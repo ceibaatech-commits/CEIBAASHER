@@ -1,28 +1,15 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import CeibaaLogo from './CeibaaLogo';
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-to-r from-gray-900 to-black text-white mt-auto">
+    <footer className="bg-gradient-to-r from-gray-900 via-slate-900 to-black text-white mt-auto border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <svg className="w-10 h-10" viewBox="0 0 50 50">
-                <defs>
-                  <linearGradient id="footerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="50%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#ec4899" />
-                  </linearGradient>
-                </defs>
-                <path d="M25 5 L45 25 L25 45 L5 25 Z" fill="url(#footerGradient)" />
-              </svg>
-              <h3 className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Ceibaa
-              </h3>
-            </div>
+            <CeibaaLogo size="sm" showText={true} />
             <p className="text-gray-400 text-sm">
               India's premier live quiz battle platform. Master competitive exams through engaging multiplayer battles.
             </p>
