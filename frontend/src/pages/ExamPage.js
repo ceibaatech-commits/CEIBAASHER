@@ -4,7 +4,7 @@ import { ArrowLeft, BookOpen, Swords, Clock, Award } from 'lucide-react';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
-const QUIZ_API_URL = process.env.REACT_APP_QUIZ_BACKEND_URL || 'http://localhost:5000';
+const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
 
 const ExamPage = () => {
   const { examName } = useParams();
