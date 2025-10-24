@@ -34,6 +34,15 @@ const BattleLobby = () => {
       console.log('Player left:', data.playerName);
     });
 
+    newSocket.on('player-kicked', (data) => {
+      setPlayers(data.players);
+    });
+
+    newSocket.on('kicked', (data) => {
+      alert(data.message);
+      navigate('/');
+    });
+
     newSocket.on('quiz-started', (data) => {
       navigate(`/live-battle/${pin}`, { 
         state: { 
