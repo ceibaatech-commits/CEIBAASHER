@@ -52,15 +52,26 @@ app.post('/api/battle/create-room', async (req, res) => {
       exam: examId, subject, topic
     });
     
-    rooms.set(pin, {
+    const roomData = {
       pin, hostName, examId, subject, topic,
       questions: response.data.questions,
       quizId: response.data.quizId,
       players: [],
       status: 'waiting',
       currentQuestion: 0,
+      isPaused: false,
       createdAt: Date.now()
-    });
+    };
+    
+    rooms.set(pin, roomData);
+    
+    // Save to MongoDB
+    if (db) {
+      await db.collection('battle_rooms').insertOne({
+        ...roomData,
+        createdAt: new Date()
+      });
+    }
     
     res.json({ success: true, pin, room: { pin, hostName, examId, subject, topic } });
   } catch (error) {
