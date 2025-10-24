@@ -1,9 +1,11 @@
 const axios = require('axios');
+const demoQuestions = require('../data/demo-questions');
 
 class GoogleSheetsService {
   constructor(apiKey) {
     this.apiKey = apiKey;
     this.baseUrl = 'https://sheets.googleapis.com/v4/spreadsheets';
+    this.useDemoData = false; // Flag to track if using demo data
   }
 
   /**
