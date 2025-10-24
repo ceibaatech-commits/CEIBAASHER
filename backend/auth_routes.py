@@ -27,27 +27,32 @@ db = client[DB_NAME]
 # OAuth configuration
 oauth = OAuth()
 
-# Twitter OAuth 1.0a
-oauth.register(
-    name='twitter',
-    client_id=os.getenv('TWITTER_API_KEY'),
-    client_secret=os.getenv('TWITTER_API_SECRET'),
-    request_token_url='https://api.twitter.com/oauth/request_token',
-    access_token_url='https://api.twitter.com/oauth/access_token',
-    authorize_url='https://api.twitter.com/oauth/authenticate',
-    api_base_url='https://api.twitter.com/1.1/',
-)
+def init_oauth():
+    """Initialize OAuth clients lazily"""
+    if not hasattr(oauth, '_initialized'):
+        # Twitter OAuth 1.0a
+        oauth.register(
+            name='twitter',
+            client_id=os.getenv('TWITTER_API_KEY'),
+            client_secret=os.getenv('TWITTER_API_SECRET'),
+            request_token_url='https://api.twitter.com/oauth/request_token',
+            access_token_url='https://api.twitter.com/oauth/access_token',
+            authorize_url='https://api.twitter.com/oauth/authenticate',
+            api_base_url='https://api.twitter.com/1.1/',
+        )
 
-# Facebook OAuth 2.0
-oauth.register(
-    name='facebook',
-    client_id=os.getenv('FACEBOOK_APP_ID'),
-    client_secret=os.getenv('FACEBOOK_APP_SECRET'),
-    authorize_url='https://www.facebook.com/v12.0/dialog/oauth',
-    access_token_url='https://graph.facebook.com/v12.0/oauth/access_token',
-    api_base_url='https://graph.facebook.com/v12.0/',
-    client_kwargs={'scope': 'email public_profile'},
-)
+        # Facebook OAuth 2.0
+        oauth.register(
+            name='facebook',
+            client_id=os.getenv('FACEBOOK_APP_ID'),
+            client_secret=os.getenv('FACEBOOK_APP_SECRET'),
+            authorize_url='https://www.facebook.com/v12.0/dialog/oauth',
+            access_token_url='https://graph.facebook.com/v12.0/oauth/access_token',
+            api_base_url='https://graph.facebook.com/v12.0/',
+            client_kwargs={'scope': 'email public_profile'},
+        )
+        
+        oauth._initialized = True
 
 # Pydantic models
 class User(BaseModel):
