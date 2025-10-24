@@ -223,7 +223,7 @@ class BattleServerTester:
     
     def test_mongodb_collections(self):
         """Test MongoDB collections exist and can be accessed"""
-        if not self.db:
+        if self.db is None:
             self.log_result("MongoDB Collections", False, "No database connection")
             return False
         
