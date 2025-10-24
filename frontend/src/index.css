@@ -113,3 +113,34 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+/* Battle Social Features Animations */
+@keyframes float {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-100px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-200px) scale(0.8);
+    }
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+}
