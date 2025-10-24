@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Lock } from 'lucide-react';
 import axios from 'axios';
 
-const BATTLE_URL = 'http://localhost:5001';
+const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const JoinRoom = () => {
   const navigate = useNavigate();
