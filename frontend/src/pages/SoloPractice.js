@@ -7,8 +7,13 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
 
 const SoloPractice = () => {
-  const { examName, subjectName } = useParams();
+  const { examName, subjectName, examId, topicName } = useParams();
   const navigate = useNavigate();
+  
+  // Use examId if available (from topic-quiz route), otherwise use examName (from solo-practice route)
+  const exam = examId || examName;
+  const subject = subjectName;
+  const topic = topicName;
   
   const [quizState, setQuizState] = useState('loading'); // loading, playing, results
   const [questions, setQuestions] = useState([]);
@@ -21,8 +26,10 @@ const SoloPractice = () => {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
-    startQuiz();
-  }, []);
+    if (exam && subject) {
+      startQuiz();
+    }
+  }, [exam, subject, topic]);
 
   useEffect(() => {
     if (quizState === 'playing' && timeLeft > 0) {
