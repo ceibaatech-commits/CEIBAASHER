@@ -3,12 +3,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import ExamSyllabus from "@/pages/ExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
-import BattleMode from "@/pages/BattleMode";
+
+// PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
 import JoinRoom from "@/pages/JoinRoom";
 import BattleLobby from "@/pages/BattleLobby";
 import LiveBattle from "@/pages/LiveBattle";
 import BattleResults from "@/pages/BattleResults";
+
+// 1v1 Live Battle with video (Original matchmaking)
+import LiveBattleMode from "@/pages/LiveBattleMode";
 
 function App() {
   return (
@@ -20,16 +24,15 @@ function App() {
           <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
           <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
           
-          {/* Live Battle Routes */}
+          {/* PIN-based Room Quiz Routes (Multiple players) */}
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
           <Route path="/battle-lobby/:pin" element={<BattleLobby />} />
           <Route path="/live-battle/:pin" element={<LiveBattle />} />
           <Route path="/battle-results/:pin" element={<BattleResults />} />
           
-          {/* Legacy routes */}
-          <Route path="/battle/:examName/:subjectName" element={<BattleMode />} />
-          <Route path="/battle/:examId/:subjectName/:topicName" element={<BattleMode />} />
+          {/* 1v1 Live Battle with video (matchmaking) */}
+          <Route path="/live-battle-1v1/:examId/:subject/:topic" element={<LiveBattleMode />} />
         </Routes>
       </BrowserRouter>
     </div>
