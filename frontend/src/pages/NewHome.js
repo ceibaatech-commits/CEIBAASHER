@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, Zap, Users, TrendingUp, BookOpen, Brain, Target, Award, ArrowRight, Sparkles, Clock } from 'lucide-react';
 import axios from 'axios';
-import CeibaaLogo from '../components/CeibaaLogo';
+import StunningCeibaaLogo from '../components/StunningCeibaaLogo';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
