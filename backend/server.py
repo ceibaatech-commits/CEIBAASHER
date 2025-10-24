@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
+from backend.quiz_routes import router as quiz_router
 
 
 ROOT_DIR = Path(__file__).parent
