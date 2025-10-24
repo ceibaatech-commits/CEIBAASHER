@@ -190,7 +190,7 @@ const ExamSyllabus = () => {
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/battle/${examId}/${topicData.subject}/${topicData.topic}`);
+                      navigate(`/create-room/${examId}/${topicData.subject}/${topicData.topic}`);
                     }}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
                   >
