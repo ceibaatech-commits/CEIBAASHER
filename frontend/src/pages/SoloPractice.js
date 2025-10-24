@@ -35,7 +35,7 @@ const SoloPractice = () => {
 
   const startQuiz = async () => {
     try {
-      const response = await axios.post(`${API_URL}/api/quiz/start`, {
+      const response = await axios.post(`${QUIZ_API_URL}/api/quiz/start`, {
         exam: examName,
         subject: subjectName
       });
