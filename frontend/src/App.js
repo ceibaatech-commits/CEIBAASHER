@@ -33,6 +33,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           
+          {/* Admin Routes */}
+          <Route path="/admin/sheets" element={<SheetManager />} />
+          
           {/* Platform Pages */}
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/creator-dashboard" element={<CreatorDashboard />} />
