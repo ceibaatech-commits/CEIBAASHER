@@ -74,7 +74,7 @@ const LiveBattle = () => {
   }, [timeLeft, selectedAnswer, isPaused]);
 
   const handleAnswerSelect = (index) => {
-    if (selectedAnswer !== null) return;
+    if (selectedAnswer !== null || isPaused) return;
     
     setSelectedAnswer(index);
     socket.emit('submit-answer', {
@@ -83,6 +83,26 @@ const LiveBattle = () => {
       answerIndex: index,
       timeLeft
     });
+  };
+
+  const pauseQuiz = () => {
+    socket.emit('pause-quiz', { pin });
+  };
+
+  const resumeQuiz = () => {
+    socket.emit('resume-quiz', { pin });
+  };
+
+  const skipQuestion = () => {
+    if (window.confirm('Skip to next question?')) {
+      socket.emit('skip-question', { pin });
+    }
+  };
+
+  const endQuiz = () => {
+    if (window.confirm('End quiz now? All players will see results.')) {
+      socket.emit('end-quiz', { pin });
+    }
   };
 
   if (!currentQuestion) {
