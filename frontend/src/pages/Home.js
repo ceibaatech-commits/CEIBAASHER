@@ -11,10 +11,29 @@ const Home = () => {
   const navigate = useNavigate();
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     fetchExams();
+    checkAuth();
   }, []);
+
+  const checkAuth = async () => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        const response = await axios.get(`${API_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUser(response.data);
+        setIsLoggedIn(true);
+      } catch (error) {
+        // Token invalid, clear it
+        localStorage.removeItem('auth_token');
+      }
+    }
+  };
 
   const fetchExams = async () => {
     try {
@@ -27,6 +46,16 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    setUser(null);
+    setIsLoggedIn(false);
   };
 
   if (loading) {
