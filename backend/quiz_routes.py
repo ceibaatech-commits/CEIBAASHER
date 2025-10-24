@@ -44,14 +44,6 @@ async def get_subjects(exam_id: str):
         raise HTTPException(status_code=404, detail="Exam not found")
     return {"success": True, "exam": exam_id, "subjects": subjects}
 
-@router.get("/topics/{exam_id}/{subject}")
-async def get_topics(exam_id: str, subject: str):
-    """Get all topics for a subject"""
-    topics = get_subject_topics(exam_id, subject)
-    if not topics:
-        raise HTTPException(status_code=404, detail="Subject not found")
-    return {"success": True, "exam": exam_id, "subject": subject, "topics": topics}
-
 @router.get("/topics/all/{exam_id}")
 async def get_all_topics(exam_id: str):
     """Get all topics across all subjects"""
@@ -59,6 +51,14 @@ async def get_all_topics(exam_id: str):
     if not topics:
         raise HTTPException(status_code=404, detail="Exam not found")
     return {"success": True, "exam": exam_id, "topics": topics}
+
+@router.get("/topics/{exam_id}/{subject}")
+async def get_topics(exam_id: str, subject: str):
+    """Get all topics for a subject"""
+    topics = get_subject_topics(exam_id, subject)
+    if not topics:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    return {"success": True, "exam": exam_id, "subject": subject, "topics": topics}
 
 @router.post("/start")
 async def start_quiz(request: QuizStartRequest):
