@@ -141,6 +141,29 @@ const LiveBattle = () => {
     }
   };
 
+  // Social Feature Functions
+  const sendMessage = (e) => {
+    e.preventDefault();
+    if (chatInput.trim() && socket) {
+      socket.emit('send-message', { pin, message: chatInput });
+      setChatInput('');
+    }
+  };
+
+  const sendReaction = (emoji) => {
+    if (socket) {
+      socket.emit('send-reaction', { pin, emoji });
+    }
+  };
+
+  const sendGift = (recipientId, giftType) => {
+    if (socket) {
+      socket.emit('send-gift', { pin, recipientId, giftType });
+      setShowGiftMenu(false);
+      setSelectedGiftRecipient(null);
+    }
+  };
+
   if (!currentQuestion) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>;
   }
