@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from quiz_routes import router as quiz_router
 from auth_routes import router as auth_router
+from sheets_routes import router as sheets_router
 
 
 ROOT_DIR = Path(__file__).parent
