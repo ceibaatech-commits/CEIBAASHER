@@ -26,6 +26,18 @@ const SoloPractice = () => {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
+    // Reset state when URL params change
+    setQuizState('loading');
+    setQuestions([]);
+    setQuizId(null);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setAnswers([]);
+    setTimeLeft(30);
+    setScore(null);
+    setResults(null);
+    
+    // Start new quiz
     if (exam && subject) {
       startQuiz();
     }
