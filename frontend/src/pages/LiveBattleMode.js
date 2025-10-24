@@ -495,4 +495,4 @@ const LiveBattleMode = () => {
   return null;
 };
 
-export default BattleMode;
+export default LiveBattleMode;
