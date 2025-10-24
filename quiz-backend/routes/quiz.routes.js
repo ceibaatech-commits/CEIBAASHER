@@ -57,8 +57,18 @@ router.post('/start', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Subject not found' });
     }
     
-    // Get 10 random questions
-    const questions = await sheetsService.getRandomQuestions(sheetId, 10);
+    let questions;
+    
+    // Try to fetch from Google Sheets first
+    try {
+      questions = await sheetsService.getRandomQuestions(sheetId, 10);
+      console.log(`✅ Fetched ${questions.length} questions from Google Sheets for ${exam} - ${subject}`);
+    } catch (sheetsError) {
+      // If Google Sheets fails, use demo data
+      console.log(`⚠️  Google Sheets failed: ${sheetsError.message}`);
+      console.log(`📚 Falling back to demo data for ${exam} - ${subject}`);
+      questions = await sheetsService.getRandomQuestionsByExamSubject(exam, subject, 10);
+    }
     
     // Remove correct answers from response (will validate on submission)
     const questionsForClient = questions.map(({ id, question, options, explanation }) => ({
@@ -77,7 +87,8 @@ router.post('/start', async (req, res) => {
       subject,
       questions: questionsForClient,
       totalQuestions: questions.length,
-      timePerQuestion: 30 // seconds
+      timePerQuestion: 30, // seconds
+      usingDemoData: sheetsService.useDemoData
     });
     
     // Store answers for validation (simplified - in production use proper session storage)
