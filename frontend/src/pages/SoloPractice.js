@@ -114,6 +114,27 @@ const SoloPractice = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading questions...</p>
+          <p className="text-sm text-gray-500 mt-2">Exam: {exam || 'N/A'} | Subject: {subject || 'N/A'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (quizState === 'error') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Failed to Load Questions</h2>
+          <p className="text-gray-600 mb-4">
+            Could not load questions for {exam} - {subject} {topic ? `- ${topic}` : ''}
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold"
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );
