@@ -65,13 +65,13 @@ const LiveBattle = () => {
   }, []);
 
   useEffect(() => {
-    if (timeLeft > 0 && selectedAnswer === null) {
+    if (timeLeft > 0 && selectedAnswer === null && !isPaused) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
     } else if (timeLeft === 0 && selectedAnswer === null) {
       handleAnswerSelect(-1);
     }
-  }, [timeLeft, selectedAnswer]);
+  }, [timeLeft, selectedAnswer, isPaused]);
 
   const handleAnswerSelect = (index) => {
     if (selectedAnswer !== null) return;
