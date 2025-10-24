@@ -64,17 +64,15 @@ async def get_all_topics(exam_id: str):
 async def start_quiz(request: QuizStartRequest):
     exam = request.exam
     subject = request.subject
+    topic = request.topic
     
-    if exam not in SHEETS_CONFIG or subject not in SHEETS_CONFIG[exam]:
-        raise HTTPException(status_code=404, detail="Subject not found")
-    
-    # Use demo questions
+    # Get questions from demo data
     if exam in DEMO_QUESTIONS and subject in DEMO_QUESTIONS[exam]:
         questions = DEMO_QUESTIONS[exam][subject]
         random.shuffle(questions)
         questions = questions[:10]
     else:
-        raise HTTPException(status_code=500, detail="Questions not available")
+        raise HTTPException(status_code=500, detail="Questions not available for this subject")
     
     # Remove correct answers
     questions_for_client = [
@@ -90,7 +88,8 @@ async def start_quiz(request: QuizStartRequest):
     quiz_sessions[quiz_id] = {
         "questions": questions,
         "exam": exam,
-        "subject": subject
+        "subject": subject,
+        "topic": topic
     }
     
     return {
@@ -98,6 +97,7 @@ async def start_quiz(request: QuizStartRequest):
         "quizId": quiz_id,
         "exam": exam,
         "subject": subject,
+        "topic": topic,
         "questions": questions_for_client,
         "totalQuestions": len(questions),
         "timePerQuestion": 30
