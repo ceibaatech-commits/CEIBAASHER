@@ -20,7 +20,11 @@ const BattleLobby = () => {
     const newSocket = io(BATTLE_URL);
     setSocket(newSocket);
 
-    newSocket.emit('join-room', { pin, playerName: isHost ? hostName : playerName });
+    newSocket.emit('join-room', { 
+      pin, 
+      playerName: isHost ? hostName : playerName,
+      isHost: isHost || false
+    });
 
     newSocket.on('player-joined', (data) => {
       setPlayers(data.players);
