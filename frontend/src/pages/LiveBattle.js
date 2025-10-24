@@ -318,7 +318,64 @@ const LiveBattle = () => {
                   </p>
                 </div>
               )}
+
+              {/* Quick Reactions Bar */}
+              <div className="mt-4 flex items-center justify-center space-x-2 p-3 bg-gray-50 rounded-lg">
+                <Smile className="w-5 h-5 text-gray-500" />
+                <span className="text-sm text-gray-600 font-medium mr-2">Quick React:</span>
+                {['👍', '🔥', '😮', '💪', '🎯', '🎉'].map((emoji, index) => (
+                  <button
+                    key={index}
+                    onClick={() => sendReaction(emoji)}
+                    className="text-2xl hover:scale-125 transition-transform bg-white rounded-lg p-2 shadow-sm hover:shadow-md"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* Floating Reactions */}
+            <div className="fixed inset-0 pointer-events-none z-50">
+              {reactions.map((reaction) => (
+                <div
+                  key={reaction.id}
+                  className="absolute animate-bounce"
+                  style={{
+                    left: `${Math.random() * 80 + 10}%`,
+                    top: `${Math.random() * 60 + 20}%`,
+                    animation: 'float 3s ease-out forwards'
+                  }}
+                >
+                  <div className="bg-white rounded-full shadow-lg p-3">
+                    <div className="text-3xl">{reaction.emoji}</div>
+                    <div className="text-xs text-gray-600 text-center mt-1">{reaction.playerName}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Gift Notification */}
+            {giftNotification && (
+              <div className={`fixed top-20 right-4 z-50 p-4 rounded-lg shadow-xl animate-slide-in ${
+                giftNotification.type === 'received' ? 'bg-green-100 border-2 border-green-500' : 'bg-blue-100 border-2 border-blue-500'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  <Gift className={`w-8 h-8 ${giftNotification.type === 'received' ? 'text-green-600' : 'text-blue-600'}`} />
+                  <div>
+                    <p className={`font-bold ${giftNotification.type === 'received' ? 'text-green-800' : 'text-blue-800'}`}>
+                      {giftNotification.type === 'received' ? '🎁 Gift Received!' : '✨ Gift Sent!'}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      {giftNotification.type === 'received' 
+                        ? `${giftNotification.from} sent you a ${giftNotification.giftType}! +${giftNotification.points} points`
+                        : `You sent a ${giftNotification.giftType} to ${giftNotification.to}! -${giftNotification.cost} points`
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Leaderboard Section */}
