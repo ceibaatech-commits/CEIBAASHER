@@ -246,6 +246,87 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Social Feature: Chat message
+  socket.on('send-message', ({ pin, message }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData) return;
+    
+    const chatMessage = {
+      playerName: playerData.playerName,
+      message: message.trim(),
+      timestamp: Date.now()
+    };
+    
+    io.to(pin).emit('new-message', chatMessage);
+  });
+
+  // Social Feature: Emoji reaction
+  socket.on('send-reaction', ({ pin, emoji }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData) return;
+    
+    io.to(pin).emit('new-reaction', {
+      playerName: playerData.playerName,
+      emoji,
+      timestamp: Date.now()
+    });
+  });
+
+  // Social Feature: Virtual gift
+  socket.on('send-gift', ({ pin, recipientId, giftType }) => {
+    const room = rooms.get(pin);
+    const senderData = players.get(socket.id);
+    
+    if (!room || !senderData) return;
+    
+    const sender = room.players.find(p => p.id === socket.id);
+    const recipient = room.players.find(p => p.id === recipientId);
+    
+    if (!sender || !recipient) return;
+    
+    // Gift values
+    const giftValues = {
+      star: 10,
+      diamond: 50,
+      crown: 100,
+      trophy: 200
+    };
+    
+    const giftValue = giftValues[giftType] || 10;
+    
+    // Simple economy: sender needs enough score to send gift
+    if (sender.score >= giftValue) {
+      sender.score -= giftValue;
+      recipient.score += Math.floor(giftValue / 2); // Recipient gets 50% of gift value
+      
+      // Notify both parties and update leaderboard
+      io.to(recipientId).emit('gift-received', {
+        from: senderData.playerName,
+        giftType,
+        points: Math.floor(giftValue / 2)
+      });
+      
+      socket.emit('gift-sent', {
+        to: recipient.name,
+        giftType,
+        cost: giftValue
+      });
+      
+      // Update leaderboard
+      const leaderboard = room.players
+        .map(p => ({ name: p.name, score: p.score, streak: p.streak, id: p.id }))
+        .sort((a, b) => b.score - a.score);
+      
+      io.to(pin).emit('leaderboard-update', { leaderboard });
+    } else {
+      socket.emit('gift-error', { message: 'Not enough points to send gift' });
+    }
+  });
+
   socket.on('disconnect', () => {
     const data = players.get(socket.id);
     if (data) {
