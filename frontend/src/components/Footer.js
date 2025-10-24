@@ -1,6 +1,6 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
-import CeibaaLogo from './CeibaaLogo';
+import StunningCeibaaLogo from './StunningCeibaaLogo';
 
 const Footer = () => {
   return (
