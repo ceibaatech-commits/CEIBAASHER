@@ -67,6 +67,26 @@ class GoogleSheetsService {
       throw error;
     }
   }
+
+  /**
+   * Get random questions for an exam and subject (with demo fallback)
+   * @param {string} exam - Exam name (NEET, JEE)
+   * @param {string} subject - Subject name
+   * @param {number} count - Number of questions
+   */
+  async getRandomQuestionsByExamSubject(exam, subject, count = 10) {
+    // Check if demo data exists for this exam and subject
+    if (demoQuestions[exam] && demoQuestions[exam][subject]) {
+      console.log(`ℹ️  Using demo data for ${exam} - ${subject}`);
+      const questions = demoQuestions[exam][subject];
+      const shuffled = questions.sort(() => 0.5 - Math.random());
+      this.useDemoData = true;
+      return shuffled.slice(0, Math.min(count, questions.length));
+    }
+    
+    // If no demo data, return empty (Google Sheets should be the primary source)
+    throw new Error(`Demo data not available for ${exam} - ${subject}`);
+  }
 }
 
 module.exports = GoogleSheetsService;
