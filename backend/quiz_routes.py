@@ -23,22 +23,41 @@ quiz_sessions = {}
 
 @router.get("/exams")
 async def get_exams():
-    exams = [
-        {"name": exam, "subjects": list(subjects.keys())}
-        for exam, subjects in SHEETS_CONFIG.items()
-    ]
+    """Get all available exams"""
+    exams = get_all_exams()
     return {"success": True, "exams": exams}
 
-@router.get("/subjects/{exam}")
-async def get_subjects(exam: str):
-    if exam not in SHEETS_CONFIG:
+@router.get("/exam/{exam_id}")
+async def get_exam(exam_id: str):
+    """Get complete exam details with syllabus"""
+    exam = get_exam_details(exam_id)
+    if not exam:
         raise HTTPException(status_code=404, detail="Exam not found")
-    
-    subjects = [
-        {"name": subject, "sheetId": sheet_id}
-        for subject, sheet_id in SHEETS_CONFIG[exam].items()
-    ]
-    return {"success": True, "exam": exam, "subjects": subjects}
+    return {"success": True, "exam": exam}
+
+@router.get("/subjects/{exam_id}")
+async def get_subjects(exam_id: str):
+    """Get all subjects for an exam"""
+    subjects = get_exam_subjects(exam_id)
+    if not subjects:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    return {"success": True, "exam": exam_id, "subjects": subjects}
+
+@router.get("/topics/{exam_id}/{subject}")
+async def get_topics(exam_id: str, subject: str):
+    """Get all topics for a subject"""
+    topics = get_subject_topics(exam_id, subject)
+    if not topics:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    return {"success": True, "exam": exam_id, "subject": subject, "topics": topics}
+
+@router.get("/topics/all/{exam_id}")
+async def get_all_topics(exam_id: str):
+    """Get all topics across all subjects"""
+    topics = get_all_topics_flat(exam_id)
+    if not topics:
+        raise HTTPException(status_code=404, detail="Exam not found")
+    return {"success": True, "exam": exam_id, "topics": topics}
 
 @router.post("/start")
 async def start_quiz(request: QuizStartRequest):
