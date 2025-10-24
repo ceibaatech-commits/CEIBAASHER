@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle } from 'lucide-react';
+import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile } from 'lucide-react';
 import io from 'socket.io-client';
 
 const BATTLE_URL = 'http://localhost:5001';
