@@ -3,8 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import ExamSyllabus from "@/pages/ExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
-import Leaderboard from "@/pages/Leaderboard";
-import CreatorDashboard from "@/pages/CreatorDashboard";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
@@ -25,10 +23,6 @@ function App() {
           <Route path="/exam/:examId" element={<ExamSyllabus />} />
           <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
           <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
-          
-          {/* New Pages */}
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/creator-dashboard" element={<CreatorDashboard />} />
           
           {/* PIN-based Room Quiz Routes (Multiple players) */}
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />
