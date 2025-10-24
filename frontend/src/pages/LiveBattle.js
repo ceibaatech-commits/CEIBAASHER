@@ -194,31 +194,65 @@ const LiveBattle = () => {
               </h2>
 
               <div className="space-y-3">
-                {currentQuestion.options.map((option, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAnswerSelect(index)}
-                    disabled={selectedAnswer !== null}
-                    className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                      selectedAnswer === null
-                        ? 'border-gray-300 hover:border-purple-500 hover:bg-purple-50'
-                        : selectedAnswer === index
-                        ? 'border-purple-600 bg-purple-50'
-                        : 'border-gray-200 opacity-50'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                        selectedAnswer === index
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-gray-200 text-gray-700'
-                      }`}>
-                        {String.fromCharCode(65 + index)}
+                {currentQuestion.options.map((option, index) => {
+                  const isSelected = selectedAnswer === index;
+                  const isCorrect = answerResult && answerResult.correctAnswer === index;
+                  const isWrong = isSelected && answerResult && !answerResult.isCorrect;
+                  
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswerSelect(index)}
+                      disabled={selectedAnswer !== null || isPaused}
+                      className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                        selectedAnswer === null && !isPaused
+                          ? 'border-gray-300 hover:border-purple-500 hover:bg-purple-50'
+                          : isCorrect
+                          ? 'border-green-600 bg-green-50'
+                          : isWrong
+                          ? 'border-red-600 bg-red-50'
+                          : isSelected
+                          ? 'border-purple-600 bg-purple-50'
+                          : 'border-gray-200 opacity-50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                          isCorrect
+                            ? 'bg-green-600 text-white'
+                            : isWrong
+                            ? 'bg-red-600 text-white'
+                            : isSelected
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-gray-200 text-gray-700'
+                        }`}>
+                          {String.fromCharCode(65 + index)}
+                        </div>
+                        <span className="flex-1 font-medium text-gray-900">{option}</span>
+                        {isCorrect && <span className="text-green-600 font-bold">✓</span>}
+                        {isWrong && <span className="text-red-600 font-bold">✗</span>}
                       </div>
-                      <span className="flex-1 font-medium text-gray-900">{option}</span>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Answer Feedback */}
+              {answerResult && (
+                <div className={`mt-4 p-4 rounded-lg ${
+                  answerResult.isCorrect ? 'bg-green-100 border-2 border-green-500' : 'bg-red-100 border-2 border-red-500'
+                }`}>
+                  <p className={`font-bold ${answerResult.isCorrect ? 'text-green-800' : 'text-red-800'}`}>
+                    {answerResult.isCorrect ? '✓ Correct!' : '✗ Incorrect'}
+                  </p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    {answerResult.isCorrect 
+                      ? `+${answerResult.points} points earned!` 
+                      : `Correct answer: ${String.fromCharCode(65 + answerResult.correctAnswer)}`
+                    }
+                  </p>
+                </div>
+              )}
               </div>
             </div>
           </div>
