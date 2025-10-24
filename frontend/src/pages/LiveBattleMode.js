@@ -9,8 +9,8 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
 const SOCKET_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend for socket
 
-const BattleMode = () => {
-  const { examName, subjectName } = useParams();
+const LiveBattleMode = () => {
+  const { examId, subject, topic } = useParams();
   const navigate = useNavigate();
   
   const [battleState, setBattleState] = useState('setup'); // setup, searching, matched, playing, results
