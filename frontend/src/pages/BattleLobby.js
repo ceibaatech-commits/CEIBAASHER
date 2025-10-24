@@ -69,6 +69,12 @@ const BattleLobby = () => {
     socket.emit('start-quiz', { pin });
   };
 
+  const kickPlayer = (playerId) => {
+    if (window.confirm('Are you sure you want to kick this player?')) {
+      socket.emit('kick-player', { pin, playerId });
+    }
+  };
+
   const copyPIN = () => {
     navigator.clipboard.writeText(pin);
     setCopied(true);
