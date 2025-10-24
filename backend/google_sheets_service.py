@@ -1,11 +1,8 @@
-import gspread
+import requests
 from typing import List, Dict, Optional
 import re
 
 class GoogleSheetsService:
-    def __init__(self):
-        # For public sheets, we don't need authentication
-        self.gc = gspread.Client()
     
     @staticmethod
     def extract_sheet_id(url: str) -> str:
@@ -18,31 +15,31 @@ class GoogleSheetsService:
     
     def fetch_questions(self, sheet_url: str, sheet_name: str = None) -> List[Dict]:
         """
-        Fetch questions from a public Google Sheet
+        Fetch questions from a public Google Sheet using CSV export
         Expected format: QUESTION NUMBER | Question | A | B | C | D | Answer | Explanation
         """
         try:
             sheet_id = self.extract_sheet_id(sheet_url)
             
-            # Open the spreadsheet by ID (public access)
-            spreadsheet = self.gc.open_by_key(sheet_id)
+            # Use public CSV export URL (works for public sheets)
+            csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
             
-            # Get the first sheet or specified sheet
-            if sheet_name:
-                worksheet = spreadsheet.worksheet(sheet_name)
-            else:
-                worksheet = spreadsheet.sheet1
+            # Fetch the CSV data
+            response = requests.get(csv_url, timeout=10)
+            response.raise_for_status()
             
-            # Get all records (assumes first row is header)
-            records = worksheet.get_all_records()
+            # Parse CSV
+            import csv
+            from io import StringIO
+            
+            csv_data = StringIO(response.text)
+            reader = csv.DictReader(csv_data)
             
             questions = []
-            for idx, row in enumerate(records):
+            for idx, row in enumerate(reader):
                 # Parse the row based on your format
-                # Expected columns: QUESTION NUMBER, Question, A, B, C, D, Answer, Explanation
-                
                 question_text = row.get('Question', row.get('question', ''))
-                if not question_text:
+                if not question_text or not question_text.strip():
                     continue
                 
                 # Get options
@@ -51,7 +48,7 @@ class GoogleSheetsService:
                 option_c = row.get('C', row.get('c', ''))
                 option_d = row.get('D', row.get('d', ''))
                 
-                # Get answer (can be A, B, C, D or 0, 1, 2, 3)
+                # Get answer
                 answer = row.get('Answer', row.get('answer', ''))
                 
                 # Convert answer to index (0-3)
@@ -89,23 +86,37 @@ class GoogleSheetsService:
         if answer in ['A', 'B', 'C', 'D']:
             return ord(answer) - ord('A')
         
-        # If it's already a number
+        # If it's 1, 2, 3, 4 (convert to 0-3)
+        if answer in ['1', '2', '3', '4']:
+            return int(answer) - 1
+        
+        # If it's already 0-3
         try:
-            return int(answer)
+            num = int(answer)
+            if 0 <= num <= 3:
+                return num
         except:
-            return 0  # Default to first option
+            pass
+        
+        return 0  # Default to first option
     
     def test_sheet_access(self, sheet_url: str) -> Dict:
         """Test if we can access a sheet and return info"""
         try:
             sheet_id = self.extract_sheet_id(sheet_url)
-            spreadsheet = self.gc.open_by_key(sheet_id)
+            csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+            
+            response = requests.get(csv_url, timeout=10)
+            response.raise_for_status()
+            
+            # Count lines
+            lines = response.text.split('\n')
             
             return {
                 "success": True,
-                "title": spreadsheet.title,
-                "sheet_count": len(spreadsheet.worksheets()),
-                "sheet_names": [ws.title for ws in spreadsheet.worksheets()]
+                "sheet_id": sheet_id,
+                "row_count": len(lines) - 1,  # Exclude header
+                "preview": lines[0] if lines else ""
             }
         except Exception as e:
             return {
