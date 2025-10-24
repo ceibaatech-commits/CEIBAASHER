@@ -62,19 +62,58 @@ async def get_topics(exam_id: str, subject: str):
 
 @router.post("/start")
 async def start_quiz(request: QuizStartRequest):
+    from motor.motor_asyncio import AsyncIOMotorClient
+    from google_sheets_service import GoogleSheetsService
+    import os
+    
     exam = request.exam
     subject = request.subject
     topic = request.topic
     
-    # Get questions from demo data
-    if exam in DEMO_QUESTIONS and subject in DEMO_QUESTIONS[exam]:
-        questions = DEMO_QUESTIONS[exam][subject]
-        random.shuffle(questions)
-        questions = questions[:10]
-    else:
-        raise HTTPException(status_code=500, detail="Questions not available for this subject")
+    # Try to get questions from Google Sheets first
+    questions = []
+    source = "demo"
     
-    # Remove correct answers
+    if topic:
+        # Check if there's a Google Sheet mapping for this topic
+        MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+        DB_NAME = os.getenv("DB_NAME", "test_database")
+        client = AsyncIOMotorClient(MONGO_URL)
+        db = client[DB_NAME]
+        
+        sheet_mapping = await db.question_sheets.find_one({
+            "exam_id": exam,
+            "subject": subject,
+            "topic": topic
+        })
+        
+        if sheet_mapping:
+            try:
+                sheets_service = GoogleSheetsService()
+                questions = sheets_service.fetch_questions(
+                    sheet_mapping["sheet_url"],
+                    sheet_mapping.get("sheet_name")
+                )
+                
+                if questions:
+                    source = "google_sheets"
+                    print(f"✅ Loaded {len(questions)} questions from Google Sheets for {exam}/{subject}/{topic}")
+            except Exception as e:
+                print(f"⚠️ Error fetching from Google Sheets: {e}")
+    
+    # Fallback to demo questions if Google Sheets failed or not configured
+    if not questions:
+        if exam in DEMO_QUESTIONS and subject in DEMO_QUESTIONS[exam]:
+            questions = DEMO_QUESTIONS[exam][subject]
+            source = "demo"
+        else:
+            raise HTTPException(status_code=500, detail="Questions not available for this subject")
+    
+    # Randomize and limit to 10 questions
+    random.shuffle(questions)
+    questions = questions[:10]
+    
+    # Remove correct answers for client
     questions_for_client = [
         {
             "id": q["id"],
