@@ -177,24 +177,33 @@ const ExamSyllabus = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="space-y-2">
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/topic-quiz/${examId}/${topicData.subject}/${topicData.topic}`);
                     }}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
                   >
-                    Practice
+                    📚 Solo Practice
                   </button>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/create-room/${examId}/${topicData.subject}/${topicData.topic}`);
                     }}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
                   >
-                    Battle
+                    🎯 Room Battle (PIN)
+                  </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/live-battle-1v1/${examId}/${topicData.subject}/${topicData.topic}`);
+                    }}
+                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
+                  >
+                    ⚔️ Live Battle (1v1)
                   </button>
                 </div>
               </div>
