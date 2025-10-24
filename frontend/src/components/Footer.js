@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <CeibaaLogo size="sm" showText={true} />
+            <StunningCeibaaLogo size="sm" showText={true} />
             <p className="text-gray-400 text-sm">
               India's premier live quiz battle platform. Master competitive exams through engaging multiplayer battles.
             </p>
