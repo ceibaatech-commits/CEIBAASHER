@@ -61,6 +61,33 @@ const LiveBattle = () => {
       setAnswerResult(data);
     });
 
+    // Social Features Listeners
+    newSocket.on('new-message', (data) => {
+      setChatMessages(prev => [...prev, data]);
+    });
+
+    newSocket.on('new-reaction', (data) => {
+      setReactions(prev => [...prev, { ...data, id: Date.now() }]);
+      // Remove reaction after animation (3 seconds)
+      setTimeout(() => {
+        setReactions(prev => prev.filter(r => r.id !== data.id));
+      }, 3000);
+    });
+
+    newSocket.on('gift-received', (data) => {
+      setGiftNotification({ type: 'received', ...data });
+      setTimeout(() => setGiftNotification(null), 5000);
+    });
+
+    newSocket.on('gift-sent', (data) => {
+      setGiftNotification({ type: 'sent', ...data });
+      setTimeout(() => setGiftNotification(null), 3000);
+    });
+
+    newSocket.on('gift-error', (data) => {
+      alert(data.message);
+    });
+
     newSocket.on('quiz-ended', (data) => {
       navigate(`/battle-results/${pin}`, { 
         state: { 
