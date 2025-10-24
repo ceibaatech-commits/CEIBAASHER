@@ -218,6 +218,8 @@ const ExamSyllabus = () => {
           </div>
         )}
       </main>
+      
+      <Footer />
     </div>
   );
 };
