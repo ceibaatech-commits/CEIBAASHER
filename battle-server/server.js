@@ -4,6 +4,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const axios = require('axios');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 const server = http.createServer(app);
@@ -16,6 +17,18 @@ app.use(express.json());
 
 const rooms = new Map();
 const players = new Map();
+
+// MongoDB connection
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
+const DB_NAME = process.env.DB_NAME || 'test_database';
+let db;
+
+MongoClient.connect(MONGO_URL)
+  .then(client => {
+    db = client.db(DB_NAME);
+    console.log('✅ Connected to MongoDB');
+  })
+  .catch(err => console.error('MongoDB connection error:', err));
 
 function generatePIN() {
   return Math.floor(100000 + Math.random() * 900000).toString();
