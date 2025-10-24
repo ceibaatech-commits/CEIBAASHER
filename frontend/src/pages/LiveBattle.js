@@ -253,7 +253,6 @@ const LiveBattle = () => {
                   </p>
                 </div>
               )}
-              </div>
             </div>
           </div>
 
