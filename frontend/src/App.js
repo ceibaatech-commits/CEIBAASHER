@@ -5,6 +5,8 @@ import ExamSyllabus from "@/pages/ExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
 import CreatorDashboard from "@/pages/CreatorDashboard";
+import Login from "@/pages/Login";
+import AuthCallback from "@/pages/AuthCallback";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
