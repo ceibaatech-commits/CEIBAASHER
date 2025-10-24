@@ -28,6 +28,10 @@ function App() {
           <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
           <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
           
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+          
           {/* Platform Pages */}
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/creator-dashboard" element={<CreatorDashboard />} />
