@@ -108,6 +108,7 @@ async def get_or_create_user(provider: str, provider_id: str, name: str, email: 
 
 @router.get("/auth/twitter")
 async def twitter_login(request: Request):
+    init_oauth()
     redirect_uri = os.getenv('TWITTER_CALLBACK_URL')
     return await oauth.twitter.authorize_redirect(request, redirect_uri)
 
