@@ -36,7 +36,20 @@ const LiveBattle = () => {
       setCurrentQuestion(data.question);
       setQuestionNumber(data.questionNumber);
       setSelectedAnswer(null);
+      setAnswerResult(null);
       setTimeLeft(30);
+    });
+
+    newSocket.on('quiz-paused', (data) => {
+      setIsPaused(true);
+    });
+
+    newSocket.on('quiz-resumed', (data) => {
+      setIsPaused(false);
+    });
+
+    newSocket.on('answer-result', (data) => {
+      setAnswerResult(data);
     });
 
     newSocket.on('quiz-ended', (data) => {
