@@ -13,6 +13,7 @@ from demo_questions import DEMO_QUESTIONS
 class QuizStartRequest(BaseModel):
     exam: str
     subject: str
+    topic: str = None  # Optional: for topic-specific quiz
 
 class QuizSubmitRequest(BaseModel):
     quizId: str
