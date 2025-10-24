@@ -1,140 +1,190 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Trophy, Users } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp } from 'lucide-react';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Home = () => {
   const navigate = useNavigate();
+  const [exams, setExams] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const exams = [
-    {
-      name: 'NEET',
-      description: 'National Eligibility cum Entrance Test',
-      subjects: ['Physics', 'Chemistry', 'Biology'],
-      color: 'from-blue-500 to-cyan-500',
-      icon: '🏥'
-    },
-    {
-      name: 'JEE',
-      description: 'Joint Entrance Examination',
-      subjects: ['Physics', 'Chemistry', 'Maths'],
-      color: 'from-purple-500 to-pink-500',
-      icon: '🎓'
+  useEffect(() => {
+    fetchExams();
+  }, []);
+
+  const fetchExams = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/quiz/exams`);
+      if (response.data.success) {
+        setExams(response.data.exams);
+      }
+    } catch (error) {
+      console.error('Error fetching exams:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading exams...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 rounded-xl">
-                <Trophy className="w-8 h-8" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Ceibaa Quiz Arena
-                </h1>
-                <p className="text-gray-600 text-sm">Master your competitive exams</p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      {/* Hero Header */}
+      <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <Trophy className="w-12 h-12" />
+              <h1 className="text-5xl font-black">Ceibaa</h1>
             </div>
+            <p className="text-xl text-white/90 mb-2">India's Premier Live Quiz Battle Platform</p>
+            <p className="text-white/80 max-w-2xl mx-auto">
+              Transform your exam preparation into exciting multiplayer battles. Practice with syllabus-based quizzes or compete live with opponents!
+            </p>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Features Banner */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Trophy className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">8 Major Exams</p>
+              <p className="text-xs text-gray-600">Complete Syllabus</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-purple-100 text-purple-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Users className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">Live Battles</p>
+              <p className="text-xs text-gray-600">Real-time Competition</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-pink-100 text-pink-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Zap className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">Topic-wise Quiz</p>
+              <p className="text-xs text-gray-600">Focused Practice</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-green-100 text-green-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
+                <TrendingUp className="w-6 h-6" />
+              </div>
+              <p className="text-sm font-semibold text-gray-900">Track Progress</p>
+              <p className="text-xs text-gray-600">Detailed Analytics</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - Exam Cards */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Choose Your Exam
+            Choose Your Competitive Exam
           </h2>
           <p className="text-xl text-gray-600">
-            Practice solo or battle with competitors in real-time
+            Select your target exam to explore complete syllabus and start practicing
           </p>
         </div>
 
-        {/* Exam Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {/* Exam Cards Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {exams.map((exam) => (
             <div
-              key={exam.name}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 cursor-pointer"
-              onClick={() => navigate(`/exam/${exam.name}`)}
+              key={exam.id}
+              onClick={() => navigate(`/exam/${exam.id}`)}
+              className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+              data-testid={`exam-card-${exam.id}`}
             >
-              <div className={`bg-gradient-to-r ${exam.color} p-8 text-white`}>
-                <div className="text-6xl mb-4">{exam.icon}</div>
-                <h3 className="text-3xl font-bold mb-2">{exam.name}</h3>
-                <p className="text-white/90">{exam.description}</p>
+              <div className={`bg-gradient-to-br ${exam.color} p-6 text-white relative overflow-hidden`}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                <div className="relative">
+                  <div className="text-5xl mb-3">{exam.icon}</div>
+                  <h3 className="text-2xl font-bold mb-1">{exam.name}</h3>
+                  <p className="text-white/90 text-sm">{exam.full_name}</p>
+                </div>
               </div>
               
               <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Subjects:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {exam.subjects.map((subject) => (
-                      <span
-                        key={subject}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
-                      >
-                        {subject}
-                      </span>
-                    ))}
+                <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Questions:</span>
+                    <span className="font-semibold text-gray-900">{exam.total_questions}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Duration:</span>
+                    <span className="font-semibold text-gray-900">{exam.duration}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Subjects:</span>
+                    <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <BookOpen className="w-4 h-4" />
-                    <span>Solo Practice</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Users className="w-4 h-4" />
-                    <span>Battle Mode</span>
-                  </div>
-                </div>
-
-                <button className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
-                  Start Learning →
+                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
+                  View Syllabus →
                 </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Features */}
-        <div className="mt-20 grid md:grid-cols-3 gap-8">
-          <div className="text-center p-6">
-            <div className="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="w-8 h-8" />
+        {/* Info Section */}
+        <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
+          <div className="text-center max-w-3xl mx-auto">
+            <h3 className="text-3xl font-bold mb-4">How Ceibaa Works</h3>
+            <div className="grid md:grid-cols-3 gap-6 mt-8">
+              <div className="text-center">
+                <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl font-bold">1</span>
+                </div>
+                <h4 className="font-semibold mb-2">Select Your Exam</h4>
+                <p className="text-white/80 text-sm">Choose from 8 major competitive exams</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl font-bold">2</span>
+                </div>
+                <h4 className="font-semibold mb-2">Pick Your Topic</h4>
+                <p className="text-white/80 text-sm">Topic-wise practice from complete syllabus</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl font-bold">3</span>
+                </div>
+                <h4 className="font-semibold mb-2">Battle & Win</h4>
+                <p className="text-white/80 text-sm">Compete live or practice solo</p>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Practice Mode</h3>
-            <p className="text-gray-600">
-              Get 10 random questions from thousands in our database
-            </p>
-          </div>
-
-          <div className="text-center p-6">
-            <div className="bg-purple-100 text-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Battle Mode</h3>
-            <p className="text-gray-600">
-              Compete with strangers in real-time quiz battles
-            </p>
-          </div>
-
-          <div className="text-center p-6">
-            <div className="bg-pink-100 text-pink-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Trophy className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Live Video</h3>
-            <p className="text-gray-600">
-              Face your opponent with live video and audio during battles
-            </p>
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-8 mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-gray-400">© 2025 Ceibaa - India's Premier Live Quiz Battle Platform</p>
+        </div>
+      </footer>
     </div>
   );
 };
