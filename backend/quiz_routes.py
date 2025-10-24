@@ -3,24 +3,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import random
+from exam_data import get_all_exams, get_exam_details, get_exam_subjects, get_subject_topics, get_all_topics_flat
 
 router = APIRouter(prefix="/quiz", tags=["quiz"])
-
-# Google Sheets configuration
-SHEETS_CONFIG = {
-    "NEET": {
-        "Physics": "1BMFBBXHlv0-mcR59XjoSt3HrxT02IWB8NsUNc-paJdc",
-        "Biology": "1e3Sk_WNgC2Hso2nxzyVUg7KR64lPdsSW9ZE1eExaqEQ",
-        "Chemistry": "1FN9SDyYYwY8onsTGXByNvknm19nsHJy-qLZ4a_LGwFg"
-    },
-    "JEE": {
-        "Physics": "1h20DKUjyhsntwxjQIbh9FwkM0AcCYM2RExeelL2Dqgk",
-        "Chemistry": "1SxblMOKQUtwAa09KEQ6zfbHSJ9Z_99sgWBGeGUhht-8",
-        "Maths": "1ZDltEUuum7tja6BXCo5lL_xntbxPwDptx7ozcC6xmfg"
-    }
-}
-
-GOOGLE_API_KEY = "AIzaSyBCaYf8fgCVFsrZKa2-dLhU0wG1knfkAvk"
 
 # Demo questions (fallback)
 from demo_questions import DEMO_QUESTIONS
