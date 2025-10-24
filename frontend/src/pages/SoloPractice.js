@@ -59,8 +59,6 @@ const SoloPractice = () => {
       alert('Failed to load questions. Please try again.');
     }
   };
-    }
-  };
 
   const handleAnswerSelect = (optionIndex) => {
     if (selectedAnswer === null) {
