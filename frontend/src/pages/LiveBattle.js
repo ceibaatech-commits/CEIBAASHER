@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Trophy, Clock, Zap, Star } from 'lucide-react';
+import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle } from 'lucide-react';
 import io from 'socket.io-client';
 
 const BATTLE_URL = 'http://localhost:5001';
@@ -9,7 +9,7 @@ const LiveBattle = () => {
   const { pin } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { playerName, firstQuestion } = location.state || {};
+  const { playerName, firstQuestion, isHost } = location.state || {};
   
   const [socket, setSocket] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(firstQuestion?.question || null);
@@ -19,6 +19,8 @@ const LiveBattle = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [myScore, setMyScore] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [answerResult, setAnswerResult] = useState(null);
 
   useEffect(() => {
     const newSocket = io(BATTLE_URL);
