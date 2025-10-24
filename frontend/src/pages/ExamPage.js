@@ -18,7 +18,7 @@ const ExamPage = () => {
 
   const fetchSubjects = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/quiz/subjects/${examName}`);
+      const response = await axios.get(`${QUIZ_API_URL}/api/quiz/subjects/${examName}`);
       if (response.data.success) {
         setSubjects(response.data.subjects);
       }
