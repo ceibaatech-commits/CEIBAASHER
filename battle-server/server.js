@@ -96,25 +96,36 @@ app.get('/api/battle/room/:pin', (req, res) => {
 io.on('connection', (socket) => {
   console.log('Connected:', socket.id);
 
-  socket.on('join-room', ({ pin, playerName }) => {
+  socket.on('join-room', ({ pin, playerName, isHost }) => {
     const room = rooms.get(pin);
     if (!room || room.status !== 'waiting') {
       socket.emit('error', { message: room ? 'Quiz started' : 'Room not found' });
       return;
     }
     
-    room.players.push({ id: socket.id, name: playerName, score: 0, streak: 0, answers: [] });
-    players.set(socket.id, { pin, playerName });
+    const playerData = { 
+      id: socket.id, 
+      name: playerName, 
+      score: 0, 
+      streak: 0, 
+      answers: [],
+      isHost: isHost || false
+    };
+    
+    room.players.push(playerData);
+    players.set(socket.id, { pin, playerName, isHost: isHost || false });
     socket.join(pin);
     
     io.to(pin).emit('player-joined', {
-      players: room.players.map(p => ({ name: p.name, score: p.score }))
+      players: room.players.map(p => ({ name: p.name, score: p.score, isHost: p.isHost }))
     });
   });
 
   socket.on('start-quiz', ({ pin }) => {
     const room = rooms.get(pin);
-    if (!room) return;
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData?.isHost) return;
     
     room.status = 'active';
     io.to(pin).emit('quiz-started', {
@@ -124,21 +135,97 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Host control: Pause quiz
+  socket.on('pause-quiz', ({ pin }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData?.isHost) return;
+    
+    room.isPaused = true;
+    io.to(pin).emit('quiz-paused', { message: 'Quiz paused by host' });
+  });
+
+  // Host control: Resume quiz
+  socket.on('resume-quiz', ({ pin }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData?.isHost) return;
+    
+    room.isPaused = false;
+    io.to(pin).emit('quiz-resumed', { message: 'Quiz resumed' });
+  });
+
+  // Host control: Kick player
+  socket.on('kick-player', ({ pin, playerId }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData?.isHost) return;
+    
+    const kickedPlayer = room.players.find(p => p.id === playerId);
+    if (kickedPlayer && !kickedPlayer.isHost) {
+      room.players = room.players.filter(p => p.id !== playerId);
+      io.to(playerId).emit('kicked', { message: 'You were removed by the host' });
+      io.to(playerId).disconnectSockets();
+      io.to(pin).emit('player-kicked', { 
+        playerName: kickedPlayer.name,
+        players: room.players.map(p => ({ name: p.name, score: p.score, isHost: p.isHost }))
+      });
+    }
+  });
+
+  // Host control: Skip question
+  socket.on('skip-question', ({ pin }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData?.isHost) return;
+    
+    room.currentQuestion++;
+    if (room.currentQuestion < room.questions.length) {
+      io.to(pin).emit('next-question', {
+        question: room.questions[room.currentQuestion],
+        questionNumber: room.currentQuestion + 1,
+        totalQuestions: room.questions.length
+      });
+    } else {
+      endQuiz(room, pin);
+    }
+  });
+
+  // Host control: End quiz
+  socket.on('end-quiz', ({ pin }) => {
+    const room = rooms.get(pin);
+    const playerData = players.get(socket.id);
+    
+    if (!room || !playerData?.isHost) return;
+    
+    endQuiz(room, pin);
+  });
+
   socket.on('submit-answer', ({ pin, questionId, answerIndex, timeLeft }) => {
     const room = rooms.get(pin);
-    if (!room) return;
+    if (!room || room.isPaused) return;
     
     const player = room.players.find(p => p.id === socket.id);
     if (!player) return;
     
-    const isCorrect = Math.random() > 0.3;
+    // Proper answer validation
+    const currentQ = room.questions[room.currentQuestion];
+    const isCorrect = currentQ && currentQ.correctAnswer === answerIndex;
+    
     player.streak = isCorrect ? player.streak + 1 : 0;
     const points = calculateScore(isCorrect, timeLeft, player.streak);
     player.score += points;
     player.answers.push({ questionId, answerIndex, isCorrect, points });
     
+    // Send feedback to the player
+    socket.emit('answer-result', { isCorrect, points, correctAnswer: currentQ.correctAnswer });
+    
     const leaderboard = room.players
-      .map(p => ({ name: p.name, score: p.score, streak: p.streak }))
+      .map(p => ({ name: p.name, score: p.score, streak: p.streak, id: p.id }))
       .sort((a, b) => b.score - a.score);
     
     io.to(pin).emit('leaderboard-update', { leaderboard });
@@ -153,12 +240,7 @@ io.on('connection', (socket) => {
             totalQuestions: room.questions.length
           });
         } else {
-          room.status = 'completed';
-          io.to(pin).emit('quiz-ended', { 
-            leaderboard: room.players
-              .map(p => ({ name: p.name, score: p.score, correct: p.answers.filter(a => a.isCorrect).length }))
-              .sort((a, b) => b.score - a.score)
-          });
+          endQuiz(room, pin);
         }
       }, 2000);
     }
@@ -177,5 +259,36 @@ io.on('connection', (socket) => {
     }
   });
 });
+
+async function endQuiz(room, pin) {
+  room.status = 'completed';
+  const finalLeaderboard = room.players
+    .map(p => ({ 
+      name: p.name, 
+      score: p.score, 
+      correct: p.answers.filter(a => a.isCorrect).length,
+      totalQuestions: room.questions.length
+    }))
+    .sort((a, b) => b.score - a.score);
+  
+  io.to(pin).emit('quiz-ended', { leaderboard: finalLeaderboard });
+  
+  // Save results to MongoDB
+  if (db) {
+    try {
+      await db.collection('quiz_results').insertOne({
+        pin,
+        examId: room.examId,
+        subject: room.subject,
+        topic: room.topic,
+        hostName: room.hostName,
+        leaderboard: finalLeaderboard,
+        completedAt: new Date()
+      });
+    } catch (error) {
+      console.error('Error saving quiz results:', error);
+    }
+  }
+}
 
 server.listen(5001, () => console.log('✅ Battle server on :5001'));
