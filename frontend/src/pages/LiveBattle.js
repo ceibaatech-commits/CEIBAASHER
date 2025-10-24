@@ -21,6 +21,15 @@ const LiveBattle = () => {
   const [myScore, setMyScore] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [answerResult, setAnswerResult] = useState(null);
+  
+  // Social Features State
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [showChat, setShowChat] = useState(true);
+  const [reactions, setReactions] = useState([]);
+  const [showGiftMenu, setShowGiftMenu] = useState(false);
+  const [selectedGiftRecipient, setSelectedGiftRecipient] = useState(null);
+  const [giftNotification, setGiftNotification] = useState(null);
 
   useEffect(() => {
     const newSocket = io(BATTLE_URL);
