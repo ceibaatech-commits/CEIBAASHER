@@ -6,7 +6,8 @@ import Peer from 'simple-peer';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
-const SOCKET_URL = 'http://localhost:5000'; // Quiz backend socket
+// Use the same backend URL for socket connection (quiz backend runs on port 5000)
+const SOCKET_URL = window.location.origin.replace(':3000', ':5000'); // Quiz backend socket
 
 const BattleMode = () => {
   const { examName, subjectName } = useParams();
