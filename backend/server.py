@@ -77,6 +77,7 @@ async def get_status_checks():
 app.include_router(api_router)
 app.include_router(quiz_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
+app.include_router(sheets_router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
