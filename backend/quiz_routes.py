@@ -23,7 +23,7 @@ SHEETS_CONFIG = {
 GOOGLE_API_KEY = "AIzaSyBCaYf8fgCVFsrZKa2-dLhU0wG1knfkAvk"
 
 # Demo questions (fallback)
-from backend.demo_questions import DEMO_QUESTIONS
+from demo_questions import DEMO_QUESTIONS
 
 class QuizStartRequest(BaseModel):
     exam: str
