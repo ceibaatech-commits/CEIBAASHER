@@ -110,6 +110,11 @@ const LiveBattle = () => {
     }
   }, [timeLeft, selectedAnswer, isPaused]);
 
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
+
   const handleAnswerSelect = (index) => {
     if (selectedAnswer !== null || isPaused) return;
     
