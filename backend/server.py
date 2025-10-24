@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -10,6 +11,7 @@ from typing import List
 import uuid
 from datetime import datetime, timezone
 from quiz_routes import router as quiz_router
+from auth_routes import router as auth_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -22,6 +24,9 @@ db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
 app = FastAPI()
+
+# Add session middleware for OAuth
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
