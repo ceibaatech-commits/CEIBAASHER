@@ -237,10 +237,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Host Control Socket Events (pause, resume, kick, skip, end)"
     - "Host Control Panel in LiveBattle"
     - "Kick Player from Lobby"
-    - "Proper Answer Validation"
     - "Answer Visual Feedback"
     - "Pause State Management"
   stuck_tasks: []
