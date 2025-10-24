@@ -175,8 +175,9 @@ const LiveBattleMode = () => {
   const startBattleQuiz = async () => {
     try {
       const response = await axios.post(`${QUIZ_API_URL}/api/quiz/start`, {
-        exam: examName,
-        subject: subjectName
+        exam: examId,
+        subject: subject,
+        topic: topic
       });
       
       if (response.data.success) {
