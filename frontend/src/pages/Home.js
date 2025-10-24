@@ -49,9 +49,16 @@ const Home = () => {
               <h1 className="text-5xl font-black">Ceibaa</h1>
             </div>
             <p className="text-xl text-white/90 mb-2">India's Premier Live Quiz Battle Platform</p>
-            <p className="text-white/80 max-w-2xl mx-auto">
+            <p className="text-white/80 max-w-2xl mx-auto mb-6">
               Transform your exam preparation into exciting multiplayer battles. Practice with syllabus-based quizzes or compete live with opponents!
             </p>
+            <button
+              onClick={() => navigate('/join-room')}
+              className="bg-white text-purple-600 px-8 py-3 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
+            >
+              <Users className="w-5 h-5" />
+              <span>Join Battle Room</span>
+            </button>
           </div>
         </div>
       </header>
