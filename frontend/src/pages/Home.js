@@ -41,29 +41,38 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Hero Header */}
-      <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <Header />
+      
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <Trophy className="w-12 h-12" />
-              <h1 className="text-5xl font-black">Ceibaa</h1>
-            </div>
-            <p className="text-xl text-white/90 mb-2">India's Premier Live Quiz Battle Platform</p>
-            <p className="text-white/80 max-w-2xl mx-auto mb-6">
-              Transform your exam preparation into exciting multiplayer battles. Practice with syllabus-based quizzes or compete live with opponents!
+            <h2 className="text-5xl font-black mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Transform Learning into Competition
+            </h2>
+            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+              Master competitive exams through engaging multiplayer battles. Practice with syllabus-based quizzes or compete live with opponents!
             </p>
-            <button
-              onClick={() => navigate('/join-room')}
-              className="bg-white text-purple-600 px-8 py-3 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
-            >
-              <Users className="w-5 h-5" />
-              <span>Join Battle Room</span>
-            </button>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => navigate('/join-room')}
+                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
+              >
+                <Users className="w-5 h-5" />
+                <span>Join Battle Room</span>
+              </button>
+              <button
+                onClick={() => navigate('/leaderboard')}
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center space-x-2"
+              >
+                <Trophy className="w-5 h-5" />
+                <span>Leaderboard</span>
+              </button>
+            </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Features Banner */}
       <div className="bg-white border-b shadow-sm">
