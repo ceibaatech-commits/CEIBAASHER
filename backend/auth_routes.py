@@ -142,6 +142,7 @@ async def twitter_callback(request: Request):
 
 @router.get("/auth/facebook")
 async def facebook_login(request: Request):
+    init_oauth()
     redirect_uri = os.getenv('FACEBOOK_CALLBACK_URL')
     return await oauth.facebook.authorize_redirect(request, redirect_uri)
 
