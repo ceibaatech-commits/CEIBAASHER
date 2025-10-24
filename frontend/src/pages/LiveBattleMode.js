@@ -62,7 +62,7 @@ const LiveBattleMode = () => {
 
     newSocket.on('opponent-disconnected', () => {
       alert('Opponent disconnected!');
-      navigate(`/exam/${examName}`);
+      navigate(`/exam/${examId}`);
     });
 
     return () => {
@@ -160,8 +160,8 @@ const LiveBattleMode = () => {
     
     socket.emit('find-match', {
       playerName,
-      exam: examName,
-      subject: subjectName
+      exam: examId,
+      subject: subject
     });
     
     setBattleState('searching');
@@ -241,7 +241,7 @@ const LiveBattleMode = () => {
                 <Users className="w-10 h-10" />
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Battle Mode</h1>
-              <p className="text-gray-600">{examName} - {subjectName}</p>
+              <p className="text-gray-600">{examId} - {subject}</p>
             </div>
 
             <div className="space-y-6">
@@ -263,7 +263,7 @@ const LiveBattleMode = () => {
                 <h3 className="font-semibold text-purple-900 mb-2">Battle Rules:</h3>
                 <ul className="space-y-1 text-sm text-purple-800">
                   <li>• Face your opponent with live video & audio</li>
-                  <li>• 10 random questions from {subjectName}</li>
+                  <li>• 10 random questions from {subject}</li>
                   <li>• 30 seconds per question</li>
                   <li>• Score points for correct answers</li>
                   <li>• Winner takes all!</li>
@@ -405,7 +405,7 @@ const LiveBattleMode = () => {
           {/* Question Card */}
           <div className="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
             <div className="mb-6">
-              <div className="text-sm text-gray-500 mb-2">{examName} - {subjectName}</div>
+              <div className="text-sm text-gray-500 mb-2">{examId} - {subject}</div>
               <h2 className="text-2xl font-bold text-gray-900">
                 {currentQuestion?.question}
               </h2>
@@ -480,10 +480,10 @@ const LiveBattleMode = () => {
                 Battle Again
               </button>
               <button
-                onClick={() => navigate(`/exam/${examName}`)}
+                onClick={() => navigate(`/exam/${examId}`)}
                 className="w-full bg-white text-gray-700 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all"
               >
-                Back to {examName}
+                Back to {examId}
               </button>
             </div>
           </div>
