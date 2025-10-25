@@ -82,7 +82,7 @@ EXAM_DATA = {
         "full_name": "National Eligibility cum Entrance Test",
         "description": "Medical entrance exam for MBBS, BDS, and medical courses",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/6xb3ng3r_Gemini_Generated_Image_isva0cisva0cisva_2-removebg-preview.png",
-        "color": "from-green-500 to-teal-600",
+        "color": "from-teal-600 to-emerald-600",
         "total_questions": 180,
         "duration": "3.5 hours",
         "subjects": {
