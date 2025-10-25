@@ -507,7 +507,7 @@ EXAM_DATA = {
         "full_name": "Central Armed Police Forces Assistant Commandant",
         "description": "Recruitment for BSF, CRPF, CISF, ITBP, SSB officers",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
-        "color": "from-indigo-700 to-blue-700",
+        "color": "from-purple-600 to-indigo-700",
         "total_questions": 250,
         "duration": "4 hours",
         "subjects": {
