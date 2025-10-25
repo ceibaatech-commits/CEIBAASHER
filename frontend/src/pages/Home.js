@@ -92,6 +92,13 @@ const Home = () => {
             </p>
             <div className="flex justify-center gap-4">
               <button
+                onClick={() => navigate('/social')}
+                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
+              >
+                <Users className="w-5 h-5" />
+                <span>Social Feed</span>
+              </button>
+              <button
                 onClick={() => navigate('/join-room')}
                 className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
               >
