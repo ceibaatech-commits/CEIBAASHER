@@ -212,3 +212,100 @@ async def get_current_user(request: Request):
 async def logout():
     # In a stateless JWT system, logout is handled client-side by removing the token
     return {"message": "Logged out successfully"}
+
+@router.post("/auth/demo-login")
+async def demo_login(login_data: DemoLoginRequest):
+    """Demo login endpoint for testing purposes"""
+    try:
+        # Find user by username (stored in provider_id for demo accounts)
+        user = await db.users.find_one({
+            "provider": "demo",
+            "provider_id": login_data.username
+        })
+        
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        # Check password (stored in a 'password' field for demo accounts)
+        if user.get("password") != login_data.password:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        # Update last login
+        await db.users.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"last_login": datetime.utcnow().isoformat()}}
+        )
+        
+        # Create JWT token
+        access_token = create_access_token({"sub": user["id"], "provider": "demo"})
+        
+        # Remove sensitive fields
+        user.pop("_id", None)
+        user.pop("password", None)
+        
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": user
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Demo login error: {e}")
+        raise HTTPException(status_code=500, detail="Login failed")
+
+@router.post("/auth/create-demo-users")
+async def create_demo_users():
+    """Create demo user accounts for testing (run once)"""
+    try:
+        # Demo user 1: Main test account
+        demo_user_1 = {
+            "id": str(uuid.uuid4()),
+            "name": "Test User",
+            "email": "testuser@ceibaa.demo",
+            "profile_picture": "https://ui-avatars.com/api/?name=Test+User&background=4F46E5&color=fff&size=200",
+            "provider": "demo",
+            "provider_id": "12345",
+            "password": "123445",
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login": datetime.utcnow().isoformat()
+        }
+        
+        # Demo user 2: Opponent account
+        demo_user_2 = {
+            "id": str(uuid.uuid4()),
+            "name": "Sher From Delhi",
+            "email": "sher@ceibaa.demo",
+            "profile_picture": "https://ui-avatars.com/api/?name=Sher+From+Delhi&background=DC2626&color=fff&size=200",
+            "provider": "demo",
+            "provider_id": "sher123",
+            "password": "sher123",
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login": datetime.utcnow().isoformat()
+        }
+        
+        # Check if users already exist and delete them
+        await db.users.delete_many({"provider": "demo", "provider_id": {"$in": ["12345", "sher123"]}})
+        
+        # Insert demo users
+        await db.users.insert_many([demo_user_1, demo_user_2])
+        
+        return {
+            "message": "Demo users created successfully",
+            "users": [
+                {
+                    "username": "12345",
+                    "password": "123445",
+                    "name": "Test User"
+                },
+                {
+                    "username": "sher123",
+                    "password": "sher123",
+                    "name": "Sher From Delhi"
+                }
+            ]
+        }
+    except Exception as e:
+        print(f"Error creating demo users: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create demo users: {str(e)}")
