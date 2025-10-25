@@ -165,19 +165,21 @@ const Home = () => {
               className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
               data-testid={`exam-card-${exam.id}`}
             >
-              <div className={`bg-gradient-to-br ${exam.color} p-6 text-white relative overflow-hidden`}>
+              <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
+                {/* Dark overlay for better text contrast */}
+                <div className="absolute inset-0 bg-black/20"></div>
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-                <div className="relative">
+                <div className="relative text-white">
                   <div className="mb-3">
                     {exam.icon.startsWith('http') ? (
-                      <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto" />
+                      <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
                     ) : (
                       <div className="text-5xl">{exam.icon}</div>
                     )}
                   </div>
-                  <h3 className="text-2xl font-bold mb-1">{exam.name}</h3>
-                  <p className="text-white/90 text-sm">{exam.full_name}</p>
+                  <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
+                  <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
                 </div>
               </div>
               
