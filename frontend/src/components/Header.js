@@ -26,7 +26,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               <h1 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 Ceibaa
               </h1>
-              <p className="text-xs text-cyan-400 font-semibold">Neural Battle Arena</p>
+              <p className="text-xs text-cyan-300 font-bold tracking-wide">Neural Battle Arena</p>
             </div>
           </div>
 
