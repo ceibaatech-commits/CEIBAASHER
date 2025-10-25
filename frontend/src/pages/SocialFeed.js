@@ -622,6 +622,48 @@ const SocialFeed = () => {
           {/* Right Sidebar - Trending */}
           <div className="col-span-3">
             <div className="space-y-4 sticky top-24">
+              {/* Friend Requests */}
+              {friendRequests.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm p-4">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Users className="w-5 h-5 text-purple-600" />
+                    <h3 className="font-bold">Friend Requests</h3>
+                    <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{friendRequests.length}</span>
+                  </div>
+                  <div className="space-y-3">
+                    {friendRequests.map((request) => (
+                      <div key={request.id} className="border border-gray-200 p-3 rounded-lg">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <img 
+                            src={request.sender_profile_picture || `https://ui-avatars.com/api/?name=${request.sender_name}`}
+                            alt={request.sender_name}
+                            className="w-10 h-10 rounded-full"
+                          />
+                          <div className="flex-1">
+                            <p className="font-semibold text-sm">{request.sender_name}</p>
+                            <p className="text-xs text-gray-500">wants to be friends</p>
+                          </div>
+                        </div>
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => handleAcceptFriendRequest(request.id)}
+                            className="flex-1 px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg font-medium"
+                          >
+                            Accept
+                          </button>
+                          <button 
+                            onClick={() => handleRejectFriendRequest(request.id)}
+                            className="flex-1 px-3 py-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm rounded-lg font-medium"
+                          >
+                            Decline
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Trending Hashtags */}
               <div className="bg-white rounded-xl shadow-sm p-4">
                 <div className="flex items-center space-x-2 mb-4">
