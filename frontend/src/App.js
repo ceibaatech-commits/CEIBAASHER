@@ -26,7 +26,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/exam/:examId" element={<ExamSyllabus />} />
+          <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
           <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
           <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
           
