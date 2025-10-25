@@ -330,6 +330,256 @@ EXAM_WEIGHTAGE = {
                 ]
             }
         }
+    },
+    
+    "GATE": {
+        "total_questions": 65,
+        "subjects": {
+            "Engineering Mathematics": {
+                "questions": 30,
+                "color": "from-purple-500 to-blue-500",
+                "topics": [
+                    {"name": "Linear Algebra", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Calculus", "expected": "10-12", "importance": "Very High"},
+                    {"name": "Differential Equations", "expected": "5-6", "importance": "High"},
+                    {"name": "Probability & Statistics", "expected": "5-7", "importance": "High"}
+                ]
+            },
+            "General Aptitude": {
+                "questions": 20,
+                "color": "from-green-500 to-teal-500",
+                "topics": [
+                    {"name": "Verbal Ability", "expected": "8-10", "importance": "High"},
+                    {"name": "Numerical Ability", "expected": "8-10", "importance": "High"},
+                    {"name": "Logical Reasoning", "expected": "2-4", "importance": "Medium"}
+                ]
+            },
+            "Core Engineering": {
+                "questions": 15,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Technical Fundamentals", "expected": "15", "importance": "Very High"}
+                ]
+            }
+        }
+    },
+    
+    "CUET": {
+        "total_questions": 200,
+        "subjects": {
+            "General Test": {
+                "questions": 120,
+                "color": "from-green-500 to-teal-500",
+                "topics": [
+                    {"name": "General Knowledge", "expected": "35-40", "importance": "Very High"},
+                    {"name": "General Mental Ability", "expected": "35-40", "importance": "Very High"},
+                    {"name": "Numerical Ability", "expected": "35-40", "importance": "Very High"}
+                ]
+            },
+            "Language": {
+                "questions": 40,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Reading Comprehension", "expected": "15-18", "importance": "Very High"},
+                    {"name": "Grammar", "expected": "12-15", "importance": "High"},
+                    {"name": "Vocabulary", "expected": "8-10", "importance": "Medium"}
+                ]
+            },
+            "Domain Subject": {
+                "questions": 40,
+                "color": "from-blue-500 to-indigo-500",
+                "topics": [
+                    {"name": "Core Concepts", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Applications", "expected": "10-12", "importance": "High"},
+                    {"name": "Problem Solving", "expected": "5-8", "importance": "Medium"}
+                ]
+            }
+        }
+    },
+    
+    "UGC_NET": {
+        "total_questions": 150,
+        "subjects": {
+            "Teaching Aptitude": {
+                "questions": 30,
+                "color": "from-purple-500 to-indigo-500",
+                "topics": [
+                    {"name": "Teaching Methods", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Research Aptitude", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Evaluation Systems", "expected": "3-5", "importance": "Medium"}
+                ]
+            },
+            "Reasoning": {
+                "questions": 30,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Logical Reasoning", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Mathematical Reasoning", "expected": "12-15", "importance": "High"}
+                ]
+            },
+            "General Awareness": {
+                "questions": 40,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Current Affairs", "expected": "18-20", "importance": "Very High"},
+                    {"name": "Higher Education System", "expected": "15-18", "importance": "High"},
+                    {"name": "ICT & Environment", "expected": "5-7", "importance": "Medium"}
+                ]
+            },
+            "Subject Specific": {
+                "questions": 50,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Core Subject Fundamentals", "expected": "35-40", "importance": "Very High"},
+                    {"name": "Advanced Topics", "expected": "8-12", "importance": "High"},
+                    {"name": "Recent Developments", "expected": "2-5", "importance": "Medium"}
+                ]
+            }
+        }
+    },
+    
+    "CAT": {
+        "total_questions": 66,
+        "subjects": {
+            "Verbal Ability": {
+                "questions": 24,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Reading Comprehension", "expected": "16-18", "importance": "Very High"},
+                    {"name": "Para Jumbles", "expected": "3-4", "importance": "High"},
+                    {"name": "Para Summary", "expected": "2-3", "importance": "Medium"}
+                ]
+            },
+            "Data Interpretation": {
+                "questions": 20,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Tables & Charts", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Caselets", "expected": "6-8", "importance": "High"},
+                    {"name": "Data Sufficiency", "expected": "4-5", "importance": "Medium"}
+                ]
+            },
+            "Quantitative Ability": {
+                "questions": 22,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Arithmetic", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Algebra", "expected": "5-6", "importance": "High"},
+                    {"name": "Geometry", "expected": "5-6", "importance": "High"},
+                    {"name": "Number System", "expected": "2-3", "importance": "Medium"}
+                ]
+            }
+        }
+    },
+    
+    "CLAT": {
+        "total_questions": 120,
+        "subjects": {
+            "English Language": {
+                "questions": 28,
+                "color": "from-blue-500 to-indigo-500",
+                "topics": [
+                    {"name": "Reading Comprehension", "expected": "18-20", "importance": "Very High"},
+                    {"name": "Grammar", "expected": "5-6", "importance": "High"},
+                    {"name": "Vocabulary", "expected": "3-4", "importance": "Medium"}
+                ]
+            },
+            "Current Affairs": {
+                "questions": 35,
+                "color": "from-green-500 to-teal-500",
+                "topics": [
+                    {"name": "National & International News", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Static GK", "expected": "8-10", "importance": "High"},
+                    {"name": "Legal Current Affairs", "expected": "3-5", "importance": "Medium"}
+                ]
+            },
+            "Legal Reasoning": {
+                "questions": 35,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Legal Principles & Applications", "expected": "25-28", "importance": "Very High"},
+                    {"name": "Case Analysis", "expected": "5-7", "importance": "High"},
+                    {"name": "Legal Logic", "expected": "2-4", "importance": "Medium"}
+                ]
+            },
+            "Logical Reasoning": {
+                "questions": 22,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Analytical Reasoning", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Logical Puzzles", "expected": "5-7", "importance": "High"},
+                    {"name": "Critical Analysis", "expected": "3-5", "importance": "Medium"}
+                ]
+            }
+        }
+    },
+    
+    "NATA": {
+        "total_questions": 125,
+        "subjects": {
+            "Mathematics": {
+                "questions": 40,
+                "color": "from-blue-500 to-purple-500",
+                "topics": [
+                    {"name": "Algebra", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Calculus", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Coordinate Geometry", "expected": "8-10", "importance": "High"},
+                    {"name": "Trigonometry", "expected": "3-5", "importance": "Medium"}
+                ]
+            },
+            "General Aptitude": {
+                "questions": 45,
+                "color": "from-green-500 to-teal-500",
+                "topics": [
+                    {"name": "Visual Perception", "expected": "18-20", "importance": "Very High"},
+                    {"name": "Aesthetic Sensitivity", "expected": "12-15", "importance": "High"},
+                    {"name": "Logical Reasoning", "expected": "8-10", "importance": "High"},
+                    {"name": "Architectural Awareness", "expected": "5-7", "importance": "Medium"}
+                ]
+            },
+            "Drawing Ability": {
+                "questions": 40,
+                "color": "from-pink-500 to-purple-500",
+                "topics": [
+                    {"name": "2D & 3D Drawing", "expected": "25-30", "importance": "Very High"},
+                    {"name": "Perspective Drawing", "expected": "8-10", "importance": "High"},
+                    {"name": "Imagination & Creativity", "expected": "2-5", "importance": "Medium"}
+                ]
+            }
+        }
+    },
+    
+    "GMAT": {
+        "total_questions": 80,
+        "subjects": {
+            "Quantitative Reasoning": {
+                "questions": 31,
+                "color": "from-cyan-500 to-blue-500",
+                "topics": [
+                    {"name": "Arithmetic", "expected": "10-12", "importance": "Very High"},
+                    {"name": "Algebra", "expected": "10-12", "importance": "Very High"},
+                    {"name": "Geometry", "expected": "8-10", "importance": "High"}
+                ]
+            },
+            "Verbal Reasoning": {
+                "questions": 36,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Reading Comprehension", "expected": "16-18", "importance": "Very High"},
+                    {"name": "Critical Reasoning", "expected": "10-12", "importance": "High"},
+                    {"name": "Sentence Correction", "expected": "8-10", "importance": "High"}
+                ]
+            },
+            "Data Insights": {
+                "questions": 13,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Graphics Interpretation", "expected": "4-5", "importance": "Very High"},
+                    {"name": "Two-Part Analysis", "expected": "4-5", "importance": "High"},
+                    {"name": "Multi-source Reasoning", "expected": "3-4", "importance": "High"}
+                ]
+            }
+        }
     }
 }
 
