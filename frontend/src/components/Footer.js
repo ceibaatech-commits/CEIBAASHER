@@ -18,7 +18,7 @@ const Footer = () => {
                 <h3 className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                   Ceibaa
                 </h3>
-                <p className="text-xs text-cyan-400 font-semibold">Neural Battle Arena</p>
+                <p className="text-xs text-cyan-300 font-bold tracking-wide">Neural Battle Arena</p>
               </div>
             </div>
             <p className="text-gray-400 text-sm">
