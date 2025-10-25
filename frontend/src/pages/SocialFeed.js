@@ -249,6 +249,59 @@ const SocialFeed = () => {
     }
   };
 
+  const handleSendFriendRequest = async (userId) => {
+    const token = localStorage.getItem('ceibaa_token');
+    
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/social/friend-requests`,
+        { receiver_id: userId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      alert('Friend request sent!');
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    }
+  };
+
+  const handleAcceptFriendRequest = async (requestId) => {
+    const token = localStorage.getItem('ceibaa_token');
+    
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/social/friend-requests/${requestId}/accept`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      setFriendRequests(friendRequests.filter(r => r.id !== requestId));
+      fetchFeedData(token); // Refresh to update friends list
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+    }
+  };
+
+  const handleRejectFriendRequest = async (requestId) => {
+    const token = localStorage.getItem('ceibaa_token');
+    
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/social/friend-requests/${requestId}/reject`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      setFriendRequests(friendRequests.filter(r => r.id !== requestId));
+    } catch (error) {
+      console.error('Error rejecting friend request:', error);
+    }
+  };
+
+  const handleChatWithOpponent = (opponentId) => {
+    navigate(`/messages?chat=${opponentId}`);
+  };
+
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);
     const now = new Date();
