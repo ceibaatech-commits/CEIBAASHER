@@ -483,6 +483,69 @@ const SocialFeed = () => {
                   {/* Post Content */}
                   <p className="text-gray-800 mb-4 whitespace-pre-wrap">{post.content}</p>
 
+                  {/* Battle Result Card */}
+                  {post.post_type === 'battle_result' && (
+                    <div className={`p-4 rounded-xl mb-4 ${
+                      post.battle_result === 'won' ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200' :
+                      post.battle_result === 'lost' ? 'bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200' :
+                      'bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200'
+                    }`}>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-2xl">
+                            {post.battle_result === 'won' ? '🏆' : post.battle_result === 'lost' ? '💪' : '🤝'}
+                          </span>
+                          <div>
+                            <p className="font-bold text-lg">
+                              {post.battle_result === 'won' ? 'Victory!' : post.battle_result === 'lost' ? 'Good Fight!' : 'Epic Draw!'}
+                            </p>
+                            <p className="text-sm text-gray-600">{post.exam_name}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold text-purple-600">{post.quiz_score}/{post.quiz_total}</p>
+                          <p className="text-xs text-gray-500">Your Score</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                        <p className="text-sm text-gray-700">
+                          Opponent: <span className="font-semibold">{post.opponent_name}</span>
+                        </p>
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => handleChatWithOpponent(post.opponent_id)}
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-full"
+                          >
+                            💬 Chat
+                          </button>
+                          <button 
+                            onClick={() => handleSendFriendRequest(post.opponent_id)}
+                            className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-full"
+                          >
+                            👥 Add Friend
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Quiz Result Card */}
+                  {post.post_type === 'quiz_result' && (
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-xl mb-4 border-2 border-purple-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">📚 Practice Session</p>
+                          <p className="font-semibold">{post.quiz_title}</p>
+                          <p className="text-xs text-gray-500">{post.exam_name}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-3xl font-bold text-purple-600">{post.quiz_score}/{post.quiz_total}</p>
+                          <p className="text-sm text-gray-600">{Math.round((post.quiz_score / post.quiz_total) * 100)}%</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Hashtags */}
                   {post.hashtags && post.hashtags.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-4">
