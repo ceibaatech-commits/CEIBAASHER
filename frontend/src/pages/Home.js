@@ -169,11 +169,11 @@ const Home = () => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
                 <div className="relative">
-                  <div className="text-5xl mb-3">
+                  <div className="mb-3">
                     {exam.icon.startsWith('http') ? (
-                      <img src={exam.icon} alt={exam.name} className="w-16 h-16 object-contain" />
+                      <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto" />
                     ) : (
-                      exam.icon
+                      <div className="text-5xl">{exam.icon}</div>
                     )}
                   </div>
                   <h3 className="text-2xl font-bold mb-1">{exam.name}</h3>
