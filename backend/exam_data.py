@@ -361,9 +361,9 @@ EXAM_DATA = {
         }
     },
     "RPSC": {
-        "name": "RSSB/RPSC",
-        "full_name": "Rajasthan State Exams",
-        "description": "RAS, Police, Teacher, and other state service exams",
+        "name": "RPSC Statistical Officer",
+        "full_name": "Rajasthan Public Service Commission Statistical Officer",
+        "description": "Statistical Officer recruitment exam for Rajasthan government departments",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/axxtkfie_IMG_1341-removebg-preview.png",
         "color": "from-orange-500 to-red-500",
         "total_questions": 150,
