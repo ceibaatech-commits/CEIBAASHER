@@ -121,7 +121,7 @@ const Footer = () => {
                   onClick={() => navigate('/exam/RPSC')}
                   className="text-gray-400 hover:text-white transition-colors text-sm text-left"
                 >
-                  RSSB/RPSC
+                  RPSC Statistical Officer
                 </button>
               </li>
             </ul>
