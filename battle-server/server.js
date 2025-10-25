@@ -95,11 +95,13 @@ app.get('/api/battle/room/:pin', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('Connected:', socket.id);
+  console.log('✅ New connection:', socket.id);
 
   socket.on('join-room', ({ pin, playerName, isHost }) => {
+    console.log(`🚪 Player ${playerName} trying to join room ${pin}, isHost: ${isHost}`);
     const room = rooms.get(pin);
     if (!room || room.status !== 'waiting') {
+      console.log(`❌ Room ${pin} not found or not waiting. Status: ${room?.status}`);
       socket.emit('error', { message: room ? 'Quiz started' : 'Room not found' });
       return;
     }
