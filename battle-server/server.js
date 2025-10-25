@@ -17,6 +17,7 @@ app.use(express.json());
 
 const rooms = new Map();
 const players = new Map();
+const matchmakingQueue = new Map(); // topic -> array of waiting players
 
 // MongoDB connection
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
