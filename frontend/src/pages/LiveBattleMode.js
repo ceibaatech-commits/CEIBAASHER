@@ -5,9 +5,10 @@ import io from 'socket.io-client';
 import Peer from 'simple-peer';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
-const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
-const SOCKET_URL = 'http://localhost:5001'; // Battle server for socket - hardcoded for now
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const API_URL = BACKEND_URL;
+const QUIZ_API_URL = BACKEND_URL;
+const SOCKET_URL = BACKEND_URL; // Socket.io will be proxied through main backend
 
 const LiveBattleMode = () => {
   const { examId, subject, topic } = useParams();
