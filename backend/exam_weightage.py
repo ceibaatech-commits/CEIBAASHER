@@ -156,6 +156,57 @@ EXAM_WEIGHTAGE = {
                 ]
             }
         }
+    },
+    "RPSC": {
+        "total_questions": 150,
+        "subjects": {
+            "General Knowledge": {
+                "questions": 60,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Rajasthan GK", "expected": "30-35", "importance": "Very High"},
+                    {"name": "Indian History", "expected": "8-10", "importance": "High"},
+                    {"name": "Indian Geography", "expected": "8-10", "importance": "High"},
+                    {"name": "Indian Polity", "expected": "6-8", "importance": "Medium"},
+                    {"name": "Economics", "expected": "4-6", "importance": "Medium"},
+                    {"name": "Current Affairs", "expected": "3-5", "importance": "Medium"}
+                ]
+            },
+            "Reasoning": {
+                "questions": 30,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Logical Reasoning", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Analogies", "expected": "5-7", "importance": "High"},
+                    {"name": "Series & Patterns", "expected": "5-7", "importance": "High"},
+                    {"name": "Coding-Decoding", "expected": "4-5", "importance": "Medium"},
+                    {"name": "Blood Relations", "expected": "3-4", "importance": "Low"},
+                    {"name": "Direction Sense", "expected": "2-3", "importance": "Low"}
+                ]
+            },
+            "Mathematics": {
+                "questions": 40,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Statistics", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Arithmetic", "expected": "10-12", "importance": "Very High"},
+                    {"name": "Data Interpretation", "expected": "8-10", "importance": "High"},
+                    {"name": "Algebra", "expected": "5-6", "importance": "Medium"},
+                    {"name": "Geometry", "expected": "3-5", "importance": "Low"}
+                ]
+            },
+            "Computer Knowledge": {
+                "questions": 20,
+                "color": "from-green-500 to-teal-500",
+                "topics": [
+                    {"name": "Computer Fundamentals", "expected": "6-8", "importance": "Very High"},
+                    {"name": "MS Office", "expected": "4-6", "importance": "High"},
+                    {"name": "Internet & Email", "expected": "3-4", "importance": "Medium"},
+                    {"name": "Operating Systems", "expected": "3-4", "importance": "Medium"},
+                    {"name": "Computer Networks", "expected": "2-3", "importance": "Low"}
+                ]
+            }
+        }
     }
 }
 
