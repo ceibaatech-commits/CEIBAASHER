@@ -119,6 +119,9 @@ io.on('connection', (socket) => {
     players.set(socket.id, { pin, playerName, isHost: isHost || false });
     socket.join(pin);
     
+    console.log(`✅ Player ${playerName} joined room ${pin}. Total players: ${room.players.length}`);
+    console.log(`📢 Broadcasting player-joined to room ${pin}`);
+    
     io.to(pin).emit('player-joined', {
       players: room.players.map(p => ({ name: p.name, score: p.score, isHost: p.isHost }))
     });
