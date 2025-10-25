@@ -754,6 +754,288 @@ EXAM_DATA = {
             }
         }
     },
+
+    
+    # ==================== BANKING EXAMINATIONS ====================
+    
+    "IBPS_PO": {
+        "name": "IBPS PO",
+        "full_name": "Institute of Banking Personnel Selection Probationary Officer",
+        "description": "Entrance exam for Probationary Officer in public sector banks",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-blue-600 to-cyan-600",
+        "total_questions": 200,
+        "duration": "3 hours",
+        "category": "Banking Examinations",
+        "subjects": {
+            "Reasoning Ability": {
+                "topics": {
+                    "Verbal Reasoning": {"subtopics": ["Analogies", "Classification", "Series"], "questions": 20},
+                    "Non-Verbal Reasoning": {"subtopics": ["Mirror Images", "Pattern Completion", "Figure Matrix"], "questions": 15},
+                    "Puzzles & Seating Arrangement": {"subtopics": ["Linear", "Circular", "Box Type"], "questions": 25}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Percentage", "Profit & Loss", "Time & Work", "SI & CI"], "questions": 25},
+                    "Data Interpretation": {"subtopics": ["Tables", "Bar Graph", "Pie Chart", "Line Graph"], "questions": 20},
+                    "Number System": {"subtopics": ["LCM HCF", "Divisibility", "Squares & Cubes"], "questions": 15}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["Passages", "Vocabulary", "Inference"], "questions": 20},
+                    "Grammar": {"subtopics": ["Error Spotting", "Sentence Improvement", "Cloze Test"], "questions": 20}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Banking Awareness": {"subtopics": ["Banking Terms", "RBI", "Financial News"], "questions": 20},
+                    "Current Affairs": {"subtopics": ["National", "International", "Sports"], "questions": 20}
+                }
+            }
+        }
+    },
+    
+    "IBPS_CLERK": {
+        "name": "IBPS Clerk",
+        "full_name": "Institute of Banking Personnel Selection Clerical Cadre",
+        "description": "Entrance exam for Clerk position in public sector banks",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-indigo-600 to-blue-600",
+        "total_questions": 190,
+        "duration": "2 hours 40 minutes",
+        "category": "Banking Examinations",
+        "subjects": {
+            "Reasoning Ability": {
+                "topics": {
+                    "Logical Reasoning": {"subtopics": ["Syllogism", "Blood Relations", "Coding-Decoding"], "questions": 25},
+                    "Seating Arrangement": {"subtopics": ["Linear", "Circular", "Square"], "questions": 10}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Time & Distance", "Average", "Ratio & Proportion"], "questions": 25},
+                    "Data Interpretation": {"subtopics": ["Tables", "Charts", "Graphs"], "questions": 10}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["Passages", "Vocabulary"], "questions": 15},
+                    "Grammar": {"subtopics": ["Error Detection", "Sentence Completion"], "questions": 20}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Banking & Financial Awareness": {"subtopics": ["Banking News", "Economy", "Monetary Policy"], "questions": 30}
+                }
+            },
+            "Computer Knowledge": {
+                "topics": {
+                    "Computer Fundamentals": {"subtopics": ["Hardware", "Software", "Internet", "MS Office"], "questions": 20}
+                }
+            }
+        }
+    },
+    
+    "IBPS_SO": {
+        "name": "IBPS SO",
+        "full_name": "Institute of Banking Personnel Selection Specialist Officer",
+        "description": "Entrance exam for IT, Agricultural, Marketing and other specialist officers",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-purple-600 to-indigo-600",
+        "total_questions": 200,
+        "duration": "3 hours",
+        "category": "Banking Examinations",
+        "subjects": {
+            "Reasoning": {
+                "topics": {
+                    "Analytical Reasoning": {"subtopics": ["Puzzles", "Data Sufficiency", "Inequalities"], "questions": 25}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Mathematics": {"subtopics": ["Algebra", "Geometry", "DI"], "questions": 25}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "English Proficiency": {"subtopics": ["RC", "Grammar", "Vocabulary"], "questions": 25}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Banking & Economy": {"subtopics": ["Current Affairs", "Banking Terms", "Economy"], "questions": 25}
+                }
+            },
+            "Professional Knowledge": {
+                "topics": {
+                    "Specialized Subject": {"subtopics": ["IT/Agriculture/Marketing/Law/HR"], "questions": 100}
+                }
+            }
+        }
+    },
+    
+    "SBI_PO": {
+        "name": "SBI PO",
+        "full_name": "State Bank of India Probationary Officer",
+        "description": "Entrance exam for PO in State Bank of India",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-blue-700 to-indigo-700",
+        "total_questions": 190,
+        "duration": "3 hours",
+        "category": "Banking Examinations",
+        "subjects": {
+            "Reasoning Ability": {
+                "topics": {
+                    "Puzzles & Seating": {"subtopics": ["Complex Puzzles", "Seating Arrangement", "Blood Relations"], "questions": 35},
+                    "Verbal Reasoning": {"subtopics": ["Syllogism", "Input-Output", "Coding"], "questions": 15}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Percentage", "Profit Loss", "Time Work", "SI CI"], "questions": 20},
+                    "Data Interpretation": {"subtopics": ["Charts", "Tables", "Graphs", "Caselets"], "questions": 15}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["RC Passages", "Vocabulary"], "questions": 20},
+                    "Grammar": {"subtopics": ["Error Spotting", "Sentence Correction", "Para Jumbles"], "questions": 15}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Banking Awareness": {"subtopics": ["Banking News", "Financial Terms", "RBI Policies"], "questions": 30}
+                }
+            },
+            "Data Analysis": {
+                "topics": {
+                    "Data Interpretation": {"subtopics": ["Advanced DI", "Data Sufficiency"], "questions": 50}
+                }
+            }
+        }
+    },
+    
+    "SBI_CLERK": {
+        "name": "SBI Clerk",
+        "full_name": "State Bank of India Junior Associate",
+        "description": "Entrance exam for Clerical position in SBI",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-cyan-600 to-blue-700",
+        "total_questions": 190,
+        "duration": "2 hours 40 minutes",
+        "category": "Banking Examinations",
+        "subjects": {
+            "Reasoning Ability": {
+                "topics": {
+                    "Logical Reasoning": {"subtopics": ["Syllogism", "Inequality", "Coding-Decoding"], "questions": 25},
+                    "Puzzles": {"subtopics": ["Seating Arrangement", "Floor Puzzle"], "questions": 10}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Percentage", "Average", "Ratio"], "questions": 25},
+                    "DI": {"subtopics": ["Tables", "Bar Graph", "Pie Chart"], "questions": 10}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["Passages", "Vocabulary"], "questions": 20},
+                    "Grammar": {"subtopics": ["Error Detection", "Fill in Blanks"], "questions": 15}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Banking & Current Affairs": {"subtopics": ["Banking News", "Economy", "Sports"], "questions": 30}
+                }
+            },
+            "Computer Aptitude": {
+                "topics": {
+                    "Computer Knowledge": {"subtopics": ["MS Office", "Internet", "Networking"], "questions": 20}
+                }
+            }
+        }
+    },
+    
+    "RBI_GRADE_B": {
+        "name": "RBI Grade B",
+        "full_name": "Reserve Bank of India Grade B Officer",
+        "description": "Entrance exam for Grade B Officer in RBI",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-red-600 to-orange-600",
+        "total_questions": 200,
+        "duration": "3.5 hours",
+        "category": "Banking Examinations",
+        "subjects": {
+            "General Awareness": {
+                "topics": {
+                    "Economy & Banking": {"subtopics": ["Indian Economy", "Monetary Policy", "Banking Structure"], "questions": 40},
+                    "Current Affairs": {"subtopics": ["National", "International", "Financial News"], "questions": 40}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["Business Passages", "Economic Articles"], "questions": 20},
+                    "Grammar & Vocabulary": {"subtopics": ["Error Correction", "Idioms", "Synonyms"], "questions": 20}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Advanced Mathematics": {"subtopics": ["Probability", "Permutation", "Algebra"], "questions": 20}
+                }
+            },
+            "Reasoning": {
+                "topics": {
+                    "Analytical Reasoning": {"subtopics": ["Complex Puzzles", "Data Sufficiency"], "questions": 20}
+                }
+            },
+            "Economic & Social Issues": {
+                "topics": {
+                    "Economics": {"subtopics": ["Macro Economics", "Micro Economics", "Indian Economy"], "questions": 40}
+                }
+            }
+        }
+    },
+    
+    "NABARD": {
+        "name": "NABARD Grade A/B",
+        "full_name": "National Bank for Agriculture and Rural Development",
+        "description": "Entrance exam for Grade A and Grade B Officers in NABARD",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-green-600 to-teal-700",
+        "total_questions": 200,
+        "duration": "3 hours",
+        "category": "Banking Examinations",
+        "subjects": {
+            "Reasoning": {
+                "topics": {
+                    "Logical Reasoning": {"subtopics": ["Syllogism", "Puzzles", "Seating"], "questions": 40}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Mathematics & DI": {"subtopics": ["Arithmetic", "Algebra", "Data Interpretation"], "questions": 40}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "English Proficiency": {"subtopics": ["RC", "Grammar", "Vocabulary"], "questions": 40}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Agriculture & Rural Dev": {"subtopics": ["Agriculture", "Rural Economy", "Banking"], "questions": 40}
+                }
+            },
+            "Computer Knowledge": {
+                "topics": {
+                    "IT & Computers": {"subtopics": ["Computer Basics", "MS Office", "Internet"], "questions": 40}
+                }
+            }
+        }
+    },
+
 }
 
 
