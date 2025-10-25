@@ -1037,6 +1037,508 @@ EXAM_DATA = {
         }
     },
 
+    
+    # ==================== UPSC EXAMINATIONS ====================
+    
+    "IES_ISS": {
+        "name": "IES/ISS",
+        "full_name": "Indian Economic Service / Indian Statistical Service",
+        "description": "Entrance exam for economic and statistical positions in Government of India",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png",
+        "color": "from-orange-600 to-red-600",
+        "total_questions": 200,
+        "duration": "3 hours",
+        "category": "UPSC Examinations",
+        "subjects": {
+            "General English": {
+                "topics": {
+                    "English Proficiency": {"subtopics": ["Essay", "Precis", "Comprehension"], "questions": 100}
+                }
+            },
+            "General Studies": {
+                "topics": {
+                    "Economics": {"subtopics": ["Macro Economics", "Micro Economics", "Indian Economy"], "questions": 40},
+                    "Statistics": {"subtopics": ["Probability", "Statistical Methods", "Data Analysis"], "questions": 30},
+                    "Current Affairs": {"subtopics": ["National", "International", "Economic News"], "questions": 30}
+                }
+            }
+        }
+    },
+    
+    "EPFO": {
+        "name": "EPFO EO/AO",
+        "full_name": "Employees' Provident Fund Organisation Enforcement/Accounts Officer",
+        "description": "Entrance exam for Enforcement Officer and Accounts Officer in EPFO",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png",
+        "color": "from-yellow-600 to-orange-600",
+        "total_questions": 200,
+        "duration": "2.5 hours",
+        "category": "UPSC Examinations",
+        "subjects": {
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Verbal", "Non-Verbal", "Analytical"], "questions": 50}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Current Affairs": {"subtopics": ["National", "International", "Sports"], "questions": 30},
+                    "Indian Polity": {"subtopics": ["Constitution", "Government", "Rights"], "questions": 20}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Mathematics": {"subtopics": ["Arithmetic", "Algebra", "Geometry"], "questions": 50}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "English": {"subtopics": ["Grammar", "Vocabulary", "Comprehension"], "questions": 50}
+                }
+            }
+        }
+    },
+    
+    # ==================== SSC EXAMINATIONS ====================
+    
+    "SSC_CGL": {
+        "name": "SSC CGL",
+        "full_name": "Staff Selection Commission Combined Graduate Level",
+        "description": "Exam for Group B and Group C posts in government departments",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-red-600 to-rose-700",
+        "total_questions": 200,
+        "duration": "2 hours",
+        "category": "SSC Examinations",
+        "subjects": {
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Analogies", "Classification", "Series", "Coding-Decoding"], "questions": 50}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Current Affairs": {"subtopics": ["National", "International", "Sports"], "questions": 25},
+                    "Static GK": {"subtopics": ["History", "Geography", "Polity", "Economy"], "questions": 25}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Percentage", "Profit Loss", "Time Work", "SI CI"], "questions": 30},
+                    "Algebra": {"subtopics": ["Linear Equations", "Quadratic Equations"], "questions": 10},
+                    "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration"], "questions": 10}
+                }
+            },
+            "English Comprehension": {
+                "topics": {
+                    "Vocabulary": {"subtopics": ["Synonyms", "Antonyms", "Idioms"], "questions": 15},
+                    "Grammar": {"subtopics": ["Error Detection", "Fill in Blanks", "Sentence Improvement"], "questions": 20},
+                    "Reading Comprehension": {"subtopics": ["Passages", "Inference"], "questions": 15}
+                }
+            }
+        }
+    },
+    
+    "SSC_CHSL": {
+        "name": "SSC CHSL",
+        "full_name": "Staff Selection Commission Combined Higher Secondary Level",
+        "description": "Exam for 10+2 level posts like LDC, DEO, Postal Assistant",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-pink-600 to-red-600",
+        "total_questions": 100,
+        "duration": "1 hour",
+        "category": "SSC Examinations",
+        "subjects": {
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Verbal", "Non-Verbal", "Logical"], "questions": 25}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "GK & Current Affairs": {"subtopics": ["Static GK", "Current Events"], "questions": 25}
+                }
+            },
+            "Quantitative Aptitude": {
+                "topics": {
+                    "Mathematics": {"subtopics": ["Arithmetic", "Algebra", "Geometry"], "questions": 25}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "English": {"subtopics": ["Grammar", "Vocabulary", "Comprehension"], "questions": 25}
+                }
+            }
+        }
+    },
+    
+    "SSC_GD": {
+        "name": "SSC GD Constable",
+        "full_name": "Staff Selection Commission General Duty Constable",
+        "description": "Exam for Constable (GD) in CAPFs, NIA, SSF and Rifleman (GD) in Assam Rifles",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-orange-600 to-red-700",
+        "total_questions": 160,
+        "duration": "2 hours",
+        "category": "SSC Examinations",
+        "subjects": {
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Analogies", "Similarities", "Differences", "Problem Solving"], "questions": 40}
+                }
+            },
+            "General Knowledge": {
+                "topics": {
+                    "General Awareness": {"subtopics": ["India & Neighbours", "Sports", "Books & Authors"], "questions": 40}
+                }
+            },
+            "Elementary Mathematics": {
+                "topics": {
+                    "Mathematics": {"subtopics": ["Number System", "Arithmetic", "Geometry"], "questions": 40}
+                }
+            },
+            "English": {
+                "topics": {
+                    "English Language": {"subtopics": ["Vocabulary", "Grammar", "Sentence Structure"], "questions": 40}
+                }
+            }
+        }
+    },
+    
+    "SSC_STENO": {
+        "name": "SSC Stenographer",
+        "full_name": "Staff Selection Commission Stenographer Grade C & D",
+        "description": "Exam for Stenographer Grade C and Grade D posts",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-purple-600 to-pink-600",
+        "total_questions": 200,
+        "duration": "2 hours",
+        "category": "SSC Examinations",
+        "subjects": {
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Analogies", "Classification", "Series"], "questions": 50}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "GK": {"subtopics": ["Current Affairs", "Static GK", "Indian Polity"], "questions": 50}
+                }
+            },
+            "English Language": {
+                "topics": {
+                    "English": {"subtopics": ["Vocabulary", "Grammar", "Sentence Formation", "Comprehension"], "questions": 100}
+                }
+            }
+        }
+    },
+    
+    # ==================== TEACHING EXAMINATIONS ====================
+    
+    "PGT": {
+        "name": "PGT",
+        "full_name": "Post Graduate Teacher",
+        "description": "Teaching exam for classes 11-12 with post-graduate qualification",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-green-600 to-emerald-600",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Subject Knowledge": {
+                "topics": {
+                    "Subject Specific": {"subtopics": ["Core Concepts", "Advanced Topics", "Pedagogy"], "questions": 90}
+                }
+            },
+            "Teaching Aptitude": {
+                "topics": {
+                    "Pedagogy": {"subtopics": ["Teaching Methods", "Assessment", "Learning Theories"], "questions": 30}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Education & Current Affairs": {"subtopics": ["Education Policies", "Current Events"], "questions": 30}
+                }
+            }
+        }
+    },
+    
+    "TGT": {
+        "name": "TGT",
+        "full_name": "Trained Graduate Teacher",
+        "description": "Teaching exam for classes 6-10 with graduate qualification",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-blue-600 to-cyan-600",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Child Development": {
+                "topics": {
+                    "Child Psychology": {"subtopics": ["Learning Theories", "Development Stages"], "questions": 30}
+                }
+            },
+            "Subject Knowledge": {
+                "topics": {
+                    "Subject Specific": {"subtopics": ["Core Concepts", "Pedagogy"], "questions": 60}
+                }
+            },
+            "Language": {
+                "topics": {
+                    "Language Proficiency": {"subtopics": ["Hindi", "English", "Regional Language"], "questions": 30}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "General Knowledge": {"subtopics": ["Current Affairs", "History", "Geography"], "questions": 30}
+                }
+            }
+        }
+    },
+    
+    "PRT": {
+        "name": "PRT",
+        "full_name": "Primary Teacher",
+        "description": "Teaching exam for classes 1-5",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-yellow-600 to-orange-600",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Child Development": {
+                "topics": {
+                    "Child Psychology & Pedagogy": {"subtopics": ["Learning Principles", "Assessment"], "questions": 30}
+                }
+            },
+            "Language": {
+                "topics": {
+                    "Hindi": {"subtopics": ["Grammar", "Comprehension", "Pedagogy"], "questions": 30},
+                    "English": {"subtopics": ["Grammar", "Comprehension", "Pedagogy"], "questions": 30}
+                }
+            },
+            "Mathematics": {
+                "topics": {
+                    "Mathematics & Pedagogy": {"subtopics": ["Number System", "Geometry", "Teaching Methods"], "questions": 30}
+                }
+            },
+            "Environmental Studies": {
+                "topics": {
+                    "EVS & Pedagogy": {"subtopics": ["Science", "Social Studies", "Teaching Methods"], "questions": 30}
+                }
+            }
+        }
+    },
+    
+    "TET": {
+        "name": "TET",
+        "full_name": "Teacher Eligibility Test",
+        "description": "National level teaching eligibility test (CTET)",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-purple-600 to-indigo-600",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Child Development": {
+                "topics": {
+                    "CDP & Pedagogy": {"subtopics": ["Learning Theories", "Assessment", "Inclusive Education"], "questions": 30}
+                }
+            },
+            "Language I": {
+                "topics": {
+                    "Language Proficiency": {"subtopics": ["Comprehension", "Pedagogy"], "questions": 30}
+                }
+            },
+            "Language II": {
+                "topics": {
+                    "Language Skills": {"subtopics": ["Grammar", "Comprehension", "Teaching Methods"], "questions": 30}
+                }
+            },
+            "Mathematics": {
+                "topics": {
+                    "Mathematics & Pedagogy": {"subtopics": ["Content", "Pedagogy"], "questions": 30}
+                }
+            },
+            "Environmental Studies": {
+                "topics": {
+                    "EVS & Pedagogy": {"subtopics": ["Content", "Pedagogy"], "questions": 30}
+                }
+            }
+        }
+    },
+    
+    "SET": {
+        "name": "SET",
+        "full_name": "State Eligibility Test",
+        "description": "State level exam for Assistant Professor eligibility",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-indigo-600 to-purple-700",
+        "total_questions": 150,
+        "duration": "3 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Teaching Aptitude": {
+                "topics": {
+                    "Teaching Methods": {"subtopics": ["Pedagogy", "Evaluation", "ICT"], "questions": 30}
+                }
+            },
+            "Research Aptitude": {
+                "topics": {
+                    "Research Methodology": {"subtopics": ["Research Methods", "Data Analysis"], "questions": 30}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Higher Education": {"subtopics": ["Education System", "Current Affairs"], "questions": 30}
+                }
+            },
+            "Subject Specific": {
+                "topics": {
+                    "Core Subject": {"subtopics": ["Subject Knowledge", "Recent Developments"], "questions": 60}
+                }
+            }
+        }
+    },
+    
+    "TS_SET": {
+        "name": "TS SET",
+        "full_name": "Telangana State Eligibility Test",
+        "description": "Telangana state exam for Assistant Professor eligibility",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-pink-600 to-red-600",
+        "total_questions": 150,
+        "duration": "3 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Teaching Aptitude": {
+                "topics": {
+                    "Pedagogy": {"subtopics": ["Teaching Methods", "Learning Assessment"], "questions": 30}
+                }
+            },
+            "Research Aptitude": {
+                "topics": {
+                    "Research Methods": {"subtopics": ["Quantitative", "Qualitative", "Data Analysis"], "questions": 30}
+                }
+            },
+            "Comprehension": {
+                "topics": {
+                    "Reading & Communication": {"subtopics": ["Comprehension", "Logical Reasoning"], "questions": 30}
+                }
+            },
+            "Subject Knowledge": {
+                "topics": {
+                    "Subject Specific": {"subtopics": ["Core Concepts", "Advanced Topics"], "questions": 60}
+                }
+            }
+        }
+    },
+    
+    "UP_TGT": {
+        "name": "UP TGT",
+        "full_name": "Uttar Pradesh Trained Graduate Teacher",
+        "description": "UP state exam for TGT posts",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-cyan-600 to-blue-700",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "General Knowledge": {
+                "topics": {
+                    "GK & Current Affairs": {"subtopics": ["UP GK", "National", "International"], "questions": 40}
+                }
+            },
+            "General Hindi": {
+                "topics": {
+                    "Hindi Language": {"subtopics": ["Grammar", "Comprehension"], "questions": 20}
+                }
+            },
+            "Subject Knowledge": {
+                "topics": {
+                    "Subject Specific": {"subtopics": ["Core Concepts", "Pedagogy"], "questions": 60}
+                }
+            },
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Verbal", "Non-Verbal", "Analytical"], "questions": 30}
+                }
+            }
+        }
+    },
+    
+    "UP_PGT": {
+        "name": "UP PGT",
+        "full_name": "Uttar Pradesh Post Graduate Teacher",
+        "description": "UP state exam for PGT posts",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-emerald-600 to-green-700",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "General Knowledge": {
+                "topics": {
+                    "GK": {"subtopics": ["UP GK", "Current Affairs", "Indian Polity"], "questions": 40}
+                }
+            },
+            "General Hindi": {
+                "topics": {
+                    "Hindi": {"subtopics": ["Grammar", "Literature", "Comprehension"], "questions": 20}
+                }
+            },
+            "Subject Knowledge": {
+                "topics": {
+                    "Subject Specific": {"subtopics": ["Advanced Concepts", "Pedagogy"], "questions": 70}
+                }
+            },
+            "Teaching Aptitude": {
+                "topics": {
+                    "Pedagogy": {"subtopics": ["Teaching Methods", "Learning Assessment"], "questions": 20}
+                }
+            }
+        }
+    },
+    
+    "HTET": {
+        "name": "HTET",
+        "full_name": "Haryana Teacher Eligibility Test",
+        "description": "Haryana state teaching eligibility test",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
+        "color": "from-orange-600 to-red-700",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Teaching Examinations",
+        "subjects": {
+            "Child Development": {
+                "topics": {
+                    "CDP & Pedagogy": {"subtopics": ["Learning Theories", "Assessment"], "questions": 30}
+                }
+            },
+            "Language I": {
+                "topics": {
+                    "Hindi/English": {"subtopics": ["Comprehension", "Pedagogy"], "questions": 30}
+                }
+            },
+            "Language II": {
+                "topics": {
+                    "Sanskrit/Other": {"subtopics": ["Grammar", "Comprehension"], "questions": 30}
+                }
+            },
+            "Mathematics/Science": {
+                "topics": {
+                    "Subject & Pedagogy": {"subtopics": ["Content", "Teaching Methods"], "questions": 30}
+                }
+            },
+            "Social Studies/EVS": {
+                "topics": {
+                    "Subject & Pedagogy": {"subtopics": ["Content", "Teaching Methods"], "questions": 30}
+                }
+            }
+        }
+    },
+
+
 }
 
 
