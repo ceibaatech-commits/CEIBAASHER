@@ -417,16 +417,21 @@ EXAM_DATA = {
         "duration": "5 hours",
         "subjects": {
             "Mathematics": {
-                "Algebra": {"subtopics": ["Complex Numbers", "Quadratic Equations", "Logarithms"], "questions": 20},
-                "Matrices": {"subtopics": ["Types of Matrices", "Determinants", "Inverse"], "questions": 15},
-                "Trigonometry": {"subtopics": ["Ratios", "Identities", "Heights & Distances"], "questions": 20},
-                "Calculus": {"subtopics": ["Differentiation", "Integration", "Applications"], "questions": 25}
+                "topics": {
+                    "Algebra": {"subtopics": ["Complex Numbers", "Quadratic Equations", "Logarithms", "Permutations"], "questions": 20},
+                    "Matrices & Determinants": {"subtopics": ["Types of Matrices", "Determinants", "Inverse", "Properties"], "questions": 15},
+                    "Trigonometry": {"subtopics": ["Ratios", "Identities", "Heights & Distances", "Equations"], "questions": 20},
+                    "Calculus": {"subtopics": ["Differentiation", "Integration", "Applications", "Limits"], "questions": 25},
+                    "Vector Algebra": {"subtopics": ["Vectors", "Dot Product", "Cross Product"], "questions": 15}
+                }
             },
             "General Ability": {
-                "English": {"subtopics": ["Grammar", "Vocabulary", "Comprehension"], "questions": 50},
-                "General Knowledge": {"subtopics": ["History", "Geography", "Current Affairs"], "questions": 40},
-                "Physics": {"subtopics": ["Mechanics", "Heat", "Light"], "questions": 30},
-                "Chemistry": {"subtopics": ["Physical Chemistry", "Inorganic", "Organic"], "questions": 25}
+                "topics": {
+                    "English": {"subtopics": ["Grammar", "Vocabulary", "Comprehension", "Sentence Correction"], "questions": 50},
+                    "General Knowledge": {"subtopics": ["History", "Geography", "Current Affairs", "Polity"], "questions": 40},
+                    "Physics": {"subtopics": ["Mechanics", "Heat", "Light", "Electricity"], "questions": 30},
+                    "Chemistry": {"subtopics": ["Physical Chemistry", "Inorganic", "Organic"], "questions": 25}
+                }
             }
         }
     },
@@ -440,19 +445,25 @@ EXAM_DATA = {
         "duration": "2 hours",
         "subjects": {
             "General Knowledge": {
-                "Indian History": {"subtopics": ["Ancient", "Medieval", "Modern"], "questions": 10},
-                "Geography": {"subtopics": ["Physical", "Economic", "World Geography"], "questions": 10},
-                "Current Affairs": {"subtopics": ["National", "International", "Sports"], "questions": 10}
+                "topics": {
+                    "Indian History": {"subtopics": ["Ancient India", "Medieval India", "Modern India"], "questions": 10},
+                    "Geography": {"subtopics": ["Physical Geography", "Economic Geography", "World Geography"], "questions": 10},
+                    "Current Affairs": {"subtopics": ["National Events", "International Events", "Sports"], "questions": 10}
+                }
             },
             "General Science": {
-                "Physics": {"subtopics": ["Mechanics", "Electricity", "Optics"], "questions": 15},
-                "Chemistry": {"subtopics": ["Elements", "Compounds", "Reactions"], "questions": 10},
-                "Biology": {"subtopics": ["Human Body", "Plants", "Diseases"], "questions": 10}
+                "topics": {
+                    "Physics": {"subtopics": ["Mechanics", "Electricity", "Optics", "Sound"], "questions": 15},
+                    "Chemistry": {"subtopics": ["Elements", "Compounds", "Reactions", "Acids & Bases"], "questions": 10},
+                    "Biology": {"subtopics": ["Human Body", "Plants", "Diseases", "Nutrition"], "questions": 10}
+                }
             },
             "Mathematics": {
-                "Arithmetic": {"subtopics": ["Number System", "Percentage", "Ratio"], "questions": 15},
-                "Algebra": {"subtopics": ["Linear Equations", "Polynomials"], "questions": 10},
-                "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration"], "questions": 10}
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Number System", "Percentage", "Ratio & Proportion", "Average"], "questions": 15},
+                    "Algebra": {"subtopics": ["Linear Equations", "Polynomials", "Factorization"], "questions": 10},
+                    "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration", "Angles"], "questions": 10}
+                }
             }
         }
     },
@@ -466,22 +477,28 @@ EXAM_DATA = {
         "duration": "6 hours",
         "subjects": {
             "English": {
-                "Grammar": {"subtopics": ["Tenses", "Voice", "Narration"], "questions": 20},
-                "Vocabulary": {"subtopics": ["Synonyms", "Antonyms", "Idioms"], "questions": 20},
-                "Comprehension": {"subtopics": ["Reading", "Analysis"], "questions": 20}
+                "topics": {
+                    "Grammar": {"subtopics": ["Tenses", "Voice", "Narration", "Articles"], "questions": 20},
+                    "Vocabulary": {"subtopics": ["Synonyms", "Antonyms", "Idioms", "Phrases"], "questions": 20},
+                    "Comprehension": {"subtopics": ["Reading Comprehension", "Passage Analysis", "Inference"], "questions": 20}
+                }
             },
             "General Knowledge": {
-                "History": {"subtopics": ["Indian History", "World History"], "questions": 20},
-                "Geography": {"subtopics": ["Physical", "Economic", "Political"], "questions": 20},
-                "Polity": {"subtopics": ["Constitution", "Governance"], "questions": 15},
-                "Economics": {"subtopics": ["Indian Economy", "World Economy"], "questions": 15},
-                "Science": {"subtopics": ["Physics", "Chemistry", "Biology"], "questions": 20}
+                "topics": {
+                    "History": {"subtopics": ["Indian History", "World History", "Freedom Movement"], "questions": 20},
+                    "Geography": {"subtopics": ["Physical Geography", "Economic Geography", "Political Geography"], "questions": 20},
+                    "Polity": {"subtopics": ["Constitution", "Governance", "Rights"], "questions": 15},
+                    "Economics": {"subtopics": ["Indian Economy", "World Economy", "Economic Development"], "questions": 15},
+                    "Science": {"subtopics": ["Physics", "Chemistry", "Biology", "Technology"], "questions": 20}
+                }
             },
             "Elementary Mathematics": {
-                "Arithmetic": {"subtopics": ["Number System", "LCM HCF", "Percentage"], "questions": 25},
-                "Algebra": {"subtopics": ["Linear Equations", "Quadratic"], "questions": 20},
-                "Trigonometry": {"subtopics": ["Ratios", "Identities"], "questions": 15},
-                "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration"], "questions": 20}
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Number System", "LCM HCF", "Percentage", "Profit & Loss"], "questions": 25},
+                    "Algebra": {"subtopics": ["Linear Equations", "Quadratic Equations", "Polynomials"], "questions": 20},
+                    "Trigonometry": {"subtopics": ["Ratios", "Identities", "Heights & Distances"], "questions": 15},
+                    "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration", "Coordinate Geometry"], "questions": 20}
+                }
             }
         }
     },
@@ -495,14 +512,18 @@ EXAM_DATA = {
         "duration": "4 hours",
         "subjects": {
             "General Ability": {
-                "General Knowledge": {"subtopics": ["History", "Geography", "Polity"], "questions": 40},
-                "Current Affairs": {"subtopics": ["National", "International"], "questions": 20},
-                "Logical Reasoning": {"subtopics": ["Analogies", "Series", "Coding"], "questions": 20}
+                "topics": {
+                    "General Knowledge": {"subtopics": ["History", "Geography", "Polity", "Economics"], "questions": 40},
+                    "Current Affairs": {"subtopics": ["National Events", "International Events", "Awards"], "questions": 20},
+                    "Logical Reasoning": {"subtopics": ["Analogies", "Series", "Coding", "Classification"], "questions": 20}
+                }
             },
             "General Studies": {
-                "Essay Writing": {"subtopics": ["Current Topics", "Social Issues"], "questions": 10},
-                "Comprehension": {"subtopics": ["Reading", "Analysis"], "questions": 20},
-                "Communication Skills": {"subtopics": ["Grammar", "Vocabulary"], "questions": 20}
+                "topics": {
+                    "Essay Writing": {"subtopics": ["Current Topics", "Social Issues", "National Security"], "questions": 10},
+                    "Comprehension": {"subtopics": ["Reading", "Analysis", "Inference"], "questions": 20},
+                    "Communication Skills": {"subtopics": ["Grammar", "Vocabulary", "Sentence Formation"], "questions": 20}
+                }
             }
         }
     },
