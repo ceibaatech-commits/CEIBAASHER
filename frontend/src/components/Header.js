@@ -16,21 +16,11 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             onClick={() => navigate('/')}
           >
             <div className="relative">
-              <svg className="w-12 h-12" viewBox="0 0 50 50">
-                <defs>
-                  <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#06b6d4" />
-                    <stop offset="50%" stopColor="#8b5cf6" />
-                    <stop offset="100%" stopColor="#ec4899" />
-                  </linearGradient>
-                </defs>
-                <circle cx="25" cy="25" r="22" fill="url(#neonGradient)" opacity="0.2" />
-                <path
-                  d="M25 5 L45 25 L25 45 L5 25 Z"
-                  fill="url(#neonGradient)"
-                  className="animate-pulse"
-                />
-              </svg>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/sd5j5kdo_IMG_1159-removebg-preview.png"
+                alt="Ceibaa Logo"
+                className="w-12 h-12 object-contain"
+              />
             </div>
             <div>
               <h1 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
