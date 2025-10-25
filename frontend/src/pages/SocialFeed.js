@@ -23,6 +23,8 @@ const SocialFeed = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [activeTab, setActiveTab] = useState('feed'); // feed, trending, bookmarks
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     checkAuth();
