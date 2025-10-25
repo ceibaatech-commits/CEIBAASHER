@@ -158,6 +158,7 @@ EXAM_DATA = {
         "color": "from-amber-500 to-orange-500",
         "total_questions": 200,
         "duration": "2 hours",
+        "category": "UPSC Examinations",
         "subjects": {
             "General Studies": {
                 "topics": {
