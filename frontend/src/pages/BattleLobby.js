@@ -17,6 +17,7 @@ const BattleLobby = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    console.log('🔗 Connecting to battle server:', BATTLE_URL);
     const newSocket = io(BATTLE_URL);
     setSocket(newSocket);
 
