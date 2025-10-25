@@ -15,6 +15,7 @@ from auth_routes import router as auth_router
 from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
 from battle_proxy_routes import router as battle_proxy_router
+from social_routes import router as social_router
 
 
 ROOT_DIR = Path(__file__).parent
