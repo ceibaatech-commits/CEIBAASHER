@@ -192,7 +192,7 @@ EXAM_DATA = {
         "full_name": "Staff Selection Commission",
         "description": "Competitive exam for government jobs - CGL, CHSL, MTS",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
-        "color": "from-slate-600 to-blue-600",
+        "color": "from-red-500 to-rose-600",
         "total_questions": 100,
         "duration": "1 hour",
         "subjects": {
