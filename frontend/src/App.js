@@ -1,6 +1,6 @@
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import NewHome from "@/pages/NewHome";
+import Home from "@/pages/Home";
 import ExamSyllabus from "@/pages/ExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
