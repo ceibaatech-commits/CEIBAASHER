@@ -60,12 +60,70 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-4 text-purple-400">Exam Categories</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">JEE Main & Advanced</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">NEET UG</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">UPSC CSE</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">SSC Exams</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Banking Exams</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Defence Exams</a></li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/JEE')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  JEE Main & Advanced
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/NEET')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  NEET UG
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/UPSC')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  UPSC CSE
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/SSC')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  SSC Exams
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/Banking')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  Banking Exams
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/Defence')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  Defence Exams
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/Agriculture')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  Agriculture Exams
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/exam/RPSC')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  RSSB/RPSC
+                </button>
+              </li>
             </ul>
           </div>
 
