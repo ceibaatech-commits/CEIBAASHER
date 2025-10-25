@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
 const Footer = () => {
+  const navigate = useNavigate();
+
   return (
     <footer className="bg-gradient-to-r from-gray-900 via-slate-900 to-black text-white mt-auto border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
