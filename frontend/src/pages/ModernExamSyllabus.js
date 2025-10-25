@@ -177,15 +177,19 @@ const ModernExamSyllabus = () => {
           {filteredTopics.map((topic, idx) => (
             <motion.div key={idx} whileHover={{ y: -4 }}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all">
-              <div className={`bg-gradient-to-br ${examData.color} p-4`}>
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="text-white font-bold text-base flex-1">{topic.topic}</h4>
-                  <button onClick={() => setExpandedTopics(p => ({ ...p, [idx]: !p[idx] }))}
-                    className="bg-white/20 p-1 rounded hover:bg-white/30 transition-all">
-                    {expandedTopics[idx] ? <ChevronUp className="w-4 h-4 text-white" /> : <ChevronDown className="w-4 h-4 text-white" />}
-                  </button>
+              <div className={`bg-gradient-to-br ${examData.color} p-4 relative`}>
+                {/* Dark overlay for better text contrast */}
+                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="relative">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-white font-bold text-base flex-1 drop-shadow-md">{topic.topic}</h4>
+                    <button onClick={() => setExpandedTopics(p => ({ ...p, [idx]: !p[idx] }))}
+                      className="bg-white/20 p-1 rounded hover:bg-white/30 transition-all">
+                      {expandedTopics[idx] ? <ChevronUp className="w-4 h-4 text-white" /> : <ChevronDown className="w-4 h-4 text-white" />}
+                    </button>
+                  </div>
+                  <span className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-semibold drop-shadow-md">{topic.subject}</span>
                 </div>
-                <span className="bg-white/20 px-2 py-1 rounded-full text-white text-xs font-semibold">{topic.subject}</span>
               </div>
               
               <div className="p-4">
