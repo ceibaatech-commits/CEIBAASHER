@@ -47,11 +47,16 @@ app.get('/health', (req, res) => {
 app.post('/api/battle/create-room', async (req, res) => {
   try {
     const { hostName, examId, subject, topic } = req.body;
-    const pin = generatePIN();
+    console.log(`📝 Creating room: ${examId}/${subject}/${topic} for host ${hostName}`);
     
+    const pin = generatePIN();
+    console.log(`🔑 Generated PIN: ${pin}`);
+    
+    console.log('🎯 Fetching questions from quiz API...');
     const response = await axios.post('http://localhost:8001/api/quiz/start', {
       exam: examId, subject, topic
     });
+    console.log(`✅ Got ${response.data.questions?.length || 0} questions`);
     
     const roomData = {
       pin, hostName, examId, subject, topic,
@@ -65,6 +70,7 @@ app.post('/api/battle/create-room', async (req, res) => {
     };
     
     rooms.set(pin, roomData);
+    console.log(`✅ Room ${pin} created and stored in memory`);
     
     // Save to MongoDB
     if (db) {
@@ -72,10 +78,14 @@ app.post('/api/battle/create-room', async (req, res) => {
         ...roomData,
         createdAt: new Date()
       });
+      console.log(`✅ Room ${pin} saved to MongoDB`);
     }
     
+    console.log(`🎉 Room ${pin} creation complete!`);
     res.json({ success: true, pin, room: { pin, hostName, examId, subject, topic } });
   } catch (error) {
+    console.error('❌ Error creating room:', error.message);
+    console.error('❌ Stack trace:', error.stack);
     res.status(500).json({ success: false, message: error.message });
   }
 });
