@@ -68,6 +68,10 @@ class TokenResponse(BaseModel):
     token_type: str
     user: User
 
+class DemoLoginRequest(BaseModel):
+    username: str
+    password: str
+
 # Helper functions
 def create_access_token(data: dict):
     to_encode = data.copy()
