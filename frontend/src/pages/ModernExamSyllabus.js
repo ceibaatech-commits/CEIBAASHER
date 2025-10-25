@@ -50,13 +50,15 @@ const ModernExamSyllabus = () => {
 
   const fetchExamData = async () => {
     try {
-      const [examResponse, topicsResponse] = await Promise.all([
+      const [examResponse, topicsResponse, weightageResponse] = await Promise.all([
         axios.get(`${API_URL}/api/quiz/exam/${examId}`),
-        axios.get(`${API_URL}/api/quiz/topics/all/${examId}`)
+        axios.get(`${API_URL}/api/quiz/topics/all/${examId}`),
+        axios.get(`${API_URL}/api/quiz/weightage/${examId}`)
       ]);
       
       if (examResponse.data.success) setExamData(examResponse.data.exam);
       if (topicsResponse.data.success) setAllTopics(topicsResponse.data.topics);
+      if (weightageResponse.data.success) setWeightageData(weightageResponse.data.weightage);
     } catch (error) {
       console.error('Error:', error);
     } finally {
