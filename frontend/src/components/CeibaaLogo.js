@@ -12,64 +12,42 @@ const CeibaaLogo = ({ size = 'md', showText = true, className = '' }) => {
 
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
-      {/* Animated Logo SVG */}
-      <div className="relative" style={{ width, height }}>
-        {/* Spinning Gradient Border */}
-        <svg
-          className="absolute inset-0 animate-spin-slow"
-          viewBox="0 0 100 100"
-          style={{ animationDuration: '3s' }}
-        >
-          <defs>
-            <linearGradient id="spinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#06b6d4', stopOpacity: 1 }} />
-              <stop offset="50%" style={{ stopColor: '#a855f7', stopOpacity: 1 }} />
-              <stop offset="100%" style={{ stopColor: '#ec4899', stopOpacity: 1 }} />
-            </linearGradient>
-          </defs>
-          <circle
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="url(#spinGradient)"
-            strokeWidth="3"
-            strokeDasharray="10 5"
-          />
-        </svg>
-
-        {/* Main Logo Shape - Curved C */}
-        <svg
-          className="absolute inset-0"
-          viewBox="0 0 100 100"
-        >
-          <defs>
-            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#06b6d4', stopOpacity: 1 }} />
-              <stop offset="50%" style={{ stopColor: '#a855f7', stopOpacity: 1 }} />
-              <stop offset="100%" style={{ stopColor: '#ec4899', stopOpacity: 1 }} />
-            </linearGradient>
-          </defs>
-          
-          {/* Letter C with neural network style */}
+      {/* Logo SVG */}
+      <svg width={width} height={height} viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="neonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style={{ stopColor: '#00f5ff' }} />
+            <stop offset="50%" style={{ stopColor: '#8b5cf6' }} />
+            <stop offset="100%" style={{ stopColor: '#f472b6' }} />
+          </linearGradient>
+        </defs>
+        
+        {/* Rotating C-shaped arc */}
+        <g>
           <path
-            d="M 70 30 A 25 25 0 0 1 70 70 L 65 70 A 20 20 0 0 0 65 30 Z"
-            fill="url(#logoGradient)"
-          />
-          
-          {/* Inner accent */}
-          <path
-            d="M 40 35 Q 35 50 40 65"
-            stroke="url(#logoGradient)"
-            strokeWidth="4"
+            d="M100 40 C140 40, 170 70, 170 100 C170 130, 140 160, 100 160 C75 160, 55 140, 45 115"
+            stroke="url(#neonGradient)"
+            strokeWidth="15"
             fill="none"
             strokeLinecap="round"
           />
-        </svg>
-
-        {/* Pulsing Dot */}
-        <div className="absolute top-1/4 right-1/4 w-3 h-3 bg-pink-500 rounded-full animate-pulse-slow" />
-      </div>
+          
+          {/* Pulse dot at top right */}
+          <circle cx="170" cy="50" r="10" fill="#00f5ff">
+            <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+          </circle>
+          
+          {/* Rotation animation for the entire group */}
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 100 100"
+            to="360 100 100"
+            dur="3s"
+            repeatCount="indefinite"
+          />
+        </g>
+      </svg>
 
       {/* Logo Text */}
       {showText && (
