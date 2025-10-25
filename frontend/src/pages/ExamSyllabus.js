@@ -70,11 +70,11 @@ const ExamSyllabus = () => {
           </button>
           
           <div className="flex items-start space-x-6">
-            <div className="text-7xl">
+            <div className="flex-shrink-0">
               {examData.icon.startsWith('http') ? (
-                <img src={examData.icon} alt={examData.name} className="w-20 h-20 object-contain" />
+                <img src={examData.icon} alt={examData.name} className="w-24 h-24 object-contain" />
               ) : (
-                examData.icon
+                <div className="text-7xl">{examData.icon}</div>
               )}
             </div>
             <div className="flex-1">
