@@ -221,6 +221,81 @@ const ModernExamSyllabus = () => {
         </AnimatedSection>
       )}
 
+      {/* Weightage Analysis */}
+      {weightageData && activeTab === 'weightage' && (
+        <>
+          <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="bg-white rounded-2xl shadow-xl p-8 border border-blue-100 mb-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <BarChart className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900">Topic-wise Weightage Analysis</h2>
+                  <p className="text-gray-600 mt-1">Total Questions: {weightageData.total_questions}</p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Object.entries(weightageData.subjects).map(([subjectName, data]) => (
+                  <div key={subjectName} className={`bg-gradient-to-br ${data.color} p-4 rounded-xl text-white`}>
+                    <h4 className="font-bold text-lg mb-2">{subjectName}</h4>
+                    <div className="text-3xl font-black mb-1">{data.questions}</div>
+                    <div className="text-sm opacity-90">Questions</div>
+                    <div className="mt-2 bg-white/20 rounded-full h-2">
+                      <div className="bg-white h-2 rounded-full" style={{ width: `${(data.questions / weightageData.total_questions) * 100}%` }} />
+                    </div>
+                    <div className="text-xs mt-1 opacity-80">{((data.questions / weightageData.total_questions) * 100).toFixed(0)}% weightage</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {Object.entries(weightageData.subjects).map(([subjectName, data]) => (
+                <div key={subjectName} className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                  <div className={`bg-gradient-to-r ${data.color} p-6`}>
+                    <div className="flex items-center justify-between text-white">
+                      <div>
+                        <h3 className="text-2xl font-bold">{subjectName}</h3>
+                        <p className="text-white/90 text-sm mt-1">{data.questions} Questions • Topic-wise Distribution</p>
+                      </div>
+                      <Brain className="w-10 h-10 opacity-80" />
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {data.topics.map((topic, idx) => (
+                        <motion.div key={idx} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: idx * 0.05 }}
+                          className="bg-gray-50 rounded-xl p-4 hover:shadow-md transition-all">
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-bold text-gray-900 flex-1">{topic.name}</h4>
+                            <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
+                              topic.importance === 'Very High' ? 'bg-red-100 text-red-700' :
+                              topic.importance === 'High' ? 'bg-orange-100 text-orange-700' :
+                              topic.importance === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              {topic.importance}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Target className="w-4 h-4 text-blue-600" />
+                            <span className="text-gray-600">Expected:</span>
+                            <span className="font-bold text-blue-600">{topic.expected} questions</span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </AnimatedSection>
+        </>
+      )}
+
       {/* Syllabus Section */}
       {activeTab === 'syllabus' && (
         <>
