@@ -142,11 +142,11 @@ const ExamSyllabus = () => {
               onClick={() => navigate(`/topic-quiz/${examId}/${topicData.subject}/${topicData.topic}`)}
             >
               <div className={`bg-gradient-to-r ${examData.color} p-4`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-white font-bold text-lg">{topicData.topic}</h3>
-                  <Trophy className="w-6 h-6 text-white/80" />
+                <div className="flex items-center justify-between mb-2">
+                  <Trophy className="w-6 h-6 text-white" />
                 </div>
-                <p className="text-white/80 text-sm mt-1">{topicData.subject}</p>
+                <h3 className="text-white font-bold text-lg mb-1">{topicData.topic}</h3>
+                <p className="text-white font-semibold text-sm bg-white/20 px-3 py-1 rounded-full inline-block">{topicData.subject}</p>
               </div>
               
               <div className="p-4">
