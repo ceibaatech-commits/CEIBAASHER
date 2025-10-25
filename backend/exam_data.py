@@ -6,7 +6,7 @@ EXAM_DATA = {
         "name": "JEE Main & Advanced",
         "full_name": "Joint Entrance Examination",
         "description": "Engineering entrance exam for IITs, NITs, and premier engineering institutes",
-        "icon": "🎓",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/tlt2dw8j_Gemini_Generated_Image_8fhn578fhn578fhn_2-removebg-preview.png",
         "color": "from-blue-500 to-purple-600",
         "total_questions": 75,
         "duration": "3 hours",
