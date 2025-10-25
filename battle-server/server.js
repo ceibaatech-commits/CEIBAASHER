@@ -56,7 +56,17 @@ app.post('/api/battle/create-room', async (req, res) => {
     const response = await axios.post('http://localhost:8001/api/quiz/start', {
       exam: examId, subject, topic
     });
-    console.log(`✅ Got ${response.data.questions?.length || 0} questions`);
+    
+    // Check if quiz API returned error
+    if (!response.data.questions || response.data.questions.length === 0) {
+      console.error('❌ No questions available');
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Questions not available for this topic. Please try another topic.' 
+      });
+    }
+    
+    console.log(`✅ Got ${response.data.questions.length} questions`);
     
     const roomData = {
       pin, hostName, examId, subject, topic,
@@ -85,7 +95,16 @@ app.post('/api/battle/create-room', async (req, res) => {
     res.json({ success: true, pin, room: { pin, hostName, examId, subject, topic } });
   } catch (error) {
     console.error('❌ Error creating room:', error.message);
-    console.error('❌ Stack trace:', error.stack);
+    console.error('❌ Error response:', error.response?.data);
+    
+    // Handle quiz API errors
+    if (error.response?.status === 404 || error.response?.data?.detail) {
+      return res.status(400).json({ 
+        success: false, 
+        message: error.response.data.detail || 'Questions not available for this topic' 
+      });
+    }
+    
     res.status(500).json({ success: false, message: error.message });
   }
 });
