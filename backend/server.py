@@ -16,6 +16,7 @@ from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
 from battle_proxy_routes import router as battle_proxy_router
 from social_routes import router as social_router
+from socket_proxy import socket_app
 
 
 ROOT_DIR = Path(__file__).parent
@@ -28,6 +29,9 @@ db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
 app = FastAPI()
+
+# Mount Socket.io proxy
+app.mount('/socket.io', socket_app)
 
 # Add session middleware for OAuth
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
