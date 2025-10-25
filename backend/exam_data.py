@@ -10,6 +10,7 @@ EXAM_DATA = {
         "color": "from-blue-500 to-indigo-600",
         "total_questions": 75,
         "duration": "3 hours",
+        "category": "Admission Tests",
         "subjects": {
             "Physics": {
                 "topics": {
