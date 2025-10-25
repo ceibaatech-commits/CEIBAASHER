@@ -28,7 +28,7 @@ const Login = () => {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mx-auto mb-4">
               <img 
-                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/76ix3e5h_IMG_1159-removebg-preview.png" 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/531vq7tt_IMG_1159-removebg-preview.png" 
                 alt="Ceibaa Logo" 
                 className="w-24 h-24 object-contain"
               />
