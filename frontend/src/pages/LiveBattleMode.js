@@ -40,6 +40,7 @@ const LiveBattleMode = () => {
 
   useEffect(() => {
     // Initialize socket connection
+    console.log('🔗 Connecting to battle server for 1v1:', SOCKET_URL);
     const newSocket = io(SOCKET_URL);
     setSocket(newSocket);
 
