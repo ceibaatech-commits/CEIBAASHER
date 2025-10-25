@@ -1,6 +1,5 @@
 import React from 'react';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
-import StunningCeibaaLogo from './StunningCeibaaLogo';
 
 const Footer = () => {
   return (
@@ -9,7 +8,19 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <StunningCeibaaLogo size="sm" showText={true} />
+            <div className="flex items-center space-x-3">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/sd5j5kdo_IMG_1159-removebg-preview.png"
+                alt="Ceibaa Logo"
+                className="w-10 h-10 object-contain"
+              />
+              <div>
+                <h3 className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  Ceibaa
+                </h3>
+                <p className="text-xs text-cyan-400 font-semibold">Neural Battle Arena</p>
+              </div>
+            </div>
             <p className="text-gray-400 text-sm">
               India's premier live quiz battle platform. Master competitive exams through engaging multiplayer battles.
             </p>
