@@ -18,8 +18,10 @@ const BattleLobby = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    console.log('🔗 BATTLE_URL:', BATTLE_URL);
     console.log('🔗 Connecting to battle server:', BATTLE_URL);
     const newSocket = io(BATTLE_URL);
+    console.log('🔗 Socket.io client created');
     setSocket(newSocket);
 
     newSocket.emit('join-room', { 
