@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
-const SOCKET_URL = process.env.REACT_APP_BATTLE_SERVER_URL || 'http://localhost:5001'; // Battle server for socket
+const SOCKET_URL = 'http://localhost:5001'; // Battle server for socket - hardcoded for now
 
 const LiveBattleMode = () => {
   const { examId, subject, topic } = useParams();
