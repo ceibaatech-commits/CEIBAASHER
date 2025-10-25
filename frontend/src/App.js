@@ -9,6 +9,7 @@ import CreatorDashboard from "@/pages/CreatorDashboard";
 import Login from "@/pages/Login";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
+import SocialFeed from "@/pages/SocialFeed";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
@@ -33,6 +34,9 @@ function App() {
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          
+          {/* Social Routes */}
+          <Route path="/social" element={<SocialFeed />} />
           
           {/* Admin Routes */}
           <Route path="/admin/sheets" element={<SheetManager />} />
