@@ -269,6 +269,7 @@ const Home = () => {
             </div>
           ))}
         </div>
+        </div>
 
         {/* Info Section */}
         <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
