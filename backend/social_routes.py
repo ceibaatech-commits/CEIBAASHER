@@ -748,6 +748,340 @@ async def delete_story(story_id: str, request: Request):
     
     return {"message": "Story deleted"}
 
+# ==================== FRIEND REQUESTS ====================
+
+@router.post("/social/friend-requests")
+async def send_friend_request(friend_request: FriendRequest, request: Request):
+    """Send a friend request"""
+    current_user = get_user_from_token(request)
+    
+    if current_user["id"] == friend_request.receiver_id:
+        raise HTTPException(status_code=400, detail="Cannot send friend request to yourself")
+    
+    # Check if already friends
+    existing_friendship = await db.friendships.find_one({
+        "$or": [
+            {"user1_id": current_user["id"], "user2_id": friend_request.receiver_id},
+            {"user1_id": friend_request.receiver_id, "user2_id": current_user["id"]}
+        ]
+    })
+    
+    if existing_friendship:
+        return {"message": "Already friends"}
+    
+    # Check if request already exists
+    existing_request = await db.friend_requests.find_one({
+        "sender_id": current_user["id"],
+        "receiver_id": friend_request.receiver_id,
+        "status": "pending"
+    })
+    
+    if existing_request:
+        return {"message": "Friend request already sent"}
+    
+    user = await get_user_details(current_user["id"])
+    
+    request_id = str(uuid.uuid4())
+    new_request = {
+        "id": request_id,
+        "sender_id": user["id"],
+        "sender_name": user["name"],
+        "sender_profile_picture": user.get("profile_picture"),
+        "receiver_id": friend_request.receiver_id,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.friend_requests.insert_one(new_request)
+    
+    new_request.pop("_id", None)
+    return new_request
+
+@router.get("/social/friend-requests")
+async def get_friend_requests(request: Request):
+    """Get pending friend requests"""
+    current_user = get_user_from_token(request)
+    
+    requests = await db.friend_requests.find({
+        "receiver_id": current_user["id"],
+        "status": "pending"
+    }).sort("created_at", -1).to_list(None)
+    
+    for req in requests:
+        req.pop("_id", None)
+    
+    return requests
+
+@router.post("/social/friend-requests/{request_id}/accept")
+async def accept_friend_request(request_id: str, request: Request):
+    """Accept a friend request"""
+    current_user = get_user_from_token(request)
+    
+    friend_request = await db.friend_requests.find_one({"id": request_id})
+    
+    if not friend_request:
+        raise HTTPException(status_code=404, detail="Friend request not found")
+    
+    if friend_request["receiver_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Update request status
+    await db.friend_requests.update_one(
+        {"id": request_id},
+        {"$set": {"status": "accepted"}}
+    )
+    
+    # Create friendship
+    friendship_id = str(uuid.uuid4())
+    await db.friendships.insert_one({
+        "id": friendship_id,
+        "user1_id": friend_request["sender_id"],
+        "user2_id": friend_request["receiver_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    # Auto-follow each other
+    follow_id_1 = str(uuid.uuid4())
+    await db.follows.insert_one({
+        "id": follow_id_1,
+        "follower_id": friend_request["sender_id"],
+        "following_id": friend_request["receiver_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    follow_id_2 = str(uuid.uuid4())
+    await db.follows.insert_one({
+        "id": follow_id_2,
+        "follower_id": friend_request["receiver_id"],
+        "following_id": friend_request["sender_id"],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {"message": "Friend request accepted"}
+
+@router.post("/social/friend-requests/{request_id}/reject")
+async def reject_friend_request(request_id: str, request: Request):
+    """Reject a friend request"""
+    current_user = get_user_from_token(request)
+    
+    friend_request = await db.friend_requests.find_one({"id": request_id})
+    
+    if not friend_request:
+        raise HTTPException(status_code=404, detail="Friend request not found")
+    
+    if friend_request["receiver_id"] != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.friend_requests.update_one(
+        {"id": request_id},
+        {"$set": {"status": "rejected"}}
+    )
+    
+    return {"message": "Friend request rejected"}
+
+@router.get("/social/friends")
+async def get_friends(request: Request):
+    """Get user's friends list"""
+    current_user = get_user_from_token(request)
+    
+    friendships = await db.friendships.find({
+        "$or": [
+            {"user1_id": current_user["id"]},
+            {"user2_id": current_user["id"]}
+        ]
+    }).to_list(None)
+    
+    friend_ids = []
+    for friendship in friendships:
+        if friendship["user1_id"] == current_user["id"]:
+            friend_ids.append(friendship["user2_id"])
+        else:
+            friend_ids.append(friendship["user1_id"])
+    
+    friends = await db.users.find({"id": {"$in": friend_ids}}).to_list(None)
+    
+    result = []
+    for friend in friends:
+        friend.pop("_id", None)
+        friend.pop("password", None)
+        result.append({
+            "id": friend["id"],
+            "name": friend["name"],
+            "profile_picture": friend.get("profile_picture"),
+            "is_verified": friend.get("is_verified", False)
+        })
+    
+    return result
+
+@router.delete("/social/friends/{friend_id}")
+async def remove_friend(friend_id: str, request: Request):
+    """Remove a friend"""
+    current_user = get_user_from_token(request)
+    
+    # Delete friendship
+    await db.friendships.delete_one({
+        "$or": [
+            {"user1_id": current_user["id"], "user2_id": friend_id},
+            {"user1_id": friend_id, "user2_id": current_user["id"]}
+        ]
+    })
+    
+    return {"message": "Friend removed"}
+
+@router.get("/social/friends/check/{user_id}")
+async def check_friendship(user_id: str, request: Request):
+    """Check if two users are friends"""
+    current_user = get_user_from_token(request)
+    
+    friendship = await db.friendships.find_one({
+        "$or": [
+            {"user1_id": current_user["id"], "user2_id": user_id},
+            {"user1_id": user_id, "user2_id": current_user["id"]}
+        ]
+    })
+    
+    return {"are_friends": bool(friendship)}
+
+# ==================== BATTLE INTEGRATION ====================
+
+@router.post("/social/share-battle-result")
+async def share_battle_result(
+    opponent_id: str,
+    opponent_name: str,
+    result: str,
+    score: int,
+    total: int,
+    exam_name: str,
+    request: Request
+):
+    """Automatically share battle result to social feed"""
+    current_user = get_user_from_token(request)
+    user = await get_user_details(current_user["id"])
+    
+    # Generate content based on result
+    if result == "won":
+        emoji = "🏆"
+        content = f"{emoji} Just won a battle against {opponent_name}! Scored {score}/{total} in {exam_name}. #Battle #Victory #{exam_name.replace(' ', '')}"
+    elif result == "lost":
+        emoji = "💪"
+        content = f"{emoji} Had an intense battle with {opponent_name} in {exam_name}! Scored {score}/{total}. Learning and improving! #Battle #{exam_name.replace(' ', '')}"
+    else:
+        emoji = "🤝"
+        content = f"{emoji} Epic draw with {opponent_name}! Both scored {score}/{total} in {exam_name}. #Battle #Draw #{exam_name.replace(' ', '')}"
+    
+    hashtags = ["Battle", exam_name.replace(' ', '')]
+    if result == "won":
+        hashtags.append("Victory")
+    
+    post_id = str(uuid.uuid4())
+    new_post = {
+        "id": post_id,
+        "user_id": user["id"],
+        "user_name": user["name"],
+        "user_profile_picture": user.get("profile_picture"),
+        "is_verified": user.get("is_verified", False),
+        "content": content,
+        "hashtags": hashtags,
+        "post_type": "battle_result",
+        "quiz_score": score,
+        "quiz_total": total,
+        "exam_name": exam_name,
+        "opponent_id": opponent_id,
+        "opponent_name": opponent_name,
+        "battle_result": result,
+        "likes_count": 0,
+        "comments_count": 0,
+        "shares_count": 0,
+        "bookmarks_count": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    
+    await db.posts.insert_one(new_post)
+    
+    new_post.pop("_id", None)
+    return new_post
+
+@router.post("/social/share-quiz-score")
+async def share_quiz_score(
+    exam_name: str,
+    topic_name: str,
+    score: int,
+    total: int,
+    request: Request
+):
+    """Share quiz practice score"""
+    current_user = get_user_from_token(request)
+    user = await get_user_details(current_user["id"])
+    
+    percentage = int((score / total) * 100)
+    
+    if percentage >= 90:
+        emoji = "🌟"
+        message = "Excellent"
+    elif percentage >= 75:
+        emoji = "🎯"
+        message = "Great"
+    elif percentage >= 60:
+        emoji = "👍"
+        message = "Good"
+    else:
+        emoji = "📚"
+        message = "Practicing"
+    
+    content = f"{emoji} {message} practice session! Scored {score}/{total} ({percentage}%) in {topic_name} - {exam_name}. #StudyProgress #{exam_name.replace(' ', '')} #{topic_name.replace(' ', '')}"
+    
+    hashtags = ["StudyProgress", exam_name.replace(' ', ''), topic_name.replace(' ', '')]
+    
+    post_id = str(uuid.uuid4())
+    new_post = {
+        "id": post_id,
+        "user_id": user["id"],
+        "user_name": user["name"],
+        "user_profile_picture": user.get("profile_picture"),
+        "is_verified": user.get("is_verified", False),
+        "content": content,
+        "hashtags": hashtags,
+        "post_type": "quiz_result",
+        "quiz_score": score,
+        "quiz_total": total,
+        "exam_name": exam_name,
+        "quiz_title": topic_name,
+        "likes_count": 0,
+        "comments_count": 0,
+        "shares_count": 0,
+        "bookmarks_count": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    
+    await db.posts.insert_one(new_post)
+    
+    new_post.pop("_id", None)
+    return new_post
+
+@router.get("/social/battle-chat/{opponent_id}")
+async def get_battle_chat(opponent_id: str, request: Request):
+    """Get chat messages with battle opponent (alias for messages)"""
+    current_user = get_user_from_token(request)
+    
+    messages = await db.messages.find({
+        "$or": [
+            {"sender_id": current_user["id"], "receiver_id": opponent_id},
+            {"sender_id": opponent_id, "receiver_id": current_user["id"]}
+        ]
+    }).sort("created_at", 1).to_list(None)
+    
+    # Mark messages as read
+    await db.messages.update_many(
+        {"sender_id": opponent_id, "receiver_id": current_user["id"], "is_read": False},
+        {"$set": {"is_read": True}}
+    )
+    
+    for msg in messages:
+        msg.pop("_id", None)
+    
+    return messages
+
+
 # ==================== TRENDING & DISCOVERY ====================
 
 @router.get("/social/trending/hashtags")
