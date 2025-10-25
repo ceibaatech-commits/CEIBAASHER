@@ -455,6 +455,15 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     const data = players.get(socket.id);
+    
+    // Remove from matchmaking queue
+    matchmakingQueue.forEach((queue, key) => {
+      const index = queue.findIndex(p => p.socketId === socket.id);
+      if (index !== -1) {
+        queue.splice(index, 1);
+      }
+    });
+    
     if (data) {
       const room = rooms.get(data.pin);
       if (room) {
