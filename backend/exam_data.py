@@ -407,6 +407,105 @@ EXAM_DATA = {
             }
         }
     },
+    "NDA": {
+        "name": "NDA Exam",
+        "full_name": "National Defence Academy",
+        "description": "Joint Services Entrance Exam for Army, Navy & Air Force",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
+        "color": "from-green-700 to-emerald-800",
+        "total_questions": 270,
+        "duration": "5 hours",
+        "subjects": {
+            "Mathematics": {
+                "Algebra": {"subtopics": ["Complex Numbers", "Quadratic Equations", "Logarithms"], "questions": 20},
+                "Matrices": {"subtopics": ["Types of Matrices", "Determinants", "Inverse"], "questions": 15},
+                "Trigonometry": {"subtopics": ["Ratios", "Identities", "Heights & Distances"], "questions": 20},
+                "Calculus": {"subtopics": ["Differentiation", "Integration", "Applications"], "questions": 25}
+            },
+            "General Ability": {
+                "English": {"subtopics": ["Grammar", "Vocabulary", "Comprehension"], "questions": 50},
+                "General Knowledge": {"subtopics": ["History", "Geography", "Current Affairs"], "questions": 40},
+                "Physics": {"subtopics": ["Mechanics", "Heat", "Light"], "questions": 30},
+                "Chemistry": {"subtopics": ["Physical Chemistry", "Inorganic", "Organic"], "questions": 25}
+            }
+        }
+    },
+    "Agniveer": {
+        "name": "Agniveer Exam",
+        "full_name": "Agniveer Recruitment",
+        "description": "Indian Armed Forces recruitment for soldiers across all three services",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
+        "color": "from-green-600 to-teal-700",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "subjects": {
+            "General Knowledge": {
+                "Indian History": {"subtopics": ["Ancient", "Medieval", "Modern"], "questions": 10},
+                "Geography": {"subtopics": ["Physical", "Economic", "World Geography"], "questions": 10},
+                "Current Affairs": {"subtopics": ["National", "International", "Sports"], "questions": 10}
+            },
+            "General Science": {
+                "Physics": {"subtopics": ["Mechanics", "Electricity", "Optics"], "questions": 15},
+                "Chemistry": {"subtopics": ["Elements", "Compounds", "Reactions"], "questions": 10},
+                "Biology": {"subtopics": ["Human Body", "Plants", "Diseases"], "questions": 10}
+            },
+            "Mathematics": {
+                "Arithmetic": {"subtopics": ["Number System", "Percentage", "Ratio"], "questions": 15},
+                "Algebra": {"subtopics": ["Linear Equations", "Polynomials"], "questions": 10},
+                "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration"], "questions": 10}
+            }
+        }
+    },
+    "CDS": {
+        "name": "CDS Exam",
+        "full_name": "Combined Defence Services",
+        "description": "Entry exam for IMA, INA, AFA and OTA",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
+        "color": "from-blue-700 to-green-700",
+        "total_questions": 340,
+        "duration": "6 hours",
+        "subjects": {
+            "English": {
+                "Grammar": {"subtopics": ["Tenses", "Voice", "Narration"], "questions": 20},
+                "Vocabulary": {"subtopics": ["Synonyms", "Antonyms", "Idioms"], "questions": 20},
+                "Comprehension": {"subtopics": ["Reading", "Analysis"], "questions": 20}
+            },
+            "General Knowledge": {
+                "History": {"subtopics": ["Indian History", "World History"], "questions": 20},
+                "Geography": {"subtopics": ["Physical", "Economic", "Political"], "questions": 20},
+                "Polity": {"subtopics": ["Constitution", "Governance"], "questions": 15},
+                "Economics": {"subtopics": ["Indian Economy", "World Economy"], "questions": 15},
+                "Science": {"subtopics": ["Physics", "Chemistry", "Biology"], "questions": 20}
+            },
+            "Elementary Mathematics": {
+                "Arithmetic": {"subtopics": ["Number System", "LCM HCF", "Percentage"], "questions": 25},
+                "Algebra": {"subtopics": ["Linear Equations", "Quadratic"], "questions": 20},
+                "Trigonometry": {"subtopics": ["Ratios", "Identities"], "questions": 15},
+                "Geometry": {"subtopics": ["Triangles", "Circles", "Mensuration"], "questions": 20}
+            }
+        }
+    },
+    "CAPF": {
+        "name": "UPSC CAPF AC",
+        "full_name": "Central Armed Police Forces Assistant Commandant",
+        "description": "Recruitment for BSF, CRPF, CISF, ITBP, SSB officers",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
+        "color": "from-indigo-700 to-blue-700",
+        "total_questions": 250,
+        "duration": "4 hours",
+        "subjects": {
+            "General Ability": {
+                "General Knowledge": {"subtopics": ["History", "Geography", "Polity"], "questions": 40},
+                "Current Affairs": {"subtopics": ["National", "International"], "questions": 20},
+                "Logical Reasoning": {"subtopics": ["Analogies", "Series", "Coding"], "questions": 20}
+            },
+            "General Studies": {
+                "Essay Writing": {"subtopics": ["Current Topics", "Social Issues"], "questions": 10},
+                "Comprehension": {"subtopics": ["Reading", "Analysis"], "questions": 20},
+                "Communication Skills": {"subtopics": ["Grammar", "Vocabulary"], "questions": 20}
+            }
+        }
+    },
     "Defence": {
         "name": "Defence Exams",
         "full_name": "NDA, CDS, AFCAT",
