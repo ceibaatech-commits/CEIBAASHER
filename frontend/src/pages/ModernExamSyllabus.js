@@ -156,15 +156,15 @@ const ModernExamSyllabus = () => {
       </div>
 
       {/* Tabs */}
-      {currentExamInfo && (
+      {(currentExamInfo || weightageData) && (
         <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
           <div className="bg-white rounded-2xl shadow-xl p-2 inline-flex space-x-2">
-            {['overview', 'syllabus'].map(tab => (
+            {['overview', 'weightage', 'syllabus'].map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                   activeTab === tab ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'
                 }`}>
-                {tab === 'overview' ? 'Exam Overview' : 'Complete Syllabus'}
+                {tab === 'overview' ? '📋 Exam Overview' : tab === 'weightage' ? '📊 Weightage Analysis' : '📚 Complete Syllabus'}
               </button>
             ))}
           </div>
