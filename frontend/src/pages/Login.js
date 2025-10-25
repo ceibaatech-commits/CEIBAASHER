@@ -98,6 +98,48 @@ const Login = () => {
             <div className="flex-1 border-t border-gray-300"></div>
           </div>
 
+          {/* Demo Login Form */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl mb-4">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 text-center">Demo Login (For Testing)</h3>
+            <form onSubmit={handleDemoLogin} className="space-y-3">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={demoUsername}
+                  onChange={(e) => setDemoUsername(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={demoPassword}
+                  onChange={(e) => setDemoPassword(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              {error && (
+                <div className="text-red-600 text-sm text-center">{error}</div>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Logging in...' : 'Login with Demo Account'}
+              </button>
+            </form>
+            <div className="mt-3 text-xs text-gray-600 text-center">
+              <p className="font-semibold mb-1">Test Credentials:</p>
+              <p>Username: <span className="font-mono bg-white px-2 py-0.5 rounded">12345</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">123445</span></p>
+              <p className="mt-1">Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span></p>
+            </div>
+          </div>
+
           {/* Guest Mode */}
           <button
             onClick={() => navigate('/')}
