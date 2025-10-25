@@ -2,6 +2,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "@/pages/Home";
 import ExamSyllabus from "@/pages/ExamSyllabus";
+import ModernExamSyllabus from "@/pages/ModernExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
 import CreatorDashboard from "@/pages/CreatorDashboard";
