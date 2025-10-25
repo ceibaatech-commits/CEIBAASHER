@@ -318,7 +318,7 @@ EXAM_DATA = {
         "full_name": "Agriculture Officer & Related Exams",
         "description": "IBPS AFO, FCI, NABARD, State Agriculture Exams",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/uleda2pa_Gemini_Generated_Image_hheyrwhheyrwhhey_2-removebg-preview.png",
-        "color": "from-lime-500 to-green-600",
+        "color": "from-green-600 to-lime-500",
         "total_questions": 120,
         "duration": "2 hours",
         "subjects": {
