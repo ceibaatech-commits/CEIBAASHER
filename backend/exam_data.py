@@ -472,7 +472,7 @@ EXAM_DATA = {
         "full_name": "Combined Defence Services",
         "description": "Entry exam for IMA, INA, AFA and OTA",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
-        "color": "from-blue-700 to-green-700",
+        "color": "from-teal-600 to-cyan-700",
         "total_questions": 340,
         "duration": "6 hours",
         "subjects": {
