@@ -191,7 +191,7 @@ EXAM_DATA = {
         "name": "SSC Exams",
         "full_name": "Staff Selection Commission",
         "description": "Competitive exam for government jobs - CGL, CHSL, MTS",
-        "icon": "📝",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
         "color": "from-red-500 to-pink-600",
         "total_questions": 100,
         "duration": "1 hour",
