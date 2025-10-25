@@ -26,6 +26,16 @@ class PostCreate(BaseModel):
     quiz_id: Optional[str] = None
     quiz_title: Optional[str] = None
     media_urls: Optional[List[str]] = []
+    post_type: Optional[str] = "text"  # text, quiz_result, achievement, battle_result
+    quiz_score: Optional[int] = None
+    quiz_total: Optional[int] = None
+    exam_name: Optional[str] = None
+    opponent_id: Optional[str] = None
+    opponent_name: Optional[str] = None
+    battle_result: Optional[str] = None  # won, lost, draw
+
+class FriendRequest(BaseModel):
+    receiver_id: str
 
 class CommentCreate(BaseModel):
     content: str
