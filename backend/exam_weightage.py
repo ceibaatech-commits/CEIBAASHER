@@ -207,6 +207,129 @@ EXAM_WEIGHTAGE = {
                 ]
             }
         }
+    },
+    "NDA": {
+        "total_questions": 270,
+        "subjects": {
+            "Mathematics": {
+                "questions": 120,
+                "color": "from-green-600 to-emerald-600",
+                "topics": [
+                    {"name": "Algebra", "expected": "25-30", "importance": "Very High"},
+                    {"name": "Matrices & Determinants", "expected": "15-20", "importance": "High"},
+                    {"name": "Trigonometry", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Calculus", "expected": "25-30", "importance": "Very High"},
+                    {"name": "Vector Algebra", "expected": "10-15", "importance": "Medium"},
+                    {"name": "Statistics", "expected": "10-12", "importance": "Medium"}
+                ]
+            },
+            "General Ability": {
+                "questions": 150,
+                "color": "from-blue-600 to-cyan-600",
+                "topics": [
+                    {"name": "English", "expected": "50-55", "importance": "Very High"},
+                    {"name": "General Knowledge", "expected": "40-45", "importance": "Very High"},
+                    {"name": "Physics", "expected": "25-30", "importance": "High"},
+                    {"name": "Chemistry", "expected": "20-25", "importance": "Medium"},
+                    {"name": "Biology", "expected": "10-12", "importance": "Low"}
+                ]
+            }
+        }
+    },
+    "Agniveer": {
+        "total_questions": 100,
+        "subjects": {
+            "General Knowledge": {
+                "questions": 30,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Indian History", "expected": "8-10", "importance": "High"},
+                    {"name": "Geography", "expected": "8-10", "importance": "High"},
+                    {"name": "Current Affairs", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Indian Polity", "expected": "4-6", "importance": "Medium"}
+                ]
+            },
+            "General Science": {
+                "questions": 35,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Physics", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Chemistry", "expected": "10-12", "importance": "High"},
+                    {"name": "Biology", "expected": "8-10", "importance": "High"}
+                ]
+            },
+            "Mathematics": {
+                "questions": 35,
+                "color": "from-blue-500 to-indigo-500",
+                "topics": [
+                    {"name": "Arithmetic", "expected": "15-18", "importance": "Very High"},
+                    {"name": "Algebra", "expected": "10-12", "importance": "High"},
+                    {"name": "Geometry", "expected": "8-10", "importance": "Medium"}
+                ]
+            }
+        }
+    },
+    "CDS": {
+        "total_questions": 340,
+        "subjects": {
+            "English": {
+                "questions": 120,
+                "color": "from-purple-600 to-pink-600",
+                "topics": [
+                    {"name": "Grammar", "expected": "35-40", "importance": "Very High"},
+                    {"name": "Vocabulary", "expected": "35-40", "importance": "Very High"},
+                    {"name": "Comprehension", "expected": "40-45", "importance": "Very High"}
+                ]
+            },
+            "General Knowledge": {
+                "questions": 120,
+                "color": "from-amber-500 to-orange-500",
+                "topics": [
+                    {"name": "History", "expected": "20-25", "importance": "High"},
+                    {"name": "Geography", "expected": "18-22", "importance": "High"},
+                    {"name": "Polity", "expected": "15-18", "importance": "High"},
+                    {"name": "Economics", "expected": "12-15", "importance": "Medium"},
+                    {"name": "Science", "expected": "18-22", "importance": "High"},
+                    {"name": "Current Affairs", "expected": "15-20", "importance": "Very High"}
+                ]
+            },
+            "Elementary Mathematics": {
+                "questions": 100,
+                "color": "from-blue-600 to-cyan-600",
+                "topics": [
+                    {"name": "Arithmetic", "expected": "30-35", "importance": "Very High"},
+                    {"name": "Algebra", "expected": "25-30", "importance": "High"},
+                    {"name": "Trigonometry", "expected": "15-18", "importance": "Medium"},
+                    {"name": "Geometry", "expected": "20-25", "importance": "High"}
+                ]
+            }
+        }
+    },
+    "CAPF": {
+        "total_questions": 250,
+        "subjects": {
+            "General Ability": {
+                "questions": 150,
+                "color": "from-indigo-600 to-blue-600",
+                "topics": [
+                    {"name": "General Knowledge", "expected": "40-45", "importance": "Very High"},
+                    {"name": "Current Affairs", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Logical Reasoning", "expected": "20-25", "importance": "High"},
+                    {"name": "Mental Ability", "expected": "15-20", "importance": "High"},
+                    {"name": "Basic Numeracy", "expected": "25-30", "importance": "High"}
+                ]
+            },
+            "General Studies": {
+                "questions": 100,
+                "color": "from-green-600 to-teal-600",
+                "topics": [
+                    {"name": "Essay Writing", "expected": "25-30", "importance": "Very High"},
+                    {"name": "Comprehension", "expected": "30-35", "importance": "Very High"},
+                    {"name": "Precis Writing", "expected": "15-20", "importance": "High"},
+                    {"name": "Communication Skills", "expected": "20-25", "importance": "High"}
+                ]
+            }
+        }
     }
 }
 
