@@ -38,6 +38,7 @@ const ModernExamSyllabus = () => {
   const navigate = useNavigate();
   const [examData, setExamData] = useState(null);
   const [allTopics, setAllTopics] = useState([]);
+  const [weightageData, setWeightageData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [expandedTopics, setExpandedTopics] = useState({});
