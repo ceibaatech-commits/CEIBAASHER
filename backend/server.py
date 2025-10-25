@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from quiz_routes import router as quiz_router
 from auth_routes import router as auth_router
+from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
 from battle_proxy_routes import router as battle_proxy_router
 
