@@ -365,7 +365,7 @@ EXAM_DATA = {
         "full_name": "Rajasthan State Exams",
         "description": "RAS, Police, Teacher, and other state service exams",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/axxtkfie_IMG_1341-removebg-preview.png",
-        "color": "from-rose-500 to-red-600",
+        "color": "from-orange-600 to-red-600",
         "total_questions": 150,
         "duration": "3 hours",
         "subjects": {
