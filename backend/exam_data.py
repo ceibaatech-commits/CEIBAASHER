@@ -527,7 +527,233 @@ EXAM_DATA = {
             }
         }
     },
+    
+    # ==================== ADMISSION TESTS ====================
+    
+    "GATE": {
+        "name": "GATE",
+        "full_name": "Graduate Aptitude Test in Engineering",
+        "description": "National level engineering entrance exam for M.Tech, PSU recruitment",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-purple-600 to-blue-600",
+        "total_questions": 65,
+        "duration": "3 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "Engineering Mathematics": {
+                "topics": {
+                    "Linear Algebra": {"subtopics": ["Matrices", "Determinants", "Eigen Values", "Linear Equations"], "questions": 10},
+                    "Calculus": {"subtopics": ["Limits", "Differentiation", "Integration", "Differential Equations"], "questions": 12},
+                    "Probability": {"subtopics": ["Random Variables", "Distributions", "Statistics"], "questions": 8}
+                }
+            },
+            "General Aptitude": {
+                "topics": {
+                    "Verbal Ability": {"subtopics": ["Grammar", "Sentence Completion", "Verbal Analogies"], "questions": 10},
+                    "Numerical Ability": {"subtopics": ["Data Interpretation", "Numerical Computation", "Quantitative Comparison"], "questions": 10}
+                }
+            },
+            "Core Engineering": {
+                "topics": {
+                    "Technical Fundamentals": {"subtopics": ["Core Concepts", "Advanced Topics", "Applications"], "questions": 15}
+                }
+            }
+        }
+    },
+    
+    "CUET": {
+        "name": "CUET",
+        "full_name": "Common University Entrance Test",
+        "description": "National level entrance exam for undergraduate programs in central universities",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-green-600 to-teal-600",
+        "total_questions": 200,
+        "duration": "3 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "General Test": {
+                "topics": {
+                    "General Knowledge": {"subtopics": ["Current Affairs", "History", "Geography", "Polity"], "questions": 40},
+                    "General Mental Ability": {"subtopics": ["Logical Reasoning", "Analytical Reasoning", "Quantitative Reasoning"], "questions": 40},
+                    "Numerical Ability": {"subtopics": ["Arithmetic", "Data Interpretation", "Modern Math"], "questions": 40}
+                }
+            },
+            "Language": {
+                "topics": {
+                    "English": {"subtopics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 40}
+                }
+            },
+            "Domain Subject": {
+                "topics": {
+                    "Subject Specific": {"subtopics": ["Core Concepts", "Applications", "Problem Solving"], "questions": 40}
+                }
+            }
+        }
+    },
+    
+    "UGC_NET": {
+        "name": "UGC NET",
+        "full_name": "University Grants Commission National Eligibility Test",
+        "description": "National level exam for determining eligibility for lectureship and JRF",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-indigo-600 to-purple-700",
+        "total_questions": 150,
+        "duration": "3 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "Teaching Aptitude": {
+                "topics": {
+                    "Teaching Methods": {"subtopics": ["Teaching Techniques", "Evaluation Systems", "Student Psychology"], "questions": 15},
+                    "Research Aptitude": {"subtopics": ["Research Methods", "Data Analysis", "Research Ethics"], "questions": 15}
+                }
+            },
+            "Reasoning": {
+                "topics": {
+                    "Logical Reasoning": {"subtopics": ["Deduction", "Induction", "Analogies"], "questions": 15},
+                    "Mathematical Reasoning": {"subtopics": ["Number Series", "Data Interpretation", "Problem Solving"], "questions": 15}
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Current Affairs": {"subtopics": ["National", "International", "Academic World"], "questions": 20},
+                    "Higher Education": {"subtopics": ["Education System", "ICT", "Environment"], "questions": 20}
+                }
+            },
+            "Subject Specific": {
+                "topics": {
+                    "Core Subject": {"subtopics": ["Fundamentals", "Advanced Topics", "Recent Developments"], "questions": 50}
+                }
+            }
+        }
+    },
+    
+    "CAT": {
+        "name": "CAT",
+        "full_name": "Common Admission Test",
+        "description": "National level entrance exam for IIMs and top B-schools",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-orange-600 to-red-600",
+        "total_questions": 66,
+        "duration": "2 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "Verbal Ability": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["Passage Analysis", "Critical Reasoning", "Inference"], "questions": 18},
+                    "Verbal Reasoning": {"subtopics": ["Para Jumbles", "Para Summary", "Sentence Correction"], "questions": 6}
+                }
+            },
+            "Data Interpretation": {
+                "topics": {
+                    "Tables & Charts": {"subtopics": ["Bar Charts", "Pie Charts", "Line Graphs", "Tables"], "questions": 10},
+                    "Data Analysis": {"subtopics": ["Caselets", "Data Sufficiency", "Logical DI"], "questions": 10}
+                }
+            },
+            "Quantitative Ability": {
+                "topics": {
+                    "Arithmetic": {"subtopics": ["Percentages", "Profit & Loss", "Time & Work", "Ratio & Proportion"], "questions": 10},
+                    "Algebra": {"subtopics": ["Equations", "Inequalities", "Functions"], "questions": 6},
+                    "Geometry": {"subtopics": ["Mensuration", "Coordinate Geometry", "Trigonometry"], "questions": 6}
+                }
+            }
+        }
+    },
+    
+    "CLAT": {
+        "name": "CLAT",
+        "full_name": "Common Law Admission Test",
+        "description": "National level entrance exam for admission to law programs",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-blue-700 to-indigo-800",
+        "total_questions": 120,
+        "duration": "2 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "English Language": {
+                "topics": {
+                    "Comprehension": {"subtopics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 28}
+                }
+            },
+            "Current Affairs": {
+                "topics": {
+                    "General Knowledge": {"subtopics": ["National News", "International News", "Static GK"], "questions": 35}
+                }
+            },
+            "Legal Reasoning": {
+                "topics": {
+                    "Legal Aptitude": {"subtopics": ["Legal Principles", "Case Analysis", "Legal Logic"], "questions": 35}
+                }
+            },
+            "Logical Reasoning": {
+                "topics": {
+                    "Critical Thinking": {"subtopics": ["Analytical Reasoning", "Logical Puzzles", "Critical Analysis"], "questions": 22}
+                }
+            }
+        }
+    },
+    
+    "NATA": {
+        "name": "NATA",
+        "full_name": "National Aptitude Test in Architecture",
+        "description": "National level entrance exam for B.Arch programs",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-pink-600 to-purple-600",
+        "total_questions": 125,
+        "duration": "3 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "Mathematics": {
+                "topics": {
+                    "Algebra": {"subtopics": ["Sets", "Functions", "Quadratic Equations", "Matrices"], "questions": 15},
+                    "Calculus": {"subtopics": ["Limits", "Differentiation", "Integration", "Applications"], "questions": 15},
+                    "Coordinate Geometry": {"subtopics": ["2D Geometry", "Circles", "Conic Sections"], "questions": 10}
+                }
+            },
+            "General Aptitude": {
+                "topics": {
+                    "Visual Perception": {"subtopics": ["Objects", "Textures", "Building Forms"], "questions": 20},
+                    "Aesthetic Sensitivity": {"subtopics": ["Design", "Color", "Contrast", "Harmony"], "questions": 15},
+                    "Logical Reasoning": {"subtopics": ["Sets", "Relationships", "Patterns"], "questions": 10}
+                }
+            },
+            "Drawing Ability": {
+                "topics": {
+                    "Sketching": {"subtopics": ["2D Drawing", "3D Perception", "Imagination"], "questions": 40}
+                }
+            }
+        }
+    },
+    
+    "GMAT": {
+        "name": "GMAT",
+        "full_name": "Graduate Management Admission Test",
+        "description": "International entrance exam for MBA and business programs",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
+        "color": "from-cyan-600 to-blue-700",
+        "total_questions": 80,
+        "duration": "3.5 hours",
+        "category": "Admission Tests",
+        "subjects": {
+            "Quantitative Reasoning": {
+                "topics": {
+                    "Problem Solving": {"subtopics": ["Arithmetic", "Algebra", "Geometry"], "questions": 31}
+                }
+            },
+            "Verbal Reasoning": {
+                "topics": {
+                    "Reading Comprehension": {"subtopics": ["Passages", "Critical Reasoning", "Inference"], "questions": 18},
+                    "Sentence Correction": {"subtopics": ["Grammar", "Idioms", "Meaning"], "questions": 18}
+                }
+            },
+            "Data Insights": {
+                "topics": {
+                    "Data Analysis": {"subtopics": ["Graphics", "Tables", "Multi-source Reasoning"], "questions": 13}
+                }
+            }
+        }
+    },
 }
+
 
 
 def get_all_exams():
