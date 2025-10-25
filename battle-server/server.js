@@ -328,6 +328,131 @@ io.on('connection', (socket) => {
     }
   });
 
+
+  // ==================== 1v1 MATCHMAKING ====================
+  
+  socket.on('find-match', ({ playerName, examId, subject, topic }) => {
+    console.log(`🔍 ${playerName} looking for match: ${examId}/${subject}/${topic}`);
+    
+    const matchKey = `${examId}_${subject}_${topic}`;
+    
+    // Get or create queue for this topic
+    if (!matchmakingQueue.has(matchKey)) {
+      matchmakingQueue.set(matchKey, []);
+    }
+    
+    const queue = matchmakingQueue.get(matchKey);
+    
+    // Check if someone is already waiting
+    if (queue.length > 0) {
+      // Match found!
+      const opponent = queue.shift();
+      
+      // Generate unique room ID
+      const roomId = `1v1_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      console.log(`✅ Match found! ${playerName} vs ${opponent.playerName}`);
+      
+      // Notify both players
+      socket.emit('match-found', {
+        roomId,
+        opponent: {
+          id: opponent.socketId,
+          name: opponent.playerName
+        },
+        examId,
+        subject,
+        topic
+      });
+      
+      io.to(opponent.socketId).emit('match-found', {
+        roomId,
+        opponent: {
+          id: socket.id,
+          name: playerName
+        },
+        examId,
+        subject,
+        topic
+      });
+      
+      // Create battle room
+      rooms.set(roomId, {
+        pin: roomId,
+        examId,
+        subject,
+        topic,
+        players: [
+          {
+            id: socket.id,
+            name: playerName,
+            score: 0,
+            answers: [],
+            streak: 0
+          },
+          {
+            id: opponent.socketId,
+            name: opponent.playerName,
+            score: 0,
+            answers: [],
+            streak: 0
+          }
+        ],
+        currentQuestion: 0,
+        status: 'waiting',
+        questions: [],
+        createdAt: Date.now()
+      });
+      
+      // Join both players to room
+      socket.join(roomId);
+      io.sockets.sockets.get(opponent.socketId)?.join(roomId);
+      
+      // Store player data
+      players.set(socket.id, { 
+        socketId: socket.id, 
+        playerName, 
+        pin: roomId,
+        isHost: true 
+      });
+      players.set(opponent.socketId, { 
+        socketId: opponent.socketId, 
+        playerName: opponent.playerName, 
+        pin: roomId,
+        isHost: false 
+      });
+      
+    } else {
+      // No match yet, add to queue
+      queue.push({ 
+        socketId: socket.id, 
+        playerName,
+        examId,
+        subject,
+        topic,
+        timestamp: Date.now()
+      });
+      
+      console.log(`⏳ ${playerName} added to queue. Queue length: ${queue.length}`);
+      
+      socket.emit('waiting', { 
+        message: 'Searching for an opponent...',
+        queuePosition: queue.length
+      });
+    }
+  });
+  
+  socket.on('cancel-matchmaking', () => {
+    // Remove from all queues
+    matchmakingQueue.forEach((queue, key) => {
+      const index = queue.findIndex(p => p.socketId === socket.id);
+      if (index !== -1) {
+        queue.splice(index, 1);
+        console.log(`❌ Player removed from matchmaking queue: ${key}`);
+      }
+    });
+  });
+
   socket.on('disconnect', () => {
     const data = players.get(socket.id);
     if (data) {
