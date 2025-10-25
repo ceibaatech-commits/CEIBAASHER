@@ -56,7 +56,10 @@ const ExamSyllabus = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <header className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`}>
+      <Header />
+      
+      {/* Exam Banner */}
+      <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
             onClick={() => navigate('/')}
@@ -69,32 +72,32 @@ const ExamSyllabus = () => {
           <div className="flex items-start space-x-6">
             <div className="text-7xl">{examData.icon}</div>
             <div className="flex-1">
-              <h1 className="text-4xl font-black mb-2">{examData.name}</h1>
-              <p className="text-xl text-white/90 mb-4">{examData.full_name}</p>
+              <h1 className="text-4xl font-black mb-2 text-white">{examData.name}</h1>
+              <p className="text-xl text-white font-semibold mb-4">{examData.full_name}</p>
               <div className="flex flex-wrap gap-4">
                 <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <FileText className="w-5 h-5" />
-                    <span className="font-semibold">{examData.total_questions} Questions</span>
+                    <span className="font-semibold text-white">{examData.total_questions} Questions</span>
                   </div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <Clock className="w-5 h-5" />
-                    <span className="font-semibold">{examData.duration}</span>
+                    <span className="font-semibold text-white">{examData.duration}</span>
                   </div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
                   <div className="flex items-center space-x-2">
                     <BookOpen className="w-5 h-5" />
-                    <span className="font-semibold">{subjects.length} Subjects</span>
+                    <span className="font-semibold text-white">{subjects.length} Subjects</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white rounded-xl shadow-md p-6 mb-8">
