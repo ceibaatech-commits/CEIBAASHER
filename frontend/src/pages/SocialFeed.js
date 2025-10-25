@@ -63,6 +63,14 @@ const SocialFeed = () => {
       const storiesRes = await axios.get(`${BACKEND_URL}/api/social/stories`, { headers });
       setStories(storiesRes.data);
 
+      // Fetch friend requests
+      const friendReqRes = await axios.get(`${BACKEND_URL}/api/social/friend-requests`, { headers });
+      setFriendRequests(friendReqRes.data);
+
+      // Fetch friends
+      const friendsRes = await axios.get(`${BACKEND_URL}/api/social/friends`, { headers });
+      setFriends(friendsRes.data);
+
       setLoading(false);
     } catch (error) {
       console.error('Error fetching feed:', error);
