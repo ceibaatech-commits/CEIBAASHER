@@ -157,8 +157,69 @@ const Home = () => {
         </div>
 
         {/* Exam Cards Grid */}
+        {/* Defence Exams Section */}
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-700 to-emerald-800 rounded-xl flex items-center justify-center">
+              <Trophy className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-gray-900">Defence Exams</h2>
+              <p className="text-gray-600">Armed Forces & Paramilitary Entrance Exams</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {exams.filter(exam => ['NDA', 'Agniveer', 'CDS', 'CAPF'].includes(exam.id)).map((exam) => (
+              <motion.div
+                key={exam.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group"
+                onClick={() => navigate(`/exam/${exam.id}`)}
+              >
+                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                  <div className="relative text-white">
+                    <div className="mb-3">
+                      {exam.icon.startsWith('http') ? (
+                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
+                      ) : (
+                        <div className="text-5xl">{exam.icon}</div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
+                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
+                  <div className="flex items-center justify-between text-sm text-gray-600">
+                    <div className="flex items-center space-x-2">
+                      <FileText className="w-4 h-4" />
+                      <span>{exam.total_questions} Qs</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4" />
+                      <span>{exam.duration}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Other Exams Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-black text-gray-900 mb-8">Other Competitive Exams</h2>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {exams.map((exam) => (
+          {exams.filter(exam => !['NDA', 'Agniveer', 'CDS', 'CAPF'].includes(exam.id)).map((exam) => (
             <div
               key={exam.id}
               onClick={() => navigate(`/exam/${exam.id}`)}
