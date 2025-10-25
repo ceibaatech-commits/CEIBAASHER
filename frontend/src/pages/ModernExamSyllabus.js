@@ -230,6 +230,20 @@ const ModernExamSyllabus = () => {
                 ))}
               </motion.div>
             </div>
+
+            {/* Hero Illustration - Right Side */}
+            <motion.div
+              initial={{ x: 100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8, type: 'spring' }}
+              className="hidden lg:block flex-shrink-0"
+            >
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/48pisksa_Gemini_Generated_Image_7osubg7osubg7osu%202.png"
+                alt="Students Learning"
+                className="w-80 h-80 object-contain drop-shadow-2xl"
+              />
+            </motion.div>
           </div>
         </div>
       </motion.div>
