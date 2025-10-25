@@ -153,7 +153,7 @@ EXAM_DATA = {
         "full_name": "Civil Services Examination",
         "description": "Premier exam for IAS, IPS, IFS and other civil services",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png",
-        "color": "from-amber-500 to-orange-600",
+        "color": "from-yellow-600 to-amber-600",
         "total_questions": 200,
         "duration": "2 hours",
         "subjects": {
