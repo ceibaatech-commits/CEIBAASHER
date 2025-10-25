@@ -26,8 +26,12 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <LogIn className="w-8 h-8" />
+            <div className="flex items-center justify-center mx-auto mb-4">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/76ix3e5h_IMG_1159-removebg-preview.png" 
+                alt="Ceibaa Logo" 
+                className="w-24 h-24 object-contain"
+              />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Ceibaa</h1>
             <p className="text-gray-600">Sign in to join the battle arena</p>
