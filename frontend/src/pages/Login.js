@@ -1,15 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, ArrowLeft } from 'lucide-react';
+import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const Login = () => {
   const navigate = useNavigate();
+  const [demoUsername, setDemoUsername] = useState('');
+  const [demoPassword, setDemoPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSocialLogin = (provider) => {
     // Redirect to backend OAuth endpoint
     window.location.href = `${BACKEND_URL}/api/auth/${provider}`;
+  };
+
+  const handleDemoLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/auth/demo-login`, {
+        username: demoUsername,
+        password: demoPassword
+      });
+
+      // Store token in localStorage
+      localStorage.setItem('ceibaa_token', response.data.access_token);
+      localStorage.setItem('ceibaa_user', JSON.stringify(response.data.user));
+
+      // Navigate to home
+      navigate('/');
+      
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Login failed. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (
