@@ -770,7 +770,8 @@ def get_all_exams():
             "color": data["color"],
             "total_questions": data["total_questions"],
             "duration": data["duration"],
-            "subjects": list(data["subjects"].keys())
+            "subjects": list(data["subjects"].keys()),
+            "category": data.get("category", "Other")
         }
         for exam_id, data in EXAM_DATA.items()
     ]
