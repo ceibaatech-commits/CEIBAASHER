@@ -70,7 +70,13 @@ const ExamSyllabus = () => {
           </button>
           
           <div className="flex items-start space-x-6">
-            <div className="text-7xl">{examData.icon}</div>
+            <div className="text-7xl">
+              {examData.icon.startsWith('http') ? (
+                <img src={examData.icon} alt={examData.name} className="w-20 h-20 object-contain" />
+              ) : (
+                examData.icon
+              )}
+            </div>
             <div className="flex-1">
               <h1 className="text-4xl font-black mb-2 text-white">{examData.name}</h1>
               <p className="text-xl text-white font-semibold mb-4">{examData.full_name}</p>
