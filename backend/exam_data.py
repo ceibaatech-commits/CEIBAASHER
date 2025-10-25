@@ -411,7 +411,7 @@ EXAM_DATA = {
         "name": "Defence Exams",
         "full_name": "NDA, CDS, AFCAT",
         "description": "Armed Forces entrance exams for Army, Navy, Air Force",
-        "icon": "🎖️",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
         "color": "from-orange-500 to-rose-600",
         "total_questions": 120,
         "duration": "2.5 hours",
