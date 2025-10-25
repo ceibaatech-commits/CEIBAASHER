@@ -258,7 +258,7 @@ EXAM_DATA = {
         "name": "Banking Exams",
         "full_name": "Banking & Insurance Exams",
         "description": "IBPS, SBI PO, SBI Clerk, RBI, NABARD exams",
-        "icon": "🏦",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-indigo-500 to-purple-600",
         "total_questions": 100,
         "duration": "1 hour",
