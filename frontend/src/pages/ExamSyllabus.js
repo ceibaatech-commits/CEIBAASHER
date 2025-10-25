@@ -59,7 +59,7 @@ const ExamSyllabus = () => {
       <Header />
       
       {/* Exam Banner */}
-      <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`}>
+      <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg min-h-[180px]`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <button
             onClick={() => navigate('/')}
