@@ -3,8 +3,9 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Use localhost:5001 for battle server
-const BATTLE_URL = 'http://localhost:5001';
+// Connect to the same backend URL - ingress will route Socket.io to battle-server
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const BATTLE_URL = BACKEND_URL;
 
 const BattleLobby = () => {
   const { pin } = useParams();
