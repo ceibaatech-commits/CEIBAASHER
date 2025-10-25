@@ -5,6 +5,20 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
     "./public/index.html"
   ],
+  safelist: [
+    // Gradient colors for exam cards
+    'from-blue-500', 'to-indigo-600',
+    'from-emerald-500', 'to-teal-600',
+    'from-amber-500', 'to-orange-500',
+    'from-red-500', 'to-rose-600',
+    'from-indigo-500', 'to-blue-600',
+    'from-green-500', 'to-emerald-600',
+    'from-orange-500', 'to-red-500',
+    'from-green-700', 'to-emerald-800',
+    'from-green-600', 'to-teal-700',
+    'from-teal-600', 'to-cyan-700',
+    'from-purple-600', 'to-indigo-700',
+  ],
   theme: {
   	extend: {
   		borderRadius: {
