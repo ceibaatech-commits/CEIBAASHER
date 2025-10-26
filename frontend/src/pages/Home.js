@@ -208,7 +208,7 @@ const Home = () => {
                     className="flex items-center justify-center mb-4"
                   >
                     <img 
-                      src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/dy7j6ux1_Gemini_Generated_Image_kmz0fikmz0fikmz0_2-removebg-preview.png"
+                      src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/2y0d30ka_Gemini_Generated_Image_fduhiefduhiefduh_2-removebg-preview.png"
                       alt="Real-Time Mock Tests"
                       className="w-40 h-40 object-contain drop-shadow-2xl"
                     />
