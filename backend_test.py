@@ -313,6 +313,211 @@ class BattleServerTester:
         except Exception as e:
             self.log_result("Answer Validation Logic", False, f"Code analysis error: {e}")
             return False
+
+    def test_contact_form_valid_request(self):
+        """Test contact form with valid data including all fields"""
+        try:
+            payload = {
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "phone": "+91 9876543210",
+                "message": "This is a test message from the contact form. I'm interested in learning more about Ceibaa's exam preparation features."
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success' and 'message' in data:
+                    self.log_result("Contact Form - Valid Request (All Fields)", True, 
+                                  f"Email sent successfully: {data['message']}")
+                    return True
+                else:
+                    self.log_result("Contact Form - Valid Request (All Fields)", False, 
+                                  f"Unexpected response structure: {data}")
+                    return False
+            else:
+                self.log_result("Contact Form - Valid Request (All Fields)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Contact Form - Valid Request (All Fields)", False, f"Request error: {e}")
+            return False
+
+    def test_contact_form_without_phone(self):
+        """Test contact form without optional phone field"""
+        try:
+            payload = {
+                "name": "Jane Smith",
+                "email": "jane.smith@example.com",
+                "message": "Testing contact form without phone number. This should work since phone is optional."
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success':
+                    self.log_result("Contact Form - Without Phone (Optional)", True, 
+                                  "Form submission works without phone field")
+                    return True
+                else:
+                    self.log_result("Contact Form - Without Phone (Optional)", False, 
+                                  f"Unexpected response: {data}")
+                    return False
+            else:
+                self.log_result("Contact Form - Without Phone (Optional)", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Contact Form - Without Phone (Optional)", False, f"Request error: {e}")
+            return False
+
+    def test_contact_form_missing_name(self):
+        """Test contact form with missing required name field"""
+        try:
+            payload = {
+                "email": "test@example.com",
+                "message": "Test message without name"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 422:
+                self.log_result("Contact Form - Missing Name Validation", True, 
+                              "Correctly validates missing name field (422)")
+                return True
+            else:
+                self.log_result("Contact Form - Missing Name Validation", False, 
+                              f"Expected 422, got {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Contact Form - Missing Name Validation", False, f"Request error: {e}")
+            return False
+
+    def test_contact_form_missing_email(self):
+        """Test contact form with missing required email field"""
+        try:
+            payload = {
+                "name": "Test User",
+                "message": "Test message without email"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 422:
+                self.log_result("Contact Form - Missing Email Validation", True, 
+                              "Correctly validates missing email field (422)")
+                return True
+            else:
+                self.log_result("Contact Form - Missing Email Validation", False, 
+                              f"Expected 422, got {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Contact Form - Missing Email Validation", False, f"Request error: {e}")
+            return False
+
+    def test_contact_form_missing_message(self):
+        """Test contact form with missing required message field"""
+        try:
+            payload = {
+                "name": "Test User",
+                "email": "test@example.com"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 422:
+                self.log_result("Contact Form - Missing Message Validation", True, 
+                              "Correctly validates missing message field (422)")
+                return True
+            else:
+                self.log_result("Contact Form - Missing Message Validation", False, 
+                              f"Expected 422, got {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Contact Form - Missing Message Validation", False, f"Request error: {e}")
+            return False
+
+    def test_contact_form_invalid_email(self):
+        """Test contact form with invalid email format"""
+        try:
+            payload = {
+                "name": "Test User",
+                "email": "invalid-email-format",
+                "message": "Test message with invalid email"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 422:
+                self.log_result("Contact Form - Invalid Email Format", True, 
+                              "Correctly validates invalid email format (422)")
+                return True
+            else:
+                self.log_result("Contact Form - Invalid Email Format", False, 
+                              f"Expected 422, got {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Contact Form - Invalid Email Format", False, f"Request error: {e}")
+            return False
+
+    def test_sendgrid_configuration(self):
+        """Test if SendGrid is properly configured"""
+        try:
+            sendgrid_api_key = os.getenv('SENDGRID_API_KEY')
+            sender_email = os.getenv('SENDER_EMAIL')
+            
+            if sendgrid_api_key:
+                self.log_result("SendGrid API Key Configuration", True, 
+                              "SendGrid API key is configured")
+            else:
+                self.log_result("SendGrid API Key Configuration", False, 
+                              "SendGrid API key not found in environment")
+                return False
+            
+            if sender_email:
+                self.log_result("Sender Email Configuration", True, 
+                              f"Sender email configured: {sender_email}")
+            else:
+                self.log_result("Sender Email Configuration", False, 
+                              "Sender email not configured")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("SendGrid Configuration", False, f"Configuration check error: {e}")
+            return False
     
     def run_all_tests(self):
         """Run all backend tests"""
