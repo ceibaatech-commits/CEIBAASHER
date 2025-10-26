@@ -38,6 +38,9 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             <button onClick={() => navigate('/')} className="hover:text-cyan-400 transition-colors font-semibold">
               Exams
             </button>
+            <button onClick={() => navigate('/about')} className="hover:text-cyan-400 transition-colors font-semibold">
+              About Us
+            </button>
             <button onClick={() => navigate('/leaderboard')} className="hover:text-cyan-400 transition-colors font-semibold">
               Leaderboard
             </button>
