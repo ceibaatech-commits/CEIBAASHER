@@ -471,12 +471,6 @@ const Home = () => {
           </div>
         </div>
 
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
         {/* UPSC Examinations Section - Enhanced */}
         <div className="mb-16">
           <motion.div 
