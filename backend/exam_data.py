@@ -797,7 +797,7 @@ EXAM_DATA = {
         "full_name": "State Bank of India Junior Associate",
         "description": "Entrance exam for Clerical position in SBI",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
-        "color": "from-cyan-600 to-blue-700",
+        "color": "from-teal-500 to-cyan-600",
         "total_questions": 190,
         "duration": "2 hours 40 minutes",
         "category": "Banking Examinations",
