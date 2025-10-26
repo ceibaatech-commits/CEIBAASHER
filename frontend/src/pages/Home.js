@@ -56,6 +56,7 @@ const Home = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
     setUser(null);
     setIsLoggedIn(false);
   };
