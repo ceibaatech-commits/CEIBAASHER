@@ -242,16 +242,16 @@ const Home = () => {
                   {/* Title First */}
                   <h3 className="text-xl font-black text-white mb-4 text-center">Personalized Practice Plans</h3>
                   
-                  {/* Character Image in Middle - Smaller */}
+                  {/* Character Image in Middle - Full Size */}
                   <motion.div
-                    animate={{ y: [0, -8, 0] }}
+                    animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
                     className="flex items-center justify-center mb-4"
                   >
                     <img 
                       src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/zj3jr6t9_Gemini_Generated_Image_mmmbmvmmmbmvmmmb_2-removebg-preview.png"
                       alt="Personalized Practice Plans"
-                      className="w-28 h-28 object-contain drop-shadow-xl"
+                      className="w-40 h-40 object-contain drop-shadow-2xl"
                     />
                   </motion.div>
                   
