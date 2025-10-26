@@ -120,7 +120,12 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <Header />
+      <Header 
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogin={() => navigate('/login')}
+        onLogout={handleLogout}
+      />
       
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-16">
