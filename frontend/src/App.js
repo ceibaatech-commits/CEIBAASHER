@@ -11,6 +11,7 @@ import SheetManager from "@/pages/SheetManager";
 import SocialFeed from "@/pages/SocialFeed";
 import AboutUs from "@/pages/AboutUs";
 import FAQ from "@/pages/FAQ";
+import Contact from "@/pages/Contact";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
