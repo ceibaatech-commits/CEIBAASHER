@@ -1227,39 +1227,38 @@ EXAM_DATA = {
         }
     },
     
-    "TET": {
-        "name": "TET",
-        "full_name": "Teacher Eligibility Test",
-        "description": "National level teaching eligibility test (CTET)",
+    "CTET": {
+        "name": "CTET",
+        "full_name": "Central Teacher Eligibility Test",
+        "description": "Central TET conducted by CBSE for teaching eligibility certification (Paper I & II)",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-purple-600 to-indigo-600",
+        "color": "from-purple-500 to-pink-600",
         "total_questions": 150,
         "duration": "2.5 hours",
         "category": "Teaching Examinations",
         "subjects": {
-            "Child Development": {
+            "Child Development & Pedagogy": {
                 "topics": {
-                    "CDP & Pedagogy": {"subtopics": ["Learning Theories", "Assessment", "Inclusive Education"], "questions": 30}
+                    "Child Development": {"subtopics": ["Learning Theories", "Piaget, Kohlberg, Vygotsky", "Individual Differences"], "questions": 15},
+                    "Pedagogy": {"subtopics": ["Learning Process", "Inclusive Education", "Assessment & Evaluation"], "questions": 15}
                 }
             },
             "Language I": {
                 "topics": {
-                    "Language Proficiency": {"subtopics": ["Comprehension", "Pedagogy"], "questions": 30}
+                    "Comprehension": {"subtopics": ["Reading Passages", "Unseen Passages", "Inference"], "questions": 15},
+                    "Language Pedagogy": {"subtopics": ["Teaching Strategies", "Language Development", "Assessment"], "questions": 15}
                 }
             },
             "Language II": {
                 "topics": {
-                    "Language Skills": {"subtopics": ["Grammar", "Comprehension", "Teaching Methods"], "questions": 30}
+                    "Comprehension": {"subtopics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 15},
+                    "Pedagogy": {"subtopics": ["Language Skills", "Teaching Methods", "Learning Materials"], "questions": 15}
                 }
             },
-            "Mathematics": {
+            "Mathematics & Science": {
                 "topics": {
-                    "Mathematics & Pedagogy": {"subtopics": ["Content", "Pedagogy"], "questions": 30}
-                }
-            },
-            "Environmental Studies": {
-                "topics": {
-                    "EVS & Pedagogy": {"subtopics": ["Content", "Pedagogy"], "questions": 30}
+                    "Mathematics": {"subtopics": ["Number System", "Algebra", "Geometry", "Pedagogy"], "questions": 30},
+                    "Science": {"subtopics": ["Physics", "Chemistry", "Biology", "Pedagogy"], "questions": 30}
                 }
             }
         }
