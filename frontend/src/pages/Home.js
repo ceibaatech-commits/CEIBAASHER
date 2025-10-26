@@ -291,6 +291,283 @@ const Home = () => {
           </div>
         </div>
 
+
+        {/* Banking Examinations Section */}
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png" 
+                alt="Banking Examinations" 
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-gray-900">Banking Examinations</h2>
+              <p className="text-gray-600">Banking & Financial Services Entrance Exams</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {exams.filter(exam => exam.category === 'Banking Examinations').map((exam) => (
+              <motion.div
+                key={exam.id}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                  <div className="relative text-white">
+                    <div className="mb-3">
+                      {exam.icon.startsWith('http') ? (
+                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
+                      ) : (
+                        <div className="text-5xl">{exam.icon}</div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
+                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Questions:</span>
+                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-semibold text-gray-900">{exam.duration}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Subjects:</span>
+                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
+                    View Syllabus →
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* UPSC Examinations Section */}
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png" 
+                alt="UPSC Examinations" 
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-gray-900">UPSC Examinations</h2>
+              <p className="text-gray-600">Union Public Service Commission Exams</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {exams.filter(exam => exam.category === 'UPSC Examinations').map((exam) => (
+              <motion.div
+                key={exam.id}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                  <div className="relative text-white">
+                    <div className="mb-3">
+                      {exam.icon.startsWith('http') ? (
+                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
+                      ) : (
+                        <div className="text-5xl">{exam.icon}</div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
+                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Questions:</span>
+                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-semibold text-gray-900">{exam.duration}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Subjects:</span>
+                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
+                    View Syllabus →
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* SSC Examinations Section */}
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-rose-600 rounded-xl flex items-center justify-center">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png" 
+                alt="SSC Examinations" 
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-gray-900">SSC Examinations</h2>
+              <p className="text-gray-600">Staff Selection Commission Exams</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {exams.filter(exam => exam.category === 'SSC Examinations').map((exam) => (
+              <motion.div
+                key={exam.id}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                  <div className="relative text-white">
+                    <div className="mb-3">
+                      {exam.icon.startsWith('http') ? (
+                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
+                      ) : (
+                        <div className="text-5xl">{exam.icon}</div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
+                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Questions:</span>
+                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-semibold text-gray-900">{exam.duration}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Subjects:</span>
+                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
+                    View Syllabus →
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Teaching Examinations Section */}
+        <div className="mb-16">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center">
+              <img 
+                src="https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png" 
+                alt="Teaching Examinations" 
+                className="w-8 h-8 object-contain"
+              />
+            </div>
+            <div>
+              <h2 className="text-3xl font-black text-gray-900">Teaching Examinations</h2>
+              <p className="text-gray-600">Teaching Eligibility & Recruitment Exams</p>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {exams.filter(exam => exam.category === 'Teaching Examinations').map((exam) => (
+              <motion.div
+                key={exam.id}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+                  <div className="relative text-white">
+                    <div className="mb-3">
+                      {exam.icon.startsWith('http') ? (
+                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
+                      ) : (
+                        <div className="text-5xl">{exam.icon}</div>
+                      )}
+                    </div>
+                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
+                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
+                  
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Questions:</span>
+                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-semibold text-gray-900">{exam.duration}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Subjects:</span>
+                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
+                    </div>
+                  </div>
+
+                  <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
+                    View Syllabus →
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         {/* Other Exams Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-black text-gray-900 mb-8">Other Competitive Exams</h2>
