@@ -6,7 +6,7 @@ module.exports = {
     "./public/index.html"
   ],
   safelist: [
-    // Gradient colors for exam cards
+    // Gradient colors for exam cards - vibrant colors
     'from-blue-500', 'to-indigo-600',
     'from-emerald-500', 'to-teal-600',
     'from-amber-500', 'to-orange-500',
@@ -18,6 +18,13 @@ module.exports = {
     'from-green-600', 'to-teal-700',
     'from-teal-600', 'to-cyan-700',
     'from-purple-600', 'to-indigo-700',
+    // New vibrant colors
+    'from-cyan-500', 'to-blue-600',
+    'from-teal-500', 'to-cyan-600',
+    'from-violet-500', 'to-purple-600',
+    'from-rose-500', 'to-pink-600',
+    'from-sky-500', 'to-blue-600',
+    'from-lime-500', 'to-green-600',
   ],
   theme: {
   	extend: {
