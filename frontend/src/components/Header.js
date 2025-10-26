@@ -112,9 +112,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               <button onClick={() => { navigate('/leaderboard'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
                 Leaderboard
               </button>
-              <button onClick={() => { navigate('/creator-dashboard'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
-                Creator Dashboard
-              </button>
             </nav>
           </div>
         )}
