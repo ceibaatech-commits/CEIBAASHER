@@ -153,6 +153,151 @@ const Home = () => {
         </div>
       </div>
 
+      {/* New Section: Unlocking Exam Potential */}
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+        {/* Background Decorations */}
+        <div className="absolute inset-0 overflow-hidden opacity-5">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Header */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <motion.h2 
+              className="text-5xl md:text-6xl font-black mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent"
+            >
+              UNLOCKING YOUR EXAM POTENTIAL ONLINE
+            </motion.h2>
+            <p className="text-xl text-gray-700 font-medium">
+              We prepare global learners for competitive success everywhere
+            </p>
+          </motion.div>
+
+          {/* Three Character Boxes */}
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Box 1: Real-Time Mock Tests */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              whileHover={{ y: -10 }}
+              className="group relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+              
+              <div className="relative bg-gradient-to-br from-green-400 via-emerald-400 to-green-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full -ml-16 -mb-16"></div>
+                
+                <div className="relative">
+                  {/* Character Image */}
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="mb-6"
+                  >
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/dy7j6ux1_Gemini_Generated_Image_kmz0fikmz0fikmz0_2-removebg-preview.png"
+                      alt="Real-Time Mock Tests"
+                      className="w-48 h-48 mx-auto object-contain drop-shadow-2xl"
+                    />
+                  </motion.div>
+                  
+                  <h3 className="text-2xl font-black text-white mb-3 text-center">Real-Time Mock Tests</h3>
+                  <p className="text-white/90 text-center leading-relaxed">
+                    Experience authentic exam simulations with timed sections, just like the real thing. Practice under pressure to build confidence.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Box 2: Personalized Practice Plans */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -10 }}
+              className="group relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+              
+              <div className="relative bg-gradient-to-br from-purple-400 via-fuchsia-400 to-pink-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full -ml-16 -mb-16"></div>
+                
+                <div className="relative">
+                  {/* Character Image */}
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                    className="mb-6"
+                  >
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/zj3jr6t9_Gemini_Generated_Image_mmmbmvmmmbmvmmmb_2-removebg-preview.png"
+                      alt="Personalized Practice Plans"
+                      className="w-48 h-48 mx-auto object-contain drop-shadow-2xl"
+                    />
+                  </motion.div>
+                  
+                  <h3 className="text-2xl font-black text-white mb-3 text-center">Personalized Practice Plans</h3>
+                  <p className="text-white/90 text-center leading-relaxed">
+                    Get custom study schedules and recommended tests based on your performance and target exam. Learn what you need, when you need it.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Box 3: In-Depth Performance Analytics */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              whileHover={{ y: -10 }}
+              className="group relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+              
+              <div className="relative bg-gradient-to-br from-blue-400 via-sky-400 to-cyan-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full -ml-16 -mb-16"></div>
+                
+                <div className="relative">
+                  {/* Character Image */}
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className="mb-6"
+                  >
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/s1j0zsw2_Gemini_Generated_Image_6wieyh6wieyh6wie_2-removebg-preview.png"
+                      alt="In-Depth Performance Analytics"
+                      className="w-48 h-48 mx-auto object-contain drop-shadow-2xl"
+                    />
+                  </motion.div>
+                  
+                  <h3 className="text-2xl font-black text-white mb-3 text-center">In-Depth Performance Analytics</h3>
+                  <p className="text-white/90 text-center leading-relaxed">
+                    Track your progress with detailed reports, identify strengths and weaknesses, and pinpoint areas for improvement.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Main Content - Exam Cards */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
