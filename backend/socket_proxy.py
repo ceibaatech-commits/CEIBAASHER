@@ -43,6 +43,8 @@ async def disconnect(sid):
     logger.info(f'❌ Client {sid} disconnected from proxy')
     if sid in client_to_server_sid:
         del client_to_server_sid[sid]
+    if sid in sid_to_rooms:
+        del sid_to_rooms[sid]
 
 # Forward all events from client to battle-server
 @sio_server.event
