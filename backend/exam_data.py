@@ -606,7 +606,7 @@ EXAM_DATA = {
         "full_name": "Graduate Management Admission Test",
         "description": "International entrance exam for MBA and business programs",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
-        "color": "from-cyan-600 to-blue-700",
+        "color": "from-sky-500 to-cyan-600",
         "total_questions": 80,
         "duration": "3.5 hours",
         "category": "Admission Tests",
