@@ -70,24 +70,53 @@ async def find_match(sid, data):
     except Exception as e:
         logger.error(f'❌ Error forwarding find-match: {e}')
 
-@sio_server.event
-async def start_quiz(sid, data):
+@sio_server.on('start-quiz')
+async def start_quiz_hyphen(sid, data):
+    """Handle start-quiz (JavaScript naming)"""
     logger.info(f'📨 Forwarding start-quiz from {sid}')
     await sio_client.emit('start-quiz', data)
 
 @sio_server.event
-async def submit_answer(sid, data):
+async def start_quiz(sid, data):
+    """Handle start_quiz (Python naming)"""
+    logger.info(f'📨 Forwarding start_quiz from {sid}')
+    await sio_client.emit('start-quiz', data)
+
+@sio_server.on('submit-answer')
+async def submit_answer_hyphen(sid, data):
+    """Handle submit-answer (JavaScript naming)"""
     logger.info(f'📨 Forwarding submit-answer from {sid}')
     await sio_client.emit('submit-answer', data)
 
 @sio_server.event
-async def send_message(sid, data):
+async def submit_answer(sid, data):
+    """Handle submit_answer (Python naming)"""
+    logger.info(f'📨 Forwarding submit_answer from {sid}')
+    await sio_client.emit('submit-answer', data)
+
+@sio_server.on('send-message')
+async def send_message_hyphen(sid, data):
+    """Handle send-message (JavaScript naming)"""
     logger.info(f'📨 Forwarding send-message from {sid}')
     await sio_client.emit('send-message', data)
 
 @sio_server.event
+async def send_message(sid, data):
+    """Handle send_message (Python naming)"""
+    logger.info(f'📨 Forwarding send_message from {sid}')
+    await sio_client.emit('send-message', data)
+
+@sio_server.on('send-reaction')
+async def send_reaction_hyphen(sid, data):
+    await sio_client.emit('send-reaction', data)
+
+@sio_server.event
 async def send_reaction(sid, data):
     await sio_client.emit('send-reaction', data)
+
+@sio_server.on('send-gift')
+async def send_gift_hyphen(sid, data):
+    await sio_client.emit('send-gift', data)
 
 @sio_server.event
 async def send_gift(sid, data):
