@@ -23,18 +23,70 @@ client_connections = {}  # {frontend_sid: battle_client}
 
 @sio_server.event
 async def connect(sid, environ):
-    """When client connects to main backend"""
+    """When client connects to main backend, create dedicated battle-server connection"""
     logger.info(f'🔗 Client {sid} connected to proxy')
-    client_to_server_sid[sid] = None
-    sid_to_rooms[sid] = set()  # Track rooms for this client
     
-    # Connect to battle-server if not already connected
-    if not sio_client.connected:
-        try:
-            await sio_client.connect(BATTLE_SERVER_URL)
-            logger.info('✅ Proxy connected to battle-server')
-        except Exception as e:
-            logger.error(f'❌ Failed to connect to battle-server: {e}')
+    # Create a new Socket.io client for this frontend client
+    battle_client = socketio.AsyncClient(logger=False, engineio_logger=False)
+    
+    # Setup event forwarding from battle-server to this specific frontend client
+    @battle_client.event
+    async def player_joined(data):
+        logger.info(f'📬 Forwarding player-joined to {sid}: {data}')
+        await sio_server.emit('player-joined', data, room=sid)
+    
+    @battle_client.event
+    async def match_found(data):
+        logger.info(f'📬 Forwarding match-found to {sid}')
+        await sio_server.emit('match-found', data, room=sid)
+    
+    @battle_client.event
+    async def waiting(data):
+        logger.info(f'📬 Forwarding waiting to {sid}')
+        await sio_server.emit('waiting', data, room=sid)
+    
+    @battle_client.event
+    async def quiz_started(data):
+        logger.info(f'📬 Forwarding quiz-started to {sid}')
+        await sio_server.emit('quiz-started', data, room=sid)
+    
+    @battle_client.event
+    async def leaderboard_update(data):
+        await sio_server.emit('leaderboard-update', data, room=sid)
+    
+    @battle_client.event
+    async def quiz_ended(data):
+        await sio_server.emit('quiz-ended', data, room=sid)
+    
+    @battle_client.event
+    async def new_message(data):
+        await sio_server.emit('new-message', data, room=sid)
+    
+    @battle_client.event
+    async def new_reaction(data):
+        await sio_server.emit('new-reaction', data, room=sid)
+    
+    @battle_client.event
+    async def gift_received(data):
+        await sio_server.emit('gift-received', data, room=sid)
+    
+    @battle_client.event
+    async def player_left(data):
+        logger.info(f'📬 Forwarding player-left to {sid}')
+        await sio_server.emit('player-left', data, room=sid)
+    
+    @battle_client.event
+    async def error(data):
+        logger.error(f'📬 Forwarding error to {sid}: {data}')
+        await sio_server.emit('error', data, room=sid)
+    
+    # Connect this client to battle-server
+    try:
+        await battle_client.connect(BATTLE_SERVER_URL)
+        client_connections[sid] = battle_client
+        logger.info(f'✅ Created dedicated battle-server connection for client {sid}')
+    except Exception as e:
+        logger.error(f'❌ Failed to connect client {sid} to battle-server: {e}')
 
 @sio_server.event
 async def disconnect(sid):
