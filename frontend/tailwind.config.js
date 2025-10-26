@@ -25,6 +25,8 @@ module.exports = {
     'from-rose-500', 'to-pink-600',
     'from-sky-500', 'to-blue-600',
     'from-lime-500', 'to-green-600',
+    'from-fuchsia-500', 'to-pink-600',
+    'from-sky-500', 'to-cyan-600',
   ],
   theme: {
   	extend: {
