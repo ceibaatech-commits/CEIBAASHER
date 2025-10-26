@@ -134,10 +134,10 @@ async def submit_contact_form(request: ContactFormRequest):
         </html>
         """
         
-        # Create SendGrid message
+        # Create SendGrid message - send to both support and hiring team
         message = Mail(
             from_email=sender_email,
-            to_emails='support@ceibaa.in',
+            to_emails=['support@ceibaa.in', 'hire@ceibaa.in'],
             subject=subject,
             html_content=html_content
         )
