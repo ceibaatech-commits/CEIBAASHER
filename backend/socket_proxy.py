@@ -90,11 +90,16 @@ async def connect(sid, environ):
 
 @sio_server.event
 async def disconnect(sid):
+    """When client disconnects, cleanup their battle-server connection"""
     logger.info(f'❌ Client {sid} disconnected from proxy')
-    if sid in client_to_server_sid:
-        del client_to_server_sid[sid]
-    if sid in sid_to_rooms:
-        del sid_to_rooms[sid]
+    if sid in client_connections:
+        battle_client = client_connections[sid]
+        try:
+            await battle_client.disconnect()
+        except:
+            pass
+        del client_connections[sid]
+        logger.info(f'🗑️ Cleaned up battle-server connection for {sid}')
 
 # Forward all events from client to battle-server
 @sio_server.event
