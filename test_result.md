@@ -141,6 +141,21 @@ backend:
         agent: "testing"
         comment: "✅ DUAL EMAIL VERIFIED: Contact form now sends emails to BOTH support@ceibaa.in AND hire@ceibaa.in simultaneously. Tested with specific dual email test case - all 8 contact form tests passed (100% success rate). Code verification confirms to_emails=['support@ceibaa.in', 'hire@ceibaa.in'] configuration. SendGrid returns 202 status for successful delivery to both recipients. Backend logs show successful POST /api/contact requests with 200 OK responses."
 
+  - task: "Socket.io Proxy Room Joining"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/socket_proxy.py"
+    stuck_count: 2
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Battle room joining completely broken. Host creates room, joiner enters PIN, but joiner never appears in host's lobby. Host sees '0 Players'. User tested with 2 separate accounts."
+      - working: "NA"
+        agent: "main"
+        comment: "ROOT CAUSE IDENTIFIED: Previous proxy used single shared client connection to battle-server. When battle-server emitted room-specific events (io.to(pin).emit), the single proxy client wasn't joined to those rooms, so events never reached frontend. SOLUTION IMPLEMENTED: Complete proxy rewrite to use one-to-one client mapping. Each frontend client now gets dedicated battle-server connection with its own event handlers. This ensures room-based events (player-joined, quiz-started, etc.) properly reach the correct frontend clients. Architecture: Frontend → Proxy Server → Dedicated Proxy Client per connection → Battle Server. Files modified: socket_proxy.py (complete rewrite with client_connections dict). Backend restarted successfully."
+
   - task: "MongoDB Connection in Battle Server"
     implemented: true
     working: true
