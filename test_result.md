@@ -315,6 +315,36 @@ test_plan:
   test_priority: "high_first"
 
 agent_communication:
+  - agent: "user"
+    message: "Battle room joining is STILL not working. Tested with 2 demo accounts. Host creates room successfully, joiner enters PIN, but host never sees the joiner. Shows '0 Players' and 'Waiting for host to start the quiz' on joiner's screen."
+  
+  - agent: "main"
+    message: |
+      🚨 CRITICAL FIX IMPLEMENTED: Socket.io Proxy Architecture Rewrite
+      
+      **Issue Analysis**:
+      Called troubleshoot_agent to perform deep RCA. Root cause identified:
+      - Previous proxy used a SINGLE shared client connection to battle-server
+      - When battle-server emits room-specific events (io.to(pin).emit('player-joined')), the single proxy client wasn't in those rooms
+      - Result: Events never reached frontend clients
+      
+      **Solution Implemented**:
+      Complete rewrite of /app/backend/socket_proxy.py:
+      - ✅ One-to-one client mapping: Each frontend connection gets dedicated battle-server connection
+      - ✅ Per-client event handlers: Each proxy client has its own handlers that forward to specific frontend client
+      - ✅ Proper room-based event propagation: When battle-server emits to a room, the dedicated client receives it and forwards to correct frontend
+      - ✅ Clean connection lifecycle: Dedicated clients created on connect, cleaned up on disconnect
+      
+      **Architecture**:
+      ```
+      Frontend Client 1 → Proxy Server → Dedicated Proxy Client 1 → Battle Server (joined to room X)
+      Frontend Client 2 → Proxy Server → Dedicated Proxy Client 2 → Battle Server (joined to room X)
+      ```
+      
+      When battle-server does `io.to(pin).emit('player-joined')`, both dedicated proxy clients receive it and forward to their respective frontend clients.
+      
+      **Status**: Backend restarted successfully. Needs testing to verify room joining now works.
+  
   - agent: "main"
     message: |
       🎉 PHASE 2 COMPLETE: Social Features Implementation
