@@ -28,8 +28,8 @@ with open('/app/frontend/.env', 'r') as f:
         if line.startswith('REACT_APP_BACKEND_URL='):
             BACKEND_URL = line.split('=')[1].strip()
             break
-else:
-    BACKEND_URL = "https://prep-together.preview.emergentagent.com"
+    else:
+        BACKEND_URL = "https://prep-together.preview.emergentagent.com"
 
 class BattleServerTester:
     def __init__(self):
