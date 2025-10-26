@@ -179,7 +179,7 @@ const Home = () => {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/9a7kp3km_Gemini_Generated_Image_8vwf428vwf428vwf%202.png" 
+                  src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/l6agpvjq_Gemini_Generated_Image_8vwf428vwf428vwf_2-removebg-preview.png" 
                   alt="Defence Exams" 
                   className="w-10 h-10 object-contain"
                 />
