@@ -37,6 +37,7 @@ function App() {
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
           
           {/* Social Routes */}
           <Route path="/social" element={<SocialFeed />} />
