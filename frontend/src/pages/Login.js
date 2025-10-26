@@ -135,10 +135,8 @@ const Login = () => {
             </form>
             <div className="mt-3 text-xs text-gray-600 text-center">
               <p className="font-semibold mb-1">Test Credentials:</p>
-              <p>Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher20</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher20</span></p>
-              <p className="mt-1">Username: <span className="font-mono bg-white px-2 py-0.5 rounded">Sher25</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">Sher25</span></p>
-              <p className="mt-1">Username: <span className="font-mono bg-white px-2 py-0.5 rounded">12345</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">123445</span></p>
-              <p className="mt-1">Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span></p>
+              <p>User: <span className="font-mono bg-white px-2 py-0.5 rounded font-bold">Sher20</span> | Username: <span className="font-mono bg-white px-2 py-0.5 rounded">12345</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">123445</span></p>
+              <p className="mt-1">User: <span className="font-mono bg-white px-2 py-0.5 rounded font-bold">Sher25</span> | Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span></p>
             </div>
           </div>
 
