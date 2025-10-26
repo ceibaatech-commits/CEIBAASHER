@@ -623,49 +623,60 @@ const Home = () => {
             {exams.filter(exam => exam.category === 'SSC Examinations').map((exam, index) => (
               <motion.div
                 key={exam.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
                 onClick={() => navigate(`/exam/${exam.id}`)}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
+                className="group relative"
               >
-                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-                  <div className="relative text-white">
-                    <div className="mb-3">
-                      {exam.icon.startsWith('http') ? (
-                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
-                      ) : (
-                        <div className="text-5xl">{exam.icon}</div>
-                      )}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
-                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-red-200 via-rose-200 to-pink-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
-                <div className="p-6">
-                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Questions:</span>
-                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Duration:</span>
-                      <span className="font-semibold text-gray-900">{exam.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Subjects:</span>
-                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
+                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-red-300">
+                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
+                    <motion.div 
+                      className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16"
+                      animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <motion.div 
+                      className="absolute bottom-0 left-0 w-24 h-24 bg-white/20 rounded-full -ml-12 -mb-12"
+                      animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    
+                    <div className="relative text-white">
+                      <motion.div 
+                        className="mb-4"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        {exam.icon.startsWith('http') ? (
+                          <div className="w-24 h-24 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-2xl">
+                            <img src={exam.icon} alt={exam.name} className="w-full h-full object-contain drop-shadow-lg" />
+                          </div>
+                        ) : (
+                          <div className="text-6xl">{exam.icon}</div>
+                        )}
+                      </motion.div>
+                      <h3 className="text-2xl font-bold mb-2 drop-shadow-lg text-center">{exam.name}</h3>
+                      <p className="text-white/90 text-sm drop-shadow-md text-center font-medium">{exam.full_name}</p>
                     </div>
                   </div>
-
-                  <button className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
-                    View Syllabus →
-                  </button>
+                
+                  <div className="p-6">
+                    <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center">{exam.description}</p>
+                    <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-red-600" />
+                        <span className="font-semibold">{exam.total_questions} Qs</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-rose-600" />
+                        <span className="font-semibold">{exam.duration}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
