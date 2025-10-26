@@ -18,9 +18,12 @@ const BattleLobby = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    console.log('🔗 BATTLE_SERVER_URL:', BATTLE_SERVER_URL);
-    console.log('🔗 Connecting to battle server:', BATTLE_SERVER_URL);
-    const newSocket = io(BATTLE_SERVER_URL);
+    console.log('🔗 BACKEND_URL:', BACKEND_URL);
+    console.log('🔗 Connecting to Socket.io proxy at backend');
+    const newSocket = io(BACKEND_URL, {
+      path: '/socket.io',
+      transports: ['websocket', 'polling']
+    });
     console.log('🔗 Socket.io client created');
     setSocket(newSocket);
 
