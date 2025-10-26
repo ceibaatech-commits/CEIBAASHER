@@ -1306,7 +1306,7 @@ EXAM_DATA = {
         "full_name": "Telangana State Eligibility Test",
         "description": "Telangana state exam for Assistant Professor eligibility",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-pink-600 to-red-600",
+        "color": "from-rose-500 to-pink-600",
         "total_questions": 150,
         "duration": "3 hours",
         "category": "Teaching Examinations",
