@@ -42,7 +42,6 @@ function App() {
           
           {/* Platform Pages */}
           <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/creator-dashboard" element={<CreatorDashboard />} />
           
           {/* PIN-based Room Quiz Routes (Multiple players) */}
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />
