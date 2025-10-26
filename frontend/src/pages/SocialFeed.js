@@ -408,9 +408,12 @@ const SocialFeed = () => {
                   <MessageSquare className="w-5 h-5 text-purple-600" />
                   <span className="font-medium">Messages</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 text-left p-3 hover:bg-gray-50 rounded-lg">
-                  <Bookmark className="w-5 h-5 text-purple-600" />
-                  <span className="font-medium">Bookmarks</span>
+                <button 
+                  onClick={() => setActiveTab('exams')}
+                  className="w-full flex items-center space-x-3 text-left p-3 hover:bg-gray-50 rounded-lg"
+                >
+                  <BookOpen className="w-5 h-5 text-purple-600" />
+                  <span className="font-medium">My Exams</span>
                 </button>
               </div>
             </div>
