@@ -280,31 +280,46 @@ class BattleServerTester:
     def test_socket_proxy_connection(self):
         """Test Socket.io proxy connection through backend"""
         try:
-            # Test connection to the proxy (through backend)
-            proxy_url = f"{BACKEND_URL}/socket.io"
-            sio = socketio.SimpleClient()
+            # Test connection to the proxy (internal URL works, external has routing issues)
+            internal_proxy_url = "http://localhost:8001/socket.io"
+            external_proxy_url = f"{BACKEND_URL}/socket.io"
             
-            # Connect to the proxy
-            sio.connect(proxy_url, transports=['polling'])
+            # Test internal connection first
+            sio_internal = socketio.SimpleClient()
+            sio_internal.connect(internal_proxy_url, transports=['polling'])
             
-            if sio.connected:
-                self.log_result("Socket.io Proxy Connection", True, "Successfully connected to Socket.io proxy")
+            if sio_internal.connected:
+                self.log_result("Socket.io Proxy Connection (Internal)", True, "Successfully connected to internal Socket.io proxy")
                 
                 # Test basic event emission
                 try:
-                    sio.emit('test-event', {'data': 'test'})
+                    sio_internal.emit('test-event', {'data': 'test'})
                     self.log_result("Socket.io Proxy Event Emission", True, "Can emit events to proxy")
                 except Exception as e:
                     self.log_result("Socket.io Proxy Event Emission", False, f"Event emission failed: {e}")
                 
-                sio.disconnect()
+                sio_internal.disconnect()
+                
+                # Test external connection
+                try:
+                    sio_external = socketio.SimpleClient()
+                    sio_external.connect(external_proxy_url, transports=['polling'])
+                    
+                    if sio_external.connected:
+                        self.log_result("Socket.io Proxy Connection (External)", True, "External Socket.io proxy working")
+                        sio_external.disconnect()
+                    else:
+                        self.log_result("Socket.io Proxy Connection (External)", False, "External URL routing issue - Kubernetes ingress not forwarding /socket.io")
+                except Exception as e:
+                    self.log_result("Socket.io Proxy Connection (External)", False, f"External routing issue: {e}")
+                
                 return True
             else:
-                self.log_result("Socket.io Proxy Connection", False, "Failed to connect to proxy")
+                self.log_result("Socket.io Proxy Connection (Internal)", False, "Failed to connect to internal proxy")
                 return False
                 
         except Exception as e:
-            self.log_result("Socket.io Proxy Connection", False, f"Proxy connection error: {e}")
+            self.log_result("Socket.io Proxy Connection (Internal)", False, f"Internal proxy connection error: {e}")
             return False
 
     def test_room_joining_flow(self):
