@@ -609,6 +609,8 @@ const SocialFeed = () => {
                   <p className="text-gray-400">Follow some users to see their posts here</p>
                 </div>
               )}
+                </>
+              )}
             </div>
           </div>
 
