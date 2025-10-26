@@ -521,14 +521,24 @@ class BattleServerTester:
     
     def run_all_tests(self):
         """Run all backend tests"""
-        print("🚀 Starting Ceibaa Battle Server Backend Tests")
+        print("🚀 Starting Ceibaa Backend Tests")
         print("=" * 60)
         
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # Core API Tests
-        print("\n📡 Testing Core APIs...")
+        # Contact Form API Tests (NEW - Primary Focus)
+        print("\n📧 Testing Contact Form API...")
+        self.test_sendgrid_configuration()
+        self.test_contact_form_valid_request()
+        self.test_contact_form_without_phone()
+        self.test_contact_form_missing_name()
+        self.test_contact_form_missing_email()
+        self.test_contact_form_missing_message()
+        self.test_contact_form_invalid_email()
+        
+        # Battle Server API Tests (Existing)
+        print("\n📡 Testing Battle Server APIs...")
         self.test_health_check()
         self.test_create_room()
         self.test_get_room_info()
@@ -566,6 +576,14 @@ class BattleServerTester:
             print("\n❌ FAILED TESTS:")
             for test in failed_tests:
                 print(f"  - {test['test']}: {test['message']}")
+        
+        # List contact form specific results
+        contact_tests = [result for result in self.test_results if 'Contact Form' in result['test'] or 'SendGrid' in result['test']]
+        if contact_tests:
+            print(f"\n📧 CONTACT FORM API RESULTS ({len(contact_tests)} tests):")
+            for test in contact_tests:
+                status = "✅" if test['success'] else "❌"
+                print(f"  {status} {test['test']}")
         
         # Cleanup
         if self.mongo_client:
