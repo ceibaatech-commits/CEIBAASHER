@@ -573,7 +573,10 @@ const Home = () => {
           <h2 className="text-3xl font-black text-gray-900 mb-8">Other Competitive Exams</h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {exams.filter(exam => !['NDA', 'Agniveer', 'CDS', 'CAPF'].includes(exam.id) && exam.category !== 'Admission Tests').map((exam) => (
+          {exams.filter(exam => 
+            !['NDA', 'Agniveer', 'CDS', 'CAPF'].includes(exam.id) && 
+            !['Admission Tests', 'Banking Examinations', 'UPSC Examinations', 'SSC Examinations', 'Teaching Examinations'].includes(exam.category)
+          ).map((exam) => (
             <div
               key={exam.id}
               onClick={() => navigate(`/exam/${exam.id}`)}
