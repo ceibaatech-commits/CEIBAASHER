@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, HelpCircle, MessageCircle, Shield, CreditCard, Users, Sparkles } from 'lucide-react';
@@ -8,6 +8,34 @@ import Footer from '@/components/Footer';
 const FAQ = () => {
   const navigate = useNavigate();
   const [openIndex, setOpenIndex] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
