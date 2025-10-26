@@ -201,7 +201,7 @@ const Home = () => {
                   {/* Title First */}
                   <h3 className="text-xl font-black text-white mb-4 text-center">Real-Time Mock Tests</h3>
                   
-                  {/* Character Image in Middle - Smaller */}
+                  {/* Character Image in Middle - Larger */}
                   <motion.div
                     animate={{ y: [0, -8, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
@@ -210,7 +210,7 @@ const Home = () => {
                     <img 
                       src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/dy7j6ux1_Gemini_Generated_Image_kmz0fikmz0fikmz0_2-removebg-preview.png"
                       alt="Real-Time Mock Tests"
-                      className="w-28 h-28 object-contain drop-shadow-xl"
+                      className="w-40 h-40 object-contain drop-shadow-2xl"
                     />
                   </motion.div>
                   
