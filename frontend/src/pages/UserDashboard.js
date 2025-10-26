@@ -137,17 +137,19 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/')}
-          className="mb-4 text-white/70 hover:text-white flex items-center space-x-2"
-        >
-          <ChevronRight className="w-5 h-5 transform rotate-180" />
-          <span>Back to Home</span>
-        </button>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
+      {/* Header Component */}
+      <Header 
+        isLoggedIn={true} 
+        user={user} 
+        onLogout={() => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('ceibaa_user');
+          navigate('/login');
+        }}
+      />
+      
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header with User Profile */}
         <div className="bg-black/30 backdrop-blur-2xl rounded-3xl p-6 mb-6 border border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between">
