@@ -136,10 +136,11 @@ async def send_gift(sid, data):
 async def cancel_matchmaking(sid):
     await sio_client.emit('cancel-matchmaking')
 
-# Forward events from battle-server back to all connected clients
+# Forward events from battle-server back to specific clients in rooms
 @sio_client.event
 async def player_joined(data):
-    logger.info(f'📬 Broadcasting player-joined from battle-server: {data}')
+    logger.info(f'📬 Received player-joined from battle-server: {data}')
+    # Broadcast to all connected clients (room-based)
     await sio_server.emit('player-joined', data)
 
 @sio_client.event
