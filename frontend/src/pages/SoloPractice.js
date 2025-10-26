@@ -235,7 +235,7 @@ const SoloPractice = () => {
               Practice Again
             </button>
             <button
-              onClick={() => navigate(`/exam/${examName}`)}
+              onClick={() => navigate(`/exam/${exam}`)}
               className="flex-1 bg-white text-gray-700 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all"
             >
               Choose Another Subject
