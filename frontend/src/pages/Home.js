@@ -178,7 +178,11 @@ const Home = () => {
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Trophy className="w-10 h-10 text-white" />
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/9a7kp3km_Gemini_Generated_Image_8vwf428vwf428vwf%202.png" 
+                  alt="Defence Exams" 
+                  className="w-10 h-10 object-contain"
+                />
               </motion.div>
               <div>
                 <h2 className="text-4xl font-black bg-gradient-to-r from-green-800 via-emerald-800 to-teal-800 bg-clip-text text-transparent">
