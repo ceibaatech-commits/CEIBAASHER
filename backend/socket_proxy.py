@@ -30,61 +30,63 @@ async def connect(sid, environ):
     battle_client = socketio.AsyncClient(logger=True, engineio_logger=True)
     
     # Setup event forwarding from battle-server to this specific frontend client
-    # Use .on() decorator with hyphenated names to match battle-server emissions
-    @battle_client.on('player-joined')
+    # Register handlers programmatically
     async def handle_player_joined(data):
         logger.info(f'📬 Received player-joined from battle-server for {sid}: {data}')
         await sio_server.emit('player-joined', data, room=sid)
     
-    @battle_client.on('match-found')
     async def handle_match_found(data):
         logger.info(f'📬 Received match-found from battle-server for {sid}')
         await sio_server.emit('match-found', data, room=sid)
     
-    @battle_client.on('waiting')
     async def handle_waiting(data):
         logger.info(f'📬 Received waiting from battle-server for {sid}')
         await sio_server.emit('waiting', data, room=sid)
     
-    @battle_client.on('quiz-started')
     async def handle_quiz_started(data):
         logger.info(f'📬 Received quiz-started from battle-server for {sid}')
         await sio_server.emit('quiz-started', data, room=sid)
     
-    @battle_client.on('leaderboard-update')
     async def handle_leaderboard_update(data):
         logger.info(f'📬 Received leaderboard-update from battle-server for {sid}')
         await sio_server.emit('leaderboard-update', data, room=sid)
     
-    @battle_client.on('quiz-ended')
     async def handle_quiz_ended(data):
         logger.info(f'📬 Received quiz-ended from battle-server for {sid}')
         await sio_server.emit('quiz-ended', data, room=sid)
     
-    @battle_client.on('new-message')
     async def handle_new_message(data):
         logger.info(f'📬 Received new-message from battle-server for {sid}')
         await sio_server.emit('new-message', data, room=sid)
     
-    @battle_client.on('new-reaction')
     async def handle_new_reaction(data):
         logger.info(f'📬 Received new-reaction from battle-server for {sid}')
         await sio_server.emit('new-reaction', data, room=sid)
     
-    @battle_client.on('gift-received')
     async def handle_gift_received(data):
         logger.info(f'📬 Received gift-received from battle-server for {sid}')
         await sio_server.emit('gift-received', data, room=sid)
     
-    @battle_client.on('player-left')
     async def handle_player_left(data):
         logger.info(f'📬 Received player-left from battle-server for {sid}')
         await sio_server.emit('player-left', data, room=sid)
     
-    @battle_client.on('error')
     async def handle_error(data):
         logger.error(f'📬 Received error from battle-server for {sid}: {data}')
         await sio_server.emit('error', data, room=sid)
+    
+    # Register all handlers
+    battle_client.on('player-joined', handle_player_joined)
+    battle_client.on('match-found', handle_match_found)
+    battle_client.on('waiting', handle_waiting)
+    battle_client.on('quiz-started', handle_quiz_started)
+    battle_client.on('leaderboard-update', handle_leaderboard_update)
+    battle_client.on('quiz-ended', handle_quiz_ended)
+    battle_client.on('new-message', handle_new_message)
+    battle_client.on('new-reaction', handle_new_reaction)
+    battle_client.on('gift-received', handle_gift_received)
+    battle_client.on('player-left', handle_player_left)
+    battle_client.on('error', handle_error)
     
     # Connect this client to battle-server
     try:
