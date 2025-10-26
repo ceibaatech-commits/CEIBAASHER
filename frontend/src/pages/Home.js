@@ -192,27 +192,30 @@ const Home = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
               
-              <div className="relative bg-gradient-to-br from-green-400 via-emerald-400 to-green-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-green-400 via-emerald-400 to-green-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300 h-full flex flex-col">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full -mr-20 -mt-20"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full -ml-16 -mb-16"></div>
                 
-                <div className="relative">
-                  {/* Character Image */}
+                <div className="relative flex-1 flex flex-col">
+                  {/* Title First */}
+                  <h3 className="text-2xl font-black text-white mb-6 text-center">Real-Time Mock Tests</h3>
+                  
+                  {/* Character Image in Middle */}
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    className="mb-6"
+                    className="flex-1 flex items-center justify-center mb-6"
                   >
                     <img 
                       src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/dy7j6ux1_Gemini_Generated_Image_kmz0fikmz0fikmz0_2-removebg-preview.png"
                       alt="Real-Time Mock Tests"
-                      className="w-48 h-48 mx-auto object-contain drop-shadow-2xl"
+                      className="w-40 h-40 object-contain drop-shadow-2xl"
                     />
                   </motion.div>
                   
-                  <h3 className="text-2xl font-black text-white mb-3 text-center">Real-Time Mock Tests</h3>
-                  <p className="text-white/90 text-center leading-relaxed">
+                  {/* Description at Bottom */}
+                  <p className="text-white/90 text-center leading-relaxed text-base">
                     Experience authentic exam simulations with timed sections, just like the real thing. Practice under pressure to build confidence.
                   </p>
                 </div>
@@ -230,27 +233,30 @@ const Home = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
               
-              <div className="relative bg-gradient-to-br from-purple-400 via-fuchsia-400 to-pink-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-purple-400 via-fuchsia-400 to-pink-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300 h-full flex flex-col">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full -mr-20 -mt-20"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full -ml-16 -mb-16"></div>
                 
-                <div className="relative">
-                  {/* Character Image */}
+                <div className="relative flex-1 flex flex-col">
+                  {/* Title First */}
+                  <h3 className="text-2xl font-black text-white mb-6 text-center">Personalized Practice Plans</h3>
+                  
+                  {/* Character Image in Middle */}
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                    className="mb-6"
+                    className="flex-1 flex items-center justify-center mb-6"
                   >
                     <img 
                       src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/zj3jr6t9_Gemini_Generated_Image_mmmbmvmmmbmvmmmb_2-removebg-preview.png"
                       alt="Personalized Practice Plans"
-                      className="w-48 h-48 mx-auto object-contain drop-shadow-2xl"
+                      className="w-40 h-40 object-contain drop-shadow-2xl"
                     />
                   </motion.div>
                   
-                  <h3 className="text-2xl font-black text-white mb-3 text-center">Personalized Practice Plans</h3>
-                  <p className="text-white/90 text-center leading-relaxed">
+                  {/* Description at Bottom */}
+                  <p className="text-white/90 text-center leading-relaxed text-base">
                     Get custom study schedules and recommended tests based on your performance and target exam. Learn what you need, when you need it.
                   </p>
                 </div>
@@ -268,27 +274,30 @@ const Home = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
               
-              <div className="relative bg-gradient-to-br from-blue-400 via-sky-400 to-cyan-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-blue-400 via-sky-400 to-cyan-500 rounded-3xl p-8 shadow-2xl overflow-hidden transform transition-all duration-300 h-full flex flex-col">
                 {/* Decorative Elements */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full -mr-20 -mt-20"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/20 rounded-full -ml-16 -mb-16"></div>
                 
-                <div className="relative">
-                  {/* Character Image */}
+                <div className="relative flex-1 flex flex-col">
+                  {/* Title First */}
+                  <h3 className="text-2xl font-black text-white mb-6 text-center">In-Depth Performance Analytics</h3>
+                  
+                  {/* Character Image in Middle */}
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                    className="mb-6"
+                    className="flex-1 flex items-center justify-center mb-6"
                   >
                     <img 
                       src="https://customer-assets.emergentagent.com/job_exam-multiverse/artifacts/s1j0zsw2_Gemini_Generated_Image_6wieyh6wieyh6wie_2-removebg-preview.png"
                       alt="In-Depth Performance Analytics"
-                      className="w-48 h-48 mx-auto object-contain drop-shadow-2xl"
+                      className="w-40 h-40 object-contain drop-shadow-2xl"
                     />
                   </motion.div>
                   
-                  <h3 className="text-2xl font-black text-white mb-3 text-center">In-Depth Performance Analytics</h3>
-                  <p className="text-white/90 text-center leading-relaxed">
+                  {/* Description at Bottom */}
+                  <p className="text-white/90 text-center leading-relaxed text-base">
                     Track your progress with detailed reports, identify strengths and weaknesses, and pinpoint areas for improvement.
                   </p>
                 </div>
