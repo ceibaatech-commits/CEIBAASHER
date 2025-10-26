@@ -1264,34 +1264,38 @@ EXAM_DATA = {
         }
     },
     
-    "SET": {
-        "name": "SET",
-        "full_name": "State Eligibility Test",
-        "description": "State level exam for Assistant Professor eligibility",
+    "MPSET": {
+        "name": "MPSET",
+        "full_name": "Madhya Pradesh State Eligibility Test",
+        "description": "MP SET for Assistant Professor eligibility in Madhya Pradesh colleges and universities",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-indigo-600 to-purple-700",
+        "color": "from-indigo-500 to-purple-700",
         "total_questions": 150,
         "duration": "3 hours",
         "category": "Teaching Examinations",
         "subjects": {
-            "Teaching Aptitude": {
+            "Paper I - Teaching Aptitude": {
                 "topics": {
-                    "Teaching Methods": {"subtopics": ["Pedagogy", "Evaluation", "ICT"], "questions": 30}
+                    "Teaching Aptitude": {"subtopics": ["Teaching Methods", "Classroom Communication", "Evaluation Systems"], "questions": 15},
+                    "Research Aptitude": {"subtopics": ["Research Methods", "Data Interpretation", "Research Ethics"], "questions": 15}
                 }
             },
-            "Research Aptitude": {
+            "Reasoning & Comprehension": {
                 "topics": {
-                    "Research Methodology": {"subtopics": ["Research Methods", "Data Analysis"], "questions": 30}
+                    "Logical Reasoning": {"subtopics": ["Deduction", "Induction", "Analogies", "Venn Diagrams"], "questions": 10},
+                    "Comprehension": {"subtopics": ["Reading Comprehension", "Analysis", "Inference"], "questions": 10}
                 }
             },
             "General Awareness": {
                 "topics": {
-                    "Higher Education": {"subtopics": ["Education System", "Current Affairs"], "questions": 30}
+                    "Higher Education": {"subtopics": ["UGC Regulations", "NEP 2020", "Education System"], "questions": 15},
+                    "ICT & Environment": {"subtopics": ["Information Technology", "Environment & Sustainability"], "questions": 15}
                 }
             },
-            "Subject Specific": {
+            "Paper II - Subject Specific": {
                 "topics": {
-                    "Core Subject": {"subtopics": ["Subject Knowledge", "Recent Developments"], "questions": 60}
+                    "Core Subject Knowledge": {"subtopics": ["Subject Fundamentals", "Advanced Topics", "Contemporary Issues"], "questions": 50},
+                    "Subject Pedagogy": {"subtopics": ["Teaching Methodologies", "Assessment Techniques"], "questions": 20}
                 }
             }
         }
