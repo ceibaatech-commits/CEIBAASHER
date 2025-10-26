@@ -115,11 +115,14 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               <button onClick={() => { navigate('/'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
                 Exams
               </button>
+              <button onClick={() => { navigate('/social'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
+                Social Feed
+              </button>
+              <button onClick={() => { navigate('/join-room'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
+                Join Battle Room
+              </button>
               <button onClick={() => { navigate('/about'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
                 About Us
-              </button>
-              <button onClick={() => { navigate('/leaderboard'); setMobileMenuOpen(false); }} className="text-left hover:text-cyan-400 transition-colors font-semibold py-2">
-                Leaderboard
               </button>
             </nav>
           </div>
