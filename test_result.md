@@ -306,13 +306,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Host Control Panel in LiveBattle"
-    - "Kick Player from Lobby"
-    - "Answer Visual Feedback"
-    - "Pause State Management"
-  stuck_tasks: []
+    - "Socket.io Proxy Room Joining"
+  stuck_tasks:
+    - "Socket.io Proxy Room Joining"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "stuck_first"
 
 agent_communication:
   - agent: "user"
