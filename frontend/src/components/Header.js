@@ -41,9 +41,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             <button onClick={() => navigate('/leaderboard')} className="hover:text-cyan-400 transition-colors font-semibold">
               Leaderboard
             </button>
-            <button onClick={() => navigate('/creator-dashboard')} className="hover:text-cyan-400 transition-colors font-semibold">
-              Create
-            </button>
           </nav>
 
           {/* User Section */}
