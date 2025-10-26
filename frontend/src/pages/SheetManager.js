@@ -13,14 +13,351 @@ const SheetManager = () => {
   const [testResult, setTestResult] = useState(null);
   
   const [formData, setFormData] = useState({
-    exam_id: 'NEET',
+    exam_id: 'JEE',
     subject: '',
     topic: '',
     sheet_url: '',
     sheet_name: ''
   });
 
-  const exams = ['NEET', 'JEE', 'UPSC', 'SSC', 'Banking', 'Agriculture', 'RPSC', 'Defence'];
+  // All 38 Exams with their complete syllabus structure
+  const examSyllabusData = {
+    "JEE": {
+      "name": "JEE Main & Advanced",
+      "subjects": {
+        "Physics": ["Mechanics", "Thermodynamics", "Electromagnetism", "Optics", "Modern Physics"],
+        "Chemistry": ["Physical Chemistry", "Organic Chemistry", "Inorganic Chemistry"],
+        "Mathematics": ["Algebra", "Calculus", "Coordinate Geometry", "Vectors and 3D", "Trigonometry"]
+      }
+    },
+    "NEET": {
+      "name": "NEET UG",
+      "subjects": {
+        "Physics": ["Mechanics", "Thermodynamics", "Electrodynamics", "Optics & Modern Physics"],
+        "Chemistry": ["Physical Chemistry", "Organic Chemistry", "Inorganic Chemistry"],
+        "Biology": ["Plant Physiology", "Human Physiology", "Genetics", "Cell Biology", "Ecology"]
+      }
+    },
+    "UPSC": {
+      "name": "UPSC CSE",
+      "subjects": {
+        "General Studies": ["History", "Geography", "Polity", "Economy", "Science & Technology", "Current Affairs"]
+      }
+    },
+    "Agriculture": {
+      "name": "Agriculture Exams",
+      "subjects": {
+        "Agriculture": ["Agronomy", "Horticulture", "Soil Science", "Plant Protection", "Agricultural Economics"],
+        "General Studies": ["Current Affairs", "Reasoning & Aptitude"]
+      }
+    },
+    "RPSC": {
+      "name": "RPSC Statistical Officer",
+      "subjects": {
+        "General Knowledge": ["Rajasthan GK", "Indian GK"],
+        "Reasoning": ["Logical Reasoning"],
+        "Mathematics": ["Arithmetic"],
+        "Computer Knowledge": ["Basics"]
+      }
+    },
+    "NDA": {
+      "name": "NDA Exam",
+      "subjects": {
+        "Mathematics": ["Algebra", "Matrices & Determinants", "Trigonometry", "Calculus", "Vector Algebra"],
+        "General Ability": ["English", "General Knowledge", "Physics", "Chemistry"]
+      }
+    },
+    "Agniveer": {
+      "name": "Agniveer Exam",
+      "subjects": {
+        "General Knowledge": ["Indian History", "Geography", "Current Affairs"],
+        "General Science": ["Physics", "Chemistry", "Biology"],
+        "Mathematics": ["Arithmetic", "Algebra", "Geometry"]
+      }
+    },
+    "CDS": {
+      "name": "CDS Exam",
+      "subjects": {
+        "English": ["Grammar", "Vocabulary", "Comprehension"],
+        "General Knowledge": ["History", "Geography", "Polity", "Economics", "Science"],
+        "Elementary Mathematics": ["Arithmetic", "Algebra", "Trigonometry", "Geometry"]
+      }
+    },
+    "CAPF": {
+      "name": "UPSC CAPF AC",
+      "subjects": {
+        "General Ability": ["General Knowledge", "Current Affairs", "Logical Reasoning"],
+        "General Studies": ["Essay Writing", "Comprehension", "Communication Skills"]
+      }
+    },
+    "GATE": {
+      "name": "GATE",
+      "subjects": {
+        "Engineering Mathematics": ["Linear Algebra", "Calculus", "Probability"],
+        "General Aptitude": ["Verbal Ability", "Numerical Ability"],
+        "Core Engineering": ["Technical Fundamentals"]
+      }
+    },
+    "CUET": {
+      "name": "CUET",
+      "subjects": {
+        "General Test": ["General Knowledge", "General Mental Ability", "Numerical Ability"],
+        "Language": ["English"],
+        "Domain Subject": ["Subject Specific"]
+      }
+    },
+    "UGC_NET": {
+      "name": "UGC NET",
+      "subjects": {
+        "Teaching Aptitude": ["Teaching Methods", "Research Aptitude"],
+        "Reasoning": ["Logical Reasoning", "Mathematical Reasoning"],
+        "General Awareness": ["Current Affairs", "Higher Education"],
+        "Subject Specific": ["Core Subject"]
+      }
+    },
+    "CAT": {
+      "name": "CAT",
+      "subjects": {
+        "Verbal Ability": ["Reading Comprehension", "Verbal Reasoning"],
+        "Data Interpretation": ["Tables & Charts", "Data Analysis"],
+        "Quantitative Ability": ["Arithmetic", "Algebra", "Geometry"]
+      }
+    },
+    "CLAT": {
+      "name": "CLAT",
+      "subjects": {
+        "English Language": ["Comprehension"],
+        "Current Affairs": ["General Knowledge"],
+        "Legal Reasoning": ["Legal Aptitude"],
+        "Logical Reasoning": ["Critical Thinking"]
+      }
+    },
+    "NATA": {
+      "name": "NATA",
+      "subjects": {
+        "Mathematics": ["Algebra", "Calculus", "Coordinate Geometry"],
+        "General Aptitude": ["Visual Perception", "Aesthetic Sensitivity", "Logical Reasoning"],
+        "Drawing Ability": ["Sketching"]
+      }
+    },
+    "GMAT": {
+      "name": "GMAT",
+      "subjects": {
+        "Quantitative Reasoning": ["Problem Solving"],
+        "Verbal Reasoning": ["Reading Comprehension", "Sentence Correction"],
+        "Data Insights": ["Data Analysis"]
+      }
+    },
+    "IBPS_PO": {
+      "name": "IBPS PO",
+      "subjects": {
+        "Reasoning Ability": ["Verbal Reasoning", "Non-Verbal Reasoning", "Puzzles & Seating Arrangement"],
+        "Quantitative Aptitude": ["Arithmetic", "Data Interpretation", "Number System"],
+        "English Language": ["Reading Comprehension", "Grammar"],
+        "General Awareness": ["Banking Awareness", "Current Affairs"]
+      }
+    },
+    "IBPS_CLERK": {
+      "name": "IBPS Clerk",
+      "subjects": {
+        "Reasoning Ability": ["Logical Reasoning", "Seating Arrangement"],
+        "Quantitative Aptitude": ["Arithmetic", "Data Interpretation"],
+        "English Language": ["Reading Comprehension", "Grammar"],
+        "General Awareness": ["Banking & Financial Awareness"],
+        "Computer Knowledge": ["Computer Fundamentals"]
+      }
+    },
+    "IBPS_SO": {
+      "name": "IBPS SO",
+      "subjects": {
+        "Reasoning": ["Analytical Reasoning"],
+        "Quantitative Aptitude": ["Mathematics"],
+        "English Language": ["English Proficiency"],
+        "General Awareness": ["Banking & Economy"],
+        "Professional Knowledge": ["Specialized Subject"]
+      }
+    },
+    "SBI_PO": {
+      "name": "SBI PO",
+      "subjects": {
+        "Reasoning Ability": ["Puzzles & Seating", "Verbal Reasoning"],
+        "Quantitative Aptitude": ["Arithmetic", "Data Interpretation"],
+        "English Language": ["Reading Comprehension", "Grammar"],
+        "General Awareness": ["Banking Awareness"],
+        "Data Analysis": ["Data Interpretation"]
+      }
+    },
+    "SBI_CLERK": {
+      "name": "SBI Clerk",
+      "subjects": {
+        "Reasoning Ability": ["Logical Reasoning", "Puzzles"],
+        "Quantitative Aptitude": ["Arithmetic", "DI"],
+        "English Language": ["Reading Comprehension", "Grammar"],
+        "General Awareness": ["Banking & Current Affairs"],
+        "Computer Aptitude": ["Computer Knowledge"]
+      }
+    },
+    "RBI_GRADE_B": {
+      "name": "RBI Grade B",
+      "subjects": {
+        "General Awareness": ["Economy & Banking", "Current Affairs"],
+        "English Language": ["Reading Comprehension", "Grammar & Vocabulary"],
+        "Quantitative Aptitude": ["Advanced Mathematics"],
+        "Reasoning": ["Analytical Reasoning"],
+        "Economic & Social Issues": ["Economics"]
+      }
+    },
+    "NABARD": {
+      "name": "NABARD Grade A/B",
+      "subjects": {
+        "Reasoning": ["Logical Reasoning"],
+        "Quantitative Aptitude": ["Mathematics & DI"],
+        "English Language": ["English Proficiency"],
+        "General Awareness": ["Agriculture & Rural Dev"],
+        "Computer Knowledge": ["IT & Computers"]
+      }
+    },
+    "IES_ISS": {
+      "name": "IES/ISS",
+      "subjects": {
+        "General English": ["English Proficiency"],
+        "General Studies": ["Economics", "Statistics", "Current Affairs"]
+      }
+    },
+    "EPFO": {
+      "name": "EPFO EO/AO",
+      "subjects": {
+        "General Intelligence": ["Reasoning"],
+        "General Awareness": ["Current Affairs", "Indian Polity"],
+        "Quantitative Aptitude": ["Mathematics"],
+        "English Language": ["English"]
+      }
+    },
+    "SSC_CGL": {
+      "name": "SSC CGL",
+      "subjects": {
+        "General Intelligence": ["Reasoning"],
+        "General Awareness": ["Current Affairs", "Static GK"],
+        "Quantitative Aptitude": ["Arithmetic", "Algebra", "Geometry"],
+        "English Comprehension": ["Vocabulary", "Grammar", "Reading Comprehension"]
+      }
+    },
+    "SSC_CHSL": {
+      "name": "SSC CHSL",
+      "subjects": {
+        "General Intelligence": ["Reasoning"],
+        "General Awareness": ["GK & Current Affairs"],
+        "Quantitative Aptitude": ["Mathematics"],
+        "English Language": ["English"]
+      }
+    },
+    "SSC_GD": {
+      "name": "SSC GD Constable",
+      "subjects": {
+        "General Intelligence": ["Reasoning"],
+        "General Knowledge": ["General Awareness"],
+        "Elementary Mathematics": ["Mathematics"],
+        "English": ["English Language"]
+      }
+    },
+    "SSC_STENO": {
+      "name": "SSC Stenographer",
+      "subjects": {
+        "General Intelligence": ["Reasoning"],
+        "General Awareness": ["GK"],
+        "English Language": ["English"]
+      }
+    },
+    "DSSB_PGT": {
+      "name": "DSSB PGT",
+      "subjects": {
+        "General Awareness": ["General Knowledge", "Delhi GK"],
+        "General Intelligence": ["Reasoning", "Numerical Ability"],
+        "Subject Specific Knowledge": ["Core Subject"],
+        "Teaching Methodology": ["Teaching Aptitude", "Educational Psychology"]
+      }
+    },
+    "DSSB_TGT": {
+      "name": "DSSB TGT",
+      "subjects": {
+        "General Awareness": ["General Knowledge", "Delhi Specific GK"],
+        "Reasoning & Aptitude": ["Logical Reasoning", "Numerical Aptitude"],
+        "Subject Knowledge": ["Core Subject"],
+        "Teaching Methodology": ["Child Psychology", "Teaching Skills"]
+      }
+    },
+    "KVS_PRT": {
+      "name": "KVS PRT",
+      "subjects": {
+        "General Awareness": ["General Knowledge", "KVS & Education"],
+        "Reasoning Ability": ["Logical Reasoning"],
+        "Child Development & Pedagogy": ["Child Psychology", "Pedagogy"],
+        "Language I (Hindi)": ["Hindi"],
+        "Language II (English)": ["English"],
+        "Mathematics & EVS": ["Mathematics", "Environmental Studies"]
+      }
+    },
+    "CTET": {
+      "name": "CTET",
+      "subjects": {
+        "Child Development & Pedagogy": ["Child Development", "Pedagogy"],
+        "Language I": ["Comprehension", "Language Pedagogy"],
+        "Language II": ["Comprehension", "Pedagogy"],
+        "Mathematics & Science": ["Mathematics", "Science"]
+      }
+    },
+    "MPSET": {
+      "name": "MPSET",
+      "subjects": {
+        "Paper I - Teaching Aptitude": ["Teaching Aptitude", "Research Aptitude"],
+        "Reasoning & Comprehension": ["Logical Reasoning", "Comprehension"],
+        "General Awareness": ["Higher Education", "ICT & Environment"],
+        "Paper II - Subject Specific": ["Core Subject Knowledge", "Subject Pedagogy"]
+      }
+    },
+    "TS_SET": {
+      "name": "TS SET",
+      "subjects": {
+        "Teaching Aptitude": ["Pedagogy"],
+        "Research Aptitude": ["Research Methods"],
+        "Comprehension": ["Reading & Communication"],
+        "Subject Knowledge": ["Subject Specific"]
+      }
+    },
+    "UP_TGT": {
+      "name": "UP TGT",
+      "subjects": {
+        "General Knowledge": ["GK & Current Affairs"],
+        "General Hindi": ["Hindi Language"],
+        "Subject Knowledge": ["Subject Specific"],
+        "General Intelligence": ["Reasoning"]
+      }
+    },
+    "UP_PGT": {
+      "name": "UP PGT",
+      "subjects": {
+        "General Knowledge": ["GK"],
+        "General Hindi": ["Hindi"],
+        "Subject Knowledge": ["Subject Specific"],
+        "Teaching Aptitude": ["Pedagogy"]
+      }
+    },
+    "HTET": {
+      "name": "HTET",
+      "subjects": {
+        "Child Development": ["CDP & Pedagogy"],
+        "Language I": ["Hindi/English"],
+        "Language II": ["Sanskrit/Other"],
+        "Mathematics/Science": ["Subject & Pedagogy"],
+        "Social Studies/EVS": ["Subject & Pedagogy"]
+      }
+    }
+  };
+
+  const exams = Object.keys(examSyllabusData);
+  const selectedExamData = examSyllabusData[formData.exam_id] || { subjects: {} };
+  const availableSubjects = Object.keys(selectedExamData.subjects);
+  const availableTopics = selectedExamData.subjects[formData.subject] || [];
 
   useEffect(() => {
     fetchSheets();
