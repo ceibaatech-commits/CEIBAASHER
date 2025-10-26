@@ -266,6 +266,7 @@ EXAM_DATA = {
         "color": "from-indigo-500 to-blue-600",
         "total_questions": 100,
         "duration": "1 hour",
+        "category": "Banking Examinations",
         "subjects": {
             "Reasoning Ability": {
                 "topics": {
