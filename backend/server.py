@@ -96,6 +96,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(sheets_router, prefix="/api")
 app.include_router(battle_proxy_router, prefix="/api")
 app.include_router(social_router, prefix="/api")
+app.include_router(contact_router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
