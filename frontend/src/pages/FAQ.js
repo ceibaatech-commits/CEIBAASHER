@@ -202,7 +202,12 @@ const FAQ = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Header 
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogin={() => navigate('/login')}
+        onLogout={handleLogout}
+      />
 
       {/* Compact Hero Section */}
       <section className="relative py-12 bg-gradient-to-br from-purple-500 to-pink-500 overflow-hidden">
