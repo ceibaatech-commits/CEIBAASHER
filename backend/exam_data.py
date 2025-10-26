@@ -574,7 +574,7 @@ EXAM_DATA = {
         "full_name": "National Aptitude Test in Architecture",
         "description": "National level entrance exam for B.Arch programs",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
-        "color": "from-pink-600 to-purple-600",
+        "color": "from-fuchsia-500 to-pink-600",
         "total_questions": 125,
         "duration": "3 hours",
         "category": "Admission Tests",
