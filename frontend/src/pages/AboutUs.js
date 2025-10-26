@@ -243,7 +243,7 @@ const AboutUs = () => {
               <div className="space-y-4">
                 {[
                   "Live battle format creates the same excitement as gaming streams",
-                  "Video features like TikTok - but for educational content",
+                  "Video features like viral short-form platforms - but for educational content",
                   "Real-time competitions keep students engaged like social media challenges",
                   "Instant gratification through points, badges, and leaderboards",
                   "Community features that replace mindless scrolling with productive learning",
