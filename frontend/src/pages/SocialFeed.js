@@ -139,37 +139,6 @@ const SocialFeed = () => {
     }
   };
 
-  const handleBookmark = async (postId) => {
-    const token = localStorage.getItem('ceibaa_token');
-    const post = posts.find(p => p.id === postId);
-
-    try {
-      if (post.is_bookmarked) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        setPosts(posts.map(p => 
-          p.id === postId 
-            ? { ...p, is_bookmarked: false }
-            : p
-        ));
-      } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        setPosts(posts.map(p => 
-          p.id === postId 
-            ? { ...p, is_bookmarked: true }
-            : p
-        ));
-      }
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-    }
-  };
-
   const handleShare = async (postId) => {
     const token = localStorage.getItem('ceibaa_token');
 
