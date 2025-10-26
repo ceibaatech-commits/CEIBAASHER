@@ -1109,29 +1109,37 @@ EXAM_DATA = {
     
     # ==================== TEACHING EXAMINATIONS ====================
     
-    "PGT": {
-        "name": "PGT",
-        "full_name": "Post Graduate Teacher",
-        "description": "Teaching exam for classes 11-12 with post-graduate qualification",
+    "DSSB_PGT": {
+        "name": "DSSB PGT",
+        "full_name": "Delhi Subordinate Services Selection Board Post Graduate Teacher",
+        "description": "Teaching exam for PGT positions in Delhi Government Schools (Classes 11-12)",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-green-600 to-emerald-600",
-        "total_questions": 150,
-        "duration": "2.5 hours",
+        "color": "from-emerald-500 to-teal-600",
+        "total_questions": 200,
+        "duration": "3 hours",
         "category": "Teaching Examinations",
         "subjects": {
-            "Subject Knowledge": {
-                "topics": {
-                    "Subject Specific": {"subtopics": ["Core Concepts", "Advanced Topics", "Pedagogy"], "questions": 90}
-                }
-            },
-            "Teaching Aptitude": {
-                "topics": {
-                    "Pedagogy": {"subtopics": ["Teaching Methods", "Assessment", "Learning Theories"], "questions": 30}
-                }
-            },
             "General Awareness": {
                 "topics": {
-                    "Education & Current Affairs": {"subtopics": ["Education Policies", "Current Events"], "questions": 30}
+                    "General Knowledge": {"subtopics": ["Current Affairs", "History", "Geography", "Polity"], "questions": 30},
+                    "Delhi GK": {"subtopics": ["Delhi History", "Delhi Administration", "Monuments", "Culture"], "questions": 20}
+                }
+            },
+            "General Intelligence": {
+                "topics": {
+                    "Reasoning": {"subtopics": ["Logical Reasoning", "Verbal Reasoning", "Non-Verbal Reasoning"], "questions": 25},
+                    "Numerical Ability": {"subtopics": ["Arithmetic", "Data Interpretation", "Number System"], "questions": 25}
+                }
+            },
+            "Subject Specific Knowledge": {
+                "topics": {
+                    "Core Subject": {"subtopics": ["Advanced Concepts", "Subject Pedagogy", "Curriculum Design"], "questions": 60}
+                }
+            },
+            "Teaching Methodology": {
+                "topics": {
+                    "Teaching Aptitude": {"subtopics": ["Teaching Methods", "Learning Theories", "Classroom Management"], "questions": 20},
+                    "Educational Psychology": {"subtopics": ["Adolescent Psychology", "Learning Styles", "Motivation"], "questions": 20}
                 }
             }
         }
