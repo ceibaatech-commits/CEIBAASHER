@@ -9,6 +9,7 @@ import Login from "@/pages/Login";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
 import SocialFeed from "@/pages/SocialFeed";
+import AboutUs from "@/pages/AboutUs";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
