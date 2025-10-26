@@ -44,6 +44,7 @@ function App() {
           
           {/* Admin Routes */}
           <Route path="/admin/sheets" element={<SheetManager />} />
+          <Route path="/sheet-manager" element={<SheetManager />} />
           
           {/* Platform Pages */}
           <Route path="/about" element={<AboutUs />} />
