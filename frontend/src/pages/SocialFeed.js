@@ -25,6 +25,7 @@ const SocialFeed = () => {
   const [activeTab, setActiveTab] = useState('feed'); // feed, trending, exams
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [attemptedExams, setAttemptedExams] = useState([]);
 
   useEffect(() => {
     checkAuth();
