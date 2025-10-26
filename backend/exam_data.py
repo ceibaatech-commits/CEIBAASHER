@@ -1372,7 +1372,7 @@ EXAM_DATA = {
         "full_name": "Uttar Pradesh Post Graduate Teacher",
         "description": "UP state exam for PGT posts",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-emerald-600 to-green-700",
+        "color": "from-lime-500 to-green-600",
         "total_questions": 150,
         "duration": "2.5 hours",
         "category": "Teaching Examinations",
