@@ -447,38 +447,45 @@ const SheetManager = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Exam</label>
                   <select
                     value={formData.exam_id}
-                    onChange={(e) => setFormData({ ...formData, exam_id: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, exam_id: e.target.value, subject: '', topic: '' })}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
                     required
                   >
                     {exams.map(exam => (
-                      <option key={exam} value={exam}>{exam}</option>
+                      <option key={exam} value={exam}>{examSyllabusData[exam].name}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    placeholder="e.g., Physics"
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value, topic: '' })}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
                     required
-                  />
+                  >
+                    <option value="">-- Select Subject --</option>
+                    {availableSubjects.map(subject => (
+                      <option key={subject} value={subject}>{subject}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.topic}
                     onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                    placeholder="e.g., Mechanics"
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
                     required
-                  />
+                    disabled={!formData.subject}
+                  >
+                    <option value="">-- Select Topic --</option>
+                    {availableTopics.map(topic => (
+                      <option key={topic} value={topic}>{topic}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
