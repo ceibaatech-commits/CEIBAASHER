@@ -287,53 +287,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-                    Performance Analytics
-                  </h3>
-                  
-                  {/* Character - Larger and Centered */}
-                  <motion.div
-                    animate={{ 
-                      y: [0, -8, 0],
-                      rotate: [0, 2, -2, 0]
-                    }}
-                    transition={{ 
-                      duration: 4, 
-                      repeat: Infinity, 
-                      ease: "easeInOut",
-                      delay: 1 
-                    }}
-                    className="flex items-center justify-center my-6"
-                  >
-                    <div className="relative">
-                      {/* Glow effect behind character */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full blur-2xl opacity-30"></div>
-                      <img 
-                        src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/zn7jiygr_Gemini_Generated_Image_jj536ojj536ojj53_2-removebg-preview.png"
-                        alt="Performance Analytics"
-                        className="relative w-48 h-48 object-contain drop-shadow-2xl"
-                        loading="lazy"
-                      />
-                    </div>
-                  </motion.div>
-                  
-                  {/* Description */}
-                  <p className="text-gray-600 text-center leading-relaxed">
-                    Track your progress with detailed reports, identify strengths and weaknesses.
-                  </p>
-                  
-                  {/* Icon Badge */}
-                  <div className="mt-4 flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-full">
-                      <TrendingUp className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-semibold text-blue-700">Track Growth</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Main Content - Exam Cards */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
