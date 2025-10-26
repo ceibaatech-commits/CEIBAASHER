@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { TrendingDown, Zap, Trophy, Users, BookOpen, Star, Target, Award, Sparkles, Clock, Brain, Gamepad2, Video, MessageCircle, BarChart3, Shield } from 'lucide-react';
@@ -7,6 +7,34 @@ import Footer from '@/components/Footer';
 
 const AboutUs = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   const statsData = [
     { icon: Users, value: "50,000+", label: "Active Students", color: "from-purple-500 to-pink-500" },
