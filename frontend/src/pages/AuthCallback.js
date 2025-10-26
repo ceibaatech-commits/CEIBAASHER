@@ -12,8 +12,8 @@ const AuthCallback = () => {
       // Store token in localStorage
       localStorage.setItem('auth_token', token);
       
-      // Redirect to home
-      navigate('/');
+      // Redirect to dashboard
+      navigate('/dashboard');
     } else {
       // No token, redirect to login with error
       navigate('/login');
