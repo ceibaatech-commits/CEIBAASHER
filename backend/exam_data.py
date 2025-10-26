@@ -198,6 +198,7 @@ EXAM_DATA = {
         "color": "from-red-500 to-rose-600",
         "total_questions": 100,
         "duration": "1 hour",
+        "category": "SSC Examinations",
         "subjects": {
             "Reasoning": {
                 "topics": {
