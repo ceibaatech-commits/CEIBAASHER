@@ -22,7 +22,7 @@ const SocialFeed = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [activeTab, setActiveTab] = useState('feed'); // feed, trending, bookmarks
+  const [activeTab, setActiveTab] = useState('feed'); // feed, trending, exams
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
 
