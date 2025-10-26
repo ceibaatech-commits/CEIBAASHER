@@ -127,6 +127,7 @@ const AboutUs = () => {
                   Start Your First Battle
                 </motion.button>
                 <motion.button
+                  onClick={() => navigate('/contact')}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-white/10 backdrop-blur-sm border-2 border-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition-all"
