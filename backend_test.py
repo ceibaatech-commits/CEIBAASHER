@@ -762,9 +762,12 @@ class BattleServerTester:
         self.test_get_room_info()
         self.test_get_nonexistent_room()
         
-        # Socket.io Tests
-        print("\n🔌 Testing Socket.io...")
-        self.test_socket_connection()
+        # Socket.io Tests (CRITICAL - Main Focus)
+        print("\n🔌 Testing Socket.io Proxy (CRITICAL)...")
+        self.test_battle_server_logs()
+        self.test_socket_connection()  # Direct battle-server connection
+        self.test_socket_proxy_connection()  # Proxy connection
+        self.test_room_joining_flow()  # CRITICAL: End-to-end room joining
         
         # MongoDB Tests
         if mongo_connected:
