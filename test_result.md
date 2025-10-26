@@ -137,6 +137,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ VERIFIED: Contact form API fully functional. All 7 tests passed (100% success rate). Valid requests with/without phone work correctly. Proper validation for missing fields (name, email, message) returns 422. Invalid email format validation working. SendGrid integration confirmed - emails sent successfully with status 202. HTML email formatting with emojis and proper styling implemented."
+      - working: true
+        agent: "testing"
+        comment: "✅ DUAL EMAIL VERIFIED: Contact form now sends emails to BOTH support@ceibaa.in AND hire@ceibaa.in simultaneously. Tested with specific dual email test case - all 8 contact form tests passed (100% success rate). Code verification confirms to_emails=['support@ceibaa.in', 'hire@ceibaa.in'] configuration. SendGrid returns 202 status for successful delivery to both recipients. Backend logs show successful POST /api/contact requests with 200 OK responses."
 
   - task: "MongoDB Connection in Battle Server"
     implemented: true
