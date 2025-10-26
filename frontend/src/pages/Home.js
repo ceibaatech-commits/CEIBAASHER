@@ -1150,7 +1150,7 @@ const Home = () => {
                   transition={{ delay: 0.1 }}
                   className="relative group"
                 >
-                  <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-cyan-400">
+                  <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-cyan-400">
                     <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
                       <div className="bg-gradient-to-br from-cyan-400 to-blue-600 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
                         <span className="text-xl font-black text-white">1</span>
@@ -1159,7 +1159,7 @@ const Home = () => {
                     <div className="mt-4">
                       <div className="text-4xl mb-2">🎯</div>
                       <h4 className="text-lg font-black mb-2 text-cyan-600">Select Your Exam</h4>
-                      <p className="text-gray-700 text-sm leading-relaxed font-medium">
+                      <p className="text-gray-800 text-sm leading-relaxed font-bold">
                         Choose from 38+ competitive exams
                       </p>
                     </div>
@@ -1174,7 +1174,7 @@ const Home = () => {
                   transition={{ delay: 0.2 }}
                   className="relative group"
                 >
-                  <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-purple-400">
+                  <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-purple-400">
                     <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
                       <div className="bg-gradient-to-br from-purple-400 to-pink-600 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
                         <span className="text-xl font-black text-white">2</span>
@@ -1183,7 +1183,7 @@ const Home = () => {
                     <div className="mt-4">
                       <div className="text-4xl mb-2">📚</div>
                       <h4 className="text-lg font-black mb-2 text-purple-600">Pick Your Topic</h4>
-                      <p className="text-gray-700 text-sm leading-relaxed font-medium">
+                      <p className="text-gray-800 text-sm leading-relaxed font-bold">
                         Topic-wise practice & tracking
                       </p>
                     </div>
@@ -1198,7 +1198,7 @@ const Home = () => {
                   transition={{ delay: 0.3 }}
                   className="relative group"
                 >
-                  <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-orange-400">
+                  <div className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-orange-400">
                     <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
                       <div className="bg-gradient-to-br from-orange-400 to-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
                         <span className="text-xl font-black text-white">3</span>
@@ -1207,7 +1207,7 @@ const Home = () => {
                     <div className="mt-4">
                       <div className="text-4xl mb-2">⚔️</div>
                       <h4 className="text-lg font-black mb-2 text-orange-600">Battle & Win</h4>
-                      <p className="text-gray-700 text-sm leading-relaxed font-medium">
+                      <p className="text-gray-800 text-sm leading-relaxed font-bold">
                         Compete live or practice solo
                       </p>
                     </div>
