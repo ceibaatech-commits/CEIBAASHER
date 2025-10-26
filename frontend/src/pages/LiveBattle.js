@@ -3,8 +3,8 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect to battle-server (Socket.io server on port 5001)
-const BATTLE_SERVER_URL = process.env.REACT_APP_BATTLE_SERVER_URL || 'http://localhost:5001';
+// Connect to backend Socket.io proxy (which forwards to battle-server)
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const LiveBattle = () => {
   const { pin } = useParams();
