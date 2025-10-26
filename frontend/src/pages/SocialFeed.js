@@ -348,10 +348,10 @@ const SocialFeed = () => {
                   Trending
                 </button>
                 <button 
-                  className={`px-4 py-2 rounded-lg font-medium ${activeTab === 'bookmarks' ? 'bg-purple-100 text-purple-600' : 'text-gray-600 hover:bg-gray-100'}`}
-                  onClick={() => setActiveTab('bookmarks')}
+                  className={`px-4 py-2 rounded-lg font-medium ${activeTab === 'exams' ? 'bg-purple-100 text-purple-600' : 'text-gray-600 hover:bg-gray-100'}`}
+                  onClick={() => setActiveTab('exams')}
                 >
-                  Bookmarks
+                  My Exams
                 </button>
               </div>
             </div>
