@@ -189,5 +189,5 @@ async def connect_error(data):
 async def disconnect():
     logger.warning('❌ Socket.io client disconnected from battle-server')
 
-# Create ASGI app
-socket_app = socketio.ASGIApp(sio_server, socketio_path='socket.io')
+# Create ASGI app - don't specify socketio_path since FastAPI mounts it at /socket.io
+socket_app = socketio.ASGIApp(sio_server)
