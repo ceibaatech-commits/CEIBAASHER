@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Youtube, Linkedin } from 'lucide-react';
+import { FaXTwitter } from 'react-icons/fa6';
 
 const Footer = () => {
   const navigate = useNavigate();
