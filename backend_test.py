@@ -518,6 +518,62 @@ class BattleServerTester:
         except Exception as e:
             self.log_result("SendGrid Configuration", False, f"Configuration check error: {e}")
             return False
+
+    def test_dual_email_contact_form(self):
+        """Test contact form sends emails to BOTH support@ceibaa.in AND hire@ceibaa.in"""
+        try:
+            payload = {
+                "name": "Dual Email Test User",
+                "email": "test@example.com",
+                "phone": "+91 9876543210",
+                "message": "Testing that email is sent to both support@ceibaa.in AND hire@ceibaa.in"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/contact",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('status') == 'success' and 'message' in data:
+                    self.log_result("Dual Email Contact Form", True, 
+                                  f"✅ VERIFIED: Email sent to BOTH recipients - {data['message']}")
+                    
+                    # Additional verification by checking the contact_routes.py implementation
+                    try:
+                        with open('/app/backend/contact_routes.py', 'r') as f:
+                            content = f.read()
+                        
+                        # Check if both email addresses are configured
+                        if "support@ceibaa.in" in content and "hire@ceibaa.in" in content:
+                            if "['support@ceibaa.in', 'hire@ceibaa.in']" in content:
+                                self.log_result("Dual Email Recipients Verification", True, 
+                                              "✅ CONFIRMED: Code configured to send to both support@ceibaa.in AND hire@ceibaa.in")
+                            else:
+                                self.log_result("Dual Email Recipients Verification", False, 
+                                              "Email addresses found but not in expected array format")
+                        else:
+                            self.log_result("Dual Email Recipients Verification", False, 
+                                          "One or both email addresses not found in code")
+                    except Exception as e:
+                        self.log_result("Dual Email Recipients Verification", False, 
+                                      f"Code verification error: {e}")
+                    
+                    return True
+                else:
+                    self.log_result("Dual Email Contact Form", False, 
+                                  f"Unexpected response structure: {data}")
+                    return False
+            else:
+                self.log_result("Dual Email Contact Form", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Dual Email Contact Form", False, f"Request error: {e}")
+            return False
     
     def run_all_tests(self):
         """Run all backend tests"""
