@@ -1145,34 +1145,37 @@ EXAM_DATA = {
         }
     },
     
-    "TGT": {
-        "name": "TGT",
-        "full_name": "Trained Graduate Teacher",
-        "description": "Teaching exam for classes 6-10 with graduate qualification",
+    "DSSB_TGT": {
+        "name": "DSSB TGT",
+        "full_name": "Delhi Subordinate Services Selection Board Trained Graduate Teacher",
+        "description": "Teaching exam for TGT positions in Delhi Government Schools (Classes 6-10)",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-blue-600 to-cyan-600",
-        "total_questions": 150,
-        "duration": "2.5 hours",
+        "color": "from-blue-500 to-cyan-600",
+        "total_questions": 200,
+        "duration": "3 hours",
         "category": "Teaching Examinations",
         "subjects": {
-            "Child Development": {
+            "General Awareness": {
                 "topics": {
-                    "Child Psychology": {"subtopics": ["Learning Theories", "Development Stages"], "questions": 30}
+                    "General Knowledge": {"subtopics": ["Current Affairs", "Indian History", "Geography", "Science"], "questions": 30},
+                    "Delhi Specific GK": {"subtopics": ["Delhi History", "Delhi Culture", "Administration"], "questions": 20}
+                }
+            },
+            "Reasoning & Aptitude": {
+                "topics": {
+                    "Logical Reasoning": {"subtopics": ["Analogies", "Series", "Coding-Decoding"], "questions": 25},
+                    "Numerical Aptitude": {"subtopics": ["Arithmetic", "Percentages", "Data Interpretation"], "questions": 25}
                 }
             },
             "Subject Knowledge": {
                 "topics": {
-                    "Subject Specific": {"subtopics": ["Core Concepts", "Pedagogy"], "questions": 60}
+                    "Core Subject": {"subtopics": ["Subject Fundamentals", "Pedagogy", "Curriculum"], "questions": 50}
                 }
             },
-            "Language": {
+            "Teaching Methodology": {
                 "topics": {
-                    "Language Proficiency": {"subtopics": ["Hindi", "English", "Regional Language"], "questions": 30}
-                }
-            },
-            "General Awareness": {
-                "topics": {
-                    "General Knowledge": {"subtopics": ["Current Affairs", "History", "Geography"], "questions": 30}
+                    "Child Psychology": {"subtopics": ["Learning Theories", "Development Stages", "Individual Differences"], "questions": 25},
+                    "Teaching Skills": {"subtopics": ["Teaching Methods", "Classroom Management", "Assessment"], "questions": 25}
                 }
             }
         }
