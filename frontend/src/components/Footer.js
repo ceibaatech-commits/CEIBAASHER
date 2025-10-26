@@ -184,18 +184,23 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-3">
                 <Mail className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400 text-sm">support@ceibaa.com</span>
+                <a href="mailto:support@ceibaa.in" className="text-gray-400 hover:text-white transition-colors text-sm">
+                  support@ceibaa.in
+                </a>
               </li>
               <li className="flex items-start space-x-3">
                 <Phone className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400 text-sm">+91 98765 43210</span>
+                <span className="text-gray-400 text-sm">Available 9 AM - 6 PM IST</span>
               </li>
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400 text-sm">Bangalore, Karnataka, India</span>
+                <span className="text-gray-400 text-sm">India</span>
               </li>
             </ul>
-            <button className="mt-4 w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-4 py-2 rounded-lg font-semibold transition-all text-sm">
+            <button 
+              onClick={() => navigate('/contact')}
+              className="mt-4 w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-4 py-2 rounded-lg font-semibold transition-all text-sm"
+            >
               Get Support
             </button>
           </div>
