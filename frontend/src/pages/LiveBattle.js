@@ -34,7 +34,7 @@ const LiveBattle = () => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io(BATTLE_URL);
+    const newSocket = io(BATTLE_SERVER_URL);
     setSocket(newSocket);
 
     newSocket.on('leaderboard-update', (data) => {
