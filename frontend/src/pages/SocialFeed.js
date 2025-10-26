@@ -430,6 +430,32 @@ const SocialFeed = () => {
 
             {/* Posts */}
             <div className="space-y-4">
+              {/* Show Attempted Exams when "My Exams" tab is active */}
+              {activeTab === 'exams' ? (
+                <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                  <BookOpen className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Your Exam History</h3>
+                  <p className="text-gray-600 mb-6">
+                    View all the exams you've attempted and track your progress
+                  </p>
+                  
+                  {/* Placeholder - Coming Soon */}
+                  <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-2 border-purple-200">
+                    <p className="text-lg font-semibold text-purple-800 mb-2">📚 Coming Soon!</p>
+                    <p className="text-gray-700 text-sm">
+                      Your attempted exams history will appear here. Take some quizzes to see your performance!
+                    </p>
+                    <button 
+                      onClick={() => navigate('/')}
+                      className="mt-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold"
+                    >
+                      Start Practicing
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Regular Posts Feed */
+                <>
               {posts.map((post) => (
                 <div key={post.id} className="bg-white rounded-xl shadow-sm p-6">
                   {/* Post Header */}
