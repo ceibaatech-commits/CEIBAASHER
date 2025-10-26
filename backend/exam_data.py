@@ -1438,6 +1438,238 @@ EXAM_DATA = {
         }
     },
 
+    # Language Proficiency Tests (8 Languages)
+    "SPANISH": {
+        "name": "Spanish",
+        "full_name": "Spanish Language Proficiency Test",
+        "description": "Test your Spanish language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-blue-500 to-cyan-500",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "FRENCH": {
+        "name": "French",
+        "full_name": "French Language Proficiency Test",
+        "description": "Test your French language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-blue-600 to-indigo-500",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "TAMIL": {
+        "name": "Tamil",
+        "full_name": "Tamil Language Proficiency Test",
+        "description": "Test your Tamil language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-sky-500 to-blue-500",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "TELUGU": {
+        "name": "Telugu",
+        "full_name": "Telugu Language Proficiency Test",
+        "description": "Test your Telugu language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-cyan-500 to-sky-500",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "KANNADA": {
+        "name": "Kannada",
+        "full_name": "Kannada Language Proficiency Test",
+        "description": "Test your Kannada language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-blue-400 to-cyan-400",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "CHINESE": {
+        "name": "Chinese",
+        "full_name": "Chinese Language Proficiency Test",
+        "description": "Test your Chinese language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-blue-600 to-indigo-600",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "JAPANESE": {
+        "name": "Japanese",
+        "full_name": "Japanese Language Proficiency Test",
+        "description": "Test your Japanese language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-sky-600 to-blue-600",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    },
+
+    "KOREAN": {
+        "name": "Korean",
+        "full_name": "Korean Language Proficiency Test",
+        "description": "Test your Korean language skills with 100 questions in 2 hours",
+        "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
+        "color": "from-cyan-600 to-sky-600",
+        "total_questions": 100,
+        "duration": "2 hours",
+        "category": "Language Proficiency Tests",
+        "subjects": {
+            "Language Test": {
+                "topics": {
+                    "Gap-fill": {
+                        "subtopics": ["Fill in the blanks", "Complete the sentence"],
+                        "questions": 35
+                    },
+                    "Vocabulary Building": {
+                        "subtopics": ["Synonyms", "Antonyms", "Word meanings"],
+                        "questions": 35
+                    },
+                    "One Word Substitution": {
+                        "subtopics": ["Replace phrases with single words"],
+                        "questions": 30
+                    }
+                }
+            }
+        }
+    }
 
 }
 
