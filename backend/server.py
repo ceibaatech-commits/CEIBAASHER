@@ -17,6 +17,7 @@ from sheets_routes import router as sheets_router
 from battle_proxy_routes import router as battle_proxy_router
 from social_routes import router as social_router
 from socket_proxy import socket_app
+from contact_routes import router as contact_router
 
 
 ROOT_DIR = Path(__file__).parent
