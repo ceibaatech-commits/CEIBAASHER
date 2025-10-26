@@ -29,11 +29,11 @@ const Login = () => {
       });
 
       // Store token in localStorage
-      localStorage.setItem('ceibaa_token', response.data.access_token);
+      localStorage.setItem('auth_token', response.data.access_token);
       localStorage.setItem('ceibaa_user', JSON.stringify(response.data.user));
 
-      // Navigate to home
-      navigate('/');
+      // Navigate to dashboard
+      navigate('/dashboard');
       
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed. Please try again.');
