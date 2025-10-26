@@ -59,10 +59,13 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 </button>
 
-                {/* User Profile (Desktop) */}
-                <div className="hidden md:flex items-center space-x-3 bg-white/10 rounded-lg px-4 py-2">
+                {/* User Profile (Desktop) - Click to go to Dashboard */}
+                <button 
+                  onClick={() => navigate('/dashboard')}
+                  className="hidden md:flex items-center space-x-3 bg-white/10 hover:bg-white/20 rounded-lg px-4 py-2 transition-colors cursor-pointer"
+                >
                   <img
-                    src={user.avatar || 'https://ui-avatars.com/api/?name=' + user.name}
+                    src={user.profile_picture || user.avatar || 'https://ui-avatars.com/api/?name=' + user.name}
                     alt={user.name}
                     className="w-8 h-8 rounded-full border-2 border-cyan-400"
                   />
@@ -75,7 +78,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                       <span>{user.streak || 0}</span>
                     </div>
                   </div>
-                </div>
+                </button>
 
                 {/* Logout */}
                 <button
