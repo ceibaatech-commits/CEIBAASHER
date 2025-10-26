@@ -499,47 +499,96 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Teaching Examinations Section */}
+        {/* Teaching Examinations Section - Enhanced UI */}
         <div className="mb-16">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png" 
-                alt="Teaching Examinations" 
-                className="w-8 h-8 object-contain"
-              />
+          {/* Unique Header with Gradient Background */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-3xl p-8 mb-8 border-2 border-emerald-200 shadow-lg"
+          >
+            <div className="flex items-center gap-4 mb-3">
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-xl"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png" 
+                  alt="Teaching Examinations" 
+                  className="w-10 h-10 object-contain"
+                />
+              </motion.div>
+              <div>
+                <h2 className="text-4xl font-black bg-gradient-to-r from-emerald-700 via-teal-700 to-cyan-700 bg-clip-text text-transparent">
+                  Teaching Examinations
+                </h2>
+                <p className="text-gray-700 font-medium text-lg">🎓 Shape Future Minds • Teaching Eligibility & Recruitment</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-black text-gray-900">Teaching Examinations</h2>
-              <p className="text-gray-600">Teaching Eligibility & Recruitment Exams</p>
+            <div className="flex items-center gap-3 text-sm text-gray-600 mt-4">
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-emerald-200">
+                ✨ DSSB • KVS • CTET
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-teal-200">
+                📚 Primary • Secondary • Higher Education
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-cyan-200">
+                🏆 Delhi • Central • State Level
+              </span>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {exams.filter(exam => exam.category === 'Teaching Examinations').map((exam) => (
+          {/* Enhanced Card Grid with Unique Styling */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {exams.filter(exam => exam.category === 'Teaching Examinations').map((exam, index) => (
               <motion.div
                 key={exam.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
                 onClick={() => navigate(`/exam/${exam.id}`)}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
+                className="group relative"
               >
-                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-                  <div className="relative text-white">
-                    <div className="mb-3">
-                      {exam.icon.startsWith('http') ? (
-                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
-                      ) : (
-                        <div className="text-5xl">{exam.icon}</div>
-                      )}
+                {/* Animated Background Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-200 via-teal-200 to-cyan-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                
+                {/* Card Content */}
+                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-emerald-300">
+                  {/* Header with Gradient */}
+                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
+                    {/* Animated Decorative Elements */}
+                    <motion.div 
+                      className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16"
+                      animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <motion.div 
+                      className="absolute bottom-0 left-0 w-24 h-24 bg-white/20 rounded-full -ml-12 -mb-12"
+                      animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    
+                    {/* Icon & Title */}
+                    <div className="relative text-white">
+                      <motion.div 
+                        className="mb-4"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        {exam.icon.startsWith('http') ? (
+                          <div className="w-24 h-24 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-2xl">
+                            <img src={exam.icon} alt={exam.name} className="w-full h-full object-contain drop-shadow-lg" />
+                          </div>
+                        ) : (
+                          <div className="text-6xl">{exam.icon}</div>
+                        )}
+                      </motion.div>
+                      <h3 className="text-2xl font-bold mb-2 drop-shadow-lg text-center">{exam.name}</h3>
+                      <p className="text-white/90 text-sm drop-shadow-md text-center font-medium">{exam.full_name}</p>
                     </div>
-                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
-                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
                   </div>
-                </div>
                 
                 <div className="p-6">
                   <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
