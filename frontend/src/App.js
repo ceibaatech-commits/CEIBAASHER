@@ -44,6 +44,7 @@ function App() {
           
           {/* Platform Pages */}
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           
           {/* PIN-based Room Quiz Routes (Multiple players) */}
