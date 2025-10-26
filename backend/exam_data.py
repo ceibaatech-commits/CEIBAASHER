@@ -756,7 +756,7 @@ EXAM_DATA = {
         "full_name": "State Bank of India Probationary Officer",
         "description": "Entrance exam for PO in State Bank of India",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
-        "color": "from-blue-700 to-indigo-700",
+        "color": "from-cyan-500 to-blue-600",
         "total_questions": 190,
         "duration": "3 hours",
         "category": "Banking Examinations",
