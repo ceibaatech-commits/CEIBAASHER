@@ -18,8 +18,11 @@ const ModernExamSyllabus = () => {
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [expandedTopics, setExpandedTopics] = useState({});
   const [showWeightage, setShowWeightage] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    checkAuth();
     const fetchData = async () => {
       try {
         const [exam, topics, weightage] = await Promise.all([
@@ -38,6 +41,28 @@ const ModernExamSyllabus = () => {
     };
     fetchData();
   }, [examId]);
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   if (loading || !examData) {
     return (
