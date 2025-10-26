@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, User, MessageSquare } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
@@ -8,6 +9,9 @@ import Footer from '../components/Footer';
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Contact = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,6 +22,32 @@ const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = () => {
+    const token = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
