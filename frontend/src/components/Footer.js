@@ -28,19 +28,48 @@ const Footer = () => {
             <p className="text-gray-400 text-sm">
               India's premier live quiz battle platform. Master competitive exams through engaging multiplayer battles.
             </p>
-            <div className="flex space-x-3">
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-blue-400 rounded-full flex items-center justify-center transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors">
-                <Youtube className="w-5 h-5" />
-              </a>
+            
+            {/* Social Media Links */}
+            <div>
+              <p className="text-xs text-gray-500 mb-2 font-semibold">Follow Us</p>
+              <div className="flex space-x-3">
+                <a 
+                  href="https://www.instagram.com/ceibaaapp" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg"
+                  title="Follow us on Instagram"
+                >
+                  <Instagram className="w-5 h-5 text-white" />
+                </a>
+                <a 
+                  href="https://x.com/Ceibaaapp" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-black hover:bg-gray-900 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg border border-gray-700"
+                  title="Follow us on X (Twitter)"
+                >
+                  <FaXTwitter className="w-5 h-5 text-white" />
+                </a>
+                <a 
+                  href="https://www.linkedin.com/company/ceibaa/" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg"
+                  title="Connect on LinkedIn"
+                >
+                  <Linkedin className="w-5 h-5 text-white" />
+                </a>
+                <a 
+                  href="https://www.youtube.com/@CeibaaTech-n7o" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg"
+                  title="Subscribe on YouTube"
+                >
+                  <Youtube className="w-5 h-5 text-white" />
+                </a>
+              </div>
             </div>
           </div>
 
