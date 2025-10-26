@@ -42,9 +42,20 @@ async def disconnect(sid):
     if sid in client_to_server_sid:
         del client_to_server_sid[sid]
 
-# Forward all events from client to battle-server and emit back to specific client
+# Forward all events from client to battle-server
 @sio_server.event
 async def join_room(sid, data):
+    """Handle join_room (Python naming)"""
+    logger.info(f'📨 Forwarding join_room from {sid}: {data}')
+    try:
+        await sio_client.emit('join-room', data)
+    except Exception as e:
+        logger.error(f'❌ Error forwarding join_room: {e}')
+
+# Also handle the hyphenated version from JavaScript
+@sio_server.on('join-room')
+async def join_room_hyphen(sid, data):
+    """Handle join-room (JavaScript naming)"""
     logger.info(f'📨 Forwarding join-room from {sid}: {data}')
     try:
         await sio_client.emit('join-room', data)
