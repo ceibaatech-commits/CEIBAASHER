@@ -477,93 +477,150 @@ const Home = () => {
           </div>
         </div>
 
-        {/* UPSC Examinations Section */}
+        {/* UPSC Examinations Section - Enhanced */}
         <div className="mb-16">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png" 
-                alt="UPSC Examinations" 
-                className="w-8 h-8 object-contain"
-              />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-amber-50 via-orange-50 to-red-50 rounded-3xl p-8 mb-8 border-2 border-amber-200 shadow-lg"
+          >
+            <div className="flex items-center gap-4 mb-3">
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 rounded-2xl flex items-center justify-center shadow-xl"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png" 
+                  alt="UPSC Examinations" 
+                  className="w-10 h-10 object-contain"
+                />
+              </motion.div>
+              <div>
+                <h2 className="text-4xl font-black bg-gradient-to-r from-amber-700 via-orange-700 to-red-700 bg-clip-text text-transparent">
+                  UPSC Examinations
+                </h2>
+                <p className="text-gray-700 font-medium text-lg">🇮🇳 Nation Building • Union Public Service Commission</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-black text-gray-900">UPSC Examinations</h2>
-              <p className="text-gray-600">Union Public Service Commission Exams</p>
+            <div className="flex items-center gap-3 text-sm text-gray-600 mt-4 flex-wrap">
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-amber-200">
+                👔 Civil Services Exam
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-orange-200">
+                📊 IES • ISS • EPFO
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-red-200">
+                🏛️ IAS • IPS • IFS
+              </span>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {exams.filter(exam => exam.category === 'UPSC Examinations').map((exam) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {exams.filter(exam => exam.category === 'UPSC Examinations').map((exam, index) => (
               <motion.div
                 key={exam.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
                 onClick={() => navigate(`/exam/${exam.id}`)}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.2 }}
+                className="group relative"
               >
-                <div className={`bg-gradient-to-br ${exam.color} p-6 relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-                  <div className="relative text-white">
-                    <div className="mb-3">
-                      {exam.icon.startsWith('http') ? (
-                        <img src={exam.icon} alt={exam.name} className="w-20 h-20 object-contain mx-auto drop-shadow-lg" />
-                      ) : (
-                        <div className="text-5xl">{exam.icon}</div>
-                      )}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-1 drop-shadow-md">{exam.name}</h3>
-                    <p className="text-white text-sm drop-shadow-md">{exam.full_name}</p>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-orange-200 to-red-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
-                <div className="p-6">
-                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Questions:</span>
-                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Duration:</span>
-                      <span className="font-semibold text-gray-900">{exam.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Subjects:</span>
-                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
+                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-amber-300">
+                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
+                    <motion.div 
+                      className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16"
+                      animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <motion.div 
+                      className="absolute bottom-0 left-0 w-24 h-24 bg-white/20 rounded-full -ml-12 -mb-12"
+                      animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    
+                    <div className="relative text-white">
+                      <motion.div 
+                        className="mb-4"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        {exam.icon.startsWith('http') ? (
+                          <div className="w-24 h-24 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-2xl">
+                            <img src={exam.icon} alt={exam.name} className="w-full h-full object-contain drop-shadow-lg" />
+                          </div>
+                        ) : (
+                          <div className="text-6xl">{exam.icon}</div>
+                        )}
+                      </motion.div>
+                      <h3 className="text-2xl font-bold mb-2 drop-shadow-lg text-center">{exam.name}</h3>
+                      <p className="text-white/90 text-sm drop-shadow-md text-center font-medium">{exam.full_name}</p>
                     </div>
                   </div>
-
-                  <button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
-                    View Syllabus →
-                  </button>
+                
+                  <div className="p-6">
+                    <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center">{exam.description}</p>
+                    <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-amber-600" />
+                        <span className="font-semibold">{exam.total_questions} Qs</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-orange-600" />
+                        <span className="font-semibold">{exam.duration}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
 
-        {/* SSC Examinations Section */}
+        {/* SSC Examinations Section - Enhanced */}
         <div className="mb-16">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-rose-600 rounded-xl flex items-center justify-center">
-              <img 
-                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png" 
-                alt="SSC Examinations" 
-                className="w-8 h-8 object-contain"
-              />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-red-50 via-rose-50 to-pink-50 rounded-3xl p-8 mb-8 border-2 border-red-200 shadow-lg"
+          >
+            <div className="flex items-center gap-4 mb-3">
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-br from-red-600 via-rose-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-xl"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png" 
+                  alt="SSC Examinations" 
+                  className="w-10 h-10 object-contain"
+                />
+              </motion.div>
+              <div>
+                <h2 className="text-4xl font-black bg-gradient-to-r from-red-700 via-rose-700 to-pink-700 bg-clip-text text-transparent">
+                  SSC Examinations
+                </h2>
+                <p className="text-gray-700 font-medium text-lg">💼 Government Career • Staff Selection Commission</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-black text-gray-900">SSC Examinations</h2>
-              <p className="text-gray-600">Staff Selection Commission Exams</p>
+            <div className="flex items-center gap-3 text-sm text-gray-600 mt-4 flex-wrap">
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-red-200">
+                📝 CGL • CHSL
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-rose-200">
+                🛡️ GD Constable
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-pink-200">
+                ✍️ Stenographer
+              </span>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {exams.filter(exam => exam.category === 'SSC Examinations').map((exam) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {exams.filter(exam => exam.category === 'SSC Examinations').map((exam, index) => (
               <motion.div
                 key={exam.id}
                 onClick={() => navigate(`/exam/${exam.id}`)}
