@@ -285,11 +285,37 @@ async def create_demo_users():
             "last_login": datetime.utcnow().isoformat()
         }
         
+        # Demo user 3: sher20
+        demo_user_3 = {
+            "id": str(uuid.uuid4()),
+            "name": "Sher20",
+            "email": "sher20@ceibaa.demo",
+            "profile_picture": "https://ui-avatars.com/api/?name=Sher20&background=10B981&color=fff&size=200",
+            "provider": "demo",
+            "provider_id": "sher20",
+            "password": "sher20",
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login": datetime.utcnow().isoformat()
+        }
+        
+        # Demo user 4: Sher25
+        demo_user_4 = {
+            "id": str(uuid.uuid4()),
+            "name": "Sher25",
+            "email": "sher25@ceibaa.demo",
+            "profile_picture": "https://ui-avatars.com/api/?name=Sher25&background=F59E0B&color=fff&size=200",
+            "provider": "demo",
+            "provider_id": "Sher25",
+            "password": "Sher25",
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login": datetime.utcnow().isoformat()
+        }
+        
         # Check if users already exist and delete them
-        await db.users.delete_many({"provider": "demo", "provider_id": {"$in": ["12345", "sher123"]}})
+        await db.users.delete_many({"provider": "demo", "provider_id": {"$in": ["12345", "sher123", "sher20", "Sher25"]}})
         
         # Insert demo users
-        await db.users.insert_many([demo_user_1, demo_user_2])
+        await db.users.insert_many([demo_user_1, demo_user_2, demo_user_3, demo_user_4])
         
         return {
             "message": "Demo users created successfully",
@@ -303,6 +329,16 @@ async def create_demo_users():
                     "username": "sher123",
                     "password": "sher123",
                     "name": "Sher From Delhi"
+                },
+                {
+                    "username": "sher20",
+                    "password": "sher20",
+                    "name": "Sher20"
+                },
+                {
+                    "username": "Sher25",
+                    "password": "Sher25",
+                    "name": "Sher25"
                 }
             ]
         }
