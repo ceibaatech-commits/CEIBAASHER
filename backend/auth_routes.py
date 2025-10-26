@@ -217,18 +217,33 @@ async def logout():
 async def demo_login(login_data: DemoLoginRequest):
     """Demo login endpoint for testing purposes"""
     try:
+        print(f"🔍 Demo login attempt - Username: '{login_data.username}', Password: '{login_data.password}'")
+        
         # Find user by username (stored in provider_id for demo accounts)
         user = await db.users.find_one({
             "provider": "demo",
             "provider_id": login_data.username
         })
         
+        print(f"🔍 User lookup result: {user is not None}")
+        if user:
+            print(f"🔍 Found user: {user.get('name')}, provider_id: '{user.get('provider_id')}', password in DB: '{user.get('password')}'")
+        
         if not user:
+            print(f"❌ User not found with provider_id: '{login_data.username}'")
             raise HTTPException(status_code=401, detail="Invalid username or password")
         
         # Check password (stored in a 'password' field for demo accounts)
-        if user.get("password") != login_data.password:
+        db_password = user.get("password")
+        input_password = login_data.password
+        
+        print(f"🔍 Password comparison: DB='{db_password}' vs Input='{input_password}', Match={db_password == input_password}")
+        
+        if db_password != input_password:
+            print(f"❌ Password mismatch!")
             raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        print(f"✅ Login successful for user: {user.get('name')}")
         
         # Update last login
         await db.users.update_one(
