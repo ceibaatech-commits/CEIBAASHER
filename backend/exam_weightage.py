@@ -1,60 +1,6 @@
 # Topic-wise Weightage Analysis for All Exams
 
 EXAM_WEIGHTAGE = {
-    "SSC": {
-        "total_questions": 100,
-        "subjects": {
-            "English Language": {
-                "questions": 25,
-                "color": "from-purple-500 to-pink-500",
-                "topics": [
-                    {"name": "Reading Comprehension", "expected": "5-7", "importance": "Very High"},
-                    {"name": "Grammar & Vocabulary", "expected": "8-10", "importance": "Very High"},
-                    {"name": "Sentence Correction", "expected": "4-5", "importance": "High"},
-                    {"name": "Fill in the Blanks", "expected": "3-4", "importance": "High"},
-                    {"name": "Idioms & Phrases", "expected": "2-3", "importance": "Medium"},
-                    {"name": "Synonyms & Antonyms", "expected": "2-3", "importance": "Medium"}
-                ]
-            },
-            "General Intelligence": {
-                "questions": 25,
-                "color": "from-blue-500 to-cyan-500",
-                "topics": [
-                    {"name": "Logical Reasoning", "expected": "5-6", "importance": "Very High"},
-                    {"name": "Analogies", "expected": "4-5", "importance": "High"},
-                    {"name": "Classification", "expected": "3-4", "importance": "High"},
-                    {"name": "Series", "expected": "4-5", "importance": "Very High"},
-                    {"name": "Coding-Decoding", "expected": "3-4", "importance": "Medium"},
-                    {"name": "Blood Relations", "expected": "2-3", "importance": "Medium"},
-                    {"name": "Direction Sense", "expected": "2-3", "importance": "Low"}
-                ]
-            },
-            "Quantitative Aptitude": {
-                "questions": 25,
-                "color": "from-orange-500 to-red-500",
-                "topics": [
-                    {"name": "Arithmetic", "expected": "8-10", "importance": "Very High"},
-                    {"name": "Algebra", "expected": "4-5", "importance": "High"},
-                    {"name": "Geometry", "expected": "4-5", "importance": "High"},
-                    {"name": "Trigonometry", "expected": "3-4", "importance": "Medium"},
-                    {"name": "Data Interpretation", "expected": "3-4", "importance": "High"},
-                    {"name": "Mensuration", "expected": "2-3", "importance": "Medium"}
-                ]
-            },
-            "General Awareness": {
-                "questions": 25,
-                "color": "from-green-500 to-teal-500",
-                "topics": [
-                    {"name": "Current Affairs", "expected": "10-12", "importance": "Very High"},
-                    {"name": "History", "expected": "4-5", "importance": "High"},
-                    {"name": "Geography", "expected": "3-4", "importance": "High"},
-                    {"name": "Polity", "expected": "3-4", "importance": "Medium"},
-                    {"name": "Economics", "expected": "2-3", "importance": "Medium"},
-                    {"name": "Science & Technology", "expected": "2-3", "importance": "Medium"}
-                ]
-            }
-        }
-    },
     "JEE": {
         "total_questions": 75,
         "subjects": {
