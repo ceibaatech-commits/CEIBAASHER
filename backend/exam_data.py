@@ -1269,7 +1269,7 @@ EXAM_DATA = {
         "full_name": "Madhya Pradesh State Eligibility Test",
         "description": "MP SET for Assistant Professor eligibility in Madhya Pradesh colleges and universities",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-indigo-500 to-purple-700",
+        "color": "from-violet-500 to-purple-600",
         "total_questions": 150,
         "duration": "3 hours",
         "category": "Teaching Examinations",
