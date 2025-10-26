@@ -526,6 +526,241 @@ EXAM_WEIGHTAGE = {
                 ]
             }
         }
+    },
+    
+    # ==================== TEACHING EXAMINATIONS ====================
+    
+    "DSSB_PGT": {
+        "total_questions": 200,
+        "subjects": {
+            "General Awareness": {
+                "questions": 50,
+                "color": "from-emerald-500 to-teal-500",
+                "topics": [
+                    {"name": "Current Affairs", "expected": "12-15", "importance": "Very High"},
+                    {"name": "History & Geography", "expected": "10-12", "importance": "High"},
+                    {"name": "Polity & Economics", "expected": "8-10", "importance": "High"},
+                    {"name": "Delhi GK", "expected": "15-18", "importance": "Very High"}
+                ]
+            },
+            "General Intelligence": {
+                "questions": 50,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Logical Reasoning", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Verbal Reasoning", "expected": "8-10", "importance": "High"},
+                    {"name": "Arithmetic", "expected": "15-18", "importance": "Very High"},
+                    {"name": "Data Interpretation", "expected": "7-10", "importance": "High"}
+                ]
+            },
+            "Subject Specific Knowledge": {
+                "questions": 60,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Advanced Concepts", "expected": "35-40", "importance": "Very High"},
+                    {"name": "Subject Pedagogy", "expected": "15-20", "importance": "Very High"},
+                    {"name": "Curriculum Design", "expected": "5-10", "importance": "High"}
+                ]
+            },
+            "Teaching Methodology": {
+                "questions": 40,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Teaching Methods", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Educational Psychology", "expected": "15-18", "importance": "Very High"},
+                    {"name": "Classroom Management", "expected": "8-10", "importance": "High"}
+                ]
+            }
+        }
+    },
+    
+    "DSSB_TGT": {
+        "total_questions": 200,
+        "subjects": {
+            "General Awareness": {
+                "questions": 50,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Current Affairs", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Indian History", "expected": "8-10", "importance": "High"},
+                    {"name": "Geography & Science", "expected": "10-12", "importance": "High"},
+                    {"name": "Delhi Specific GK", "expected": "15-18", "importance": "Very High"}
+                ]
+            },
+            "Reasoning & Aptitude": {
+                "questions": 50,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Logical Reasoning", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Analogies & Series", "expected": "8-10", "importance": "High"},
+                    {"name": "Arithmetic", "expected": "15-18", "importance": "Very High"},
+                    {"name": "Percentages & DI", "expected": "7-10", "importance": "High"}
+                ]
+            },
+            "Subject Knowledge": {
+                "questions": 50,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Subject Fundamentals", "expected": "30-35", "importance": "Very High"},
+                    {"name": "Subject Pedagogy", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Curriculum", "expected": "3-5", "importance": "Medium"}
+                ]
+            },
+            "Teaching Methodology": {
+                "questions": 50,
+                "color": "from-amber-500 to-orange-500",
+                "topics": [
+                    {"name": "Child Psychology", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Teaching Skills", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Assessment Methods", "expected": "5-10", "importance": "High"}
+                ]
+            }
+        }
+    },
+    
+    "KVS_PRT": {
+        "total_questions": 180,
+        "subjects": {
+            "General Awareness": {
+                "questions": 40,
+                "color": "from-amber-500 to-orange-500",
+                "topics": [
+                    {"name": "Current Affairs", "expected": "12-15", "importance": "Very High"},
+                    {"name": "History & Geography", "expected": "10-12", "importance": "High"},
+                    {"name": "Science", "expected": "8-10", "importance": "High"},
+                    {"name": "KVS & Education Policies", "expected": "8-10", "importance": "Very High"}
+                ]
+            },
+            "Reasoning Ability": {
+                "questions": 20,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Logical Reasoning", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Analogies & Classification", "expected": "5-8", "importance": "High"}
+                ]
+            },
+            "Child Development & Pedagogy": {
+                "questions": 30,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Child Psychology", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Learning Theories", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Pedagogy & Inclusive Education", "expected": "7-10", "importance": "High"}
+                ]
+            },
+            "Language I (Hindi)": {
+                "questions": 30,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Hindi Grammar", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Comprehension", "expected": "10-12", "importance": "High"},
+                    {"name": "Pedagogy", "expected": "5-8", "importance": "High"}
+                ]
+            },
+            "Language II (English)": {
+                "questions": 30,
+                "color": "from-indigo-500 to-purple-500",
+                "topics": [
+                    {"name": "English Grammar", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Comprehension", "expected": "10-12", "importance": "High"},
+                    {"name": "Pedagogy", "expected": "5-8", "importance": "High"}
+                ]
+            },
+            "Mathematics & EVS": {
+                "questions": 30,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Mathematics", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Environmental Studies", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Pedagogy", "expected": "3-6", "importance": "High"}
+                ]
+            }
+        }
+    },
+    
+    "CTET": {
+        "total_questions": 150,
+        "subjects": {
+            "Child Development & Pedagogy": {
+                "questions": 30,
+                "color": "from-purple-500 to-pink-500",
+                "topics": [
+                    {"name": "Child Development", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Learning Theories", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Pedagogy & Inclusive Education", "expected": "7-10", "importance": "High"}
+                ]
+            },
+            "Language I": {
+                "questions": 30,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Reading Comprehension", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Language Pedagogy", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Grammar & Vocabulary", "expected": "3-6", "importance": "High"}
+                ]
+            },
+            "Language II": {
+                "questions": 30,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Comprehension", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Pedagogy", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Language Skills", "expected": "3-6", "importance": "High"}
+                ]
+            },
+            "Mathematics & Science": {
+                "questions": 60,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Mathematics Content", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Mathematics Pedagogy", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Science Content", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Science Pedagogy", "expected": "7-10", "importance": "Very High"}
+                ]
+            }
+        }
+    },
+    
+    "MPSET": {
+        "total_questions": 150,
+        "subjects": {
+            "Paper I - Teaching Aptitude": {
+                "questions": 30,
+                "color": "from-indigo-500 to-purple-500",
+                "topics": [
+                    {"name": "Teaching Aptitude", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Research Aptitude", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Evaluation Systems", "expected": "3-6", "importance": "High"}
+                ]
+            },
+            "Reasoning & Comprehension": {
+                "questions": 20,
+                "color": "from-blue-500 to-cyan-500",
+                "topics": [
+                    {"name": "Logical Reasoning", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Comprehension & Analysis", "expected": "8-10", "importance": "Very High"},
+                    {"name": "Inference", "expected": "2-4", "importance": "High"}
+                ]
+            },
+            "General Awareness": {
+                "questions": 30,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Higher Education System", "expected": "12-15", "importance": "Very High"},
+                    {"name": "UGC & NEP 2020", "expected": "10-12", "importance": "Very High"},
+                    {"name": "ICT & Environment", "expected": "5-8", "importance": "High"}
+                ]
+            },
+            "Paper II - Subject Specific": {
+                "questions": 70,
+                "color": "from-orange-500 to-red-500",
+                "topics": [
+                    {"name": "Core Subject Knowledge", "expected": "45-50", "importance": "Very High"},
+                    {"name": "Advanced Topics", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Subject Pedagogy", "expected": "8-12", "importance": "High"}
+                ]
+            }
+        }
     }
 }
 
