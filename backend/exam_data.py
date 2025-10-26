@@ -944,7 +944,7 @@ EXAM_DATA = {
         "full_name": "Employees' Provident Fund Organisation Enforcement/Accounts Officer",
         "description": "Entrance exam for Enforcement Officer and Accounts Officer in EPFO",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/lwzydz67_Gemini_Generated_Image_69zrpn69zrpn69zr_2-removebg-preview.png",
-        "color": "from-yellow-600 to-orange-600",
+        "color": "from-amber-500 to-orange-500",
         "total_questions": 200,
         "duration": "2.5 hours",
         "category": "UPSC Examinations",
