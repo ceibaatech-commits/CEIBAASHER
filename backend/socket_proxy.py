@@ -28,6 +28,7 @@ async def connect(sid, environ):
     """When client connects to main backend"""
     logger.info(f'🔗 Client {sid} connected to proxy')
     client_to_server_sid[sid] = None
+    sid_to_rooms[sid] = set()  # Track rooms for this client
     
     # Connect to battle-server if not already connected
     if not sio_client.connected:
