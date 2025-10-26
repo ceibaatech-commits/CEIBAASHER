@@ -129,8 +129,7 @@ const Contact = () => {
               <div className="relative">
                 <motion.div
                   animate={{ 
-                    y: [0, -15, 0],
-                    rotate: [0, 5, -5, 0]
+                    y: [0, -15, 0]
                   }}
                   transition={{ 
                     duration: 5, 
