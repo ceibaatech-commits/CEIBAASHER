@@ -52,6 +52,9 @@ async def join_room(sid, data):
     """Handle join_room (Python naming)"""
     logger.info(f'📨 Forwarding join_room from {sid}: {data}')
     try:
+        pin = data.get('pin')
+        if pin and sid in sid_to_rooms:
+            sid_to_rooms[sid].add(pin)
         await sio_client.emit('join-room', data)
     except Exception as e:
         logger.error(f'❌ Error forwarding join_room: {e}')
@@ -62,6 +65,9 @@ async def join_room_hyphen(sid, data):
     """Handle join-room (JavaScript naming)"""
     logger.info(f'📨 Forwarding join-room from {sid}: {data}')
     try:
+        pin = data.get('pin')
+        if pin and sid in sid_to_rooms:
+            sid_to_rooms[sid].add(pin)
         await sio_client.emit('join-room', data)
     except Exception as e:
         logger.error(f'❌ Error forwarding join-room: {e}')
