@@ -21,7 +21,7 @@ const AboutUs = () => {
     {
       icon: Video,
       title: "Live Video Battles",
-      description: "Stream live like TikTok while competing - see your opponents, react in real-time, and make learning social.",
+      description: "Stream live like viral video apps while competing - see your opponents, react in real-time, and make learning social.",
       gradient: "from-purple-500 to-pink-500"
     },
     {
