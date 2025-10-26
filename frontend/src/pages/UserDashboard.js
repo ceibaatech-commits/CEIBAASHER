@@ -25,33 +25,20 @@ const UserDashboard = () => {
 
   const checkAuth = async () => {
     const token = localStorage.getItem('auth_token');
-    if (!token) {
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (!token || !storedUser) {
       navigate('/login');
       return;
     }
 
+    // Load user from localStorage
     try {
-      // First, try to get user from localStorage
-      const storedUser = localStorage.getItem('ceibaa_user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-
-      // Then try to fetch from API
-      const response = await axios.get(`${API_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setUser(response.data);
-      localStorage.setItem('ceibaa_user', JSON.stringify(response.data));
-    } catch (error) {
-      console.error('Auth error:', error);
-      // If API fails but we have user in localStorage, keep them logged in
-      const storedUser = localStorage.getItem('ceibaa_user');
-      if (!storedUser) {
-        navigate('/login');
-      }
-    } finally {
+      setUser(JSON.parse(storedUser));
       setLoading(false);
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      navigate('/login');
     }
   };
 
