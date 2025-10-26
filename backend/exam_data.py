@@ -541,7 +541,7 @@ EXAM_DATA = {
         "full_name": "Common Law Admission Test",
         "description": "National level entrance exam for admission to law programs",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
-        "color": "from-blue-700 to-indigo-800",
+        "color": "from-indigo-500 to-blue-600",
         "total_questions": 120,
         "duration": "2 hours",
         "category": "Admission Tests",
