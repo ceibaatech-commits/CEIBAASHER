@@ -603,12 +603,6 @@ const SocialFeed = () => {
                       <Share2 className="w-5 h-5" />
                       <span>Share</span>
                     </button>
-                    <button 
-                      onClick={() => handleBookmark(post.id)}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-50 ${post.is_bookmarked ? 'text-purple-600' : 'text-gray-600'}`}
-                    >
-                      <Bookmark className={`w-5 h-5 ${post.is_bookmarked ? 'fill-current' : ''}`} />
-                    </button>
                   </div>
                 </div>
               ))}
