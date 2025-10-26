@@ -1118,7 +1118,7 @@ const Home = () => {
                   <span className="text-3xl font-bold">1</span>
                 </div>
                 <h4 className="font-semibold mb-2">Select Your Exam</h4>
-                <p className="text-white/80 text-sm">Choose from 8 major competitive exams</p>
+                <p className="text-white/80 text-sm">Choose from 38+ competitive exams</p>
               </div>
               <div className="text-center">
                 <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
