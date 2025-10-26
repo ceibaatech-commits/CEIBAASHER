@@ -77,7 +77,14 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-bold mb-4 text-cyan-400">Quick Links</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
+              <li>
+                <button 
+                  onClick={() => navigate('/about')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  About Us
+                </button>
+              </li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">How It Works</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Pricing</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
