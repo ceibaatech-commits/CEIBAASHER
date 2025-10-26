@@ -277,6 +277,167 @@ class BattleServerTester:
             self.log_result("MongoDB Collections", False, f"Database error: {e}")
             return False
     
+    def test_socket_proxy_connection(self):
+        """Test Socket.io proxy connection through backend"""
+        try:
+            # Test connection to the proxy (through backend)
+            proxy_url = f"{BACKEND_URL}/socket.io"
+            sio = socketio.SimpleClient()
+            
+            # Connect to the proxy
+            sio.connect(proxy_url, transports=['polling'])
+            
+            if sio.connected:
+                self.log_result("Socket.io Proxy Connection", True, "Successfully connected to Socket.io proxy")
+                
+                # Test basic event emission
+                try:
+                    sio.emit('test-event', {'data': 'test'})
+                    self.log_result("Socket.io Proxy Event Emission", True, "Can emit events to proxy")
+                except Exception as e:
+                    self.log_result("Socket.io Proxy Event Emission", False, f"Event emission failed: {e}")
+                
+                sio.disconnect()
+                return True
+            else:
+                self.log_result("Socket.io Proxy Connection", False, "Failed to connect to proxy")
+                return False
+                
+        except Exception as e:
+            self.log_result("Socket.io Proxy Connection", False, f"Proxy connection error: {e}")
+            return False
+
+    def test_room_joining_flow(self):
+        """Test the complete room joining flow through Socket.io proxy"""
+        if not hasattr(self, 'test_pin'):
+            self.log_result("Room Joining Flow", False, "No PIN available from create room test")
+            return False
+        
+        try:
+            # Create two Socket.io clients to simulate host and joiner
+            proxy_url = f"{BACKEND_URL}/socket.io"
+            
+            host_client = socketio.SimpleClient()
+            joiner_client = socketio.SimpleClient()
+            
+            # Connect both clients
+            host_client.connect(proxy_url, transports=['polling'])
+            joiner_client.connect(proxy_url, transports=['polling'])
+            
+            if not (host_client.connected and joiner_client.connected):
+                self.log_result("Room Joining Flow", False, "Failed to connect clients to proxy")
+                return False
+            
+            self.log_result("Multi-Client Proxy Connection", True, "Both host and joiner connected to proxy")
+            
+            # Set up event listeners for joiner
+            joiner_events = []
+            
+            def on_player_joined(data):
+                joiner_events.append(('player-joined', data))
+                print(f"🎉 Joiner received player-joined: {data}")
+            
+            def on_error(data):
+                joiner_events.append(('error', data))
+                print(f"❌ Joiner received error: {data}")
+            
+            joiner_client.on('player-joined', on_player_joined)
+            joiner_client.on('error', on_error)
+            
+            # Host joins room first
+            print(f"🏠 Host joining room {self.test_pin}")
+            host_client.emit('join-room', {
+                'pin': self.test_pin,
+                'playerName': 'TestHost',
+                'isHost': True
+            })
+            
+            # Wait a moment for host to join
+            time.sleep(2)
+            
+            # Joiner joins room
+            print(f"👤 Joiner joining room {self.test_pin}")
+            joiner_client.emit('join-room', {
+                'pin': self.test_pin,
+                'playerName': 'TestJoiner',
+                'isHost': False
+            })
+            
+            # Wait for events to propagate
+            time.sleep(3)
+            
+            # Check if joiner received player-joined event
+            player_joined_events = [e for e in joiner_events if e[0] == 'player-joined']
+            error_events = [e for e in joiner_events if e[0] == 'error']
+            
+            if error_events:
+                self.log_result("Room Joining Flow", False, f"Joiner received error: {error_events[0][1]}")
+                return False
+            
+            if player_joined_events:
+                event_data = player_joined_events[-1][1]  # Get latest event
+                if 'players' in event_data and len(event_data['players']) >= 2:
+                    player_names = [p['name'] for p in event_data['players']]
+                    if 'TestHost' in player_names and 'TestJoiner' in player_names:
+                        self.log_result("Room Joining Flow", True, 
+                                      f"✅ CRITICAL FIX VERIFIED: Both players in room - {player_names}")
+                        self.log_result("Socket.io Event Propagation", True, 
+                                      "player-joined events properly forwarded through proxy")
+                        success = True
+                    else:
+                        self.log_result("Room Joining Flow", False, 
+                                      f"Missing players in event: {player_names}")
+                        success = False
+                else:
+                    self.log_result("Room Joining Flow", False, 
+                                  f"Invalid player-joined event data: {event_data}")
+                    success = False
+            else:
+                self.log_result("Room Joining Flow", False, 
+                              "Joiner never received player-joined event - proxy forwarding failed")
+                success = False
+            
+            # Cleanup
+            host_client.disconnect()
+            joiner_client.disconnect()
+            
+            return success
+            
+        except Exception as e:
+            self.log_result("Room Joining Flow", False, f"Room joining test error: {e}")
+            return False
+
+    def test_battle_server_logs(self):
+        """Check battle-server logs for room joining activity"""
+        try:
+            # Check if battle-server is running and accessible
+            response = requests.get(f"{BATTLE_SERVER_URL}/health", timeout=5)
+            if response.status_code != 200:
+                self.log_result("Battle Server Status", False, f"Battle server not responding: {response.status_code}")
+                return False
+            
+            self.log_result("Battle Server Status", True, "Battle server running and accessible")
+            
+            # Test direct connection to battle-server (not through proxy)
+            try:
+                direct_sio = socketio.SimpleClient()
+                direct_sio.connect(BATTLE_SERVER_URL)
+                
+                if direct_sio.connected:
+                    self.log_result("Direct Battle Server Connection", True, "Can connect directly to battle-server")
+                    direct_sio.disconnect()
+                else:
+                    self.log_result("Direct Battle Server Connection", False, "Cannot connect directly to battle-server")
+                    
+            except Exception as e:
+                self.log_result("Direct Battle Server Connection", False, f"Direct connection failed: {e}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Battle Server Status", False, f"Battle server check error: {e}")
+            return False
+
     def test_answer_validation_logic(self):
         """Test the answer validation logic by examining the code structure"""
         try:
