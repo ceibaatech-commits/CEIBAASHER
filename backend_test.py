@@ -586,6 +586,7 @@ class BattleServerTester:
         # Contact Form API Tests (NEW - Primary Focus)
         print("\n📧 Testing Contact Form API...")
         self.test_sendgrid_configuration()
+        self.test_dual_email_contact_form()  # NEW: Test dual email functionality
         self.test_contact_form_valid_request()
         self.test_contact_form_without_phone()
         self.test_contact_form_missing_name()
