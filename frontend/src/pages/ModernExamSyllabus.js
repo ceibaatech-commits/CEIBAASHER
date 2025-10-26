@@ -78,7 +78,12 @@ const ModernExamSyllabus = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <Header />
+      <Header 
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogin={() => navigate('/login')}
+        onLogout={handleLogout}
+      />
       
       {/* Compact Hero */}
       <div className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-8">
