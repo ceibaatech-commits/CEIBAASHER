@@ -1181,35 +1181,47 @@ EXAM_DATA = {
         }
     },
     
-    "PRT": {
-        "name": "PRT",
-        "full_name": "Primary Teacher",
-        "description": "Teaching exam for classes 1-5",
+    "KVS_PRT": {
+        "name": "KVS PRT",
+        "full_name": "Kendriya Vidyalaya Sangathan Primary Teacher",
+        "description": "Primary teacher recruitment for Kendriya Vidyalaya Schools (Classes 1-5)",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-yellow-600 to-orange-600",
-        "total_questions": 150,
-        "duration": "2.5 hours",
+        "color": "from-amber-500 to-orange-600",
+        "total_questions": 180,
+        "duration": "3 hours",
         "category": "Teaching Examinations",
         "subjects": {
-            "Child Development": {
+            "General Awareness": {
                 "topics": {
-                    "Child Psychology & Pedagogy": {"subtopics": ["Learning Principles", "Assessment"], "questions": 30}
+                    "General Knowledge": {"subtopics": ["Current Affairs", "History", "Geography", "Science"], "questions": 30},
+                    "KVS & Education": {"subtopics": ["KVS History", "NEP 2020", "Education Policies"], "questions": 10}
                 }
             },
-            "Language": {
+            "Reasoning Ability": {
                 "topics": {
-                    "Hindi": {"subtopics": ["Grammar", "Comprehension", "Pedagogy"], "questions": 30},
+                    "Logical Reasoning": {"subtopics": ["Analogies", "Classification", "Series"], "questions": 20}
+                }
+            },
+            "Child Development & Pedagogy": {
+                "topics": {
+                    "Child Psychology": {"subtopics": ["Learning Theories", "Development Stages", "Individual Differences"], "questions": 15},
+                    "Pedagogy": {"subtopics": ["Teaching Methods", "Classroom Management", "Inclusive Education"], "questions": 15}
+                }
+            },
+            "Language I (Hindi)": {
+                "topics": {
+                    "Hindi": {"subtopics": ["Grammar", "Comprehension", "Pedagogy"], "questions": 30}
+                }
+            },
+            "Language II (English)": {
+                "topics": {
                     "English": {"subtopics": ["Grammar", "Comprehension", "Pedagogy"], "questions": 30}
                 }
             },
-            "Mathematics": {
+            "Mathematics & EVS": {
                 "topics": {
-                    "Mathematics & Pedagogy": {"subtopics": ["Number System", "Geometry", "Teaching Methods"], "questions": 30}
-                }
-            },
-            "Environmental Studies": {
-                "topics": {
-                    "EVS & Pedagogy": {"subtopics": ["Science", "Social Studies", "Teaching Methods"], "questions": 30}
+                    "Mathematics": {"subtopics": ["Number System", "Arithmetic", "Pedagogy"], "questions": 15},
+                    "Environmental Studies": {"subtopics": ["Science Concepts", "Social Studies", "Pedagogy"], "questions": 15}
                 }
             }
         }
