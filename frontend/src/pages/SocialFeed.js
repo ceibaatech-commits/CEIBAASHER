@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
-  Heart, MessageCircle, Share2, Bookmark, Send, Hash, TrendingUp, 
-  Users, MessageSquare, Clock, X, Image as ImageIcon, Video, Smile
+  Heart, MessageCircle, Share2, Send, Hash, TrendingUp, 
+  Users, MessageSquare, Clock, X, Image as ImageIcon, Video, Smile, BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
