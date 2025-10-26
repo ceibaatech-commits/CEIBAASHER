@@ -126,66 +126,78 @@ async def join_room_hyphen(sid, data):
 @sio_server.event
 async def find_match(sid, data):
     logger.info(f'📨 Forwarding find-match from {sid}: {data}')
-    try:
-        await sio_client.emit('find-match', data)
-    except Exception as e:
-        logger.error(f'❌ Error forwarding find-match: {e}')
+    if sid in client_connections:
+        try:
+            await client_connections[sid].emit('find-match', data)
+        except Exception as e:
+            logger.error(f'❌ Error forwarding find-match: {e}')
 
 @sio_server.on('start-quiz')
 async def start_quiz_hyphen(sid, data):
     """Handle start-quiz (JavaScript naming)"""
     logger.info(f'📨 Forwarding start-quiz from {sid}')
-    await sio_client.emit('start-quiz', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('start-quiz', data)
 
 @sio_server.event
 async def start_quiz(sid, data):
     """Handle start_quiz (Python naming)"""
     logger.info(f'📨 Forwarding start_quiz from {sid}')
-    await sio_client.emit('start-quiz', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('start-quiz', data)
 
 @sio_server.on('submit-answer')
 async def submit_answer_hyphen(sid, data):
     """Handle submit-answer (JavaScript naming)"""
     logger.info(f'📨 Forwarding submit-answer from {sid}')
-    await sio_client.emit('submit-answer', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('submit-answer', data)
 
 @sio_server.event
 async def submit_answer(sid, data):
     """Handle submit_answer (Python naming)"""
     logger.info(f'📨 Forwarding submit_answer from {sid}')
-    await sio_client.emit('submit-answer', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('submit-answer', data)
 
 @sio_server.on('send-message')
 async def send_message_hyphen(sid, data):
     """Handle send-message (JavaScript naming)"""
     logger.info(f'📨 Forwarding send-message from {sid}')
-    await sio_client.emit('send-message', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('send-message', data)
 
 @sio_server.event
 async def send_message(sid, data):
     """Handle send_message (Python naming)"""
     logger.info(f'📨 Forwarding send_message from {sid}')
-    await sio_client.emit('send-message', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('send-message', data)
 
 @sio_server.on('send-reaction')
 async def send_reaction_hyphen(sid, data):
-    await sio_client.emit('send-reaction', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('send-reaction', data)
 
 @sio_server.event
 async def send_reaction(sid, data):
-    await sio_client.emit('send-reaction', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('send-reaction', data)
 
 @sio_server.on('send-gift')
 async def send_gift_hyphen(sid, data):
-    await sio_client.emit('send-gift', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('send-gift', data)
 
 @sio_server.event
 async def send_gift(sid, data):
-    await sio_client.emit('send-gift', data)
+    if sid in client_connections:
+        await client_connections[sid].emit('send-gift', data)
 
 @sio_server.event
 async def cancel_matchmaking(sid):
-    await sio_client.emit('cancel-matchmaking')
+    if sid in client_connections:
+        await client_connections[sid].emit('cancel-matchmaking')
 
 # Forward events from battle-server back to specific clients in rooms
 @sio_client.event
