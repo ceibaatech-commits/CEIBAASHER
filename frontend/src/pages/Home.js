@@ -928,6 +928,296 @@ const Home = () => {
           </div>
         </div>
 
+        {/* Language Proficiency Tests Section - NEW */}
+        <div className="mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 rounded-3xl p-8 mb-8 border-2 border-blue-200 shadow-lg"
+          >
+            <div className="flex items-center gap-4 mb-3">
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-br from-blue-500 via-cyan-500 to-sky-500 rounded-2xl flex items-center justify-center shadow-xl"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                  alt="Language Tests" 
+                  className="w-12 h-12 object-contain"
+                />
+              </motion.div>
+              <div>
+                <h2 className="text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-600 bg-clip-text text-transparent">
+                  Language Proficiency Tests
+                </h2>
+                <p className="text-blue-700 font-medium text-lg">🌍 Master Global Languages • 100 Questions • 2 Hours</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-blue-600 mt-4 flex-wrap">
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-blue-200">
+                📝 Gap-fill & Vocabulary
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-cyan-200">
+                🎯 One Word Substitution
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-sky-200">
+                🌐 8 Languages Available
+              </span>
+            </div>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {/* Spanish */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0 * 0.1 }}
+              onClick={() => navigate('/exam/SPANISH')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-sky-500/10 group-hover:from-blue-500/20 group-hover:via-cyan-500/20 group-hover:to-sky-500/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Spanish" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇪🇸</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Spanish</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* French */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 * 0.1 }}
+              onClick={() => navigate('/exam/FRENCH')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-sky-500/10 group-hover:from-blue-500/20 group-hover:via-cyan-500/20 group-hover:to-sky-500/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="French" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇫🇷</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">French</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Tamil */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 2 * 0.1 }}
+              onClick={() => navigate('/exam/TAMIL')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-blue-500/10 to-cyan-500/10 group-hover:from-sky-500/20 group-hover:via-blue-500/20 group-hover:to-cyan-500/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-sky-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Tamil" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇮🇳</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Tamil</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Telugu */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 3 * 0.1 }}
+              onClick={() => navigate('/exam/TELUGU')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-sky-500/10 to-blue-500/10 group-hover:from-cyan-500/20 group-hover:via-sky-500/20 group-hover:to-blue-500/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-sky-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Telugu" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇮🇳</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Telugu</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Kannada */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 4 * 0.1 }}
+              onClick={() => navigate('/exam/KANNADA')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-cyan-400/10 to-sky-400/10 group-hover:from-blue-400/20 group-hover:via-cyan-400/20 group-hover:to-sky-400/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Kannada" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇮🇳</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Kannada</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Chinese */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 5 * 0.1 }}
+              onClick={() => navigate('/exam/CHINESE')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-indigo-500/10 to-purple-500/10 group-hover:from-blue-600/20 group-hover:via-indigo-500/20 group-hover:to-purple-500/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Chinese" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇨🇳</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Chinese</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Japanese */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 6 * 0.1 }}
+              onClick={() => navigate('/exam/JAPANESE')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-sky-600/10 via-blue-600/10 to-indigo-500/10 group-hover:from-sky-600/20 group-hover:via-blue-600/20 group-hover:to-indigo-500/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-sky-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Japanese" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇯🇵</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Japanese</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Korean */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 7 * 0.1 }}
+              onClick={() => navigate('/exam/KOREAN')}
+              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-blue-100 hover:border-blue-400 transform hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/10 via-sky-600/10 to-blue-600/10 group-hover:from-cyan-600/20 group-hover:via-sky-600/20 group-hover:to-blue-600/20 transition-all duration-300"></div>
+              <div className="relative p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-cyan-600 to-sky-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
+                      alt="Korean" 
+                      className="w-10 h-10 object-contain"
+                    />
+                  </div>
+                  <span className="text-3xl">🇰🇷</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Korean</h3>
+                <p className="text-sm text-gray-600 mb-3">Language Proficiency Test</p>
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3 h-3" />
+                    <span>2 Hours • 100 Questions</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
         {/* Other Competitive Exams Section - Enhanced */}
         <div className="mb-16">
           <motion.div 
