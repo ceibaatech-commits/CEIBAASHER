@@ -345,30 +345,9 @@ class BattleServerTester:
             
             self.log_result("Multi-Client Proxy Connection", True, "Both host and joiner connected to proxy")
             
-            # Set up event listeners for both clients
+            # Set up event tracking
             host_events = []
             joiner_events = []
-            
-            def host_on_player_joined(data):
-                host_events.append(('player-joined', data))
-                print(f"🏠 Host received player-joined: {data}")
-            
-            def joiner_on_player_joined(data):
-                joiner_events.append(('player-joined', data))
-                print(f"👤 Joiner received player-joined: {data}")
-            
-            def host_on_error(data):
-                host_events.append(('error', data))
-                print(f"❌ Host received error: {data}")
-            
-            def joiner_on_error(data):
-                joiner_events.append(('error', data))
-                print(f"❌ Joiner received error: {data}")
-            
-            host_client.on('player-joined', host_on_player_joined)
-            host_client.on('error', host_on_error)
-            joiner_client.on('player-joined', joiner_on_player_joined)
-            joiner_client.on('error', joiner_on_error)
             
             # Host joins room first
             print(f"🏠 Host joining room {self.test_pin}")
