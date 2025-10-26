@@ -12,11 +12,24 @@ import asyncio
 from pymongo import MongoClient
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv('/app/backend/.env')
 
 # Configuration
 BATTLE_SERVER_URL = "http://localhost:5001"
 MONGO_URL = "mongodb://localhost:27017"
 DB_NAME = "test_database"
+
+# Get backend URL from frontend .env
+with open('/app/frontend/.env', 'r') as f:
+    for line in f:
+        if line.startswith('REACT_APP_BACKEND_URL='):
+            BACKEND_URL = line.split('=')[1].strip()
+            break
+else:
+    BACKEND_URL = "https://prep-together.preview.emergentagent.com"
 
 class BattleServerTester:
     def __init__(self):
