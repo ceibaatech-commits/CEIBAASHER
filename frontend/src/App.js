@@ -42,6 +42,7 @@ function App() {
           <Route path="/admin/sheets" element={<SheetManager />} />
           
           {/* Platform Pages */}
+          <Route path="/about" element={<AboutUs />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           
           {/* PIN-based Room Quiz Routes (Multiple players) */}
