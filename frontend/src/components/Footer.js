@@ -85,10 +85,17 @@ const Footer = () => {
                   About Us
                 </button>
               </li>
+              <li>
+                <button 
+                  onClick={() => navigate('/faq')}
+                  className="text-gray-400 hover:text-white transition-colors text-sm text-left"
+                >
+                  FAQs
+                </button>
+              </li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">How It Works</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Pricing</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">FAQs</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</a></li>
             </ul>
           </div>
