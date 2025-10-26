@@ -1108,53 +1108,58 @@ const Home = () => {
         </div>
         </div>
 
-        {/* How Ceibaa Works Section - Redesigned with Background Image */}
+        {/* How Ceibaa Works Section - Redesigned with Visible Background */}
         <div className="mt-16 relative overflow-hidden rounded-3xl shadow-2xl">
-          {/* Background Image with Overlay */}
+          {/* Background Image - More Visible */}
           <div className="absolute inset-0">
             <img 
               src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/96rls157_Gemini_Generated_Image_swqa8zswqa8zswqa%202.png"
               alt="Ceibaa Background"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover opacity-90"
             />
-            {/* Gradient Overlay for readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/95 via-blue-900/90 to-indigo-900/95"></div>
+            {/* Lighter Gradient Overlay - Only on sides */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/60 via-transparent to-purple-900/60"></div>
+            {/* Bottom gradient for text readability */}
+            <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-indigo-900/80 to-transparent"></div>
           </div>
 
           {/* Content */}
           <div className="relative z-10 p-12 text-white">
-            <div className="text-center max-w-4xl mx-auto">
+            <div className="text-center max-w-5xl mx-auto">
               <motion.h3 
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-5xl font-black mb-3 bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent"
+                className="text-6xl font-black mb-4 drop-shadow-2xl"
+                style={{
+                  textShadow: '0 0 30px rgba(0,0,0,0.8), 0 0 60px rgba(0,0,0,0.5)'
+                }}
               >
                 How Ceibaa Works ✨
               </motion.h3>
-              <p className="text-xl text-white/90 mb-12 font-medium">
+              <p className="text-2xl text-white font-bold mb-16 drop-shadow-xl">
                 Your journey to exam success in 3 simple steps
               </p>
 
-              <div className="grid md:grid-cols-3 gap-8 mt-10">
+              <div className="grid md:grid-cols-3 gap-10 mt-10">
                 {/* Step 1 */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.1 }}
-                  className="relative"
+                  className="relative group"
                 >
-                  <div className="bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-gradient-to-br from-cyan-400 to-blue-500 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
-                        <span className="text-2xl font-black text-white">1</span>
+                  <div className="bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-cyan-400">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-br from-cyan-400 to-blue-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
+                        <span className="text-3xl font-black text-white">1</span>
                       </div>
                     </div>
-                    <div className="mt-6">
-                      <div className="text-4xl mb-4">🎯</div>
-                      <h4 className="text-xl font-bold mb-3">Select Your Exam</h4>
-                      <p className="text-white/80 leading-relaxed">
+                    <div className="mt-8">
+                      <div className="text-6xl mb-4">🎯</div>
+                      <h4 className="text-2xl font-black mb-3 text-cyan-600">Select Your Exam</h4>
+                      <p className="text-gray-700 leading-relaxed font-medium">
                         Choose from 38+ competitive exams with complete syllabus coverage
                       </p>
                     </div>
@@ -1163,22 +1168,22 @@ const Home = () => {
 
                 {/* Step 2 */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.2 }}
-                  className="relative"
+                  className="relative group"
                 >
-                  <div className="bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-gradient-to-br from-purple-400 to-pink-500 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
-                        <span className="text-2xl font-black text-white">2</span>
+                  <div className="bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-purple-400">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-br from-purple-400 to-pink-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
+                        <span className="text-3xl font-black text-white">2</span>
                       </div>
                     </div>
-                    <div className="mt-6">
-                      <div className="text-4xl mb-4">📚</div>
-                      <h4 className="text-xl font-bold mb-3">Pick Your Topic</h4>
-                      <p className="text-white/80 leading-relaxed">
+                    <div className="mt-8">
+                      <div className="text-6xl mb-4">📚</div>
+                      <h4 className="text-2xl font-black mb-3 text-purple-600">Pick Your Topic</h4>
+                      <p className="text-gray-700 leading-relaxed font-medium">
                         Topic-wise practice with detailed explanations and performance tracking
                       </p>
                     </div>
@@ -1187,22 +1192,22 @@ const Home = () => {
 
                 {/* Step 3 */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.3 }}
-                  className="relative"
+                  className="relative group"
                 >
-                  <div className="bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
-                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-gradient-to-br from-orange-400 to-red-500 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
-                        <span className="text-2xl font-black text-white">3</span>
+                  <div className="bg-gradient-to-br from-white/95 to-white/85 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 transform hover:scale-105 border-4 border-orange-400">
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-br from-orange-400 to-red-600 w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
+                        <span className="text-3xl font-black text-white">3</span>
                       </div>
                     </div>
-                    <div className="mt-6">
-                      <div className="text-4xl mb-4">⚔️</div>
-                      <h4 className="text-xl font-bold mb-3">Battle & Win</h4>
-                      <p className="text-white/80 leading-relaxed">
+                    <div className="mt-8">
+                      <div className="text-6xl mb-4">⚔️</div>
+                      <h4 className="text-2xl font-black mb-3 text-orange-600">Battle & Win</h4>
+                      <p className="text-gray-700 leading-relaxed font-medium">
                         Compete live with peers or practice solo to ace your exams
                       </p>
                     </div>
@@ -1210,17 +1215,23 @@ const Home = () => {
                 </motion.div>
               </div>
 
-              {/* CTA Button */}
+              {/* CTA Button - Scrolls to Exams */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.4 }}
-                className="mt-12"
+                className="mt-16"
               >
                 <button
-                  onClick={() => navigate('/')}
-                  className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 hover:from-cyan-500 hover:via-purple-600 hover:to-pink-600 px-10 py-5 rounded-full font-black text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-3"
+                  onClick={() => {
+                    const examsSection = document.querySelector('main');
+                    examsSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 px-12 py-6 rounded-full font-black text-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 inline-flex items-center gap-3 text-white border-4 border-white"
+                  style={{
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+                  }}
                 >
                   🚀 Start Your Battle Journey
                 </button>
