@@ -27,57 +27,63 @@ async def connect(sid, environ):
     logger.info(f'🔗 Client {sid} connected to proxy')
     
     # Create a new Socket.io client for this frontend client
-    battle_client = socketio.AsyncClient(logger=False, engineio_logger=False)
+    battle_client = socketio.AsyncClient(logger=True, engineio_logger=True)
     
     # Setup event forwarding from battle-server to this specific frontend client
-    @battle_client.event
-    async def player_joined(data):
-        logger.info(f'📬 Forwarding player-joined to {sid}: {data}')
+    # Use .on() decorator with hyphenated names to match battle-server emissions
+    @battle_client.on('player-joined')
+    async def handle_player_joined(data):
+        logger.info(f'📬 Received player-joined from battle-server for {sid}: {data}')
         await sio_server.emit('player-joined', data, room=sid)
     
-    @battle_client.event
-    async def match_found(data):
-        logger.info(f'📬 Forwarding match-found to {sid}')
+    @battle_client.on('match-found')
+    async def handle_match_found(data):
+        logger.info(f'📬 Received match-found from battle-server for {sid}')
         await sio_server.emit('match-found', data, room=sid)
     
-    @battle_client.event
-    async def waiting(data):
-        logger.info(f'📬 Forwarding waiting to {sid}')
+    @battle_client.on('waiting')
+    async def handle_waiting(data):
+        logger.info(f'📬 Received waiting from battle-server for {sid}')
         await sio_server.emit('waiting', data, room=sid)
     
-    @battle_client.event
-    async def quiz_started(data):
-        logger.info(f'📬 Forwarding quiz-started to {sid}')
+    @battle_client.on('quiz-started')
+    async def handle_quiz_started(data):
+        logger.info(f'📬 Received quiz-started from battle-server for {sid}')
         await sio_server.emit('quiz-started', data, room=sid)
     
-    @battle_client.event
-    async def leaderboard_update(data):
+    @battle_client.on('leaderboard-update')
+    async def handle_leaderboard_update(data):
+        logger.info(f'📬 Received leaderboard-update from battle-server for {sid}')
         await sio_server.emit('leaderboard-update', data, room=sid)
     
-    @battle_client.event
-    async def quiz_ended(data):
+    @battle_client.on('quiz-ended')
+    async def handle_quiz_ended(data):
+        logger.info(f'📬 Received quiz-ended from battle-server for {sid}')
         await sio_server.emit('quiz-ended', data, room=sid)
     
-    @battle_client.event
-    async def new_message(data):
+    @battle_client.on('new-message')
+    async def handle_new_message(data):
+        logger.info(f'📬 Received new-message from battle-server for {sid}')
         await sio_server.emit('new-message', data, room=sid)
     
-    @battle_client.event
-    async def new_reaction(data):
+    @battle_client.on('new-reaction')
+    async def handle_new_reaction(data):
+        logger.info(f'📬 Received new-reaction from battle-server for {sid}')
         await sio_server.emit('new-reaction', data, room=sid)
     
-    @battle_client.event
-    async def gift_received(data):
+    @battle_client.on('gift-received')
+    async def handle_gift_received(data):
+        logger.info(f'📬 Received gift-received from battle-server for {sid}')
         await sio_server.emit('gift-received', data, room=sid)
     
-    @battle_client.event
-    async def player_left(data):
-        logger.info(f'📬 Forwarding player-left to {sid}')
+    @battle_client.on('player-left')
+    async def handle_player_left(data):
+        logger.info(f'📬 Received player-left from battle-server for {sid}')
         await sio_server.emit('player-left', data, room=sid)
     
-    @battle_client.event
-    async def error(data):
-        logger.error(f'📬 Forwarding error to {sid}: {data}')
+    @battle_client.on('error')
+    async def handle_error(data):
+        logger.error(f'📬 Received error from battle-server for {sid}: {data}')
         await sio_server.emit('error', data, room=sid)
     
     # Connect this client to battle-server
