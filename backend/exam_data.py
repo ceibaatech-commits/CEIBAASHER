@@ -1339,7 +1339,7 @@ EXAM_DATA = {
         "full_name": "Uttar Pradesh Trained Graduate Teacher",
         "description": "UP state exam for TGT posts",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
-        "color": "from-cyan-600 to-blue-700",
+        "color": "from-sky-500 to-blue-600",
         "total_questions": 150,
         "duration": "2.5 hours",
         "category": "Teaching Examinations",
