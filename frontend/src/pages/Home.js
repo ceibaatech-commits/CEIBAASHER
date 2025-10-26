@@ -201,9 +201,9 @@ const Home = () => {
                   {/* Title First */}
                   <h3 className="text-xl font-black text-white mb-4 text-center">Real-Time Mock Tests</h3>
                   
-                  {/* Character Image in Middle - Larger */}
+                  {/* Character Image in Middle - Full Size */}
                   <motion.div
-                    animate={{ y: [0, -8, 0] }}
+                    animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     className="flex items-center justify-center mb-4"
                   >
