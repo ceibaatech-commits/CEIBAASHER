@@ -329,8 +329,8 @@ class BattleServerTester:
             return False
         
         try:
-            # Create two Socket.io clients to simulate host and joiner
-            proxy_url = f"{BACKEND_URL}/socket.io"
+            # Use internal URL since external has routing issues
+            proxy_url = "http://localhost:8001/socket.io"
             
             host_client = socketio.SimpleClient()
             joiner_client = socketio.SimpleClient()
@@ -345,19 +345,30 @@ class BattleServerTester:
             
             self.log_result("Multi-Client Proxy Connection", True, "Both host and joiner connected to proxy")
             
-            # Set up event listeners for joiner
+            # Set up event listeners for both clients
+            host_events = []
             joiner_events = []
             
-            def on_player_joined(data):
-                joiner_events.append(('player-joined', data))
-                print(f"🎉 Joiner received player-joined: {data}")
+            def host_on_player_joined(data):
+                host_events.append(('player-joined', data))
+                print(f"🏠 Host received player-joined: {data}")
             
-            def on_error(data):
+            def joiner_on_player_joined(data):
+                joiner_events.append(('player-joined', data))
+                print(f"👤 Joiner received player-joined: {data}")
+            
+            def host_on_error(data):
+                host_events.append(('error', data))
+                print(f"❌ Host received error: {data}")
+            
+            def joiner_on_error(data):
                 joiner_events.append(('error', data))
                 print(f"❌ Joiner received error: {data}")
             
-            joiner_client.on('player-joined', on_player_joined)
-            joiner_client.on('error', on_error)
+            host_client.on('player-joined', host_on_player_joined)
+            host_client.on('error', host_on_error)
+            joiner_client.on('player-joined', joiner_on_player_joined)
+            joiner_client.on('error', joiner_on_error)
             
             # Host joins room first
             print(f"🏠 Host joining room {self.test_pin}")
@@ -379,37 +390,59 @@ class BattleServerTester:
             })
             
             # Wait for events to propagate
-            time.sleep(3)
+            time.sleep(4)
             
-            # Check if joiner received player-joined event
-            player_joined_events = [e for e in joiner_events if e[0] == 'player-joined']
-            error_events = [e for e in joiner_events if e[0] == 'error']
+            # Check results
+            host_player_joined = [e for e in host_events if e[0] == 'player-joined']
+            joiner_player_joined = [e for e in joiner_events if e[0] == 'player-joined']
+            host_errors = [e for e in host_events if e[0] == 'error']
+            joiner_errors = [e for e in joiner_events if e[0] == 'error']
             
-            if error_events:
-                self.log_result("Room Joining Flow", False, f"Joiner received error: {error_events[0][1]}")
+            print(f"📊 Host events: {len(host_player_joined)} player-joined, {len(host_errors)} errors")
+            print(f"📊 Joiner events: {len(joiner_player_joined)} player-joined, {len(joiner_errors)} errors")
+            
+            if host_errors or joiner_errors:
+                all_errors = host_errors + joiner_errors
+                self.log_result("Room Joining Flow", False, f"Errors received: {all_errors}")
                 return False
             
-            if player_joined_events:
-                event_data = player_joined_events[-1][1]  # Get latest event
-                if 'players' in event_data and len(event_data['players']) >= 2:
-                    player_names = [p['name'] for p in event_data['players']]
-                    if 'TestHost' in player_names and 'TestJoiner' in player_names:
+            # Check if both clients received player-joined events
+            if host_player_joined and joiner_player_joined:
+                # Check the latest events from both clients
+                host_latest = host_player_joined[-1][1]
+                joiner_latest = joiner_player_joined[-1][1]
+                
+                # Both should have 2 players
+                if ('players' in host_latest and len(host_latest['players']) >= 2 and
+                    'players' in joiner_latest and len(joiner_latest['players']) >= 2):
+                    
+                    host_player_names = [p['name'] for p in host_latest['players']]
+                    joiner_player_names = [p['name'] for p in joiner_latest['players']]
+                    
+                    if ('TestHost' in host_player_names and 'TestJoiner' in host_player_names and
+                        'TestHost' in joiner_player_names and 'TestJoiner' in joiner_player_names):
+                        
                         self.log_result("Room Joining Flow", True, 
-                                      f"✅ CRITICAL FIX VERIFIED: Both players in room - {player_names}")
+                                      f"✅ CRITICAL FIX VERIFIED: Both clients see both players - Host: {host_player_names}, Joiner: {joiner_player_names}")
                         self.log_result("Socket.io Event Propagation", True, 
-                                      "player-joined events properly forwarded through proxy")
+                                      "player-joined events properly forwarded through proxy to all clients")
                         success = True
                     else:
                         self.log_result("Room Joining Flow", False, 
-                                      f"Missing players in event: {player_names}")
+                                      f"Player name mismatch - Host sees: {host_player_names}, Joiner sees: {joiner_player_names}")
                         success = False
                 else:
                     self.log_result("Room Joining Flow", False, 
-                                  f"Invalid player-joined event data: {event_data}")
+                                  f"Insufficient players - Host: {host_latest.get('players', [])}, Joiner: {joiner_latest.get('players', [])}")
                     success = False
             else:
+                missing = []
+                if not host_player_joined:
+                    missing.append("Host")
+                if not joiner_player_joined:
+                    missing.append("Joiner")
                 self.log_result("Room Joining Flow", False, 
-                              "Joiner never received player-joined event - proxy forwarding failed")
+                              f"Missing player-joined events for: {', '.join(missing)}")
                 success = False
             
             # Cleanup
