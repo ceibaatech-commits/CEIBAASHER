@@ -134,9 +134,9 @@ const Login = () => {
               </button>
             </form>
             <div className="mt-3 text-xs text-gray-600 text-center">
-              <p className="font-semibold mb-1">Test Credentials:</p>
-              <p>User: <span className="font-mono bg-white px-2 py-0.5 rounded font-bold">Sher20</span> | Username: <span className="font-mono bg-white px-2 py-0.5 rounded">12345</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">123445</span></p>
-              <p className="mt-1">User: <span className="font-mono bg-white px-2 py-0.5 rounded font-bold">Sher25</span> | Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span></p>
+              <p className="font-semibold mb-1">Test Credentials (Use these for testing):</p>
+              <p><span className="font-bold">User 1:</span> Username: <span className="font-mono bg-white px-2 py-0.5 rounded">12345</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">123445</span></p>
+              <p className="mt-1"><span className="font-bold">User 2:</span> Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span></p>
             </div>
           </div>
 
