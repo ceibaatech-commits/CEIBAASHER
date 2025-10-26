@@ -57,7 +57,7 @@ const AboutUs = () => {
   ];
 
   const problems = [
-    { icon: TrendingDown, text: "70% of students spend 4-6 hours daily on Instagram, TikTok, and YouTube" },
+    { icon: TrendingDown, text: "70% of students spend 4-6 hours daily on short-form video platforms" },
     { icon: Clock, text: "Average attention span dropped from 12 seconds to just 8 seconds" },
     { icon: Sparkles, text: "Students constantly distracted during study hours by notifications" },
     { icon: Brain, text: "Traditional learning feels boring compared to social media dopamine hits" },
