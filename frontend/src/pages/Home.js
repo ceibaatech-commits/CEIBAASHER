@@ -590,27 +590,58 @@ const Home = () => {
                     </div>
                   </div>
                 
-                <div className="p-6">
-                  <p className="text-gray-700 text-sm mb-4 h-12">{exam.description}</p>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Questions:</span>
-                      <span className="font-semibold text-gray-900">{exam.total_questions}</span>
+                  {/* Enhanced Card Body */}
+                  <div className="p-6 bg-gradient-to-br from-white to-gray-50">
+                    <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed">{exam.description}</p>
+                    
+                    {/* Stats with Icons */}
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100">
+                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xl">📝</span>
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs text-gray-500 block">Questions</span>
+                          <span className="font-bold text-gray-900">{exam.total_questions}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100">
+                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xl">⏱️</span>
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs text-gray-500 block">Duration</span>
+                          <span className="font-bold text-gray-900">{exam.duration}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-sm border border-gray-100">
+                        <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg flex items-center justify-center">
+                          <span className="text-xl">📚</span>
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs text-gray-500 block">Subjects</span>
+                          <span className="font-bold text-gray-900">{exam.subjects.length}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Duration:</span>
-                      <span className="font-semibold text-gray-900">{exam.duration}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Subjects:</span>
-                      <span className="font-semibold text-gray-900">{exam.subjects.length}</span>
-                    </div>
-                  </div>
 
-                  <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all group-hover:scale-105">
-                    View Syllabus →
-                  </button>
+                    {/* Enhanced CTA Button */}
+                    <motion.button 
+                      className="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-2xl transform transition-all flex items-center justify-center gap-2 group"
+                      whileHover={{ scale: 1.02, y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <span>View Syllabus</span>
+                      <motion.span
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        →
+                      </motion.span>
+                    </motion.button>
+                  </div>
                 </div>
               </motion.div>
             ))}
