@@ -5,7 +5,6 @@ import ExamSyllabus from "@/pages/ExamSyllabus";
 import ModernExamSyllabus from "@/pages/ModernExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
-import CreatorDashboard from "@/pages/CreatorDashboard";
 import Login from "@/pages/Login";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
