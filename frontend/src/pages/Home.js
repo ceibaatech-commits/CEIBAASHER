@@ -1108,32 +1108,123 @@ const Home = () => {
         </div>
         </div>
 
-        {/* Info Section */}
-        <div className="mt-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-          <div className="text-center max-w-3xl mx-auto">
-            <h3 className="text-3xl font-bold mb-4">How Ceibaa Works</h3>
-            <div className="grid md:grid-cols-3 gap-6 mt-8">
-              <div className="text-center">
-                <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-3xl font-bold">1</span>
-                </div>
-                <h4 className="font-semibold mb-2">Select Your Exam</h4>
-                <p className="text-white/80 text-sm">Choose from 38+ competitive exams</p>
+        {/* How Ceibaa Works Section - Redesigned with Background Image */}
+        <div className="mt-16 relative overflow-hidden rounded-3xl shadow-2xl">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/96rls157_Gemini_Generated_Image_swqa8zswqa8zswqa%202.png"
+              alt="Ceibaa Background"
+              className="w-full h-full object-cover"
+            />
+            {/* Gradient Overlay for readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/95 via-blue-900/90 to-indigo-900/95"></div>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 p-12 text-white">
+            <div className="text-center max-w-4xl mx-auto">
+              <motion.h3 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-5xl font-black mb-3 bg-gradient-to-r from-cyan-300 via-purple-300 to-pink-300 bg-clip-text text-transparent"
+              >
+                How Ceibaa Works ✨
+              </motion.h3>
+              <p className="text-xl text-white/90 mb-12 font-medium">
+                Your journey to exam success in 3 simple steps
+              </p>
+
+              <div className="grid md:grid-cols-3 gap-8 mt-10">
+                {/* Step 1 */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 }}
+                  className="relative"
+                >
+                  <div className="bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-br from-cyan-400 to-blue-500 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
+                        <span className="text-2xl font-black text-white">1</span>
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <div className="text-4xl mb-4">🎯</div>
+                      <h4 className="text-xl font-bold mb-3">Select Your Exam</h4>
+                      <p className="text-white/80 leading-relaxed">
+                        Choose from 38+ competitive exams with complete syllabus coverage
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Step 2 */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 }}
+                  className="relative"
+                >
+                  <div className="bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-br from-purple-400 to-pink-500 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
+                        <span className="text-2xl font-black text-white">2</span>
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <div className="text-4xl mb-4">📚</div>
+                      <h4 className="text-xl font-bold mb-3">Pick Your Topic</h4>
+                      <p className="text-white/80 leading-relaxed">
+                        Topic-wise practice with detailed explanations and performance tracking
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Step 3 */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="relative"
+                >
+                  <div className="bg-white/10 backdrop-blur-md border-2 border-white/20 rounded-2xl p-8 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+                    <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                      <div className="bg-gradient-to-br from-orange-400 to-red-500 w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border-4 border-white">
+                        <span className="text-2xl font-black text-white">3</span>
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <div className="text-4xl mb-4">⚔️</div>
+                      <h4 className="text-xl font-bold mb-3">Battle & Win</h4>
+                      <p className="text-white/80 leading-relaxed">
+                        Compete live with peers or practice solo to ace your exams
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
-              <div className="text-center">
-                <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-3xl font-bold">2</span>
-                </div>
-                <h4 className="font-semibold mb-2">Pick Your Topic</h4>
-                <p className="text-white/80 text-sm">Topic-wise practice from complete syllabus</p>
-              </div>
-              <div className="text-center">
-                <div className="bg-white/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-3xl font-bold">3</span>
-                </div>
-                <h4 className="font-semibold mb-2">Battle & Win</h4>
-                <p className="text-white/80 text-sm">Compete live or practice solo</p>
-              </div>
+
+              {/* CTA Button */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+                className="mt-12"
+              >
+                <button
+                  onClick={() => navigate('/')}
+                  className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 hover:from-cyan-500 hover:via-purple-600 hover:to-pink-600 px-10 py-5 rounded-full font-black text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 inline-flex items-center gap-3"
+                >
+                  🚀 Start Your Battle Journey
+                </button>
+              </motion.div>
             </div>
           </div>
         </div>
