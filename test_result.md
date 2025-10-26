@@ -309,11 +309,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Socket.io Proxy Room Joining"
-  stuck_tasks:
-    - "Socket.io Proxy Room Joining"
+    - "Host Control Panel in LiveBattle"
+    - "In-Battle Chat System"
+    - "Emoji Reactions During Quiz"
+  stuck_tasks: []
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "user"
