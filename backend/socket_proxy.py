@@ -1,5 +1,6 @@
 """
 Socket.io proxy to forward connections from main backend to battle-server
+Each frontend client gets its own dedicated battle-server connection
 """
 import socketio
 import asyncio
@@ -7,9 +8,6 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Create Socket.io client that connects to battle-server
-sio_client = socketio.AsyncClient(logger=True, engineio_logger=True)
 
 # Create Socket.io server that frontend will connect to  
 sio_server = socketio.AsyncServer(
@@ -20,8 +18,8 @@ sio_server = socketio.AsyncServer(
 )
 
 BATTLE_SERVER_URL = 'http://localhost:5001'
-client_to_server_sid = {}  # Map client sid to battle-server sid
-sid_to_rooms = {}  # Track which rooms each client is in
+# Map frontend client SID to their dedicated battle-server client
+client_connections = {}  # {frontend_sid: battle_client}
 
 @sio_server.event
 async def connect(sid, environ):
