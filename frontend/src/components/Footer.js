@@ -93,9 +93,6 @@ const Footer = () => {
                   FAQs
                 </button>
               </li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">How It Works</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Pricing</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
               <li>
                 <button 
                   onClick={() => navigate('/contact')}
