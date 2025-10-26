@@ -31,13 +31,25 @@ const UserDashboard = () => {
     }
 
     try {
+      // First, try to get user from localStorage
+      const storedUser = localStorage.getItem('ceibaa_user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+
+      // Then try to fetch from API
       const response = await axios.get(`${API_URL}/api/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);
+      localStorage.setItem('ceibaa_user', JSON.stringify(response.data));
     } catch (error) {
       console.error('Auth error:', error);
-      navigate('/login');
+      // If API fails but we have user in localStorage, keep them logged in
+      const storedUser = localStorage.getItem('ceibaa_user');
+      if (!storedUser) {
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }
