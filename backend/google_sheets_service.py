@@ -13,10 +13,15 @@ class GoogleSheetsService:
             return match.group(1)
         return url  # Assume it's already an ID
     
-    def fetch_questions(self, sheet_url: str, sheet_name: str = None) -> List[Dict]:
+    def fetch_questions(self, sheet_url: str, sheet_name: str = None, topic_filter: str = None) -> List[Dict]:
         """
         Fetch questions from a public Google Sheet using CSV export
         Expected format: QUESTION NUMBER | Question | A | B | C | D | Answer | Explanation
+        
+        Args:
+            sheet_url: URL of the Google Sheet
+            sheet_name: Name of the sheet (optional)
+            topic_filter: Filter questions by topic prefix in question text (e.g., "Periodic Table")
         """
         try:
             sheet_id = self.extract_sheet_id(sheet_url)
@@ -42,6 +47,13 @@ class GoogleSheetsService:
                 if not question_text or not question_text.strip():
                     continue
                 
+                # Filter by topic if specified
+                # Check if question starts with (Topic): format
+                if topic_filter:
+                    # Look for pattern like "(Periodic Table):" or "(Chemical Bonding):"
+                    if not question_text.strip().lower().startswith(f"({topic_filter.lower()}):"):
+                        continue
+                
                 # Get options
                 option_a = row.get('A', row.get('a', ''))
                 option_b = row.get('B', row.get('b', ''))
@@ -50,6 +62,10 @@ class GoogleSheetsService:
                 
                 # Get answer
                 answer = row.get('Answer', row.get('answer', ''))
+                
+                # Also try 'Correct Answer' column
+                if not answer:
+                    answer = row.get('Correct Answer', row.get('correct answer', ''))
                 
                 # Convert answer to index (0-3)
                 correct_answer = self._parse_answer(answer)
