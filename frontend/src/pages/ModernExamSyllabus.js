@@ -109,8 +109,10 @@ const ModernExamSyllabus = () => {
                 <div className="text-5xl">{examData.icon}</div>
               )}
               <div>
-                <h1 className="text-3xl font-black">{examData.name}</h1>
-                <p className="text-white/90 text-sm mt-1">{examData.full_name}</p>
+                <h1 className="text-3xl font-black">
+                  {examData.name} 2026 - Test Series, MCQ & Free Practice Quizzes
+                </h1>
+                <p className="text-white/90 text-sm mt-1">{examData.full_name} Preparation Platform</p>
               </div>
             </div>
 
