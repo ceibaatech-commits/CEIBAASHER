@@ -320,6 +320,35 @@ agent_communication:
   - agent: "user"
     message: "Battle room joining is STILL not working. Tested with 2 demo accounts. Host creates room successfully, joiner enters PIN, but host never sees the joiner. Shows '0 Players' and 'Waiting for host to start the quiz' on joiner's screen."
   
+  - agent: "user"
+    message: "Add JEE Organic Chemistry and JEE Inorganic Chemistry sheets to the database. Inorganic Chemistry sheet URL: https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview with topics: Periodic Table, Chemical Bonding, Coordination Compounds, Metallurgy"
+  
+  - agent: "main"
+    message: |
+      ✅ GOOGLE SHEETS ADDED SUCCESSFULLY
+      
+      Added the following question banks to database:
+      
+      1. **JEE Main - Organic Chemistry**:
+         - Topic: Basic Principles & Techniques
+         - Sheet URL: https://docs.google.com/spreadsheets/d/1Vn8c42Wb31nFsX3FaG56dQG3BcXYePeStZ6_w8L8LAw/htmlview
+         - Sheet ID: 014b0b09-0198-4420-95dc-51ef8ac981e8
+         - Status: Successfully added and verified
+      
+      2. **JEE Main - Inorganic Chemistry** (4 topics):
+         - Topic: Periodic Table (ID: 515d7d16-e0e5-4bfc-82ab-d9c106b88c5e)
+         - Topic: Chemical Bonding (ID: 13b29cee-184e-4195-b1f5-891a5bc2b53e)
+         - Topic: Coordination Compounds (ID: 4b7eb060-d2e9-4b6f-be37-e2d4dbf8e958)
+         - Topic: Metallurgy (ID: ec379870-bf8f-435e-9f27-834fbbc624be)
+         - Sheet URL: https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview
+         - Sheet contains 30 questions
+         - Status: All topics successfully added and verified
+      
+      📊 Current Database Status:
+      - Total sheets in database: 6
+      - All sheets tested and accessible via Google Sheets API
+      - Questions available for solo practice and battle mode
+  
   - agent: "main"
     message: |
       🚨 CRITICAL FIX IMPLEMENTED: Socket.io Proxy Architecture Rewrite
