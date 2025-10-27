@@ -218,11 +218,11 @@ backend:
 
   - task: "Google Sheets Question Bank Integration"
     implemented: true
-    working: true
-    file: "/app/backend/sheets_routes.py"
+    working: "NA"
+    file: "/app/backend/sheets_routes.py, /app/backend/quiz_routes.py, /app/backend/google_sheets_service.py"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -230,6 +230,12 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ VERIFIED: All 5 sheet mappings successfully added. Sheets tested and accessible with 30 questions available. Total 6 sheets now in database (including previous NEET Physics). API endpoints working: /api/sheets/add, /api/sheets/list, /api/sheets/test"
+      - working: "NA"
+        agent: "user"
+        comment: "Questions are NOT loading from the uploaded Google Sheets. Still showing random/different questions instead of the ones from the uploaded Excel sheets"
+      - working: "NA"
+        agent: "main"
+        comment: "Investigating quiz question loading logic. quiz_routes.py has Google Sheets integration code (lines 74-103) that should fetch from sheets when topic is specified. google_sheets_service.py has fetch_questions method. Need to test if questions are actually being pulled from sheets or falling back to demo questions. Will run backend tests to verify the integration."
 
 frontend:
   - task: "Host Control Panel in LiveBattle"
