@@ -804,6 +804,9 @@ class BattleServerTester:
             # Test the specific sheet mentioned in the review request
             sheet_url = "https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview"
             
+            # Import from backend directory
+            import sys
+            sys.path.append('/app/backend')
             from google_sheets_service import GoogleSheetsService
             service = GoogleSheetsService()
             
@@ -857,6 +860,9 @@ class BattleServerTester:
         try:
             sheet_url = "https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview"
             
+            # Import from backend directory
+            import sys
+            sys.path.append('/app/backend')
             from google_sheets_service import GoogleSheetsService
             service = GoogleSheetsService()
             
