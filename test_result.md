@@ -216,6 +216,21 @@ backend:
         agent: "testing"
         comment: "✅ VERIFIED: MongoDB integration working correctly. Battle rooms saved to battle_rooms collection with all required fields (pin, hostName, examId, subject, topic, questions, quizId). Quiz results collection accessible and ready for data when quizzes complete."
 
+  - task: "Google Sheets Question Bank Integration"
+    implemented: true
+    working: true
+    file: "/app/backend/sheets_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added JEE Organic Chemistry (Basic Principles & Techniques) and JEE Inorganic Chemistry (Periodic Table, Chemical Bonding, Coordination Compounds, Metallurgy) to question_sheets collection"
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFIED: All 5 sheet mappings successfully added. Sheets tested and accessible with 30 questions available. Total 6 sheets now in database (including previous NEET Physics). API endpoints working: /api/sheets/add, /api/sheets/list, /api/sheets/test"
+
 frontend:
   - task: "Host Control Panel in LiveBattle"
     implemented: true
