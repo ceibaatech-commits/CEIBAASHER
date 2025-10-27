@@ -1046,10 +1046,20 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # Contact Form API Tests (NEW - Primary Focus)
+        # Google Sheets Integration Tests (CRITICAL - Primary Focus)
+        print("\n📊 Testing Google Sheets Integration (CRITICAL)...")
+        if mongo_connected:
+            self.test_google_sheets_database_mappings()
+        self.test_google_sheets_csv_access()
+        self.test_google_sheets_service_fetch()
+        self.test_quiz_start_with_google_sheets()
+        self.test_quiz_start_multiple_topics()
+        self.test_backend_logs_for_sheets_loading()
+        
+        # Contact Form API Tests
         print("\n📧 Testing Contact Form API...")
         self.test_sendgrid_configuration()
-        self.test_dual_email_contact_form()  # NEW: Test dual email functionality
+        self.test_dual_email_contact_form()
         self.test_contact_form_valid_request()
         self.test_contact_form_without_phone()
         self.test_contact_form_missing_name()
@@ -1057,19 +1067,19 @@ class BattleServerTester:
         self.test_contact_form_missing_message()
         self.test_contact_form_invalid_email()
         
-        # Battle Server API Tests (Existing)
+        # Battle Server API Tests
         print("\n📡 Testing Battle Server APIs...")
         self.test_health_check()
         self.test_create_room()
         self.test_get_room_info()
         self.test_get_nonexistent_room()
         
-        # Socket.io Tests (CRITICAL - Main Focus)
-        print("\n🔌 Testing Socket.io Proxy (CRITICAL)...")
+        # Socket.io Tests
+        print("\n🔌 Testing Socket.io Proxy...")
         self.test_battle_server_logs()
-        self.test_socket_connection()  # Direct battle-server connection
-        self.test_socket_proxy_connection()  # Proxy connection
-        self.test_room_joining_flow()  # CRITICAL: End-to-end room joining
+        self.test_socket_connection()
+        self.test_socket_proxy_connection()
+        self.test_room_joining_flow()
         
         # MongoDB Tests
         if mongo_connected:
@@ -1099,6 +1109,14 @@ class BattleServerTester:
             print("\n❌ FAILED TESTS:")
             for test in failed_tests:
                 print(f"  - {test['test']}: {test['message']}")
+        
+        # List Google Sheets specific results
+        sheets_tests = [result for result in self.test_results if 'Google Sheets' in result['test'] or 'Quiz Start' in result['test']]
+        if sheets_tests:
+            print(f"\n📊 GOOGLE SHEETS INTEGRATION RESULTS ({len(sheets_tests)} tests):")
+            for test in sheets_tests:
+                status = "✅" if test['success'] else "❌"
+                print(f"  {status} {test['test']}")
         
         # List contact form specific results
         contact_tests = [result for result in self.test_results if 'Contact Form' in result['test'] or 'SendGrid' in result['test']]
