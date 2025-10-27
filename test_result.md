@@ -245,6 +245,12 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ ROOT CAUSE FIXED: The issue was that the user's single Google Sheet contained ALL topics mixed together (Periodic Table, Chemical Bonding, Coordination Compounds, Metallurgy in one sheet), but we mapped it to 4 separate topics. When requesting 'Periodic Table', the system loaded all 30 questions (all topics mixed), shuffled them, and returned random 10. SOLUTION: Added topic_filter parameter to google_sheets_service.py that parses the question prefix (e.g., '(Periodic Table):') to filter questions by topic. Now each topic returns only its specific questions: Periodic Table (7 questions), Chemical Bonding (7 questions), Coordination Compounds (6 questions), Metallurgy (7 questions). Tested and verified all 4 topics return correct filtered questions."
+      - working: false
+        agent: "user"
+        comment: "Nothing is working there is not even one question loading from sheets"
+      - working: true
+        agent: "main"
+        comment: "✅ CRITICAL BUG FIXED: Found the actual root cause - exam_id mismatch! The sheets were stored in database with exam_id 'jee-main-advanced' but the frontend and exam_data.py use 'JEE'. When quiz API searched for sheets with exam='JEE', it found nothing, so fell back to demo questions (which don't exist for Inorganic Chemistry). FIX: Updated all 5 JEE sheets in database from exam_id 'jee-main-advanced' to 'JEE'. VERIFIED: All 4 Inorganic Chemistry topics now working: Periodic Table (7 questions), Chemical Bonding (7 questions), Coordination Compounds (6 questions), Metallurgy (7 questions). Questions are correctly filtered by topic and loading from user's Google Sheet."
 
 frontend:
   - task: "Host Control Panel in LiveBattle"
