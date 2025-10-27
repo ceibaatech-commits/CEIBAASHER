@@ -143,7 +143,33 @@
                 </div>
             </div>
         </noscript>
-        <div id="root"></div>
+        <div id="root">
+            <!-- Loading fallback that shows before React loads -->
+            <div id="app-loading" style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; z-index: 9999;">
+                <div style="text-align: center; color: white;">
+                    <div style="width: 80px; height: 80px; border: 5px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                    <h1 style="font-size: 2em; margin-bottom: 10px;">Ceibaa</h1>
+                    <p style="font-size: 1.1em; opacity: 0.9;">Loading 38+ Exam Preparations...</p>
+                    <p style="font-size: 0.9em; opacity: 0.7; margin-top: 10px;">JEE 2026 • NEET 2026 • UPSC • SSC • Banking</p>
+                </div>
+            </div>
+            <style>
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+            </style>
+            <script>
+                // Remove loading screen when React app mounts
+                window.addEventListener('DOMContentLoaded', function() {
+                    setTimeout(function() {
+                        var loader = document.getElementById('app-loading');
+                        if (loader && document.querySelector('#root > div')) {
+                            loader.style.display = 'none';
+                        }
+                    }, 1000);
+                });
+            </script>
+        </div>
         <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
