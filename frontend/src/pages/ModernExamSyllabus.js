@@ -79,6 +79,14 @@ const ModernExamSyllabus = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* SEO Component */}
+      <SEO 
+        examName={examData?.full_name || examData?.name}
+        title={`${examData?.full_name || examData?.name} 2026 - Test Series, MCQ & Free Practice Quizzes | Ceibaa`}
+        description={`Prepare for ${examData?.full_name || examData?.name} 2026 with comprehensive test series, MCQs & free practice quizzes. Master all subjects with live battles, real-time mock tests & detailed syllabus coverage on Ceibaa.`}
+        keywords={`${examData?.name} 2026, ${examData?.name} test series, ${examData?.name} MCQ, ${examData?.name} practice quiz, ${examData?.name} mock test, ${examData?.name} preparation, ${examData?.name} syllabus`}
+      />
+      
       <Header 
         isLoggedIn={isLoggedIn}
         user={user}
