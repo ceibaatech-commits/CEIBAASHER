@@ -92,7 +92,8 @@ async def start_quiz(request: QuizStartRequest):
                 sheets_service = GoogleSheetsService()
                 questions = sheets_service.fetch_questions(
                     sheet_mapping["sheet_url"],
-                    sheet_mapping.get("sheet_name")
+                    sheet_mapping.get("sheet_name"),
+                    topic_filter=topic  # Pass topic to filter questions
                 )
                 
                 if questions:
