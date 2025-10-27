@@ -75,6 +75,13 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      {/* SEO Component for Home Page */}
+      <SEO 
+        title="Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for JEE, NEET, UPSC, SSC & 38+ Competitive Exams"
+        description="Master 38+ competitive exams including JEE 2026, NEET 2026, UPSC, SSC, Banking, Teaching with Ceibaa's free online test series, MCQs, and practice quizzes. Join live multiplayer battles, take mock tests, and prepare with comprehensive syllabus coverage."
+        keywords="JEE 2026, NEET 2026, UPSC 2026, SSC 2026, Banking exams, Teaching exams, competitive exams, test series, MCQ practice, free quiz, online mock tests, exam preparation, live battles"
+      />
+      
       <Header 
         isLoggedIn={isLoggedIn}
         user={user}
@@ -86,11 +93,11 @@ const Home = () => {
       <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-5xl font-black mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Transform Learning into Competition
-            </h2>
+            <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              Ceibaa - Master 38+ Competitive Exams with Free Test Series 2026
+            </h1>
             <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-              Master competitive exams through engaging multiplayer battles. Practice with syllabus-based quizzes or compete live with opponents!
+              Master JEE, NEET, UPSC, SSC & more through engaging multiplayer battles. Free practice quizzes, MCQs & comprehensive test series for 2026 exams!
             </p>
             <div className="flex justify-center gap-4">
               <button
