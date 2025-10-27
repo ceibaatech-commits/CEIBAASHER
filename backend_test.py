@@ -755,6 +755,288 @@ class BattleServerTester:
         except Exception as e:
             self.log_result("Dual Email Contact Form", False, f"Request error: {e}")
             return False
+
+    def test_google_sheets_database_mappings(self):
+        """Test Google Sheets database mappings exist"""
+        if self.db is None:
+            self.log_result("Google Sheets Database Mappings", False, "No database connection")
+            return False
+        
+        try:
+            # Check question_sheets collection
+            sheets_collection = self.db.question_sheets
+            sheet_count = sheets_collection.count_documents({})
+            
+            if sheet_count > 0:
+                self.log_result("Google Sheets Database Mappings", True, f"Found {sheet_count} sheet mapping(s)")
+                
+                # Get all mappings
+                mappings = list(sheets_collection.find({}))
+                
+                # Check for JEE Inorganic Chemistry mappings
+                jee_inorganic_mappings = [m for m in mappings if 
+                                        m.get('exam_id') == 'jee-main-advanced' and 
+                                        m.get('subject') == 'Inorganic Chemistry']
+                
+                if jee_inorganic_mappings:
+                    topics = [m.get('topic') for m in jee_inorganic_mappings]
+                    self.log_result("JEE Inorganic Chemistry Mappings", True, 
+                                  f"Found {len(jee_inorganic_mappings)} topics: {', '.join(topics)}")
+                    
+                    # Store mappings for later tests
+                    self.jee_inorganic_mappings = jee_inorganic_mappings
+                    return True
+                else:
+                    self.log_result("JEE Inorganic Chemistry Mappings", False, 
+                                  "No JEE Inorganic Chemistry mappings found")
+                    return False
+            else:
+                self.log_result("Google Sheets Database Mappings", False, "No sheet mappings found in database")
+                return False
+                
+        except Exception as e:
+            self.log_result("Google Sheets Database Mappings", False, f"Database error: {e}")
+            return False
+
+    def test_google_sheets_csv_access(self):
+        """Test direct CSV access to Google Sheets"""
+        try:
+            # Test the specific sheet mentioned in the review request
+            sheet_url = "https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview"
+            
+            from google_sheets_service import GoogleSheetsService
+            service = GoogleSheetsService()
+            
+            # Extract sheet ID and test CSV access
+            sheet_id = service.extract_sheet_id(sheet_url)
+            csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+            
+            response = requests.get(csv_url, timeout=10)
+            
+            if response.status_code == 200:
+                # Parse CSV to check format
+                import csv
+                from io import StringIO
+                
+                csv_data = StringIO(response.text)
+                reader = csv.DictReader(csv_data)
+                
+                # Get headers
+                headers = reader.fieldnames
+                self.log_result("Google Sheets CSV Access", True, 
+                              f"✅ CSV accessible. Headers: {headers}")
+                
+                # Count rows
+                rows = list(reader)
+                self.log_result("Google Sheets CSV Row Count", True, 
+                              f"Found {len(rows)} question rows")
+                
+                # Check expected headers
+                expected_headers = ['Question Number', 'Question', 'A', 'B', 'C', 'D', 'Correct Answer', 'Explanation']
+                missing_headers = [h for h in expected_headers if h not in headers]
+                
+                if not missing_headers:
+                    self.log_result("Google Sheets CSV Headers", True, 
+                                  "All expected headers present")
+                else:
+                    self.log_result("Google Sheets CSV Headers", False, 
+                                  f"Missing headers: {missing_headers}. Available: {headers}")
+                
+                return True
+            else:
+                self.log_result("Google Sheets CSV Access", False, 
+                              f"CSV not accessible: HTTP {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Google Sheets CSV Access", False, f"CSV access error: {e}")
+            return False
+
+    def test_google_sheets_service_fetch(self):
+        """Test GoogleSheetsService fetch_questions method"""
+        try:
+            sheet_url = "https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview"
+            
+            from google_sheets_service import GoogleSheetsService
+            service = GoogleSheetsService()
+            
+            questions = service.fetch_questions(sheet_url)
+            
+            if questions:
+                self.log_result("Google Sheets Service Fetch", True, 
+                              f"✅ Fetched {len(questions)} questions from Google Sheets")
+                
+                # Validate question structure
+                if questions:
+                    sample_q = questions[0]
+                    required_fields = ['id', 'question', 'options', 'correctAnswer']
+                    
+                    if all(field in sample_q for field in required_fields):
+                        self.log_result("Google Sheets Question Structure", True, 
+                                      "Questions have correct structure")
+                        
+                        # Check options format
+                        if isinstance(sample_q['options'], list) and len(sample_q['options']) == 4:
+                            self.log_result("Google Sheets Question Options", True, 
+                                          "Questions have 4 options as expected")
+                        else:
+                            self.log_result("Google Sheets Question Options", False, 
+                                          f"Invalid options format: {sample_q['options']}")
+                        
+                        # Store questions for comparison
+                        self.sheets_questions = questions
+                        return True
+                    else:
+                        missing = [f for f in required_fields if f not in sample_q]
+                        self.log_result("Google Sheets Question Structure", False, 
+                                      f"Missing fields: {missing}")
+                        return False
+            else:
+                self.log_result("Google Sheets Service Fetch", False, 
+                              "No questions fetched from Google Sheets")
+                return False
+                
+        except Exception as e:
+            self.log_result("Google Sheets Service Fetch", False, f"Fetch error: {e}")
+            return False
+
+    def test_quiz_start_with_google_sheets(self):
+        """Test quiz start API with Google Sheets integration"""
+        try:
+            # Test with JEE Inorganic Chemistry - Periodic Table
+            payload = {
+                "exam": "jee-main-advanced",
+                "subject": "Inorganic Chemistry", 
+                "topic": "Periodic Table"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/quiz/start",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get('success') and 'questions' in data:
+                    questions = data['questions']
+                    self.log_result("Quiz Start API - Google Sheets Topic", True, 
+                                  f"✅ Quiz started with {len(questions)} questions")
+                    
+                    # Check if questions are from Google Sheets or demo
+                    # Compare with demo questions to see if they're different
+                    from demo_questions import DEMO_QUESTIONS
+                    
+                    demo_questions = DEMO_QUESTIONS.get('jee-main-advanced', {}).get('Inorganic Chemistry', [])
+                    
+                    if demo_questions:
+                        # Check if returned questions match demo questions
+                        demo_question_texts = [q['question'] for q in demo_questions]
+                        api_question_texts = [q['question'] for q in questions]
+                        
+                        # If questions are identical to demo, Google Sheets integration failed
+                        if api_question_texts == demo_question_texts[:len(api_question_texts)]:
+                            self.log_result("Google Sheets vs Demo Questions", False, 
+                                          "❌ CRITICAL: Questions are from DEMO data, not Google Sheets!")
+                            return False
+                        else:
+                            self.log_result("Google Sheets vs Demo Questions", True, 
+                                          "✅ Questions are different from demo - likely from Google Sheets")
+                    
+                    # Store quiz questions for comparison
+                    self.quiz_questions = questions
+                    return True
+                else:
+                    self.log_result("Quiz Start API - Google Sheets Topic", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Quiz Start API - Google Sheets Topic", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Quiz Start API - Google Sheets Topic", False, f"Request error: {e}")
+            return False
+
+    def test_quiz_start_multiple_topics(self):
+        """Test quiz start API with different JEE Inorganic Chemistry topics"""
+        topics = ["Periodic Table", "Chemical Bonding", "Coordination Compounds", "Metallurgy"]
+        
+        for topic in topics:
+            try:
+                payload = {
+                    "exam": "jee-main-advanced",
+                    "subject": "Inorganic Chemistry",
+                    "topic": topic
+                }
+                
+                response = requests.post(
+                    f"{BACKEND_URL}/api/quiz/start",
+                    json=payload,
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('success') and 'questions' in data:
+                        questions = data['questions']
+                        self.log_result(f"Quiz Start - {topic}", True, 
+                                      f"✅ {len(questions)} questions loaded for {topic}")
+                    else:
+                        self.log_result(f"Quiz Start - {topic}", False, 
+                                      f"Invalid response: {data}")
+                else:
+                    self.log_result(f"Quiz Start - {topic}", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+                    
+            except Exception as e:
+                self.log_result(f"Quiz Start - {topic}", False, f"Error: {e}")
+
+    def test_backend_logs_for_sheets_loading(self):
+        """Check backend logs for Google Sheets loading messages"""
+        try:
+            # Check supervisor backend logs
+            import subprocess
+            
+            result = subprocess.run(
+                ["tail", "-n", "50", "/var/log/supervisor/backend.out.log"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            if result.returncode == 0:
+                log_content = result.stdout
+                
+                # Look for Google Sheets success messages
+                if "✅ Loaded" in log_content and "questions from Google Sheets" in log_content:
+                    self.log_result("Backend Logs - Google Sheets Success", True, 
+                                  "✅ Found Google Sheets loading success messages in logs")
+                elif "⚠️ Error fetching from Google Sheets" in log_content:
+                    self.log_result("Backend Logs - Google Sheets Error", False, 
+                                  "❌ Found Google Sheets error messages in logs")
+                else:
+                    self.log_result("Backend Logs - Google Sheets Messages", False, 
+                                  "No Google Sheets loading messages found in recent logs")
+                
+                # Check for any error messages
+                if "Error" in log_content or "Exception" in log_content:
+                    error_lines = [line for line in log_content.split('\n') if 'Error' in line or 'Exception' in line]
+                    if error_lines:
+                        self.log_result("Backend Logs - Errors", False, 
+                                      f"Found errors in logs: {error_lines[:3]}")  # Show first 3 errors
+                
+                return True
+            else:
+                self.log_result("Backend Logs Check", False, 
+                              f"Could not read backend logs: {result.stderr}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Backend Logs Check", False, f"Log check error: {e}")
+            return False
     
     def run_all_tests(self):
         """Run all backend tests"""
