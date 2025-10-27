@@ -6,6 +6,7 @@ import axios from 'axios';
 import CeibaaLogo from '../components/CeibaaLogo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
