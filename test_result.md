@@ -330,9 +330,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Host Control Panel in LiveBattle"
-    - "In-Battle Chat System"
-    - "Emoji Reactions During Quiz"
+    - "Google Sheets Question Bank Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
