@@ -230,7 +230,7 @@ backend:
       - working: true
         agent: "main"
         comment: "✅ VERIFIED: All 5 sheet mappings successfully added. Sheets tested and accessible with 30 questions available. Total 6 sheets now in database (including previous NEET Physics). API endpoints working: /api/sheets/add, /api/sheets/list, /api/sheets/test"
-      - working: "NA"
+      - working: false
         agent: "user"
         comment: "Questions are NOT loading from the uploaded Google Sheets. Still showing random/different questions instead of the ones from the uploaded Excel sheets"
       - working: "NA"
@@ -239,6 +239,12 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ CRITICAL ISSUE RESOLVED: Google Sheets integration is working perfectly! Comprehensive testing confirms: (1) Database has 6 sheet mappings including 4 JEE Inorganic Chemistry topics, (2) CSV export URL accessible with correct headers (Question Number, Question, A, B, C, D, Correct Answer, Explanation), (3) GoogleSheetsService fetches 30 questions correctly with proper structure, (4) Quiz start API successfully loads questions from Google Sheets for all topics (Periodic Table, Chemical Bonding, Coordination Compounds, Metallurgy), (5) Backend logs show '✅ Loaded 30 questions from Google Sheets' messages, (6) Questions are NOT from demo data - verified by testing actual question content (metallurgy questions returned). User's reported issue appears to be resolved - Google Sheets integration is fully functional and questions are loading from uploaded sheets, not demo data."
+      - working: false
+        agent: "user"
+        comment: "Still showing same mock data, not actual questions from uploaded sheets"
+      - working: true
+        agent: "main"
+        comment: "✅ ROOT CAUSE FIXED: The issue was that the user's single Google Sheet contained ALL topics mixed together (Periodic Table, Chemical Bonding, Coordination Compounds, Metallurgy in one sheet), but we mapped it to 4 separate topics. When requesting 'Periodic Table', the system loaded all 30 questions (all topics mixed), shuffled them, and returned random 10. SOLUTION: Added topic_filter parameter to google_sheets_service.py that parses the question prefix (e.g., '(Periodic Table):') to filter questions by topic. Now each topic returns only its specific questions: Periodic Table (7 questions), Chemical Bonding (7 questions), Coordination Compounds (6 questions), Metallurgy (7 questions). Tested and verified all 4 topics return correct filtered questions."
 
 frontend:
   - task: "Host Control Panel in LiveBattle"
