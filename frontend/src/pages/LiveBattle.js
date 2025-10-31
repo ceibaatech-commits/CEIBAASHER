@@ -82,6 +82,16 @@ const LiveBattle = () => {
         setCurrentQuestion(data.questions[0]);
         setTotalQuestions(data.questions.length);
         setLoading(false);
+      } else if (!isHost) {
+        // Joiner but no questions yet - host hasn't set them
+        console.log('⏳ Waiting for host to set questions...');
+        // Set a timeout to stop loading after 10 seconds if no questions
+        setTimeout(() => {
+          if (!allQuestions || allQuestions.length === 0) {
+            setLoading(false);
+            alert('Failed to load questions. Please refresh and try again.');
+          }
+        }, 10000);
       }
       
       // If this is host with questions, send them to battle-server
@@ -91,6 +101,18 @@ const LiveBattle = () => {
           roomId: pin,
           questions: questions
         });
+      }
+    });
+
+    // Listen for questions being set (in case joiner joins before host sets them)
+    newSocket.on('questions_updated', (data) => {
+      console.log('📥 Questions updated by host:', data);
+      if (!isHost && data.questions && data.questions.length > 0) {
+        console.log(`📝 Received ${data.questions.length} questions after host update`);
+        setAllQuestions(data.questions);
+        setCurrentQuestion(data.questions[0]);
+        setTotalQuestions(data.questions.length);
+        setLoading(false);
       }
     });
 
