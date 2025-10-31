@@ -3,9 +3,11 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect directly to the standalone battle server on port 5001
-// This server handles all Socket.io real-time battle communication
-const BATTLE_SERVER_URL = 'http://localhost:5001';
+// Connect to battle server through the backend domain
+// Browser cannot access localhost:5001 (container internal)
+// So we use the external backend URL
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://battle-fix.preview.emergentagent.com';
+const SOCKET_PATH = '/socket.io'; // Default Socket.io path
 
 const BattleLobby = () => {
   const { pin } = useParams();
