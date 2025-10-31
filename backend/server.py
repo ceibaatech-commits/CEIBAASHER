@@ -32,9 +32,6 @@ db = client[os.environ['DB_NAME']]
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
 
-# Import socket server
-from socket_proxy import sio_server
-
 # Add session middleware for OAuth
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
