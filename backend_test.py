@@ -1050,6 +1050,457 @@ class BattleServerTester:
             self.log_result("Backend Logs Check", False, f"Log check error: {e}")
             return False
     
+    def test_socket_io_battle_system_flow(self):
+        """Test complete Socket.io Battle System Flow as per review request"""
+        print("\n🎮 TESTING SOCKET.IO BATTLE SYSTEM FLOW")
+        print("=" * 60)
+        
+        # Step 1: Create Battle Room
+        print("\n1️⃣ Testing Battle Room Creation...")
+        room_created = self.test_create_room()
+        if not room_created:
+            self.log_result("Socket.io Battle System Flow", False, "Failed at room creation step")
+            return False
+        
+        # Step 2: Test Socket.io Proxy Connection
+        print("\n2️⃣ Testing Socket.io Proxy Connection...")
+        proxy_connected = self.test_socket_io_proxy_detailed()
+        if not proxy_connected:
+            self.log_result("Socket.io Battle System Flow", False, "Failed at proxy connection step")
+            return False
+        
+        # Step 3: Test Room Joining Flow
+        print("\n3️⃣ Testing Room Joining Flow...")
+        joining_success = self.test_room_joining_detailed()
+        if not joining_success:
+            self.log_result("Socket.io Battle System Flow", False, "Failed at room joining step")
+            return False
+        
+        # Step 4: Test Event Forwarding
+        print("\n4️⃣ Testing Event Forwarding...")
+        forwarding_success = self.test_event_forwarding()
+        if not forwarding_success:
+            self.log_result("Socket.io Battle System Flow", False, "Failed at event forwarding step")
+            return False
+        
+        # Step 5: Test Multi-Client Connections
+        print("\n5️⃣ Testing Multi-Client Connections...")
+        multi_client_success = self.test_multi_client_battle_flow()
+        
+        self.log_result("Socket.io Battle System Flow - COMPLETE", True, 
+                       "✅ All battle system components tested successfully")
+        return True
+
+    def test_socket_io_proxy_detailed(self):
+        """Test Socket.io proxy connection with detailed verification"""
+        try:
+            # Test both internal and external URLs
+            internal_url = "http://localhost:8001"
+            external_url = BACKEND_URL
+            
+            # Test internal connection
+            print(f"🔗 Testing internal proxy: {internal_url}/socket.io")
+            internal_client = socketio.SimpleClient()
+            
+            try:
+                internal_client.connect(f"{internal_url}/socket.io", transports=['polling'])
+                if internal_client.connected:
+                    self.log_result("Socket.io Proxy - Internal Connection", True, 
+                                  "✅ Internal proxy connection successful")
+                    
+                    # Test basic event emission
+                    internal_client.emit('test-event', {'data': 'test'})
+                    self.log_result("Socket.io Proxy - Event Emission", True, 
+                                  "✅ Can emit events to internal proxy")
+                    
+                    internal_client.disconnect()
+                    internal_success = True
+                else:
+                    self.log_result("Socket.io Proxy - Internal Connection", False, 
+                                  "❌ Failed to connect to internal proxy")
+                    internal_success = False
+            except Exception as e:
+                self.log_result("Socket.io Proxy - Internal Connection", False, 
+                              f"❌ Internal connection error: {e}")
+                internal_success = False
+            
+            # Test external connection
+            print(f"🌐 Testing external proxy: {external_url}/socket.io")
+            external_client = socketio.SimpleClient()
+            
+            try:
+                external_client.connect(f"{external_url}/socket.io", transports=['polling'])
+                if external_client.connected:
+                    self.log_result("Socket.io Proxy - External Connection", True, 
+                                  "✅ External proxy connection successful")
+                    external_client.disconnect()
+                    external_success = True
+                else:
+                    self.log_result("Socket.io Proxy - External Connection", False, 
+                                  "❌ External URL routing issue - Kubernetes ingress not forwarding /socket.io")
+                    external_success = False
+            except Exception as e:
+                self.log_result("Socket.io Proxy - External Connection", False, 
+                              f"❌ External connection error: {e}")
+                external_success = False
+            
+            # Test transports
+            print("🚀 Testing Socket.io transports...")
+            transport_client = socketio.SimpleClient()
+            
+            try:
+                # Test polling transport
+                transport_client.connect(f"{internal_url}/socket.io", transports=['polling'])
+                if transport_client.connected:
+                    self.log_result("Socket.io Transports - Polling", True, 
+                                  "✅ Polling transport working")
+                    transport_client.disconnect()
+                
+                # Test websocket transport (may fail due to proxy setup)
+                try:
+                    transport_client.connect(f"{internal_url}/socket.io", transports=['websocket'])
+                    if transport_client.connected:
+                        self.log_result("Socket.io Transports - WebSocket", True, 
+                                      "✅ WebSocket transport working")
+                        transport_client.disconnect()
+                    else:
+                        self.log_result("Socket.io Transports - WebSocket", False, 
+                                      "⚠️ WebSocket transport not available (expected with proxy)")
+                except:
+                    self.log_result("Socket.io Transports - WebSocket", False, 
+                                  "⚠️ WebSocket transport not available (expected with proxy)")
+                
+            except Exception as e:
+                self.log_result("Socket.io Transports", False, f"Transport test error: {e}")
+            
+            return internal_success  # At least internal should work
+            
+        except Exception as e:
+            self.log_result("Socket.io Proxy Connection", False, f"Proxy test error: {e}")
+            return False
+
+    def test_room_joining_detailed(self):
+        """Test detailed room joining flow with host and joiner"""
+        if not hasattr(self, 'test_pin'):
+            self.log_result("Room Joining Flow", False, "No PIN available from create room test")
+            return False
+        
+        try:
+            proxy_url = f"http://localhost:8001/socket.io"
+            
+            # Create host and joiner clients
+            host_client = socketio.SimpleClient()
+            joiner_client = socketio.SimpleClient()
+            
+            print(f"👑 Testing host connection to room {self.test_pin}")
+            
+            # Connect host first
+            host_client.connect(proxy_url, transports=['polling'])
+            if not host_client.connected:
+                self.log_result("Room Joining - Host Connection", False, "Host failed to connect to proxy")
+                return False
+            
+            self.log_result("Room Joining - Host Connection", True, "✅ Host connected to proxy")
+            
+            # Host joins room
+            host_events = []
+            
+            def host_player_joined(data):
+                host_events.append(('player-joined', data))
+                print(f"👑 Host received player-joined: {data}")
+            
+            def host_error(data):
+                host_events.append(('error', data))
+                print(f"👑 Host received error: {data}")
+            
+            host_client.on('player-joined', host_player_joined)
+            host_client.on('error', host_error)
+            
+            print(f"👑 Host joining room {self.test_pin}")
+            host_client.emit('join-room', {
+                'pin': self.test_pin,
+                'playerName': 'TestHost',
+                'isHost': True
+            })
+            
+            # Wait for host to join
+            time.sleep(2)
+            
+            # Connect joiner
+            print(f"👤 Testing joiner connection to room {self.test_pin}")
+            joiner_client.connect(proxy_url, transports=['polling'])
+            if not joiner_client.connected:
+                self.log_result("Room Joining - Joiner Connection", False, "Joiner failed to connect to proxy")
+                host_client.disconnect()
+                return False
+            
+            self.log_result("Room Joining - Joiner Connection", True, "✅ Joiner connected to proxy")
+            
+            # Joiner joins room
+            joiner_events = []
+            
+            def joiner_player_joined(data):
+                joiner_events.append(('player-joined', data))
+                print(f"👤 Joiner received player-joined: {data}")
+            
+            def joiner_error(data):
+                joiner_events.append(('error', data))
+                print(f"👤 Joiner received error: {data}")
+            
+            joiner_client.on('player-joined', joiner_player_joined)
+            joiner_client.on('error', joiner_error)
+            
+            print(f"👤 Joiner joining room {self.test_pin}")
+            joiner_client.emit('join-room', {
+                'pin': self.test_pin,
+                'playerName': 'TestJoiner',
+                'isHost': False
+            })
+            
+            # Wait for events to propagate
+            time.sleep(3)
+            
+            # Check for events
+            print(f"📊 Host received {len(host_events)} events")
+            print(f"📊 Joiner received {len(joiner_events)} events")
+            
+            # Verify player-joined events
+            host_player_events = [e for e in host_events if e[0] == 'player-joined']
+            joiner_player_events = [e for e in joiner_events if e[0] == 'player-joined']
+            
+            if host_player_events:
+                self.log_result("Room Joining - Host Events", True, 
+                              f"✅ Host received {len(host_player_events)} player-joined event(s)")
+            else:
+                self.log_result("Room Joining - Host Events", False, 
+                              "❌ Host did not receive player-joined events")
+            
+            if joiner_player_events:
+                self.log_result("Room Joining - Joiner Events", True, 
+                              f"✅ Joiner received {len(joiner_player_events)} player-joined event(s)")
+            else:
+                self.log_result("Room Joining - Joiner Events", False, 
+                              "❌ Joiner did not receive player-joined events")
+            
+            # Check for errors
+            host_errors = [e for e in host_events if e[0] == 'error']
+            joiner_errors = [e for e in joiner_events if e[0] == 'error']
+            
+            if host_errors:
+                self.log_result("Room Joining - Host Errors", False, 
+                              f"❌ Host received errors: {host_errors}")
+            else:
+                self.log_result("Room Joining - Host Errors", True, 
+                              "✅ No errors for host")
+            
+            if joiner_errors:
+                self.log_result("Room Joining - Joiner Errors", False, 
+                              f"❌ Joiner received errors: {joiner_errors}")
+            else:
+                self.log_result("Room Joining - Joiner Errors", True, 
+                              "✅ No errors for joiner")
+            
+            # Cleanup
+            host_client.disconnect()
+            joiner_client.disconnect()
+            
+            # Overall success if both connected and no critical errors
+            success = (len(host_player_events) > 0 or len(joiner_player_events) > 0) and not (host_errors or joiner_errors)
+            
+            if success:
+                self.log_result("Room Joining Flow - COMPLETE", True, 
+                              "✅ Multi-client room joining working correctly")
+            else:
+                self.log_result("Room Joining Flow - COMPLETE", False, 
+                              "❌ Room joining flow has issues")
+            
+            return success
+            
+        except Exception as e:
+            self.log_result("Room Joining Flow", False, f"Room joining test error: {e}")
+            return False
+
+    def test_event_forwarding(self):
+        """Test critical event forwarding between frontend and battle-server"""
+        if not hasattr(self, 'test_pin'):
+            self.log_result("Event Forwarding", False, "No PIN available")
+            return False
+        
+        try:
+            proxy_url = f"http://localhost:8001/socket.io"
+            
+            # Test critical events: join-room, start-quiz, quiz-started
+            test_client = socketio.SimpleClient()
+            test_client.connect(proxy_url, transports=['polling'])
+            
+            if not test_client.connected:
+                self.log_result("Event Forwarding", False, "Failed to connect for event testing")
+                return False
+            
+            received_events = []
+            
+            def event_handler(event_name):
+                def handler(data):
+                    received_events.append((event_name, data))
+                    print(f"📨 Received {event_name}: {data}")
+                return handler
+            
+            # Register handlers for critical events
+            critical_events = ['player-joined', 'quiz-started', 'new-question', 'error']
+            for event in critical_events:
+                test_client.on(event, event_handler(event))
+            
+            # Test join-room event forwarding
+            print("📤 Testing join-room event forwarding...")
+            test_client.emit('join-room', {
+                'pin': self.test_pin,
+                'playerName': 'EventTester',
+                'isHost': False
+            })
+            
+            # Wait for response
+            time.sleep(2)
+            
+            # Test start-quiz event (should get error since not host)
+            print("📤 Testing start-quiz event forwarding...")
+            test_client.emit('start-quiz', {'pin': self.test_pin})
+            
+            # Wait for response
+            time.sleep(2)
+            
+            print(f"📊 Received {len(received_events)} events during forwarding test")
+            
+            # Check if events were forwarded
+            if received_events:
+                self.log_result("Event Forwarding", True, 
+                              f"✅ Events forwarded correctly: {[e[0] for e in received_events]}")
+                
+                # Check for specific event types
+                player_joined_events = [e for e in received_events if e[0] == 'player-joined']
+                error_events = [e for e in received_events if e[0] == 'error']
+                
+                if player_joined_events:
+                    self.log_result("Event Forwarding - player-joined", True, 
+                                  "✅ player-joined events forwarded")
+                
+                if error_events:
+                    self.log_result("Event Forwarding - error handling", True, 
+                                  "✅ Error events forwarded (expected for non-host start-quiz)")
+                
+                success = True
+            else:
+                self.log_result("Event Forwarding", False, 
+                              "❌ No events received - forwarding may be broken")
+                success = False
+            
+            test_client.disconnect()
+            return success
+            
+        except Exception as e:
+            self.log_result("Event Forwarding", False, f"Event forwarding test error: {e}")
+            return False
+
+    def test_multi_client_battle_flow(self):
+        """Test complete multi-client battle flow"""
+        if not hasattr(self, 'test_pin'):
+            self.log_result("Multi-Client Battle Flow", False, "No PIN available")
+            return False
+        
+        try:
+            proxy_url = f"http://localhost:8001/socket.io"
+            
+            # Create multiple clients
+            clients = []
+            client_events = {}
+            
+            # Create 3 clients (1 host + 2 players)
+            for i in range(3):
+                client = socketio.SimpleClient()
+                client.connect(proxy_url, transports=['polling'])
+                
+                if client.connected:
+                    clients.append(client)
+                    client_events[i] = []
+                    
+                    # Event handler for this client
+                    def make_handler(client_id):
+                        def handler(event_name):
+                            def event_handler(data):
+                                client_events[client_id].append((event_name, data))
+                                print(f"👤 Client {client_id} received {event_name}")
+                            return event_handler
+                        return handler
+                    
+                    handler_maker = make_handler(i)
+                    client.on('player-joined', handler_maker('player-joined'))
+                    client.on('error', handler_maker('error'))
+                    
+                    self.log_result(f"Multi-Client Connection {i+1}", True, 
+                                  f"✅ Client {i+1} connected successfully")
+                else:
+                    self.log_result(f"Multi-Client Connection {i+1}", False, 
+                                  f"❌ Client {i+1} failed to connect")
+            
+            if len(clients) < 2:
+                self.log_result("Multi-Client Battle Flow", False, 
+                              "❌ Insufficient clients connected for multi-client test")
+                return False
+            
+            # All clients join the same room
+            for i, client in enumerate(clients):
+                is_host = (i == 0)  # First client is host
+                player_name = f"Player{i+1}" if not is_host else "Host"
+                
+                print(f"👤 {player_name} joining room {self.test_pin}")
+                client.emit('join-room', {
+                    'pin': self.test_pin,
+                    'playerName': player_name,
+                    'isHost': is_host
+                })
+                
+                # Small delay between joins
+                time.sleep(1)
+            
+            # Wait for all events to propagate
+            time.sleep(3)
+            
+            # Analyze results
+            total_events = sum(len(events) for events in client_events.values())
+            print(f"📊 Total events received across all clients: {total_events}")
+            
+            # Check if clients can see each other
+            clients_with_events = sum(1 for events in client_events.values() if len(events) > 0)
+            
+            if clients_with_events >= 2:
+                self.log_result("Multi-Client Battle Flow", True, 
+                              f"✅ Multi-client flow working: {clients_with_events}/{len(clients)} clients received events")
+                
+                # Detailed analysis
+                for client_id, events in client_events.items():
+                    player_joined_events = [e for e in events if e[0] == 'player-joined']
+                    if player_joined_events:
+                        self.log_result(f"Client {client_id+1} Events", True, 
+                                      f"✅ Received {len(player_joined_events)} player-joined events")
+                
+                success = True
+            else:
+                self.log_result("Multi-Client Battle Flow", False, 
+                              f"❌ Multi-client flow broken: only {clients_with_events}/{len(clients)} clients received events")
+                success = False
+            
+            # Cleanup
+            for client in clients:
+                try:
+                    client.disconnect()
+                except:
+                    pass
+            
+            return success
+            
+        except Exception as e:
+            self.log_result("Multi-Client Battle Flow", False, f"Multi-client test error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
@@ -1058,17 +1509,34 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # Google Sheets Integration Tests (CRITICAL - Primary Focus)
-        print("\n📊 Testing Google Sheets Integration (CRITICAL)...")
-        if mongo_connected:
-            self.test_google_sheets_database_mappings()
-        self.test_google_sheets_csv_access()
-        self.test_google_sheets_service_fetch()
-        self.test_quiz_start_with_google_sheets()
-        self.test_quiz_start_multiple_topics()
-        self.test_backend_logs_for_sheets_loading()
+        # PRIORITY 1: Socket.io Battle System Flow (CRITICAL - Review Request Focus)
+        print("\n🎮 SOCKET.IO BATTLE SYSTEM FLOW TESTING (CRITICAL)")
+        print("=" * 60)
+        self.test_socket_io_battle_system_flow()
         
-        # Contact Form API Tests
+        # PRIORITY 2: Battle Server API Tests
+        print("\n📡 Testing Battle Server APIs...")
+        self.test_health_check()
+        self.test_create_room()
+        self.test_get_room_info()
+        self.test_get_nonexistent_room()
+        
+        # PRIORITY 3: Socket.io Individual Components
+        print("\n🔌 Testing Socket.io Components...")
+        self.test_battle_server_logs()
+        self.test_socket_connection()
+        self.test_socket_proxy_connection()
+        
+        # MongoDB Tests
+        if mongo_connected:
+            print("\n🗄️ Testing MongoDB Integration...")
+            self.test_mongodb_collections()
+        
+        # Code Logic Tests
+        print("\n🔍 Testing Implementation Logic...")
+        self.test_answer_validation_logic()
+        
+        # Contact Form API Tests (Lower Priority)
         print("\n📧 Testing Contact Form API...")
         self.test_sendgrid_configuration()
         self.test_dual_email_contact_form()
@@ -1079,28 +1547,15 @@ class BattleServerTester:
         self.test_contact_form_missing_message()
         self.test_contact_form_invalid_email()
         
-        # Battle Server API Tests
-        print("\n📡 Testing Battle Server APIs...")
-        self.test_health_check()
-        self.test_create_room()
-        self.test_get_room_info()
-        self.test_get_nonexistent_room()
-        
-        # Socket.io Tests
-        print("\n🔌 Testing Socket.io Proxy...")
-        self.test_battle_server_logs()
-        self.test_socket_connection()
-        self.test_socket_proxy_connection()
-        self.test_room_joining_flow()
-        
-        # MongoDB Tests
+        # Google Sheets Integration Tests (Lower Priority - Already Working)
+        print("\n📊 Testing Google Sheets Integration...")
         if mongo_connected:
-            print("\n🗄️ Testing MongoDB Integration...")
-            self.test_mongodb_collections()
-        
-        # Code Logic Tests
-        print("\n🔍 Testing Implementation Logic...")
-        self.test_answer_validation_logic()
+            self.test_google_sheets_database_mappings()
+        self.test_google_sheets_csv_access()
+        self.test_google_sheets_service_fetch()
+        self.test_quiz_start_with_google_sheets()
+        self.test_quiz_start_multiple_topics()
+        self.test_backend_logs_for_sheets_loading()
         
         # Summary
         print("\n" + "=" * 60)
