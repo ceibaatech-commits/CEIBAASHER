@@ -766,53 +766,73 @@ const LiveBattle = () => {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <Zap className="w-5 h-5 text-yellow-500 mr-2" />
-                Live Leaderboard
+                Live Rankings
               </h3>
-              <div className="space-y-3">
-                {leaderboard.slice(0, 5).map((player, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-center space-x-3 p-3 rounded-lg ${
-                      player.name === playerName 
-                        ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-300' 
-                        : 'bg-gray-50'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                      index === 0 ? 'bg-yellow-400 text-white' :
-                      index === 1 ? 'bg-gray-400 text-white' :
-                      index === 2 ? 'bg-orange-400 text-white' :
-                      'bg-gray-200 text-gray-600'
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-gray-900">{player.name}</p>
-                      {player.streak > 1 && (
-                        <div className="flex items-center space-x-1 text-xs text-orange-600">
-                          <Star className="w-3 h-3 fill-current" />
-                          <span>{player.streak} streak</span>
+              {leaderboard.length === 0 ? (
+                <div className="text-center text-gray-500 py-4">
+                  <p className="text-sm">Waiting for players...</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {leaderboard.map((player, index) => (
+                    <div
+                      key={player.name}
+                      className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-300 ${
+                        player.name === playerName 
+                          ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-400 shadow-md transform scale-105' 
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shadow-md ${
+                        index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-500 text-white' :
+                        index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-400 text-white' :
+                        index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-500 text-white' :
+                        'bg-gray-200 text-gray-600'
+                      }`}>
+                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-semibold truncate ${
+                          player.name === playerName ? 'text-purple-900' : 'text-gray-900'
+                        }`}>
+                          {player.name}
+                          {player.name === playerName && (
+                            <span className="ml-2 text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">You</span>
+                          )}
+                        </p>
+                        {player.streak > 1 && (
+                          <div className="flex items-center space-x-1 text-xs text-orange-600 mt-0.5">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span>{player.streak} streak</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right flex items-center space-x-2">
+                        <div className="text-right">
+                          <p className={`font-bold text-lg ${
+                            player.name === playerName ? 'text-purple-600' : 'text-gray-900'
+                          }`}>
+                            {player.score}
+                          </p>
+                          <p className="text-xs text-gray-500">points</p>
                         </div>
-                      )}
+                        {player.name !== playerName && (
+                          <button
+                            onClick={() => {
+                              setSelectedGiftRecipient(player);
+                              setShowGiftMenu(true);
+                            }}
+                            className="p-1.5 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
+                            title="Send Gift"
+                          >
+                            <Gift className="w-4 h-4 text-pink-600" />
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right flex items-center space-x-2">
-                      <p className="font-bold text-purple-600">{player.score}</p>
-                      {player.name !== playerName && (
-                        <button
-                          onClick={() => {
-                            setSelectedGiftRecipient(player);
-                            setShowGiftMenu(true);
-                          }}
-                          className="p-1.5 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
-                          title="Send Gift"
-                        >
-                          <Gift className="w-4 h-4 text-pink-600" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Room Code & Share */}
