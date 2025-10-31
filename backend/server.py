@@ -20,6 +20,7 @@ from social_routes import router as social_router
 # Socket.io proxy now runs separately on port 5002
 # from socket_proxy import socket_app  # Not needed anymore
 from contact_routes import router as contact_router
+from social_feed_routes import router as social_feed_router
 
 
 ROOT_DIR = Path(__file__).parent
