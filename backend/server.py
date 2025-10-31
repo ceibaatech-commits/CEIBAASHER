@@ -22,7 +22,7 @@ from social_routes import router as social_router
 from contact_routes import router as contact_router
 from social_feed_routes import router as social_feed_router
 import social_feed_routes
-from socketio_proxy_routes import router as socketio_proxy_router
+# socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
 ROOT_DIR = Path(__file__).parent
