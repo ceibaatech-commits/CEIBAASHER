@@ -162,10 +162,33 @@ io.on('connection', (socket) => {
       room: getRoomData(room)
     });
 
+    // Send room data including questions to the joiner
     socket.emit('room_joined', {
       success: true,
-      room: getRoomData(room)
+      room: getRoomData(room),
+      questions: room.questions // Send the same questions as host
     });
+  });
+
+  // Set questions for a room (called by host after fetching questions)
+  socket.on('set_room_questions', ({ roomId, questions }) => {
+    const room = battleRooms.get(roomId);
+    
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+    
+    // Only host can set questions
+    if (room.host.userId !== socket.id) {
+      socket.emit('error', { message: 'Only host can set questions' });
+      return;
+    }
+    
+    room.questions = questions;
+    console.log(`[QUESTIONS] Host set ${questions.length} questions for room ${roomId}`);
+    
+    socket.emit('questions_set', { success: true });
   });
 
   // Start battle
