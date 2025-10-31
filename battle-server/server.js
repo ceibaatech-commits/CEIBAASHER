@@ -188,7 +188,12 @@ io.on('connection', (socket) => {
     room.questions = questions;
     console.log(`[QUESTIONS] Host set ${questions.length} questions for room ${roomId}`);
     
+    // Notify host
     socket.emit('questions_set', { success: true });
+    
+    // Broadcast to all participants in the room (especially joiners waiting for questions)
+    io.to(roomId).emit('questions_updated', { questions });
+    console.log(`[BROADCAST] Questions sent to all participants in room ${roomId}`);
   });
 
   // Start battle
