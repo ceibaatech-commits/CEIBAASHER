@@ -282,14 +282,20 @@ backend:
   - task: "Socket.io Battle System Complete End-to-End Flow"
     implemented: true
     working: false
-    file: "/app/battle-server/server.js, /app/backend/socket_app.py, /app/backend/battle_proxy_routes.py"
+    file: "/app/battle-server/server.js, /app/backend/socket_app.py, /app/backend/socketio_proxy_routes.py, /app/frontend/src/pages/BattleLobby.js"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "testing"
         comment: "⚠️ MIXED RESULTS: Socket.io Battle System partially working (66.7% success rate - 6/9 tests passed). ✅ WORKING COMPONENTS: (1) Battle server health check - server running on port 5001, (2) Socket.io handshake and connection - direct connection to battle server successful, (3) Socket.io room creation via 'create_room' event - generates valid PINs (e.g., HOHDVN), (4) Socket.io room joining via 'join_room' event - multi-client joining working with proper participant_joined/room_joined events, (5) Room list API - GET /api/rooms working. ❌ CRITICAL GAPS: (1) REST API endpoints MISSING - POST /api/battle/create-room not implemented in battle server (returns 404), FastAPI proxy fails with 500 error, (2) Socket.io proxy integration BROKEN - localhost:8001/socket.io returns 404, proxy connection fails, (3) Architecture mismatch - review request expects REST API + Socket.io but only Socket.io events work. CONCLUSION: Core Socket.io functionality works but REST API layer and proxy integration missing/broken."
+      - working: false
+        agent: "user"
+        comment: "CRITICAL BUG: SOCKET_PROXY_URL is not defined. Runtime error when entering room code and navigating to battle lobby. Error: 'ReferenceError: SOCKET_PROXY_URL is not defined' at BattleLobby.js line 25. This completely blocks battle room joining flow."
+      - working: "NA"
+        agent: "main"
+        comment: "FIX IMPLEMENTED: Fixed SOCKET_PROXY_URL undefined error in BattleLobby.js. Issue was console.log referencing undefined variable on line 25. Replaced 'SOCKET_PROXY_URL' with properly defined 'BATTLE_SERVER_URL'. Frontend restarted successfully. Join Room page now loads without errors. Need to test complete battle flow (create → join → play) to verify Socket.io connections work end-to-end."
 
   - task: "Social Feed Backend APIs"
     implemented: true
