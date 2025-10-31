@@ -442,6 +442,21 @@ agent_communication:
   - agent: "user"
     message: "Add JEE Organic Chemistry and JEE Inorganic Chemistry sheets to the database. Inorganic Chemistry sheet URL: https://docs.google.com/spreadsheets/d/1d_3qTCgrqAurKUG0vpzF4mTWhgyO8SNi2CJF6xMJgMU/htmlview with topics: Periodic Table, Chemical Bonding, Coordination Compounds, Metallurgy"
   
+  - agent: "user"
+    message: "CRITICAL BUG REPORTED: After entering room code in Join Battle Room page, getting runtime error 'SOCKET_PROXY_URL is not defined'. Complete application crash preventing battle room joining."
+  
+  - agent: "main"
+    message: |
+      🔧 SOCKET_PROXY_URL FIX COMPLETE
+      
+      **Issue**: ReferenceError: SOCKET_PROXY_URL is not defined in BattleLobby.js
+      **Root Cause**: Line 25 of BattleLobby.js had console.log referencing undefined variable SOCKET_PROXY_URL
+      **Fix**: Replaced 'SOCKET_PROXY_URL' with properly defined 'BATTLE_SERVER_URL' in console.log
+      **Testing**: Join Room page loads without errors, form accepts 6-digit PINs correctly
+      **Status**: Frontend restarted successfully, error resolved
+      
+      **Next Step**: Need comprehensive end-to-end battle flow testing (create room → join room → play quiz) to verify Socket.io connections work properly and players can see each other in lobby.
+  
   - agent: "main"
     message: |
       ✅ GOOGLE SHEETS ADDED SUCCESSFULLY
