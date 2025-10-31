@@ -250,6 +250,17 @@ const LiveBattle = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Back/Quit Button */}
+        <div className="mb-4">
+          <button
+            onClick={quitQuiz}
+            className="flex items-center text-gray-600 hover:text-gray-900 bg-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            <span className="font-semibold">Quit & Back to Home</span>
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Question Section */}
           <div className="lg:col-span-2 space-y-4">
