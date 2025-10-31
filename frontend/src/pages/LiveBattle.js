@@ -578,9 +578,16 @@ const LiveBattle = () => {
                   <p className="text-sm text-gray-700 mt-1">
                     {answerResult.isCorrect 
                       ? `+${answerResult.points} points earned!` 
-                      : `Correct answer: ${String.fromCharCode(65 + answerResult.correctAnswer)}`
+                      : `Correct answer: ${currentQuestion.options[answerResult.correctAnswer]}`
                     }
                   </p>
+                  {/* Show explanation if available */}
+                  {currentQuestion.explanation && (
+                    <div className="mt-3 pt-3 border-t border-gray-300">
+                      <p className="text-sm font-semibold text-gray-800 mb-1">Explanation:</p>
+                      <p className="text-sm text-gray-700">{currentQuestion.explanation}</p>
+                    </div>
+                  )}
                 </div>
               )}
 
