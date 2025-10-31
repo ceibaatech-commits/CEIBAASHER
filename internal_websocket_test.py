@@ -25,8 +25,11 @@ def test_internal_websocket():
                 print(f"✅ Successfully connected to {internal_url}/api/battlews")
                 
                 # Check transport type
-                transport = getattr(sio_client.eio, 'transport_name', 'unknown')
-                print(f"🚀 Transport: {transport}")
+                try:
+                    transport = getattr(sio_client.eio, 'transport_name', 'unknown')
+                    print(f"🚀 Transport: {transport}")
+                except:
+                    print("🚀 Transport: Connected (transport info not available)")
                 
                 # Test basic event emission
                 sio_client.emit('test_event', {'data': 'test'})
