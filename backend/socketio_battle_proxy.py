@@ -183,6 +183,15 @@ async def next_question(sid, data):
 
 
 @sio_proxy.event
+async def complete_battle(sid, data):
+    """Forward complete-battle event to battle-server"""
+    logger.info(f"🏁 complete_battle from {sid}: {data}")
+    battle_client = client_connections.get(sid)
+    if battle_client:
+        await battle_client.emit('complete_battle', data)
+
+
+@sio_proxy.event
 async def send_message(sid, data):
     """Forward send-message event to battle-server"""
     logger.info(f"💬 send_message from {sid}: {data}")
