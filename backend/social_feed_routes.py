@@ -2,7 +2,7 @@
 Ceibaa Social Feed Routes
 Comprehensive social networking features for educational platform
 """
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal
 from datetime import datetime, timezone
@@ -10,10 +10,13 @@ import uuid
 
 router = APIRouter()
 
-# Database will be accessed via request.app.state.db
-# This is set in server.py
-def get_db(request: Request):
-    return request.app.state.db
+# Database connection will be injected
+db = None
+
+def init_db(database):
+    """Initialize database connection"""
+    global db
+    db = database
 
 # ==================== MODELS ====================
 
