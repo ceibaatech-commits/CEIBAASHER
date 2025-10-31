@@ -91,19 +91,19 @@ async def get_exam_weightage(exam_id: str):
     return {"success": True, "weightage": weightage_data}
 
 # Include the router in the main app
-app.include_router(api_router)
-app.include_router(quiz_router, prefix="/api")
-app.include_router(auth_router, prefix="/api")
-app.include_router(sheets_router, prefix="/api")
-app.include_router(battle_proxy_router, prefix="/api")
-app.include_router(social_router, prefix="/api")
-app.include_router(contact_router, prefix="/api")
+fastapi_app.include_router(api_router)
+fastapi_app.include_router(quiz_router, prefix="/api")
+fastapi_app.include_router(auth_router, prefix="/api")
+fastapi_app.include_router(sheets_router, prefix="/api")
+fastapi_app.include_router(battle_proxy_router, prefix="/api")
+fastapi_app.include_router(social_router, prefix="/api")
+fastapi_app.include_router(contact_router, prefix="/api")
 
 # Test routes for debugging
 from test_routes import router as test_router
-app.include_router(test_router, prefix="/api")
+fastapi_app.include_router(test_router, prefix="/api")
 
-app.add_middleware(
+fastapi_app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
