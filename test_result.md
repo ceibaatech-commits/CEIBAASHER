@@ -281,15 +281,18 @@ backend:
 
   - task: "Social Feed Backend APIs"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/backend/social_feed_routes.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented comprehensive social feed backend with 25+ API endpoints: User APIs (profile, follow/unfollow, followers, following), Post APIs (create, feeds by type, get/delete), Engagement APIs (like, comment, share, gift, challenge), Study Group APIs (create, join, list), Notification APIs (get, mark read). Supports 6 post types: battle_victory, quiz_announcement, study_tip, achievement, government, general. Full engagement system with gifts (star, diamond, crown, trophy) and battle challenges. Registered router at /api/social prefix."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUES FOUND: Social Feed Backend has major problems (30% success rate - 3/10 tests passed). WORKING: User profile API, Trending feed, Leaderboard feed. BROKEN: Post creation (401 authentication required), For-You/Following/My-Circle feeds (422 missing user_id parameter), Engagement APIs (no test post due to creation failure), Study Groups (404 not found), Notifications (404 not found). Root causes: (1) Authentication system not properly integrated - APIs require auth but no auth mechanism provided, (2) Missing required parameters in API design - user_id required but not documented, (3) Missing API endpoints - study groups and notifications return 404, (4) API routing issues - some endpoints not properly registered. Needs comprehensive authentication integration and API parameter fixes."
 
 frontend:
   - task: "Host Control Panel in LiveBattle"
