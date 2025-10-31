@@ -174,6 +174,15 @@ async def submit_answer(sid, data):
 
 
 @sio_proxy.event
+async def next_question(sid, data):
+    """Forward next-question event to battle-server"""
+    logger.info(f"⏭️ next_question from {sid}: {data}")
+    battle_client = client_connections.get(sid)
+    if battle_client:
+        await battle_client.emit('next_question', data)
+
+
+@sio_proxy.event
 async def send_message(sid, data):
     """Forward send-message event to battle-server"""
     logger.info(f"💬 send_message from {sid}: {data}")
