@@ -82,7 +82,7 @@ async def get_status_checks():
     
     return status_checks
 
-@app.get("/api/quiz/weightage/{exam_id}")
+@fastapi_app.get("/api/quiz/weightage/{exam_id}")
 async def get_exam_weightage(exam_id: str):
     """Get topic-wise weightage analysis for an exam"""
     weightage_data = EXAM_WEIGHTAGE.get(exam_id)
@@ -118,7 +118,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-@app.on_event("shutdown")
+@fastapi_app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
 # Wrap FastAPI app with Socket.io ASGI app
