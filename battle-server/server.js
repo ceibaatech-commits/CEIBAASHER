@@ -9,15 +9,18 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] }
+  cors: { origin: "*", methods: ["GET", "POST"] },
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 app.use(cors());
 app.use(express.json());
 
+// Data structures
 const rooms = new Map();
 const players = new Map();
-const matchmakingQueue = new Map(); // topic -> array of waiting players
+const questionTimers = new Map();
 
 // MongoDB connection
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
@@ -31,56 +34,110 @@ MongoClient.connect(MONGO_URL)
   })
   .catch(err => console.error('MongoDB connection error:', err));
 
+// Helper functions
 function generatePIN() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-function calculateScore(isCorrect, timeLeft, streak) {
+// JovVix-inspired scoring system
+function calculateScore(isCorrect, timeLeft, streak, totalTime = 30) {
   if (!isCorrect) return 0;
-  return 100 + (timeLeft * 2) + ((streak > 1 ? (streak - 1) * 10 : 0));
+  
+  // Base points
+  const basePoints = 100;
+  
+  // Time bonus (faster = more points, max 50 bonus)
+  const timeBonus = Math.floor((timeLeft / totalTime) * 50);
+  
+  // Streak bonus (consecutive correct answers)
+  const streakBonus = streak > 1 ? (streak - 1) * 20 : 0;
+  
+  return basePoints + timeBonus + streakBonus;
 }
 
+// Real-time leaderboard calculation
+function calculateLeaderboard(room) {
+  const leaderboard = room.players
+    .map(player => ({
+      id: player.id,
+      name: player.name,
+      score: player.score,
+      correctAnswers: player.correctAnswers || 0,
+      streak: player.streak || 0,
+      avatar: player.avatar || '👤',
+      isHost: player.isHost || false
+    }))
+    .sort((a, b) => b.score - a.score)
+    .map((player, index) => ({
+      ...player,
+      rank: index + 1
+    }));
+  
+  return leaderboard;
+}
+
+// Broadcast leaderboard to all players in room
+function broadcastLeaderboard(pin) {
+  const room = rooms.get(pin);
+  if (!room) return;
+  
+  const leaderboard = calculateLeaderboard(room);
+  io.to(pin).emit('leaderboard-update', { leaderboard });
+}
+
+// Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'Battle server running' });
+  res.json({ 
+    status: 'Enhanced Battle Server Running',
+    activeRooms: rooms.size,
+    activePlayers: players.size
+  });
 });
 
+// Create room endpoint
 app.post('/api/battle/create-room', async (req, res) => {
   try {
     const { hostName, examId, subject, topic } = req.body;
     console.log(`📝 Creating room: ${examId}/${subject}/${topic} for host ${hostName}`);
     
     const pin = generatePIN();
-    console.log(`🔑 Generated PIN: ${pin}`);
     
-    console.log('🎯 Fetching questions from quiz API...');
+    // Fetch questions from quiz API
+    console.log('🎯 Fetching questions from Google Sheets...');
     const response = await axios.post('http://localhost:8001/api/quiz/start', {
-      exam: examId, subject, topic
+      exam: examId, 
+      subject, 
+      topic
     });
     
-    // Check if quiz API returned error
     if (!response.data.questions || response.data.questions.length === 0) {
       console.error('❌ No questions available');
       return res.status(400).json({ 
         success: false, 
-        message: 'Questions not available for this topic. Please try another topic.' 
+        message: 'Questions not available for this topic. Please upload a Google Sheet first.' 
       });
     }
     
-    console.log(`✅ Got ${response.data.questions.length} questions`);
+    console.log(`✅ Got ${response.data.questions.length} questions from Google Sheets`);
     
     const roomData = {
-      pin, hostName, examId, subject, topic,
+      pin,
+      hostName,
+      examId,
+      subject,
+      topic,
       questions: response.data.questions,
       quizId: response.data.quizId,
       players: [],
-      status: 'waiting',
+      status: 'waiting', // waiting, active, paused, finished
       currentQuestion: 0,
       isPaused: false,
+      questionStartTime: null,
+      timePerQuestion: response.data.timePerQuestion || 30,
       createdAt: Date.now()
     };
     
     rooms.set(pin, roomData);
-    console.log(`✅ Room ${pin} created and stored in memory`);
     
     // Save to MongoDB
     if (db) {
@@ -88,457 +145,390 @@ app.post('/api/battle/create-room', async (req, res) => {
         ...roomData,
         createdAt: new Date()
       });
-      console.log(`✅ Room ${pin} saved to MongoDB`);
     }
     
-    console.log(`🎉 Room ${pin} creation complete!`);
-    res.json({ success: true, pin, room: { pin, hostName, examId, subject, topic } });
+    console.log(`✅ Room ${pin} created successfully`);
+    res.json({ 
+      success: true, 
+      pin, 
+      room: { pin, hostName, examId, subject, topic, totalQuestions: response.data.questions.length } 
+    });
   } catch (error) {
     console.error('❌ Error creating room:', error.message);
-    console.error('❌ Error response:', error.response?.data);
-    
-    // Handle quiz API errors
-    if (error.response?.status === 404 || error.response?.data?.detail) {
-      return res.status(400).json({ 
-        success: false, 
-        message: error.response.data.detail || 'Questions not available for this topic' 
-      });
-    }
-    
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: error.response?.data?.detail || 'Failed to create room' 
+    });
   }
 });
 
+// Get room info
 app.get('/api/battle/room/:pin', (req, res) => {
   const room = rooms.get(req.params.pin);
-  if (!room) return res.status(404).json({ success: false, message: 'Room not found' });
+  if (!room) {
+    return res.status(404).json({ success: false, message: 'Room not found' });
+  }
   
   res.json({ 
     success: true, 
     room: {
-      pin: room.pin, hostName: room.hostName, examId: room.examId,
-      subject: room.subject, topic: room.topic, status: room.status,
-      players: room.players.map(p => ({ name: p.name, score: p.score }))
+      pin: room.pin,
+      hostName: room.hostName,
+      examId: room.examId,
+      subject: room.subject,
+      topic: room.topic,
+      status: room.status,
+      playerCount: room.players.length,
+      totalQuestions: room.questions.length,
+      currentQuestion: room.currentQuestion
     }
   });
 });
 
+// Socket.io events
 io.on('connection', (socket) => {
   console.log('✅ New connection:', socket.id);
 
+  // Join room
   socket.on('join-room', ({ pin, playerName, isHost }) => {
-    console.log(`🚪 Player ${playerName} trying to join room ${pin}, isHost: ${isHost}`);
+    console.log(`🚪 ${playerName} joining room ${pin}, isHost: ${isHost}`);
+    
     const room = rooms.get(pin);
-    if (!room || room.status !== 'waiting') {
-      console.log(`❌ Room ${pin} not found or not waiting. Status: ${room?.status}`);
-      socket.emit('error', { message: room ? 'Quiz started' : 'Room not found' });
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
       return;
     }
     
-    const playerData = { 
-      id: socket.id, 
-      name: playerName, 
-      score: 0, 
-      streak: 0, 
+    if (room.status === 'active') {
+      socket.emit('error', { message: 'Quiz already started' });
+      return;
+    }
+    
+    // Create player data
+    const playerData = {
+      id: socket.id,
+      name: playerName,
+      score: 0,
+      correctAnswers: 0,
+      streak: 0,
       answers: [],
-      isHost: isHost || false
+      isHost: isHost || false,
+      avatar: getRandomAvatar(),
+      joinedAt: Date.now()
     };
     
     room.players.push(playerData);
     players.set(socket.id, { pin, playerName, isHost: isHost || false });
     socket.join(pin);
     
-    console.log(`✅ Player ${playerName} joined room ${pin}. Total players: ${room.players.length}`);
-    console.log(`📢 Broadcasting player-joined to room ${pin}`);
+    console.log(`✅ ${playerName} joined room ${pin}. Total players: ${room.players.length}`);
     
+    // Notify all players
     io.to(pin).emit('player-joined', {
-      players: room.players.map(p => ({ name: p.name, score: p.score, isHost: p.isHost }))
+      player: { id: socket.id, name: playerName, isHost: isHost || false },
+      players: room.players.map(p => ({ id: p.id, name: p.name, isHost: p.isHost })),
+      totalPlayers: room.players.length
+    });
+    
+    // Send room info to joiner
+    socket.emit('room-joined', {
+      room: {
+        pin: room.pin,
+        hostName: room.hostName,
+        examId: room.examId,
+        subject: room.subject,
+        topic: room.topic,
+        totalQuestions: room.questions.length,
+        timePerQuestion: room.timePerQuestion
+      },
+      players: room.players.map(p => ({ id: p.id, name: p.name, isHost: p.isHost })),
+      isHost: isHost || false
     });
   });
 
-  socket.on('start-quiz', ({ pin }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
+  // Start quiz (host only)
+  socket.on('start-quiz', () => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo || !playerInfo.isHost) {
+      socket.emit('error', { message: 'Only host can start quiz' });
+      return;
+    }
     
-    if (!room || !playerData?.isHost) return;
+    const room = rooms.get(playerInfo.pin);
+    if (!room) return;
     
+    if (room.players.length < 1) {
+      socket.emit('error', { message: 'Need at least 1 player to start' });
+      return;
+    }
+    
+    console.log(`🚀 Starting quiz in room ${playerInfo.pin}`);
     room.status = 'active';
-    io.to(pin).emit('quiz-started', {
-      question: room.questions[0],
-      questionNumber: 1,
-      totalQuestions: room.questions.length
-    });
+    room.currentQuestion = 0;
+    room.questionStartTime = Date.now();
+    
+    // Send first question
+    sendQuestion(playerInfo.pin);
   });
 
-  // Host control: Pause quiz
-  socket.on('pause-quiz', ({ pin }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
+  // Submit answer
+  socket.on('submit-answer', ({ answerIndex, timeLeft }) => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo) return;
     
-    if (!room || !playerData?.isHost) return;
+    const room = rooms.get(playerInfo.pin);
+    if (!room || room.status !== 'active') return;
     
-    room.isPaused = true;
-    io.to(pin).emit('quiz-paused', { message: 'Quiz paused by host' });
-  });
-
-  // Host control: Resume quiz
-  socket.on('resume-quiz', ({ pin }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
-    
-    if (!room || !playerData?.isHost) return;
-    
-    room.isPaused = false;
-    io.to(pin).emit('quiz-resumed', { message: 'Quiz resumed' });
-  });
-
-  // Host control: Kick player
-  socket.on('kick-player', ({ pin, playerId }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
-    
-    if (!room || !playerData?.isHost) return;
-    
-    const kickedPlayer = room.players.find(p => p.id === playerId);
-    if (kickedPlayer && !kickedPlayer.isHost) {
-      room.players = room.players.filter(p => p.id !== playerId);
-      io.to(playerId).emit('kicked', { message: 'You were removed by the host' });
-      io.to(playerId).disconnectSockets();
-      io.to(pin).emit('player-kicked', { 
-        playerName: kickedPlayer.name,
-        players: room.players.map(p => ({ name: p.name, score: p.score, isHost: p.isHost }))
-      });
-    }
-  });
-
-  // Host control: Skip question
-  socket.on('skip-question', ({ pin }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
-    
-    if (!room || !playerData?.isHost) return;
-    
-    room.currentQuestion++;
-    if (room.currentQuestion < room.questions.length) {
-      io.to(pin).emit('next-question', {
-        question: room.questions[room.currentQuestion],
-        questionNumber: room.currentQuestion + 1,
-        totalQuestions: room.questions.length
-      });
-    } else {
-      endQuiz(room, pin);
-    }
-  });
-
-  // Host control: End quiz
-  socket.on('end-quiz', ({ pin }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
-    
-    if (!room || !playerData?.isHost) return;
-    
-    endQuiz(room, pin);
-  });
-
-  socket.on('submit-answer', ({ pin, questionId, answerIndex, timeLeft }) => {
-    const room = rooms.get(pin);
-    if (!room || room.isPaused) return;
+    const currentQ = room.questions[room.currentQuestion];
+    if (!currentQ) return;
     
     const player = room.players.find(p => p.id === socket.id);
     if (!player) return;
     
-    // Proper answer validation
-    const currentQ = room.questions[room.currentQuestion];
-    const isCorrect = currentQ && currentQ.correctAnswer === answerIndex;
+    // Check answer
+    const isCorrect = currentQ.correctAnswer === answerIndex;
     
-    player.streak = isCorrect ? player.streak + 1 : 0;
-    const points = calculateScore(isCorrect, timeLeft, player.streak);
+    // Update streak
+    if (isCorrect) {
+      player.streak++;
+      player.correctAnswers++;
+    } else {
+      player.streak = 0;
+    }
+    
+    // Calculate score using JovVix-inspired scoring
+    const points = calculateScore(isCorrect, timeLeft, player.streak, room.timePerQuestion);
     player.score += points;
-    player.answers.push({ questionId, answerIndex, isCorrect, points });
     
-    // Send feedback to the player
-    socket.emit('answer-result', { isCorrect, points, correctAnswer: currentQ.correctAnswer });
+    // Save answer
+    player.answers.push({
+      questionIndex: room.currentQuestion,
+      answerIndex,
+      isCorrect,
+      points,
+      timeLeft
+    });
     
-    const leaderboard = room.players
-      .map(p => ({ name: p.name, score: p.score, streak: p.streak, id: p.id }))
-      .sort((a, b) => b.score - a.score);
+    console.log(`📝 ${player.name} answered Q${room.currentQuestion}: ${isCorrect ? '✅ Correct' : '❌ Wrong'} (+${points} pts)`);
     
-    io.to(pin).emit('leaderboard-update', { leaderboard });
+    // Send instant feedback to player
+    socket.emit('answer-result', {
+      isCorrect,
+      points,
+      correctAnswer: currentQ.correctAnswer,
+      explanation: currentQ.explanation,
+      yourAnswer: answerIndex,
+      newScore: player.score,
+      streak: player.streak
+    });
     
-    if (room.players.every(p => p.answers.length === room.currentQuestion + 1)) {
-      setTimeout(() => {
-        room.currentQuestion++;
-        if (room.currentQuestion < room.questions.length) {
-          io.to(pin).emit('next-question', {
-            question: room.questions[room.currentQuestion],
-            questionNumber: room.currentQuestion + 1,
-            totalQuestions: room.questions.length
-          });
-        } else {
-          endQuiz(room, pin);
-        }
-      }, 2000);
+    // Broadcast real-time leaderboard update
+    broadcastLeaderboard(playerInfo.pin);
+  });
+
+  // Next question (auto-advance after time)
+  socket.on('next-question', () => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo) return;
+    
+    const room = rooms.get(playerInfo.pin);
+    if (!room) return;
+    
+    room.currentQuestion++;
+    
+    if (room.currentQuestion >= room.questions.length) {
+      endQuiz(playerInfo.pin);
+    } else {
+      room.questionStartTime = Date.now();
+      sendQuestion(playerInfo.pin);
     }
   });
 
-  // Social Feature: Chat message
-  socket.on('send-message', ({ pin, message }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
+  // Host controls
+  socket.on('pause-quiz', () => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo || !playerInfo.isHost) return;
     
-    if (!room || !playerData) return;
+    const room = rooms.get(playerInfo.pin);
+    if (!room) return;
     
-    const chatMessage = {
-      playerName: playerData.playerName,
-      message: message.trim(),
-      timestamp: Date.now()
-    };
-    
-    io.to(pin).emit('new-message', chatMessage);
+    room.isPaused = true;
+    io.to(playerInfo.pin).emit('quiz-paused');
   });
 
-  // Social Feature: Emoji reaction
-  socket.on('send-reaction', ({ pin, emoji }) => {
-    const room = rooms.get(pin);
-    const playerData = players.get(socket.id);
+  socket.on('resume-quiz', () => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo || !playerInfo.isHost) return;
     
-    if (!room || !playerData) return;
+    const room = rooms.get(playerInfo.pin);
+    if (!room) return;
     
-    io.to(pin).emit('new-reaction', {
-      playerName: playerData.playerName,
+    room.isPaused = false;
+    io.to(playerInfo.pin).emit('quiz-resumed');
+  });
+
+  socket.on('skip-question', () => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo || !playerInfo.isHost) return;
+    
+    socket.emit('next-question');
+  });
+
+  socket.on('end-quiz', () => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo || !playerInfo.isHost) return;
+    
+    endQuiz(playerInfo.pin);
+  });
+
+  // Chat message
+  socket.on('send-message', ({ message }) => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo) return;
+    
+    const room = rooms.get(playerInfo.pin);
+    if (!room) return;
+    
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
+    
+    io.to(playerInfo.pin).emit('new-message', {
+      user: player.name,
+      message,
+      timestamp: Date.now()
+    });
+  });
+
+  // Reactions
+  socket.on('send-reaction', ({ emoji }) => {
+    const playerInfo = players.get(socket.id);
+    if (!playerInfo) return;
+    
+    const room = rooms.get(playerInfo.pin);
+    if (!room) return;
+    
+    const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
+    
+    io.to(playerInfo.pin).emit('new-reaction', {
+      user: player.name,
       emoji,
-      timestamp: Date.now()
+      id: Date.now()
     });
   });
 
-  // Social Feature: Virtual gift
-  socket.on('send-gift', ({ pin, recipientId, giftType }) => {
-    const room = rooms.get(pin);
-    const senderData = players.get(socket.id);
-    
-    if (!room || !senderData) return;
-    
-    const sender = room.players.find(p => p.id === socket.id);
-    const recipient = room.players.find(p => p.id === recipientId);
-    
-    if (!sender || !recipient) return;
-    
-    // Gift values
-    const giftValues = {
-      star: 10,
-      diamond: 50,
-      crown: 100,
-      trophy: 200
-    };
-    
-    const giftValue = giftValues[giftType] || 10;
-    
-    // Simple economy: sender needs enough score to send gift
-    if (sender.score >= giftValue) {
-      sender.score -= giftValue;
-      recipient.score += Math.floor(giftValue / 2); // Recipient gets 50% of gift value
-      
-      // Notify both parties and update leaderboard
-      io.to(recipientId).emit('gift-received', {
-        from: senderData.playerName,
-        giftType,
-        points: Math.floor(giftValue / 2)
-      });
-      
-      socket.emit('gift-sent', {
-        to: recipient.name,
-        giftType,
-        cost: giftValue
-      });
-      
-      // Update leaderboard
-      const leaderboard = room.players
-        .map(p => ({ name: p.name, score: p.score, streak: p.streak, id: p.id }))
-        .sort((a, b) => b.score - a.score);
-      
-      io.to(pin).emit('leaderboard-update', { leaderboard });
-    } else {
-      socket.emit('gift-error', { message: 'Not enough points to send gift' });
-    }
-  });
-
-
-  // ==================== 1v1 MATCHMAKING ====================
-  
-  socket.on('find-match', ({ playerName, examId, subject, topic }) => {
-    console.log(`🔍 ${playerName} looking for match: ${examId}/${subject}/${topic}`);
-    
-    const matchKey = `${examId}_${subject}_${topic}`;
-    
-    // Get or create queue for this topic
-    if (!matchmakingQueue.has(matchKey)) {
-      matchmakingQueue.set(matchKey, []);
-    }
-    
-    const queue = matchmakingQueue.get(matchKey);
-    
-    // Check if someone is already waiting
-    if (queue.length > 0) {
-      // Match found!
-      const opponent = queue.shift();
-      
-      // Generate unique room ID
-      const roomId = `1v1_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      console.log(`✅ Match found! ${playerName} vs ${opponent.playerName}`);
-      
-      // Notify both players
-      socket.emit('match-found', {
-        roomId,
-        opponent: {
-          id: opponent.socketId,
-          name: opponent.playerName
-        },
-        examId,
-        subject,
-        topic
-      });
-      
-      io.to(opponent.socketId).emit('match-found', {
-        roomId,
-        opponent: {
-          id: socket.id,
-          name: playerName
-        },
-        examId,
-        subject,
-        topic
-      });
-      
-      // Create battle room
-      rooms.set(roomId, {
-        pin: roomId,
-        examId,
-        subject,
-        topic,
-        players: [
-          {
-            id: socket.id,
-            name: playerName,
-            score: 0,
-            answers: [],
-            streak: 0
-          },
-          {
-            id: opponent.socketId,
-            name: opponent.playerName,
-            score: 0,
-            answers: [],
-            streak: 0
-          }
-        ],
-        currentQuestion: 0,
-        status: 'waiting',
-        questions: [],
-        createdAt: Date.now()
-      });
-      
-      // Join both players to room
-      socket.join(roomId);
-      io.sockets.sockets.get(opponent.socketId)?.join(roomId);
-      
-      // Store player data
-      players.set(socket.id, { 
-        socketId: socket.id, 
-        playerName, 
-        pin: roomId,
-        isHost: true 
-      });
-      players.set(opponent.socketId, { 
-        socketId: opponent.socketId, 
-        playerName: opponent.playerName, 
-        pin: roomId,
-        isHost: false 
-      });
-      
-    } else {
-      // No match yet, add to queue
-      queue.push({ 
-        socketId: socket.id, 
-        playerName,
-        examId,
-        subject,
-        topic,
-        timestamp: Date.now()
-      });
-      
-      console.log(`⏳ ${playerName} added to queue. Queue length: ${queue.length}`);
-      
-      socket.emit('waiting', { 
-        message: 'Searching for an opponent...',
-        queuePosition: queue.length
-      });
-    }
-  });
-  
-  socket.on('cancel-matchmaking', () => {
-    // Remove from all queues
-    matchmakingQueue.forEach((queue, key) => {
-      const index = queue.findIndex(p => p.socketId === socket.id);
-      if (index !== -1) {
-        queue.splice(index, 1);
-        console.log(`❌ Player removed from matchmaking queue: ${key}`);
-      }
-    });
-  });
-
+  // Disconnect
   socket.on('disconnect', () => {
-    const data = players.get(socket.id);
+    console.log('❌ Disconnected:', socket.id);
     
-    // Remove from matchmaking queue
-    matchmakingQueue.forEach((queue, key) => {
-      const index = queue.findIndex(p => p.socketId === socket.id);
-      if (index !== -1) {
-        queue.splice(index, 1);
-      }
-    });
-    
-    if (data) {
-      const room = rooms.get(data.pin);
+    const playerInfo = players.get(socket.id);
+    if (playerInfo) {
+      const room = rooms.get(playerInfo.pin);
       if (room) {
+        // Remove player from room
         room.players = room.players.filter(p => p.id !== socket.id);
-        io.to(data.pin).emit('player-left', { playerName: data.playerName });
-        if (room.players.length === 0) rooms.delete(data.pin);
+        
+        io.to(playerInfo.pin).emit('player-left', {
+          playerId: socket.id,
+          playerName: playerInfo.playerName,
+          totalPlayers: room.players.length
+        });
+        
+        // If host left, end quiz
+        if (playerInfo.isHost && room.status === 'active') {
+          endQuiz(playerInfo.pin);
+        }
+        
+        // Delete room if empty
+        if (room.players.length === 0) {
+          rooms.delete(playerInfo.pin);
+          console.log(`🗑️ Room ${playerInfo.pin} deleted (empty)`);
+        }
       }
+      
       players.delete(socket.id);
     }
   });
 });
 
-async function endQuiz(room, pin) {
-  room.status = 'completed';
-  const finalLeaderboard = room.players
-    .map(p => ({ 
-      name: p.name, 
-      score: p.score, 
-      correct: p.answers.filter(a => a.isCorrect).length,
-      totalQuestions: room.questions.length
-    }))
-    .sort((a, b) => b.score - a.score);
+// Helper function to send question to all players
+function sendQuestion(pin) {
+  const room = rooms.get(pin);
+  if (!room) return;
   
-  io.to(pin).emit('quiz-ended', { leaderboard: finalLeaderboard });
+  const question = room.questions[room.currentQuestion];
+  
+  io.to(pin).emit('new-question', {
+    questionNumber: room.currentQuestion + 1,
+    totalQuestions: room.questions.length,
+    question: {
+      id: question.id,
+      question: question.question,
+      options: question.options
+    },
+    timeLimit: room.timePerQuestion
+  });
+  
+  // Auto-advance after time limit
+  questionTimers.set(pin, setTimeout(() => {
+    const updatedRoom = rooms.get(pin);
+    if (!updatedRoom || updatedRoom.status !== 'active') return;
+    
+    updatedRoom.currentQuestion++;
+    
+    if (updatedRoom.currentQuestion >= updatedRoom.questions.length) {
+      endQuiz(pin);
+    } else {
+      sendQuestion(pin);
+    }
+  }, room.timePerQuestion * 1000));
+}
+
+// End quiz and show results
+function endQuiz(pin) {
+  const room = rooms.get(pin);
+  if (!room) return;
+  
+  // Clear timer
+  if (questionTimers.has(pin)) {
+    clearTimeout(questionTimers.get(pin));
+    questionTimers.delete(pin);
+  }
+  
+  room.status = 'finished';
+  
+  const finalLeaderboard = calculateLeaderboard(room);
+  
+  io.to(pin).emit('quiz-ended', {
+    leaderboard: finalLeaderboard,
+    totalQuestions: room.questions.length
+  });
   
   // Save results to MongoDB
   if (db) {
-    try {
-      await db.collection('quiz_results').insertOne({
-        pin,
-        examId: room.examId,
-        subject: room.subject,
-        topic: room.topic,
-        hostName: room.hostName,
-        leaderboard: finalLeaderboard,
-        completedAt: new Date()
-      });
-    } catch (error) {
-      console.error('Error saving quiz results:', error);
-    }
+    db.collection('quiz_results').insertOne({
+      pin: room.pin,
+      examId: room.examId,
+      subject: room.subject,
+      topic: room.topic,
+      leaderboard: finalLeaderboard,
+      totalQuestions: room.questions.length,
+      completedAt: new Date()
+    }).catch(err => console.error('Error saving results:', err));
   }
+  
+  console.log(`🏁 Quiz ended in room ${pin}`);
 }
 
-server.listen(5001, () => console.log('✅ Battle server on :5001'));
+// Random avatar generator
+function getRandomAvatar() {
+  const avatars = ['👨‍🎓', '👩‍🎓', '🧑‍🎓', '👨‍💻', '👩‍💻', '🧑‍💻', '👨‍🔬', '👩‍🔬', '🧑‍🔬'];
+  return avatars[Math.floor(Math.random() * avatars.length)];
+}
+
+// Start server
+const PORT = process.env.PORT || 5001;
+server.listen(PORT, () => {
+  console.log(`🚀 Enhanced Battle Server running on port ${PORT}`);
+  console.log(`✨ JovVix-inspired features enabled`);
+});
