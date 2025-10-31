@@ -4,7 +4,7 @@ import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, Mes
 import io from 'socket.io-client';
 
 // Connect to battle server through the backend domain
-const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://battle-fix.preview.emergentagent.com';
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://battle-proxy-fix.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();

@@ -29,7 +29,7 @@ with open('/app/frontend/.env', 'r') as f:
             BACKEND_URL = line.split('=')[1].strip()
             break
     else:
-        BACKEND_URL = "https://battle-fix.preview.emergentagent.com"
+        BACKEND_URL = "https://battle-proxy-fix.preview.emergentagent.com"
 
 class BattleServerTester:
     def __init__(self):

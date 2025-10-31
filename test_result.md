@@ -754,7 +754,7 @@ agent_communication:
       - ✅ Uvicorn has --ws auto flag enabled
       
       **Issue Identified**:
-      - Frontend .env has REACT_APP_SOCKET_PROXY_URL=https://battle-fix.preview.emergentagent.com
+      - Frontend .env has REACT_APP_SOCKET_PROXY_URL=https://battle-proxy-fix.preview.emergentagent.com
       - BattleLobby.js connects to SOCKET_PROXY_URL (which points to correct domain)
       - LiveBattle.js connects to BACKEND_URL (also correct domain)
       - Both should use path: '/socket.io'
