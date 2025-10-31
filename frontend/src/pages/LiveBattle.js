@@ -38,11 +38,36 @@ const LiveBattle = () => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
+    if (!playerName || !pin) {
+      navigate('/');
+      return;
+    }
+
     const newSocket = io(BATTLE_SERVER_URL, {
       transports: ['polling', 'websocket'],
       reconnection: true
     });
     setSocket(newSocket);
+
+    // Join room
+    newSocket.emit('join_room', {
+      roomId: pin,
+      userData: {
+        username: playerName,
+        isHost: isHost || false,
+        avatar: isHost ? '👑' : '👤'
+      }
+    });
+
+    // Listen for participants joining
+    newSocket.on('participant_joined', (data) => {
+      setParticipants(data.room.participants);
+      console.log('Participant joined:', data.participant.username);
+    });
+
+    newSocket.on('participant_left', (data) => {
+      setParticipants(data.room.participants);
+    });
 
     newSocket.on('leaderboard-update', (data) => {
       setLeaderboard(data.leaderboard);
@@ -51,8 +76,10 @@ const LiveBattle = () => {
     });
 
     newSocket.on('next-question', (data) => {
-      setCurrentQuestion(data.question);
-      setQuestionNumber(data.questionNumber);
+      if (data.question) {
+        setCurrentQuestion(data.question);
+        setQuestionNumber(data.questionNumber);
+      }
       setSelectedAnswer(null);
       setAnswerResult(null);
       setTimeLeft(30);
@@ -77,7 +104,6 @@ const LiveBattle = () => {
 
     newSocket.on('new-reaction', (data) => {
       setReactions(prev => [...prev, { ...data, id: Date.now() }]);
-      // Remove reaction after animation (3 seconds)
       setTimeout(() => {
         setReactions(prev => prev.filter(r => r.id !== data.id));
       }, 3000);
