@@ -356,7 +356,11 @@ const LiveBattle = () => {
         console.log(`✅ Auto-advanced to question ${nextIndex + 1}`);
       } else {
         console.log('🏁 Last question completed');
-        // Could trigger quiz end here
+        // Show completion message and navigate after delay
+        setTimeout(() => {
+          alert(`Quiz Complete!\n\nYour Final Score: ${myScore} points\n\nThank you for playing!`);
+          navigate('/');
+        }, 2000);
       }
     }, 2000);
   };
