@@ -26,11 +26,12 @@ const userRooms = new Map(); // Track which room each user is in
 
 // Room structure
 class BattleRoom {
-  constructor(roomId, host, config) {
+  constructor(roomId, host, config, questions = []) {
     this.roomId = roomId;
     this.host = host;
     this.participants = [host];
     this.config = config;
+    this.questions = questions; // Store questions for the room
     this.status = 'waiting'; // waiting, starting, active, completed
     this.currentQuestion = 0;
     this.scores = new Map();
