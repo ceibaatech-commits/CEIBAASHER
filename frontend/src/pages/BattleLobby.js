@@ -30,14 +30,31 @@ const BattleLobby = () => {
     
     setSocket(newSocket);
 
-    // Wait for connection before joining room
+    // Connection events
     newSocket.on('connect', () => {
-      console.log('✅ Socket connected! Now joining room...');
+      console.log('✅ Socket CONNECTED! Socket ID:', newSocket.id);
+      console.log('📤 Emitting join-room with:', {
+        pin,
+        playerName: isHost ? hostName : playerName,
+        isHost: isHost || false
+      });
       newSocket.emit('join-room', { 
         pin, 
         playerName: isHost ? hostName : playerName,
         isHost: isHost || false
       });
+    });
+
+    newSocket.on('connect_error', (error) => {
+      console.error('❌ Connection error:', error);
+    });
+
+    newSocket.on('disconnect', (reason) => {
+      console.log('❌ Disconnected:', reason);
+    });
+
+    newSocket.on('error', (error) => {
+      console.error('❌ Socket error:', error);
     });
 
     newSocket.on('player-joined', (data) => {
