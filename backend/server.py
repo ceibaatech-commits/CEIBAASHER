@@ -113,7 +113,7 @@ fastapi_app.include_router(battle_proxy_router, prefix="/api")
 fastapi_app.include_router(social_router, prefix="/api")
 fastapi_app.include_router(contact_router, prefix="/api")
 fastapi_app.include_router(social_feed_router, prefix="/api/social")
-fastapi_app.include_router(socketio_proxy_router, prefix="/api")  # Mounts at /api/battlews
+# socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
 from test_routes import router as test_router
