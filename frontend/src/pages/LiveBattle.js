@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile } from 'lucide-react';
+import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile, ArrowLeft } from 'lucide-react';
 import io from 'socket.io-client';
 
 // Connect directly to the standalone battle server on port 5001
