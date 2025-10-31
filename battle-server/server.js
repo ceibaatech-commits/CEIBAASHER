@@ -118,7 +118,7 @@ io.on('connection', (socket) => {
     socket.emit('room_created', {
       success: true,
       roomId,
-      pin: roomId.toUpperCase(),
+      pin: roomId,  // Already numeric
       room: getRoomData(room)
     });
 
