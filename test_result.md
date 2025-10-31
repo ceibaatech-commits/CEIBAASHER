@@ -430,9 +430,7 @@ metadata:
 test_plan:
   current_focus: 
     - "Socket.io Battle System Complete End-to-End Flow"
-    - "Social Feed Backend APIs"
   stuck_tasks:
-    - "Socket.io Battle System Complete End-to-End Flow"
     - "Social Feed Backend APIs"
   test_all: false
   test_priority: "high_first"
