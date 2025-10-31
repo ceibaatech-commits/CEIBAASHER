@@ -18,10 +18,18 @@ const BattleLobby = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    console.log('🚀 BattleLobby useEffect RUNNING');
     console.log('🔗 BACKEND_URL:', BACKEND_URL);
     console.log('🔗 Connecting to Socket.io proxy at backend');
     console.log('🔗 Room info:', { pin, isHost, playerName, hostName });
     
+    // Guard clause - don't connect if we don't have the PIN
+    if (!pin) {
+      console.log('⚠️ No PIN yet, waiting...');
+      return;
+    }
+    
+    console.log('📡 Creating Socket.io connection...');
     const newSocket = io(BACKEND_URL, {
       path: '/socket.io',
       transports: ['polling'], // Force polling only, no WebSocket
