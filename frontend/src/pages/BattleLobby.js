@@ -31,10 +31,11 @@ const BattleLobby = () => {
     }
     
     console.log('📡 Creating Socket.io connection...');
-    const newSocket = io(SOCKET_PROXY_URL, {
-      path: '/socket.io',
-      transports: ['polling'],
-      upgrade: false
+    // Try to connect directly to battle-server
+    // In production, this should be proxied through Kubernetes
+    const newSocket = io(BATTLE_SERVER_URL, {
+      transports: ['polling', 'websocket'],
+      upgrade: true
     });
     
     setSocket(newSocket);
