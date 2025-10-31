@@ -35,7 +35,7 @@ const LiveBattle = () => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io(BACKEND_URL, {
+    const newSocket = io(BATTLE_SERVER_URL, {
       path: '/socket.io',
       transports: ['websocket', 'polling']
     });
