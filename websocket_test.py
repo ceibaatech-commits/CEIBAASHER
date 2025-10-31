@@ -276,7 +276,7 @@ class WebSocketTester:
             
             # Connect test client
             test_client = socketio.SimpleClient()
-            test_client.connect(external_url, transports=['websocket', 'polling'])
+            test_client.connect(BACKEND_URL, socketio_path='/api/battlews/socket.io', transports=['websocket', 'polling'])
             
             if not test_client.connected:
                 self.log_result("Real-time Events - Connection", False, "Failed to connect for event testing")
