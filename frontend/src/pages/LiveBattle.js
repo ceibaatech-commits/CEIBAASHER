@@ -227,9 +227,14 @@ const LiveBattle = () => {
 
     newSocket.on('battle_completed', (data) => {
       console.log('🏁 Battle completed:', data);
-      // Navigate to home for now (can show results later)
-      alert('Quiz ended by host!');
-      navigate('/');
+      // Show final results with scores
+      const finalMessage = `Quiz Ended!\n\nFinal Scores:\n${data.leaderboard ? data.leaderboard.map((p, i) => `${i+1}. ${p.username}: ${p.score} points`).join('\n') : 'No scores available'}`;
+      alert(finalMessage);
+      
+      // Navigate to home after showing results
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     });
 
     newSocket.on('quiz-ended', (data) => {
