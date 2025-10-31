@@ -171,10 +171,15 @@ const LiveBattle = () => {
     // Also listen for leaderboard_update (with underscore)
     newSocket.on('leaderboard_update', (data) => {
       console.log('📊 Leaderboard update received (underscore):', data);
-      setLeaderboard(data.leaderboard);
-      const me = data.leaderboard.find(p => p.name === playerName || p.username === playerName);
+      // Transform server data to match frontend format
+      const transformedLeaderboard = data.leaderboard.map(p => ({
+        name: p.username,
+        score: p.score,
+        streak: 0 // Can be enhanced later
+      }));
+      setLeaderboard(transformedLeaderboard);
+      const me = transformedLeaderboard.find(p => p.name === playerName);
       if (me) {
-        setMyScore(me.score);
         console.log(`✅ Updated my score from server: ${me.score}`);
       }
     });
