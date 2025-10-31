@@ -29,10 +29,12 @@ const BattleLobby = () => {
       return;
     }
     
-    console.log('📡 Creating Socket.io connection to:', SOCKET_URL);
-    const newSocket = io(SOCKET_URL, {
-      path: '/api/socketio',
-      transports: ['polling', 'websocket']
+    console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
+    const newSocket = io(BATTLE_SERVER_URL, {
+      transports: ['polling', 'websocket'],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5
     });
     
     setSocket(newSocket);
