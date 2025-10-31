@@ -166,7 +166,7 @@ class BattleGame {
     this.status = 'PLAYING';
     this.currentQuestionIndex = 0;
 
-    this.broadcast('game-started', {
+    this.broadcast('quiz-started', {
       totalQuestions: this.totalQuestions,
       timePerQuestion: this.timePerQuestion
     });
@@ -525,69 +525,79 @@ app.get('/api/battle/room/:pin', (req, res) => {
   });
 });
 
-// Socket.io Events (Rahoot-inspired)
+// Socket.io Events (Compatible with existing frontend)
 io.on('connection', (socket) => {
   console.log('✅ Socket connected:', socket.id);
 
-  // Host initializes game after room creation
-  socket.on('host-init', ({ pin, hostName }) => {
-    console.log(`👑 Host ${hostName} initializing game ${pin}`);
-    
-    // Check pending game
-    if (!global.pendingGames || !global.pendingGames.has(pin)) {
-      socket.emit('error', { message: 'Room not found' });
-      return;
-    }
-
-    const gameData = global.pendingGames.get(pin);
-    global.pendingGames.delete(pin);
-
-    // Create actual game instance
-    const game = new BattleGame(io, socket, gameData);
-    game.inviteCode = pin; // Use the same PIN
-    game.host.name = hostName;
-    
-    registry.addGame(game);
-    socket.join(game.gameId);
-
-    socket.emit('host-initialized', {
-      gameId: game.gameId,
-      inviteCode: pin,
-      totalQuestions: game.totalQuestions
-    });
-
-    console.log(`✅ Game ${pin} fully initialized`);
-  });
-
-  // Player joins game
-  socket.on('join-game', ({ pin, playerName }) => {
-    console.log(`🚪 ${playerName} trying to join game ${pin}`);
+  // FRONTEND EVENT: join-room (handles both host and player join)
+  socket.on('join-room', ({ pin, playerName, isHost }) => {
+    console.log(`🚪 ${playerName} ${isHost ? '(HOST)' : '(PLAYER)'} joining room ${pin}`);
     
     const game = registry.getGameByCode(pin);
-    if (!game) {
-      socket.emit('error', { message: 'Room not found' });
-      return;
-    }
-
-    const result = game.addPlayer(socket, playerName);
     
-    if (!result.success) {
-      socket.emit('error', { message: result.error });
+    // If game doesn't exist and this is the host, initialize it
+    if (!game && isHost) {
+      console.log(`👑 Host ${playerName} initializing game ${pin}`);
+      
+      // Check pending game
+      if (!global.pendingGames || !global.pendingGames.has(pin)) {
+        socket.emit('error', { message: 'Room not found' });
+        return;
+      }
+
+      const gameData = global.pendingGames.get(pin);
+      global.pendingGames.delete(pin);
+
+      // Create actual game instance
+      const newGame = new BattleGame(io, socket, gameData);
+      newGame.inviteCode = pin; // Use the same PIN
+      newGame.host.name = playerName;
+      
+      registry.addGame(newGame);
+      socket.join(newGame.gameId);
+
+      // Notify host
+      socket.emit('player-joined', {
+        players: [],
+        totalPlayers: 0
+      });
+
+      console.log(`✅ Game ${pin} initialized by host`);
       return;
     }
+    
+    // If game exists, player is joining
+    if (game) {
+      if (isHost) {
+        // Host reconnecting
+        socket.join(game.gameId);
+        socket.emit('player-joined', {
+          players: game.players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar })),
+          totalPlayers: game.players.length
+        });
+        return;
+      }
+      
+      // Regular player joining
+      const result = game.addPlayer(socket, playerName);
+      
+      if (!result.success) {
+        socket.emit('error', { message: result.error });
+        return;
+      }
 
-    socket.emit('joined-game', {
-      gameId: game.gameId,
-      inviteCode: pin,
-      player: result.player,
-      totalQuestions: game.totalQuestions,
-      players: game.players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar }))
-    });
+      // Success - game will broadcast player-joined to all
+      console.log(`✅ ${playerName} joined game ${pin}`);
+      return;
+    }
+    
+    // Game not found
+    socket.emit('error', { message: 'Room not found' });
   });
 
-  // Host starts game
-  socket.on('start-game', ({ gameId }) => {
-    const game = registry.getGameById(gameId);
+  // FRONTEND EVENT: start-quiz (host starts the game)
+  socket.on('start-quiz', ({ pin }) => {
+    const game = registry.getGameByCode(pin);
     if (!game) {
       socket.emit('error', { message: 'Game not found' });
       return;
@@ -604,12 +614,108 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Player submits answer
-  socket.on('submit-answer', ({ gameId, answerIndex, timeLeft }) => {
-    const game = registry.getGameById(gameId);
+  // FRONTEND EVENT: submit-answer
+  socket.on('submit-answer', ({ pin, answerIndex, timeLeft }) => {
+    const game = registry.getGameByCode(pin);
     if (!game) return;
 
     game.submitAnswer(socket.id, answerIndex);
+  });
+
+  // FRONTEND EVENT: kick-player
+  socket.on('kick-player', ({ pin, playerId }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game) return;
+
+    if (socket.id !== game.host.id) {
+      socket.emit('error', { message: 'Only host can kick players' });
+      return;
+    }
+
+    const player = game.players.find(p => p.id === playerId);
+    if (!player) return;
+
+    // Remove player
+    game.players = game.players.filter(p => p.id !== playerId);
+    
+    // Notify kicked player
+    io.to(playerId).emit('kicked', { message: 'You were kicked from the game' });
+    
+    // Notify everyone else
+    game.broadcast('player-left', {
+      playerId,
+      playerName: player.name,
+      totalPlayers: game.players.length
+    });
+    
+    // Update players list
+    game.broadcast('player-joined', {
+      players: game.players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar })),
+      totalPlayers: game.players.length
+    });
+  });
+
+  // FRONTEND EVENT: pause-quiz, resume-quiz, skip-question, end-quiz
+  socket.on('pause-quiz', ({ pin }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game || socket.id !== game.host.id) return;
+    
+    game.status = 'PAUSED';
+    game.broadcast('quiz-paused', {});
+  });
+
+  socket.on('resume-quiz', ({ pin }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game || socket.id !== game.host.id) return;
+    
+    game.status = 'PLAYING';
+    game.broadcast('quiz-resumed', {});
+  });
+
+  socket.on('skip-question', ({ pin }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game || socket.id !== game.host.id) return;
+    
+    clearTimeout(game.questionTimer);
+    game.nextQuestion();
+  });
+
+  socket.on('end-quiz', ({ pin }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game || socket.id !== game.host.id) return;
+    
+    game.endGame();
+  });
+
+  // FRONTEND EVENT: send-message, send-reaction
+  socket.on('send-message', ({ pin, message }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game) return;
+
+    const player = game.players.find(p => p.id === socket.id) || 
+                   (socket.id === game.host.id ? { name: game.host.name } : null);
+    if (!player) return;
+
+    game.broadcast('new-message', {
+      user: player.name,
+      message,
+      timestamp: Date.now()
+    });
+  });
+
+  socket.on('send-reaction', ({ pin, emoji }) => {
+    const game = registry.getGameByCode(pin);
+    if (!game) return;
+
+    const player = game.players.find(p => p.id === socket.id) ||
+                   (socket.id === game.host.id ? { name: game.host.name } : null);
+    if (!player) return;
+
+    game.broadcast('new-reaction', {
+      user: player.name,
+      emoji,
+      id: Date.now()
+    });
   });
 
   // Disconnect
