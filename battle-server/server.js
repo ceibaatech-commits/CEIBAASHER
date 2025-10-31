@@ -141,6 +141,9 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // Store userData on socket for later use (chat, reactions, etc.)
+    socket.userData = userData;
+
     // CRITICAL FIX: If this is the host joining, update their socket ID
     // This fixes the mismatch between HTTP room creation and Socket.io connection
     if (userData.isHost === true) {
