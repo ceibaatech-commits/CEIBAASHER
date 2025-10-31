@@ -13,6 +13,7 @@ import AboutUs from "@/pages/AboutUs";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
 import TestSheets from "@/pages/TestSheets";
+import TestSocket from "@/pages/TestSocket";
 import UserDashboard from "@/pages/UserDashboard";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
