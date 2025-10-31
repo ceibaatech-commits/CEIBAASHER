@@ -209,7 +209,15 @@ const LiveBattle = () => {
       alert(data.message);
     });
 
+    newSocket.on('battle_completed', (data) => {
+      console.log('🏁 Battle completed:', data);
+      // Navigate to home for now (can show results later)
+      alert('Quiz ended by host!');
+      navigate('/');
+    });
+
     newSocket.on('quiz-ended', (data) => {
+      console.log('🏁 Quiz ended:', data);
       navigate(`/battle-results/${pin}`, { 
         state: { 
           leaderboard: data.leaderboard,
