@@ -423,7 +423,7 @@ app.post('/api/battle/create-room', (req, res) => {
       examId,
       subject,
       topic,
-      maxParticipants: 10
+      maxParticipants: 50  // Default limit set to 50
     };
 
     const room = new BattleRoom(roomId, {
@@ -435,7 +435,7 @@ app.post('/api/battle/create-room', (req, res) => {
 
     battleRooms.set(roomId, room);
 
-    console.log(`[HTTP] Room created: ${roomId} by ${hostName}`);
+    console.log(`[HTTP] Room created: ${roomId} by ${hostName} (max: 50 participants)`);
 
     res.json({
       success: true,
