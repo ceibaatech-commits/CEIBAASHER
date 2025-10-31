@@ -20,21 +20,28 @@ const BattleLobby = () => {
   useEffect(() => {
     console.log('🔗 BACKEND_URL:', BACKEND_URL);
     console.log('🔗 Connecting to Socket.io proxy at backend');
+    console.log('🔗 Room info:', { pin, isHost, playerName, hostName });
+    
     const newSocket = io(BACKEND_URL, {
       path: '/socket.io',
       transports: ['websocket', 'polling']
     });
-    console.log('🔗 Socket.io client created');
+    
     setSocket(newSocket);
 
-    newSocket.emit('join-room', { 
-      pin, 
-      playerName: isHost ? hostName : playerName,
-      isHost: isHost || false
+    // Wait for connection before joining room
+    newSocket.on('connect', () => {
+      console.log('✅ Socket connected! Now joining room...');
+      newSocket.emit('join-room', { 
+        pin, 
+        playerName: isHost ? hostName : playerName,
+        isHost: isHost || false
+      });
     });
 
     newSocket.on('player-joined', (data) => {
-      setPlayers(data.players);
+      console.log('📬 Received player-joined:', data);
+      setPlayers(data.players || []);
     });
 
     newSocket.on('player-left', (data) => {
