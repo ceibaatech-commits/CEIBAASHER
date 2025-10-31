@@ -42,11 +42,15 @@ fastapi_app = FastAPI()
 # Add session middleware for OAuth
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
-# Import and mount Socket.io
+# Import and mount Socket.io apps
 from socket_app import socket_asgi_app
 # Mount Socket.io ASGI app at /api/socketio (routes through ingress /api -> backend)
 # This avoids needing custom ingress rules for /socket.io
 fastapi_app.mount("/api/socketio", socket_asgi_app)
+
+# Mount Socket.io Battle Proxy at /api/battlews
+from socketio_battle_proxy import battle_proxy_app
+fastapi_app.mount("/api/battlews", battle_proxy_app)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
