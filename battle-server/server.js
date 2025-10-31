@@ -440,7 +440,7 @@ app.post('/api/battle/create-room', (req, res) => {
 
     res.json({
       success: true,
-      pin: roomId.toUpperCase(),
+      pin: roomId,  // Already numeric, no need for toUpperCase()
       roomId,
       room: getRoomData(room)
     });
