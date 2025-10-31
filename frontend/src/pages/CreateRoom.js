@@ -29,7 +29,32 @@ const CreateRoom = () => {
       });
 
       if (response.data.success) {
-        setRoom(response.data);
+        const { pin } = response.data;
+        
+        // Get questions for this topic
+        const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, {
+          examId,
+          subject,
+          topic,
+          numberOfQuestions: 10
+        });
+
+        if (quizResponse.data.success) {
+          // Navigate directly to LiveBattle with questions
+          navigate(`/live-battle/${pin}`, {
+            state: {
+              playerName: hostName,
+              isHost: true,
+              questions: quizResponse.data.questions,
+              roomInfo: response.data.room,
+              examId,
+              subject,
+              topic
+            }
+          });
+        } else {
+          alert('Failed to load questions. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Error creating room:', error);
