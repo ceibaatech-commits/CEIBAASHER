@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect to backend Socket.io proxy (which forwards to battle-server)
+// Connect to backend Socket.io at /api/socketio path
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const LiveBattle = () => {
