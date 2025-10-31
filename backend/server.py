@@ -17,7 +17,8 @@ from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
 from battle_proxy_routes import router as battle_proxy_router
 from social_routes import router as social_router
-from socket_proxy import socket_app
+# Socket.io proxy now runs separately on port 5002
+# from socket_proxy import socket_app  # Not needed anymore
 from contact_routes import router as contact_router
 
 
