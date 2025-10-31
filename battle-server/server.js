@@ -273,7 +273,13 @@ io.on('connection', (socket) => {
       currentScore: room.scores.get(socket.id)
     });
 
-    console.log(`[ANSWER] ${socket.userData?.username} answered Q${questionId}: ${isCorrect ? 'Correct' : 'Wrong'}`);
+    // Broadcast updated leaderboard to ALL participants in real-time
+    const leaderboard = room.getLeaderboard();
+    io.to(roomId).emit('leaderboard_update', {
+      leaderboard: leaderboard
+    });
+
+    console.log(`[ANSWER] ${socket.userData?.username} answered Q${questionId}: ${isCorrect ? 'Correct' : 'Wrong'} - Broadcasting leaderboard update`);
   });
 
   // Next question
