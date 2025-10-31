@@ -47,6 +47,18 @@ async def connect(sid, environ):
         logger.info(f'📬 Received quiz-started from battle-server for {sid}')
         await sio_server.emit('quiz-started', data, room=sid)
     
+    async def handle_new_question(data):
+        logger.info(f'📬 Received new-question from battle-server for {sid}')
+        await sio_server.emit('new-question', data, room=sid)
+    
+    async def handle_answer_result(data):
+        logger.info(f'📬 Received answer-result from battle-server for {sid}')
+        await sio_server.emit('answer-result', data, room=sid)
+    
+    async def handle_question_results(data):
+        logger.info(f'📬 Received question-results from battle-server for {sid}')
+        await sio_server.emit('question-results', data, room=sid)
+    
     async def handle_leaderboard_update(data):
         logger.info(f'📬 Received leaderboard-update from battle-server for {sid}')
         await sio_server.emit('leaderboard-update', data, room=sid)
