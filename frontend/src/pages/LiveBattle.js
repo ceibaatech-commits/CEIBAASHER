@@ -182,11 +182,12 @@ const LiveBattle = () => {
     });
 
     // Social Features Listeners
-    newSocket.on('new-message', (data) => {
+    newSocket.on('new_message', (data) => {
       setChatMessages(prev => [...prev, data]);
+      console.log('💬 New chat message received:', data);
     });
 
-    newSocket.on('new-reaction', (data) => {
+    newSocket.on('new_reaction', (data) => {
       setReactions(prev => [...prev, { ...data, id: Date.now() }]);
       setTimeout(() => {
         setReactions(prev => prev.filter(r => r.id !== data.id));
