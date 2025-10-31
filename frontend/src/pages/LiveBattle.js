@@ -107,22 +107,27 @@ const LiveBattle = () => {
         console.log('⏳ Waiting for host to set questions...');
         // Set a timeout to stop loading after 10 seconds if no questions
         setTimeout(() => {
-          if (!allQuestions || allQuestions.length === 0) {
+          if ((!allQuestions || allQuestions.length === 0) && !currentQuestion) {
             setLoading(false);
-            alert('Failed to load questions. Please refresh and try again.');
+            console.error('❌ Timeout: No questions received after 10 seconds');
+            alert('Failed to load questions. The host may not have set up the quiz properly. Please ask the host to refresh.');
           }
         }, 10000);
       }
       
-      // If this is host with questions, send them to battle-server
+      // BACKUP: If host didn't send questions on connect, send them now
       if (isHost && questions && questions.length > 0) {
-        console.log(`📤 Host sending ${questions.length} questions to battle-server`);
+        console.log(`📤 HOST (backup): Sending ${questions.length} questions via room_joined`);
         newSocket.emit('set_room_questions', {
           roomId: pin,
           questions: questions
         });
-      } else if (isHost) {
-        console.error('❌ Host has no questions to send!', { isHost, questions });
+      } else if (isHost && (!questions || questions.length === 0)) {
+        console.error('❌ HOST ERROR: No questions available!', { 
+          isHost, 
+          questionsExist: !!questions, 
+          questionsLength: questions?.length 
+        });
       }
     });
 
