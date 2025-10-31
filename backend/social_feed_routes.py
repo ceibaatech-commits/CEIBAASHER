@@ -338,7 +338,7 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 10):
 @router.get("/feed/trending")
 async def get_trending_feed(skip: int = 0, limit: int = 10):
     """Get trending posts"""
-    posts = await db.social_posts.find({"_id": 0}) \
+    posts = await db.social_posts.find({}, {"_id": 0}) \
         .sort([("trending_score", -1), ("created_at", -1)]) \
         .skip(skip) \
         .limit(limit) \
