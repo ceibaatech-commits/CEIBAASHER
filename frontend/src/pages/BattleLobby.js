@@ -3,8 +3,8 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect to backend Socket.io proxy (which forwards to battle-server)
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+// Connect to battle-server directly
+const BATTLE_SERVER_URL = 'http://localhost:5001';
 
 const BattleLobby = () => {
   const { pin } = useParams();
