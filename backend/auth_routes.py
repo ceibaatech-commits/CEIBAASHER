@@ -215,59 +215,87 @@ async def logout():
 
 @router.post("/auth/demo-login")
 async def demo_login(login_data: DemoLoginRequest):
-    """Demo login endpoint for testing purposes"""
+    """Demo login endpoint - No social login, only demo accounts"""
     try:
         print(f"🔍 Demo login attempt - Username: '{login_data.username}', Password: '{login_data.password}'")
         
-        # Find user by username (stored in provider_id for demo accounts)
-        user = await db.users.find_one({
+        # Define demo users
+        demo_users = {
+            "demo1": {
+                "id": "demo1-uuid",
+                "name": "Demo Student 1",
+                "email": "demo1@ceibaa.com",
+                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+1&background=3B82F6&color=fff&size=200",
+                "provider": "demo",
+                "provider_id": "demo1",
+                "password": "demo1",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            "demo2": {
+                "id": "demo2-uuid",
+                "name": "Demo Student 2",
+                "email": "demo2@ceibaa.com",
+                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+2&background=10B981&color=fff&size=200",
+                "provider": "demo",
+                "provider_id": "demo2",
+                "password": "demo2",
+                "created_at": datetime.utcnow().isoformat()
+            }
+        }
+        
+        # Check if credentials match
+        username = login_data.username.lower().strip()
+        password = login_data.password.strip()
+        
+        if username not in demo_users or demo_users[username]["password"] != password:
+            print(f"❌ Login failed for username: {username}")
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        user_data = demo_users[username]
+        
+        # Check if user exists in DB
+        existing_user = await db.users.find_one({"provider": "demo", "provider_id": user_data["provider_id"]})
+        
+        if not existing_user:
+            # Create user in DB
+            await db.users.insert_one(user_data)
+            print(f"✅ Created new demo user: {user_data['name']}")
+        else:
+            # Update last login
+            await db.users.update_one(
+                {"provider": "demo", "provider_id": user_data["provider_id"]},
+                {"$set": {"last_login": datetime.utcnow().isoformat()}}
+            )
+            user_data = existing_user
+        
+        # Create token
+        token_data = {
+            "sub": user_data["id"],
             "provider": "demo",
-            "provider_id": login_data.username
-        })
+            "provider_id": user_data["provider_id"]
+        }
+        access_token = create_access_token(token_data)
         
-        print(f"🔍 User lookup result: {user is not None}")
-        if user:
-            print(f"🔍 Found user: {user.get('name')}, provider_id: '{user.get('provider_id')}', password in DB: '{user.get('password')}'")
-        
-        if not user:
-            print(f"❌ User not found with provider_id: '{login_data.username}'")
-            raise HTTPException(status_code=401, detail="Invalid username or password")
-        
-        # Check password (stored in a 'password' field for demo accounts)
-        db_password = user.get("password")
-        input_password = login_data.password
-        
-        print(f"🔍 Password comparison: DB='{db_password}' vs Input='{input_password}', Match={db_password == input_password}")
-        
-        if db_password != input_password:
-            print(f"❌ Password mismatch!")
-            raise HTTPException(status_code=401, detail="Invalid username or password")
-        
-        print(f"✅ Login successful for user: {user.get('name')}")
-        
-        # Update last login
-        await db.users.update_one(
-            {"_id": user["_id"]},
-            {"$set": {"last_login": datetime.utcnow().isoformat()}}
-        )
-        
-        # Create JWT token
-        access_token = create_access_token({"sub": user["id"], "provider": "demo"})
-        
-        # Remove sensitive fields
-        user.pop("_id", None)
-        user.pop("password", None)
+        print(f"✅ Demo login successful: {user_data['name']}")
         
         return {
             "access_token": access_token,
             "token_type": "bearer",
-            "user": user
+            "user": {
+                "id": user_data["id"],
+                "name": user_data["name"],
+                "email": user_data.get("email"),
+                "profile_picture": user_data.get("profile_picture"),
+                "provider": "demo"
+            }
         }
         
     except HTTPException:
         raise
     except Exception as e:
         print(f"Demo login error: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail="Login failed")
 
 @router.post("/auth/create-demo-users")
