@@ -1,0 +1,421 @@
+// battle-server.js - Standalone Socket.io Battle Server
+// Deploy this separately or alongside FastAPI
+
+const express = require('express');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
+
+const app = express();
+const httpServer = createServer(app);
+
+// Configure Socket.io with CORS
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000', 'http://localhost:8000', 'https://battle-fix.preview.emergentagent.com'],
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  path: '/socket.io/',
+  transports: ['websocket', 'polling']
+});
+
+// Store active battle rooms
+const battleRooms = new Map();
+const userRooms = new Map(); // Track which room each user is in
+
+// Room structure
+class BattleRoom {
+  constructor(roomId, host, config) {
+    this.roomId = roomId;
+    this.host = host;
+    this.participants = [host];
+    this.config = config;
+    this.status = 'waiting'; // waiting, starting, active, completed
+    this.currentQuestion = 0;
+    this.scores = new Map();
+    this.answers = new Map();
+    this.createdAt = Date.now();
+  }
+
+  addParticipant(userId, userData) {
+    if (this.participants.length >= this.config.maxParticipants) {
+      return { success: false, error: 'Room is full' };
+    }
+
+    this.participants.push({
+      userId,
+      ...userData,
+      joinedAt: Date.now()
+    });
+
+    this.scores.set(userId, 0);
+    return { success: true };
+  }
+
+  removeParticipant(userId) {
+    this.participants = this.participants.filter(p => p.userId !== userId);
+    this.scores.delete(userId);
+    this.answers.delete(userId);
+  }
+
+  submitAnswer(userId, questionId, answerId, timeSpent) {
+    const key = `${userId}-${questionId}`;
+    this.answers.set(key, {
+      answerId,
+      timeSpent,
+      timestamp: Date.now()
+    });
+  }
+
+  updateScore(userId, points) {
+    const currentScore = this.scores.get(userId) || 0;
+    this.scores.set(userId, currentScore + points);
+  }
+
+  getLeaderboard() {
+    return Array.from(this.scores.entries())
+      .map(([userId, score]) => {
+        const participant = this.participants.find(p => p.userId === userId);
+        return {
+          userId,
+          username: participant?.username || 'Unknown',
+          avatar: participant?.avatar || '👤',
+          score
+        };
+      })
+      .sort((a, b) => b.score - a.score);
+  }
+}
+
+// Socket.io event handlers
+io.on('connection', (socket) => {
+  console.log(`[SOCKET] User connected: ${socket.id}`);
+
+  // User authentication
+  socket.on('authenticate', (userData) => {
+    socket.userData = userData;
+    socket.emit('authenticated', { success: true, socketId: socket.id });
+    console.log(`[AUTH] User authenticated: ${userData.username} (${socket.id})`);
+  });
+
+  // Create battle room
+  socket.on('create_room', (config) => {
+    const roomId = generateRoomId();
+    const room = new BattleRoom(roomId, {
+      userId: socket.id,
+      username: socket.userData?.username || 'Host',
+      avatar: socket.userData?.avatar || '👑',
+      isHost: true
+    }, config);
+
+    battleRooms.set(roomId, room);
+    userRooms.set(socket.id, roomId);
+    socket.join(roomId);
+
+    console.log(`[ROOM] Created: ${roomId} by ${socket.userData?.username}`);
+
+    socket.emit('room_created', {
+      success: true,
+      roomId,
+      pin: roomId.toUpperCase(),
+      room: getRoomData(room)
+    });
+
+    // Broadcast to lobby
+    io.emit('room_list_updated', getActiveRooms());
+  });
+
+  // Join battle room
+  socket.on('join_room', ({ roomId, userData }) => {
+    const room = battleRooms.get(roomId);
+
+    if (!room) {
+      socket.emit('join_error', { error: 'Room not found' });
+      return;
+    }
+
+    if (room.status !== 'waiting') {
+      socket.emit('join_error', { error: 'Battle already started' });
+      return;
+    }
+
+    const result = room.addParticipant(socket.id, userData);
+
+    if (!result.success) {
+      socket.emit('join_error', { error: result.error });
+      return;
+    }
+
+    userRooms.set(socket.id, roomId);
+    socket.join(roomId);
+
+    console.log(`[JOIN] ${userData.username} joined room ${roomId}`);
+
+    // Notify all participants
+    io.to(roomId).emit('participant_joined', {
+      participant: {
+        userId: socket.id,
+        ...userData
+      },
+      room: getRoomData(room)
+    });
+
+    socket.emit('room_joined', {
+      success: true,
+      room: getRoomData(room)
+    });
+  });
+
+  // Start battle
+  socket.on('start_battle', ({ roomId }) => {
+    const room = battleRooms.get(roomId);
+
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    if (room.host.userId !== socket.id) {
+      socket.emit('error', { message: 'Only host can start battle' });
+      return;
+    }
+
+    if (room.participants.length < 2) {
+      socket.emit('error', { message: 'Need at least 2 participants' });
+      return;
+    }
+
+    room.status = 'starting';
+    console.log(`[START] Battle starting in room ${roomId}`);
+
+    // Countdown
+    let countdown = 3;
+    const countdownInterval = setInterval(() => {
+      io.to(roomId).emit('countdown', { count: countdown });
+      countdown--;
+
+      if (countdown < 0) {
+        clearInterval(countdownInterval);
+        room.status = 'active';
+        io.to(roomId).emit('battle_started', {
+          room: getRoomData(room),
+          currentQuestion: 0
+        });
+        console.log(`[ACTIVE] Battle active in room ${roomId}`);
+      }
+    }, 1000);
+  });
+
+  // Submit answer
+  socket.on('submit_answer', ({ roomId, questionId, answerId, timeSpent, isCorrect, points }) => {
+    const room = battleRooms.get(roomId);
+
+    if (!room) return;
+
+    room.submitAnswer(socket.id, questionId, answerId, timeSpent);
+
+    if (isCorrect) {
+      room.updateScore(socket.id, points);
+    }
+
+    // Broadcast answer submission (without revealing correctness to others)
+    socket.to(roomId).emit('participant_answered', {
+      userId: socket.id,
+      questionId
+    });
+
+    // Send feedback to submitter
+    socket.emit('answer_result', {
+      correct: isCorrect,
+      points: isCorrect ? points : 0,
+      currentScore: room.scores.get(socket.id)
+    });
+
+    console.log(`[ANSWER] ${socket.userData?.username} answered Q${questionId}: ${isCorrect ? 'Correct' : 'Wrong'}`);
+  });
+
+  // Next question
+  socket.on('next_question', ({ roomId }) => {
+    const room = battleRooms.get(roomId);
+
+    if (!room || room.host.userId !== socket.id) return;
+
+    room.currentQuestion++;
+
+    io.to(roomId).emit('next_question', {
+      questionNumber: room.currentQuestion,
+      leaderboard: room.getLeaderboard()
+    });
+
+    console.log(`[NEXT] Room ${roomId} - Question ${room.currentQuestion}`);
+  });
+
+  // Complete battle
+  socket.on('complete_battle', ({ roomId }) => {
+    const room = battleRooms.get(roomId);
+
+    if (!room || room.host.userId !== socket.id) return;
+
+    room.status = 'completed';
+
+    const finalResults = {
+      leaderboard: room.getLeaderboard(),
+      totalQuestions: room.currentQuestion,
+      participants: room.participants.length
+    };
+
+    io.to(roomId).emit('battle_completed', finalResults);
+
+    console.log(`[COMPLETE] Battle completed in room ${roomId}`);
+
+    // Clean up after 5 minutes
+    setTimeout(() => {
+      battleRooms.delete(roomId);
+      console.log(`[CLEANUP] Room ${roomId} deleted`);
+    }, 5 * 60 * 1000);
+  });
+
+  // Chat messages
+  socket.on('send_message', ({ roomId, message }) => {
+    const room = battleRooms.get(roomId);
+    if (!room) return;
+
+    const chatMessage = {
+      userId: socket.id,
+      username: socket.userData?.username || 'Anonymous',
+      message,
+      timestamp: Date.now()
+    };
+
+    io.to(roomId).emit('new_message', chatMessage);
+  });
+
+  // Reactions
+  socket.on('send_reaction', ({ roomId, reaction }) => {
+    const room = battleRooms.get(roomId);
+    if (!room) return;
+
+    io.to(roomId).emit('new_reaction', {
+      userId: socket.id,
+      username: socket.userData?.username || 'Anonymous',
+      reaction,
+      timestamp: Date.now()
+    });
+  });
+
+  // Leave room
+  socket.on('leave_room', ({ roomId }) => {
+    handleUserLeave(socket, roomId);
+  });
+
+  // Disconnect
+  socket.on('disconnect', () => {
+    console.log(`[DISCONNECT] User disconnected: ${socket.id}`);
+
+    const roomId = userRooms.get(socket.id);
+    if (roomId) {
+      handleUserLeave(socket, roomId);
+    }
+  });
+});
+
+// Helper functions
+function handleUserLeave(socket, roomId) {
+  const room = battleRooms.get(roomId);
+  if (!room) return;
+
+  room.removeParticipant(socket.id);
+  userRooms.delete(socket.id);
+  socket.leave(roomId);
+
+  console.log(`[LEAVE] User ${socket.id} left room ${roomId}`);
+
+  // If host left, assign new host or close room
+  if (room.host.userId === socket.id) {
+    if (room.participants.length > 0) {
+      room.host = room.participants[0];
+      room.host.isHost = true;
+      io.to(roomId).emit('host_changed', { newHost: room.host });
+      console.log(`[HOST] New host assigned in ${roomId}`);
+    } else {
+      battleRooms.delete(roomId);
+      console.log(`[CLOSE] Room ${roomId} closed - no participants`);
+    }
+  }
+
+  // Notify remaining participants
+  io.to(roomId).emit('participant_left', {
+    userId: socket.id,
+    room: getRoomData(room)
+  });
+
+  // Update room list
+  io.emit('room_list_updated', getActiveRooms());
+}
+
+function generateRoomId() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+function getRoomData(room) {
+  return {
+    roomId: room.roomId,
+    host: room.host,
+    participants: room.participants,
+    status: room.status,
+    currentQuestion: room.currentQuestion,
+    config: room.config,
+    participantCount: room.participants.length,
+    leaderboard: room.getLeaderboard()
+  };
+}
+
+function getActiveRooms() {
+  return Array.from(battleRooms.values())
+    .filter(room => room.status === 'waiting')
+    .map(room => ({
+      roomId: room.roomId,
+      pin: room.roomId.toUpperCase(),
+      host: room.host.username,
+      participants: room.participants.length,
+      maxParticipants: room.config.maxParticipants,
+      category: room.config.category,
+      subject: room.config.subject
+    }));
+}
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    activeRooms: battleRooms.size,
+    connectedUsers: io.sockets.sockets.size,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Get active rooms (REST API)
+app.get('/api/rooms', (req, res) => {
+  res.json({
+    rooms: getActiveRooms(),
+    total: battleRooms.size
+  });
+});
+
+// Start server
+const PORT = process.env.PORT || 5001;
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Battle Server running on port ${PORT}`);
+  console.log(`📡 Socket.io endpoint: http://localhost:${PORT}/socket.io/`);
+  console.log(`🏥 Health check: http://localhost:${PORT}/health`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, closing server...');
+  httpServer.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
