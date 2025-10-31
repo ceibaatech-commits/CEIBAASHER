@@ -207,6 +207,12 @@ const LiveBattle = () => {
       }
     });
 
+    // Listen for other participants answering
+    newSocket.on('participant_answered', (data) => {
+      console.log('👥 Participant answered:', data);
+      // Optionally show visual feedback that someone answered
+    });
+
     // Social Features Listeners
     newSocket.on('new_message', (data) => {
       setChatMessages(prev => [...prev, data]);
