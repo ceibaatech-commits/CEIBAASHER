@@ -135,6 +135,15 @@ async def join_room(sid, data):
 
 
 @sio_proxy.event
+async def set_room_questions(sid, data):
+    """Forward set-room-questions event to battle-server"""
+    logger.info(f"📝 set_room_questions from {sid}: {data.get('roomId', 'unknown')}")
+    battle_client = client_connections.get(sid)
+    if battle_client:
+        await battle_client.emit('set_room_questions', data)
+
+
+@sio_proxy.event
 async def create_room(sid, data):
     """Forward create-room event to battle-server"""
     logger.info(f"🏗️ create_room from {sid}: {data}")
