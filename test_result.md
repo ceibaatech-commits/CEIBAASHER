@@ -279,6 +279,18 @@ backend:
         agent: "main"
         comment: "✅ CRITICAL BUG FIXED: Found the actual root cause - exam_id mismatch! The sheets were stored in database with exam_id 'jee-main-advanced' but the frontend and exam_data.py use 'JEE'. When quiz API searched for sheets with exam='JEE', it found nothing, so fell back to demo questions (which don't exist for Inorganic Chemistry). FIX: Updated all 5 JEE sheets in database from exam_id 'jee-main-advanced' to 'JEE'. VERIFIED: All 4 Inorganic Chemistry topics now working: Periodic Table (7 questions), Chemical Bonding (7 questions), Coordination Compounds (6 questions), Metallurgy (7 questions). Questions are correctly filtered by topic and loading from user's Google Sheet."
 
+  - task: "Social Feed Backend APIs"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/social_feed_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive social feed backend with 25+ API endpoints: User APIs (profile, follow/unfollow, followers, following), Post APIs (create, feeds by type, get/delete), Engagement APIs (like, comment, share, gift, challenge), Study Group APIs (create, join, list), Notification APIs (get, mark read). Supports 6 post types: battle_victory, quiz_announcement, study_tip, achievement, government, general. Full engagement system with gifts (star, diamond, crown, trophy) and battle challenges. Registered router at /api/social prefix."
+
 frontend:
   - task: "Host Control Panel in LiveBattle"
     implemented: true
