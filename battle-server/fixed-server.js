@@ -166,7 +166,7 @@ class BattleGame {
     this.status = 'PLAYING';
     this.currentQuestionIndex = 0;
 
-    this.broadcast('game-started', {
+    this.broadcast('quiz-started', {
       totalQuestions: this.totalQuestions,
       timePerQuestion: this.timePerQuestion
     });
