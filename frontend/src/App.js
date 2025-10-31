@@ -29,10 +29,11 @@ import LiveBattleMode from "@/pages/LiveBattleMode";
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
+    <AuthProvider>
+      <div className="App">
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
           <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
           <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
           <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
