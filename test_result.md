@@ -669,3 +669,29 @@ agent_communication:
       - ✅ One-to-one client mapping verified ✅
       
       📋 **READY FOR**: End-to-end frontend testing with real battle room scenarios. The critical Socket.io proxy architecture issue has been resolved!
+  
+  - agent: "main"
+    message: |
+      🔍 INVESTIGATING BROWSER SOCKET CONNECTION ISSUE
+      
+      **Current Architecture Analysis**:
+      - ✅ Backend has Socket.io integrated at /socket.io (port 8001) via socket_app.py
+      - ✅ Separate socket-proxy service running on port 5002 (socket_proxy_server.py) - DEPRECATED
+      - ✅ Battle-server running on port 5001
+      - ✅ Uvicorn has --ws auto flag enabled
+      
+      **Issue Identified**:
+      - Frontend .env has REACT_APP_SOCKET_PROXY_URL=https://battle-fix.preview.emergentagent.com
+      - BattleLobby.js connects to SOCKET_PROXY_URL (which points to correct domain)
+      - LiveBattle.js connects to BACKEND_URL (also correct domain)
+      - Both should use path: '/socket.io'
+      
+      **Investigation Status**:
+      - Need to verify browser connection in console
+      - Check if frontend is connecting to the correct Socket.io endpoint
+      - Verify Socket.io events are being emitted and received properly
+      
+      **Next Steps**:
+      - Take screenshot to verify current browser behavior
+      - Test Socket.io connection from browser console
+      - Update frontend if needed to ensure consistent Socket.io connection
