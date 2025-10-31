@@ -161,10 +161,22 @@ const LiveBattle = () => {
 
     newSocket.on('next_question', (data) => {
       console.log('➡️ Moving to next question:', data);
+      
+      // Use the question from the event if provided
       if (data.question) {
         setCurrentQuestion(data.question);
         setQuestionNumber(data.questionNumber);
+      } else if (data.questionNumber) {
+        // Otherwise, use local questions array and question number from event
+        const nextIndex = data.questionNumber - 1; // Convert to 0-based index
+        if (allQuestions[nextIndex]) {
+          setCurrentQuestionIndex(nextIndex);
+          setCurrentQuestion(allQuestions[nextIndex]);
+          setQuestionNumber(data.questionNumber);
+          console.log(`✅ Advanced to question ${data.questionNumber}`);
+        }
       }
+      
       setSelectedAnswer(null);
       setAnswerResult(null);
       setTimeLeft(30);
