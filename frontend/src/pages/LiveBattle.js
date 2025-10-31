@@ -35,9 +35,8 @@ const LiveBattle = () => {
 
   useEffect(() => {
     const newSocket = io(BACKEND_URL, {
-      path: '/socket.io',
-      transports: ['polling'], // Force polling only
-      upgrade: false
+      path: '/api/socketio',
+      transports: ['polling', 'websocket']
     });
     setSocket(newSocket);
 
