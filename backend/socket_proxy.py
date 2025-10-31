@@ -24,10 +24,13 @@ client_connections = {}  # {frontend_sid: battle_client}
 @sio_server.event
 async def connect(sid, environ):
     """When client connects to main backend, create dedicated battle-server connection"""
-    logger.info(f'🔗 Client {sid} connected to proxy')
-    
-    # Create a new Socket.io client for this frontend client
-    battle_client = socketio.AsyncClient(logger=True, engineio_logger=True)
+    try:
+        logger.info(f'🔗 Client {sid} attempting to connect to proxy')
+        logger.info(f'   Environment: {environ.get("HTTP_ORIGIN")}')
+        logger.info(f'   Query string: {environ.get("QUERY_STRING")}')
+        
+        # Create a new Socket.io client for this frontend client
+        battle_client = socketio.AsyncClient(logger=True, engineio_logger=True)
     
     # Setup event forwarding from battle-server to this specific frontend client
     # Register handlers programmatically
