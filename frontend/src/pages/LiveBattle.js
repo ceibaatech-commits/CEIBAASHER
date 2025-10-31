@@ -185,7 +185,7 @@ const LiveBattle = () => {
   }, [chatMessages]);
 
   const handleAnswerSelect = (index) => {
-    if (selectedAnswer !== null || isPaused) return;
+    if (selectedAnswer !== null || isPaused || !currentQuestion) return;
     
     setSelectedAnswer(index);
     socket.emit('submit-answer', {
