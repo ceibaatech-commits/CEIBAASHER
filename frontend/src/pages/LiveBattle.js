@@ -159,7 +159,8 @@ const LiveBattle = () => {
       if (me) setMyScore(me.score);
     });
 
-    newSocket.on('next-question', (data) => {
+    newSocket.on('next_question', (data) => {
+      console.log('➡️ Moving to next question:', data);
       if (data.question) {
         setCurrentQuestion(data.question);
         setQuestionNumber(data.questionNumber);
