@@ -293,6 +293,19 @@ const LiveBattle = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4">
       <div className="max-w-7xl mx-auto px-4">
+        {/* Loading State for Auto-Join */}
+        {loading && (
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600 text-lg">Loading quiz questions...</p>
+            </div>
+          </div>
+        )}
+
+        {/* Quiz Content - Only show when not loading */}
+        {!loading && (
+          <>
         {/* Back/Quit Button */}
         <div className="mb-4">
           <button
