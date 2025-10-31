@@ -29,17 +29,14 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# Create the main app without a prefix
-app = FastAPI()
+# Create the main FastAPI app without a prefix
+fastapi_app = FastAPI()
 
-# Import socket server before mounting
+# Import socket server
 from socket_proxy import sio_server
 
-# Wrap the FastAPI app with Socket.io ASGI app
-app = socketio.ASGIApp(sio_server, other_asgi_app=app)
-
 # Add session middleware for OAuth
-app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
+fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
