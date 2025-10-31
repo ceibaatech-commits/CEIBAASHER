@@ -171,13 +171,13 @@ const LiveBattle = () => {
   }, []);
 
   useEffect(() => {
-    if (timeLeft > 0 && selectedAnswer === null && !isPaused) {
+    if (timeLeft > 0 && selectedAnswer === null && !isPaused && currentQuestion) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && selectedAnswer === null) {
+    } else if (timeLeft === 0 && selectedAnswer === null && currentQuestion) {
       handleAnswerSelect(-1);
     }
-  }, [timeLeft, selectedAnswer, isPaused]);
+  }, [timeLeft, selectedAnswer, isPaused, currentQuestion]);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
