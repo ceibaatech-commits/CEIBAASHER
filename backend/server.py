@@ -38,9 +38,6 @@ social_feed_routes.init_db(db)
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
 
-# Store db in app state for other routers to access
-fastapi_app.state.db = db
-
 # Add session middleware for OAuth
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
