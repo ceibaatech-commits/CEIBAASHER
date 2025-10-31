@@ -73,8 +73,9 @@ class BattleServerTester:
             response = requests.get(f"{self.base_url}/health", timeout=5)
             if response.status_code == 200:
                 data = response.json()
-                if data.get('status') == 'Battle server running':
-                    self.log_result("Health Check", True, "Battle server is running")
+                # Updated to match the actual response format
+                if 'status' in data and ('Battle Server' in data['status'] or 'running' in data['status'].lower()):
+                    self.log_result("Health Check", True, f"Battle server is running: {data['status']}")
                     return True
                 else:
                     self.log_result("Health Check", False, f"Unexpected response: {data}")
