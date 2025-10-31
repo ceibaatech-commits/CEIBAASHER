@@ -39,6 +39,46 @@ const LiveBattle = () => {
   const [giftNotification, setGiftNotification] = useState(null);
   const chatEndRef = useRef(null);
 
+  // Fetch room details and questions when auto-joining
+  useEffect(() => {
+    if (autoJoin && !questions && pin) {
+      const fetchRoomAndQuestions = async () => {
+        try {
+          setLoading(true);
+          
+          // Get room details
+          const roomResponse = await axios.get(`${BATTLE_SERVER_URL}/api/battle/room/${pin}`);
+          if (roomResponse.data.success) {
+            const room = roomResponse.data.room;
+            
+            // Fetch questions based on room config
+            const quizResponse = await axios.post(`${BATTLE_SERVER_URL}/api/quiz/start`, {
+              exam: room.config.examId,
+              subject: room.config.subject,
+              topic: room.config.topic
+            });
+            
+            if (quizResponse.data.success && quizResponse.data.questions) {
+              const fetchedQuestions = quizResponse.data.questions;
+              setAllQuestions(fetchedQuestions);
+              setCurrentQuestion(fetchedQuestions[0]);
+              setTotalQuestions(fetchedQuestions.length);
+              console.log(`✅ Loaded ${fetchedQuestions.length} questions for auto-join`);
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching room/questions:', error);
+          alert('Failed to load quiz. Please try again.');
+          navigate('/');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      fetchRoomAndQuestions();
+    }
+  }, [autoJoin, questions, pin]);
+
   useEffect(() => {
     if (!playerName || !pin) {
       navigate('/');
