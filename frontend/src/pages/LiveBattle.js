@@ -10,18 +10,22 @@ const LiveBattle = () => {
   const { pin } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { playerName, firstQuestion, isHost } = location.state || {};
+  const { playerName, isHost, questions, roomInfo, examId, subject, topic } = location.state || {};
   
   const [socket, setSocket] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(firstQuestion?.question || null);
-  const [questionNumber, setQuestionNumber] = useState(firstQuestion?.questionNumber || 1);
-  const [totalQuestions, setTotalQuestions] = useState(firstQuestion?.totalQuestions || 10);
+  const [allQuestions, setAllQuestions] = useState(questions || []);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(questions?.[0] || null);
+  const [questionNumber, setQuestionNumber] = useState(1);
+  const [totalQuestions, setTotalQuestions] = useState(questions?.length || 10);
   const [timeLeft, setTimeLeft] = useState(30);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [myScore, setMyScore] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [answerResult, setAnswerResult] = useState(null);
+  const [participants, setParticipants] = useState([]);
+  const [showAllQuestions, setShowAllQuestions] = useState(isHost); // Host can see all questions
   
   // Social Features State
   const [chatMessages, setChatMessages] = useState([]);
