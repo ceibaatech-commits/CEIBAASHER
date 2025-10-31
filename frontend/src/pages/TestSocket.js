@@ -14,11 +14,11 @@ const TestSocket = () => {
     addLog('📦 Attempting to import socket.io-client...');
     
     try {
-      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      addLog(`🔗 BACKEND_URL: ${BACKEND_URL}`);
+      const SOCKET_PROXY_URL = process.env.REACT_APP_SOCKET_PROXY_URL || 'http://localhost:5002';
+      addLog(`🔗 SOCKET_PROXY_URL: ${SOCKET_PROXY_URL}`);
       
-      addLog('📡 Creating Socket.io connection...');
-      const socket = io(BACKEND_URL, {
+      addLog('📡 Creating Socket.io connection to port 5002...');
+      const socket = io(SOCKET_PROXY_URL, {
         transports: ['polling'],
         upgrade: false
       });
