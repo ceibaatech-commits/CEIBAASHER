@@ -98,6 +98,10 @@ app.include_router(battle_proxy_router, prefix="/api")
 app.include_router(social_router, prefix="/api")
 app.include_router(contact_router, prefix="/api")
 
+# Test routes for debugging
+from test_routes import router as test_router
+app.include_router(test_router, prefix="/api")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
