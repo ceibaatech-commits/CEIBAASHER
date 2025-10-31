@@ -199,6 +199,22 @@ const LiveBattle = () => {
   const endQuiz = () => {
     if (window.confirm('End quiz now? All players will see results.')) {
       socket.emit('end-quiz', { pin });
+      // Navigate to home page after ending
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+    }
+  };
+
+  const quitQuiz = () => {
+    if (window.confirm('Are you sure you want to quit? Your progress will be lost.')) {
+      // Leave the room
+      if (socket) {
+        socket.emit('leave_room', { roomId: pin });
+        socket.disconnect();
+      }
+      // Navigate to home page
+      navigate('/');
     }
   };
 
