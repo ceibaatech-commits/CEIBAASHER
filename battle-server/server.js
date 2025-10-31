@@ -355,7 +355,8 @@ function handleUserLeave(socket, roomId) {
 }
 
 function generateRoomId() {
-  return Math.random().toString(36).substring(2, 8).toUpperCase();
+  // Generate 6-digit numeric code (100000 to 999999)
+  return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 function getRoomData(room) {
