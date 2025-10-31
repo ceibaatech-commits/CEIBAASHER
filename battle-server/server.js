@@ -141,6 +141,15 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // CRITICAL FIX: If this is the host joining, update their socket ID
+    // This fixes the mismatch between HTTP room creation and Socket.io connection
+    if (userData.isHost === true) {
+      console.log(`[HOST UPDATE] Updating host socket ID from ${room.host.userId} to ${socket.id}`);
+      room.host.userId = socket.id;
+      room.host.username = userData.username || room.host.username;
+      room.host.avatar = userData.avatar || room.host.avatar;
+    }
+
     const result = room.addParticipant(socket.id, userData);
 
     if (!result.success) {
@@ -151,7 +160,7 @@ io.on('connection', (socket) => {
     userRooms.set(socket.id, roomId);
     socket.join(roomId);
 
-    console.log(`[JOIN] ${userData.username} joined room ${roomId}`);
+    console.log(`[JOIN] ${userData.username} joined room ${roomId} (isHost: ${userData.isHost})`);
 
     // Notify all participants
     io.to(roomId).emit('participant_joined', {
