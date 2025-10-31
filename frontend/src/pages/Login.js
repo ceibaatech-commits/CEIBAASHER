@@ -125,6 +125,13 @@ const Login = () => {
             </div>
           </div>
 
+          {/* Divider */}
+          <div className="my-6 flex items-center">
+            <div className="flex-1 border-t border-gray-300"></div>
+            <span className="px-4 text-sm text-gray-500">or</span>
+            <div className="flex-1 border-t border-gray-300"></div>
+          </div>
+
           {/* Guest Mode */}
           <button
             onClick={() => navigate('/')}
