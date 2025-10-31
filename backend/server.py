@@ -31,8 +31,12 @@ db = client[os.environ['DB_NAME']]
 # Create the main app without a prefix
 app = FastAPI()
 
-# Mount Socket.io proxy
-app.mount('/socket.io', socket_app)
+# Mount Socket.io proxy at root, it will handle /socket.io/* paths internally
+import socketio
+app.mount('/', socketio.ASGIApp(
+    sio_server=socket_proxy.sio_server,
+    other_asgi_app=app
+))
 
 # Add session middleware for OAuth
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
