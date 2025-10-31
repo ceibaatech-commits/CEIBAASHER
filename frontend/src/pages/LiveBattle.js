@@ -843,6 +843,8 @@ const LiveBattle = () => {
             </div>
           </div>
         )}
+          </>
+        )}
       </div>
     </div>
   );
