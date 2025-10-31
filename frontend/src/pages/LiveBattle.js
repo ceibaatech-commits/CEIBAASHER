@@ -71,6 +71,29 @@ const LiveBattle = () => {
       }
     });
 
+    // Listen for room_joined event (receives questions for joiners)
+    newSocket.on('room_joined', (data) => {
+      console.log('✅ Room joined successfully:', data);
+      
+      // If this is a joiner and questions are provided, set them
+      if (!isHost && data.questions && data.questions.length > 0) {
+        console.log(`📝 Received ${data.questions.length} questions from host`);
+        setAllQuestions(data.questions);
+        setCurrentQuestion(data.questions[0]);
+        setTotalQuestions(data.questions.length);
+        setLoading(false);
+      }
+      
+      // If this is host with questions, send them to battle-server
+      if (isHost && questions && questions.length > 0) {
+        console.log(`📤 Host sending ${questions.length} questions to battle-server`);
+        newSocket.emit('set_room_questions', {
+          roomId: pin,
+          questions: questions
+        });
+      }
+    });
+
     // Listen for participants joining
     newSocket.on('participant_joined', (data) => {
       setParticipants(data.room.participants);
