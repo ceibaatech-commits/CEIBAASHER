@@ -31,7 +31,7 @@ const BattleLobby = () => {
     
     console.log('📡 Creating Socket.io connection to:', SOCKET_URL);
     const newSocket = io(SOCKET_URL, {
-      path: '/socket.io',
+      path: '/api/socketio',
       transports: ['polling', 'websocket']
     });
     
