@@ -269,10 +269,12 @@ const LiveBattle = () => {
     
     setSelectedAnswer(index);
     
-    // Calculate if answer is correct
-    const correctAnswerIndex = currentQuestion.options.indexOf(currentQuestion.answer);
+    // Get correct answer from question
+    const correctAnswerIndex = currentQuestion.correctAnswer;
     const isCorrect = index === correctAnswerIndex;
     const pointsEarned = isCorrect ? Math.max(10, timeLeft * 2) : 0;
+    
+    console.log(`📝 Answer selected: ${index}, Correct: ${correctAnswerIndex}, Is Correct: ${isCorrect}, Points: ${pointsEarned}`);
     
     // Show immediate feedback
     setAnswerResult({
@@ -284,6 +286,7 @@ const LiveBattle = () => {
     // Update local score immediately
     if (isCorrect) {
       setMyScore(prev => prev + pointsEarned);
+      console.log(`✅ Score updated: +${pointsEarned} points`);
     }
     
     // Send to server
