@@ -175,6 +175,27 @@ const LiveBattle = () => {
     }
   };
 
+  const nextQuestion = () => {
+    if (currentQuestionIndex < allQuestions.length - 1) {
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      setCurrentQuestion(allQuestions[nextIndex]);
+      setQuestionNumber(nextIndex + 1);
+      setSelectedAnswer(null);
+      setAnswerResult(null);
+      setTimeLeft(30);
+      
+      // Emit to all participants
+      if (socket) {
+        socket.emit('next_question', {
+          roomId: pin,
+          question: allQuestions[nextIndex],
+          questionNumber: nextIndex + 1
+        });
+      }
+    }
+  };
+
   const endQuiz = () => {
     if (window.confirm('End quiz now? All players will see results.')) {
       socket.emit('end-quiz', { pin });
