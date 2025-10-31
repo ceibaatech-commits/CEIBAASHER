@@ -21,6 +21,7 @@ from social_routes import router as social_router
 # from socket_proxy import socket_app  # Not needed anymore
 from contact_routes import router as contact_router
 from social_feed_routes import router as social_feed_router
+import social_feed_routes
 
 
 ROOT_DIR = Path(__file__).parent
