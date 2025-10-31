@@ -190,8 +190,12 @@ const LiveBattle = () => {
       setIsPaused(false);
     });
 
-    newSocket.on('answer-result', (data) => {
-      setAnswerResult(data);
+    newSocket.on('answer_result', (data) => {
+      console.log('📊 Answer result from server:', data);
+      // Server confirms the result, update score if needed
+      if (data.currentScore !== undefined) {
+        setMyScore(data.currentScore);
+      }
     });
 
     // Social Features Listeners
