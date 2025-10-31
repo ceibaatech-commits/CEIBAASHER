@@ -377,7 +377,7 @@ function getActiveRooms() {
     .filter(room => room.status === 'waiting')
     .map(room => ({
       roomId: room.roomId,
-      pin: room.roomId.toUpperCase(),
+      pin: room.roomId,  // Already numeric
       host: room.host.username,
       participants: room.participants.length,
       maxParticipants: room.config.maxParticipants,
