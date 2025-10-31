@@ -4,7 +4,8 @@ import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, Mes
 import io from 'socket.io-client';
 
 // Connect to backend Socket.io proxy (which forwards to battle-server)
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+// Connect to battle-server directly
+const BATTLE_SERVER_URL = 'http://localhost:5001';
 
 const LiveBattle = () => {
   const { pin } = useParams();
