@@ -157,8 +157,8 @@ class WebSocketTester:
             joiner_client = socketio.SimpleClient()
             
             # Connect both clients
-            host_client.connect(external_url, transports=['websocket', 'polling'])
-            joiner_client.connect(external_url, transports=['websocket', 'polling'])
+            host_client.connect(BACKEND_URL, socketio_path='/api/battlews/socket.io', transports=['websocket', 'polling'])
+            joiner_client.connect(BACKEND_URL, socketio_path='/api/battlews/socket.io', transports=['websocket', 'polling'])
             
             if not (host_client.connected and joiner_client.connected):
                 self.log_result("Battle Flow - Multi-Client Connection", False, 
