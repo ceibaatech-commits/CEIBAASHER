@@ -294,8 +294,20 @@ const LiveBattle = () => {
     
     // Update local score immediately
     if (isCorrect) {
-      setMyScore(prev => prev + pointsEarned);
+      const newScore = myScore + pointsEarned;
+      setMyScore(newScore);
       console.log(`✅ Score updated: +${pointsEarned} points`);
+      
+      // Update leaderboard locally
+      setLeaderboard(prevLeaderboard => {
+        const updated = prevLeaderboard.map(p => 
+          p.name === playerName 
+            ? { ...p, score: newScore }
+            : p
+        );
+        // Sort by score descending
+        return updated.sort((a, b) => b.score - a.score);
+      });
     }
     
     // Send to server
