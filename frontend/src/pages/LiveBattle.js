@@ -147,6 +147,14 @@ const LiveBattle = () => {
     newSocket.on('participant_joined', (data) => {
       setParticipants(data.room.participants);
       console.log('Participant joined:', data.participant.username);
+      
+      // Initialize/update leaderboard with all participants
+      const updatedLeaderboard = data.room.participants.map(p => ({
+        name: p.username,
+        score: 0,
+        streak: 0
+      }));
+      setLeaderboard(updatedLeaderboard);
     });
 
     newSocket.on('participant_left', (data) => {
@@ -154,6 +162,7 @@ const LiveBattle = () => {
     });
 
     newSocket.on('leaderboard-update', (data) => {
+      console.log('📊 Leaderboard update received:', data);
       setLeaderboard(data.leaderboard);
       const me = data.leaderboard.find(p => p.name === playerName);
       if (me) setMyScore(me.score);
