@@ -259,12 +259,51 @@ const LiveBattle = () => {
     if (selectedAnswer !== null || isPaused || !currentQuestion) return;
     
     setSelectedAnswer(index);
-    socket.emit('submit-answer', {
-      pin,
-      questionId: currentQuestion.id,
-      answerIndex: index,
-      timeLeft
+    
+    // Calculate if answer is correct
+    const correctAnswerIndex = currentQuestion.options.indexOf(currentQuestion.answer);
+    const isCorrect = index === correctAnswerIndex;
+    const pointsEarned = isCorrect ? Math.max(10, timeLeft * 2) : 0;
+    
+    // Show immediate feedback
+    setAnswerResult({
+      isCorrect,
+      correctAnswer: correctAnswerIndex,
+      points: pointsEarned
     });
+    
+    // Update local score immediately
+    if (isCorrect) {
+      setMyScore(prev => prev + pointsEarned);
+    }
+    
+    // Send to server
+    socket.emit('submit_answer', {
+      roomId: pin,
+      questionId: currentQuestion.id,
+      answerId: index,
+      timeSpent: 30 - timeLeft,
+      isCorrect,
+      points: pointsEarned
+    });
+    
+    // Auto-advance to next question after 2 seconds
+    setTimeout(() => {
+      if (currentQuestionIndex < allQuestions.length - 1) {
+        const nextIndex = currentQuestionIndex + 1;
+        setCurrentQuestionIndex(nextIndex);
+        setCurrentQuestion(allQuestions[nextIndex]);
+        setQuestionNumber(nextIndex + 1);
+        setSelectedAnswer(null);
+        setAnswerResult(null);
+        setTimeLeft(30);
+        
+        console.log(`✅ Auto-advanced to question ${nextIndex + 1}`);
+      } else {
+        console.log('🏁 Last question completed');
+        // Could trigger quiz end here
+      }
+    }, 2000);
   };
 
   const pauseQuiz = () => {
