@@ -10,7 +10,7 @@ const LiveBattle = () => {
   const { pin } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { playerName, isHost, questions, roomInfo, examId, subject, topic } = location.state || {};
+  const { playerName, isHost, questions, roomInfo, examId, subject, topic, autoJoin } = location.state || {};
   
   const [socket, setSocket] = useState(null);
   const [allQuestions, setAllQuestions] = useState(questions || []);
@@ -26,6 +26,7 @@ const LiveBattle = () => {
   const [answerResult, setAnswerResult] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [showAllQuestions, setShowAllQuestions] = useState(isHost); // Host can see all questions
+  const [loading, setLoading] = useState(autoJoin && !questions); // Loading state for fetching questions
   
   // Social Features State
   const [chatMessages, setChatMessages] = useState([]);
