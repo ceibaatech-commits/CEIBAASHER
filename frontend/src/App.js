@@ -12,6 +12,7 @@ import SocialFeed from "@/pages/SocialFeed";
 import AboutUs from "@/pages/AboutUs";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
+import TestSheets from "@/pages/TestSheets";
 import UserDashboard from "@/pages/UserDashboard";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
