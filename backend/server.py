@@ -121,3 +121,6 @@ logger = logging.getLogger(__name__)
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+# Wrap FastAPI app with Socket.io ASGI app
+app = socketio.ASGIApp(sio_server, other_asgi_app=fastapi_app)
+
