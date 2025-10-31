@@ -127,11 +127,14 @@ async def catch_all_from_frontend(event, sid, data):
 # Specific event handlers for important battle events
 @sio_proxy.event
 async def join_room(sid, data):
-    """Forward join-room event to battle-server"""
+    """Forward join-room event to battle-server AND join the room on proxy side"""
     logger.info(f"🏠 join_room from {sid}: {data}")
     battle_client = client_connections.get(sid)
     if battle_client:
+        # Make the proxy client also join the room on battle-server
+        # This ensures broadcasts to the room reach the proxy client
         await battle_client.emit('join_room', data)
+        logger.info(f"✅ Proxy client for {sid} joined room {data.get('roomId', 'unknown')}")
 
 
 @sio_proxy.event
