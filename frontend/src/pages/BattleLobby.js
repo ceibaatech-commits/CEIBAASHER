@@ -90,8 +90,12 @@ const BattleLobby = () => {
       navigate('/');
     });
 
-    return () => newSocket.close();
-  }, []);
+    return () => {
+      if (newSocket) {
+        newSocket.close();
+      }
+    };
+  }, [pin, isHost, playerName, hostName]); // Re-run when these values change
 
   const startQuiz = () => {
     if (players.length < 1) {
