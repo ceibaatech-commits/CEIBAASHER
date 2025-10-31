@@ -279,6 +279,18 @@ backend:
         agent: "main"
         comment: "✅ CRITICAL BUG FIXED: Found the actual root cause - exam_id mismatch! The sheets were stored in database with exam_id 'jee-main-advanced' but the frontend and exam_data.py use 'JEE'. When quiz API searched for sheets with exam='JEE', it found nothing, so fell back to demo questions (which don't exist for Inorganic Chemistry). FIX: Updated all 5 JEE sheets in database from exam_id 'jee-main-advanced' to 'JEE'. VERIFIED: All 4 Inorganic Chemistry topics now working: Periodic Table (7 questions), Chemical Bonding (7 questions), Coordination Compounds (6 questions), Metallurgy (7 questions). Questions are correctly filtered by topic and loading from user's Google Sheet."
 
+  - task: "Socket.io Battle System Complete End-to-End Flow"
+    implemented: true
+    working: false
+    file: "/app/battle-server/server.js, /app/backend/socket_app.py, /app/backend/battle_proxy_routes.py"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "⚠️ MIXED RESULTS: Socket.io Battle System partially working (66.7% success rate - 6/9 tests passed). ✅ WORKING COMPONENTS: (1) Battle server health check - server running on port 5001, (2) Socket.io handshake and connection - direct connection to battle server successful, (3) Socket.io room creation via 'create_room' event - generates valid PINs (e.g., HOHDVN), (4) Socket.io room joining via 'join_room' event - multi-client joining working with proper participant_joined/room_joined events, (5) Room list API - GET /api/rooms working. ❌ CRITICAL GAPS: (1) REST API endpoints MISSING - POST /api/battle/create-room not implemented in battle server (returns 404), FastAPI proxy fails with 500 error, (2) Socket.io proxy integration BROKEN - localhost:8001/socket.io returns 404, proxy connection fails, (3) Architecture mismatch - review request expects REST API + Socket.io but only Socket.io events work. CONCLUSION: Core Socket.io functionality works but REST API layer and proxy integration missing/broken."
+
   - task: "Social Feed Backend APIs"
     implemented: true
     working: false
