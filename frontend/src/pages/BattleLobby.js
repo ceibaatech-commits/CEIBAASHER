@@ -3,10 +3,10 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect directly to battle-server (Socket.io)
-// Note: Using backend URL since battle-server is proxied through it
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-const BATTLE_SERVER_URL = 'http://localhost:5001'; // For local development
+// Connect to Socket.io for battle system
+// NOTE: Socket.io path routing through Kubernetes ingress needs configuration
+// The socket proxy is running internally but not externally accessible yet
+const SOCKET_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const BattleLobby = () => {
   const { pin } = useParams();
