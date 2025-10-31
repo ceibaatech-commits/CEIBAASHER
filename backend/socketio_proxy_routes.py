@@ -12,13 +12,14 @@ router = APIRouter()
 # Battle server internal URL
 BATTLE_SERVER_URL = "http://localhost:5001"
 
-@router.api_route("/socket.io/{path:path}", methods=["GET", "POST", "OPTIONS"])
+@router.api_route("/battlews/{path:path}", methods=["GET", "POST", "OPTIONS"])
 async def socket_proxy(path: str, request: Request):
     """
     Proxy all Socket.io requests to the battle server
     This allows external browser connections to reach the internal battle-server
+    Mounted at /api/battlews to avoid Kubernetes ingress conflicts
     """
-    # Build the target URL
+    # Build the target URL - forward to battle server's /socket.io path
     target_url = f"{BATTLE_SERVER_URL}/socket.io/{path}"
     
     # Get query parameters
