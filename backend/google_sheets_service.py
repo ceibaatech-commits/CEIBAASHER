@@ -30,9 +30,12 @@ class GoogleSheetsService:
             # Use public CSV export URL (works for public sheets)
             csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
             
-            # Fetch the CSV data
+            # Fetch the CSV data with UTF-8 encoding
             response = requests.get(csv_url, timeout=10)
             response.raise_for_status()
+            
+            # Ensure UTF-8 encoding
+            response.encoding = 'utf-8'
             
             # Parse CSV
             import csv
