@@ -121,7 +121,6 @@ logger = logging.getLogger(__name__)
 @fastapi_app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
-# Export both the FastAPI app and Socket.io ASGI app
-# Uvicorn will serve the combined app
-app = socketio.ASGIApp(sio_server, other_asgi_app=fastapi_app)
+# FastAPI app is now standalone, Socket.io runs separately on port 5002
+app = fastapi_app
 
