@@ -257,14 +257,22 @@ const LiveBattle = () => {
   const sendMessage = (e) => {
     e.preventDefault();
     if (chatInput.trim() && socket) {
-      socket.emit('send-message', { pin, message: chatInput });
+      socket.emit('send_message', { 
+        roomId: pin, 
+        message: chatInput,
+        sender: playerName
+      });
       setChatInput('');
     }
   };
 
   const sendReaction = (emoji) => {
     if (socket) {
-      socket.emit('send-reaction', { pin, emoji });
+      socket.emit('send_reaction', { 
+        roomId: pin, 
+        emoji,
+        sender: playerName
+      });
     }
   };
 
