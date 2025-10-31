@@ -22,7 +22,14 @@ const JoinRoom = () => {
       const response = await axios.get(`${BATTLE_URL}/api/battle/room/${pin}`);
       
       if (response.data.success) {
-        navigate(`/battle-lobby/${pin}`, { state: { isHost: false, playerName } });
+        // Navigate directly to live battle - skip lobby, join and play immediately
+        navigate(`/live-battle/${pin}`, { 
+          state: { 
+            isHost: false, 
+            playerName,
+            autoJoin: true  // Flag to indicate auto-joining without waiting
+          } 
+        });
       }
     } catch (error) {
       console.error('Error joining room:', error);
