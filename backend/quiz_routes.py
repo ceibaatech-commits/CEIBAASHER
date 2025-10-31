@@ -114,12 +114,15 @@ async def start_quiz(request: QuizStartRequest):
     random.shuffle(questions)
     questions = questions[:10]
     
-    # Remove correct answers for client
+    # For battle mode, include correctAnswer and explanation so frontend can validate immediately
+    # Note: This is acceptable for battle mode where speed matters
     questions_for_client = [
         {
             "id": q["id"],
             "question": q["question"],
-            "options": q["options"]
+            "options": q["options"],
+            "correctAnswer": q["correctAnswer"],
+            "explanation": q.get("explanation", "")
         }
         for q in questions
     ]
