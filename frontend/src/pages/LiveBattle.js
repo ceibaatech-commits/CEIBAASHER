@@ -44,6 +44,7 @@ const LiveBattle = () => {
     }
 
     const newSocket = io(BATTLE_SERVER_URL, {
+      path: '/api/battlews',  // Custom path to avoid ingress conflicts
       transports: ['polling', 'websocket'],
       reconnection: true
     });
