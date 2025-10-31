@@ -109,7 +109,7 @@ fastapi_app.include_router(battle_proxy_router, prefix="/api")
 fastapi_app.include_router(social_router, prefix="/api")
 fastapi_app.include_router(contact_router, prefix="/api")
 fastapi_app.include_router(social_feed_router, prefix="/api/social")
-fastapi_app.include_router(socketio_proxy_router)  # No prefix, mounts at /socket.io
+fastapi_app.include_router(socketio_proxy_router, prefix="/api")  # Mounts at /api/battlews
 
 # Test routes for debugging
 from test_routes import router as test_router
