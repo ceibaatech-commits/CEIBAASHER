@@ -66,41 +66,11 @@ const Login = () => {
             <p className="text-gray-600">Sign in to join the battle arena</p>
           </div>
 
-          {/* Social Login Buttons */}
-          <div className="space-y-4">
-            {/* X (Twitter) Login */}
-            <button
-              onClick={() => handleSocialLogin('twitter')}
-              className="w-full flex items-center justify-center space-x-3 bg-black hover:bg-gray-900 text-white py-3 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-              <span>Login with X</span>
-            </button>
-
-            {/* Facebook Login */}
-            <button
-              onClick={() => handleSocialLogin('facebook')}
-              className="w-full flex items-center justify-center space-x-3 bg-[#1877F2] hover:bg-[#166fe5] text-white py-3 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl"
-            >
-              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-              <span>Continue with Facebook</span>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-4 text-sm text-gray-500">or</span>
-            <div className="flex-1 border-t border-gray-300"></div>
-          </div>
-
-          {/* Demo Login Form */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl mb-4">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 text-center">Demo Login (For Testing)</h3>
+          {/* Demo Login Section */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl">
+            <h3 className="text-lg font-bold text-gray-800 mb-2 text-center">🎓 Demo Login</h3>
+            <p className="text-sm text-gray-600 text-center mb-4">Use demo accounts to explore the platform</p>
+            
             <form onSubmit={handleDemoLogin} className="space-y-3">
               <div>
                 <input
@@ -108,7 +78,7 @@ const Login = () => {
                   placeholder="Username"
                   value={demoUsername}
                   onChange={(e) => setDemoUsername(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   required
                 />
               </div>
@@ -118,25 +88,40 @@ const Login = () => {
                   placeholder="Password"
                   value={demoPassword}
                   onChange={(e) => setDemoPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   required
                 />
               </div>
               {error && (
-                <div className="text-red-600 text-sm text-center">{error}</div>
+                <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg text-center">
+                  {error}
+                </div>
               )}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
-                {loading ? 'Logging in...' : 'Login with Demo Account'}
+                <LogIn className="w-5 h-5" />
+                <span>{loading ? 'Logging in...' : 'Login'}</span>
               </button>
             </form>
-            <div className="mt-3 text-xs text-gray-600 text-center">
-              <p className="font-semibold mb-1">Test Credentials (Use these for testing):</p>
-              <p><span className="font-bold">User 1:</span> Username: <span className="font-mono bg-white px-2 py-0.5 rounded">12345</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">123445</span></p>
-              <p className="mt-1"><span className="font-bold">User 2:</span> Username: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span> | Password: <span className="font-mono bg-white px-2 py-0.5 rounded">sher123</span></p>
+            
+            <div className="mt-4 p-4 bg-white rounded-lg border-2 border-purple-200">
+              <p className="font-bold text-gray-700 mb-2 text-center">📝 Demo Accounts</p>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between bg-blue-50 p-2 rounded">
+                  <span className="font-semibold text-gray-700">Demo Student 1:</span>
+                  <span className="font-mono text-blue-600">demo1 / demo1</span>
+                </div>
+                <div className="flex items-center justify-between bg-green-50 p-2 rounded">
+                  <span className="font-semibold text-gray-700">Demo Student 2:</span>
+                  <span className="font-mono text-green-600">demo2 / demo2</span>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Click username/password to copy
+              </p>
             </div>
           </div>
 
