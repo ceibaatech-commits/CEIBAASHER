@@ -22,7 +22,7 @@ const BattleLobby = () => {
 
   useEffect(() => {
     console.log('🚀 BattleLobby useEffect RUNNING');
-    console.log('🔗 SOCKET_PROXY_URL:', SOCKET_PROXY_URL);
+    console.log('🔗 BATTLE_SERVER_URL:', BATTLE_SERVER_URL);
     console.log('🔗 Room info:', { pin, isHost, playerName, hostName });
     
     // Guard clause - don't connect if we don't have the PIN
