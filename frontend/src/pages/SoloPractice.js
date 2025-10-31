@@ -255,11 +255,15 @@ const SoloPractice = () => {
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={() => navigate(`/exam/${examName}`)}
+              onClick={() => {
+                if (window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
+                  navigate('/');
+                }
+              }}
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-5 h-5 mr-2" />
-              Exit Quiz
+              Back to Home
             </button>
             
             <div className="flex items-center space-x-4">
