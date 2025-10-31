@@ -19,8 +19,7 @@ const BattleLobby = () => {
 
   useEffect(() => {
     console.log('🚀 BattleLobby useEffect RUNNING');
-    console.log('🔗 BACKEND_URL:', BACKEND_URL);
-    console.log('🔗 Connecting to Socket.io proxy at backend');
+    console.log('🔗 SOCKET_PROXY_URL:', SOCKET_PROXY_URL);
     console.log('🔗 Room info:', { pin, isHost, playerName, hostName });
     
     // Guard clause - don't connect if we don't have the PIN
@@ -29,8 +28,8 @@ const BattleLobby = () => {
       return;
     }
     
-    console.log('📡 Creating Socket.io connection...');
-    const newSocket = io(BACKEND_URL, {
+    console.log('📡 Creating Socket.io connection to port 5002...');
+    const newSocket = io(SOCKET_PROXY_URL, {
       path: '/socket.io',
       transports: ['polling'], // Force polling only, no WebSocket
       upgrade: false // Don't try to upgrade to WebSocket
