@@ -36,6 +36,11 @@ fastapi_app = FastAPI()
 # Add session middleware for OAuth
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
+# Import and mount Socket.io at /socket.io path
+import socketio
+from socket_proxy_server import sio_server, app as socket_app
+fastapi_app.mount('/socket.io', socket_app)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
