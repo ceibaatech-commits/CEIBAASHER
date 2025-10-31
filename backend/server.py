@@ -32,6 +32,9 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Initialize social feed routes with db
+social_feed_routes.init_db(db)
+
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
 
