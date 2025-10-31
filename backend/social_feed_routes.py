@@ -135,8 +135,9 @@ class Notification(BaseModel):
 # ==================== USER PROFILE ENDPOINTS ====================
 
 @router.get("/user/{user_id}")
-async def get_user_profile(user_id: str):
+async def get_user_profile(user_id: str, request: Request):
     """Get user profile with full stats"""
+    db = request.app.state.db
     user = await db.users.find_one({"id": user_id}, {"_id": 0})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
