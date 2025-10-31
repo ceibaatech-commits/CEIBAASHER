@@ -74,6 +74,7 @@ const LiveBattle = () => {
     // Listen for room_joined event (receives questions for joiners)
     newSocket.on('room_joined', (data) => {
       console.log('✅ Room joined successfully:', data);
+      console.log('🔍 Debug - isHost:', isHost, 'questions:', questions ? questions.length : 'undefined');
       
       // If this is a joiner and questions are provided, set them
       if (!isHost && data.questions && data.questions.length > 0) {
@@ -101,6 +102,8 @@ const LiveBattle = () => {
           roomId: pin,
           questions: questions
         });
+      } else if (isHost) {
+        console.error('❌ Host has no questions to send!', { isHost, questions });
       }
     });
 
