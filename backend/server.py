@@ -101,6 +101,7 @@ fastapi_app.include_router(sheets_router, prefix="/api")
 fastapi_app.include_router(battle_proxy_router, prefix="/api")
 fastapi_app.include_router(social_router, prefix="/api")
 fastapi_app.include_router(contact_router, prefix="/api")
+fastapi_app.include_router(social_feed_router, prefix="/api/social")
 
 # Test routes for debugging
 from test_routes import router as test_router
