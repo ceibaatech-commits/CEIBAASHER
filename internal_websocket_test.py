@@ -12,20 +12,25 @@ def test_internal_websocket():
     """Test internal WebSocket connection"""
     try:
         # Test internal connection to /api/battlews through localhost:8001
-        internal_url = "http://localhost:8001/api/battlews"
-        print(f"🔗 Testing internal WebSocket connection to: {internal_url}")
+        internal_url = "http://localhost:8001"
+        print(f"🔗 Testing internal WebSocket connection to: {internal_url}/api/battlews")
         
         sio_client = socketio.SimpleClient()
         
         try:
-            sio_client.connect(internal_url, transports=['polling', 'websocket'])
+            # Connect with the correct socketio_path
+            sio_client.connect(internal_url, socketio_path='/api/battlews/socket.io', transports=['polling', 'websocket'])
             
             if sio_client.connected:
-                print(f"✅ Successfully connected to {internal_url}")
+                print(f"✅ Successfully connected to {internal_url}/api/battlews")
                 
                 # Check transport type
                 transport = getattr(sio_client.eio, 'transport_name', 'unknown')
                 print(f"🚀 Transport: {transport}")
+                
+                # Test basic event emission
+                sio_client.emit('test_event', {'data': 'test'})
+                print("📤 Sent test event")
                 
                 # Test stability
                 time.sleep(2)
@@ -38,7 +43,7 @@ def test_internal_websocket():
                 sio_client.disconnect()
                 return True
             else:
-                print(f"❌ Failed to connect to {internal_url}")
+                print(f"❌ Failed to connect to {internal_url}/api/battlews")
                 return False
                 
         except Exception as e:
