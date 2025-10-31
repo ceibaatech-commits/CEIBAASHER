@@ -33,7 +33,7 @@ const CreateRoom = () => {
         
         // Get questions for this topic
         const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, {
-          examId,
+          exam: examId,  // Changed from examId to exam
           subject,
           topic,
           numberOfQuestions: 10
