@@ -22,6 +22,7 @@ class GoogleSheetsService:
             sheet_url: URL of the Google Sheet
             sheet_name: Name of the sheet (optional)
             topic_filter: Filter questions by topic prefix in question text (e.g., "Periodic Table")
+                         If topic_filter is provided but no questions match, returns ALL questions
         """
         try:
             sheet_id = self.extract_sheet_id(sheet_url)
@@ -40,19 +41,14 @@ class GoogleSheetsService:
             csv_data = StringIO(response.text)
             reader = csv.DictReader(csv_data)
             
-            questions = []
+            all_questions = []
+            filtered_questions = []
+            
             for idx, row in enumerate(reader):
                 # Parse the row based on your format
                 question_text = row.get('Question', row.get('question', ''))
                 if not question_text or not question_text.strip():
                     continue
-                
-                # Filter by topic if specified
-                # Check if question starts with (Topic): format
-                if topic_filter:
-                    # Look for pattern like "(Periodic Table):" or "(Chemical Bonding):"
-                    if not question_text.strip().lower().startswith(f"({topic_filter.lower()}):"):
-                        continue
                 
                 # Get options
                 option_a = row.get('A', row.get('a', ''))
@@ -85,9 +81,20 @@ class GoogleSheetsService:
                     "explanation": explanation.strip() if explanation else ""
                 }
                 
-                questions.append(question_obj)
+                all_questions.append(question_obj)
+                
+                # Check if question matches topic filter
+                if topic_filter:
+                    # Look for pattern like "(Topic Name):" at start of question
+                    if question_text.strip().lower().startswith(f"({topic_filter.lower()}):"):
+                        filtered_questions.append(question_obj)
             
-            return questions
+            # Return filtered questions if filter was used AND matches were found
+            # Otherwise return all questions (sheets without topic prefixes)
+            if topic_filter and filtered_questions:
+                return filtered_questions
+            else:
+                return all_questions
             
         except Exception as e:
             print(f"Error fetching from Google Sheets: {e}")
