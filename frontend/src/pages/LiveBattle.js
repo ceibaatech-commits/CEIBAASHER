@@ -284,7 +284,7 @@ const LiveBattle = () => {
 
   const endQuiz = () => {
     if (window.confirm('End quiz now? All players will see results.')) {
-      socket.emit('end-quiz', { pin });
+      socket.emit('complete_battle', { roomId: pin });
       // Navigate to home page after ending
       setTimeout(() => {
         navigate('/');
