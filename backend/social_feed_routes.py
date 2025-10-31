@@ -2,20 +2,18 @@
 Ceibaa Social Feed Routes
 Comprehensive social networking features for educational platform
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal
 from datetime import datetime, timezone
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
 import uuid
 
 router = APIRouter()
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+# MongoDB will be accessed from server.py's db instance
+# We'll use a dependency to get the database
+def get_db(request: Request):
+    return request.app.state.db
 
 # ==================== MODELS ====================
 
