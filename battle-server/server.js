@@ -386,6 +386,9 @@ function getActiveRooms() {
 }
 
 // Health check endpoint
+app.use(cors());
+app.use(express.json());
+
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -400,6 +403,73 @@ app.get('/api/rooms', (req, res) => {
   res.json({
     rooms: getActiveRooms(),
     total: battleRooms.size
+  });
+});
+
+// Create room via HTTP (for backward compatibility with FastAPI)
+app.post('/api/battle/create-room', (req, res) => {
+  const { examId, subject, topic, hostName } = req.body;
+  
+  if (!examId || !subject || !topic || !hostName) {
+    return res.status(400).json({
+      success: false,
+      error: 'Missing required fields: examId, subject, topic, hostName'
+    });
+  }
+
+  try {
+    const roomId = generateRoomId();
+    const config = {
+      examId,
+      subject,
+      topic,
+      maxParticipants: 10
+    };
+
+    const room = new BattleRoom(roomId, {
+      userId: 'http-' + Math.random().toString(36).substring(7),
+      username: hostName,
+      avatar: '👑',
+      isHost: true
+    }, config);
+
+    battleRooms.set(roomId, room);
+
+    console.log(`[HTTP] Room created: ${roomId} by ${hostName}`);
+
+    res.json({
+      success: true,
+      pin: roomId.toUpperCase(),
+      roomId,
+      room: getRoomData(room)
+    });
+
+    // Broadcast to lobby
+    io.emit('room_list_updated', getActiveRooms());
+  } catch (error) {
+    console.error('[HTTP] Error creating room:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error'
+    });
+  }
+});
+
+// Get room by PIN/ID via HTTP
+app.get('/api/battle/room/:pin', (req, res) => {
+  const pin = req.params.pin.toUpperCase();
+  const room = battleRooms.get(pin) || battleRooms.get(pin.toLowerCase());
+
+  if (!room) {
+    return res.status(404).json({
+      success: false,
+      error: 'Room not found'
+    });
+  }
+
+  res.json({
+    success: true,
+    room: getRoomData(room)
   });
 });
 
