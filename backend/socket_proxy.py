@@ -113,13 +113,9 @@ async def connect(sid, environ):
         logger.info(f'✅ Created dedicated battle-server connection for client {sid}')
     except Exception as e:
         logger.error(f'❌ Failed to connect client {sid} to battle-server: {e}')
-        raise  # Re-raise to let client know connection failed
-        
-    except Exception as e:
-        logger.error(f'❌ ERROR in connect handler for {sid}: {e}')
         import traceback
         traceback.print_exc()
-        raise
+        raise  # Re-raise to let client know connection failed
 
 @sio_server.event
 async def disconnect(sid):
