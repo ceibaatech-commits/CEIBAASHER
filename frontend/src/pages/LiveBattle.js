@@ -267,13 +267,21 @@ const LiveBattle = () => {
                     Host Controls
                   </h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                   <button
                     onClick={isPaused ? resumeQuiz : pauseQuiz}
                     className="flex items-center justify-center space-x-2 bg-white hover:bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-semibold transition-all border-2 border-orange-300"
                   >
                     {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                     <span>{isPaused ? 'Resume' : 'Pause'}</span>
+                  </button>
+                  <button
+                    onClick={nextQuestion}
+                    disabled={currentQuestionIndex >= allQuestions.length - 1}
+                    className="flex items-center justify-center space-x-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <SkipForward className="w-4 h-4" />
+                    <span>Next Q</span>
                   </button>
                   <button
                     onClick={skipQuestion}
