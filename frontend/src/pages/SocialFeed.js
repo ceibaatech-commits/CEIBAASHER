@@ -1,0 +1,682 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { 
+  Heart, MessageCircle, Share2, Send, Gift, Swords, Trophy, 
+  Users, TrendingUp, UserPlus, Target, Sparkles, Play, Crown,
+  Star, Diamond, Award, Bell, Plus, Image, Video, Smile, X
+} from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+const SocialFeed = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  
+  const [activeTab, setActiveTab] = useState('for-you');
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [newPost, setNewPost] = useState({
+    post_type: 'general',
+    content: '',
+    exam_category: '',
+    subject: ''
+  });
+
+  // Fetch feed based on active tab
+  useEffect(() => {
+    fetchFeed();
+  }, [activeTab, user]);
+
+  const fetchFeed = async () => {
+    if (!user) {
+      // Allow viewing without login
+      setLoading(false);
+      // Fetch public trending feed
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/social/feed/trending`);
+        if (response.data.success) {
+          setPosts(response.data.posts);
+        }
+      } catch (error) {
+        console.error('Error fetching feed:', error);
+      }
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let endpoint = '';
+      switch (activeTab) {
+        case 'for-you':
+          endpoint = `/feed/for-you?user_id=${user.id}`;
+          break;
+        case 'trending':
+          endpoint = '/feed/trending';
+          break;
+        case 'following':
+          endpoint = `/feed/following?user_id=${user.id}`;
+          break;
+        case 'leaderboard':
+          endpoint = '/feed/leaderboard';
+          break;
+        case 'my-circle':
+          endpoint = `/feed/my-circle?user_id=${user.id}`;
+          break;
+        default:
+          endpoint = `/feed/for-you?user_id=${user.id}`;
+      }
+
+      const response = await axios.get(`${BACKEND_URL}/api/social${endpoint}`);
+      if (response.data.success) {
+        setPosts(response.data.posts);
+      }
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLikePost = async (postId, currentlyLiked) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      if (currentlyLiked) {
+        await axios.delete(
+          `${BACKEND_URL}/api/social/posts/${postId}/like?user_id=${user.id}`
+        );
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {
+          user_id: user.id
+        });
+      }
+
+      // Update local state
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            liked_by_user: !currentlyLiked,
+            likes_count: currentlyLiked ? post.likes_count - 1 : post.likes_count + 1
+          };
+        }
+        return post;
+      }));
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
+  };
+
+  const handleComment = async (postId, content) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/posts/${postId}/comment`,
+        {
+          user_id: user.id,
+          content
+        }
+      );
+
+      if (response.data.success) {
+        // Update comments count
+        setPosts(posts.map(post => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              comments_count: post.comments_count + 1
+            };
+          }
+          return post;
+        }));
+      }
+    } catch (error) {
+      console.error('Error commenting:', error);
+    }
+  };
+
+  const handleShare = async (postId) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {
+        user_id: user.id
+      });
+
+      // Update shares count
+      setPosts(posts.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            shares_count: post.shares_count + 1
+          };
+        }
+        return post;
+      }));
+
+      alert('Post shared!');
+    } catch (error) {
+      console.error('Error sharing post:', error);
+    }
+  };
+
+  const handleCreatePost = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!newPost.content.trim()) {
+      alert('Please enter post content');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/posts?user_id=${user.id}`,
+        newPost
+      );
+
+      if (response.data.success) {
+        setShowCreatePost(false);
+        setNewPost({
+          post_type: 'general',
+          content: '',
+          exam_category: '',
+          subject: ''
+        });
+        fetchFeed(); // Refresh feed
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Failed to create post');
+    }
+  };
+
+  const PostCard = ({ post }) => {
+    const [showComments, setShowComments] = useState(false);
+    const [commentText, setCommentText] = useState('');
+    const [showGiftModal, setShowGiftModal] = useState(false);
+
+    const handleSendGift = async (giftType) => {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/gift`, {
+          user_id: user.id,
+          gift_type: giftType
+        });
+        setShowGiftModal(false);
+        alert(`${giftType} sent successfully!`);
+      } catch (error) {
+        console.error('Error sending gift:', error);
+        alert(error.response?.data?.detail || 'Failed to send gift');
+      }
+    };
+
+    const handleChallenge = async () => {
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/challenge`, {
+          user_id: user.id,
+          subject: post.subject || 'General',
+          topic: 'Challenge'
+        });
+        alert('Challenge sent!');
+      } catch (error) {
+        console.error('Error sending challenge:', error);
+        alert(error.response?.data?.detail || 'Failed to send challenge');
+      }
+    };
+
+    return (
+      <div className="bg-white rounded-xl shadow-md p-6 mb-4 hover:shadow-lg transition-shadow">
+        {/* User Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
+              {post.user_name ? post.user_name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="font-bold text-gray-900">{post.user_name}</h3>
+                {post.user_verified && (
+                  <span className="text-blue-500">
+                    {post.user_verified_type === 'educator' && '✓'}
+                    {post.user_verified_type === 'institution' && '🎓'}
+                    {post.user_verified_type === 'government' && '🏛️'}
+                    {post.user_verified_type === 'expert' && '⭐'}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-gray-500">
+                {post.user_location && `${post.user_location} • `}
+                {new Date(post.created_at).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Post Content */}
+        <div className="mb-4">
+          <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
+          
+          {/* Battle Stats Card */}
+          {post.post_type === 'battle_victory' && post.battle_stats && (
+            <div className="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
+              <h4 className="font-bold text-blue-900 mb-2">🏆 Battle Stats</h4>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {post.battle_stats.accuracy && (
+                  <div><span className="text-gray-600">Accuracy:</span> <span className="font-bold">{post.battle_stats.accuracy}%</span></div>
+                )}
+                {post.battle_stats.winStreak && (
+                  <div><span className="text-gray-600">Win Streak:</span> <span className="font-bold">{post.battle_stats.winStreak}</span></div>
+                )}
+                {post.battle_stats.rank && (
+                  <div><span className="text-gray-600">Rank:</span> <span className="font-bold">#{post.battle_stats.rank}</span></div>
+                )}
+                {post.battle_stats.subject && (
+                  <div><span className="text-gray-600">Subject:</span> <span className="font-bold">{post.battle_stats.subject}</span></div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Quiz Announcement Card */}
+          {post.post_type === 'quiz_announcement' && post.quiz_details && (
+            <div className="mt-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+              <h4 className="font-bold text-orange-900 mb-2">📚 {post.quiz_details.title}</h4>
+              <div className="text-sm space-y-1 mb-3">
+                {post.quiz_details.time && (
+                  <p><span className="text-gray-600">⏰ Time:</span> {post.quiz_details.time}</p>
+                )}
+                {post.quiz_details.maxStudents && (
+                  <p><span className="text-gray-600">👥 Max Students:</span> {post.quiz_details.maxStudents}</p>
+                )}
+                {post.quiz_details.difficulty && (
+                  <p><span className="text-gray-600">🎯 Difficulty:</span> {post.quiz_details.difficulty}</p>
+                )}
+                {post.quiz_details.pin && (
+                  <p><span className="text-gray-600">🔑 PIN:</span> <span className="font-mono font-bold">{post.quiz_details.pin}</span></p>
+                )}
+              </div>
+              <button className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
+                <Play className="inline w-4 h-4 mr-2" />
+                Join Now
+              </button>
+            </div>
+          )}
+
+          {/* Media */}
+          {post.media_urls && post.media_urls.length > 0 && (
+            <div className="mt-4">
+              {post.media_urls.map((url, index) => (
+                <img key={index} src={url} alt="Post media" className="rounded-lg w-full" />
+              ))}
+            </div>
+          )}
+
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {post.tags.map((tag, index) => (
+                <span key={index} className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Engagement Buttons */}
+        <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+          <button
+            onClick={() => handleLikePost(post.id, post.liked_by_user)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+              post.liked_by_user
+                ? 'text-red-500 bg-red-50'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <Heart className={`w-5 h-5 ${post.liked_by_user ? 'fill-current' : ''}`} />
+            <span className="font-semibold">{post.likes_count || 0}</span>
+          </button>
+
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span className="font-semibold">{post.comments_count || 0}</span>
+          </button>
+
+          <button
+            onClick={() => handleShare(post.id)}
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <Share2 className="w-5 h-5" />
+            <span className="font-semibold">{post.shares_count || 0}</span>
+          </button>
+
+          <button
+            onClick={() => setShowGiftModal(true)}
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            <Gift className="w-5 h-5" />
+          </button>
+
+          {post.post_type === 'battle_victory' && (
+            <button
+              onClick={handleChallenge}
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-purple-600 hover:bg-purple-50 transition-colors"
+            >
+              <Swords className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Comments Section */}
+        {showComments && (
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="flex space-x-2 mb-4">
+              <input
+                type="text"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Write a comment..."
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+              />
+              <button
+                onClick={() => {
+                  if (commentText.trim()) {
+                    handleComment(post.id, commentText);
+                    setCommentText('');
+                  }
+                }}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Gift Modal */}
+        {showGiftModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold">Send a Gift 🎁</h3>
+                <button onClick={() => setShowGiftModal(false)}>
+                  <X className="w-6 h-6 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => handleSendGift('star')}
+                  className="bg-gradient-to-br from-yellow-100 to-yellow-200 p-4 rounded-xl hover:shadow-lg transition-all"
+                >
+                  <div className="text-4xl mb-2">⭐</div>
+                  <div className="font-bold">Star</div>
+                  <div className="text-sm text-gray-600">10 coins</div>
+                </button>
+
+                <button
+                  onClick={() => handleSendGift('diamond')}
+                  className="bg-gradient-to-br from-blue-100 to-cyan-200 p-4 rounded-xl hover:shadow-lg transition-all"
+                >
+                  <div className="text-4xl mb-2">💎</div>
+                  <div className="font-bold">Diamond</div>
+                  <div className="text-sm text-gray-600">50 coins</div>
+                </button>
+
+                <button
+                  onClick={() => handleSendGift('crown')}
+                  className="bg-gradient-to-br from-purple-100 to-pink-200 p-4 rounded-xl hover:shadow-lg transition-all"
+                >
+                  <div className="text-4xl mb-2">👑</div>
+                  <div className="font-bold">Crown</div>
+                  <div className="text-sm text-gray-600">100 coins</div>
+                </button>
+
+                <button
+                  onClick={() => handleSendGift('trophy')}
+                  className="bg-gradient-to-br from-amber-100 to-orange-200 p-4 rounded-xl hover:shadow-lg transition-all"
+                >
+                  <div className="text-4xl mb-2">🏆</div>
+                  <div className="font-bold">Trophy</div>
+                  <div className="text-sm text-gray-600">200 coins</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Header user={user} logout={logout} />
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Feed Tabs */}
+        <div className="bg-white rounded-xl shadow-md mb-6 p-2 flex overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('for-you')}
+            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'for-you'
+                ? 'bg-purple-600 text-white'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <Sparkles className="w-5 h-5" />
+            <span>For You</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('trending')}
+            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'trending'
+                ? 'bg-orange-500 text-white'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <TrendingUp className="w-5 h-5" />
+            <span>Trending</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('following')}
+            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'following'
+                ? 'bg-blue-500 text-white'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <UserPlus className="w-5 h-5" />
+            <span>Following</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('leaderboard')}
+            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'leaderboard'
+                ? 'bg-yellow-500 text-white'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <Trophy className="w-5 h-5" />
+            <span>Leaderboard</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('my-circle')}
+            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'my-circle'
+                ? 'bg-green-500 text-white'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <Target className="w-5 h-5" />
+            <span>My Circle</span>
+          </button>
+        </div>
+
+        {/* Create Post Button */}
+        {user && (
+          <button
+            onClick={() => setShowCreatePost(true)}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold mb-6 hover:shadow-xl transition-all flex items-center justify-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Create Post</span>
+          </button>
+        )}
+
+        {/* Guest Banner */}
+        {!user && (
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-6 mb-6 text-center">
+            <h3 className="text-xl font-bold mb-2">Join Ceibaa Social 🚀</h3>
+            <p className="mb-4">Connect with learners, share your achievements, and grow together!</p>
+            <button
+              onClick={() => navigate('/login')}
+              className="bg-white text-purple-600 px-6 py-2 rounded-lg font-bold hover:shadow-lg transition-all"
+            >
+              Login to Continue
+            </button>
+          </div>
+        )}
+
+        {/* Feed Content */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full mx-auto"></div>
+            <p className="text-gray-600 mt-4">Loading feed...</p>
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-md p-12 text-center">
+            <div className="text-6xl mb-4">📭</div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No posts yet</h3>
+            <p className="text-gray-600">Be the first to share something!</p>
+          </div>
+        ) : (
+          posts.map(post => <PostCard key={post.id} post={post} />)
+        )}
+
+        {/* Create Post Modal */}
+        {showCreatePost && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-2xl font-bold">Create Post</h3>
+                <button onClick={() => setShowCreatePost(false)}>
+                  <X className="w-6 h-6 text-gray-500" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Post Type
+                  </label>
+                  <select
+                    value={newPost.post_type}
+                    onChange={(e) => setNewPost({ ...newPost, post_type: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                  >
+                    <option value="general">General</option>
+                    <option value="battle_victory">Battle Victory</option>
+                    <option value="study_tip">Study Tip</option>
+                    <option value="achievement">Achievement</option>
+                    <option value="quiz_announcement">Quiz Announcement</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Content
+                  </label>
+                  <textarea
+                    value={newPost.content}
+                    onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                    placeholder="What's on your mind?"
+                    rows="6"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Exam Category
+                    </label>
+                    <select
+                      value={newPost.exam_category}
+                      onChange={(e) => setNewPost({ ...newPost, exam_category: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    >
+                      <option value="">Select...</option>
+                      <option value="JEE">JEE</option>
+                      <option value="NEET">NEET</option>
+                      <option value="SSC">SSC</option>
+                      <option value="UPSC">UPSC</option>
+                      <option value="Banking">Banking</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      value={newPost.subject}
+                      onChange={(e) => setNewPost({ ...newPost, subject: e.target.value })}
+                      placeholder="Physics, Chemistry, etc."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleCreatePost}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
+                >
+                  Post
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default SocialFeed;
