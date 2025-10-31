@@ -3,8 +3,8 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile, ArrowLeft } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect directly to the standalone battle server on port 5001
-const BATTLE_SERVER_URL = 'http://localhost:5001';
+// Connect to battle server through the backend domain
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://battle-fix.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
