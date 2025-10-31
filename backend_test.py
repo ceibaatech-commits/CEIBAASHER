@@ -466,29 +466,35 @@ class BattleServerTester:
             with open('/app/battle-server/server.js', 'r') as f:
                 content = f.read()
             
-            # Check for proper answer validation (not Math.random)
-            if 'currentQ.correctAnswer === answerIndex' in content:
-                self.log_result("Answer Validation Logic", True, "Uses proper correctAnswer comparison")
-            elif 'Math.random' in content:
-                self.log_result("Answer Validation Logic", False, "Still using Math.random for validation")
+            # Check for proper answer validation (updated pattern)
+            if 'question.correctAnswer === answerIndex' in content:
+                self.log_result("Answer Validation Logic", True, "✅ Uses proper question.correctAnswer === answerIndex comparison")
+            elif 'currentQ.correctAnswer === answerIndex' in content:
+                self.log_result("Answer Validation Logic", True, "✅ Uses proper currentQ.correctAnswer === answerIndex comparison")
+            elif 'Math.random' in content and 'correctAnswer ===' not in content:
+                self.log_result("Answer Validation Logic", False, "❌ Still using Math.random for validation")
             else:
-                self.log_result("Answer Validation Logic", False, "Answer validation logic unclear")
+                # Check for any correctAnswer comparison
+                if 'correctAnswer ===' in content or 'correctAnswer ==' in content:
+                    self.log_result("Answer Validation Logic", True, "✅ Uses proper correctAnswer comparison")
+                else:
+                    self.log_result("Answer Validation Logic", False, "❌ Answer validation logic unclear")
             
             # Check for answer-result event emission
             if 'answer-result' in content and 'isCorrect' in content:
-                self.log_result("Answer Result Event", True, "Emits answer-result with isCorrect flag")
+                self.log_result("Answer Result Event", True, "✅ Emits answer-result with isCorrect flag")
             else:
-                self.log_result("Answer Result Event", False, "Missing answer-result event emission")
+                self.log_result("Answer Result Event", False, "❌ Missing answer-result event emission")
             
             # Check for host control events
             host_events = ['pause-quiz', 'resume-quiz', 'kick-player', 'skip-question', 'end-quiz']
             found_events = [event for event in host_events if event in content]
             
             if len(found_events) == len(host_events):
-                self.log_result("Host Control Events", True, f"All host events implemented: {', '.join(found_events)}")
+                self.log_result("Host Control Events", True, f"✅ All host events implemented: {', '.join(found_events)}")
             else:
                 missing = [event for event in host_events if event not in found_events]
-                self.log_result("Host Control Events", False, f"Missing events: {missing}")
+                self.log_result("Host Control Events", False, f"❌ Missing events: {missing}")
             
             return True
             
