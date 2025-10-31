@@ -28,10 +28,11 @@ const BattleLobby = () => {
       return;
     }
     
-    console.log('📡 Creating Socket.io connection to port 5002...');
+    console.log('📡 Creating Socket.io connection...');
     const newSocket = io(SOCKET_PROXY_URL, {
-      transports: ['polling'], // Force polling only, no WebSocket
-      upgrade: false // Don't try to upgrade to WebSocket
+      path: '/socket.io',
+      transports: ['polling'],
+      upgrade: false
     });
     
     setSocket(newSocket);
