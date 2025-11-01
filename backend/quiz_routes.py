@@ -70,6 +70,7 @@ async def start_quiz(request: QuizStartRequest):
     exam = request.exam
     subject = request.subject
     topic = request.topic
+    sub_topic = request.sub_topic  # NEW: Get sub-topic
     
     # Try to get questions from Google Sheets first
     questions = []
@@ -82,24 +83,38 @@ async def start_quiz(request: QuizStartRequest):
         client = AsyncIOMotorClient(MONGO_URL)
         db = client[DB_NAME]
         
-        sheet_mapping = await db.question_sheets.find_one({
+        # Build query - try sub-topic specific first, then fall back to topic
+        query = {
             "exam_id": exam,
             "subject": subject,
             "topic": topic
-        })
+        }
+        
+        # If sub_topic provided, try to find specific mapping
+        if sub_topic:
+            specific_mapping = await db.question_sheets.find_one({
+                **query,
+                "sub_topic": sub_topic
+            })
+            sheet_mapping = specific_mapping
+        else:
+            sheet_mapping = await db.question_sheets.find_one(query)
         
         if sheet_mapping:
             try:
                 sheets_service = GoogleSheetsService()
+                # Pass sub_topic filter if available
+                filter_topic = sub_topic if sub_topic else topic
                 questions = sheets_service.fetch_questions(
                     sheet_mapping["sheet_url"],
                     sheet_mapping.get("sheet_name"),
-                    topic_filter=topic  # Pass topic to filter questions
+                    topic_filter=filter_topic  # Filter by sub-topic or topic
                 )
                 
                 if questions:
                     source = "google_sheets"
-                    print(f"✅ Loaded {len(questions)} questions from Google Sheets for {exam}/{subject}/{topic}")
+                    filter_info = f"{topic}/{sub_topic}" if sub_topic else topic
+                    print(f"✅ Loaded {len(questions)} questions from Google Sheets for {exam}/{subject}/{filter_info}")
             except Exception as e:
                 print(f"⚠️ Error fetching from Google Sheets: {e}")
     
