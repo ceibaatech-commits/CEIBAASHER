@@ -36,6 +36,26 @@ const TestLatex = () => {
       text: "$$\\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$$"
     },
     {
+      title: "Unicode: Chemical Bonds (σ-π)",
+      text: "The σ-π bond in benzene is delocalized. The σ bond is stronger than π bond."
+    },
+    {
+      title: "Unicode: Chemical Structure",
+      text: "The compound R-CH(OH)-CH₃ undergoes oxidation to form R-CO-CH₃"
+    },
+    {
+      title: "Unicode: Logarithm with Subscripts",
+      text: "The rate constant relationship is: log(k/k₀) = -Ea/2.303RT where k₀ is initial rate"
+    },
+    {
+      title: "Unicode: Chemical Formula",
+      text: "Benzene C₆H₆ has alternating σ and π bonds. The π electron cloud is above and below the ring."
+    },
+    {
+      title: "Unicode: Greek + Subscripts",
+      text: "The wavelength λ₀ = 589 nm, frequency ν₀ = 5.09×10¹⁴ Hz, energy ΔE = hν"
+    },
+    {
       title: "WITHOUT Dollar Signs (Broken)",
       text: "If z = -2 + 2√3i then |z| = 4"
     },
