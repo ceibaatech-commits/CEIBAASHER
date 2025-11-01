@@ -14,6 +14,7 @@ class QuizStartRequest(BaseModel):
     exam: str
     subject: str
     topic: str = None  # Optional: for topic-specific quiz
+    sub_topic: str = None  # NEW: Optional sub-topic for granular practice
 
 class QuizSubmitRequest(BaseModel):
     quizId: str
