@@ -648,7 +648,7 @@ const LiveBattle = () => {
             {/* Question Card */}
             <div className="bg-white rounded-xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                {currentQuestion.question}
+                <MathText text={currentQuestion.question} />
               </h2>
 
               <div className="space-y-3">
@@ -686,7 +686,9 @@ const LiveBattle = () => {
                         }`}>
                           {String.fromCharCode(65 + index)}
                         </div>
-                        <span className="flex-1 font-medium text-gray-900">{option}</span>
+                        <span className="flex-1 font-medium text-gray-900">
+                          <MathText text={option} />
+                        </span>
                         {isCorrect && <span className="text-green-600 font-bold">✓</span>}
                         {isWrong && <span className="text-red-600 font-bold">✗</span>}
                       </div>
@@ -706,7 +708,7 @@ const LiveBattle = () => {
                   <p className="text-sm text-gray-700 mt-1">
                     {answerResult.isCorrect 
                       ? `+${answerResult.points} points earned!` 
-                      : `Correct answer: ${currentQuestion.options[answerResult.correctAnswer]}`
+                      : <>Correct answer: <MathText text={currentQuestion.options[answerResult.correctAnswer]} /></>
                     }
                   </p>
                   {/* Show explanation if available */}
