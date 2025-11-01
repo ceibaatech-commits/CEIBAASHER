@@ -31,7 +31,7 @@ const SoloPractice = () => {
 
   useEffect(() => {
     // Reset state when URL params change
-    setQuizState('loading');
+    setQuizState('setup'); // Changed: Start with setup instead of loading
     setQuestions([]);
     setQuizId(null);
     setCurrentQuestionIndex(0);
@@ -40,11 +40,6 @@ const SoloPractice = () => {
     setTimeLeft(30);
     setScore(null);
     setResults(null);
-    
-    // Start new quiz
-    if (exam && subject) {
-      startQuiz();
-    }
   }, [exam, subject, topic, subTopic]);
 
   useEffect(() => {
