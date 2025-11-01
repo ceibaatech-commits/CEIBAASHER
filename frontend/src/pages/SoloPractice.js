@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Clock, CheckCircle, XCircle, Trophy } from 'lucide-react';
 import axios from 'axios';
 
@@ -9,6 +9,8 @@ const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
 const SoloPractice = () => {
   const { examName, subjectName, examId, topicName } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
   
   // Use examId if available (from topic-quiz route), otherwise use examName (from solo-practice route)
   const exam = examId || examName;
