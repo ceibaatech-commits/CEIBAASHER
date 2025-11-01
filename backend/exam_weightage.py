@@ -761,6 +761,59 @@ EXAM_WEIGHTAGE = {
                 ]
             }
         }
+    },
+    "CDS": {
+        "total_questions": 100,
+        "subjects": {
+            "Mathematics": {
+                "questions": 100,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {
+                        "name": "Algebra",
+                        "expected": "15-20",
+                        "importance": "Very High",
+                        "subtopics": ["Complex Numbers", "Quadratic Equations", "Logarithms", "Permutations & Combinations"]
+                    },
+                    {
+                        "name": "Matrices & Determinants",
+                        "expected": "10-15",
+                        "importance": "Very High",
+                        "subtopics": ["Types of Matrices", "Determinants", "Inverse of Matrix", "Properties"]
+                    },
+                    {
+                        "name": "Trigonometry",
+                        "expected": "12-15",
+                        "importance": "Very High",
+                        "subtopics": ["Trigonometric Ratios", "Identities", "Heights & Distances", "Inverse Trigonometric Functions"]
+                    },
+                    {
+                        "name": "Calculus",
+                        "expected": "10-12",
+                        "importance": "High",
+                        "subtopics": ["Limits", "Differentiation", "Integration", "Applications"]
+                    },
+                    {
+                        "name": "Geometry",
+                        "expected": "10-12",
+                        "importance": "High",
+                        "subtopics": ["Coordinate Geometry", "Circles", "Straight Lines"]
+                    },
+                    {
+                        "name": "Mensuration",
+                        "expected": "8-10",
+                        "importance": "Medium",
+                        "subtopics": ["2D Shapes", "3D Shapes", "Surface Area & Volume"]
+                    },
+                    {
+                        "name": "Statistics & Probability",
+                        "expected": "6-8",
+                        "importance": "Medium",
+                        "subtopics": ["Mean, Median, Mode", "Probability", "Data Interpretation"]
+                    }
+                ]
+            }
+        }
     }
 }
 
