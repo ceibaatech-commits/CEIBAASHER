@@ -15,6 +15,7 @@ class QuizStartRequest(BaseModel):
     subject: str
     topic: str = None  # Optional: for topic-specific quiz
     sub_topic: str = None  # NEW: Optional sub-topic for granular practice
+    numberOfQuestions: int = 10  # NEW: Configurable question limit (default 10, max 100)
 
 class QuizSubmitRequest(BaseModel):
     quizId: str
