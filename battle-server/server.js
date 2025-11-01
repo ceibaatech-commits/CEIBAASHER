@@ -136,8 +136,19 @@ io.on('connection', (socket) => {
       return;
     }
 
-    if (room.status !== 'waiting') {
-      socket.emit('join_error', { error: 'Battle already started' });
+    // Check if room expired (24 hours)
+    const roomAge = Date.now() - room.createdAt;
+    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+    
+    if (roomAge > TWENTY_FOUR_HOURS) {
+      socket.emit('join_error', { error: 'Room expired. Create a new room.' });
+      battleRooms.delete(roomId);
+      return;
+    }
+
+    // Allow joining even if battle is active (users can join anytime within 24h)
+    if (room.status === 'completed') {
+      socket.emit('join_error', { error: 'Battle already completed' });
       return;
     }
 
