@@ -767,3 +767,90 @@ EXAM_WEIGHTAGE = {
 def get_exam_weightage(exam_id):
     """Get weightage data for a specific exam"""
     return EXAM_WEIGHTAGE.get(exam_id, None)
+    ,
+    "CDS": {
+        "total_questions": 100,
+        "subjects": {
+            "Mathematics": {
+                "questions": 100,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {
+                        "name": "Algebra",
+                        "expected": "15-20",
+                        "importance": "Very High",
+                        "sub_topics": [
+                            {"name": "Complex Numbers", "questions": "3-5"},
+                            {"name": "Quadratic Equations", "questions": "4-6"},
+                            {"name": "Logarithms", "questions": "3-4"},
+                            {"name": "Permutations & Combinations", "questions": "5-7"}
+                        ]
+                    },
+                    {
+                        "name": "Matrices & Determinants",
+                        "expected": "10-15",
+                        "importance": "Very High",
+                        "sub_topics": [
+                            {"name": "Types of Matrices", "questions": "2-3"},
+                            {"name": "Determinants", "questions": "3-4"},
+                            {"name": "Inverse of Matrix", "questions": "3-5"},
+                            {"name": "Properties", "questions": "2-3"}
+                        ]
+                    },
+                    {
+                        "name": "Trigonometry",
+                        "expected": "12-15",
+                        "importance": "Very High",
+                        "sub_topics": [
+                            {"name": "Trigonometric Ratios", "questions": "3-4"},
+                            {"name": "Identities", "questions": "3-4"},
+                            {"name": "Heights & Distances", "questions": "3-4"},
+                            {"name": "Inverse Trigonometric Functions", "questions": "3-4"}
+                        ]
+                    },
+                    {
+                        "name": "Calculus",
+                        "expected": "10-12",
+                        "importance": "High",
+                        "sub_topics": [
+                            {"name": "Limits", "questions": "2-3"},
+                            {"name": "Differentiation", "questions": "4-5"},
+                            {"name": "Integration", "questions": "4-5"},
+                            {"name": "Applications", "questions": "2-3"}
+                        ]
+                    },
+                    {
+                        "name": "Geometry",
+                        "expected": "10-12",
+                        "importance": "High",
+                        "sub_topics": [
+                            {"name": "Coordinate Geometry", "questions": "4-5"},
+                            {"name": "Circles", "questions": "3-4"},
+                            {"name": "Straight Lines", "questions": "3-4"}
+                        ]
+                    },
+                    {
+                        "name": "Mensuration",
+                        "expected": "8-10",
+                        "importance": "Medium",
+                        "sub_topics": [
+                            {"name": "2D Shapes", "questions": "3-4"},
+                            {"name": "3D Shapes", "questions": "3-4"},
+                            {"name": "Surface Area & Volume", "questions": "2-3"}
+                        ]
+                    },
+                    {
+                        "name": "Statistics & Probability",
+                        "expected": "6-8",
+                        "importance": "Medium",
+                        "sub_topics": [
+                            {"name": "Mean, Median, Mode", "questions": "2-3"},
+                            {"name": "Probability", "questions": "2-3"},
+                            {"name": "Data Interpretation", "questions": "2-3"}
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+
