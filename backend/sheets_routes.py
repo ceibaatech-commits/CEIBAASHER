@@ -38,14 +38,20 @@ class SheetMappingResponse(BaseModel):
 
 @router.post("/sheets/add")
 async def add_sheet_mapping(mapping: SheetMapping):
-    """Add or update a Google Sheet mapping for an exam topic"""
+    """Add or update a Google Sheet mapping for an exam topic (with optional sub-topic)"""
     try:
         # Check if mapping already exists
-        existing = await db.question_sheets.find_one({
+        query = {
             "exam_id": mapping.exam_id,
             "subject": mapping.subject,
             "topic": mapping.topic
-        })
+        }
+        
+        # Include sub_topic in query if provided
+        if mapping.sub_topic:
+            query["sub_topic"] = mapping.sub_topic
+        
+        existing = await db.question_sheets.find_one(query)
         
         if existing:
             # Update existing mapping
@@ -54,11 +60,28 @@ async def add_sheet_mapping(mapping: SheetMapping):
                 {"$set": {
                     "sheet_url": mapping.sheet_url,
                     "sheet_name": mapping.sheet_name,
+                    "sub_topic": mapping.sub_topic,
                     "updated_at": datetime.utcnow().isoformat()
                 }}
             )
             return {"success": True, "message": "Sheet mapping updated", "id": existing["id"]}
         else:
+            # Create new mapping
+            new_mapping = {
+                "id": str(uuid.uuid4()),
+                "exam_id": mapping.exam_id,
+                "subject": mapping.subject,
+                "topic": mapping.topic,
+                "sub_topic": mapping.sub_topic,
+                "sheet_url": mapping.sheet_url,
+                "sheet_name": mapping.sheet_name,
+                "created_at": datetime.utcnow().isoformat(),
+                "updated_at": datetime.utcnow().isoformat()
+            }
+            await db.question_sheets.insert_one(new_mapping)
+            return {"success": True, "message": "Sheet mapping created", "id": new_mapping["id"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
             # Create new mapping
             sheet_id = str(uuid.uuid4())
             new_mapping = {
