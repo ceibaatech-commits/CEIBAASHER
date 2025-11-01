@@ -438,10 +438,10 @@ const ModernExamSyllabus = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[
-                { icon: '🎯', number: '95%', label: 'Success Rate' },
-                { icon: '📚', number: '10K+', label: 'Mock Tests' },
-                { icon: '👥', number: '50K+', label: 'Students' },
-                { icon: '⭐', number: '4.9/5', label: 'Rating' }
+                { icon: '⏱️', number: '15min', label: 'Avg Study Session' },
+                { icon: '📚', number: '5K+', label: 'Daily Active Users' },
+                { icon: '🎯', number: '87%', label: 'Complete Tests' },
+                { icon: '⭐', number: '4.6/5', label: 'User Rating' }
               ].map((stat, index) => (
                 <div key={index} className="bg-white/20 backdrop-blur-xl rounded-xl p-4 text-center border border-white/30 hover:scale-105 transform transition-all">
                   <div className="text-3xl mb-1">{stat.icon}</div>
