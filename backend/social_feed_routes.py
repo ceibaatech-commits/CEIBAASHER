@@ -48,6 +48,19 @@ class UserProfile(BaseModel):
     # Social stats
     followers_count: int = 0
     following_count: int = 0
+
+
+class BattlePostCreate(BaseModel):
+    user_id: str
+    user_name: str
+    score: int
+    rank: int
+    exam: str
+    topic: str
+    opponents: List[str]  # List of opponent names
+    total_participants: int
+    questions_correct: Optional[int] = None
+
     posts_count: int = 0
     
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
