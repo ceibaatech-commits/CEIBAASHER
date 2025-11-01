@@ -193,6 +193,80 @@ const ModernExamSyllabus = () => {
           </div>
         )}
 
+
+        {/* Animated Exam Poster */}
+        <div className="relative overflow-hidden rounded-3xl mb-8">
+          <div className={`relative bg-gradient-to-br ${examData.color} p-8 md:p-12`}>
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+              <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            </div>
+
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-4">
+                <div className="bg-white/20 backdrop-blur-xl px-4 py-2 rounded-full border border-white/30 inline-block">
+                  <p className="text-white font-semibold flex items-center space-x-2">
+                    <Zap className="w-4 h-4" />
+                    <span>Sub-Topic Wise Mock Tests</span>
+                  </p>
+                </div>
+
+                <h2 className="text-3xl md:text-4xl font-black text-white">
+                  Master Every Sub-Topic!
+                </h2>
+
+                <p className="text-lg text-white/90">
+                  500+ Sub-Topic Tests Across {subjects.length} Subjects
+                </p>
+
+                <div className="flex flex-wrap gap-4">
+                  <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-2 border border-white/30">
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="w-4 h-4 text-white" />
+                      <div>
+                        <p className="text-xl font-bold text-white">{examData.total_questions}+</p>
+                        <p className="text-white/80 text-xs">Questions</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-2 border border-white/30">
+                    <div className="flex items-center space-x-2">
+                      <Trophy className="w-4 h-4 text-white" />
+                      <div>
+                        <p className="text-xl font-bold text-white">95%</p>
+                        <p className="text-white/80 text-xs">Success</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <button onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} className="bg-white text-gray-900 px-5 py-2 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2">
+                    <Play className="w-4 h-4" />
+                    <span>Start Free Test</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="relative h-64 hidden md:block">
+                <div className="absolute top-0 right-0 w-48 bg-white/20 backdrop-blur-xl rounded-xl p-4 border border-white/30 shadow-xl">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-8 h-8 bg-green-500/30 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-green-300" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm">Progress</p>
+                    </div>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div className="bg-green-400 h-2 rounded-full" style={{width: '85%'}}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Subject Filter */}
         <div className="bg-white rounded-xl shadow-md p-4 mb-6">
           <div className="flex flex-wrap gap-2">
