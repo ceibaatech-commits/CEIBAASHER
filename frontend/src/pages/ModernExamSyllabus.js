@@ -424,15 +424,15 @@ const ModernExamSyllabus = () => {
               <div className="inline-block bg-white/20 backdrop-blur-xl px-6 py-2 rounded-full border border-white/30 mb-4">
                 <p className="text-white font-bold flex items-center space-x-2">
                   <Trophy className="w-5 h-5" />
-                  <span>50,000+ Students Achieved Success</span>
+                  <span>Join 5,000+ Daily Active Students</span>
                 </p>
               </div>
 
               <h2 className="text-3xl md:text-5xl font-black text-white mb-3">
-                Your Success Journey Starts Here!
+                Study Smarter, Not Longer!
               </h2>
               <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
-                Achieve your goals with India's #1 Live Quiz Battle Platform
+                Beat distractions with focused 15-minute sub-topic quizzes
               </p>
             </div>
 
