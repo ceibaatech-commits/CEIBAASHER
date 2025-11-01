@@ -422,6 +422,62 @@ const LiveBattle = () => {
     }
   };
 
+  const handleCeep = async (player) => {
+    try {
+      // Generate simple user IDs from names for demo
+      const userId = playerName.toLowerCase().replace(/\s+/g, '_');
+      const ceepUserId = player.name.toLowerCase().replace(/\s+/g, '_');
+      
+      const response = await axios.post(`${BATTLE_SERVER_URL}/api/ceep/ceep`, {
+        user_id: userId,
+        ceep_user_id: ceepUserId,
+        user_name: playerName,
+        ceep_user_name: player.name
+      });
+      
+      if (response.data.success) {
+        alert(`✅ You are now ceeping ${player.name}!`);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (error) {
+      console.error('Error ceeping user:', error);
+      alert('Failed to ceep user. Please try again.');
+    }
+  };
+
+  const postBattleResults = async () => {
+    try {
+      const userId = playerName.toLowerCase().replace(/\s+/g, '_');
+      const rank = leaderboard.findIndex(p => p.name === playerName) + 1;
+      const opponents = leaderboard
+        .filter(p => p.name !== playerName)
+        .map(p => p.name);
+      
+      // Extract exam and topic from route or state
+      const examMatch = window.location.pathname.match(/exam\/([^\/]+)/);
+      const exam = examMatch ? decodeURIComponent(examMatch[1]) : 'Quiz';
+      
+      const response = await axios.post(`${BATTLE_SERVER_URL}/api/social/battle-post`, {
+        user_id: userId,
+        user_name: playerName,
+        score: myScore,
+        rank: rank || leaderboard.length,
+        exam: exam,
+        topic: 'General',  // Can be enhanced to get actual topic
+        opponents: opponents,
+        total_participants: leaderboard.length,
+        questions_correct: Math.floor(myScore / 20)  // Rough calculation
+      });
+      
+      if (response.data.success) {
+        console.log('✅ Battle results posted to social feed!');
+      }
+    } catch (error) {
+      console.error('Error posting battle results:', error);
+    }
+  };
+
   // Social Feature Functions
   const sendMessage = (e) => {
     e.preventDefault();
