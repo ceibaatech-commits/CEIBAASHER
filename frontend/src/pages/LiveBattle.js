@@ -837,16 +837,25 @@ const LiveBattle = () => {
                           <p className="text-xs text-gray-500">points</p>
                         </div>
                         {player.name !== playerName && (
-                          <button
-                            onClick={() => {
-                              setSelectedGiftRecipient(player);
-                              setShowGiftMenu(true);
-                            }}
-                            className="p-1.5 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
-                            title="Send Gift"
-                          >
-                            <Gift className="w-4 h-4 text-pink-600" />
-                          </button>
+                          <>
+                            <button
+                              onClick={() => handleCeep(player)}
+                              className="p-1.5 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
+                              title="Ceep this player"
+                            >
+                              <span className="text-sm font-bold text-blue-600">Ceep</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedGiftRecipient(player);
+                                setShowGiftMenu(true);
+                              }}
+                              className="p-1.5 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors"
+                              title="Send Gift"
+                            >
+                              <Gift className="w-4 h-4 text-pink-600" />
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
