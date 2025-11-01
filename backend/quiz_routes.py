@@ -127,9 +127,12 @@ async def start_quiz(request: QuizStartRequest):
         else:
             raise HTTPException(status_code=500, detail="Questions not available for this subject")
     
-    # Randomize and limit to 10 questions
+    # Get number of questions requested (default 10, max 100)
+    num_questions = min(request.numberOfQuestions, 100)
+    
+    # Randomize and limit questions
     random.shuffle(questions)
-    questions = questions[:10]
+    questions = questions[:num_questions]
     
     # For battle mode, include correctAnswer and explanation so frontend can validate immediately
     # Note: This is acceptable for battle mode where speed matters
