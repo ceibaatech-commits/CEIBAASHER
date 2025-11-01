@@ -57,6 +57,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/test-sheets" element={<TestSheets />} />
           <Route path="/test-socket" element={<TestSocket />} />
+          <Route path="/test-latex" element={<TestLatex />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           
           {/* PIN-based Room Quiz Routes (Multiple players) */}
