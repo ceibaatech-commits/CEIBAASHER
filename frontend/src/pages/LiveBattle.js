@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, MessageCircle, Send, Gift, Smile, ArrowLeft } from 'lucide-react';
 import io from 'socket.io-client';
 import axios from 'axios';
+import MathText from '../components/MathText';
 
 // Connect to battle server through the backend domain
 const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://ceibaa-battle.preview.emergentagent.com';
