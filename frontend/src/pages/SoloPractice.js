@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Clock, CheckCircle, XCircle, Trophy } from 'lucide-react';
 import axios from 'axios';
+import MathText from '../components/MathText';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
