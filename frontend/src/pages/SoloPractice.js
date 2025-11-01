@@ -52,11 +52,13 @@ const SoloPractice = () => {
   }, [timeLeft, quizState]);
 
   const startQuiz = async () => {
+    setQuizState('loading'); // Show loading while fetching
     try {
       const requestData = {
         exam: exam,
         subject: subject,
-        topic: topic
+        topic: topic,
+        numberOfQuestions: numberOfQuestions // NEW: Send number of questions
       };
       
       // Include sub_topic if available
