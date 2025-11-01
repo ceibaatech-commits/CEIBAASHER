@@ -18,7 +18,8 @@ const SoloPractice = () => {
   const subject = subjectName;
   const topic = topicName;
   
-  const [quizState, setQuizState] = useState('loading'); // loading, playing, results
+  const [numberOfQuestions, setNumberOfQuestions] = useState(10); // NEW: Question count selector
+  const [quizState, setQuizState] = useState('setup'); // NEW: Changed from 'loading' to 'setup'
   const [questions, setQuestions] = useState([]);
   const [quizId, setQuizId] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
