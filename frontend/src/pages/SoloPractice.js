@@ -43,7 +43,7 @@ const SoloPractice = () => {
     if (exam && subject) {
       startQuiz();
     }
-  }, [exam, subject, topic]);
+  }, [exam, subject, topic, subTopic]);
 
   useEffect(() => {
     if (quizState === 'playing' && timeLeft > 0) {
