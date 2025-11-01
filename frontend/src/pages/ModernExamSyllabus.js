@@ -242,13 +242,45 @@ const ModernExamSyllabus = () => {
                 <AnimatePresence>
                   {expandedTopics[idx] && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                      className="mb-3 max-h-24 overflow-y-auto space-y-1">
-                      {topic.subtopics.map((sub, i) => (
-                        <div key={i} className="flex items-start gap-1 text-xs text-gray-700">
-                          <CheckCircle className="w-3 h-3 text-teal-500 flex-shrink-0 mt-0.5" />
-                          <span>{sub}</span>
-                        </div>
-                      ))}
+                      className="mb-3 max-h-64 overflow-y-auto">
+                      <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Target className="w-3 h-3" />
+                        <span>Focus on Specific Concepts:</span>
+                      </div>
+                      <div className="space-y-2">
+                        {topic.subtopics.map((sub, i) => (
+                          <div key={i} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-2 hover:from-blue-50 hover:to-blue-100 transition-all group">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-start gap-2 flex-1">
+                                <CheckCircle className="w-3 h-3 text-teal-500 flex-shrink-0 mt-0.5 group-hover:text-blue-600 transition-colors" />
+                                <span className="text-xs text-gray-700 group-hover:text-blue-900 font-medium">{sub}</span>
+                              </div>
+                              <div className="flex gap-1">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/topic-quiz/${examId}/${topic.subject}/${topic.topic}`, { state: { subTopic: sub } });
+                                  }}
+                                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-semibold shadow-sm hover:shadow transition-all"
+                                  title="Practice this concept"
+                                >
+                                  📚
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/create-room/${examId}/${topic.subject}/${topic.topic}`, { state: { subTopic: sub } });
+                                  }}
+                                  className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-0.5 rounded text-xs font-semibold shadow-sm hover:shadow transition-all"
+                                  title="Create room for this concept"
+                                >
+                                  🎯
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
