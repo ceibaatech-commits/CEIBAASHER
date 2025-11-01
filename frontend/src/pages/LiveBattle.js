@@ -450,33 +450,47 @@ const LiveBattle = () => {
 
   const postBattleResults = async () => {
     try {
+      console.log('📤 Attempting to post battle results...');
+      console.log('Current state:', { myScore, playerName, leaderboard });
+      
       const userId = playerName.toLowerCase().replace(/\s+/g, '_');
       const rank = leaderboard.findIndex(p => p.name === playerName) + 1;
       const opponents = leaderboard
         .filter(p => p.name !== playerName)
         .map(p => p.name);
       
-      // Extract exam and topic from route or state
-      const examMatch = window.location.pathname.match(/exam\/([^\/]+)/);
-      const exam = examMatch ? decodeURIComponent(examMatch[1]) : 'Quiz';
+      // Get exam and topic from location state if available
+      const stateExam = examId || 'Quiz';
+      const stateTopic = topic || 'General';
       
-      const response = await axios.post(`${BATTLE_SERVER_URL}/api/social/battle-post`, {
+      const postData = {
         user_id: userId,
         user_name: playerName,
         score: myScore,
         rank: rank || leaderboard.length,
-        exam: exam,
-        topic: 'General',  // Can be enhanced to get actual topic
+        exam: stateExam,
+        topic: stateTopic,
         opponents: opponents,
         total_participants: leaderboard.length,
         questions_correct: Math.floor(myScore / 20)  // Rough calculation
-      });
+      };
+      
+      console.log('📝 Post data:', postData);
+      
+      const response = await axios.post(`${BATTLE_SERVER_URL}/api/social/battle-post`, postData);
+      
+      console.log('✅ Battle post response:', response.data);
       
       if (response.data.success) {
         console.log('✅ Battle results posted to social feed!');
+        return true;
       }
     } catch (error) {
-      console.error('Error posting battle results:', error);
+      console.error('❌ Error posting battle results:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
+      return false;
     }
   };
 
