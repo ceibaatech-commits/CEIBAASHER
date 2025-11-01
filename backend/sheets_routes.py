@@ -19,6 +19,7 @@ class SheetMapping(BaseModel):
     exam_id: str
     subject: str
     topic: str
+    sub_topic: Optional[str] = None  # NEW: Sub-topic for granular filtering
     sheet_url: str
     sheet_name: Optional[str] = None
 
@@ -27,6 +28,7 @@ class SheetMappingResponse(BaseModel):
     exam_id: str
     subject: str
     topic: str
+    sub_topic: Optional[str]
     sheet_url: str
     sheet_name: Optional[str]
     created_at: str
