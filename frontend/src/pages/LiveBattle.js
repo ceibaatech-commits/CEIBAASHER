@@ -356,11 +356,16 @@ const LiveBattle = () => {
         console.log(`✅ Auto-advanced to question ${nextIndex + 1}`);
       } else {
         console.log('🏁 Last question completed');
-        // Post battle results to social feed
-        postBattleResults();
         // Show completion message and navigate after delay
-        setTimeout(() => {
-          alert(`Quiz Complete!\n\nYour Final Score: ${myScore} points\n\nYour results have been shared on the Social Feed! 📱\n\nThank you for playing!`);
+        setTimeout(async () => {
+          // Post battle results to social feed
+          const posted = await postBattleResults();
+          
+          const successMessage = posted 
+            ? `Quiz Complete!\n\nYour Final Score: ${myScore} points\n\n✅ Your results have been shared on the Social Feed! 📱\n\nThank you for playing!`
+            : `Quiz Complete!\n\nYour Final Score: ${myScore} points\n\nThank you for playing!`;
+          
+          alert(successMessage);
           navigate('/');
         }, 2000);
       }
