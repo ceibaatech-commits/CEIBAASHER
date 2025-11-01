@@ -459,7 +459,7 @@ const ModernExamSyllabus = () => {
               </div>
               
               <p className="text-lg md:text-xl text-white text-center mb-4 italic">
-                "Ceibaa's sub-topic wise tests helped me secure AIR 245 in JEE! Every concept became crystal clear."
+                "The sub-topic wise breakdown really helped me focus. I used to get distracted easily, but now I can practice specific concepts for 15-20 mins and stay focused. Much better than random questions!"
               </p>
               
               <div className="flex items-center justify-center space-x-3">
@@ -467,9 +467,36 @@ const ModernExamSyllabus = () => {
                   👨‍🎓
                 </div>
                 <div className="text-left">
-                  <p className="text-white font-bold">Arjun Sharma</p>
-                  <p className="text-white/80 text-sm">JEE AIR 245 • IIT Delhi</p>
+                  <p className="text-white font-bold">Rahul K.</p>
+                  <p className="text-white/80 text-sm">CDS Aspirant • Delhi</p>
                 </div>
+              </div>
+            </div>
+
+            {/* Additional Testimonials Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/30">
+                <div className="flex items-center space-x-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-white/90 text-sm mb-3">
+                  "Battle mode is addictive in a good way! I practice more because it's fun competing with others. My weak areas in math improved a lot."
+                </p>
+                <p className="text-white font-semibold text-sm">Priya M. • NEET Student</p>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/30">
+                <div className="flex items-center space-x-1 mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-white/90 text-sm mb-3">
+                  "Before Ceibaa, I wasted hours scrolling social media. Now I do quick 10-minute quizzes whenever I'm free. My consistency improved a lot!"
+                </p>
+                <p className="text-white font-semibold text-sm">Amit S. • JEE Aspirant</p>
               </div>
             </div>
 
