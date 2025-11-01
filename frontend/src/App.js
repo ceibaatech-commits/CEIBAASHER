@@ -15,6 +15,7 @@ import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
 import TestSheets from "@/pages/TestSheets";
 import TestSocket from "@/pages/TestSocket";
+import TestLatex from "@/pages/TestLatex";
 import UserDashboard from "@/pages/UserDashboard";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
