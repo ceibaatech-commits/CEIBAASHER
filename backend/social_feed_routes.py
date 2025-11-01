@@ -794,3 +794,87 @@ async def mark_all_notifications_read(user_id: str):
     )
     
     return {"success": True, "message": "All notifications marked as read"}
+
+
+
+# ==================== BATTLE POST ENDPOINT ====================
+
+@router.post("/battle-post")
+async def create_battle_post(battle_data: BattlePostCreate):
+    """
+    Create a social feed post from battle results
+    Automatically posted when user completes a battle
+    """
+    try:
+        # Create hashtags from exam and topic
+        hashtags = [f"#{battle_data.exam}", f"#{battle_data.topic.replace(' ', '')}"]
+        
+        # Create engaging content
+        rank_emoji = "🥇" if battle_data.rank == 1 else "🥈" if battle_data.rank == 2 else "🥉" if battle_data.rank == 3 else "🎯"
+        
+        content = f"{rank_emoji} Just finished a battle quiz!\n\n"
+        content += f"📊 Score: {battle_data.score} points\n"
+        content += f"🏆 Rank: #{battle_data.rank} out of {battle_data.total_participants}\n"
+        
+        if battle_data.opponents:
+            opponents_str = ", ".join(battle_data.opponents[:3])  # Show first 3
+            if len(battle_data.opponents) > 3:
+                opponents_str += f" and {len(battle_data.opponents) - 3} others"
+            content += f"👥 Competed with: {opponents_str}\n"
+        
+        content += f"\n{' '.join(hashtags)}"
+        
+        # Create battle stats
+        battle_stats = {
+            "score": battle_data.score,
+            "rank": battle_data.rank,
+            "total_participants": battle_data.total_participants,
+            "opponents": battle_data.opponents
+        }
+        
+        if battle_data.questions_correct:
+            battle_stats["questions_correct"] = battle_data.questions_correct
+        
+        # Create post document
+        post = {
+            "id": str(uuid.uuid4()),
+            "user_id": battle_data.user_id,
+            "user_name": battle_data.user_name,
+            "user_avatar": "👤",
+            "user_verified": False,
+            "post_type": "battle_victory",
+            "content": content,
+            "battle_stats": battle_stats,
+            "tags": hashtags,
+            "exam_category": battle_data.exam,
+            "subject": battle_data.topic,
+            "likes_count": 0,
+            "comments_count": 0,
+            "shares_count": 0,
+            "is_trending": False,
+            "trending_score": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Insert into database
+        await db.posts.insert_one(post)
+        
+        # Update user's posts count
+        await db.users.update_one(
+            {"user_id": battle_data.user_id},
+            {
+                "$inc": {"posts_count": 1, "total_battles": 1},
+                "$set": {"last_battle_at": datetime.now(timezone.utc).isoformat()}
+            },
+            upsert=True
+        )
+        
+        return {
+            "success": True,
+            "message": "Battle results posted to social feed!",
+            "post_id": post["id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating battle post: {str(e)}")
+
