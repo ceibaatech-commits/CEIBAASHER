@@ -230,7 +230,7 @@ const SoloPractice = () => {
 
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
                   <p className="text-sm text-gray-700">
-                    <strong>Explanation:</strong> {result.explanation}
+                    <strong>Explanation:</strong> <MathText text={result.explanation} />
                   </p>
                 </div>
               </div>
