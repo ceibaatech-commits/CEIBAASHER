@@ -715,7 +715,9 @@ const LiveBattle = () => {
                   {currentQuestion.explanation && (
                     <div className="mt-3 pt-3 border-t border-gray-300">
                       <p className="text-sm font-semibold text-gray-800 mb-1">Explanation:</p>
-                      <p className="text-sm text-gray-700">{currentQuestion.explanation}</p>
+                      <p className="text-sm text-gray-700">
+                        <MathText text={currentQuestion.explanation} />
+                      </p>
                     </div>
                   )}
                 </div>
