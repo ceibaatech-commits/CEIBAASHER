@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users, Clock, Trophy, Copy, Check } from 'lucide-react';
 import axios from 'axios';
 
@@ -8,6 +8,8 @@ const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
 const CreateRoom = () => {
   const { examId, subject, topic } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
   const [hostName, setHostName] = useState('');
   const [loading, setLoading] = useState(false);
   const [room, setRoom] = useState(null);
@@ -32,12 +34,19 @@ const CreateRoom = () => {
         const { pin } = response.data;
         
         // Get questions for this topic
-        const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, {
+        const quizRequestData = {
           exam: examId,  // Changed from examId to exam
           subject,
           topic,
           numberOfQuestions: 10
-        });
+        };
+        
+        // Include sub_topic if available
+        if (subTopic) {
+          quizRequestData.sub_topic = subTopic;
+        }
+        
+        const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, quizRequestData);
 
         if (quizResponse.data.success) {
           // Navigate directly to LiveBattle with questions
@@ -49,7 +58,8 @@ const CreateRoom = () => {
               roomInfo: response.data.room,
               examId,
               subject,
-              topic
+              topic,
+              subTopic
             }
           });
         } else {
