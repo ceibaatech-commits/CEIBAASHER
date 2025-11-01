@@ -302,7 +302,7 @@ const SoloPractice = () => {
           <div className="mb-6">
             <div className="text-sm text-gray-500 mb-2">{examName} - {subjectName}</div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {currentQuestion?.question}
+              <MathText text={currentQuestion?.question} />
             </h2>
           </div>
 
@@ -329,7 +329,9 @@ const SoloPractice = () => {
                   }`}>
                     {String.fromCharCode(65 + index)}
                   </div>
-                  <span className="flex-1 font-medium text-gray-900">{option}</span>
+                  <span className="flex-1 font-medium text-gray-900">
+                    <MathText text={option} />
+                  </span>
                 </div>
               </button>
             ))}
