@@ -254,6 +254,93 @@ const SoloPractice = () => {
     );
   }
 
+  // Setup screen - select number of questions
+  if (quizState === 'setup') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="mb-6">
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Back to Home
+              </button>
+            </div>
+
+            <div className="text-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Setup Your Quiz</h1>
+              <p className="text-gray-600">{exam} - {subject} {topic && `- ${topic}`} {subTopic && `- ${subTopic}`}</p>
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-lg font-semibold text-gray-900 mb-4">
+                Number of Questions
+              </label>
+              <div className="grid grid-cols-5 gap-3 mb-4">
+                {[10, 20, 30, 50, 100].map((num) => (
+                  <button
+                    key={num}
+                    onClick={() => setNumberOfQuestions(num)}
+                    className={`py-3 px-4 rounded-lg font-semibold transition-all ${
+                      numberOfQuestions === num
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="100"
+                step="10"
+                value={numberOfQuestions}
+                onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              />
+              <div className="flex justify-between text-sm text-gray-500 mt-2">
+                <span>10 questions</span>
+                <span className="font-bold text-lg text-purple-600">{numberOfQuestions} questions</span>
+                <span>100 questions</span>
+              </div>
+            </div>
+
+            <button
+              onClick={startQuiz}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold text-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2"
+            >
+              <Trophy className="w-6 h-6" />
+              <span>Start Quiz</span>
+            </button>
+
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <p className="text-sm text-gray-700">
+                <strong>Note:</strong> Each question will have 30 seconds. You can review all answers at the end.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading screen
+  if (quizState === 'loading') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading questions...</p>
+        </div>
+      </div>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
 
   return (
