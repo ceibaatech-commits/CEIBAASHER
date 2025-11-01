@@ -56,11 +56,18 @@ const SoloPractice = () => {
 
   const startQuiz = async () => {
     try {
-      const response = await axios.post(`${QUIZ_API_URL}/api/quiz/start`, {
+      const requestData = {
         exam: exam,
         subject: subject,
         topic: topic
-      });
+      };
+      
+      // Include sub_topic if available
+      if (subTopic) {
+        requestData.sub_topic = subTopic;
+      }
+      
+      const response = await axios.post(`${QUIZ_API_URL}/api/quiz/start`, requestData);
       
       if (response.data.success) {
         setQuestions(response.data.questions);
