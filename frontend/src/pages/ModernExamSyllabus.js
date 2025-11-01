@@ -381,6 +381,117 @@ const ModernExamSyllabus = () => {
         </div>
       </div>
 
+
+      {/* Why Choose Ceibaa - Features */}
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 mb-12 border border-gray-700">
+        <h2 className="text-3xl font-bold text-white text-center mb-8">
+          🚀 Why Choose Ceibaa?
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+            <Target className="w-10 h-10 mb-3" />
+            <h3 className="text-xl font-bold mb-2">Sub-Topic Wise Focus</h3>
+            <p className="text-white/90 text-sm">Master every topic by breaking it into smaller, focused segments</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+            <Zap className="w-10 h-10 mb-3" />
+            <h3 className="text-xl font-bold mb-2">Real-Time Battles</h3>
+            <p className="text-white/90 text-sm">Compete with live opponents and learn faster through competition</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+            <BarChart className="w-10 h-10 mb-3" />
+            <h3 className="text-xl font-bold mb-2">Detailed Analytics</h3>
+            <p className="text-white/90 text-sm">Track your progress in every sub-topic with detailed insights</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Success Stories & CTA */}
+      <div className="relative overflow-hidden rounded-3xl mb-12">
+        <div className="bg-gradient-to-r from-emerald-500 via-green-600 to-teal-700 p-8 md:p-12">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0" style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundSize: '30px 30px'
+            }}></div>
+          </div>
+
+          <div className="relative z-10">
+            <div className="text-center mb-8">
+              <div className="inline-block bg-white/20 backdrop-blur-xl px-6 py-2 rounded-full border border-white/30 mb-4">
+                <p className="text-white font-bold flex items-center space-x-2">
+                  <Trophy className="w-5 h-5" />
+                  <span>50,000+ Students Achieved Success</span>
+                </p>
+              </div>
+
+              <h2 className="text-3xl md:text-5xl font-black text-white mb-3">
+                Your Success Journey Starts Here!
+              </h2>
+              <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
+                Achieve your goals with India's #1 Live Quiz Battle Platform
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              {[
+                { icon: '🎯', number: '95%', label: 'Success Rate' },
+                { icon: '📚', number: '10K+', label: 'Mock Tests' },
+                { icon: '👥', number: '50K+', label: 'Students' },
+                { icon: '⭐', number: '4.9/5', label: 'Rating' }
+              ].map((stat, index) => (
+                <div key={index} className="bg-white/20 backdrop-blur-xl rounded-xl p-4 text-center border border-white/30 hover:scale-105 transform transition-all">
+                  <div className="text-3xl mb-1">{stat.icon}</div>
+                  <p className="text-2xl font-black text-white mb-1">{stat.number}</p>
+                  <p className="text-white/80 text-xs">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/30">
+              <div className="flex items-center justify-center space-x-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              
+              <p className="text-lg md:text-xl text-white text-center mb-4 italic">
+                "Ceibaa's sub-topic wise tests helped me secure AIR 245 in JEE! Every concept became crystal clear."
+              </p>
+              
+              <div className="flex items-center justify-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-xl">
+                  👨‍🎓
+                </div>
+                <div className="text-left">
+                  <p className="text-white font-bold">Arjun Sharma</p>
+                  <p className="text-white/80 text-sm">JEE AIR 245 • IIT Delhi</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <button 
+                onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+                className="bg-white text-green-600 px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transform transition-all shadow-2xl inline-flex items-center space-x-3"
+              >
+                <Zap className="w-6 h-6" />
+                <span>Start Now - Completely Free!</span>
+                <ChevronRight className="w-6 h-6" />
+              </button>
+
+              <p className="text-white/80 mt-4 text-sm">
+                ✅ No Credit Card Required • ✅ Instant Access • ✅ 24/7 Support
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="h-2 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-600"></div>
+      </div>
+
       <Footer />
     </div>
   );
