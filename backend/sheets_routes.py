@@ -82,24 +82,6 @@ async def add_sheet_mapping(mapping: SheetMapping):
             return {"success": True, "message": "Sheet mapping created", "id": new_mapping["id"]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-            # Create new mapping
-            sheet_id = str(uuid.uuid4())
-            new_mapping = {
-                "id": sheet_id,
-                "exam_id": mapping.exam_id,
-                "subject": mapping.subject,
-                "topic": mapping.topic,
-                "sheet_url": mapping.sheet_url,
-                "sheet_name": mapping.sheet_name,
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
-            }
-            
-            await db.question_sheets.insert_one(new_mapping)
-            return {"success": True, "message": "Sheet mapping added", "id": sheet_id}
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/sheets/list")
 async def list_sheet_mappings():
