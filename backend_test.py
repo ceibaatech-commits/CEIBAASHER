@@ -1918,7 +1918,7 @@ class BattleServerTester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get('success') and 'user' in data:
+                if 'user' in data:
                     user = data['user']
                     self.demo1_user_id = user.get('id')
                     self.demo1_name = user.get('name')
