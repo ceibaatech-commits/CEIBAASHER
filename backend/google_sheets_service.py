@@ -126,12 +126,25 @@ class GoogleSheetsService:
                     explanation = (row.get('Explanation') or row.get('explanation') or 
                                   row.get('EXPLANATION') or '').strip()
                 
+                # Get PASSAGE (for reading comprehension questions)
+                passage = ''
+                for key_variation in ['passage', 'para', 'paragraph', 'text', 'readingpassage']:
+                    if key_variation in row_normalized:
+                        passage = row_normalized[key_variation]
+                        break
+                
+                # Also try original keys
+                if not passage:
+                    passage = (row.get('Passage') or row.get('passage') or 
+                              row.get('PASSAGE') or row.get('Reading Passage') or '').strip()
+                
                 question_obj = {
                     "id": f"q_{idx + 1}",
                     "question": question_text,
                     "options": [option_a, option_b, option_c, option_d],
                     "correctAnswer": correct_answer,
-                    "explanation": explanation
+                    "explanation": explanation,
+                    "passage": passage if passage else None  # Add passage if present
                 }
                 
                 all_questions.append(question_obj)
