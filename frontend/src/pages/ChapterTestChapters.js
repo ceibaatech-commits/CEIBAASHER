@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Clock, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Play, ChevronRight, Target } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Play, Target, Brain } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -15,24 +15,40 @@ const ChapterTestChapters = () => {
   const formattedSubject = subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   const [chapters, setChapters] = useState([]);
-  const [filteredChapters, setFilteredChapters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState('all'); // all, attempted, unattempted
-  const [sortBy, setSortBy] = useState('chapter'); // chapter, name
-  const [bookmarkedChapters, setBookmarkedChapters] = useState([]);
+  const [expandedChapters, setExpandedChapters] = useState({});
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    checkAuth();
     fetchChapters();
-    loadBookmarks();
   }, [selectedClass, subject]);
 
-  useEffect(() => {
-    applyFiltersAndSearch();
-  }, [chapters, searchQuery, filterType, sortBy]);
+  const checkAuth = () => {
+    const token = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   const fetchChapters = async () => {
-    try:
+    try {
       setLoading(true);
       const response = await axios.get(`${API_URL}/api/chapter-tests/chapters`, {
         params: {
@@ -46,70 +62,16 @@ const ChapterTestChapters = () => {
       }
     } catch (error) {
       console.error('Error fetching chapters:', error);
-      // Set default chapters if API fails
-      setChapters(getDefaultChapters());
+      setChapters([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getDefaultChapters = () => {
-    // Default sample chapters structure
-    return [
-      { chapter_number: 1, chapter_name: 'Sample Chapter 1', total_questions: 50, difficulty: 'Easy', duration: 30, attempted: false },
-      { chapter_number: 2, chapter_name: 'Sample Chapter 2', total_questions: 45, difficulty: 'Medium', duration: 35, attempted: false }
-    ];
-  };
-
-  const loadBookmarks = () => {
-    const saved = localStorage.getItem(`bookmarks_${selectedClass}_${subject}`);
-    if (saved) {
-      setBookmarkedChapters(JSON.parse(saved));
-    }
-  };
-
-  const toggleBookmark = (chapterNumber) => {
-    const updated = bookmarkedChapters.includes(chapterNumber)
-      ? bookmarkedChapters.filter(num => num !== chapterNumber)
-      : [...bookmarkedChapters, chapterNumber];
-    
-    setBookmarkedChapters(updated);
-    localStorage.setItem(`bookmarks_${selectedClass}_${subject}`, JSON.stringify(updated));
-  };
-
-  const applyFiltersAndSearch = () => {
-    let filtered = [...chapters];
-
-    // Apply search
-    if (searchQuery) {
-      filtered = filtered.filter(ch => 
-        ch.chapter_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ch.chapter_number.toString().includes(searchQuery)
-      );
-    }
-
-    // Apply filter type
-    if (filterType === 'attempted') {
-      filtered = filtered.filter(ch => ch.attempted);
-    } else if (filterType === 'unattempted') {
-      filtered = filtered.filter(ch => !ch.attempted);
-    }
-
-    // Apply sorting
-    if (sortBy === 'chapter') {
-      filtered.sort((a, b) => a.chapter_number - b.chapter_number);
-    } else if (sortBy === 'name') {
-      filtered.sort((a, b) => a.chapter_name.localeCompare(b.chapter_name));
-    }
-
-    setFilteredChapters(filtered);
-  };
-
   const startTest = (chapter) => {
-    // Navigate to quiz with chapter details
     navigate('/quiz', { 
       state: { 
-        exam: `Class ${selectedClass}`,
+        exam: `CBSE Class ${selectedClass}`,
         subject: formattedSubject,
         chapter: chapter.chapter_name,
         chapterNumber: chapter.chapter_number
@@ -126,207 +88,299 @@ const ChapterTestChapters = () => {
     }
   };
 
-  const calculateProgress = () => {
-    if (chapters.length === 0) return 0;
-    const attempted = chapters.filter(ch => ch.attempted).length;
-    return Math.round((attempted / chapters.length) * 100);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div 
+          animate={{ rotate: 360 }} 
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} 
+          className="rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent" 
+        />
+      </div>
+    );
+  }
+
+  // Color based on class
+  const classColors = {
+    '6': 'from-blue-500 to-blue-600',
+    '7': 'from-purple-500 to-purple-600',
+    '8': 'from-pink-500 to-pink-600',
+    '9': 'from-orange-500 to-orange-600',
+    '10': 'from-red-500 to-red-600',
+    '11': 'from-teal-500 to-teal-600',
+    '12': 'from-indigo-500 to-indigo-600'
   };
 
+  const colorGradient = classColors[selectedClass] || 'from-blue-600 to-teal-600';
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <Header 
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogin={() => navigate('/login')}
+        onLogout={handleLogout}
+      />
       
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Breadcrumb Navigation */}
-        <div className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <button onClick={() => navigate('/chapter-tests')} className="hover:text-cyan-600">
-            Home
+      {/* Compact Hero */}
+      <div className={`bg-gradient-to-br ${colorGradient} text-white py-8`}>
+        <div className="max-w-7xl mx-auto px-4">
+          <button
+            onClick={() => navigate(`/chapter-tests/${classNumber}`)}
+            className="flex items-center space-x-2 text-white/90 hover:text-white mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-semibold">Back to Subjects</span>
           </button>
-          <span>/</span>
-          <button onClick={() => navigate(`/chapter-tests/class-${selectedClass}`)} className="hover:text-cyan-600">
-            Class {selectedClass}
-          </button>
-          <span>/</span>
-          <span className="text-gray-900 font-semibold">{formattedSubject}</span>
-        </div>
-
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(`/chapter-tests/class-${selectedClass}`)}
-          className="flex items-center space-x-2 text-gray-700 hover:text-cyan-600 mb-6 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="font-semibold">Back to Subjects</span>
-        </button>
-
-        {/* Header Section */}
-        <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200 mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+          
+          <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center space-x-3 mb-3">
-                <span className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold">
+              <div className="flex items-center space-x-3 mb-2">
+                <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold">
                   Class {selectedClass}
                 </span>
-                <span className="text-gray-600">•</span>
-                <span className="text-gray-700 font-semibold">{formattedSubject}</span>
+                <ChevronRight className="w-4 h-4" />
+                <span className="font-semibold">{formattedSubject}</span>
               </div>
-              <h1 className="text-4xl font-black text-gray-900 mb-2">
-                Chapter-wise Tests
-              </h1>
-              <p className="text-gray-600">
-                {chapters.length} chapters available • {calculateProgress()}% completed
-              </p>
+              <h1 className="text-3xl md:text-4xl font-black">Chapter-wise Tests</h1>
+              <p className="text-white/90 mt-2">{chapters.length} Chapters Available</p>
             </div>
             
-            <div className="mt-4 md:mt-0">
-              <div className="bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl p-6 text-white">
-                <div className="flex items-center space-x-3">
-                  <TrendingUp className="w-8 h-8" />
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-3 border border-white/30">
+                <div className="flex items-center space-x-2">
+                  <BookOpen className="w-5 h-5 text-white" />
                   <div>
-                    <p className="text-sm opacity-90">Overall Progress</p>
-                    <p className="text-3xl font-bold">{calculateProgress()}%</p>
+                    <p className="text-2xl font-bold text-white">{chapters.length}</p>
+                    <p className="text-white/80 text-xs">Chapters</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Search and Filter Section */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search chapters..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              />
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Animated Poster */}
+        <div className="relative overflow-hidden rounded-3xl mb-8">
+          <div className={`relative bg-gradient-to-br ${colorGradient} p-8 md:p-12`}>
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+              <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
             </div>
 
-            {/* Filter Type */}
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="all">All Chapters</option>
-              <option value="attempted">Attempted</option>
-              <option value="unattempted">Unattempted</option>
-            </select>
+            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div className="space-y-4">
+                <div className="bg-white/20 backdrop-blur-xl px-4 py-2 rounded-full border border-white/30 inline-block">
+                  <p className="text-white font-semibold flex items-center space-x-2">
+                    <Zap className="w-4 h-4" />
+                    <span>NCERT Chapter-wise Tests</span>
+                  </p>
+                </div>
 
-            {/* Sort By */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="chapter">Sort by Chapter Number</option>
-              <option value="name">Sort by Name</option>
-            </select>
+                <h2 className="text-3xl md:text-4xl font-black text-white">
+                  Master Every Chapter!
+                </h2>
+
+                <p className="text-lg text-white/90">
+                  Practice {chapters.length} Chapters with Detailed MCQs
+                </p>
+
+                <div className="flex flex-wrap gap-4">
+                  <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-2 border border-white/30">
+                    <div className="flex items-center space-x-2">
+                      <BookOpen className="w-4 h-4 text-white" />
+                      <div>
+                        <p className="text-xl font-bold text-white">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
+                        <p className="text-white/80 text-xs">Questions</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-2 border border-white/30">
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-4 h-4 text-white" />
+                      <div>
+                        <p className="text-xl font-bold text-white">30-50m</p>
+                        <p className="text-white/80 text-xs">Per Test</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <button 
+                    onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
+                    className="bg-white text-gray-900 px-5 py-2 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    <span>Start Practice</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="relative h-64 hidden md:block">
+                <div className="absolute top-0 right-0 w-48 bg-white/20 backdrop-blur-xl rounded-xl p-4 border border-white/30 shadow-xl">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-8 h-8 bg-blue-500/30 rounded-lg flex items-center justify-center">
+                      <Brain className="w-4 h-4 text-blue-300" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm">NCERT Based</p>
+                    </div>
+                  </div>
+                  <p className="text-white/80 text-xs">All questions aligned with latest NCERT syllabus</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Chapters List */}
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
-            <p className="text-gray-600 mt-4">Loading chapters...</p>
-          </div>
-        ) : filteredChapters.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
-            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-xl text-gray-600">No chapters found</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredChapters.map((chapter) => (
-              <div
-                key={chapter.chapter_number}
-                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-cyan-200"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        Ch {chapter.chapter_number}
-                      </span>
-                      {chapter.attempted && (
-                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-                          ✓ Attempted
+        {/* Chapters Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {chapters.map((chapter, idx) => (
+            <motion.div 
+              key={idx} 
+              whileHover={{ y: -4 }}
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
+            >
+              <div className={`bg-gradient-to-br ${colorGradient} p-4 relative`}>
+                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="relative">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="bg-white/30 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-bold">
+                          Chapter {chapter.chapter_number}
                         </span>
-                      )}
+                        {chapter.attempted && (
+                          <span className="bg-green-400/30 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-bold">
+                            ✓ Done
+                          </span>
+                        )}
+                      </div>
+                      <h4 className="text-white font-bold text-base drop-shadow-md">{chapter.chapter_name}</h4>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">
-                      {chapter.chapter_name}
-                    </h3>
+                    <button 
+                      onClick={() => setExpandedChapters(p => ({ ...p, [idx]: !p[idx] }))}
+                      className="bg-white/20 p-1 rounded hover:bg-white/30 transition-all"
+                    >
+                      {expandedChapters[idx] ? 
+                        <ChevronUp className="w-4 h-4 text-white" /> : 
+                        <ChevronDown className="w-4 h-4 text-white" />
+                      }
+                    </button>
                   </div>
-                  
-                  <button
-                    onClick={() => toggleBookmark(chapter.chapter_number)}
-                    className={`p-2 rounded-full ${
-                      bookmarkedChapters.includes(chapter.chapter_number)
-                        ? 'bg-yellow-100 text-yellow-600'
-                        : 'bg-gray-100 text-gray-400 hover:bg-yellow-100 hover:text-yellow-600'
-                    } transition-colors`}
-                  >
-                    <Star className="w-5 h-5" fill={bookmarkedChapters.includes(chapter.chapter_number) ? 'currentColor' : 'none'} />
-                  </button>
                 </div>
-
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="bg-blue-50 rounded-lg p-3">
-                    <p className="text-xs text-blue-600 font-semibold mb-1">Questions</p>
-                    <p className="text-2xl font-bold text-blue-700">{chapter.total_questions || 50}</p>
+              </div>
+              
+              <div className="p-4">
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600">Questions</p>
+                    <p className="font-bold text-blue-600 text-lg">{chapter.total_questions}</p>
                   </div>
-                  <div className="bg-purple-50 rounded-lg p-3">
-                    <p className="text-xs text-purple-600 font-semibold mb-1">Duration</p>
-                    <p className="text-2xl font-bold text-purple-700">{chapter.duration || 30}m</p>
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600">Duration</p>
+                    <p className="font-bold text-purple-600 text-lg">{chapter.duration}m</p>
                   </div>
-                  <div className="bg-pink-50 rounded-lg p-3">
-                    <p className="text-xs text-pink-600 font-semibold mb-1">Level</p>
-                    <p className={`text-xs font-semibold px-2 py-1 rounded ${getDifficultyColor(chapter.difficulty || 'Medium')}`}>
-                      {chapter.difficulty || 'Medium'}
-                    </p>
+                  <div className="text-center">
+                    <p className="text-xs text-gray-600">Level</p>
+                    <span className={`text-xs font-semibold px-2 py-1 rounded ${getDifficultyColor(chapter.difficulty)}`}>
+                      {chapter.difficulty}
+                    </span>
                   </div>
                 </div>
 
                 {chapter.last_score && (
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 mb-4">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-2 mb-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">Previous Score:</span>
-                      <span className="text-lg font-bold text-green-600">{chapter.last_score}%</span>
+                      <span className="text-xs text-gray-700">Previous Score:</span>
+                      <span className="text-sm font-bold text-green-600">{chapter.last_score}%</span>
                     </div>
                   </div>
                 )}
 
-                <button
-                  onClick={() => startTest(chapter)}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 text-white font-bold py-3 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-                >
-                  <Play className="w-5 h-5" />
-                  <span>{chapter.attempted ? 'Practice Again' : 'Start Test'}</span>
-                </button>
+                <AnimatePresence>
+                  {expandedChapters[idx] && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }} 
+                      animate={{ height: 'auto', opacity: 1 }} 
+                      exit={{ height: 0, opacity: 0 }}
+                      className="mb-3"
+                    >
+                      <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                        <Target className="w-3 h-3" />
+                        <span>Test Details:</span>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                        <div className="flex items-center gap-2 text-xs">
+                          <CheckCircle className="w-3 h-3 text-teal-500" />
+                          <span className="text-gray-700">{chapter.total_questions} Multiple Choice Questions</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <CheckCircle className="w-3 h-3 text-teal-500" />
+                          <span className="text-gray-700">NCERT Based Content</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <CheckCircle className="w-3 h-3 text-teal-500" />
+                          <span className="text-gray-700">Instant Results & Analysis</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="space-y-2">
+                  <button 
+                    onClick={() => startTest(chapter)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
+                  >
+                    📚 {chapter.attempted ? 'Practice Again' : 'Start Test'}
+                  </button>
+                </div>
               </div>
-            ))}
+            </motion.div>
+          ))}
+        </div>
+
+        {chapters.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
+            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-xl text-gray-600">No chapters available yet</p>
+            <p className="text-gray-500 mt-2">Chapters will be added soon!</p>
           </div>
         )}
 
-        {/* Analytics Link */}
-        <div className="mt-12 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl p-8 shadow-lg text-white text-center">
-          <h3 className="text-2xl font-bold mb-2">📊 View Your Performance Analytics</h3>
-          <p className="mb-6 opacity-90">Track your progress, identify weak areas, and improve your scores</p>
-          <button
-            onClick={() => navigate('/analytics')}
-            className="bg-white text-cyan-600 font-bold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            View Analytics Dashboard
-          </button>
-        </div>
-      </main>
+        {/* Why Choose Section */}
+        {chapters.length > 0 && (
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 mt-12 border border-gray-700">
+            <h2 className="text-3xl font-bold text-white text-center mb-8">
+              🚀 Why Chapter-wise Practice?
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+                <Target className="w-10 h-10 mb-3" />
+                <h3 className="text-xl font-bold mb-2">Focused Learning</h3>
+                <p className="text-white/90 text-sm">Master one chapter at a time with targeted practice</p>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+                <Zap className="w-10 h-10 mb-3" />
+                <h3 className="text-xl font-bold mb-2">NCERT Aligned</h3>
+                <p className="text-white/90 text-sm">All questions follow latest NCERT curriculum</p>
+              </div>
+
+              <div className="bg-gradient-to-br from-teal-500 to-green-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+                <Trophy className="w-10 h-10 mb-3" />
+                <h3 className="text-xl font-bold mb-2">Track Progress</h3>
+                <p className="text-white/90 text-sm">Monitor your performance chapter by chapter</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <Footer />
     </div>
