@@ -373,9 +373,11 @@ const ChapterTestChapters = () => {
                         <span>Battle</span>
                       </button>
                     </div>
-              </div>
-            </motion.div>
-          ))}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
 
         {chapters.length === 0 && (
