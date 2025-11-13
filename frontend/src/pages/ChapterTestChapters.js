@@ -352,10 +352,11 @@ const ChapterTestChapters = () => {
                   </button>
                   <button 
                     onClick={() => {
-                      // Encode URL parameters properly
-                      const examParam = `Class-${selectedClass}-${formattedSubject}`;
-                      const chapterParam = encodeURIComponent(chapter.chapter_name);
-                      navigate(`/create-room/${examParam}/${chapterParam}`, {
+                      // Format parameters for URL
+                      const examParam = `Class-${selectedClass}`;
+                      const subjectParam = formattedSubject.replace(/\s+/g, '-');
+                      const chapterParam = chapter.chapter_name.replace(/\s+/g, '-');
+                      navigate(`/create-room/${examParam}/${subjectParam}/${chapterParam}`, {
                         state: {
                           isClassBased: true,
                           class_name: `Class ${selectedClass}`,
