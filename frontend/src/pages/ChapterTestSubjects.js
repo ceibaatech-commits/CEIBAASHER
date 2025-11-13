@@ -86,6 +86,66 @@ const ChapterTestSubjects = () => {
         description: 'Improve your Hindi language proficiency'
       }
     ];
+  } else if (selectedClass === '7') {
+    // Class 7 has all subjects including Geography, History, Civics
+    subjects = [
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Master mathematical concepts chapter by chapter'
+      },
+      {
+        name: 'Science',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Physics, Chemistry, and Biology'
+      },
+      {
+        name: 'Geography',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Our Environment'
+      },
+      {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'Tracing Changes Through A Thousand Years'
+      },
+      {
+        name: 'Civics',
+        icon: Globe,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-600',
+        description: 'Social and Political Life - II'
+      },
+      {
+        name: 'English Honeycomb',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'NCERT Honeycomb - English Prose'
+      },
+      {
+        name: 'Hindi Vasant',
+        icon: Languages,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'NCERT Vasant - Hindi Textbook'
+      }
+    ];
   } else if (selectedClass === '8') {
     // Class 8 has all subjects including English and Hindi books
     subjects = [
