@@ -212,25 +212,31 @@ async def create_sheet(sheet: ExamSheet):
                     "success": True,
                     "message": f"Sheet created successfully with {len(questions)} questions imported",
                     "sheet": sheet_data,
-                    "questions_imported": len(questions)
+                    "questions_imported": len(questions),
+                    "sheet_id": sheet_id
                 }
             else:
+                print("No questions found in sheet")
                 return {
                     "success": True,
                     "message": "Sheet created but no questions found. Please check sheet format.",
                     "sheet": sheet_data,
                     "questions_imported": 0,
-                    "warning": "No questions imported. Verify sheet is public and has correct format."
+                    "warning": "No questions imported. Verify sheet is public and has correct format.",
+                    "sheet_id": sheet_id
                 }
                 
         except Exception as import_error:
+            import traceback
             print(f"Error importing questions: {import_error}")
+            print(traceback.format_exc())
             return {
                 "success": True,
-                "message": "Sheet created but questions import failed",
+                "message": f"Sheet created but questions import failed: {str(import_error)}",
                 "sheet": sheet_data,
                 "questions_imported": 0,
-                "error": str(import_error)
+                "error": str(import_error),
+                "sheet_id": sheet_id
             }
         
     except Exception as e:
