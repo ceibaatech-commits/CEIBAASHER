@@ -24,7 +24,8 @@ const SocialFeed = () => {
     post_type: 'general',
     content: '',
     exam_category: '',
-    subject: ''
+    subject: '',
+    room_code: ''
   });
 
   // Fetch feed based on active tab
