@@ -457,6 +457,21 @@ frontend:
         agent: "testing"
         comment: "✅ COMPREHENSIVE TESTING COMPLETE (93.8% success rate - 15/16 tests passed): (1) ✅ Mixed For You Feed API: Returns 5 posts with proper structure, (2) ✅ Trending Score Calculation: All posts have trending_score calculated using correct formula (likes*2 + comments*3 + shares*4) * recency_factor, verified with actual data: [49156.0, 2568.0, 2487.0, 2249.0, 3820.0], (3) ✅ Post Types Variety: Found expected types including battle_victory, quiz_announcement, achievement, (4) ✅ Trending Formula Verification: Manually verified formula calculation for multiple posts with different engagement levels, (5) ✅ Follow/Ceep Integration: Feed properly fetches posts from followed users via ceeps collection. Mixed feed successfully combines following + trending content as designed."
 
+  - task: "Social Feed Battle Post Bug Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/social_feed_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "Bug reported: battle-post endpoint was writing to `db.posts` instead of `db.social_posts`, causing battle results to not appear in social feed"
+      - working: true
+        agent: "testing"
+        comment: "✅ CRITICAL BUG FIX VERIFIED (92.3% success rate - 12/13 tests passed): (1) ✅ Battle Post Creation: POST /api/social/battle-post creates posts successfully for both demo users, (2) ✅ Social Feed Integration: Battle posts appear correctly in For You feed (found 6 battle posts total), (3) ✅ Trending Feed: Battle posts appear in trending feed, (4) ✅ Post Structure: All required fields present (post_type: battle_victory, battle_stats with score/rank, content with emoji), (5) ✅ DATABASE FIX CONFIRMED: New battle posts going to social_posts collection (6 recent), old posts remain in posts collection (10 total), (6) ✅ Post Persistence: Posts retrievable with correct engagement counts (likes=0, comments=0 initially). CONCLUSION: Battle-post endpoint now writes to correct collection, battle results appear in social feed as expected."
+
   - task: "Room Code Sharing in Social Feed"
     implemented: true
     working: false
