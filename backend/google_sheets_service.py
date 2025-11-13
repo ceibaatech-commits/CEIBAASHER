@@ -44,44 +44,57 @@ class GoogleSheetsService:
             csv_data = StringIO(response.text)
             reader = csv.DictReader(csv_data)
             
+            # Log the headers to debug
+            if reader.fieldnames:
+                print(f"📋 CSV Headers found: {reader.fieldnames}")
+            
             all_questions = []
             filtered_questions = []
             
             for idx, row in enumerate(reader):
-                # Parse the row based on your format
-                question_text = row.get('Question', row.get('question', ''))
-                if not question_text or not question_text.strip():
+                # Skip empty rows
+                if not row or all(not str(v).strip() for v in row.values()):
                     continue
                 
-                # Get options
-                option_a = row.get('A', row.get('a', ''))
-                option_b = row.get('B', row.get('b', ''))
-                option_c = row.get('C', row.get('c', ''))
-                option_d = row.get('D', row.get('d', ''))
+                # Try multiple column name variations with whitespace trimming
+                # Create a case-insensitive lookup dict
+                row_lower = {k.strip().lower(): v for k, v in row.items() if k}
                 
-                # Get answer
-                answer = row.get('Answer', row.get('answer', ''))
+                # Parse the row based on your format
+                question_text = (row.get('Question') or row.get('question') or 
+                               row_lower.get('question') or '').strip()
                 
-                # Also try 'Correct Answer' column
+                if not question_text:
+                    print(f"⚠️ Row {idx + 1}: Skipping - no question text found. Row keys: {list(row.keys())}")
+                    continue
+                
+                # Get options - try both exact case and lowercase
+                option_a = (row.get('A') or row.get('a') or row_lower.get('a') or '').strip()
+                option_b = (row.get('B') or row.get('b') or row_lower.get('b') or '').strip()
+                option_c = (row.get('C') or row.get('c') or row_lower.get('c') or '').strip()
+                option_d = (row.get('D') or row.get('d') or row_lower.get('d') or '').strip()
+                
+                # Get answer - try multiple column names
+                answer = (row.get('Answer') or row.get('answer') or 
+                         row.get('Correct Answer') or row.get('correct answer') or
+                         row_lower.get('answer') or row_lower.get('correct answer') or '').strip()
+                
                 if not answer:
-                    answer = row.get('Correct Answer', row.get('correct answer', ''))
+                    print(f"⚠️ Row {idx + 1}: No answer found for question: {question_text[:50]}...")
                 
                 # Convert answer to index (0-3)
                 correct_answer = self._parse_answer(answer)
                 
-                explanation = row.get('Explanation', row.get('explanation', ''))
+                # Get explanation
+                explanation = (row.get('Explanation') or row.get('explanation') or 
+                              row_lower.get('explanation') or '').strip()
                 
                 question_obj = {
                     "id": f"q_{idx + 1}",
-                    "question": question_text.strip(),
-                    "options": [
-                        option_a.strip() if option_a else "",
-                        option_b.strip() if option_b else "",
-                        option_c.strip() if option_c else "",
-                        option_d.strip() if option_d else ""
-                    ],
+                    "question": question_text,
+                    "options": [option_a, option_b, option_c, option_d],
                     "correctAnswer": correct_answer,
-                    "explanation": explanation.strip() if explanation else ""
+                    "explanation": explanation
                 }
                 
                 all_questions.append(question_obj)
@@ -89,8 +102,12 @@ class GoogleSheetsService:
                 # Check if question matches topic filter
                 if topic_filter:
                     # Look for pattern like "(Topic Name):" at start of question
-                    if question_text.strip().lower().startswith(f"({topic_filter.lower()}):"):
+                    if question_text.lower().startswith(f"({topic_filter.lower()}):"):
                         filtered_questions.append(question_obj)
+            
+            print(f"✅ Parsed {len(all_questions)} total questions")
+            if topic_filter:
+                print(f"📌 Filtered to {len(filtered_questions)} questions for topic: {topic_filter}")
             
             # Return filtered questions if filter was used AND matches were found
             # Otherwise return all questions (sheets without topic prefixes)
@@ -100,7 +117,9 @@ class GoogleSheetsService:
                 return all_questions
             
         except Exception as e:
-            print(f"Error fetching from Google Sheets: {e}")
+            import traceback
+            print(f"❌ Error fetching from Google Sheets: {e}")
+            print(traceback.format_exc())
             return []
     
     @staticmethod
