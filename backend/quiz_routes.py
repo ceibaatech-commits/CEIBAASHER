@@ -85,29 +85,33 @@ async def start_quiz(request: QuizStartRequest):
         db = client[DB_NAME]
         
         # Build query using NEW field names that match Admin Sheet Manager
-        # subject parameter = syllabus_topic in database
-        # topic parameter = subject in database
+        # The 'subject' parameter from URL = 'syllabus_topic' in database
+        # The 'topic' parameter from URL = 'subject' in database
         query = {
-            "exam_id": exam,
-            "syllabus_topic": subject,  # Changed from "subject"
-            "subject": topic  # Changed from "topic"
+            "exam_name": exam,  # Changed from "exam_id" to match admin_routes
+            "syllabus_topic": subject,
+            "subject": topic
         }
         
-        print(f"🔍 Querying database for: {query}")
+        print(f"🔍 Querying exam_sheets collection for: {query}")
         
         # If sub_topic provided, try to find specific mapping
         if sub_topic:
             specific_query = {**query, "sub_topic": sub_topic}
             print(f"🔍 Looking for specific sub-topic: {specific_query}")
-            specific_mapping = await db.question_sheets.find_one(specific_query)
+            specific_mapping = await db.exam_sheets.find_one(specific_query)
             sheet_mapping = specific_mapping
         else:
-            sheet_mapping = await db.question_sheets.find_one(query)
+            sheet_mapping = await db.exam_sheets.find_one(query)
         
         if sheet_mapping:
-            print(f"✅ Found sheet mapping: {sheet_mapping.get('sheet_url')}")
+            print(f"✅ Found sheet mapping in exam_sheets collection")
+            print(f"   Sheet link: {sheet_mapping.get('sheet_link')}")
+            print(f"   Questions imported: {sheet_mapping.get('questions_imported')}")
+            print(f"   Question count: {sheet_mapping.get('question_count')}")
         else:
-            print(f"❌ No sheet mapping found for query: {query}")
+            print(f"❌ No sheet mapping found in exam_sheets collection")
+            print(f"   Query used: {query}")
         
         if sheet_mapping:
             try:
