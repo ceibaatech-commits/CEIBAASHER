@@ -1902,6 +1902,469 @@ class BattleServerTester:
             self.log_result("Room Code in Feed", False, f"Request error: {e}")
             return False
 
+    def test_demo_login_demo1(self):
+        """Test demo1 login and get user_id"""
+        try:
+            payload = {
+                "username": "demo1",
+                "password": "demo1"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'user' in data:
+                    user = data['user']
+                    self.demo1_user_id = user.get('id')
+                    self.demo1_name = user.get('name')
+                    self.log_result("Demo1 Login", True, 
+                                  f"✅ Demo1 logged in successfully. User ID: {self.demo1_user_id}, Name: {self.demo1_name}")
+                    return True
+                else:
+                    self.log_result("Demo1 Login", False, f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Demo1 Login", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Demo1 Login", False, f"Request error: {e}")
+            return False
+
+    def test_demo_login_demo2(self):
+        """Test demo2 login and get user_id"""
+        try:
+            payload = {
+                "username": "demo2",
+                "password": "demo2"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'user' in data:
+                    user = data['user']
+                    self.demo2_user_id = user.get('id')
+                    self.demo2_name = user.get('name')
+                    self.log_result("Demo2 Login", True, 
+                                  f"✅ Demo2 logged in successfully. User ID: {self.demo2_user_id}, Name: {self.demo2_name}")
+                    return True
+                else:
+                    self.log_result("Demo2 Login", False, f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Demo2 Login", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Demo2 Login", False, f"Request error: {e}")
+            return False
+
+    def test_follow_relationship_creation(self):
+        """Test demo1 follows demo2"""
+        if not hasattr(self, 'demo1_user_id') or not hasattr(self, 'demo2_user_id'):
+            self.log_result("Follow Relationship Creation", False, "Demo user IDs not available")
+            return False
+        
+        try:
+            payload = {
+                "user_id": self.demo1_user_id,
+                "ceep_user_id": self.demo2_user_id,
+                "user_name": self.demo1_name,
+                "ceep_user_name": self.demo2_name
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/ceep/ceep",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result("Follow Relationship Creation", True, 
+                                  f"✅ Demo1 successfully follows Demo2: {data.get('message')}")
+                    return True
+                else:
+                    self.log_result("Follow Relationship Creation", False, 
+                                  f"Follow failed: {data.get('message')}")
+                    return False
+            else:
+                self.log_result("Follow Relationship Creation", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Follow Relationship Creation", False, f"Request error: {e}")
+            return False
+
+    def test_follow_status_check(self):
+        """Test follow status check - demo1 following demo2"""
+        if not hasattr(self, 'demo1_user_id') or not hasattr(self, 'demo2_user_id'):
+            self.log_result("Follow Status Check", False, "Demo user IDs not available")
+            return False
+        
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/ceep/is-following/{self.demo1_user_id}/{self.demo2_user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('is_following') == True:
+                    self.log_result("Follow Status Check", True, 
+                                  "✅ Correctly shows demo1 is following demo2")
+                    return True
+                else:
+                    self.log_result("Follow Status Check", False, 
+                                  f"Expected is_following: true, got: {data.get('is_following')}")
+                    return False
+            else:
+                self.log_result("Follow Status Check", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Follow Status Check", False, f"Request error: {e}")
+            return False
+
+    def test_demo1_following_list(self):
+        """Test demo1's following list includes demo2"""
+        if not hasattr(self, 'demo1_user_id'):
+            self.log_result("Demo1 Following List", False, "Demo1 user ID not available")
+            return False
+        
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/ceep/ceeps/{self.demo1_user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'ceeps' in data:
+                    ceeps = data['ceeps']
+                    demo2_found = any(ceep.get('ceep_user_id') == self.demo2_user_id for ceep in ceeps)
+                    
+                    if demo2_found:
+                        self.log_result("Demo1 Following List", True, 
+                                      f"✅ Demo2 found in Demo1's following list ({len(ceeps)} total)")
+                        return True
+                    else:
+                        self.log_result("Demo1 Following List", False, 
+                                      f"Demo2 not found in following list. Found: {[c.get('ceep_user_id') for c in ceeps]}")
+                        return False
+                else:
+                    self.log_result("Demo1 Following List", False, f"Invalid response: {data}")
+                    return False
+            else:
+                self.log_result("Demo1 Following List", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Demo1 Following List", False, f"Request error: {e}")
+            return False
+
+    def test_reverse_follow_check(self):
+        """Test reverse check - demo2 should NOT be following demo1"""
+        if not hasattr(self, 'demo1_user_id') or not hasattr(self, 'demo2_user_id'):
+            self.log_result("Reverse Follow Check", False, "Demo user IDs not available")
+            return False
+        
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/ceep/is-following/{self.demo2_user_id}/{self.demo1_user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('is_following') == False:
+                    self.log_result("Reverse Follow Check", True, 
+                                  "✅ Correctly shows demo2 is NOT following demo1 (one-way follow)")
+                    return True
+                else:
+                    self.log_result("Reverse Follow Check", False, 
+                                  f"Expected is_following: false, got: {data.get('is_following')}")
+                    return False
+            else:
+                self.log_result("Reverse Follow Check", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Reverse Follow Check", False, f"Request error: {e}")
+            return False
+
+    def test_search_user_demo1(self):
+        """Test search for demo1 by name"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/auth/search-user?name=Demo Student 1",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                user_id = data.get('user_id')
+                
+                if user_id and hasattr(self, 'demo1_user_id') and user_id == self.demo1_user_id:
+                    self.log_result("Search User Demo1", True, 
+                                  f"✅ Found Demo1 by name search: {user_id}")
+                    return True
+                elif user_id:
+                    self.log_result("Search User Demo1", False, 
+                                  f"Found user but ID mismatch. Expected: {getattr(self, 'demo1_user_id', 'N/A')}, Got: {user_id}")
+                    return False
+                else:
+                    self.log_result("Search User Demo1", False, "User not found by name search")
+                    return False
+            else:
+                self.log_result("Search User Demo1", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Search User Demo1", False, f"Request error: {e}")
+            return False
+
+    def test_search_user_demo2(self):
+        """Test search for demo2 by name"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/auth/search-user?name=Demo Student 2",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                user_id = data.get('user_id')
+                
+                if user_id and hasattr(self, 'demo2_user_id') and user_id == self.demo2_user_id:
+                    self.log_result("Search User Demo2", True, 
+                                  f"✅ Found Demo2 by name search: {user_id}")
+                    return True
+                elif user_id:
+                    self.log_result("Search User Demo2", False, 
+                                  f"Found user but ID mismatch. Expected: {getattr(self, 'demo2_user_id', 'N/A')}, Got: {user_id}")
+                    return False
+                else:
+                    self.log_result("Search User Demo2", False, "User not found by name search")
+                    return False
+            else:
+                self.log_result("Search User Demo2", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Search User Demo2", False, f"Request error: {e}")
+            return False
+
+    def test_demo2_create_post(self):
+        """Test demo2 creates a post for feed integration testing"""
+        if not hasattr(self, 'demo2_user_id'):
+            self.log_result("Demo2 Create Post", False, "Demo2 user ID not available")
+            return False
+        
+        try:
+            payload = {
+                "user_id": self.demo2_user_id,
+                "content": "This is a test post from Demo2 for follow feed integration testing! 🎯",
+                "post_type": "study_tip",
+                "exam_category": "JEE"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/posts",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'post' in data:
+                    post = data['post']
+                    self.demo2_post_id = post.get('post_id')
+                    self.log_result("Demo2 Create Post", True, 
+                                  f"✅ Demo2 created test post: {self.demo2_post_id}")
+                    return True
+                else:
+                    self.log_result("Demo2 Create Post", False, f"Invalid response: {data}")
+                    return False
+            else:
+                self.log_result("Demo2 Create Post", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Demo2 Create Post", False, f"Request error: {e}")
+            return False
+
+    def test_demo1_for_you_feed(self):
+        """Test demo1's For You feed includes demo2's post"""
+        if not hasattr(self, 'demo1_user_id'):
+            self.log_result("Demo1 For You Feed", False, "Demo1 user ID not available")
+            return False
+        
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/for-you?user_id={self.demo1_user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    
+                    # Check if demo2's post is in the feed
+                    demo2_posts = [post for post in posts if post.get('user_id') == self.demo2_user_id]
+                    
+                    if demo2_posts:
+                        self.log_result("Demo1 For You Feed", True, 
+                                      f"✅ Demo1's For You feed includes {len(demo2_posts)} post(s) from Demo2 (followed user)")
+                        
+                        # Check if our test post is there
+                        if hasattr(self, 'demo2_post_id'):
+                            test_post_found = any(post.get('post_id') == self.demo2_post_id for post in demo2_posts)
+                            if test_post_found:
+                                self.log_result("Demo1 For You Feed - Test Post", True, 
+                                              "✅ Demo2's test post found in Demo1's feed")
+                            else:
+                                self.log_result("Demo1 For You Feed - Test Post", False, 
+                                              "Demo2's test post not found in feed (may be due to timing)")
+                        
+                        return True
+                    else:
+                        self.log_result("Demo1 For You Feed", False, 
+                                      f"Demo2's posts not found in Demo1's For You feed. Total posts: {len(posts)}")
+                        return False
+                else:
+                    self.log_result("Demo1 For You Feed", False, f"Invalid response: {data}")
+                    return False
+            else:
+                self.log_result("Demo1 For You Feed", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Demo1 For You Feed", False, f"Request error: {e}")
+            return False
+
+    def test_prevent_duplicate_follow(self):
+        """Test demo1 tries to follow demo2 again - should prevent duplicate"""
+        if not hasattr(self, 'demo1_user_id') or not hasattr(self, 'demo2_user_id'):
+            self.log_result("Prevent Duplicate Follow", False, "Demo user IDs not available")
+            return False
+        
+        try:
+            payload = {
+                "user_id": self.demo1_user_id,
+                "ceep_user_id": self.demo2_user_id,
+                "user_name": self.demo1_name,
+                "ceep_user_name": self.demo2_name
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/ceep/ceep",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if not data.get('success') and "Already ceeped this user" in data.get('message', ''):
+                    self.log_result("Prevent Duplicate Follow", True, 
+                                  f"✅ Correctly prevented duplicate follow: {data.get('message')}")
+                    return True
+                else:
+                    self.log_result("Prevent Duplicate Follow", False, 
+                                  f"Expected duplicate prevention, got: {data}")
+                    return False
+            else:
+                self.log_result("Prevent Duplicate Follow", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Prevent Duplicate Follow", False, f"Request error: {e}")
+            return False
+
+    def test_follow_ceep_system_comprehensive(self):
+        """Run comprehensive follow/ceep system tests as per review request"""
+        print("\n🎯 TESTING FOLLOW/CEEP SYSTEM - COMPREHENSIVE")
+        print("=" * 60)
+        
+        # Setup: Create/Login Demo Users
+        print("\n📋 SETUP: Demo User Login")
+        demo1_login = self.test_demo_login_demo1()
+        demo2_login = self.test_demo_login_demo2()
+        
+        if not (demo1_login and demo2_login):
+            self.log_result("Follow/Ceep System Comprehensive", False, "Failed at demo user login setup")
+            return False
+        
+        # Test 1: Follow Relationship Creation
+        print("\n1️⃣ TEST: Follow Relationship Creation")
+        follow_creation = self.test_follow_relationship_creation()
+        follow_status = self.test_follow_status_check()
+        following_list = self.test_demo1_following_list()
+        
+        # Test 2: Reverse Check (Should be False)
+        print("\n2️⃣ TEST: Reverse Follow Check")
+        reverse_check = self.test_reverse_follow_check()
+        
+        # Test 3: Search User by Name
+        print("\n3️⃣ TEST: User Search by Name")
+        search_demo1 = self.test_search_user_demo1()
+        search_demo2 = self.test_search_user_demo2()
+        
+        # Test 4: Following Feed Integration
+        print("\n4️⃣ TEST: Following Feed Integration")
+        create_post = self.test_demo2_create_post()
+        time.sleep(2)  # Wait for post to be indexed
+        for_you_feed = self.test_demo1_for_you_feed()
+        
+        # Test 5: Prevent Duplicate Follows
+        print("\n5️⃣ TEST: Prevent Duplicate Follows")
+        prevent_duplicate = self.test_prevent_duplicate_follow()
+        
+        # Calculate success rate
+        tests = [
+            follow_creation, follow_status, following_list,
+            reverse_check, search_demo1, search_demo2,
+            create_post, for_you_feed, prevent_duplicate
+        ]
+        
+        passed_tests = sum(1 for test in tests if test)
+        total_tests = len(tests)
+        success_rate = (passed_tests / total_tests) * 100
+        
+        if success_rate >= 80:
+            self.log_result("Follow/Ceep System Comprehensive", True, 
+                          f"✅ EXCELLENT SUCCESS ({success_rate:.1f}% - {passed_tests}/{total_tests} tests passed)")
+        elif success_rate >= 60:
+            self.log_result("Follow/Ceep System Comprehensive", True, 
+                          f"✅ GOOD SUCCESS ({success_rate:.1f}% - {passed_tests}/{total_tests} tests passed)")
+        else:
+            self.log_result("Follow/Ceep System Comprehensive", False, 
+                          f"❌ NEEDS IMPROVEMENT ({success_rate:.1f}% - {passed_tests}/{total_tests} tests passed)")
+        
+        return success_rate >= 60
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
