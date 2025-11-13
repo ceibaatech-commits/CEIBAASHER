@@ -84,22 +84,30 @@ async def start_quiz(request: QuizStartRequest):
         client = AsyncIOMotorClient(MONGO_URL)
         db = client[DB_NAME]
         
-        # Build query - try sub-topic specific first, then fall back to topic
+        # Build query using NEW field names that match Admin Sheet Manager
+        # subject parameter = syllabus_topic in database
+        # topic parameter = subject in database
         query = {
             "exam_id": exam,
-            "subject": subject,
-            "topic": topic
+            "syllabus_topic": subject,  # Changed from "subject"
+            "subject": topic  # Changed from "topic"
         }
+        
+        print(f"🔍 Querying database for: {query}")
         
         # If sub_topic provided, try to find specific mapping
         if sub_topic:
-            specific_mapping = await db.question_sheets.find_one({
-                **query,
-                "sub_topic": sub_topic
-            })
+            specific_query = {**query, "sub_topic": sub_topic}
+            print(f"🔍 Looking for specific sub-topic: {specific_query}")
+            specific_mapping = await db.question_sheets.find_one(specific_query)
             sheet_mapping = specific_mapping
         else:
             sheet_mapping = await db.question_sheets.find_one(query)
+        
+        if sheet_mapping:
+            print(f"✅ Found sheet mapping: {sheet_mapping.get('sheet_url')}")
+        else:
+            print(f"❌ No sheet mapping found for query: {query}")
         
         if sheet_mapping:
             try:
