@@ -330,10 +330,10 @@ CBSE_CHAPTER_DATA = {
         "English Honeydew": [
             {"chapter_number": 1, "chapter_name": "The Best Christmas Present in the World & The Ant and the Cricket", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 2, "chapter_name": "The Tsunami & Geography Lesson", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Glimpses of the Past Macavity The Mystery Cat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Bepin Choudhurys Lapse of Memory & The Last Bargain", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Glimpses of the Past Macavity – The Mystery Cat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Bepin Choudhury's Lapse of Memory & The Last Bargain", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 5, "chapter_name": "The Summit Within & The School Boy", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "This is Jodys Fawn & The Duck and the Kangaroo", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "This is Jody's Fawn & The Duck and the Kangaroo", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 7, "chapter_name": "A Visit to Cambridge & When I Set out for Lyonnesse", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 8, "chapter_name": "A Short Monsoon Diary & On the Grasshopper and Cricket", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
