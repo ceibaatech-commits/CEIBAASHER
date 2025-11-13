@@ -322,31 +322,88 @@ async def create_post(post_data: PostCreate, user_id: str):
     return {"success": True, "post": post_doc}
 
 @router.get("/feed/for-you")
-async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 10):
-    """Get personalized feed based on user's interests"""
-    # Get user's exam focus and subjects
-    user = await db.users.find_one({"id": user_id}, {"_id": 0, "exam_focus": 1, "subjects": 1})
+async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
+    """
+    Get mixed feed with:
+    1. Posts from users you follow (from ceeps collection)
+    2. Trending content based on engagement + recency
+    All activity types: scores, battle results, achievements, room codes
+    """
+    from datetime import timedelta
     
-    # Build query for personalized content
-    query = {}
-    if user and user.get("exam_focus"):
-        query["exam_category"] = {"$in": user.get("exam_focus", [])}
+    mixed_posts = []
     
-    posts = await db.social_posts.find(query, {"_id": 0}) \
-        .sort("created_at", -1) \
-        .skip(skip) \
-        .limit(limit) \
-        .to_list(limit)
+    # PART 1: Get posts from users you're following (ceeps)
+    ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
+    following_ids = [c["ceep_user_id"] for c in ceeps]
+    
+    if following_ids:
+        following_posts = await db.social_posts.find(
+            {"user_id": {"$in": following_ids}},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(limit // 2).to_list(limit // 2)
+        mixed_posts.extend(following_posts)
+    
+    # PART 2: Calculate trending score for all posts and get trending content
+    # Trending score = (likes * 2 + comments * 3 + shares * 4) * recency_factor
+    all_posts = await db.social_posts.find({}, {"_id": 0}).to_list(1000)
+    
+    now = datetime.now(timezone.utc)
+    for post in all_posts:
+        # Calculate engagement score
+        engagement_score = (
+            post.get("likes_count", 0) * 2 + 
+            post.get("comments_count", 0) * 3 + 
+            post.get("shares_count", 0) * 4
+        )
+        
+        # Calculate recency factor (higher for recent posts)
+        post_time = datetime.fromisoformat(post.get("created_at", now.isoformat()))
+        hours_old = (now - post_time).total_seconds() / 3600
+        
+        if hours_old < 24:
+            recency_factor = 2.0  # Posts < 24hrs get 2x boost
+        elif hours_old < 72:
+            recency_factor = 1.5  # Posts < 3 days get 1.5x boost
+        elif hours_old < 168:  # 7 days
+            recency_factor = 1.2
+        else:
+            recency_factor = 1.0
+        
+        # Calculate final trending score
+        trending_score = engagement_score * recency_factor
+        post["trending_score"] = trending_score
+        
+        # Update trending score in database for future use
+        await db.social_posts.update_one(
+            {"id": post["id"]},
+            {"$set": {"trending_score": trending_score}}
+        )
+    
+    # Sort by trending score and get top posts
+    trending_posts = sorted(all_posts, key=lambda x: x.get("trending_score", 0), reverse=True)[:limit // 2]
+    
+    # Add trending posts that aren't already in mixed_posts
+    existing_post_ids = {p["id"] for p in mixed_posts}
+    for post in trending_posts:
+        if post["id"] not in existing_post_ids:
+            mixed_posts.append(post)
+    
+    # Sort mixed feed by created_at (most recent first)
+    mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    # Apply pagination
+    paginated_posts = mixed_posts[skip:skip + limit]
     
     # Enrich with like status
-    for post in posts:
+    for post in paginated_posts:
         liked = await db.post_likes.find_one({
             "user_id": user_id,
             "post_id": post["id"]
         })
         post["liked_by_user"] = liked is not None
     
-    return {"success": True, "posts": posts, "count": len(posts)}
+    return {"success": True, "posts": paginated_posts, "count": len(paginated_posts)}
 
 @router.get("/feed/trending")
 async def get_trending_feed(skip: int = 0, limit: int = 10):
