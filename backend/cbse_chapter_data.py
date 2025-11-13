@@ -227,6 +227,21 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 6, "chapter_name": "Confronting Marginalisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "Public Facilities", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 8, "chapter_name": "Law and Social Justice", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        ],
+        "Hindi": [
+            {"chapter_number": 1, "chapter_name": "Laakh Ki Chudiyan", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Bus Ki Yatra", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Diwanon Ki Hasti", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Bhagwan Ke Dakiye", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Kya Nirash Hua Jaye", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Yah Sabse Kathin Samay Nahi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Kabir Ki Saakhiyan", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Sudama Charit", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Jahan Pahiya Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Akshari Lota", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "Surdas Ke Pad", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Paani Ki Kahani", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Baaz Aur Saap", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ]
     }
 }
