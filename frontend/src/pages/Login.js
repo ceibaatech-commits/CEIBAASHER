@@ -62,61 +62,18 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center mx-auto mb-6">
-              <svg width="240" height="80" viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="loginMultiColorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style={{ stopColor: '#3b82f6', stopOpacity: 1 }} />
-                    <stop offset="20%" style={{ stopColor: '#8b5cf6', stopOpacity: 1 }} />
-                    <stop offset="40%" style={{ stopColor: '#d946ef', stopOpacity: 1 }} />
-                    <stop offset="60%" style={{ stopColor: '#f97316', stopOpacity: 1 }} />
-                    <stop offset="80%" style={{ stopColor: '#facc15', stopOpacity: 1 }} />
-                    <stop offset="100%" style={{ stopColor: '#3b82f6', stopOpacity: 1 }} />
-                  </linearGradient>
-                  <linearGradient id="loginGlossEffect" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.4 }} />
-                    <stop offset="50%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
-                    <stop offset="100%" style={{ stopColor: '#000000', stopOpacity: 0.1 }} />
-                  </linearGradient>
-                </defs>
-                <text
-                  x="140"
-                  y="55"
-                  fontFamily="Arial, Helvetica, sans-serif"
-                  fontSize="60"
-                  fontWeight="900"
-                  textAnchor="middle"
-                  fill="url(#loginMultiColorGradient)"
-                  style={{ letterSpacing: '2px' }}
-                >
+            <div className="flex flex-col items-center justify-center mx-auto mb-6">
+              <img 
+                src="/ceibaa-logo.png" 
+                alt="Ceibaa Logo" 
+                className="h-24 w-auto object-contain mb-3"
+              />
+              <div className="text-center">
+                <h2 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-1">
                   Ceibaa
-                </text>
-                <text
-                  x="140"
-                  y="55"
-                  fontFamily="Arial, Helvetica, sans-serif"
-                  fontSize="60"
-                  fontWeight="900"
-                  textAnchor="middle"
-                  fill="url(#loginGlossEffect)"
-                  opacity="0.5"
-                  style={{ letterSpacing: '2px', mixBlendMode: 'overlay' }}
-                >
-                  Ceibaa
-                </text>
-                <text
-                  x="140"
-                  y="78"
-                  fontFamily="system-ui, -apple-system, sans-serif"
-                  fontSize="12"
-                  fontWeight="400"
-                  textAnchor="middle"
-                  fill="#9ca3af"
-                  style={{ letterSpacing: '2px' }}
-                >
-                  Mind Vs Mind
-                </text>
-              </svg>
+                </h2>
+                <p className="text-sm text-gray-500 font-semibold tracking-wider">Mind Vs Mind</p>
+              </div>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Ceibaa</h1>
             <p className="text-gray-600">Sign in to join the battle arena</p>
