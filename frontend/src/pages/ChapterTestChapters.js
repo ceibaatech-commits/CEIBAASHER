@@ -336,8 +336,22 @@ const ChapterTestChapters = () => {
                     onClick={() => startTest(chapter)}
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
                   >
-                    📚 {chapter.attempted ? 'Practice Again' : 'Start Test'}
+                    📚 Solo Practice
                   </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button 
+                      onClick={() => navigate(`/create-room/CBSE-Class-${selectedClass}/${formattedSubject}/${chapter.chapter_name}`)}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all"
+                    >
+                      🎯 Room
+                    </button>
+                    <button 
+                      onClick={() => navigate(`/live-battle-1v1/CBSE-Class-${selectedClass}/${formattedSubject}/${chapter.chapter_name}`)}
+                      className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all"
+                    >
+                      ⚔️ Battle
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
