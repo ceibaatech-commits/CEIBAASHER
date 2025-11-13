@@ -7,6 +7,32 @@ import Footer from '../components/Footer';
 const ChapterTestHome = () => {
   const navigate = useNavigate();
 
+  // Check auth state
+  const [user, setUser] = React.useState(null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('ceibaa_user');
+    
+    if (token && storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
+    setUser(null);
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
   const classes = [
     { class: 6, color: 'from-blue-500 to-blue-600', icon: '📚' },
     { class: 7, color: 'from-purple-500 to-purple-600', icon: '📖' },
