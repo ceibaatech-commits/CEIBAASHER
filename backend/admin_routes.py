@@ -70,7 +70,7 @@ async def search_users(query: str, limit: int = 20):
             ]
         }
         
-        users = await db.users.find(search_filter, {"_id": 0}).limit(limit).to_list(limit)
+        users = await db.users.find(search_filter, {"_id": 0, "password": 0, "token": 0, "secret": 0}).limit(limit).to_list(limit)
         
         return {
             "success": True,
