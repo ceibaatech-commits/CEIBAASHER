@@ -81,6 +81,127 @@ async def search_users(query: str, limit: int = 20):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error searching users: {str(e)}")
 
+
+# ==================== EXAM SHEET MANAGEMENT ====================
+
+class ExamSheet(BaseModel):
+    type: str  # 'exam' or 'class'
+    # For exam type
+    exam_name: Optional[str] = None
+    syllabus_topic: Optional[str] = None
+    subject: Optional[str] = None
+    sub_topic: Optional[str] = None
+    sub_sub_topic: Optional[str] = None
+    # For class type
+    class_name: Optional[str] = None
+    chapter: Optional[str] = None
+    # Common
+    sheet_link: str
+
+@router.get("/admin/sheets")
+async def get_all_sheets():
+    """
+    Get all exam sheets
+    """
+    try:
+        sheets = await db.exam_sheets.find({}, {"_id": 0}).to_list(1000)
+        return {
+            "success": True,
+            "sheets": sheets,
+            "count": len(sheets)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching sheets: {str(e)}")
+
+@router.post("/admin/sheets")
+async def create_sheet(sheet: ExamSheet):
+    """
+    Create a new exam sheet entry
+    """
+    try:
+        sheet_data = {
+            "id": str(uuid.uuid4()),
+            "type": sheet.type,
+            "sheet_link": sheet.sheet_link,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Add exam-specific fields
+        if sheet.type == "exam":
+            sheet_data.update({
+                "exam_name": sheet.exam_name,
+                "syllabus_topic": sheet.syllabus_topic,
+                "subject": sheet.subject,
+                "sub_topic": sheet.sub_topic,
+                "sub_sub_topic": sheet.sub_sub_topic
+            })
+        # Add class-specific fields
+        elif sheet.type == "class":
+            sheet_data.update({
+                "class_name": sheet.class_name,
+                "subject": sheet.subject,
+                "chapter": sheet.chapter
+            })
+        
+        await db.exam_sheets.insert_one(sheet_data)
+        
+        return {
+            "success": True,
+            "message": "Sheet created successfully",
+            "sheet": sheet_data
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating sheet: {str(e)}")
+
+@router.delete("/admin/sheets/{sheet_id}")
+async def delete_sheet(sheet_id: str):
+    """
+    Delete an exam sheet
+    """
+    try:
+        result = await db.exam_sheets.delete_one({"id": sheet_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Sheet not found")
+        
+        return {
+            "success": True,
+            "message": "Sheet deleted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting sheet: {str(e)}")
+
+@router.get("/admin/sheets/search")
+async def search_sheets(query: str):
+    """
+    Search sheets by exam name, class, subject, etc.
+    """
+    try:
+        search_filter = {
+            "$or": [
+                {"exam_name": {"$regex": query, "$options": "i"}},
+                {"class_name": {"$regex": query, "$options": "i"}},
+                {"subject": {"$regex": query, "$options": "i"}},
+                {"syllabus_topic": {"$regex": query, "$options": "i"}},
+                {"chapter": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        
+        sheets = await db.exam_sheets.find(search_filter, {"_id": 0}).to_list(100)
+        
+        return {
+            "success": True,
+            "sheets": sheets,
+            "count": len(sheets)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error searching sheets: {str(e)}")
+
 @router.get("/admin/users/{user_id}")
 async def get_user_details(user_id: str):
     """
