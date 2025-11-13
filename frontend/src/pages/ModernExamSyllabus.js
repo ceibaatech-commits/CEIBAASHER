@@ -74,8 +74,9 @@ const ModernExamSyllabus = () => {
     );
   }
 
-  const filteredTopics = selectedSubject === 'all' ? allTopics : allTopics.filter(t => t.subject === selectedSubject);
-  const subjects = Object.keys(examData.subjects || {});
+  const filteredTopics = selectedSubject === 'all' ? allTopics : allTopics.filter(t => t.syllabus_topic === selectedSubject);
+  // Extract unique syllabus topics from all topics
+  const subjects = [...new Set(allTopics.map(t => t.syllabus_topic))];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
