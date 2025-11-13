@@ -1643,7 +1643,7 @@ class BattleServerTester:
                                       f"✅ Valid likes count: {count}")
                         
                         # Verify against post_likes collection
-                        if self.db:
+                        if self.db is not None:
                             try:
                                 actual_count = self.db.post_likes.count_documents({})
                                 if actual_count == count:
