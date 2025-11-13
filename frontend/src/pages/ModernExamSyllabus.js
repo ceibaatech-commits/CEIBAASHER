@@ -360,7 +360,7 @@ const ModernExamSyllabus = () => {
                 </AnimatePresence>
 
                 <div className="space-y-2">
-                  <button onClick={() => navigate(`/topic-quiz/${examId}/${topic.subject}/${topic.topic}`)}
+                  <button onClick={() => navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all">
                     📚 Solo Practice
                   </button>
