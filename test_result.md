@@ -547,6 +547,21 @@ frontend:
         agent: "testing"
         comment: "✅ EXAM SHEET MANAGER TESTING COMPLETE (90% success rate - 9/10 tests passed): ✅ ALL CRITICAL SUCCESS CRITERIA MET: (1) Add Exam-based Sheet: POST /api/admin/sheets successfully creates exam sheets with proper structure (exam_name, syllabus_topic, subject, sub_topic, sub_sub_topic) ✅, (2) Add Class-based Sheet: POST /api/admin/sheets successfully creates class sheets with proper structure (class_name, subject, chapter) ✅, (3) Fetch All Sheets: GET /api/admin/sheets returns list of sheets with proper structure and question_count field ✅, (4) Database Verification: Sheets properly saved to exam_sheets collection with UUID id fields (not ObjectId) ✅, (5) NO 500 ERRORS: All requests return 200 OK status ✅, (6) NO ObjectId Serialization Errors: Response is valid JSON without serialization issues ✅, (7) Response Structure: All required fields present with correct data types ✅, (8) Google Sheets Integration: Questions import attempted (0 questions from test sheet as expected) ✅, (9) Success Messages: Clear success messages returned ✅. Minor: One test detected _id reference in response text but functionality working correctly. CONCLUSION: Exam Sheet Manager add sheet functionality is FULLY OPERATIONAL and the ObjectId serialization fix is working correctly."
 
+  - task: "Google Sheets 8-Column Format Parser Fix"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/google_sheets_service.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Sheet import failing with error 'Failed to parse questions from sheet. Check format.' User's new sheet format has 8 columns: QUESTION NUMBER | Question | A | B | C | D | Answer | Explanation (added QUESTION NUMBER column at the beginning)"
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed Google Sheets parsing logic to handle 8-column format. Changes made: (1) Added CSV header logging to debug column names, (2) Implemented case-insensitive column lookup with whitespace trimming, (3) Created lowercase lookup dictionary for flexible column name matching, (4) Enhanced error logging to show which rows are skipped and why, (5) Added better handling for empty rows, (6) Multiple column name variations (Answer vs Correct Answer, etc), (7) Full traceback on parsing errors. The extra QUESTION NUMBER column is now ignored gracefully. Backend restarted successfully."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
