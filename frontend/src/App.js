@@ -36,6 +36,11 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import RRB_NTPC from "@/pages/RRB_NTPC";
 import AFCAT from "@/pages/AFCAT";
 
+// Chapter Test Pages
+import ChapterTestHome from "@/pages/ChapterTestHome";
+import ChapterTestSubjects from "@/pages/ChapterTestSubjects";
+import ChapterTestChapters from "@/pages/ChapterTestChapters";
+
 function App() {
   return (
     <AuthProvider>
