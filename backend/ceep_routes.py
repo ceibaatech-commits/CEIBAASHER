@@ -123,18 +123,29 @@ async def unceep_user(request: UnceepRequest):
 
 
 @router.get("/ceeps/{user_id}")
-async def get_user_ceeps(user_id: str):
+async def get_ceeps(user_id: str):
     """
-    Get list of users this user is ceeping
+    Get all users that a user is ceeping (following)
     """
-    try:
-        ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0}).to_list(length=None)
-        return {
-            "success": True,
-            "ceeps": ceeps
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching ceeps: {str(e)}")
+    ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    return {
+        "success": True,
+        "ceeps": ceeps,
+        "count": len(ceeps)
+    }
+
+@router.get("/is-following/{user_id}/{target_user_id}")
+async def check_is_following(user_id: str, target_user_id: str):
+    """
+    Check if user_id is following target_user_id
+    """
+    existing = await db.ceeps.find_one({
+        "user_id": user_id,
+        "ceep_user_id": target_user_id
+    })
+    return {
+        "is_following": existing is not None
+    }
 
 
 @router.get("/ceepers/{user_id}")
