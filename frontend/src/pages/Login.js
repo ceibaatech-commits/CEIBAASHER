@@ -36,8 +36,7 @@ const Login = () => {
       const userData = response.data.user;
       
       // Update AuthContext with user data
-      localStorage.setItem('ceibaa_user', JSON.stringify(userData));
-      updateUser(userData);
+      setUserData(userData);
 
       // Navigate back to where user came from, or to social feed by default
       const from = location.state?.from || '/social-feed';
