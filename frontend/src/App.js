@@ -28,6 +28,10 @@ import BattleResults from "@/pages/BattleResults";
 // 1v1 Live Battle with video (Original matchmaking)
 import LiveBattleMode from "@/pages/LiveBattleMode";
 
+// Admin Panel
+import AdminLogin from "@/pages/AdminLogin";
+import AdminDashboard from "@/pages/AdminDashboard";
+
 function App() {
   return (
     <AuthProvider>
