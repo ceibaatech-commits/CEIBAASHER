@@ -30,21 +30,17 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 10, "chapter_name": "Fun with Magnets", "total_questions": 40, "difficulty": "Easy", "duration": 25},
             {"chapter_number": 11, "chapter_name": "Air Around Us", "total_questions": 40, "difficulty": "Easy", "duration": 25}
         ],
-        "Social Science": [
-            {"chapter_number": 1, "chapter_name": "Locating Places on the Earth", "total_questions": 40, "difficulty": "Easy", "duration": 25},
-            {"chapter_number": 2, "chapter_name": "Oceans and Continents", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Landforms and Life", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Timeline and Sources of History", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "India, That Is Bharat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "The Beginnings of Indian Civilisation", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "India's Cultural Roots", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Unity in Diversity, or Many in the One", "total_questions": 40, "difficulty": "Easy", "duration": 25},
-            {"chapter_number": 9, "chapter_name": "Family and Community", "total_questions": 40, "difficulty": "Easy", "duration": 25},
-            {"chapter_number": 10, "chapter_name": "Grassroots Democracy – Part 1: Governance", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "Grassroots Democracy – Part 2: Local Government in Rural Areas", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 12, "chapter_name": "Grassroots Democracy – Part 3: Local Government in Urban Areas", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 13, "chapter_name": "The Value of Work", "total_questions": 40, "difficulty": "Easy", "duration": 25},
-            {"chapter_number": 14, "chapter_name": "Economic Activities Around Us", "total_questions": 45, "difficulty": "Medium", "duration": 30}
+        "History": [
+            {"chapter_number": 1, "chapter_name": "What, Where, How and When?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "From Hunting – Gathering to Growing Food", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "In the Earliest Cities", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "What Books and Burials Tell Us", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Kingdoms, Kings and an Early Republic", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "New Questions and Ideas", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "From a Kingdom to an Empire", "total_questions": 45, "difficulty": "Hard", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Villages, Towns and Trade", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "New Empires and Kingdoms", "total_questions": 45, "difficulty": "Hard", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Buildings, Paintings and Books", "total_questions": 40, "difficulty": "Medium", "duration": 30}
         ],
         "Poorvi": [
             # Unit 1: Fables and Folk Tales
