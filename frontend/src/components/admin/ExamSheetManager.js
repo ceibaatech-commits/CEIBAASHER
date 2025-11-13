@@ -1166,14 +1166,33 @@ const ExamSheetManager = () => {
                           <option value="History">History</option>
                           <option value="Civics">Civics</option>
                         </>
+                      ) : classForm.class_name === 'Class 10' ? (
+                        <>
+                          <option value="Economics">Economics</option>
+                          <option value="History">History</option>
+                          <option value="Civics">Civics</option>
+                          <option value="Geography">Geography</option>
+                          <option value="English First Flight Prose">English First Flight Prose</option>
+                          <option value="English First Flight Poems">English First Flight Poems</option>
+                          <option value="English Footprints Without Feet">English Footprints Without Feet</option>
+                          <option value="Hindi Kshitij">Hindi Kshitij</option>
+                          <option value="Hindi Kritika">Hindi Kritika</option>
+                          <option value="Hindi Sparsh">Hindi Sparsh</option>
+                        </>
                       ) : (
                         <>
                           <option value="Social Science">Social Science</option>
+                          <option value="English">English</option>
+                          <option value="Hindi">Hindi</option>
                         </>
                       )}
-                      <option value="English">English</option>
-                      <option value="Hindi">Hindi</option>
                       {classForm.class_name === 'Class 6' && <option value="Poorvi">Poorvi</option>}
+                      {classForm.class_name === 'Class 8' && (
+                        <>
+                          <option value="English">English</option>
+                          <option value="Hindi">Hindi</option>
+                        </>
+                      )}
                     </select>
                   </div>
 
