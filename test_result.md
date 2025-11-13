@@ -1499,3 +1499,55 @@ agent_communication:
         agent: "main"
         comment: "Completed implementation of passage-based quiz UI. Created PassageQuizLayout.js component with split-screen design: passage on left (sticky), questions on right. Added conditional logic in SoloPractice.js to detect questions with passage field and render PassageQuizLayout instead of default layout. Features: responsive grid layout, auto-detect passage questions, same answer selection logic, progress tracking, timer display, previous/next navigation. Ready for testing with quiz containing passage-based questions."
 
+
+  - agent: "main"
+    message: |
+      ✅ PASSAGE-BASED QUIZ SPLIT-SCREEN UI IMPLEMENTATION COMPLETE
+      
+      **Feature Request**: User requested split-screen UI for passage-based reading comprehension questions, where the passage remains static on the left while questions appear on the right.
+      
+      **Implementation Summary**:
+      
+      1. **Backend - Passage Parsing** (/app/backend/google_sheets_service.py):
+         - ✅ Already implemented in previous session
+         - Detects "passage", "para", "paragraph", "text", "readingpassage" columns
+         - Case-insensitive matching with whitespace trimming
+         - Adds passage field to question object if present
+      
+      2. **Frontend - PassageQuizLayout Component** (/app/frontend/src/components/PassageQuizLayout.js):
+         - ✅ Complete split-screen component created
+         - Left side: Sticky passage display with prose styling
+         - Right side: Question card with options, navigation buttons
+         - Responsive: Side-by-side on desktop (lg:grid-cols-2), stacked on mobile
+         - Features: Progress bar, timer, option highlighting, explanation display
+         - Professional UI with gradients and proper spacing
+      
+      3. **Frontend - Conditional Rendering** (/app/frontend/src/pages/SoloPractice.js):
+         - ✅ Added detection logic for passage-based questions
+         - Checks if currentQuestion.passage exists and is non-empty
+         - Renders PassageQuizLayout for passage questions
+         - Falls back to default layout for regular questions
+         - Maintains all existing functionality (timer, answer tracking, navigation)
+      
+      **Technical Details**:
+      ```javascript
+      // Detection logic in SoloPractice.js
+      const hasPassage = currentQuestion?.passage && currentQuestion.passage.trim().length > 0;
+      
+      if (hasPassage) {
+        return <PassageQuizLayout passage={...} currentQuestion={...} />;
+      }
+      
+      // Default layout for non-passage questions
+      return <div>...</div>;
+      ```
+      
+      **Auto-Detection**: The system automatically detects passage-based questions from Google Sheets data and renders the appropriate UI - no configuration needed.
+      
+      **Status**: Implementation complete. Services running. Ready for testing with a quiz containing passage-based questions.
+      
+      **Next Steps**: 
+      1. Create a test Google Sheet with passage column
+      2. Import sheet via Admin Panel
+      3. Start quiz and verify split-screen layout appears for passage questions
+      4. Test navigation, timer, and answer submission
