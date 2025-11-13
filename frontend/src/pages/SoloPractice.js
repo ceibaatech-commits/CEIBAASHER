@@ -322,6 +322,34 @@ const SoloPractice = () => {
               </button>
             </div>
 
+            {/* Breadcrumb for class-based */}
+            {isClassBased && classBasedData && (
+              <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+                <button 
+                  onClick={() => navigate('/chapter-tests')} 
+                  className="hover:text-cyan-600 font-semibold"
+                >
+                  Home
+                </button>
+                <span>/</span>
+                <button 
+                  onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`)} 
+                  className="hover:text-cyan-600 font-semibold"
+                >
+                  {classBasedData.class_name}
+                </button>
+                <span>/</span>
+                <button 
+                  onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`)} 
+                  className="hover:text-cyan-600 font-semibold"
+                >
+                  {classBasedData.subject}
+                </button>
+                <span>/</span>
+                <span className="text-gray-900 font-semibold">{classBasedData.chapter}</span>
+              </div>
+            )}
+
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Setup Your Quiz</h1>
               <p className="text-gray-600">
