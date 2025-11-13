@@ -7,7 +7,12 @@ import Footer from '../components/Footer';
 const ChapterTestSubjects = () => {
   const navigate = useNavigate();
   const { classNumber } = useParams();
-  const selectedClass = classNumber?.replace('class-', '');
+  const location = window.location;
+  
+  // Extract class number from URL path (e.g., /chapter-tests/class-6)
+  const pathParts = location.pathname.split('/');
+  const classIndex = pathParts.findIndex(part => part.startsWith('class-'));
+  const selectedClass = classIndex >= 0 ? pathParts[classIndex].replace('class-', '') : (classNumber?.replace('class-', '') || '');
 
   // Check auth state
   const [user, setUser] = React.useState(null);
