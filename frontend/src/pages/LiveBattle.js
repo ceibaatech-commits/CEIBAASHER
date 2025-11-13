@@ -978,10 +978,18 @@ const LiveBattle = () => {
                           <>
                             <button
                               onClick={() => handleFollow(player)}
-                              className="p-1.5 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
-                              title="Follow this player"
+                              className={`p-1.5 rounded-lg transition-colors ${
+                                followingStatus[player.name]
+                                  ? 'bg-green-100 hover:bg-green-200'
+                                  : 'bg-blue-100 hover:bg-blue-200'
+                              }`}
+                              title={followingStatus[player.name] ? "Already following" : "Follow this player"}
                             >
-                              <span className="text-sm font-bold text-blue-600">Follow</span>
+                              <span className={`text-sm font-bold ${
+                                followingStatus[player.name] ? 'text-green-600' : 'text-blue-600'
+                              }`}>
+                                {followingStatus[player.name] ? 'Following' : 'Follow'}
+                              </span>
                             </button>
                             <button
                               onClick={() => {
