@@ -655,6 +655,26 @@ const ExamSheetManager = () => {
             '6. The Last Leaf',
             '7. A House is Not a Home',
             '8. The Beggar'
+          ],
+          'Civics': [
+            '1. What is Democracy? Why Is Democracy?',
+            '2. Constitutional Design',
+            '3. Electoral Politics',
+            '4. Working of Institutions',
+            '5. Democratic Rights'
+          ],
+          'Economics': [
+            '1. The Story of Village Palampur',
+            '2. People as Resource',
+            '3. Poverty as a Challenge',
+            '4. Food Security in India'
+          ],
+          'History': [
+            '1. The French Revolution',
+            '2. Socialism in Europe and the Russian Revolution',
+            '3. Nazism and the Rise of Hitler',
+            '4. Forest Society and Colonialism',
+            '5. Pastoralists in the Modern World'
           ]
         },
         'Class 10': {
