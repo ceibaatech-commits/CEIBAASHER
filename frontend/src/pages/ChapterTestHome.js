@@ -128,17 +128,6 @@ const ChapterTestHome = () => {
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
               
-              {/* Class 6 Sticker */}
-              {item.class === 6 && (
-                <div className="absolute -top-2 -right-2 z-20 transform rotate-12 group-hover:rotate-0 transition-transform duration-300">
-                  <img 
-                    src="https://customer-assets.emergentagent.com/job_exam-practice-app-1/artifacts/7k5600su_Gemini_Generated_Image_bj70lxbj70lxbj70%202.png"
-                    alt="Class 6 Sticker"
-                    className="w-20 h-20 object-contain drop-shadow-lg"
-                  />
-                </div>
-              )}
-              
               <div className="relative z-10">
                 <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
