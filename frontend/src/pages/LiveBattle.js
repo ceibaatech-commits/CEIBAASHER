@@ -13,6 +13,7 @@ const LiveBattle = () => {
   const { pin } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const { playerName, isHost, questions, roomInfo, examId, subject, topic, autoJoin } = location.state || {};
   
   const [socket, setSocket] = useState(null);
