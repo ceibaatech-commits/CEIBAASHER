@@ -531,15 +531,46 @@ const ExamSheetManager = () => {
             'Prose'
           ],
           'Hindi': [
-            'व्याकरण',
-            'अपठित गद्यांश',
-            'अपठित काव्यांश',
-            'पत्र लेखन',
-            'निबंध लेखन',
-            'कहानी लेखन',
-            'संवाद लेखन',
-            'कविता',
-            'गद्य पाठ'
+            '1. Laakh Ki Chudiyan',
+            '2. Bus Ki Yatra',
+            '3. Diwanon Ki Hasti',
+            '4. Bhagwan Ke Dakiye',
+            '5. Kya Nirash Hua Jaye',
+            '6. Yah Sabse Kathin Samay Nahi',
+            '7. Kabir Ki Saakhiyan',
+            '8. Sudama Charit',
+            '9. Jahan Pahiya Hai',
+            '10. Akshari Lota',
+            '11. Surdas Ke Pad',
+            '12. Paani Ki Kahani',
+            '13. Baaz Aur Saap'
+          ],
+          'Geography': [
+            '1. Resources',
+            '2. Land, Soil, Water, Natural Vegetation and Wildlife Resources',
+            '3. Agriculture',
+            '4. Industries',
+            '5. Human Resources'
+          ],
+          'History': [
+            '1. Introduction: How, When and Where',
+            '2. Trade to Territory',
+            '3. Ruling The Countryside',
+            '4. Tribals, Dikus, and the Vision of a Golden Age',
+            '5. When People Revolt 1857 and After',
+            '6. Civilising the Native Educating the Nation',
+            '7. Women Caste and Reform',
+            '8. The Making of National Movement: 1870s–1947'
+          ],
+          'Civics': [
+            '1. The Indian Constitution',
+            '2. Understanding Secularism',
+            '3. Parliament and The Making of Laws',
+            '4. Judiciary',
+            '5. Understanding Marginalisation',
+            '6. Confronting Marginalisation',
+            '7. Public Facilities',
+            '8. Law and Social Justice'
           ]
         },
         'Class 9': {
