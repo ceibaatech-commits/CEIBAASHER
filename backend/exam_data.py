@@ -1683,83 +1683,71 @@ EXAM_DATA = {
             "General Awareness": {
                 "subjects": {
                     "Current Affairs": {
-                        "sub_topics": ["National Events", "International Events", "Awards", "Sports"],
+                        "sub_topics": ["National News", "International News", "Economy News", "Sports News"],
                         "questions": 50
                     },
-                    "Indian History": {
-                        "sub_topics": ["Ancient History", "Medieval History", "Modern History"],
+                    "Static GK": {
+                        "sub_topics": ["Books and Authors", "Awards", "Sports", "Capitals", "Important Days"],
                         "questions": 50
                     },
-                    "Indian Geography": {
-                        "sub_topics": ["Physical Geography", "Economic Geography", "Social Geography"],
+                    "Banking Awareness": {
+                        "sub_topics": ["Banking Terms", "RBI Functions", "Monetary Policy", "Banking News"],
                         "questions": 50
                     },
-                    "Indian Polity": {
-                        "sub_topics": ["Constitution", "Governance", "Political System"],
-                        "questions": 50
-                    },
-                    "General Science": {
-                        "sub_topics": ["Physics", "Chemistry", "Biology"],
+                    "Economics": {
+                        "sub_topics": ["Indian Economy", "Economic Terms", "Budget", "GDP"],
                         "questions": 50
                     }
                 }
             },
             "Mathematics": {
                 "subjects": {
-                    "Number System": {
-                        "sub_topics": ["HCF & LCM", "Divisibility", "Fractions & Decimals"],
-                        "questions": 35
-                    },
-                    "Percentage": {
-                        "sub_topics": ["Basic Percentage", "Profit & Loss", "Discount"],
-                        "questions": 35
-                    },
-                    "Time and Work": {
-                        "sub_topics": ["Work Efficiency", "Pipes & Cisterns"],
-                        "questions": 30
-                    },
-                    "Time and Distance": {
-                        "sub_topics": ["Speed & Distance", "Trains", "Boats & Streams"],
-                        "questions": 30
-                    },
                     "Algebra": {
                         "sub_topics": ["Linear Equations", "Quadratic Equations"],
+                        "questions": 35
+                    },
+                    "Calculus": {
+                        "sub_topics": ["Differentiation", "Integration", "Limits"],
+                        "questions": 35
+                    },
+                    "Coordinate Geometry": {
+                        "sub_topics": ["Lines", "Circles", "Parabola"],
                         "questions": 30
                     },
-                    "Geometry": {
-                        "sub_topics": ["Lines & Angles", "Triangles", "Circles"],
+                    "Trigonometry": {
+                        "sub_topics": ["Trigonometric Ratios", "Identities", "Heights and Distances"],
                         "questions": 30
                     },
-                    "Mensuration": {
-                        "sub_topics": ["Area", "Volume", "Surface Area"],
+                    "Statistics": {
+                        "sub_topics": ["Mean", "Median", "Mode", "Standard Deviation"],
+                        "questions": 30
+                    },
+                    "Probability": {
+                        "sub_topics": ["Basic Probability", "Conditional Probability", "Bayes Theorem"],
+                        "questions": 30
+                    },
+                    "Vectors": {
+                        "sub_topics": ["Vector Operations", "Dot Product", "Cross Product"],
+                        "questions": 30
+                    },
+                    "Differential Equations": {
+                        "sub_topics": ["First Order", "Second Order", "Linear Equations"],
                         "questions": 30
                     }
                 }
             },
-            "General Intelligence & Reasoning": {
+            "General Intelligence": {
                 "subjects": {
-                    "Analogies": {
-                        "sub_topics": ["Letter Analogies", "Number Analogies", "Word Analogies"],
+                    "Verbal Reasoning": {
+                        "sub_topics": ["Analogies", "Classification", "Series", "Coding-Decoding", "Blood Relations", "Direction Sense"],
                         "questions": 35
                     },
-                    "Coding-Decoding": {
-                        "sub_topics": ["Letter Coding", "Number Coding", "Substitution"],
+                    "Non-Verbal Reasoning": {
+                        "sub_topics": ["Pattern Recognition", "Figure Series", "Mirror Images", "Paper Folding"],
                         "questions": 30
                     },
-                    "Series": {
-                        "sub_topics": ["Number Series", "Letter Series", "Mixed Series"],
-                        "questions": 30
-                    },
-                    "Puzzles": {
-                        "sub_topics": ["Seating Arrangement", "Blood Relations", "Direction Sense"],
-                        "questions": 35
-                    },
-                    "Syllogism": {
-                        "sub_topics": ["Logical Deductions", "Venn Diagrams"],
-                        "questions": 25
-                    },
-                    "Data Interpretation": {
-                        "sub_topics": ["Tables", "Graphs", "Charts"],
+                    "Analytical Reasoning": {
+                        "sub_topics": ["Logical Deductions", "Statement Arguments", "Assumptions", "Courses of Action"],
                         "questions": 25
                     }
                 }
