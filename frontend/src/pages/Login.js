@@ -9,7 +9,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login: authLogin, updateUser } = useAuth();
+  const { login: authLogin, setUserData } = useAuth();
   const [demoUsername, setDemoUsername] = useState('');
   const [demoPassword, setDemoPassword] = useState('');
   const [loading, setLoading] = useState(false);
