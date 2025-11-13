@@ -203,14 +203,34 @@ class GoogleSheetsService:
             response = requests.get(csv_url, timeout=10)
             response.raise_for_status()
             
+            # Parse CSV to get header info
+            import csv
+            from io import StringIO
+            
+            response.encoding = 'utf-8'
+            csv_data = StringIO(response.text)
+            reader = csv.DictReader(csv_data)
+            
+            # Get headers
+            headers = list(reader.fieldnames) if reader.fieldnames else []
+            
             # Count lines
             lines = response.text.split('\n')
+            non_empty_lines = [line for line in lines if line.strip()]
             
             return {
                 "success": True,
                 "sheet_id": sheet_id,
-                "row_count": len(lines) - 1,  # Exclude header
-                "preview": lines[0] if lines else ""
+                "row_count": len(non_empty_lines) - 1,  # Exclude header
+                "headers": headers,
+                "column_count": len(headers),
+                "preview": lines[0] if lines else "",
+                "format_check": {
+                    "has_question": any('question' in h.lower() for h in headers),
+                    "has_options": all(opt in [h.strip().upper() for h in headers] for opt in ['A', 'B', 'C', 'D']),
+                    "has_answer": any('answer' in h.lower() for h in headers),
+                    "expected_format": "QUESTION NUMBER | Question | A | B | C | D | Answer | Explanation"
+                }
             }
         except Exception as e:
             return {
