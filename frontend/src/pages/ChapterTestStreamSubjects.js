@@ -66,7 +66,12 @@ const ChapterTestStreamSubjects = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <Header />
+      <Header 
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogin={() => navigate('/login')}
+        onLogout={handleLogout}
+      />
       
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
