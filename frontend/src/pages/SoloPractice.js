@@ -32,14 +32,14 @@ const SoloPractice = () => {
     } else if (isClassBasedFromUrl) {
       // Extract from URL if state not available
       // URL format: /topic-quiz/Class-6/science/components-of-food
-      const className = urlExamName; // "Class-6"
-      const subjectName = subjectName; // "science"
-      const chapterName = topicName; // "components-of-food"
+      const urlClassName = urlExamName; // "Class-6"
+      const urlSubject = subjectName; // "science"  
+      const urlChapter = topicName; // "components-of-food"
       
       classBasedData = {
-        class_name: className.replace('Class-', 'Class '),
-        subject: subjectName.charAt(0).toUpperCase() + subjectName.slice(1),
-        chapter: chapterName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        class_name: urlClassName.replace('Class-', 'Class ').replace(/-/g, ' '),
+        subject: urlSubject.charAt(0).toUpperCase() + urlSubject.slice(1),
+        chapter: urlChapter.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
       };
     }
   }
