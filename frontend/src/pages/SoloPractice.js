@@ -62,16 +62,31 @@ const SoloPractice = () => {
   const startQuiz = async () => {
     setQuizState('loading'); // Show loading while fetching
     try {
-      const requestData = {
-        exam: exam,
-        subject: subject,
-        topic: topic,
-        numberOfQuestions: numberOfQuestions // NEW: Send number of questions
-      };
+      let requestData;
       
-      // Include sub_topic if available
-      if (subTopic) {
-        requestData.sub_topic = subTopic;
+      if (isClassBased && classBasedData) {
+        // Class-based quiz (CBSE chapters)
+        requestData = {
+          isClassBased: true,
+          class_name: classBasedData.class_name,
+          subject: classBasedData.subject,
+          chapter: classBasedData.chapter,
+          exam: exam, // For compatibility
+          numberOfQuestions: numberOfQuestions
+        };
+      } else {
+        // Exam-based quiz (NEET, JEE, etc.)
+        requestData = {
+          exam: exam,
+          subject: subject,
+          topic: topic,
+          numberOfQuestions: numberOfQuestions
+        };
+        
+        // Include sub_topic if available
+        if (subTopic) {
+          requestData.sub_topic = subTopic;
+        }
       }
       
       const response = await axios.post(`${QUIZ_API_URL}/api/quiz/start`, requestData);
