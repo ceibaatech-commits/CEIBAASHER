@@ -1516,6 +1516,352 @@ class BattleServerTester:
             self.log_result("Multi-Client Battle Flow", False, f"Multi-client test error: {e}")
             return False
 
+    def test_social_feed_for_you_mixed(self):
+        """Test Mixed 'For You' Feed with following + trending content"""
+        try:
+            # Test with a user ID
+            test_user_id = "test_user_123"
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/for-you?user_id={test_user_id}",
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    self.log_result("Mixed For You Feed API", True, 
+                                  f"✅ Feed returned {len(posts)} posts")
+                    
+                    # Check if posts have trending_score
+                    posts_with_trending = [p for p in posts if 'trending_score' in p]
+                    if posts_with_trending:
+                        self.log_result("Trending Score Calculation", True, 
+                                      f"✅ {len(posts_with_trending)} posts have trending_score")
+                    else:
+                        self.log_result("Trending Score Calculation", False, 
+                                      "❌ No posts have trending_score field")
+                    
+                    # Check for different post types
+                    post_types = set(p.get('post_type', 'unknown') for p in posts)
+                    if post_types:
+                        self.log_result("Post Types Variety", True, 
+                                      f"✅ Found post types: {', '.join(post_types)}")
+                    else:
+                        self.log_result("Post Types Variety", False, 
+                                      "❌ No post types found")
+                    
+                    return True
+                else:
+                    self.log_result("Mixed For You Feed API", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Mixed For You Feed API", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Mixed For You Feed API", False, f"Request error: {e}")
+            return False
+
+    def test_room_code_post_creation(self):
+        """Test Room Code Post Creation"""
+        try:
+            test_user_id = "test_user_123"
+            
+            payload = {
+                "post_type": "room_code",
+                "content": "Join my battle room!",
+                "room_code": "ABC123"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/posts?user_id={test_user_id}",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'post' in data:
+                    post = data['post']
+                    
+                    # Verify room_code field is present
+                    if post.get('room_code') == "ABC123":
+                        self.log_result("Room Code Post Creation", True, 
+                                      f"✅ Room code post created with code: {post['room_code']}")
+                        
+                        # Store post ID for verification
+                        self.test_room_code_post_id = post.get('id')
+                        return True
+                    else:
+                        self.log_result("Room Code Post Creation", False, 
+                                      f"❌ Room code not saved correctly: {post.get('room_code')}")
+                        return False
+                else:
+                    self.log_result("Room Code Post Creation", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Room Code Post Creation", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Room Code Post Creation", False, f"Request error: {e}")
+            return False
+
+    def test_follow_ceep_system(self):
+        """Test Follow/Ceep System"""
+        try:
+            # Test creating a follow relationship
+            payload = {
+                "user_id": "user_a",
+                "ceep_user_id": "user_b", 
+                "user_name": "User A",
+                "ceep_user_name": "User B"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/ceep/ceep",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result("Follow/Ceep Creation", True, 
+                                  f"✅ Follow relationship created: {data.get('message')}")
+                    
+                    # Test getting following list
+                    following_response = requests.get(
+                        f"{BACKEND_URL}/api/ceep/ceeps/user_a",
+                        timeout=10
+                    )
+                    
+                    if following_response.status_code == 200:
+                        following_data = following_response.json()
+                        if following_data.get('success') and 'ceeps' in following_data:
+                            ceeps = following_data['ceeps']
+                            user_b_found = any(c.get('ceep_user_id') == 'user_b' for c in ceeps)
+                            
+                            if user_b_found:
+                                self.log_result("Following List Verification", True, 
+                                              f"✅ User B found in User A's following list ({len(ceeps)} total)")
+                            else:
+                                self.log_result("Following List Verification", False, 
+                                              "❌ User B not found in User A's following list")
+                        else:
+                            self.log_result("Following List Verification", False, 
+                                          f"Invalid following list response: {following_data}")
+                    else:
+                        self.log_result("Following List Verification", False, 
+                                      f"Following list API failed: {following_response.status_code}")
+                    
+                    # Test getting followers list
+                    followers_response = requests.get(
+                        f"{BACKEND_URL}/api/ceep/ceepers/user_b",
+                        timeout=10
+                    )
+                    
+                    if followers_response.status_code == 200:
+                        followers_data = followers_response.json()
+                        if followers_data.get('success') and 'ceepers' in followers_data:
+                            ceepers = followers_data['ceepers']
+                            user_a_found = any(c.get('user_id') == 'user_a' for c in ceepers)
+                            
+                            if user_a_found:
+                                self.log_result("Followers List Verification", True, 
+                                              f"✅ User A found in User B's followers list ({len(ceepers)} total)")
+                            else:
+                                self.log_result("Followers List Verification", False, 
+                                              "❌ User A not found in User B's followers list")
+                        else:
+                            self.log_result("Followers List Verification", False, 
+                                          f"Invalid followers list response: {followers_data}")
+                    else:
+                        self.log_result("Followers List Verification", False, 
+                                      f"Followers list API failed: {followers_response.status_code}")
+                    
+                    return True
+                else:
+                    self.log_result("Follow/Ceep Creation", False, 
+                                  f"Follow creation failed: {data.get('message')}")
+                    return False
+            else:
+                self.log_result("Follow/Ceep Creation", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Follow/Ceep System", False, f"Request error: {e}")
+            return False
+
+    def test_trending_score_calculation(self):
+        """Test Trending Score Calculation with different engagement metrics"""
+        try:
+            test_user_id = "test_user_trending"
+            
+            # Create multiple test posts with different engagement
+            test_posts = [
+                {
+                    "post_type": "battle_victory",
+                    "content": "High engagement post - won a tough battle!",
+                    "battle_stats": {"score": 95, "rank": 1}
+                },
+                {
+                    "post_type": "study_tip", 
+                    "content": "Medium engagement post - study tip for physics",
+                    "exam_category": "JEE"
+                },
+                {
+                    "post_type": "general",
+                    "content": "Low engagement post - just a regular update"
+                }
+            ]
+            
+            created_posts = []
+            
+            # Create test posts
+            for i, post_data in enumerate(test_posts):
+                response = requests.post(
+                    f"{BACKEND_URL}/api/social/posts?user_id={test_user_id}",
+                    json=post_data,
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('success') and 'post' in data:
+                        created_posts.append(data['post'])
+                        self.log_result(f"Test Post Creation {i+1}", True, 
+                                      f"✅ Created post: {post_data['post_type']}")
+                    else:
+                        self.log_result(f"Test Post Creation {i+1}", False, 
+                                      f"Failed to create post: {data}")
+                else:
+                    self.log_result(f"Test Post Creation {i+1}", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+            
+            if created_posts:
+                # Wait a moment for posts to be processed
+                import time
+                time.sleep(2)
+                
+                # Check trending feed to see if trending scores are calculated
+                trending_response = requests.get(
+                    f"{BACKEND_URL}/api/social/feed/trending?limit=20",
+                    timeout=30
+                )
+                
+                if trending_response.status_code == 200:
+                    trending_data = trending_response.json()
+                    if trending_data.get('success') and 'posts' in trending_data:
+                        trending_posts = trending_data['posts']
+                        
+                        # Check if our test posts have trending scores
+                        test_post_ids = [p.get('id') for p in created_posts]
+                        trending_test_posts = [p for p in trending_posts if p.get('id') in test_post_ids]
+                        
+                        if trending_test_posts:
+                            scores = [p.get('trending_score', 0) for p in trending_test_posts]
+                            self.log_result("Trending Score Calculation", True, 
+                                          f"✅ Test posts have trending scores: {scores}")
+                            
+                            # Check if scores are calculated based on engagement formula
+                            # (likes*2 + comments*3 + shares*4) * recency_factor
+                            posts_with_scores = [p for p in trending_test_posts if p.get('trending_score', 0) > 0]
+                            if posts_with_scores:
+                                self.log_result("Trending Score Formula", True, 
+                                              f"✅ {len(posts_with_scores)} posts have calculated trending scores")
+                            else:
+                                self.log_result("Trending Score Formula", False, 
+                                              "❌ No posts have calculated trending scores")
+                        else:
+                            self.log_result("Trending Score Calculation", False, 
+                                          "❌ Test posts not found in trending feed")
+                    else:
+                        self.log_result("Trending Score Calculation", False, 
+                                      f"Invalid trending feed response: {trending_data}")
+                else:
+                    self.log_result("Trending Score Calculation", False, 
+                                  f"Trending feed API failed: {trending_response.status_code}")
+                
+                return len(created_posts) > 0
+            else:
+                self.log_result("Trending Score Calculation", False, 
+                              "❌ No test posts created successfully")
+                return False
+                
+        except Exception as e:
+            self.log_result("Trending Score Calculation", False, f"Request error: {e}")
+            return False
+
+    def test_room_code_in_feed(self):
+        """Test that room code posts appear in feed"""
+        try:
+            if not hasattr(self, 'test_room_code_post_id'):
+                self.log_result("Room Code in Feed", False, "No room code post created in previous test")
+                return False
+            
+            # Check if room code post appears in For You feed
+            test_user_id = "test_user_123"
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/for-you?user_id={test_user_id}&limit=50",
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    
+                    # Look for our room code post
+                    room_code_posts = [p for p in posts if p.get('post_type') == 'room_code']
+                    our_post = [p for p in posts if p.get('id') == self.test_room_code_post_id]
+                    
+                    if room_code_posts:
+                        self.log_result("Room Code Posts in Feed", True, 
+                                      f"✅ Found {len(room_code_posts)} room code posts in feed")
+                        
+                        # Check if room code field is present
+                        posts_with_codes = [p for p in room_code_posts if p.get('room_code')]
+                        if posts_with_codes:
+                            codes = [p.get('room_code') for p in posts_with_codes]
+                            self.log_result("Room Code Field Verification", True, 
+                                          f"✅ Room codes present: {codes}")
+                        else:
+                            self.log_result("Room Code Field Verification", False, 
+                                          "❌ Room code posts missing room_code field")
+                    else:
+                        self.log_result("Room Code Posts in Feed", False, 
+                                      "❌ No room code posts found in feed")
+                    
+                    if our_post:
+                        self.log_result("Test Room Code Post in Feed", True, 
+                                      "✅ Our test room code post appears in feed")
+                        return True
+                    else:
+                        self.log_result("Test Room Code Post in Feed", False, 
+                                      "❌ Our test room code post not found in feed")
+                        return False
+                else:
+                    self.log_result("Room Code in Feed", False, 
+                                  f"Invalid feed response: {data}")
+                    return False
+            else:
+                self.log_result("Room Code in Feed", False, 
+                              f"Feed API failed: {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Room Code in Feed", False, f"Request error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
