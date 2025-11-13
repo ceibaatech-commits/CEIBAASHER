@@ -168,7 +168,7 @@ const SoloPractice = () => {
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Failed to Load Questions</h2>
           <p className="text-gray-600 mb-4">
-            Could not load questions for {exam} - {subject} {topic ? `- ${topic}` : ''}
+            Could not load questions for {isClassBased ? `${classBasedData.class_name} - ${classBasedData.subject} - ${classBasedData.chapter}` : `${exam} - ${subject} ${topic ? `- ${topic}` : ''}`}
           </p>
           <button
             onClick={() => navigate('/')}
