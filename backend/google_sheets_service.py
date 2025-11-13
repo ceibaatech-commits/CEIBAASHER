@@ -56,28 +56,47 @@ class GoogleSheetsService:
                 if not row or all(not str(v).strip() for v in row.values()):
                     continue
                 
-                # Try multiple column name variations with whitespace trimming
-                # Create a case-insensitive lookup dict
-                row_lower = {k.strip().lower(): v for k, v in row.items() if k}
+                # Create a normalized lookup dict (lowercase, trimmed)
+                row_normalized = {}
+                for k, v in row.items():
+                    if k:
+                        # Normalize key: lowercase, remove extra spaces, remove special chars
+                        normalized_key = k.strip().lower().replace(' ', '').replace('_', '')
+                        row_normalized[normalized_key] = str(v).strip() if v else ''
                 
-                # Parse the row based on your format
-                question_text = (row.get('Question') or row.get('question') or 
-                               row_lower.get('question') or '').strip()
+                # Parse QUESTION (try multiple variations)
+                question_text = ''
+                for key_variation in ['question', 'questions', 'ques', 'q']:
+                    if key_variation in row_normalized:
+                        question_text = row_normalized[key_variation]
+                        break
+                
+                # Also try original keys
+                if not question_text:
+                    question_text = (row.get('Question') or row.get('question') or 
+                                   row.get('QUESTION') or '').strip()
                 
                 if not question_text:
-                    print(f"⚠️ Row {idx + 1}: Skipping - no question text found. Row keys: {list(row.keys())}")
+                    print(f"⚠️ Row {idx + 1}: Skipping - no question text found. Available keys: {list(row.keys())}")
                     continue
                 
-                # Get options - try both exact case and lowercase
-                option_a = (row.get('A') or row.get('a') or row_lower.get('a') or '').strip()
-                option_b = (row.get('B') or row.get('b') or row_lower.get('b') or '').strip()
-                option_c = (row.get('C') or row.get('c') or row_lower.get('c') or '').strip()
-                option_d = (row.get('D') or row.get('d') or row_lower.get('d') or '').strip()
+                # Get OPTIONS A, B, C, D (try multiple variations)
+                option_a = row_normalized.get('a') or row.get('A') or row.get('a') or ''
+                option_b = row_normalized.get('b') or row.get('B') or row.get('b') or ''
+                option_c = row_normalized.get('c') or row.get('C') or row.get('c') or ''
+                option_d = row_normalized.get('d') or row.get('D') or row.get('d') or ''
                 
-                # Get answer - try multiple column names
-                answer = (row.get('Answer') or row.get('answer') or 
-                         row.get('Correct Answer') or row.get('correct answer') or
-                         row_lower.get('answer') or row_lower.get('correct answer') or '').strip()
+                # Get ANSWER (try multiple column name variations)
+                answer = ''
+                for key_variation in ['answer', 'ans', 'correctanswer', 'correct']:
+                    if key_variation in row_normalized:
+                        answer = row_normalized[key_variation]
+                        break
+                
+                # Also try original keys
+                if not answer:
+                    answer = (row.get('Answer') or row.get('answer') or row.get('ANSWER') or
+                             row.get('Correct Answer') or row.get('correct answer') or '').strip()
                 
                 if not answer:
                     print(f"⚠️ Row {idx + 1}: No answer found for question: {question_text[:50]}...")
@@ -85,9 +104,17 @@ class GoogleSheetsService:
                 # Convert answer to index (0-3)
                 correct_answer = self._parse_answer(answer)
                 
-                # Get explanation
-                explanation = (row.get('Explanation') or row.get('explanation') or 
-                              row_lower.get('explanation') or '').strip()
+                # Get EXPLANATION (try multiple variations)
+                explanation = ''
+                for key_variation in ['explanation', 'explaination', 'explain', 'exp']:
+                    if key_variation in row_normalized:
+                        explanation = row_normalized[key_variation]
+                        break
+                
+                # Also try original keys
+                if not explanation:
+                    explanation = (row.get('Explanation') or row.get('explanation') or 
+                                  row.get('EXPLANATION') or '').strip()
                 
                 question_obj = {
                     "id": f"q_{idx + 1}",
