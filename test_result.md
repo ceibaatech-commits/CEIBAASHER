@@ -471,9 +471,10 @@ metadata:
 
 test_plan:
   current_focus: 
-    - "Social Feed Backend APIs"
-  stuck_tasks:
-    - "Social Feed Backend APIs"
+    - "Rename Ceep to Follow in Battle Room"
+    - "Mixed For You Feed - Following + Trending"
+    - "Room Code Sharing in Social Feed"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
