@@ -1843,15 +1843,19 @@ EXAM_DATA = {
             "Reasoning & Military Aptitude": {
                 "subjects": {
                     "Verbal Reasoning": {
-                        "sub_topics": ["Analogies", "Coding-Decoding", "Blood Relations"],
+                        "sub_topics": ["Analogies", "Classification", "Series", "Coding-Decoding", "Blood Relations", "Direction Sense"],
                         "questions": 75
                     },
                     "Non-Verbal Reasoning": {
-                        "sub_topics": ["Figure Series", "Pattern Completion"],
+                        "sub_topics": ["Pattern Recognition", "Figure Series", "Mirror Images", "Paper Folding"],
                         "questions": 75
                     },
                     "Spatial Ability": {
-                        "sub_topics": ["Mirror Images", "Water Images", "Paper Folding"],
+                        "sub_topics": ["Figure Series", "Paper Folding", "Mirror Images", "Water Images", "Embedded Figures"],
+                        "questions": 75
+                    },
+                    "Military Aptitude": {
+                        "sub_topics": ["Logical Reasoning", "Critical Thinking", "Decision Making", "Problem Solving"],
                         "questions": 75
                     }
                 }
