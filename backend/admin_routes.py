@@ -155,11 +155,18 @@ async def create_sheet(sheet: ExamSheet):
             sheets_service = GoogleSheetsService()
             
             # Fetch questions from the sheet
+            print(f"Fetching questions from: {sheet.sheet_link}")
             questions = sheets_service.fetch_questions(sheet.sheet_link)
+            print(f"Fetched {len(questions)} questions")
             
             if questions:
                 # Add metadata to each question
                 for idx, question in enumerate(questions):
+                    # Convert correctAnswer index to letter if needed
+                    correct_answer = question["correctAnswer"]
+                    if isinstance(correct_answer, int):
+                        correct_answer = chr(ord('A') + correct_answer)
+                    
                     question_doc = {
                         "id": str(uuid.uuid4()),
                         "sheet_id": sheet_id,
@@ -167,7 +174,7 @@ async def create_sheet(sheet: ExamSheet):
                         "question_number": idx + 1,
                         "question": question["question"],
                         "options": question["options"],
-                        "correctAnswer": question["correctAnswer"],
+                        "correctAnswer": correct_answer,
                         "explanation": question.get("explanation", ""),
                         "created_at": datetime.now(timezone.utc).isoformat()
                     }
