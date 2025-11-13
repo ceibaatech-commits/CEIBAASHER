@@ -1474,3 +1474,28 @@ agent_communication:
       - Questions are parsed successfully
       - All fields (Question, A, B, C, D, Answer, Explanation) are extracted properly
       - Import completes without "Failed to parse" error
+
+  - task: "Google Sheets Passage Column Parsing"
+    implemented: true
+    working: true
+    file: "/app/backend/google_sheets_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented passage column detection and parsing in Google Sheets service. Added logic to detect 'passage', 'para', 'paragraph', 'text', 'readingpassage' column variations with case-insensitive matching. Passage text is now extracted and added to question object as 'passage' field. Lines 129-147 updated with passage parsing logic."
+
+  - task: "Passage-based Quiz Split-Screen UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/PassageQuizLayout.js, /app/frontend/src/pages/SoloPractice.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Completed implementation of passage-based quiz UI. Created PassageQuizLayout.js component with split-screen design: passage on left (sticky), questions on right. Added conditional logic in SoloPractice.js to detect questions with passage field and render PassageQuizLayout instead of default layout. Features: responsive grid layout, auto-detect passage questions, same answer selection logic, progress tracking, timer display, previous/next navigation. Ready for testing with quiz containing passage-based questions."
+
