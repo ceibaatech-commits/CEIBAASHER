@@ -146,8 +146,11 @@ async def create_sheet(sheet: ExamSheet):
                 "chapter": sheet.chapter
             })
         
-        # Save sheet metadata first
-        await db.exam_sheets.insert_one(sheet_data)
+        # Save sheet metadata first (create a copy without _id for response)
+        insert_result = await db.exam_sheets.insert_one(sheet_data.copy())
+        # Remove MongoDB's _id from response data
+        if "_id" in sheet_data:
+            del sheet_data["_id"]
         
         # Import questions from Google Sheet
         try:
