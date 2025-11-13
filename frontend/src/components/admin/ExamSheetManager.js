@@ -578,10 +578,10 @@ const ExamSheetManager = () => {
           'English Honeydew': [
             '1. The Best Christmas Present in the World & The Ant and the Cricket',
             '2. The Tsunami & Geography Lesson',
-            '3. Glimpses of the Past Macavity The Mystery Cat',
-            '4. Bepin Choudhurys Lapse of Memory & The Last Bargain',
+            '3. Glimpses of the Past Macavity – The Mystery Cat',
+            '4. Bepin Choudhury\'s Lapse of Memory & The Last Bargain',
             '5. The Summit Within & The School Boy',
-            '6. This is Jodys Fawn & The Duck and the Kangaroo',
+            '6. This is Jody\'s Fawn & The Duck and the Kangaroo',
             '7. A Visit to Cambridge & When I Set out for Lyonnesse',
             '8. A Short Monsoon Diary & On the Grasshopper and Cricket'
           ],
