@@ -433,6 +433,28 @@ const LiveBattle = () => {
     }
   };
 
+  // Check follow status for all players
+  const checkFollowStatus = async () => {
+    if (!isAuthenticated() || !user?.id) return;
+
+    try {
+      const statusMap = {};
+      for (const player of players) {
+        if (player.name !== playerName) {
+          // Try to find the actual user ID by searching for the player
+          const userSearchResponse = await axios.get(`${BATTLE_SERVER_URL}/api/auth/search-user?name=${encodeURIComponent(player.name)}`);
+          const targetUserId = userSearchResponse.data?.user_id || player.name.toLowerCase().replace(/\s+/g, '_');
+          
+          const response = await axios.get(`${BATTLE_SERVER_URL}/api/ceep/is-following/${user.id}/${targetUserId}`);
+          statusMap[player.name] = response.data.is_following;
+        }
+      }
+      setFollowingStatus(statusMap);
+    } catch (error) {
+      console.error('Error checking follow status:', error);
+    }
+  };
+
   const handleFollow = async (player) => {
     // Check if user is logged in
     if (!isAuthenticated()) {
@@ -440,19 +462,37 @@ const LiveBattle = () => {
       return;
     }
 
+    // If already following, show message
+    if (followingStatus[player.name]) {
+      alert(`You are already following ${player.name}`);
+      return;
+    }
+
     try {
-      // Use actual user ID if logged in
-      const userId = user?.id || playerName.toLowerCase().replace(/\s+/g, '_');
-      const followUserId = player.name.toLowerCase().replace(/\s+/g, '_');
+      // Try to find the actual user ID by searching for the player
+      let targetUserId;
+      try {
+        const userSearchResponse = await axios.get(`${BATTLE_SERVER_URL}/api/auth/search-user?name=${encodeURIComponent(player.name)}`);
+        targetUserId = userSearchResponse.data?.user_id;
+      } catch (searchError) {
+        console.log('User search failed, using name-based ID');
+      }
+      
+      // Fallback to name-based ID if search fails
+      if (!targetUserId) {
+        targetUserId = player.name.toLowerCase().replace(/\s+/g, '_');
+      }
       
       const response = await axios.post(`${BATTLE_SERVER_URL}/api/ceep/ceep`, {
-        user_id: userId,
-        ceep_user_id: followUserId,
-        user_name: user?.name || playerName,
+        user_id: user.id,
+        ceep_user_id: targetUserId,
+        user_name: user.name,
         ceep_user_name: player.name
       });
       
       if (response.data.success) {
+        // Update following status
+        setFollowingStatus(prev => ({ ...prev, [player.name]: true }));
         alert(`✅ You are now following ${player.name}!`);
       } else {
         alert(response.data.message);
