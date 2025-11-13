@@ -152,7 +152,8 @@ CBSE_CHAPTER_DATA = {
 }
 
 # Add similar data for classes 7, 8, 9, 11, 12 (keeping it concise for now)
-# These can be expanded based on NCERT syllabusfor class_num in ["7", "8", "9", "11", "12"]:
+# These can be expanded based on NCERT syllabus
+for class_num in ["7", "8", "9", "11", "12"]:
     CBSE_CHAPTER_DATA[class_num] = {
         "Mathematics": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
