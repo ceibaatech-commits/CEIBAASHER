@@ -1135,6 +1135,20 @@ const ExamSheetManager = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <button
+                          onClick={() => handleImport(sheet.id)}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Import Questions"
+                        >
+                          <Upload className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleTestSheet(sheet.id)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Test Sheet"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(sheet.id)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Delete"
