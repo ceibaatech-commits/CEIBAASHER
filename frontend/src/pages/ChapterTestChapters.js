@@ -134,40 +134,31 @@ const ChapterTestChapters = () => {
         onLogout={handleLogout}
       />
       
-      {/* Compact Hero */}
-      <div className={`bg-gradient-to-br ${colorGradient} text-white py-8`}>
+      {/* Compact Hero - Kahoot Style */}
+      <div className={`bg-gradient-to-br ${colorGradient} text-white py-4`}>
         <div className="max-w-7xl mx-auto px-4">
-          <button
-            onClick={() => navigate(`/chapter-tests/${classNumber}`)}
-            className="flex items-center space-x-2 text-white/90 hover:text-white mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-semibold">Back to Subjects</span>
-          </button>
-          
           <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate(`/chapter-tests/class-${selectedClass}`)}
+                className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg hover:bg-white/20"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="font-semibold text-sm">Back</span>
+              </button>
+              
+              <div className="flex items-center space-x-2">
+                <span className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold">
                   Class {selectedClass}
                 </span>
                 <ChevronRight className="w-4 h-4" />
-                <span className="font-semibold">{formattedSubject}</span>
+                <span className="font-bold text-sm">{formattedSubject}</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black">Chapter-wise Tests</h1>
-              <p className="text-white/90 mt-2">{chapters.length} Chapters Available</p>
             </div>
             
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-3 border border-white/30">
-                <div className="flex items-center space-x-2">
-                  <BookOpen className="w-5 h-5 text-white" />
-                  <div>
-                    <p className="text-2xl font-bold text-white">{chapters.length}</p>
-                    <p className="text-white/80 text-xs">Chapters</p>
-                  </div>
-                </div>
-              </div>
+            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              <BookOpen className="w-4 h-4" />
+              <span className="font-bold text-sm">{chapters.length} Chapters</span>
             </div>
           </div>
         </div>
