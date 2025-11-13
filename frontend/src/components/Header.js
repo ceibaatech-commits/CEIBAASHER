@@ -17,7 +17,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           >
             <div className="relative">
               <img 
-                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/sd5j5kdo_IMG_1159-removebg-preview.png"
+                src="/ceibaa-logo-new.png"
                 alt="Ceibaa Logo"
                 className="w-12 h-12 object-contain"
               />
