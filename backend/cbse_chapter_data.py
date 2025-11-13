@@ -70,11 +70,23 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 16, "chapter_name": "National War Memorial", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 5: Culture and Tradition"}
         ],
         "Hindi": [
-            {"chapter_number": 1, "chapter_name": "व्याकरण: संज्ञा और सर्वनाम", "total_questions": 50, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "पठन बोध", "total_questions": 40, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "लेखन कौशल", "total_questions": 30, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "साहित्य: गद्य", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "साहित्य: पद्य", "total_questions": 40, "difficulty": "Medium", "duration": 30}
+            {"chapter_number": 1, "chapter_name": "Vah Pakshee Jo", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Bachapan", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Naadaan Dost", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Ch Se Sa See Gappe", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Akshar Ka Mahatv", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Paar Nazar Ke", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "Saathee Haath Badhaana", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Aise", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Tikat Alabam", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Jhaansee Kee Raanee", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Jo Dekhakar Bhee Nahin Dekha", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "Sansaar Pustak Hai", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Main Sabase Chhotee Hooon", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 14, "chapter_name": "Lokageet", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "Sarv", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 16, "chapter_name": "Van Ke Maarg Mein", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 17, "chapter_name": "Shvaas-shvaas Mein Baans", "total_questions": 40, "difficulty": "Medium", "duration": 30}
         ]
     },
     "10": {
