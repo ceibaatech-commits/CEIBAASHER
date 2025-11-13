@@ -570,7 +570,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Google Sheets 8-Column Format Parser Fix"
+    - "Passage-based Quiz Split-Screen UI"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
