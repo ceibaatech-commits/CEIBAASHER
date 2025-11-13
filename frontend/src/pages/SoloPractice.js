@@ -204,7 +204,9 @@ const SoloPractice = () => {
               <p className="text-gray-600">
                 You got {results?.filter(r => r.isCorrect).length} out of {results?.length} correct
               </p>
-              <p className="text-sm text-gray-500 mt-2">{exam} - {subject} {topic ? `- ${topic}` : ''}</p>
+              <p className="text-sm text-gray-500 mt-2">
+                {isClassBased ? `${classBasedData.class_name} - ${classBasedData.subject} - ${classBasedData.chapter}` : `${exam} - ${subject} ${topic ? `- ${topic}` : ''}`}
+              </p>
             </div>
           </div>
 
