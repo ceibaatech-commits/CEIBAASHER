@@ -2784,6 +2784,13 @@ class BattleServerTester:
         self.test_trending_score_calculation()
         self.test_room_code_in_feed()
         
+        # Admin Panel Tests (NEW - Current Review Request)
+        print("\n👑 ADMIN PANEL USER MANAGEMENT TESTS (CURRENT REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_admin_get_all_users()
+        self.test_admin_overview_stats()
+        self.test_admin_search_users()
+        
         # Summary
         print("\n" + "=" * 60)
         print("📊 TEST SUMMARY")
