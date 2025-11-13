@@ -1693,7 +1693,7 @@ class BattleServerTester:
                                       f"✅ Valid comments count: {count}")
                         
                         # Verify against post_comments collection
-                        if self.db:
+                        if self.db is not None:
                             try:
                                 actual_count = self.db.post_comments.count_documents({})
                                 if actual_count == count:
