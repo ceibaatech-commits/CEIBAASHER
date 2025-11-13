@@ -26,8 +26,8 @@ async def get_all_users():
     Returns: List of users with id, name, email, status, registration date
     """
     try:
-        # Fetch all users from database
-        users = await db.users.find({}, {"_id": 0}).to_list(1000)
+        # Fetch all users from database (exclude sensitive fields)
+        users = await db.users.find({}, {"_id": 0, "password": 0, "token": 0, "secret": 0}).to_list(1000)
         
         # Enrich user data with status (for now, set all as offline - can be updated with real-time tracking)
         for user in users:
