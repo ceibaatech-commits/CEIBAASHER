@@ -154,7 +154,23 @@ const ExamSheetManager = () => {
     'Computer Fundamentals': ['Hardware', 'Software', 'Memory', 'Input Output Devices', 'Operating Systems'],
     'MS Office': ['Word', 'Excel', 'PowerPoint', 'Outlook'],
     'Internet': ['Browsers', 'Email', 'Search Engines', 'Social Media'],
-    'Networking': ['LAN', 'WAN', 'Protocols', 'IP Address']
+    'Networking': ['LAN', 'WAN', 'Protocols', 'IP Address'],
+    
+    // AFCAT specific sub-topics
+    'Reading Comprehension': ['Passage Reading', 'Inference Questions', 'Main Idea', 'Vocabulary in Context'],
+    'Vocabulary': ['Synonyms', 'Antonyms', 'Idioms and Phrases', 'One Word Substitution'],
+    'Grammar': ['Tenses', 'Articles', 'Prepositions', 'Active Passive Voice', 'Error Detection', 'Sentence Improvement'],
+    'Error Detection': ['Grammatical Errors', 'Spelling Errors', 'Punctuation Errors'],
+    'Sentence Improvement': ['Sentence Correction', 'Phrase Replacement', 'Sentence Completion'],
+    'Mensuration': ['Area', 'Perimeter', 'Volume', 'Surface Area', 'Height and Distance'],
+    'Spatial Ability': ['Figure Series', 'Paper Folding', 'Mirror Images', 'Water Images', 'Embedded Figures'],
+    'Military Aptitude': ['Logical Reasoning', 'Critical Thinking', 'Decision Making', 'Problem Solving'],
+    
+    // RRB NTPC specific sub-topics
+    'Analytical Reasoning': ['Logical Deductions', 'Statement Arguments', 'Assumptions', 'Courses of Action'],
+    'Number System': ['HCF LCM', 'Divisibility Rules', 'Fractions Decimals', 'Squares Cubes'],
+    'Banking Awareness': ['Banking Terms', 'RBI Functions', 'Monetary Policy', 'Banking News'],
+    'Economics': ['Indian Economy', 'Economic Terms', 'Budget', 'GDP']
   };
 
   const [syllabusTopics, setSyllabusTopics] = useState([]);
