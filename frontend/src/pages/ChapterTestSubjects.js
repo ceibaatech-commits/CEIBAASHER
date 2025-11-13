@@ -138,6 +138,58 @@ const ChapterTestSubjects = () => {
         description: 'NCERT Vasant - Hindi Textbook'
       }
     ];
+  } else if (selectedClass === '10') {
+    // Class 10 has separate subjects and multiple English/Hindi books
+    subjects = [
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Master mathematical concepts chapter by chapter'
+      },
+      {
+        name: 'Science',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Physics, Chemistry, and Biology'
+      },
+      {
+        name: 'Economics',
+        icon: Globe,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'Understanding Economic Development'
+      },
+      {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'India and Contemporary World - II'
+      },
+      {
+        name: 'Civics',
+        icon: Globe,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-600',
+        description: 'Democratic Politics - II'
+      },
+      {
+        name: 'Geography',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Contemporary India II'
+      }
+    ];
   } else {
     // Other classes
     subjects = [
