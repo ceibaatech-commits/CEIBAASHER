@@ -440,6 +440,34 @@ const SoloPractice = () => {
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  // Check if current question has a passage (reading comprehension)
+  const hasPassage = currentQuestion?.passage && currentQuestion.passage.trim().length > 0;
+
+  // If question has passage, render the PassageQuizLayout component
+  if (hasPassage) {
+    return (
+      <PassageQuizLayout
+        passage={currentQuestion.passage}
+        currentQuestion={currentQuestion}
+        questionIndex={currentQuestionIndex}
+        totalQuestions={questions.length}
+        selectedAnswer={selectedAnswer}
+        timeLeft={timeLeft}
+        onAnswerSelect={handleAnswerSelect}
+        onNext={handleNextQuestion}
+        onPrevious={() => {
+          if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+            setSelectedAnswer(answers[currentQuestionIndex - 1]?.selectedOption ?? null);
+            setTimeLeft(30);
+          }
+        }}
+        showExplanation={false}
+      />
+    );
+  }
+
+  // Default quiz layout (for non-passage questions)
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       <div className="max-w-4xl mx-auto px-4">
