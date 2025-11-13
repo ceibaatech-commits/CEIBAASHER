@@ -127,40 +127,44 @@ EXAM_DATA = {
             "Chemistry": {
                 "subjects": {
                     "Physical Chemistry": {
-                        "sub_topics": ["Atomic Structure", "States of Matter", "Equilibrium", "Redox"],
-                        "questions": 25
-                    },
-                    "Organic Chemistry": {
-                        "sub_topics": ["Basic Principles", "Hydrocarbons", "Functional Groups", "Biomolecules"],
+                        "sub_topics": ["Atomic Structure", "Chemical Bonding", "States of Matter", "Thermodynamics", "Equilibrium", "Ionic Equilibrium", "Redox Reactions", "Electrochemistry", "Chemical Kinetics", "Surface Chemistry"],
                         "questions": 30
                     },
+                    "Organic Chemistry": {
+                        "sub_topics": ["Basic Concepts", "Hydrocarbons", "Haloalkanes", "Alcohols Phenols Ethers", "Aldehydes Ketones", "Carboxylic Acids", "Amines", "Biomolecules", "Polymers"],
+                        "questions": 35
+                    },
                     "Inorganic Chemistry": {
-                        "sub_topics": ["Periodic Table", "Chemical Bonding", "p-Block Elements", "d-Block Elements"],
+                        "sub_topics": ["Periodic Table", "Chemical Bonding", "Coordination Compounds", "Metallurgy", "p-Block Elements", "d-Block Elements", "f-Block Elements"],
                         "questions": 25
                     }
                 }
             },
             "Biology": {
                 "subjects": {
-                    "Plant Physiology": {
-                        "sub_topics": ["Plant Anatomy", "Photosynthesis", "Respiration", "Plant Growth"],
-                        "questions": 25
-                    },
-                    "Human Physiology": {
-                        "sub_topics": ["Digestion", "Breathing", "Circulation", "Excretion", "Nervous System"],
+                    "Botany": {
+                        "sub_topics": ["Plant Physiology", "Plant Anatomy", "Plant Kingdom", "Reproduction in Plants", "Photosynthesis", "Respiration"],
                         "questions": 30
                     },
-                    "Genetics": {
-                        "sub_topics": ["Heredity", "Molecular Basis", "Evolution"],
-                        "questions": 20
-                    },
-                    "Cell Biology": {
-                        "sub_topics": ["Cell Structure", "Cell Division", "Biomolecules"],
-                        "questions": 20
+                    "Zoology": {
+                        "sub_topics": ["Animal Kingdom", "Human Anatomy", "Animal Physiology", "Reproduction", "Circulatory System", "Nervous System"],
+                        "questions": 30
                     },
                     "Ecology": {
-                        "sub_topics": ["Ecosystem", "Biodiversity", "Environment"],
+                        "sub_topics": ["Ecosystem", "Biodiversity", "Environmental Issues", "Conservation"],
                         "questions": 15
+                    },
+                    "Genetics": {
+                        "sub_topics": ["Principles of Inheritance", "Molecular Basis", "DNA Replication", "Gene Expression"],
+                        "questions": 15
+                    },
+                    "Evolution": {
+                        "sub_topics": ["Origin of Life", "Evolution Theory", "Natural Selection", "Human Evolution"],
+                        "questions": 10
+                    },
+                    "Human Physiology": {
+                        "sub_topics": ["Digestion", "Breathing", "Circulation", "Excretion", "Neural Control"],
+                        "questions": 20
                     }
                 }
             }
