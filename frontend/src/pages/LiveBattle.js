@@ -299,6 +299,13 @@ const LiveBattle = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  // Check follow status when participants or user changes
+  useEffect(() => {
+    if (participants.length > 0 && isAuthenticated()) {
+      checkFollowStatus();
+    }
+  }, [participants, user]);
+
   const handleAnswerSelect = (index) => {
     if (selectedAnswer !== null || isPaused || !currentQuestion) return;
     
