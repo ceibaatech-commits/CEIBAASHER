@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { LogIn, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login: authLogin, updateUser } = useAuth();
   const [demoUsername, setDemoUsername] = useState('');
   const [demoPassword, setDemoPassword] = useState('');
   const [loading, setLoading] = useState(false);
