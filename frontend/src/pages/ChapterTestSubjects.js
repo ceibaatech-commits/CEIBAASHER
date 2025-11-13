@@ -27,12 +27,12 @@ const ChapterTestSubjects = () => {
       description: 'Explore Physics, Chemistry, and Biology'
     },
     {
-      name: 'Social Science',
+      name: selectedClass === '6' ? 'History' : 'Social Science',
       icon: Globe,
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-orange-100',
       textColor: 'text-orange-600',
-      description: 'History, Geography, Civics, and Economics'
+      description: selectedClass === '6' ? 'Ancient India and Early Civilizations' : 'History, Geography, Civics, and Economics'
     },
     {
       name: selectedClass === '6' ? 'Poorvi' : 'English',
