@@ -718,14 +718,26 @@ const ExamSheetManager = () => {
       const response = await axios.post(`${BACKEND_URL}/api/admin/sheets`, formData);
       
       if (response.data.success) {
-        alert('Sheet added successfully!');
+        const questionsCount = response.data.questions_imported || 0;
+        
+        if (questionsCount > 0) {
+          alert(`✅ Sheet added successfully!\n\n${questionsCount} questions imported automatically.`);
+        } else if (response.data.warning) {
+          alert(`⚠️ ${response.data.message}\n\n${response.data.warning}\n\nPlease check:\n1. Sheet is publicly accessible\n2. Sheet has correct format (Question, A, B, C, D, Answer columns)\n3. Data starts from row 2`);
+        } else if (response.data.error) {
+          alert(`⚠️ Sheet added but import failed:\n\n${response.data.error}\n\nYou can click the Import button to try again.`);
+        } else {
+          alert('Sheet added! Click Import button to load questions.');
+        }
+        
         setShowAddForm(false);
         resetForm();
         fetchSheets();
       }
     } catch (error) {
       console.error('Error adding sheet:', error);
-      alert('Failed to add sheet. Please try again.');
+      const errorMsg = error.response?.data?.detail || error.message;
+      alert(`Failed to add sheet:\n\n${errorMsg}`);
     } finally {
       setLoading(false);
     }
