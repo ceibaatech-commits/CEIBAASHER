@@ -369,7 +369,7 @@ const ModernExamSyllabus = () => {
                       className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all">
                       🎯 Room
                     </button>
-                    <button onClick={() => navigate(`/live-battle-1v1/${examId}/${topic.subject}/${topic.topic}`)}
+                    <button onClick={() => navigate(`/live-battle-1v1/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
                       className="bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all">
                       ⚔️ Battle
                     </button>
