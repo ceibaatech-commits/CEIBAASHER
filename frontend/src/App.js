@@ -47,6 +47,10 @@ function App() {
           <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
           <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
           
+          {/* Dedicated Exam Pages */}
+          <Route path="/exams/rrb-ntpc" element={<RRB_NTPC />} />
+          <Route path="/exams/afcat" element={<AFCAT />} />
+          
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
