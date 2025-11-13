@@ -1571,22 +1571,25 @@ class BattleServerTester:
         try:
             test_user_id = "test_user_123"
             
-            # First create a test user in the database
+            # First create a test user in the database using pymongo
             if self.db:
-                user_doc = {
-                    "id": test_user_id,
-                    "name": "Test User",
-                    "email": "test@example.com",
-                    "avatar": None,
-                    "verified": False,
-                    "location": "Test City"
-                }
-                await_result = self.db.users.update_one(
-                    {"id": test_user_id},
-                    {"$set": user_doc},
-                    upsert=True
-                )
-                self.log_result("Test User Creation", True, "✅ Test user created in database")
+                try:
+                    user_doc = {
+                        "id": test_user_id,
+                        "name": "Test User",
+                        "email": "test@example.com",
+                        "avatar": None,
+                        "verified": False,
+                        "location": "Test City"
+                    }
+                    self.db.users.update_one(
+                        {"id": test_user_id},
+                        {"$set": user_doc},
+                        upsert=True
+                    )
+                    self.log_result("Test User Creation", True, "✅ Test user created in database")
+                except Exception as e:
+                    self.log_result("Test User Creation", False, f"Failed to create user: {e}")
             
             payload = {
                 "post_type": "room_code",
