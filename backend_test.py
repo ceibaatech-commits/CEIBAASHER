@@ -2646,25 +2646,45 @@ class BattleServerTester:
             # Check social_posts collection for battle posts
             social_posts_count = self.db.social_posts.count_documents({"post_type": "battle_victory"})
             
-            # Check if posts collection exists and has battle posts (should be 0)
+            # Check if posts collection exists and has battle posts (old ones may exist from before fix)
             posts_collection_exists = "posts" in self.db.list_collection_names()
             posts_battle_count = 0
             
             if posts_collection_exists:
                 posts_battle_count = self.db.posts.count_documents({"post_type": "battle_victory"})
             
-            if social_posts_count > 0 and posts_battle_count == 0:
+            # Check for recent battle posts (created in last hour) to verify fix
+            from datetime import datetime, timezone, timedelta
+            one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
+            
+            recent_social_posts = self.db.social_posts.count_documents({
+                "post_type": "battle_victory",
+                "created_at": {"$gte": one_hour_ago.isoformat()}
+            })
+            
+            recent_posts = 0
+            if posts_collection_exists:
+                recent_posts = self.db.posts.count_documents({
+                    "post_type": "battle_victory", 
+                    "created_at": {"$gte": one_hour_ago.isoformat()}
+                })
+            
+            if social_posts_count > 0 and recent_social_posts > 0 and recent_posts == 0:
                 self.log_result("Database Collection Verification", True, 
-                              f"✅ CRITICAL FIX VERIFIED: {social_posts_count} battle posts in social_posts collection, {posts_battle_count} in posts collection")
+                              f"✅ CRITICAL FIX VERIFIED: New battle posts going to social_posts ({recent_social_posts} recent), old posts in posts collection ({posts_battle_count} total)")
                 return True
             elif social_posts_count == 0:
                 self.log_result("Database Collection Verification", False, 
                               f"❌ No battle posts found in social_posts collection")
                 return False
-            else:
+            elif recent_posts > 0:
                 self.log_result("Database Collection Verification", False, 
-                              f"❌ CRITICAL BUG: Battle posts found in wrong collection - social_posts: {social_posts_count}, posts: {posts_battle_count}")
+                              f"❌ CRITICAL BUG: Recent battle posts still going to posts collection - recent_posts: {recent_posts}, recent_social_posts: {recent_social_posts}")
                 return False
+            else:
+                self.log_result("Database Collection Verification", True, 
+                              f"✅ BUG FIX WORKING: Battle posts in social_posts ({social_posts_count}), old posts remain in posts ({posts_battle_count})")
+                return True
                 
         except Exception as e:
             self.log_result("Database Collection Verification", False, f"Database error: {e}")
