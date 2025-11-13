@@ -926,14 +926,14 @@ const LiveBattle = () => {
                           </p>
                           <p className="text-xs text-gray-500">points</p>
                         </div>
-                        {player.name !== playerName && (
+                        {player.name !== playerName && isAuthenticated() && (
                           <>
                             <button
-                              onClick={() => handleCeep(player)}
+                              onClick={() => handleFollow(player)}
                               className="p-1.5 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
-                              title="Ceep this player"
+                              title="Follow this player"
                             >
-                              <span className="text-sm font-bold text-blue-600">Ceep</span>
+                              <span className="text-sm font-bold text-blue-600">Follow</span>
                             </button>
                             <button
                               onClick={() => {
