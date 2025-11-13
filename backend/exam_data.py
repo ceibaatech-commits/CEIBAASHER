@@ -1779,15 +1779,23 @@ EXAM_DATA = {
             "English": {
                 "subjects": {
                     "Reading Comprehension": {
-                        "sub_topics": ["Passages", "Inference", "Main Idea"],
+                        "sub_topics": ["Passage Reading", "Inference Questions", "Main Idea", "Vocabulary in Context"],
                         "questions": 90
                     },
                     "Vocabulary": {
-                        "sub_topics": ["Synonyms", "Antonyms", "Idioms & Phrases"],
+                        "sub_topics": ["Synonyms", "Antonyms", "Idioms and Phrases", "One Word Substitution"],
                         "questions": 90
                     },
                     "Grammar": {
-                        "sub_topics": ["Error Detection", "Sentence Improvement"],
+                        "sub_topics": ["Tenses", "Articles", "Prepositions", "Active Passive Voice", "Error Detection", "Sentence Improvement"],
+                        "questions": 90
+                    },
+                    "Error Detection": {
+                        "sub_topics": ["Grammatical Errors", "Spelling Errors", "Punctuation Errors"],
+                        "questions": 90
+                    },
+                    "Sentence Improvement": {
+                        "sub_topics": ["Sentence Correction", "Phrase Replacement", "Sentence Completion"],
                         "questions": 90
                     }
                 }
