@@ -1571,6 +1571,23 @@ class BattleServerTester:
         try:
             test_user_id = "test_user_123"
             
+            # First create a test user in the database
+            if self.db:
+                user_doc = {
+                    "id": test_user_id,
+                    "name": "Test User",
+                    "email": "test@example.com",
+                    "avatar": None,
+                    "verified": False,
+                    "location": "Test City"
+                }
+                await_result = self.db.users.update_one(
+                    {"id": test_user_id},
+                    {"$set": user_doc},
+                    upsert=True
+                )
+                self.log_result("Test User Creation", True, "✅ Test user created in database")
+            
             payload = {
                 "post_type": "room_code",
                 "content": "Join my battle room!",
