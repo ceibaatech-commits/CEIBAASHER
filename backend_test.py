@@ -2678,8 +2678,13 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Follow/Ceep System Testing (CRITICAL - Review Request Focus)
-        print("\n🎯 FOLLOW/CEEP SYSTEM TESTING (CRITICAL - REVIEW REQUEST)")
+        # PRIORITY 1: Social Feed Battle Post Bug Fix (CRITICAL - Review Request Focus)
+        print("\n🎯 SOCIAL FEED BATTLE POST BUG FIX (CRITICAL - REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_social_feed_battle_post_bug_fix()
+        
+        # PRIORITY 2: Follow/Ceep System Testing
+        print("\n🎯 FOLLOW/CEEP SYSTEM TESTING")
         print("=" * 60)
         self.test_follow_ceep_system_comprehensive()
         
