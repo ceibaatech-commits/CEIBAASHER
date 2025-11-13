@@ -54,7 +54,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 {/* User Profile (Desktop) - Click to go to Dashboard */}
                 <button 
                   onClick={() => navigate('/dashboard')}
-                  className="hidden md:flex items-center space-x-3 bg-white/10 hover:bg-white/20 rounded-lg px-4 py-2 transition-colors cursor-pointer"
+                  className="hidden md:flex items-center space-x-3 bg-gray-200 hover:bg-gray-300 rounded-lg px-4 py-2 transition-colors cursor-pointer text-gray-800"
                 >
                   <img
                     src={user.profile_picture || user.avatar || 'https://ui-avatars.com/api/?name=' + user.name}
@@ -64,9 +64,9 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                   <div>
                     <p className="font-semibold text-sm">{user.name}</p>
                     <div className="flex items-center space-x-2 text-xs">
-                      <Trophy className="w-3 h-3 text-yellow-400" />
+                      <Trophy className="w-3 h-3 text-yellow-500" />
                       <span>{user.rating || 1200}</span>
-                      <Flame className="w-3 h-3 text-orange-400" />
+                      <Flame className="w-3 h-3 text-orange-500" />
                       <span>{user.streak || 0}</span>
                     </div>
                   </div>
@@ -75,7 +75,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 {/* Logout */}
                 <button
                   onClick={onLogout}
-                  className="hidden md:flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors"
+                  className="hidden md:flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors text-white"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="text-sm font-semibold">Logout</span>
