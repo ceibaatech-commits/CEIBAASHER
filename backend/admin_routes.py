@@ -55,6 +55,32 @@ async def get_all_users():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching users: {str(e)}")
 
+@router.get("/admin/users/search")
+async def search_users(query: str, limit: int = 20):
+    """
+    Search users by name, email, or ID
+    """
+    try:
+        # Build search query
+        search_filter = {
+            "$or": [
+                {"name": {"$regex": query, "$options": "i"}},
+                {"email": {"$regex": query, "$options": "i"}},
+                {"id": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        
+        users = await db.users.find(search_filter, {"_id": 0}).limit(limit).to_list(limit)
+        
+        return {
+            "success": True,
+            "users": users,
+            "count": len(users)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error searching users: {str(e)}")
+
 @router.get("/admin/users/{user_id}")
 async def get_user_details(user_id: str):
     """
@@ -192,29 +218,3 @@ async def delete_user(user_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting user: {str(e)}")
-
-@router.get("/admin/users/search")
-async def search_users(query: str, limit: int = 20):
-    """
-    Search users by name, email, or ID
-    """
-    try:
-        # Build search query
-        search_filter = {
-            "$or": [
-                {"name": {"$regex": query, "$options": "i"}},
-                {"email": {"$regex": query, "$options": "i"}},
-                {"id": {"$regex": query, "$options": "i"}}
-            ]
-        }
-        
-        users = await db.users.find(search_filter, {"_id": 0}).limit(limit).to_list(limit)
-        
-        return {
-            "success": True,
-            "users": users,
-            "count": len(users)
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error searching users: {str(e)}")
