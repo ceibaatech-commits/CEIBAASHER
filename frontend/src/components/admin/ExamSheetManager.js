@@ -1144,7 +1144,7 @@ const ExamSheetManager = () => {
                 </tr>
               ) : filteredSheets.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="5" className="px-6 py-12 text-center text-gray-500">
                     <FileSpreadsheet className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p>No sheets found. Add your first sheet!</p>
                   </td>
