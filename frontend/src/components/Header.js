@@ -30,6 +30,9 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Exams
             </button>
+            <button onClick={() => navigate('/chapter-tests')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+              Chapter Test
+            </button>
             <button onClick={() => navigate('/social')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Social Feed
             </button>
