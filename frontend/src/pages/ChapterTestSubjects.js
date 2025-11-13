@@ -139,7 +139,7 @@ const ChapterTestSubjects = () => {
       }
     ];
   } else if (selectedClass === '9') {
-    // Class 9 has separate Geography and multiple English books
+    // Class 9 has all 7 subjects including Geography and multiple English/Hindi books
     subjects = [
       {
         name: 'Mathematics',
@@ -164,6 +164,38 @@ const ChapterTestSubjects = () => {
         bgColor: 'bg-teal-100',
         textColor: 'text-teal-600',
         description: 'Contemporary India I'
+      },
+      {
+        name: 'Hindi Kshitij',
+        icon: Languages,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'NCERT Kshitij - Hindi Textbook'
+      },
+      {
+        name: 'English Beehive Poems',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'Poetry Collection'
+      },
+      {
+        name: 'English Beehive Prose',
+        icon: BookOpen,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'Prose Stories and Essays'
+      },
+      {
+        name: 'English Moments',
+        icon: BookOpen,
+        color: 'from-violet-500 to-violet-600',
+        bgColor: 'bg-violet-100',
+        textColor: 'text-violet-600',
+        description: 'Supplementary Reader'
       }
     ];
   } else if (selectedClass === '10') {
