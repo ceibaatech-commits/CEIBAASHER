@@ -90,39 +90,34 @@ const Home = () => {
         onLogout={handleLogout}
       />
       
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-16">
+      {/* Banner Carousel - Sliding Banners for Featured Exams */}
+      <HomeBannerCarousel />
+      
+      {/* Quick Access Buttons - Below Banner */}
+      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl font-black mb-4 bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Ceibaa - Master 38+ Competitive Exams with Free Test Series 2026
-            </h1>
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
-              Master JEE, NEET, UPSC, SSC & more through engaging multiplayer battles. Free practice quizzes, MCQs & comprehensive test series for 2026 exams!
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => navigate('/social')}
-                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
-              >
-                <Users className="w-5 h-5" />
-                <span>Social Feed</span>
-              </button>
-              <button
-                onClick={() => navigate('/join-room')}
-                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
-              >
-                <Users className="w-5 h-5" />
-                <span>Join Battle Room</span>
-              </button>
-              <button
-                onClick={() => navigate('/leaderboard')}
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center space-x-2"
-              >
-                <Trophy className="w-5 h-5" />
-                <span>Leaderboard</span>
-              </button>
-            </div>
+          <div className="flex justify-center gap-4 flex-wrap">
+            <button
+              onClick={() => navigate('/social')}
+              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
+            >
+              <Users className="w-5 h-5" />
+              <span>Social Feed</span>
+            </button>
+            <button
+              onClick={() => navigate('/join-room')}
+              className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
+            >
+              <Users className="w-5 h-5" />
+              <span>Join Battle Room</span>
+            </button>
+            <button
+              onClick={() => navigate('/leaderboard')}
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center space-x-2"
+            >
+              <Trophy className="w-5 h-5" />
+              <span>Leaderboard</span>
+            </button>
           </div>
         </div>
       </div>
