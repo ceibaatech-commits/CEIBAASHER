@@ -380,6 +380,26 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 6, "chapter_name": "The Last Leaf", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "A House is Not a Home", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 8, "chapter_name": "The Beggar", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "Civics": [
+            {"chapter_number": 1, "chapter_name": "What is Democracy? Why Is Democracy?", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Constitutional Design", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Electoral Politics", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Working of Institutions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Democratic Rights", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Economics": [
+            {"chapter_number": 1, "chapter_name": "The Story of Village Palampur", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "People as Resource", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Poverty as a Challenge", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Food Security in India", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "History": [
+            {"chapter_number": 1, "chapter_name": "The French Revolution", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 2, "chapter_name": "Socialism in Europe and the Russian Revolution", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Nazism and the Rise of Hitler", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "Forest Society and Colonialism", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Pastoralists in the Modern World", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ]
     }
 }
