@@ -64,6 +64,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('ceibaa_user', JSON.stringify(updatedUser));
   };
 
+  const setUserData = (userData) => {
+    setUser(userData);
+    localStorage.setItem('ceibaa_user', JSON.stringify(userData));
+  };
+
   const isAuthenticated = () => {
     return user !== null;
   };
@@ -74,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
+    setUserData,
     isAuthenticated
   };
 
