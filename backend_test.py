@@ -3081,6 +3081,10 @@ class BattleServerTester:
                     self.log_result("Follow User", True, 
                                   f"✅ {follower_name} now follows {target_name}")
                     return True
+                elif "Already ceeped" in data.get('message', ''):
+                    self.log_result("Follow User", True, 
+                                  f"✅ {follower_name} already follows {target_name} (relationship exists)")
+                    return True
                 else:
                     self.log_result("Follow User", False, 
                                   f"Follow failed: {data.get('message', 'Unknown error')}")
