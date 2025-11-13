@@ -2921,8 +2921,8 @@ class BattleServerTester:
         
         # Step 1: Login as demo users
         print("\n1️⃣ Testing Demo User Login...")
-        demo1_data = self.test_demo_login("demo1", "password")
-        demo2_data = self.test_demo_login("demo2", "password")
+        demo1_data = self.test_demo_login("demo1", "demo1")
+        demo2_data = self.test_demo_login("demo2", "demo2")
         
         if not demo1_data or not demo2_data:
             self.log_result("Social Feed Workflow", False, "Failed to login demo users")
