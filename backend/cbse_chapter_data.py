@@ -282,7 +282,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 7, "chapter_name": "Public Facilities", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 8, "chapter_name": "Law and Social Justice", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
-        "Hindi": [
+        "Hindi Vasant": [
             {"chapter_number": 1, "chapter_name": "Laakh Ki Chudiyan", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 2, "chapter_name": "Bus Ki Yatra", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 3, "chapter_name": "Diwanon Ki Hasti", "total_questions": 50, "difficulty": "Medium", "duration": 35},
@@ -290,12 +290,62 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 5, "chapter_name": "Kya Nirash Hua Jaye", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 6, "chapter_name": "Yah Sabse Kathin Samay Nahi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "Kabir Ki Saakhiyan", "total_questions": 50, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Sudama Charit", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Surdas Charit", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 9, "chapter_name": "Jahan Pahiya Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Akshari Lota", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Akbari Lota", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 11, "chapter_name": "Surdas Ke Pad", "total_questions": 50, "difficulty": "Hard", "duration": 40},
             {"chapter_number": 12, "chapter_name": "Paani Ki Kahani", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 13, "chapter_name": "Baaz Aur Saap", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Durva": [
+            {"chapter_number": 1, "chapter_name": "Gudiya", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Do Gauraiya", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Chiththiyon Mein Europe", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Os", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Natak Mein Natak", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Sagar Yatra", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Uth Kisan O", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Saste Ka Chakkar", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Ek Khiladi Ki Kuch Yadein", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Bus Ki Sair", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "Hindi Ne Jinki Jindagi Badal Di Maria Nezheshi", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Ashadh Ka Pehla Din", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Anyay Ke Khilaf", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Baccho Ke Priya Shri Keshav Shankar Pillai", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "Farsh Par", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 16, "chapter_name": "Budhi Amma Ki Baat", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 17, "chapter_name": "Vah Subah Kabhi To Aayegi", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Bharat Ki Khoj": [
+            {"chapter_number": 1, "chapter_name": "Ahmadnagar Ka Kila", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Talash", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Sindhu Ghati Sabhyata", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Yugon Ka Daur", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Nayi Samasyaen", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Antim Daur Ek", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Antim Daur Do", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Tanav", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Do Prishthabhoomian Bhartiya Aur Angrezi", "total_questions": 50, "difficulty": "Hard", "duration": 40}
+        ],
+        "English Honeydew": [
+            {"chapter_number": 1, "chapter_name": "The Best Christmas Present in the World & The Ant and the Cricket", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "The Tsunami & Geography Lesson", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Glimpses of the Past Macavity The Mystery Cat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Bepin Choudhurys Lapse of Memory & The Last Bargain", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "The Summit Within & The School Boy", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "This is Jodys Fawn & The Duck and the Kangaroo", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "A Visit to Cambridge & When I Set out for Lyonnesse", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "A Short Monsoon Diary & On the Grasshopper and Cricket", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "English It So Happened": [
+            {"chapter_number": 1, "chapter_name": "How the Camel Got His Hump", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Children at Work", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "The Selfish Giant", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "The Treasure Within", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Princess September", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "The Fight", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Jalebis", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Ancient Education System of India", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ]
     },
     "9": {
