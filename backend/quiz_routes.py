@@ -81,13 +81,23 @@ async def start_quiz(request: QuizStartRequest):
     questions = []
     source = "demo"
     
-    if topic:
-        # Check if there's a Google Sheet mapping for this topic
-        MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-        DB_NAME = os.getenv("DB_NAME", "test_database")
-        client = AsyncIOMotorClient(MONGO_URL)
-        db = client[DB_NAME]
-        
+    # Check if there's a Google Sheet mapping
+    MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+    DB_NAME = os.getenv("DB_NAME", "test_database")
+    client = AsyncIOMotorClient(MONGO_URL)
+    db = client[DB_NAME]
+    
+    # Build query based on whether it's class-based or exam-based
+    if request.isClassBased and request.class_name and request.chapter:
+        # Class-based query (CBSE chapters)
+        query = {
+            "class_name": request.class_name,
+            "subject": request.subject,
+            "chapter": request.chapter
+        }
+        print(f"🔍 Querying exam_sheets collection for CLASS-BASED: {query}")
+    elif topic:
+        # Exam-based query (NEET, JEE, etc.)
         # Build query using NEW field names that match Admin Sheet Manager
         # The 'subject' parameter from URL = 'syllabus_topic' in database
         # The 'topic' parameter from URL = 'subject' in database
@@ -97,7 +107,11 @@ async def start_quiz(request: QuizStartRequest):
             "subject": topic
         }
         
-        print(f"🔍 Querying exam_sheets collection for: {query}")
+        print(f"🔍 Querying exam_sheets collection for EXAM-BASED: {query}")
+    else:
+        query = None
+    
+    if query:
         
         # If sub_topic provided, try to find specific mapping
         if sub_topic:
