@@ -1,62 +1,78 @@
 <analysis>
-The trajectory documents a comprehensive development cycle on the Ceibaa competitive exam platform. The work began by addressing a series of user-reported issues, starting with implementing a configurable question limit for quizzes and integrating the KaTeX library to render mathematical and chemical notations.
+The trajectory details a multi-stage development process for the Ceibaa exam platform. The initial work involved a series of iterative UI/UX improvements based on user feedback, starting with replacing the site's logo with a user-provided transparent image and then cycling through three different header color schemes (dark grey, olive, light grey) to enhance its visibility. This required updates to , , , and .
 
-A significant portion of the effort was dedicated to building and debugging a complex social feature set. This involved renaming the Ceep follow system to Follow, implementing a mixed For You feed (combining posts from followed users with trending content), and adding the ability for users to share battle room codes on the feed. Multiple bugs were fixed in this area, including ensuring the Follow button state updated correctly and correcting database collection names ( vs. ,  vs. ) to ensure interactions appeared on the feed.
+The core of the work was the implementation of a major new feature: a comprehensive Chapter Test section for the CBSE curriculum (classes 6-12). This was a large-scale task involving multi-level navigation. The engineer created new frontend pages for class selection (), subject selection (), and chapter lists (). A significant architectural change was made for classes 11 and 12, introducing a stream-selection step (Science, Commerce, Humanities) with dedicated pages (, ).
 
-A major effort was then channeled into fixing the authentication and authorization flow. This included resolving a bug where the social feed didn't wait for user authentication to complete, leading to a premature login prompt. The engineer implemented a full Google OAuth 2.0 login flow, from adding backend routes and credentials to fixing the frontend callback component to correctly fetch user data and update the application state.
+A critical part of the process was debugging. The engineer resolved numerous issues, including a white-screen bug caused by missing props in the Header component, a  URL error due to incorrect parameter handling, and a major quiz-loading failure. The quiz-loading fix was complex, requiring modifications to the frontend () and backend () to support a new class-based quiz structure alongside the existing exam-based one. This involved updating API request models, database query logic (using regex for flexible matching), and frontend state management.
 
-Most recently, development has focused on building an Admin Panel, starting with a live-data dashboard and a full-featured Exam Sheet Manager. The core of this work involved creating backend APIs to fetch user data and manage Google Sheet links, and then fixing a series of bugs in the sheet import process, including a critical MongoDB  serialization error and, currently, a parsing error due to a new column format in the user's Google Sheets.
+The final request was to create a split-screen UI for passage-based questions, which the engineer began by updating the Google Sheets parser () and creating a new layout component ().
 </analysis>
 
 <product_requirements>
-The Ceibaa platform is a web-based competitive exam preparation tool with two main user-facing features: Solo Practice and real-time Live Battles. A central requirement is that all question content is sourced dynamically from Google Sheets.
+The Ceibaa platform is a web application for competitive exam preparation. Its core functionality allows users to take practice quizzes (Solo Practice) and compete in live battles, with all question content sourced dynamically from Google Sheets via an Admin Panel.
 
-The platform must include a social layer that allows users to follow each other, view a mixed timeline of posts from followed users and trending content, and share battle room codes. This social functionality must be integrated with the core quiz experience, allowing users to follow others from a battle room and see battle results posted to the feed.
+The primary product goal of this development cycle was to expand the platform's offerings by introducing a comprehensive, multi-level CBSE Chapter Test system. This feature required a hierarchical navigation flow:
+1.  **Class Selection (6-12)**.
+2.  **Stream Selection** for Classes 11 & 12 (Science, Commerce, Humanities).
+3.  **Subject Selection**.
+4.  **Chapter-wise Quiz List**, styled to match the existing exam pages.
 
-A secure, role-based Admin Panel is required for platform management. This panel must provide a real-time overview of platform statistics (users, posts, battles), a detailed user management table, and a crucial Exam Sheet Manager. The Sheet Manager is the interface for connecting Google Sheets to the system, mapping them to specific exams or classes, and importing the questions into the database. The import process must be robust, handling specific sheet formats and providing clear feedback to the admin. Authentication includes both demo accounts and social logins (Google, Facebook, Twitter), with a seamless flow that maintains the user's session across the application.
+A key requirement was that this new system be fully integrated with the existing Admin Sheet Manager, allowing administrators to upload chapter-specific questions via Google Sheets. The implementation also needed to handle UI/UX feedback, such as updating the site logo and header colors, and ensure new features like Create Room were compatible with the chapter-based structure. The final task initiated was to support passage-based reading comprehension questions with a dedicated split-view UI, auto-detected from the Google Sheets.
 </product_requirements>
 
 <key_technical_concepts>
-- **Backend**: FastAPI for REST APIs, Pydantic for data validation, JWT for authentication.
-- **Frontend**: React (including Hooks, ),  for global state management.
-- **Database**: MongoDB, with a key challenge being the handling of non-serializable  types in API responses.
-- **Data Source**: Google Sheets API, used as the primary CMS for all question content.
-- **Real-time**: Node.js and Socket.io for the .
-- **Rendering**: KaTeX () for client-side rendering of mathematical and chemical formulas.
+- **Backend**: FastAPI (Python) with Pydantic for data validation. Key logic involved creating new routers () and modifying existing ones () to handle dual data models (exam-based vs. class-based).
+- **Frontend**: React.js with . Extensive use of hooks (, , , ) for state management, data fetching, and handling complex navigation logic.
+- **Database**: MongoDB. A significant challenge was querying the database with sufficient flexibility, ultimately solved by using case-insensitive regex to match chapter names.
+- **Data Source**: Google Sheets API. The parsing logic in  was updated to support a new passage column for reading comprehension questions.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a microservices architecture with a separate frontend, backend, and real-time battle server.
+The application uses a standard microservices architecture with a React frontend and a FastAPI backend.
 
-   - ****
-      - **Importance**: Contains all API endpoints for the Admin Panel, secured by a JWT-based  dependency. It handles fetching users, getting dashboard stats, and managing sheet links.
-      - **Changes**: This file was created from scratch. Key changes included adding endpoints for , , , and . A critical fix was implemented in the  (POST) endpoint to convert the MongoDB  (an ) to a string to prevent a JSON serialization error (500).
-   - ****
-      - **Importance**: This service is responsible for the core logic of fetching a Google Sheet URL, parsing it as a CSV, and transforming the rows into structured question data. It's central to the entire question import process.
-      - **Changes**: The parsing logic was updated to correctly map the  from a numeric index to a letter ('A'-'D'). It is the focus of the current bug, as it expects a 7-column format and is failing on the user's new 8-column format.
-   - ****
-      - **Importance**: Defines the logic for the social feed, including post creation and the For You and Following timelines.
-      - **Changes**: Multiple significant fixes were made here. The  endpoint was corrected to query the  collection instead of the non-existent . The  endpoint was fixed to insert into  instead of .
-   - ****
-      - **Importance**: The frontend component for the Sheet Manager. It provides the UI for admins to add new sheet links and view their import status.
-      - **Changes**: This file was created and later enhanced to include Test and Import buttons, an Import Status column, and loading indicators, providing admins with real-time feedback on the question import process. The cascading dropdown logic was also rewritten here to use comprehensive, hardcoded data.
-   - ****
-      - **Importance**: Handles the redirect from an external OAuth provider (like Google). It's responsible for exchanging the token for user data and establishing the session.
-      - **Changes**: This file was completely rewritten to fetch user data from the  endpoint after receiving a token, update the global  with the user's information, and then redirect to the social feed.
+- ** (New Files)**
+  - **Importance**: These files create the entire multi-level navigation flow for the new CBSE Chapter Test feature, from class selection to subject/stream and finally the chapter list.
+  - **Changes**: Created from scratch to implement the user's explicit request for a hierarchical test system.  was later modified to conditionally navigate Classes 11 and 12 to the stream selection page.
+
+- ****
+  - **Importance**: This is the core component for rendering and managing a user's quiz session.
+  - **Changes**: Heavily modified to support both the original exam-based quizzes and the new class-based chapter tests. Logic was added to detect the quiz type from URL patterns and , send the correct data structure to the backend API, and render appropriate breadcrumbs and navigation buttons.
+
+- ****
+  - **Importance**: Contains the  endpoint, which is critical for loading all quiz questions.
+  - **Changes**: The  model and the  function were updated to accept and process new fields (, , ). The database query logic was modified to query the  collection using class-based fields and a flexible regex match for the chapter name.
+
+- ** (New File)**
+  - **Importance**: Centralizes the data structure for all CBSE classes, subjects, and chapters, acting as the source of truth for the frontend display.
+  - **Changes**: Created to store the detailed chapter lists for all subjects in Classes 6-12, keeping the main  file cleaner.
+
+- ****
+  - **Importance**: The main navigation bar for the entire site.
+  - **Changes**: Modified multiple times for UI/UX improvements. A Chapter Test link was added. The background color was changed three times based on user feedback ( ->  -> ), which also required updating text and icon colors for contrast.
+
+- ****
+  - **Importance**: Handles all data import logic from Google Sheets.
+  - **Changes**: The parsing logic was updated to recognize and extract data from a new optional passage column, setting the stage for the passage-based quiz feature.
 </code_architecture>
 
 <pending_tasks>
-- **Solo Practice Social Posting**: The feature to post quiz results from  to the social feed has not been implemented.
-- **Admin Dashboard Completeness**: While the User Management and Sheet Manager sections are functional, other placeholder sections like Content Moderation and Revenue Management are not yet built.
-- **Social Feed Debugging**: The issue of quiz results (from Solo Practice) not being posted to the social feed remains unresolved as it was never implemented.
+- **Passage-Based Quiz UI**: The frontend logic in  to detect passage-based questions and render the  component is not complete.
+- **Chapter Test Admin UI**: The  was updated with chapter data, but the UI may need further refinement to provide a smooth workflow for managing CBSE content.
+- **Advanced Chapter Test Features**: The initial request mentioned several features for the chapter list page that were not implemented: bookmarking chapters, performance analytics, and a Recently Attempted section.
 </pending_tasks>
 
 <current_work>
-The immediate task is to debug and fix the Google Sheet import functionality within the Exam Sheet Manager. The user has reported that saving a new sheet fails, and provided a screenshot showing a frontend error message: Failed to parse questions from sheet. Check format. They also specified the new, correct format for the Google Sheet columns: .
+The engineer was actively implementing a new feature for **passage-based reading comprehension quizzes**. The user requested a split-screen UI where the passage remains static on the left while the associated multiple-choice questions are presented on the right. This feature should be automatically enabled for questions that have an associated passage in the source Google Sheet.
 
-Previously, a  was resolved, which was caused by a MongoDB  serialization issue in . The current problem is a logical error in the parsing service itself. The  is written to handle a 7-column CSV, but the user's sheet now provides 8 columns. The parsing logic needs to be adjusted to account for the additional  column at the beginning and correctly map the subsequent columns (, , , , , , ) to the corresponding fields in the database model. The system is now stable on the API side, but the data processing logic is incorrect for the new sheet format.
+The work performed so far includes:
+1.  **Backend Update**: The  file was modified to add logic that detects and parses a new passage column from the imported CSV data. This ensures the passage text is associated with the relevant questions in the database.
+    
+2.  **New Frontend Component**: A new React component, , was created to provide the basic structure for the split-screen layout.
+3.  **Integration Start**: The main quiz component, , was modified to import the new .
+
+The work stopped right before adding the conditional logic within  to detect if the fetched questions contain a passage and, if so, to render  instead of the default quiz view.
 </current_work>
 
 <optional_next_step>
-I will read  and modify the  function to correctly handle the new 8-column format by adjusting the indices used when unpacking each row from the sheet data.
+Complete the implementation of the passage-based quiz UI by adding logic to  to detect questions with a  field and render them using the new  component.
 </optional_next_step>

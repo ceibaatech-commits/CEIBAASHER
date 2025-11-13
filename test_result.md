@@ -187,7 +187,7 @@ backend:
         comment: "✅ SOCKET.IO BATTLE SYSTEM FLOW COMPREHENSIVE TEST COMPLETE: Verified complete battle system architecture per review request. (1) ✅ Battle Room Creation API: POST /api/battle/create-room working correctly - generates valid 6-digit PINs, returns proper room structure with examId/subject/topic. (2) ✅ Socket.io Proxy Connection: Internal proxy at localhost:8001/socket.io fully functional - supports polling and websocket transports, handles multi-client connections. (3) ✅ Room Joining Flow: Multi-client architecture verified - host and joiner can connect simultaneously, emit join-room events successfully. (4) ✅ Event Forwarding Architecture: Frontend → Proxy (socket_app.py) → Battle-server (port 5001) → Proxy → Frontend flow confirmed working. (5) ✅ Critical Events Tested: join-room, start-quiz, player-joined events properly handled. Minor: External URL has Kubernetes ingress routing issue for /socket.io path, but internal proxy fully operational. Battle system core functionality VERIFIED and WORKING."
       - working: true
         agent: "testing"
-        comment: "🎉 WEBSOCKET FIX VERIFICATION COMPLETE - 100% SUCCESS: Comprehensive testing per review request confirms WebSocket fix is fully operational. (1) ✅ WebSocket Connection Test: Successfully connects to external URL https://ceibaa-exam-prep.preview.emergentagent.com/api/battlews with stable connection, (2) ✅ Complete Battle Flow: Room creation via battle-server working, multi-client connections to /api/battlews successful, bi-directional event communication verified, (3) ✅ Real-time Events: start_quiz, submit_answer, send_message events all working correctly through proxy architecture, (4) ✅ Architecture Verified: Frontend → /api/battlews → Socket.io Proxy → Battle-Server → Proxy → Frontend flow fully functional. ALL SUCCESS CRITERIA MET: WebSocket upgrade working, multiple clients connect simultaneously, Socket.io events bi-directional, room joining with real-time updates operational. Backend logs show successful proxy connections with proper event forwarding. WebSocket fix implementation using python-socketio proxy is COMPLETE and WORKING."
+        comment: "🎉 WEBSOCKET FIX VERIFICATION COMPLETE - 100% SUCCESS: Comprehensive testing per review request confirms WebSocket fix is fully operational. (1) ✅ WebSocket Connection Test: Successfully connects to external URL https://exam-practice-app-1.preview.emergentagent.com/api/battlews with stable connection, (2) ✅ Complete Battle Flow: Room creation via battle-server working, multi-client connections to /api/battlews successful, bi-directional event communication verified, (3) ✅ Real-time Events: start_quiz, submit_answer, send_message events all working correctly through proxy architecture, (4) ✅ Architecture Verified: Frontend → /api/battlews → Socket.io Proxy → Battle-Server → Proxy → Frontend flow fully functional. ALL SUCCESS CRITERIA MET: WebSocket upgrade working, multiple clients connect simultaneously, Socket.io events bi-directional, room joining with real-time updates operational. Backend logs show successful proxy connections with proper event forwarding. WebSocket fix implementation using python-socketio proxy is COMPLETE and WORKING."
 
   - task: "MongoDB Connection in Battle Server"
     implemented: true
@@ -1014,7 +1014,7 @@ agent_communication:
       - ✅ Uvicorn has --ws auto flag enabled
       
       **Issue Identified**:
-      - Frontend .env has REACT_APP_SOCKET_PROXY_URL=https://ceibaa-exam-prep.preview.emergentagent.com
+      - Frontend .env has REACT_APP_SOCKET_PROXY_URL=https://exam-practice-app-1.preview.emergentagent.com
       - BattleLobby.js connects to SOCKET_PROXY_URL (which points to correct domain)
       - LiveBattle.js connects to BACKEND_URL (also correct domain)
       - Both should use path: '/socket.io'
@@ -1138,7 +1138,7 @@ agent_communication:
       ## ✅ ALL SUCCESS CRITERIA MET (100% - 10/10 tests passed):
       
       ### 1️⃣ WebSocket Connection Test ✅
-      - Successfully connects to external URL: https://ceibaa-exam-prep.preview.emergentagent.com/api/battlews
+      - Successfully connects to external URL: https://exam-practice-app-1.preview.emergentagent.com/api/battlews
       - WebSocket upgrade working (not just HTTP polling)
       - Connection remains stable after 2+ seconds
       - No more "WebSocket upgrade was successful" errors in browser
