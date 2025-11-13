@@ -1741,7 +1741,7 @@ class BattleServerTester:
             overview_stats = overview_data['stats']
             
             # Verify total_users matches actual user count
-            if self.db:
+            if self.db is not None:
                 try:
                     actual_users = self.db.users.count_documents({})
                     if actual_users == overview_stats['total_users']:
