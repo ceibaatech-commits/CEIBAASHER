@@ -452,11 +452,102 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 5, "chapter_name": "Pastoralists in the Modern World", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ]
     }
+    },
+    "7": {
+        "Mathematics": [
+            {"chapter_number": 1, "chapter_name": "Integers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Fractions and Decimals", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Data Handling", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Simple Equations", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Lines and Angles", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "The Triangle and Its Properties", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 7, "chapter_name": "Comparing Quantities", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Rational Numbers", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Perimeter and Area", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Algebraic Expressions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Exponents and Powers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Symmetry", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Visualising Solid Shapes", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Nutrition in Plants", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Nutrition in Animals", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Heat", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Acids, Bases and Salts", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Physical and Chemical Changes", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Respiration in Organisms", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Transportation in Animals and Plants", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Reproduction in Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Motion and Time", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Electric Current and Its Effects", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Light", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Forests: Our Lifeline", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Wastewater Story", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "Environment", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Inside Our Earth", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Our Changing Earth", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Air", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Water", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Human Environment Interactions - The Tropical and the Subtropical Region", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Life in the Deserts", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "History": [
+            {"chapter_number": 1, "chapter_name": "Introduction: Tracing Changes Through A Thousand Years", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Kings and Kingdoms", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Delhi: 12th to 15th Century", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "The Mughals", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "Tribes, Nomads and Settled Communities", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Devotional Paths To The Divine", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "The Making Of Regional Cultures", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Eighteenth-Century Political Formation", "total_questions": 55, "difficulty": "Hard", "duration": 40}
+        ],
+        "Civics": [
+            {"chapter_number": 1, "chapter_name": "On Equality", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Role of the Government in Health", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "How The State Government Works", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Growing Up As Boys And Girls", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Women Change The World", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Understanding Media", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Markets Around Us", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "A Shirt In The Market", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "English Honeycomb": [
+            {"chapter_number": 1, "chapter_name": "Three Questions", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "A Gift of Chappals", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Gopal and the Hilsa Fish", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "The Ashes That Made Trees Bloom", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Quality", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Expert Detectives", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "The Invention of Vita – Wonk", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Fire Friend and Foe", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "A Bicycle in Good Repair", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "The Story of Cricket", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Vasant": [
+            {"chapter_number": 1, "chapter_name": "Hum Panchi Unmukt Gagan Ke", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Himalaya Ki Betiyan", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Kathputli", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Meethaiwala", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Raja Kho Gaye", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "Shaam - Ek Kisan", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "Apoorv Anubhav", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Rahim Ke Dohe", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Ek Tinka", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Khanpan Ki Badalti Tasveer", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Neelkanth", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Bhor Aur Bharkha", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Veer Kunwar Singh", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Sangatkaar Ki Karuna Mein Tungnathji Ho Gaye: Dhanraj", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 15, "chapter_name": "Atma Ka Anumanit Vyay", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ]
+    }
 }
 
-# Add similar data for classes 7, 11, 12 (keeping it concise for now)
+# Add similar data for classes 11, 12 (keeping it concise for now)
 # These can be expanded based on NCERT syllabus
-for class_num in ["7", "11", "12"]:
+for class_num in ["11", "12"]:
     CBSE_CHAPTER_DATA[class_num] = {
         "Mathematics": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
