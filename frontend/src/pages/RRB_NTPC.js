@@ -541,8 +541,8 @@ const RRB_NTPC = () => {
                         <h4 className="font-bold text-gray-900 mb-2">Preparation Strategy</h4>
                         <p className="text-gray-700 text-sm">
                           {data.weight === 'High' 
-                            ? `This is a high-weightage section. Allocate maximum study time here. Master all ${data.topics.length} topics thoroughly.`
-                            : `Focus on core concepts and practice regularly. Cover all ${data.topics.length} topics systematically.`
+                            ? `This is a high-weightage section. Allocate maximum study time here. Master all ${data.subjects.length} subjects thoroughly.`
+                            : `Focus on core concepts and practice regularly. Cover all ${data.subjects.length} subjects systematically.`
                           }
                         </p>
                       </div>
