@@ -39,6 +39,8 @@ import AFCAT from "@/pages/AFCAT";
 // Chapter Test Pages
 import ChapterTestHome from "@/pages/ChapterTestHome";
 import ChapterTestSubjects from "@/pages/ChapterTestSubjects";
+import ChapterTestStreams from "@/pages/ChapterTestStreams";
+import ChapterTestStreamSubjects from "@/pages/ChapterTestStreamSubjects";
 import ChapterTestChapters from "@/pages/ChapterTestChapters";
 
 function App() {
