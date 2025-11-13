@@ -295,7 +295,9 @@ const SoloPractice = () => {
 
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Setup Your Quiz</h1>
-              <p className="text-gray-600">{exam} - {subject} {topic && `- ${topic}`} {subTopic && `- ${subTopic}`}</p>
+              <p className="text-gray-600">
+                {isClassBased ? `${classBasedData.class_name} - ${classBasedData.subject} - ${classBasedData.chapter}` : `${exam} - ${subject} ${topic ? `- ${topic}` : ''} ${subTopic ? `- ${subTopic}` : ''}`}
+              </p>
             </div>
 
             <div className="mb-8">
