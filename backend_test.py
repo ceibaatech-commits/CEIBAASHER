@@ -1593,7 +1593,7 @@ class BattleServerTester:
                                       f"✅ Valid follows count: {count}")
                         
                         # Verify against ceeps collection
-                        if self.db:
+                        if self.db is not None:
                             try:
                                 actual_count = self.db.ceeps.count_documents({})
                                 if actual_count == count:
