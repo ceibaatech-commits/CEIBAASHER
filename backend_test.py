@@ -1572,6 +1572,15 @@ class BattleServerTester:
         self.test_quiz_start_multiple_topics()
         self.test_backend_logs_for_sheets_loading()
         
+        # Social Feed Tests (NEW - Review Request Focus)
+        print("\n📱 SOCIAL FEED TESTS (REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_social_feed_for_you_mixed()
+        self.test_room_code_post_creation()
+        self.test_follow_ceep_system()
+        self.test_trending_score_calculation()
+        self.test_room_code_in_feed()
+        
         # Summary
         print("\n" + "=" * 60)
         print("📊 TEST SUMMARY")
