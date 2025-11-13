@@ -2997,10 +2997,13 @@ class BattleServerTester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get('success') and 'user' in data:
+                if 'user' in data and 'access_token' in data:
                     user = data['user']
+                    # Add user_id field for compatibility with existing tests
+                    user['user_id'] = user.get('id')
+                    user['access_token'] = data.get('access_token')
                     self.log_result(f"Demo Login - {username}", True, 
-                                  f"✅ Login successful: {user.get('name')} (ID: {user.get('user_id')})")
+                                  f"✅ Login successful: {user.get('name')} (ID: {user.get('id')})")
                     return user
                 else:
                     self.log_result(f"Demo Login - {username}", False, 
