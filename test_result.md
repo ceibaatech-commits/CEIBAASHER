@@ -972,3 +972,38 @@ agent_communication:
       - Backend logs show successful proxy connections
       
       **CONCLUSION**: WebSocket fix is COMPLETE and WORKING. All critical success criteria met. Battle system ready for production use.
+
+  - agent: "main"
+    message: |
+      ✅ SOCIAL FEED ENHANCEMENT & FOLLOW FEATURE UPDATE COMPLETE
+      
+      **Task 1: Battle Room Follow Feature**
+      - Renamed "Ceep" button → "Follow" in LiveBattle.js leaderboard
+      - Implemented authentication check using useAuth hook
+      - Follow button now only visible to logged-in users
+      - Updated all messages from "ceeping" to "following"
+      - Backend API remains at /api/ceep/ceep (no breaking changes)
+      
+      **Task 2: Mixed 'For You' Feed Implementation**
+      - Complete rewrite of /feed/for-you endpoint
+      - Now shows mixed content: posts from followed users + trending content
+      - Trending algorithm: engagement_score * recency_factor
+      - Engagement score = (likes × 2 + comments × 3 + shares × 4)
+      - Recency factors: 2.0x (<24hrs), 1.5x (<3days), 1.2x (<7days), 1.0x (older)
+      - Trending scores calculated and stored in database
+      - All activity types supported: scores, battle results, achievements, room codes
+      
+      **Task 3: Room Code Sharing Feature**
+      - Added 'room_code' post type to backend models
+      - Frontend: New "Share Room Code" option in create post modal
+      - Room code input: 6-digit, auto-uppercase, centered display
+      - Room Code Card: Green gradient design with large code display
+      - "Join Battle Now" button navigates directly to battle lobby
+      - Users can share and join battle rooms via social feed
+      
+      **Files Modified**:
+      - /app/frontend/src/pages/LiveBattle.js
+      - /app/backend/social_feed_routes.py
+      - /app/frontend/src/pages/SocialFeed.js
+      
+      **Status**: All implementations complete. Ready for comprehensive testing.
