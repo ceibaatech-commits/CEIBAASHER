@@ -1191,6 +1191,9 @@ const ExamSheetManager = () => {
                       ) : classForm.class_name === 'Class 9' ? (
                         <>
                           <option value="Geography">Geography</option>
+                          <option value="History">History</option>
+                          <option value="Civics">Civics</option>
+                          <option value="Economics">Economics</option>
                           <option value="Hindi Kshitij">Hindi Kshitij</option>
                           <option value="English Beehive Poems">English Beehive Poems</option>
                           <option value="English Beehive Prose">English Beehive Prose</option>
