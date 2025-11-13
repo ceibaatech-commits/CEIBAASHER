@@ -56,6 +56,11 @@ function App() {
           <Route path="/exams/rrb-ntpc" element={<RRB_NTPC />} />
           <Route path="/exams/afcat" element={<AFCAT />} />
           
+          {/* Chapter Test Routes */}
+          <Route path="/chapter-tests" element={<ChapterTestHome />} />
+          <Route path="/chapter-tests/:classNumber" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/:classNumber/:subject" element={<ChapterTestChapters />} />
+          
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
