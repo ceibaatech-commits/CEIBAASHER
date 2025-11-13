@@ -6,7 +6,7 @@ import axios from 'axios';
 import MathText from '../components/MathText';
 
 // Connect to battle server through the backend domain
-const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://ceibaa-battle.preview.emergentagent.com';
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://smartquiz-render.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();

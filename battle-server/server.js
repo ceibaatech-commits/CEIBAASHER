@@ -12,7 +12,7 @@ const httpServer = createServer(app);
 // Configure Socket.io with CORS
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000', 'http://localhost:8000', 'https://ceibaa-battle.preview.emergentagent.com'],
+    origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['http://localhost:3000', 'http://localhost:8000', 'https://smartquiz-render.preview.emergentagent.com'],
     methods: ['GET', 'POST'],
     credentials: true
   },
