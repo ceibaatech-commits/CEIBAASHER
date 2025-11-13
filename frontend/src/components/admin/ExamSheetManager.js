@@ -748,8 +748,61 @@ const ExamSheetManager = () => {
     });
   };
 
+  const handleImport = async (sheetId) => {
+    if (!window.confirm('Import/Re-import questions from this sheet? This will replace existing questions.')) return;
+
+    try {
+      setLoading(true);
+      const response = await axios.post(`${BACKEND_URL}/api/admin/sheets/${sheetId}/import`);
+      
+      if (response.data.success) {
+        alert(`✅ Successfully imported ${response.data.imported} questions!`);
+        fetchSheets();
+      } else {
+        alert(`❌ Import failed: ${response.data.message || response.data.error}`);
+      }
+    } catch (error) {
+      console.error('Error importing questions:', error);
+      alert(`Failed to import questions: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTestSheet = async (sheetId) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BACKEND_URL}/api/admin/sheets/${sheetId}/test`);
+      
+      if (response.data.success) {
+        const { sheet_id, row_count, question_count, preview, sample_questions } = response.data;
+        
+        let message = `✅ Sheet is accessible!\n\n`;
+        message += `Sheet ID: ${sheet_id}\n`;
+        message += `Total Rows: ${row_count}\n`;
+        message += `Questions Found: ${question_count}\n\n`;
+        
+        if (sample_questions && sample_questions.length > 0) {
+          message += `Sample Questions:\n`;
+          sample_questions.forEach((q, idx) => {
+            message += `\n${idx + 1}. ${q.question.substring(0, 100)}...\n`;
+          });
+        }
+        
+        alert(message);
+      } else {
+        alert(`❌ Sheet test failed: ${response.data.error}`);
+      }
+    } catch (error) {
+      console.error('Error testing sheet:', error);
+      alert(`Failed to test sheet: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDelete = async (sheetId) => {
-    if (!window.confirm('Are you sure you want to delete this sheet?')) return;
+    if (!window.confirm('Are you sure you want to delete this sheet and all its questions?')) return;
 
     try {
       await axios.delete(`${BACKEND_URL}/api/admin/sheets/${sheetId}`);
