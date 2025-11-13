@@ -277,6 +277,118 @@ async def search_sheets(query: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error searching sheets: {str(e)}")
 
+@router.post("/admin/sheets/{sheet_id}/import")
+async def import_sheet_questions(sheet_id: str):
+    """
+    Manually import/re-import questions from a sheet
+    """
+    try:
+        # Get sheet info
+        sheet = await db.exam_sheets.find_one({"id": sheet_id}, {"_id": 0})
+        if not sheet:
+            raise HTTPException(status_code=404, detail="Sheet not found")
+        
+        from google_sheets_service import GoogleSheetsService
+        sheets_service = GoogleSheetsService()
+        
+        # Delete existing questions for this sheet
+        delete_result = await db.questions.delete_many({"sheet_id": sheet_id})
+        
+        # Fetch fresh questions
+        questions = sheets_service.fetch_questions(sheet["sheet_link"])
+        
+        if not questions:
+            return {
+                "success": False,
+                "message": "No questions found in sheet",
+                "error": "Sheet is empty or format is incorrect"
+            }
+        
+        # Import questions
+        imported_count = 0
+        for idx, question in enumerate(questions):
+            question_doc = {
+                "id": str(uuid.uuid4()),
+                "sheet_id": sheet_id,
+                "type": sheet["type"],
+                "question_number": idx + 1,
+                "question": question["question"],
+                "options": question["options"],
+                "correctAnswer": question["correctAnswer"],
+                "explanation": question.get("explanation", ""),
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Add categorization
+            if sheet["type"] == "exam":
+                question_doc.update({
+                    "exam_name": sheet.get("exam_name"),
+                    "syllabus_topic": sheet.get("syllabus_topic"),
+                    "subject": sheet.get("subject"),
+                    "sub_topic": sheet.get("sub_topic"),
+                    "sub_sub_topic": sheet.get("sub_sub_topic")
+                })
+            else:
+                question_doc.update({
+                    "class_name": sheet.get("class_name"),
+                    "subject": sheet.get("subject"),
+                    "chapter": sheet.get("chapter")
+                })
+            
+            await db.questions.insert_one(question_doc)
+            imported_count += 1
+        
+        # Update sheet metadata
+        await db.exam_sheets.update_one(
+            {"id": sheet_id},
+            {"$set": {
+                "questions_imported": True,
+                "question_count": imported_count,
+                "last_import": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        return {
+            "success": True,
+            "message": f"Successfully imported {imported_count} questions",
+            "deleted": delete_result.deleted_count,
+            "imported": imported_count
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error importing questions: {str(e)}")
+
+@router.get("/admin/sheets/{sheet_id}/test")
+async def test_sheet_access(sheet_id: str):
+    """
+    Test if we can access and parse a Google Sheet
+    """
+    try:
+        sheet = await db.exam_sheets.find_one({"id": sheet_id}, {"_id": 0})
+        if not sheet:
+            raise HTTPException(status_code=404, detail="Sheet not found")
+        
+        from google_sheets_service import GoogleSheetsService
+        sheets_service = GoogleSheetsService()
+        
+        # Test sheet access
+        test_result = sheets_service.test_sheet_access(sheet["sheet_link"])
+        
+        if test_result["success"]:
+            # Try to fetch sample questions
+            questions = sheets_service.fetch_questions(sheet["sheet_link"])
+            test_result["question_count"] = len(questions)
+            test_result["sample_questions"] = questions[:3] if questions else []
+        
+        return test_result
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error testing sheet: {str(e)}")
+
 @router.get("/admin/users/{user_id}")
 async def get_user_details(user_id: str):
     """
