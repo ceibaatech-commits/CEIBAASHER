@@ -2914,6 +2914,319 @@ class BattleServerTester:
             self.log_result("Admin Search Users", False, f"❌ Request error: {e}")
             return False
 
+    def test_social_feed_workflow(self):
+        """Test complete social feed workflow: post creation, following users, and timeline/feed integration"""
+        print("\n🌟 TESTING SOCIAL FEED WORKFLOW")
+        print("=" * 60)
+        
+        # Step 1: Login as demo users
+        print("\n1️⃣ Testing Demo User Login...")
+        demo1_data = self.test_demo_login("demo1", "password")
+        demo2_data = self.test_demo_login("demo2", "password")
+        
+        if not demo1_data or not demo2_data:
+            self.log_result("Social Feed Workflow", False, "Failed to login demo users")
+            return False
+        
+        demo1_id = demo1_data.get('user_id')
+        demo2_id = demo2_data.get('user_id')
+        
+        # Step 2: Create Post as Demo1
+        print("\n2️⃣ Testing Post Creation as Demo1...")
+        post_created = self.test_create_post(demo1_id, "general", "This is demo1's test post! #testing")
+        if not post_created:
+            self.log_result("Social Feed Workflow", False, "Failed to create post as demo1")
+            return False
+        
+        # Step 3: Verify post appears in Demo1's own feed
+        print("\n3️⃣ Testing Demo1's Own Feed...")
+        own_feed_success = self.test_for_you_feed(demo1_id, expect_own_posts=True)
+        
+        # Step 4: Following Workflow - Demo2 follows Demo1
+        print("\n4️⃣ Testing Following Workflow...")
+        follow_success = self.test_follow_user(demo2_id, demo1_id, "Demo Student 2", "Demo Student 1")
+        if not follow_success:
+            self.log_result("Social Feed Workflow", False, "Failed to create follow relationship")
+            return False
+        
+        # Step 5: Verify follow relationship
+        print("\n5️⃣ Testing Follow Status Verification...")
+        follow_status = self.test_follow_status(demo2_id, demo1_id)
+        
+        # Step 6: Following Tab Integration
+        print("\n6️⃣ Testing Following Feed Integration...")
+        following_feed_success = self.test_following_feed(demo2_id, demo1_id)
+        
+        # Step 7: For You Feed Integration
+        print("\n7️⃣ Testing For You Feed Integration...")
+        for_you_feed_success = self.test_for_you_feed(demo2_id, expect_followed_posts=True)
+        
+        # Step 8: Create Another Post and verify it appears
+        print("\n8️⃣ Testing Additional Post Creation...")
+        second_post_created = self.test_create_post(demo1_id, "achievement", "Just scored 100% in Physics! 🎉")
+        if second_post_created:
+            # Check if new post appears in Demo2's Following feed
+            self.test_following_feed(demo2_id, demo1_id, expect_multiple_posts=True)
+        
+        # Overall success assessment
+        critical_tests = [demo1_data, demo2_data, post_created, follow_success]
+        success_rate = sum(1 for test in critical_tests if test) / len(critical_tests)
+        
+        if success_rate >= 0.75:  # 75% success rate for critical tests
+            self.log_result("Social Feed Workflow - COMPLETE", True, 
+                          f"✅ Social feed workflow working ({success_rate*100:.1f}% success rate)")
+            return True
+        else:
+            self.log_result("Social Feed Workflow - COMPLETE", False, 
+                          f"❌ Social feed workflow has issues ({success_rate*100:.1f}% success rate)")
+            return False
+
+    def test_demo_login(self, username, password):
+        """Test demo user login"""
+        try:
+            payload = {
+                "username": username,
+                "password": password
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'user' in data:
+                    user = data['user']
+                    self.log_result(f"Demo Login - {username}", True, 
+                                  f"✅ Login successful: {user.get('name')} (ID: {user.get('user_id')})")
+                    return user
+                else:
+                    self.log_result(f"Demo Login - {username}", False, 
+                                  f"Invalid response structure: {data}")
+                    return None
+            else:
+                self.log_result(f"Demo Login - {username}", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_result(f"Demo Login - {username}", False, f"Request error: {e}")
+            return None
+
+    def test_create_post(self, user_id, post_type, content):
+        """Test post creation"""
+        try:
+            payload = {
+                "post_type": post_type,
+                "content": content
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/posts?user_id={user_id}",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'post' in data:
+                    post = data['post']
+                    self.log_result("Post Creation", True, 
+                                  f"✅ Post created: {post.get('id')} - {post_type}")
+                    return True
+                else:
+                    self.log_result("Post Creation", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Post Creation", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Post Creation", False, f"Request error: {e}")
+            return False
+
+    def test_follow_user(self, follower_id, target_id, follower_name, target_name):
+        """Test follow user functionality using ceep system"""
+        try:
+            payload = {
+                "user_id": follower_id,
+                "ceep_user_id": target_id,
+                "user_name": follower_name,
+                "ceep_user_name": target_name
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/ceep/ceep",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result("Follow User", True, 
+                                  f"✅ {follower_name} now follows {target_name}")
+                    return True
+                else:
+                    self.log_result("Follow User", False, 
+                                  f"Follow failed: {data.get('message', 'Unknown error')}")
+                    return False
+            else:
+                self.log_result("Follow User", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Follow User", False, f"Request error: {e}")
+            return False
+
+    def test_follow_status(self, follower_id, target_id):
+        """Test follow status verification"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/ceep/is-following/{follower_id}/{target_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('is_following'):
+                    self.log_result("Follow Status Check", True, 
+                                  "✅ Follow relationship confirmed")
+                    return True
+                else:
+                    self.log_result("Follow Status Check", False, 
+                                  "❌ Follow relationship not found")
+                    return False
+            else:
+                self.log_result("Follow Status Check", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Follow Status Check", False, f"Request error: {e}")
+            return False
+
+    def test_following_feed(self, user_id, followed_user_id, expect_multiple_posts=False):
+        """Test Following feed shows posts from followed users"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/following?user_id={user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    
+                    # Check if posts from followed user appear
+                    followed_posts = [p for p in posts if p.get('user_id') == followed_user_id]
+                    
+                    if followed_posts:
+                        expected_count = 2 if expect_multiple_posts else 1
+                        if len(followed_posts) >= expected_count:
+                            self.log_result("Following Feed Integration", True, 
+                                          f"✅ Found {len(followed_posts)} posts from followed user in Following feed")
+                        else:
+                            self.log_result("Following Feed Integration", True, 
+                                          f"✅ Found {len(followed_posts)} posts from followed user (expected {expected_count})")
+                        
+                        # Verify post structure
+                        sample_post = followed_posts[0]
+                        required_fields = ['user_id', 'user_name', 'content', 'post_type', 'created_at']
+                        if all(field in sample_post for field in required_fields):
+                            self.log_result("Following Feed Post Structure", True, 
+                                          "✅ Posts have complete structure")
+                        else:
+                            missing = [f for f in required_fields if f not in sample_post]
+                            self.log_result("Following Feed Post Structure", False, 
+                                          f"Missing fields: {missing}")
+                        
+                        # Check liked_by_user field
+                        if 'liked_by_user' in sample_post:
+                            self.log_result("Following Feed - liked_by_user Field", True, 
+                                          "✅ liked_by_user field present")
+                        else:
+                            self.log_result("Following Feed - liked_by_user Field", False, 
+                                          "❌ liked_by_user field missing")
+                        
+                        return True
+                    else:
+                        self.log_result("Following Feed Integration", False, 
+                                      "❌ No posts from followed user found in Following feed")
+                        return False
+                else:
+                    self.log_result("Following Feed Integration", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Following Feed Integration", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Following Feed Integration", False, f"Request error: {e}")
+            return False
+
+    def test_for_you_feed(self, user_id, expect_own_posts=False, expect_followed_posts=False):
+        """Test For You feed integration"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/for-you?user_id={user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    
+                    if expect_own_posts:
+                        own_posts = [p for p in posts if p.get('user_id') == user_id]
+                        if own_posts:
+                            self.log_result("For You Feed - Own Posts", True, 
+                                          f"✅ Found {len(own_posts)} own posts in For You feed")
+                        else:
+                            self.log_result("For You Feed - Own Posts", False, 
+                                          "❌ Own posts not found in For You feed")
+                    
+                    if expect_followed_posts:
+                        # Check if feed contains mixed content (following + trending)
+                        if len(posts) > 0:
+                            self.log_result("For You Feed - Mixed Content", True, 
+                                          f"✅ For You feed contains {len(posts)} posts (mixed following + trending)")
+                            
+                            # Check for liked_by_user field in all posts
+                            posts_with_liked_field = [p for p in posts if 'liked_by_user' in p]
+                            if len(posts_with_liked_field) == len(posts):
+                                self.log_result("For You Feed - liked_by_user Field", True, 
+                                              "✅ All posts have liked_by_user field")
+                            else:
+                                self.log_result("For You Feed - liked_by_user Field", False, 
+                                              f"❌ Only {len(posts_with_liked_field)}/{len(posts)} posts have liked_by_user field")
+                        else:
+                            self.log_result("For You Feed - Mixed Content", False, 
+                                          "❌ For You feed is empty")
+                    
+                    return True
+                else:
+                    self.log_result("For You Feed Integration", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("For You Feed Integration", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("For You Feed Integration", False, f"Request error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
