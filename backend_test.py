@@ -2933,7 +2933,7 @@ class BattleServerTester:
         
         # Step 2: Create Post as Demo1
         print("\n2️⃣ Testing Post Creation as Demo1...")
-        post_created = self.test_create_post(demo1_id, "general", "This is demo1's test post! #testing")
+        post_created = self.test_create_post(demo1_id, "general", "This is demo1's test post! #testing", demo1_data.get('access_token'))
         if not post_created:
             self.log_result("Social Feed Workflow", False, "Failed to create post as demo1")
             return False
