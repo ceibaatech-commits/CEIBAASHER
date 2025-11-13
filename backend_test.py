@@ -3018,7 +3018,7 @@ class BattleServerTester:
             self.log_result(f"Demo Login - {username}", False, f"Request error: {e}")
             return None
 
-    def test_create_post(self, user_id, post_type, content):
+    def test_create_post(self, user_id, post_type, content, access_token=None):
         """Test post creation"""
         try:
             payload = {
@@ -3026,9 +3026,14 @@ class BattleServerTester:
                 "content": content
             }
             
+            headers = {}
+            if access_token:
+                headers["Authorization"] = f"Bearer {access_token}"
+            
             response = requests.post(
                 f"{BACKEND_URL}/api/social/posts?user_id={user_id}",
                 json=payload,
+                headers=headers,
                 timeout=10
             )
             
