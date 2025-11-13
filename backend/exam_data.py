@@ -1803,23 +1803,19 @@ EXAM_DATA = {
             "General Awareness": {
                 "subjects": {
                     "Current Affairs": {
-                        "sub_topics": ["National", "International", "Defence"],
+                        "sub_topics": ["National News", "International News", "Economy News", "Sports News"],
                         "questions": 75
                     },
-                    "History": {
-                        "sub_topics": ["Ancient", "Medieval", "Modern"],
+                    "Static GK": {
+                        "sub_topics": ["Books and Authors", "Awards", "Sports", "Capitals", "Important Days"],
                         "questions": 75
                     },
-                    "Geography": {
-                        "sub_topics": ["Indian Geography", "World Geography"],
+                    "Banking Awareness": {
+                        "sub_topics": ["Banking Terms", "RBI Functions", "Monetary Policy", "Banking News"],
                         "questions": 75
                     },
-                    "Polity": {
-                        "sub_topics": ["Constitution", "Governance"],
-                        "questions": 75
-                    },
-                    "Science": {
-                        "sub_topics": ["Physics", "Chemistry", "Biology"],
+                    "Economics": {
+                        "sub_topics": ["Indian Economy", "Economic Terms", "Budget", "GDP"],
                         "questions": 75
                     }
                 }
@@ -1827,7 +1823,7 @@ EXAM_DATA = {
             "Numerical Ability": {
                 "subjects": {
                     "Arithmetic": {
-                        "sub_topics": ["Percentage", "Profit & Loss", "Simple & Compound Interest"],
+                        "sub_topics": ["Number System", "Percentage", "Profit Loss", "Simple Interest", "Compound Interest", "Time Work", "Time Speed Distance", "Ratio Proportion", "Average", "Mixture Alligation"],
                         "questions": 60
                     },
                     "Algebra": {
@@ -1835,7 +1831,11 @@ EXAM_DATA = {
                         "questions": 60
                     },
                     "Mensuration": {
-                        "sub_topics": ["Area", "Volume", "Perimeter"],
+                        "sub_topics": ["Area", "Perimeter", "Volume", "Surface Area", "Height and Distance"],
+                        "questions": 60
+                    },
+                    "Data Interpretation": {
+                        "sub_topics": ["Tables", "Graphs", "Charts"],
                         "questions": 60
                     }
                 }
