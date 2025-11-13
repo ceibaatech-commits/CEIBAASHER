@@ -96,7 +96,12 @@ const ExamSheetManager = () => {
     // GATE subjects
     'Engineering Mathematics': ['Linear Algebra', 'Calculus', 'Probability', 'Differential Equations'],
     'General Aptitude': ['Verbal Ability', 'Numerical Ability', 'Reasoning'],
-    'Technical Subject': ['Core Concepts', 'Advanced Topics', 'Problem Solving']
+    'Technical Subject': ['Core Concepts', 'Advanced Topics', 'Problem Solving'],
+    
+    // AFCAT subjects
+    'English': ['Reading Comprehension', 'Vocabulary', 'Grammar', 'Error Detection', 'Sentence Improvement'],
+    'Numerical Ability': ['Arithmetic', 'Algebra', 'Mensuration', 'Data Interpretation'],
+    'Reasoning & Military Aptitude': ['Verbal Reasoning', 'Non-Verbal Reasoning', 'Spatial Ability', 'Military Aptitude']
   };
 
   // Comprehensive sub-topics map
