@@ -53,12 +53,32 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 13, "chapter_name": "The Value of Work", "total_questions": 40, "difficulty": "Easy", "duration": 25},
             {"chapter_number": 14, "chapter_name": "Economic Activities Around Us", "total_questions": 45, "difficulty": "Medium", "duration": 30}
         ],
-        "English": [
-            {"chapter_number": 1, "chapter_name": "Grammar: Parts of Speech", "total_questions": 50, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Reading Comprehension", "total_questions": 40, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Writing Skills: Paragraph Writing", "total_questions": 30, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "Literature: Prose", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Literature: Poetry", "total_questions": 40, "difficulty": "Medium", "duration": 30}
+        "Poorvi": [
+            # Unit 1: Fables and Folk Tales
+            {"chapter_number": 1, "chapter_name": "A Bottle of Dew", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 1: Fables and Folk Tales"},
+            {"chapter_number": 2, "chapter_name": "The Raven and the Fox", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 1: Fables and Folk Tales"},
+            {"chapter_number": 3, "chapter_name": "Rama to the Rescue", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 1: Fables and Folk Tales"},
+            
+            # Unit 2: Friendship
+            {"chapter_number": 4, "chapter_name": "The Unlikely Best Friends", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 2: Friendship"},
+            {"chapter_number": 5, "chapter_name": "A Friend's Prayer", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 2: Friendship"},
+            {"chapter_number": 6, "chapter_name": "The Chair", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 2: Friendship"},
+            
+            # Unit 3: Nurturing Nature
+            {"chapter_number": 7, "chapter_name": "Neem Baba", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 3: Nurturing Nature"},
+            {"chapter_number": 8, "chapter_name": "What a Bird Thought", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 3: Nurturing Nature"},
+            {"chapter_number": 9, "chapter_name": "Spices that Heal Us", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 3: Nurturing Nature"},
+            
+            # Unit 4: Sports and Wellness
+            {"chapter_number": 10, "chapter_name": "Change of Heart", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 4: Sports and Wellness"},
+            {"chapter_number": 11, "chapter_name": "The Winner", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 4: Sports and Wellness"},
+            {"chapter_number": 12, "chapter_name": "Yoga—A Way of Life", "total_questions": 45, "difficulty": "Easy", "duration": 35, "unit": "Unit 4: Sports and Wellness"},
+            
+            # Unit 5: Culture and Tradition
+            {"chapter_number": 13, "chapter_name": "Hamara Bharat—Incredible India!", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 5: Culture and Tradition"},
+            {"chapter_number": 14, "chapter_name": "The Kites", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 5: Culture and Tradition"},
+            {"chapter_number": 15, "chapter_name": "Ila Sachani: Embroidering Dreams with her Feet", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 5: Culture and Tradition"},
+            {"chapter_number": 16, "chapter_name": "National War Memorial", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 5: Culture and Tradition"}
         ],
         "Hindi": [
             {"chapter_number": 1, "chapter_name": "व्याकरण: संज्ञा और सर्वनाम", "total_questions": 50, "difficulty": "Easy", "duration": 30},
