@@ -151,12 +151,25 @@ class GoogleSheetsService:
     
     @staticmethod
     def _parse_answer(answer: str) -> int:
-        """Convert answer to 0-3 index"""
+        """
+        Convert answer to 0-3 index
+        Handles formats: A/B/C/D, 1/2/3/4, 0/1/2/3, Option A, a), (A), etc.
+        """
+        if not answer:
+            return 0
+            
         answer = str(answer).strip().upper()
         
-        # If it's A, B, C, D
+        # Remove common prefixes and suffixes
+        answer = answer.replace('OPTION', '').replace('(', '').replace(')', '').strip()
+        
+        # If it's A, B, C, D (or a), b), etc.)
         if answer in ['A', 'B', 'C', 'D']:
             return ord(answer) - ord('A')
+        
+        # Check if answer is in format like "A)", "A.", "A:"
+        if len(answer) >= 1 and answer[0] in ['A', 'B', 'C', 'D']:
+            return ord(answer[0]) - ord('A')
         
         # If it's 1, 2, 3, 4 (convert to 0-3)
         if answer in ['1', '2', '3', '4']:
@@ -167,9 +180,18 @@ class GoogleSheetsService:
             num = int(answer)
             if 0 <= num <= 3:
                 return num
+            # If it's 1-4, convert to 0-3
+            if 1 <= num <= 4:
+                return num - 1
         except:
             pass
         
+        # Try to extract first letter if it contains a letter
+        for char in answer:
+            if char in ['A', 'B', 'C', 'D']:
+                return ord(char) - ord('A')
+        
+        print(f"⚠️ Could not parse answer '{answer}', defaulting to A (0)")
         return 0  # Default to first option
     
     def test_sheet_access(self, sheet_url: str) -> Dict:
