@@ -1669,6 +1669,186 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+    "RRB_NTPC": {
+        "name": "RRB NTPC",
+        "full_name": "Railway Recruitment Board - Non-Technical Popular Categories",
+        "description": "Railway recruitment exam for non-technical posts like Station Master, Goods Guard, Commercial cum Ticket Clerk",
+        "icon": "🚂",
+        "color": "from-blue-600 to-purple-700",
+        "total_questions": 100,
+        "duration": "90 minutes",
+        "category": "Government Jobs",
+        "subjects": {
+            "General Awareness": {
+                "topics": {
+                    "Current Affairs": {
+                        "subtopics": ["National Events", "International Events", "Awards", "Sports"],
+                        "questions": 50
+                    },
+                    "Indian History": {
+                        "subtopics": ["Ancient History", "Medieval History", "Modern History"],
+                        "questions": 50
+                    },
+                    "Indian Geography": {
+                        "subtopics": ["Physical Geography", "Economic Geography", "Social Geography"],
+                        "questions": 50
+                    },
+                    "Indian Polity": {
+                        "subtopics": ["Constitution", "Governance", "Political System"],
+                        "questions": 50
+                    },
+                    "General Science": {
+                        "subtopics": ["Physics", "Chemistry", "Biology"],
+                        "questions": 50
+                    }
+                }
+            },
+            "Mathematics": {
+                "topics": {
+                    "Number System": {
+                        "subtopics": ["HCF & LCM", "Divisibility", "Fractions & Decimals"],
+                        "questions": 35
+                    },
+                    "Percentage": {
+                        "subtopics": ["Basic Percentage", "Profit & Loss", "Discount"],
+                        "questions": 35
+                    },
+                    "Time and Work": {
+                        "subtopics": ["Work Efficiency", "Pipes & Cisterns"],
+                        "questions": 30
+                    },
+                    "Time and Distance": {
+                        "subtopics": ["Speed & Distance", "Trains", "Boats & Streams"],
+                        "questions": 30
+                    },
+                    "Algebra": {
+                        "subtopics": ["Linear Equations", "Quadratic Equations"],
+                        "questions": 30
+                    },
+                    "Geometry": {
+                        "subtopics": ["Lines & Angles", "Triangles", "Circles"],
+                        "questions": 30
+                    },
+                    "Mensuration": {
+                        "subtopics": ["Area", "Volume", "Surface Area"],
+                        "questions": 30
+                    }
+                }
+            },
+            "General Intelligence & Reasoning": {
+                "topics": {
+                    "Analogies": {
+                        "subtopics": ["Letter Analogies", "Number Analogies", "Word Analogies"],
+                        "questions": 35
+                    },
+                    "Coding-Decoding": {
+                        "subtopics": ["Letter Coding", "Number Coding", "Substitution"],
+                        "questions": 30
+                    },
+                    "Series": {
+                        "subtopics": ["Number Series", "Letter Series", "Mixed Series"],
+                        "questions": 30
+                    },
+                    "Puzzles": {
+                        "subtopics": ["Seating Arrangement", "Blood Relations", "Direction Sense"],
+                        "questions": 35
+                    },
+                    "Syllogism": {
+                        "subtopics": ["Logical Deductions", "Venn Diagrams"],
+                        "questions": 25
+                    },
+                    "Data Interpretation": {
+                        "subtopics": ["Tables", "Graphs", "Charts"],
+                        "questions": 25
+                    }
+                }
+            }
+        }
+    },
+    "AFCAT": {
+        "name": "AFCAT",
+        "full_name": "Air Force Common Admission Test",
+        "description": "Indian Air Force entrance exam for Flying and Ground Duty (Technical & Non-Technical) branches",
+        "icon": "✈️",
+        "color": "from-sky-500 to-indigo-700",
+        "total_questions": 100,
+        "duration": "120 minutes",
+        "category": "Defence Exams",
+        "subjects": {
+            "English": {
+                "topics": {
+                    "Reading Comprehension": {
+                        "subtopics": ["Passages", "Inference", "Main Idea"],
+                        "questions": 90
+                    },
+                    "Vocabulary": {
+                        "subtopics": ["Synonyms", "Antonyms", "Idioms & Phrases"],
+                        "questions": 90
+                    },
+                    "Grammar": {
+                        "subtopics": ["Error Detection", "Sentence Improvement"],
+                        "questions": 90
+                    }
+                }
+            },
+            "General Awareness": {
+                "topics": {
+                    "Current Affairs": {
+                        "subtopics": ["National", "International", "Defence"],
+                        "questions": 75
+                    },
+                    "History": {
+                        "subtopics": ["Ancient", "Medieval", "Modern"],
+                        "questions": 75
+                    },
+                    "Geography": {
+                        "subtopics": ["Indian Geography", "World Geography"],
+                        "questions": 75
+                    },
+                    "Polity": {
+                        "subtopics": ["Constitution", "Governance"],
+                        "questions": 75
+                    },
+                    "Science": {
+                        "subtopics": ["Physics", "Chemistry", "Biology"],
+                        "questions": 75
+                    }
+                }
+            },
+            "Numerical Ability": {
+                "topics": {
+                    "Arithmetic": {
+                        "subtopics": ["Percentage", "Profit & Loss", "Simple & Compound Interest"],
+                        "questions": 60
+                    },
+                    "Algebra": {
+                        "subtopics": ["Linear Equations", "Quadratic Equations"],
+                        "questions": 60
+                    },
+                    "Mensuration": {
+                        "subtopics": ["Area", "Volume", "Perimeter"],
+                        "questions": 60
+                    }
+                }
+            },
+            "Reasoning & Military Aptitude": {
+                "topics": {
+                    "Verbal Reasoning": {
+                        "subtopics": ["Analogies", "Coding-Decoding", "Blood Relations"],
+                        "questions": 75
+                    },
+                    "Non-Verbal Reasoning": {
+                        "subtopics": ["Figure Series", "Pattern Completion"],
+                        "questions": 75
+                    },
+                    "Spatial Ability": {
+                        "subtopics": ["Mirror Images", "Water Images", "Paper Folding"],
+                        "questions": 75
+                    }
+                }
+            }
+        }
     }
 
 }
