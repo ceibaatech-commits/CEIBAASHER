@@ -91,20 +91,36 @@ EXAM_DATA = {
             "Physics": {
                 "subjects": {
                     "Mechanics": {
-                        "sub_topics": ["Motion", "Forces", "Work and Energy", "Gravitation"],
+                        "sub_topics": ["Kinematics", "Laws of Motion", "Work Energy Power", "Rotational Motion", "Gravitation", "Simple Harmonic Motion", "Elasticity", "Fluid Mechanics"],
                         "questions": 20
                     },
                     "Thermodynamics": {
-                        "sub_topics": ["Heat", "Kinetic Theory", "Laws of Thermodynamics"],
+                        "sub_topics": ["Heat and Temperature", "Thermal Expansion", "Calorimetry", "Heat Transfer", "Kinetic Theory", "Laws of Thermodynamics"],
                         "questions": 15
                     },
-                    "Electrodynamics": {
-                        "sub_topics": ["Electrostatics", "Current", "Magnetism", "EM Induction"],
-                        "questions": 25
+                    "Optics": {
+                        "sub_topics": ["Ray Optics", "Wave Optics", "Reflection", "Refraction", "Lenses", "Mirrors", "Optical Instruments"],
+                        "questions": 15
                     },
-                    "Optics & Modern Physics": {
-                        "sub_topics": ["Optics", "Dual Nature", "Atoms & Nuclei"],
+                    "Electromagnetism": {
+                        "sub_topics": ["Electrostatics", "Current Electricity", "Magnetic Effects", "Electromagnetic Induction", "AC Circuits"],
                         "questions": 20
+                    },
+                    "Modern Physics": {
+                        "sub_topics": ["Atomic Structure", "Nuclear Physics", "Photoelectric Effect", "Dual Nature", "Semiconductor Devices"],
+                        "questions": 15
+                    },
+                    "Waves": {
+                        "sub_topics": ["Wave Motion", "Sound Waves", "Doppler Effect", "Superposition"],
+                        "questions": 10
+                    },
+                    "Sound": {
+                        "sub_topics": ["Sound Propagation", "Acoustic Phenomena", "Musical Instruments"],
+                        "questions": 10
+                    },
+                    "Electricity": {
+                        "sub_topics": ["Electric Charge", "Electric Field", "Electric Potential", "Capacitance", "Current Electricity Basics"],
+                        "questions": 15
                     }
                 }
             },
