@@ -12,20 +12,14 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
         <div className="flex items-center justify-between h-20">
           {/* Logo & Brand */}
           <div 
-            className="cursor-pointer flex items-center space-x-3"
+            className="cursor-pointer flex items-center"
             onClick={() => navigate('/')}
           >
             <img 
               src="/ceibaa-logo.png" 
               alt="Ceibaa Logo" 
-              className="h-12 w-auto object-contain"
+              className="h-14 w-auto object-contain"
             />
-            <div className="flex flex-col">
-              <span className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                Ceibaa
-              </span>
-              <span className="text-xs text-cyan-300 font-semibold tracking-wide">Mind Vs Mind</span>
-            </div>
           </div>
 
           {/* Desktop Navigation */}
