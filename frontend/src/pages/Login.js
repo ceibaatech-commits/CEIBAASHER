@@ -66,14 +66,8 @@ const Login = () => {
               <img 
                 src="/ceibaa-logo.png" 
                 alt="Ceibaa Logo" 
-                className="h-24 w-auto object-contain mb-3"
+                className="h-24 w-auto object-contain"
               />
-              <div className="text-center">
-                <h2 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-1">
-                  Ceibaa
-                </h2>
-                <p className="text-sm text-gray-500 font-semibold tracking-wider">Mind Vs Mind</p>
-              </div>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Ceibaa</h1>
             <p className="text-gray-600">Sign in to join the battle arena</p>
