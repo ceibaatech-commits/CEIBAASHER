@@ -917,7 +917,7 @@ async def create_battle_post(battle_data: BattlePostCreate):
         }
         
         # Insert into database
-        await db.posts.insert_one(post)
+        await db.social_posts.insert_one(post)
         
         # Update user's posts count
         await db.users.update_one(
