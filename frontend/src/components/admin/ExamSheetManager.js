@@ -530,7 +530,7 @@ const ExamSheetManager = () => {
             'Poetry',
             'Prose'
           ],
-          'Hindi': [
+          'Hindi Vasant': [
             '1. Laakh Ki Chudiyan',
             '2. Bus Ki Yatra',
             '3. Diwanon Ki Hasti',
@@ -538,12 +538,62 @@ const ExamSheetManager = () => {
             '5. Kya Nirash Hua Jaye',
             '6. Yah Sabse Kathin Samay Nahi',
             '7. Kabir Ki Saakhiyan',
-            '8. Sudama Charit',
+            '8. Surdas Charit',
             '9. Jahan Pahiya Hai',
-            '10. Akshari Lota',
+            '10. Akbari Lota',
             '11. Surdas Ke Pad',
             '12. Paani Ki Kahani',
             '13. Baaz Aur Saap'
+          ],
+          'Hindi Durva': [
+            '1. Gudiya',
+            '2. Do Gauraiya',
+            '3. Chiththiyon Mein Europe',
+            '4. Os',
+            '5. Natak Mein Natak',
+            '6. Sagar Yatra',
+            '7. Uth Kisan O',
+            '8. Saste Ka Chakkar',
+            '9. Ek Khiladi Ki Kuch Yadein',
+            '10. Bus Ki Sair',
+            '11. Hindi Ne Jinki Jindagi Badal Di Maria Nezheshi',
+            '12. Ashadh Ka Pehla Din',
+            '13. Anyay Ke Khilaf',
+            '14. Baccho Ke Priya Shri Keshav Shankar Pillai',
+            '15. Farsh Par',
+            '16. Budhi Amma Ki Baat',
+            '17. Vah Subah Kabhi To Aayegi'
+          ],
+          'Hindi Bharat Ki Khoj': [
+            '1. Ahmadnagar Ka Kila',
+            '2. Talash',
+            '3. Sindhu Ghati Sabhyata',
+            '4. Yugon Ka Daur',
+            '5. Nayi Samasyaen',
+            '6. Antim Daur Ek',
+            '7. Antim Daur Do',
+            '8. Tanav',
+            '9. Do Prishthabhoomian Bhartiya Aur Angrezi'
+          ],
+          'English Honeydew': [
+            '1. The Best Christmas Present in the World & The Ant and the Cricket',
+            '2. The Tsunami & Geography Lesson',
+            '3. Glimpses of the Past Macavity The Mystery Cat',
+            '4. Bepin Choudhurys Lapse of Memory & The Last Bargain',
+            '5. The Summit Within & The School Boy',
+            '6. This is Jodys Fawn & The Duck and the Kangaroo',
+            '7. A Visit to Cambridge & When I Set out for Lyonnesse',
+            '8. A Short Monsoon Diary & On the Grasshopper and Cricket'
+          ],
+          'English It So Happened': [
+            '1. How the Camel Got His Hump',
+            '2. Children at Work',
+            '3. The Selfish Giant',
+            '4. The Treasure Within',
+            '5. Princess September',
+            '6. The Fight',
+            '7. Jalebis',
+            '8. Ancient Education System of India'
           ],
           'Geography': [
             '1. Resources',
