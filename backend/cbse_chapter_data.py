@@ -169,9 +169,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 6, "chapter_name": "साहित्य: स्पर्श (पद्य)", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "साहित्य: संचयन", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ]
-    }
-}
-
+    },
     "8": {
         "Mathematics": [
             {"chapter_number": 1, "chapter_name": "Rational Numbers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
