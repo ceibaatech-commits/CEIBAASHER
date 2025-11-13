@@ -33,9 +33,124 @@ const ExamSheetManager = () => {
     sheet_link: ''
   });
 
-  // Dropdowns data
-  const [examNames, setExamNames] = useState(['NEET', 'JEE', 'UPSC', 'NDA', 'CDS', 'AFCAT']);
-  const [classNames, setClassNames] = useState(['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12']);
+  // Comprehensive dropdown data
+  const examNames = ['NEET', 'JEE Main', 'JEE Advanced', 'UPSC CSE', 'UPSC NDA', 'SSC CGL', 'SSC CHSL', 'IBPS PO', 'IBPS Clerk', 'RRB NTPC', 'GATE', 'CAT', 'CLAT', 'AIIMS', 'JIPMER'];
+  const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+
+  // Comprehensive syllabus topics map
+  const syllabusTopicsMap = {
+    'NEET': ['Physics', 'Chemistry', 'Biology'],
+    'JEE Main': ['Physics', 'Chemistry', 'Mathematics'],
+    'JEE Advanced': ['Physics', 'Chemistry', 'Mathematics'],
+    'UPSC CSE': ['General Studies Paper 1', 'General Studies Paper 2', 'General Studies Paper 3', 'General Studies Paper 4', 'Optional Subject', 'Essay'],
+    'UPSC NDA': ['Mathematics', 'General Ability Test'],
+    'SSC CGL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Comprehension'],
+    'SSC CHSL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Language'],
+    'IBPS PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
+    'IBPS Clerk': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
+    'RRB NTPC': ['General Awareness', 'Mathematics', 'General Intelligence'],
+    'GATE': ['Engineering Mathematics', 'General Aptitude', 'Technical Subject'],
+    'CAT': ['Verbal Ability', 'Data Interpretation', 'Logical Reasoning', 'Quantitative Aptitude'],
+    'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
+    'AIIMS': ['Physics', 'Chemistry', 'Biology', 'General Knowledge'],
+    'JIPMER': ['Physics', 'Chemistry', 'Biology', 'English']
+  };
+
+  // Comprehensive subjects map
+  const subjectsMap = {
+    // Science subjects
+    'Physics': ['Mechanics', 'Thermodynamics', 'Optics', 'Electromagnetism', 'Modern Physics', 'Waves', 'Sound', 'Electricity'],
+    'Chemistry': ['Physical Chemistry', 'Organic Chemistry', 'Inorganic Chemistry'],
+    'Biology': ['Botany', 'Zoology', 'Ecology', 'Genetics', 'Evolution', 'Human Physiology'],
+    'Mathematics': ['Algebra', 'Calculus', 'Coordinate Geometry', 'Trigonometry', 'Statistics', 'Probability', 'Vectors', 'Differential Equations'],
+    
+    // UPSC subjects
+    'General Studies Paper 1': ['History', 'Geography', 'Culture', 'Society'],
+    'General Studies Paper 2': ['Governance', 'Constitution', 'Polity', 'Social Justice'],
+    'General Studies Paper 3': ['Economy', 'Environment', 'Science & Technology', 'Security'],
+    'General Studies Paper 4': ['Ethics', 'Integrity', 'Aptitude'],
+    'Optional Subject': ['History', 'Geography', 'Political Science', 'Sociology', 'Public Administration'],
+    'Essay': ['Essay Writing', 'Current Affairs Analysis'],
+    
+    // Aptitude subjects
+    'General Ability Test': ['English', 'General Knowledge', 'Physics', 'Chemistry', 'History', 'Geography', 'Current Affairs'],
+    'General Intelligence': ['Verbal Reasoning', 'Non-Verbal Reasoning', 'Analytical Reasoning'],
+    'General Awareness': ['Current Affairs', 'Static GK', 'Banking Awareness', 'Economics'],
+    'Quantitative Aptitude': ['Arithmetic', 'Algebra', 'Geometry', 'Data Interpretation', 'Number System'],
+    'English Comprehension': ['Reading Comprehension', 'Grammar', 'Vocabulary', 'Sentence Formation'],
+    'English Language': ['Grammar', 'Vocabulary', 'Comprehension', 'Error Detection'],
+    'Reasoning Ability': ['Puzzles', 'Seating Arrangement', 'Syllogism', 'Coding-Decoding'],
+    'Computer Knowledge': ['Computer Fundamentals', 'MS Office', 'Internet', 'Networking'],
+    
+    // CAT subjects
+    'Verbal Ability': ['Reading Comprehension', 'Para Jumbles', 'Grammar', 'Vocabulary'],
+    'Data Interpretation': ['Tables', 'Graphs', 'Charts', 'Data Analysis'],
+    'Logical Reasoning': ['Puzzles', 'Arrangements', 'Blood Relations', 'Direction Sense'],
+    
+    // CLAT subjects
+    'Legal Reasoning': ['Legal Principles', 'Case Studies', 'Legal Maxims'],
+    'Current Affairs': ['National Events', 'International Events', 'Sports', 'Awards'],
+    'Quantitative Techniques': ['Arithmetic', 'Algebra', 'Data Interpretation'],
+    
+    // GATE subjects
+    'Engineering Mathematics': ['Linear Algebra', 'Calculus', 'Probability', 'Differential Equations'],
+    'General Aptitude': ['Verbal Ability', 'Numerical Ability', 'Reasoning'],
+    'Technical Subject': ['Core Concepts', 'Advanced Topics', 'Problem Solving']
+  };
+
+  // Comprehensive sub-topics map
+  const subTopicsMap = {
+    // Physics
+    'Mechanics': ['Kinematics', 'Laws of Motion', 'Work Energy Power', 'Rotational Motion', 'Gravitation', 'Simple Harmonic Motion', 'Elasticity', 'Fluid Mechanics'],
+    'Thermodynamics': ['Heat and Temperature', 'Thermal Expansion', 'Calorimetry', 'Heat Transfer', 'Kinetic Theory', 'Laws of Thermodynamics'],
+    'Optics': ['Ray Optics', 'Wave Optics', 'Reflection', 'Refraction', 'Lenses', 'Mirrors', 'Optical Instruments'],
+    'Electromagnetism': ['Electrostatics', 'Current Electricity', 'Magnetic Effects', 'Electromagnetic Induction', 'AC Circuits'],
+    'Modern Physics': ['Atomic Structure', 'Nuclear Physics', 'Photoelectric Effect', 'Dual Nature', 'Semiconductor Devices'],
+    'Waves': ['Wave Motion', 'Sound Waves', 'Doppler Effect', 'Superposition'],
+    'Electricity': ['Electric Charge', 'Electric Field', 'Potential', 'Capacitance', 'Current', 'Resistance'],
+    
+    // Chemistry
+    'Physical Chemistry': ['Atomic Structure', 'Chemical Bonding', 'States of Matter', 'Thermodynamics', 'Equilibrium', 'Ionic Equilibrium', 'Redox Reactions', 'Electrochemistry', 'Chemical Kinetics', 'Surface Chemistry'],
+    'Organic Chemistry': ['Basic Concepts', 'Hydrocarbons', 'Haloalkanes', 'Alcohols Phenols Ethers', 'Aldehydes Ketones', 'Carboxylic Acids', 'Amines', 'Biomolecules', 'Polymers'],
+    'Inorganic Chemistry': ['Periodic Table', 'Chemical Bonding', 'Coordination Compounds', 'Metallurgy', 'p-Block Elements', 'd-Block Elements', 'f-Block Elements'],
+    
+    // Biology
+    'Botany': ['Plant Physiology', 'Plant Anatomy', 'Plant Kingdom', 'Reproduction in Plants', 'Photosynthesis', 'Respiration'],
+    'Zoology': ['Animal Kingdom', 'Human Anatomy', 'Animal Physiology', 'Reproduction', 'Circulatory System', 'Nervous System'],
+    'Ecology': ['Ecosystem', 'Biodiversity', 'Environmental Issues', 'Conservation'],
+    'Genetics': ['Principles of Inheritance', 'Molecular Basis', 'DNA Replication', 'Gene Expression'],
+    'Human Physiology': ['Digestion', 'Breathing', 'Circulation', 'Excretion', 'Neural Control'],
+    
+    // Mathematics
+    'Algebra': ['Linear Equations', 'Quadratic Equations', 'Complex Numbers', 'Sequences and Series', 'Binomial Theorem', 'Permutations Combinations'],
+    'Calculus': ['Limits', 'Continuity', 'Differentiation', 'Integration', 'Application of Derivatives', 'Differential Equations'],
+    'Coordinate Geometry': ['Straight Lines', 'Circles', 'Parabola', 'Ellipse', 'Hyperbola', '3D Geometry'],
+    'Trigonometry': ['Trigonometric Functions', 'Identities', 'Equations', 'Inverse Functions', 'Properties of Triangles'],
+    'Statistics': ['Mean Median Mode', 'Standard Deviation', 'Probability Distribution', 'Correlation'],
+    'Probability': ['Basic Concepts', 'Conditional Probability', 'Bayes Theorem', 'Random Variables'],
+    'Vectors': ['Vector Algebra', 'Dot Product', 'Cross Product', 'Scalar Triple Product'],
+    
+    // Aptitude
+    'Arithmetic': ['Number System', 'Percentage', 'Profit Loss', 'Simple Interest', 'Compound Interest', 'Time Work', 'Time Speed Distance', 'Ratio Proportion', 'Average', 'Mixture Alligation'],
+    'Verbal Reasoning': ['Analogies', 'Classification', 'Series', 'Coding-Decoding', 'Blood Relations', 'Direction Sense'],
+    'Non-Verbal Reasoning': ['Pattern Recognition', 'Figure Series', 'Mirror Images', 'Paper Folding'],
+    'Reading Comprehension': ['Passage Reading', 'Inference', 'Main Idea', 'Tone Detection'],
+    'Grammar': ['Tenses', 'Articles', 'Prepositions', 'Active Passive Voice', 'Direct Indirect Speech', 'Error Detection'],
+    'Vocabulary': ['Synonyms', 'Antonyms', 'Idioms', 'Phrases', 'One Word Substitution'],
+    
+    // General Knowledge
+    'History': ['Ancient History', 'Medieval History', 'Modern History', 'World History', 'Art and Culture'],
+    'Geography': ['Physical Geography', 'Indian Geography', 'World Geography', 'Economic Geography'],
+    'Static GK': ['Books and Authors', 'Awards', 'Sports', 'Capitals', 'Important Days'],
+    'Current Affairs': ['National News', 'International News', 'Economy News', 'Sports News'],
+    
+    // Computer
+    'Computer Fundamentals': ['Hardware', 'Software', 'Memory', 'Input Output Devices', 'Operating Systems'],
+    'MS Office': ['Word', 'Excel', 'PowerPoint', 'Outlook'],
+    'Internet': ['Browsers', 'Email', 'Search Engines', 'Social Media'],
+    'Networking': ['LAN', 'WAN', 'Protocols', 'IP Address']
+  };
+
   const [syllabusTopics, setSyllabusTopics] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [subTopics, setSubTopics] = useState([]);
@@ -48,41 +163,45 @@ const ExamSheetManager = () => {
   useEffect(() => {
     // Update syllabus topics based on exam selection
     if (examForm.exam_name) {
-      const topicsMap = {
-        'NEET': ['Physics', 'Chemistry', 'Biology'],
-        'JEE': ['Physics', 'Chemistry', 'Mathematics'],
-        'UPSC': ['General Studies', 'Optional Subject', 'Essay'],
-        'NDA': ['Mathematics', 'General Ability Test'],
-        'CDS': ['English', 'General Knowledge', 'Elementary Mathematics'],
-        'AFCAT': ['General Awareness', 'Verbal Ability', 'Numerical Ability', 'Reasoning']
-      };
-      setSyllabusTopics(topicsMap[examForm.exam_name] || []);
+      setSyllabusTopics(syllabusTopicsMap[examForm.exam_name] || []);
+      // Reset dependent fields
+      setExamForm(prev => ({
+        ...prev,
+        syllabus_topic: '',
+        subject: '',
+        sub_topic: '',
+        sub_sub_topic: ''
+      }));
+      setSubjects([]);
+      setSubTopics([]);
     }
   }, [examForm.exam_name]);
 
   useEffect(() => {
     // Update subjects based on syllabus topic
     if (examForm.syllabus_topic) {
-      const subjectsMap = {
-        'Physics': ['Mechanics', 'Thermodynamics', 'Optics', 'Electromagnetism', 'Modern Physics'],
-        'Chemistry': ['Physical Chemistry', 'Organic Chemistry', 'Inorganic Chemistry'],
-        'Biology': ['Botany', 'Zoology', 'Ecology'],
-        'Mathematics': ['Algebra', 'Calculus', 'Geometry', 'Trigonometry', 'Statistics']
-      };
       setSubjects(subjectsMap[examForm.syllabus_topic] || []);
+      // Reset dependent fields
+      setExamForm(prev => ({
+        ...prev,
+        subject: '',
+        sub_topic: '',
+        sub_sub_topic: ''
+      }));
+      setSubTopics([]);
     }
   }, [examForm.syllabus_topic]);
 
   useEffect(() => {
     // Update sub-topics based on subject
     if (examForm.subject) {
-      const subTopicsMap = {
-        'Mechanics': ['Kinematics', 'Laws of Motion', 'Work Energy Power', 'Rotational Motion'],
-        'Physical Chemistry': ['Atomic Structure', 'Chemical Bonding', 'Thermodynamics', 'Equilibrium'],
-        'Organic Chemistry': ['Hydrocarbons', 'Alcohols', 'Aldehydes and Ketones', 'Carboxylic Acids'],
-        'Algebra': ['Linear Equations', 'Quadratic Equations', 'Sequences and Series', 'Matrices']
-      };
       setSubTopics(subTopicsMap[examForm.subject] || []);
+      // Reset dependent fields
+      setExamForm(prev => ({
+        ...prev,
+        sub_topic: '',
+        sub_sub_topic: ''
+      }));
     }
   }, [examForm.subject]);
 
