@@ -449,11 +449,11 @@ const LiveBattle = () => {
       for (const player of participants) {
         if (player.username !== playerName) {
           // Try to find the actual user ID by searching for the player
-          const userSearchResponse = await axios.get(`${BATTLE_SERVER_URL}/api/auth/search-user?name=${encodeURIComponent(player.name)}`);
-          const targetUserId = userSearchResponse.data?.user_id || player.name.toLowerCase().replace(/\s+/g, '_');
+          const userSearchResponse = await axios.get(`${BATTLE_SERVER_URL}/api/auth/search-user?name=${encodeURIComponent(player.username)}`);
+          const targetUserId = userSearchResponse.data?.user_id || player.username.toLowerCase().replace(/\s+/g, '_');
           
           const response = await axios.get(`${BATTLE_SERVER_URL}/api/ceep/is-following/${user.id}/${targetUserId}`);
-          statusMap[player.name] = response.data.is_following;
+          statusMap[player.username] = response.data.is_following;
         }
       }
       setFollowingStatus(statusMap);
