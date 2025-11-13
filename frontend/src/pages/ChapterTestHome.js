@@ -235,97 +235,133 @@ const ChapterTestHome = () => {
           </div>
         </div>
 
-        {/* Why Ceibaa is Best for India Section */}
+        {/* Why Ceibaa is Best for India Section - Kahoot-Inspired */}
         <div className="mt-16 relative">
-          <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 rounded-3xl p-12 shadow-2xl relative overflow-hidden">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="bg-white rounded-3xl p-12 shadow-2xl relative overflow-hidden border-4 border-gray-100">
+            {/* Subtle background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-50"></div>
             
             <div className="relative z-10">
               <div className="text-center mb-12">
-                <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
-                  <span className="text-white font-bold text-sm">🇮🇳 MADE FOR INDIA</span>
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-600 px-6 py-3 rounded-full mb-6 shadow-lg animate-pulse">
+                  <span className="text-2xl">🇮🇳</span>
+                  <span className="text-white font-black text-sm tracking-wider">MADE FOR INDIA</span>
                 </div>
-                <h2 className="text-5xl font-black text-white mb-4">
+                <h2 className="text-5xl md:text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600">
                   Why Ceibaa is Perfect for Indian Students
                 </h2>
-                <p className="text-xl text-white/90 max-w-3xl mx-auto font-semibold">
-                  India's first gamified learning platform designed specifically for CBSE curriculum
+                <p className="text-xl text-gray-700 max-w-3xl mx-auto font-bold">
+                  India's first gamified learning platform designed specifically for CBSE curriculum 🎯
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Feature 1 */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
-                    <span className="text-3xl">🎮</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Feature 1 - Gamified Learning */}
+                <div className="group bg-gradient-to-br from-purple-500 to-purple-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">🎮</span>
                   </div>
-                  <h4 className="text-xl font-black text-white mb-3">Fun Learning Experience</h4>
-                  <p className="text-white/90">Turn boring studies into exciting games. Battle with friends and compete on leaderboards!</p>
+                  <h4 className="text-2xl font-black text-white mb-4">Gamified Learning</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Turn boring studies into exciting games. Battle with friends, earn rewards, and compete on India-wide leaderboards!</p>
                 </div>
 
-                {/* Feature 2 */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
-                    <span className="text-3xl">📚</span>
+                {/* Feature 2 - NCERT Aligned */}
+                <div className="group bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">📚</span>
                   </div>
-                  <h4 className="text-xl font-black text-white mb-3">100% NCERT Aligned</h4>
-                  <p className="text-white/90">Every question mapped to NCERT chapters. Perfect for CBSE board exam preparation.</p>
+                  <h4 className="text-2xl font-black text-white mb-4">100% NCERT Aligned</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Every question mapped to NCERT chapters. Perfect match with your textbooks and CBSE board exam pattern!</p>
                 </div>
 
-                {/* Feature 3 */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
-                    <span className="text-3xl">🏆</span>
+                {/* Feature 3 - Live Competitions */}
+                <div className="group bg-gradient-to-br from-yellow-500 to-orange-600 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">🏆</span>
                   </div>
-                  <h4 className="text-xl font-black text-white mb-3">Compete & Win</h4>
-                  <p className="text-white/90">Live battles with students across India. Earn badges, rewards, and climb the rankings!</p>
+                  <h4 className="text-2xl font-black text-white mb-4">Live Competitions</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Real-time battles with students across India. Climb rankings, earn badges, and become a champion!</p>
                 </div>
 
-                {/* Feature 4 */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
-                    <span className="text-3xl">💰</span>
+                {/* Feature 4 - Completely Free */}
+                <div className="group bg-gradient-to-br from-green-500 to-emerald-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">💰</span>
                   </div>
-                  <h4 className="text-xl font-black text-white mb-3">100% Free Forever</h4>
-                  <p className="text-white/90">No hidden charges, no subscriptions. Quality education accessible to every Indian student.</p>
+                  <h4 className="text-2xl font-black text-white mb-4">100% Free Forever</h4>
+                  <p className="text-white/95 text-base leading-relaxed">No hidden charges, no subscriptions, no trials. Quality education accessible to every Indian student!</p>
                 </div>
 
-                {/* Feature 5 */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
-                    <span className="text-3xl">🌐</span>
+                {/* Feature 5 - Learn Anywhere */}
+                <div className="group bg-gradient-to-br from-pink-500 to-rose-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">📱</span>
                   </div>
-                  <h4 className="text-xl font-black text-white mb-3">Study Anywhere</h4>
-                  <p className="text-white/90">Works on mobile, tablet, or computer. Learn from home, school, or anywhere in India!</p>
+                  <h4 className="text-2xl font-black text-white mb-4">Study Anywhere</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Mobile, tablet, or computer - works everywhere! Learn from home, school, or anywhere in India!</p>
                 </div>
 
-                {/* Feature 6 */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
-                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
-                    <span className="text-3xl">⚡</span>
+                {/* Feature 6 - Instant Results */}
+                <div className="group bg-gradient-to-br from-indigo-500 to-purple-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">⚡</span>
                   </div>
-                  <h4 className="text-xl font-black text-white mb-3">Instant Feedback</h4>
-                  <p className="text-white/90">Get results immediately with detailed explanations. Learn from mistakes and improve faster!</p>
+                  <h4 className="text-2xl font-black text-white mb-4">Instant Feedback</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Get results immediately with detailed explanations. Learn from mistakes and improve faster than ever!</p>
+                </div>
+
+                {/* Feature 7 - Chapter-wise Tests */}
+                <div className="group bg-gradient-to-br from-red-500 to-pink-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">🎯</span>
+                  </div>
+                  <h4 className="text-2xl font-black text-white mb-4">Chapter-wise Practice</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Master one chapter at a time. Focused tests help you build strong fundamentals step by step!</p>
+                </div>
+
+                {/* Feature 8 - Performance Tracking */}
+                <div className="group bg-gradient-to-br from-teal-500 to-cyan-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">📊</span>
+                  </div>
+                  <h4 className="text-2xl font-black text-white mb-4">Track Your Growth</h4>
+                  <p className="text-white/95 text-base leading-relaxed">Detailed analytics and progress reports. See your improvement over time and identify weak areas!</p>
+                </div>
+
+                {/* Feature 9 - All Classes */}
+                <div className="group bg-gradient-to-br from-orange-500 to-red-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
+                  <div className="bg-white rounded-2xl w-20 h-20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-lg">
+                    <span className="text-5xl">🎓</span>
+                  </div>
+                  <h4 className="text-2xl font-black text-white mb-4">Complete Coverage</h4>
+                  <p className="text-white/95 text-base leading-relaxed">From Class 6 to 12, all subjects covered. Your complete exam preparation solution in one place!</p>
                 </div>
               </div>
 
               {/* CTA Section */}
-              <div className="mt-12 text-center">
-                <div className="bg-white rounded-2xl p-8 inline-block shadow-2xl">
-                  <h3 className="text-3xl font-black text-gray-900 mb-3">
-                    Join 50,000+ Students Across India! 🚀
-                  </h3>
-                  <p className="text-gray-600 mb-6 text-lg">
-                    Start your journey to exam success with India's most engaging learning platform
-                  </p>
-                  <button 
-                    onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-                    className="bg-gradient-to-r from-orange-500 to-pink-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transform transition-all shadow-lg"
-                  >
-                    Start Learning Now - It's Free! 🎉
-                  </button>
+              <div className="mt-16 text-center">
+                <div className="bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 rounded-3xl p-12 shadow-2xl relative overflow-hidden">
+                  <div className="absolute inset-0 bg-black/10"></div>
+                  {/* Decorative floating elements */}
+                  <div className="absolute top-8 left-12 text-7xl opacity-20 animate-bounce">🚀</div>
+                  <div className="absolute bottom-8 right-12 text-7xl opacity-20 animate-bounce" style={{animationDelay: '0.5s'}}>⭐</div>
+                  
+                  <div className="relative z-10">
+                    <h3 className="text-4xl md:text-5xl font-black text-white mb-4">
+                      Join 50,000+ Students Across India!
+                    </h3>
+                    <p className="text-xl text-white/95 mb-8 max-w-2xl mx-auto font-semibold">
+                      Start your journey to exam success with India's most engaging and effective learning platform
+                    </p>
+                    <button 
+                      onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+                      className="bg-white text-purple-600 px-12 py-5 rounded-2xl font-black text-xl hover:scale-110 transform transition-all shadow-2xl hover:shadow-white/50 inline-flex items-center gap-3"
+                    >
+                      <span>Start Learning Now - It's Free!</span>
+                      <span className="text-2xl">🎉</span>
+                    </button>
+                    <p className="text-white/80 mt-4 text-sm">No credit card required • Start in 30 seconds</p>
+                  </div>
                 </div>
               </div>
             </div>
