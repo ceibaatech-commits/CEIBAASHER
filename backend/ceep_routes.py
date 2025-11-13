@@ -4,6 +4,7 @@ Similar to Twitter follow/unfollow
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime, timezone
 import uuid
 
