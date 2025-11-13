@@ -93,7 +93,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="md:hidden p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
