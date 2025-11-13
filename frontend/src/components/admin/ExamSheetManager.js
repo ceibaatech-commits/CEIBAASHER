@@ -1107,13 +1107,25 @@ const ExamSheetManager = () => {
                       value={classForm.subject}
                       onChange={(e) => setClassForm({ ...classForm, subject: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      disabled={!classForm.class_name}
                     >
                       <option value="">Select Subject</option>
                       <option value="Mathematics">Mathematics</option>
                       <option value="Science">Science</option>
+                      {classForm.class_name === 'Class 8' ? (
+                        <>
+                          <option value="Geography">Geography</option>
+                          <option value="History">History</option>
+                          <option value="Civics">Civics</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="Social Science">Social Science</option>
+                        </>
+                      )}
                       <option value="English">English</option>
-                      <option value="Social Science">Social Science</option>
                       <option value="Hindi">Hindi</option>
+                      {classForm.class_name === 'Class 6' && <option value="Poorvi">Poorvi</option>}
                     </select>
                   </div>
 
