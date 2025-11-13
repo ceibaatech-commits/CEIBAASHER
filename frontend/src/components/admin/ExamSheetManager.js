@@ -209,12 +209,45 @@ const ExamSheetManager = () => {
     // Update chapters based on class and subject
     if (classForm.class_name && classForm.subject) {
       const chaptersMap = {
-        'Mathematics': ['Number Systems', 'Algebra', 'Geometry', 'Mensuration', 'Statistics'],
-        'Science': ['Physics', 'Chemistry', 'Biology'],
-        'English': ['Grammar', 'Literature', 'Composition', 'Comprehension'],
-        'Social Science': ['History', 'Geography', 'Civics', 'Economics']
+        'Mathematics': [
+          'Real Numbers', 'Polynomials', 'Linear Equations', 'Quadratic Equations',
+          'Arithmetic Progressions', 'Triangles', 'Coordinate Geometry', 'Trigonometry',
+          'Circles', 'Constructions', 'Areas Related to Circles', 'Surface Areas and Volumes',
+          'Statistics', 'Probability', 'Introduction to Euclid Geometry'
+        ],
+        'Science': [
+          'Chemical Reactions', 'Acids Bases and Salts', 'Metals and Non-metals',
+          'Carbon and its Compounds', 'Periodic Classification', 'Life Processes',
+          'Control and Coordination', 'Reproduction', 'Heredity and Evolution',
+          'Light Reflection and Refraction', 'Human Eye', 'Electricity',
+          'Magnetic Effects', 'Sources of Energy', 'Environment', 'Natural Resources'
+        ],
+        'English': [
+          'Tenses', 'Articles', 'Prepositions', 'Conjunctions', 'Active Passive Voice',
+          'Direct Indirect Speech', 'Reading Comprehension', 'Letter Writing',
+          'Essay Writing', 'Vocabulary', 'Grammar Exercises', 'Literature Texts',
+          'Poetry', 'Prose', 'Drama'
+        ],
+        'Social Science': [
+          'The French Revolution', 'Socialism in Europe', 'Nazism', 'Forest Society',
+          'Pastoralists', 'Peasants and Farmers', 'India Size and Location',
+          'Physical Features', 'Drainage', 'Climate', 'Natural Vegetation',
+          'What is Democracy', 'Constitutional Design', 'Electoral Politics',
+          'Working of Institutions', 'Democratic Rights', 'The Story of Village Palampur',
+          'People as Resource', 'Poverty', 'Food Security'
+        ],
+        'Hindi': [
+          'व्याकरण', 'वर्णमाला', 'संज्ञा', 'सर्वनाम', 'विशेषण', 'क्रिया',
+          'काल', 'वाक्य', 'अलंकार', 'रस', 'छंद', 'पत्र लेखन',
+          'निबंध लेखन', 'कहानी लेखन', 'कविता', 'गद्य'
+        ]
       };
       setChapters(chaptersMap[classForm.subject] || []);
+      // Reset chapter when subject changes
+      setClassForm(prev => ({
+        ...prev,
+        chapter: ''
+      }));
     }
   }, [classForm.class_name, classForm.subject]);
 
