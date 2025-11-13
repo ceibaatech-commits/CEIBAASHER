@@ -333,7 +333,7 @@ const ModernExamSyllabus = () => {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate(`/topic-quiz/${examId}/${topic.subject}/${topic.topic}`, { state: { subTopic: sub } });
+                                    navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`, { state: { subTopic: sub } });
                                   }}
                                   className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-semibold shadow-sm hover:shadow transition-all"
                                   title="Practice this concept"
@@ -343,7 +343,7 @@ const ModernExamSyllabus = () => {
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate(`/create-room/${examId}/${topic.subject}/${topic.topic}`, { state: { subTopic: sub } });
+                                    navigate(`/create-room/${examId}/${topic.syllabus_topic}/${topic.subject}`, { state: { subTopic: sub } });
                                   }}
                                   className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-0.5 rounded text-xs font-semibold shadow-sm hover:shadow transition-all"
                                   title="Create room for this concept"
