@@ -419,7 +419,7 @@ const AFCAT = () => {
                       </div>
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <button
-                          onClick={() => navigate('/create-room')}
+                          onClick={() => navigate('/exam/AFCAT')}
                           className="bg-gradient-to-r from-sky-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all inline-flex items-center space-x-2"
                         >
                           <Play className="w-5 h-5" />
