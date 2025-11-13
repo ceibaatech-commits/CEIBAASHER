@@ -116,14 +116,17 @@ async def get_all_sheets():
 @router.post("/admin/sheets")
 async def create_sheet(sheet: ExamSheet):
     """
-    Create a new exam sheet entry
+    Create a new exam sheet entry and import questions
     """
     try:
+        sheet_id = str(uuid.uuid4())
         sheet_data = {
-            "id": str(uuid.uuid4()),
+            "id": sheet_id,
             "type": sheet.type,
             "sheet_link": sheet.sheet_link,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "questions_imported": False,
+            "question_count": 0
         }
         
         # Add exam-specific fields
@@ -143,13 +146,85 @@ async def create_sheet(sheet: ExamSheet):
                 "chapter": sheet.chapter
             })
         
+        # Save sheet metadata first
         await db.exam_sheets.insert_one(sheet_data)
         
-        return {
-            "success": True,
-            "message": "Sheet created successfully",
-            "sheet": sheet_data
-        }
+        # Import questions from Google Sheet
+        try:
+            from google_sheets_service import GoogleSheetsService
+            sheets_service = GoogleSheetsService()
+            
+            # Fetch questions from the sheet
+            questions = sheets_service.fetch_questions(sheet.sheet_link)
+            
+            if questions:
+                # Add metadata to each question
+                for idx, question in enumerate(questions):
+                    question_doc = {
+                        "id": str(uuid.uuid4()),
+                        "sheet_id": sheet_id,
+                        "type": sheet.type,
+                        "question_number": idx + 1,
+                        "question": question["question"],
+                        "options": question["options"],
+                        "correctAnswer": question["correctAnswer"],
+                        "explanation": question.get("explanation", ""),
+                        "created_at": datetime.now(timezone.utc).isoformat()
+                    }
+                    
+                    # Add categorization
+                    if sheet.type == "exam":
+                        question_doc.update({
+                            "exam_name": sheet.exam_name,
+                            "syllabus_topic": sheet.syllabus_topic,
+                            "subject": sheet.subject,
+                            "sub_topic": sheet.sub_topic,
+                            "sub_sub_topic": sheet.sub_sub_topic
+                        })
+                    else:
+                        question_doc.update({
+                            "class_name": sheet.class_name,
+                            "subject": sheet.subject,
+                            "chapter": sheet.chapter
+                        })
+                    
+                    # Insert question into database
+                    await db.questions.insert_one(question_doc)
+                
+                # Update sheet with import status
+                await db.exam_sheets.update_one(
+                    {"id": sheet_id},
+                    {"$set": {
+                        "questions_imported": True,
+                        "question_count": len(questions),
+                        "last_import": datetime.now(timezone.utc).isoformat()
+                    }}
+                )
+                
+                return {
+                    "success": True,
+                    "message": f"Sheet created successfully with {len(questions)} questions imported",
+                    "sheet": sheet_data,
+                    "questions_imported": len(questions)
+                }
+            else:
+                return {
+                    "success": True,
+                    "message": "Sheet created but no questions found. Please check sheet format.",
+                    "sheet": sheet_data,
+                    "questions_imported": 0,
+                    "warning": "No questions imported. Verify sheet is public and has correct format."
+                }
+                
+        except Exception as import_error:
+            print(f"Error importing questions: {import_error}")
+            return {
+                "success": True,
+                "message": "Sheet created but questions import failed",
+                "sheet": sheet_data,
+                "questions_imported": 0,
+                "error": str(import_error)
+            }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating sheet: {str(e)}")
