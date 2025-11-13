@@ -3293,8 +3293,13 @@ class BattleServerTester:
         self.test_quiz_start_multiple_topics()
         self.test_backend_logs_for_sheets_loading()
         
-        # Social Feed Tests (NEW - Review Request Focus)
-        print("\n📱 SOCIAL FEED TESTS (REVIEW REQUEST)")
+        # Social Feed Workflow Tests (NEW - Review Request Focus)
+        print("\n🌟 SOCIAL FEED WORKFLOW TESTS (REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_social_feed_workflow()
+        
+        # Additional Social Feed Tests
+        print("\n📱 ADDITIONAL SOCIAL FEED TESTS")
         print("=" * 60)
         self.test_social_feed_for_you_mixed()
         self.test_room_code_post_creation()
