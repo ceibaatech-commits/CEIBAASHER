@@ -14,7 +14,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <img 
-                src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/sd5j5kdo_IMG_1159-removebg-preview.png"
+                src="/ceibaa-logo-new.png"
                 alt="Ceibaa Logo"
                 className="w-10 h-10 object-contain"
               />
