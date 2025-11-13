@@ -479,10 +479,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: 
-    - "Rename Ceep to Follow in Battle Room"
-    - "Mixed For You Feed - Following + Trending"
-    - "Room Code Sharing in Social Feed"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
