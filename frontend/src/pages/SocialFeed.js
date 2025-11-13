@@ -329,6 +329,26 @@ const SocialFeed = () => {
             </div>
           )}
 
+          {/* Room Code Card */}
+          {post.post_type === 'room_code' && post.room_code && (
+            <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+              <h4 className="font-bold text-green-900 mb-2">🎮 Join Battle Room</h4>
+              <div className="text-sm mb-3">
+                <p className="text-gray-600 mb-2">Room Code:</p>
+                <p className="text-3xl font-black text-green-600 tracking-widest">{post.room_code}</p>
+              </div>
+              <button 
+                onClick={() => navigate(`/battle-lobby/${post.room_code}`, {
+                  state: { autoJoin: true }
+                })}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors w-full"
+              >
+                <Play className="inline w-4 h-4 mr-2" />
+                Join Battle Now
+              </button>
+            </div>
+          )}
+
           {/* Media */}
           {post.media_urls && post.media_urls.length > 0 && (
             <div className="mt-4">
