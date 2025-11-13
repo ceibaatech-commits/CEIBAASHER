@@ -40,48 +40,141 @@ const ChapterTestSubjects = () => {
     navigate('/');
   };
 
-  const subjects = [
-    {
-      name: 'Mathematics',
-      icon: Calculator,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-100',
-      textColor: 'text-blue-600',
-      description: 'Master mathematical concepts chapter by chapter'
-    },
-    {
-      name: 'Science',
-      icon: Beaker,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-green-100',
-      textColor: 'text-green-600',
-      description: 'Explore Physics, Chemistry, and Biology'
-    },
-    {
-      name: selectedClass === '6' ? 'History' : 'Social Science',
-      icon: Globe,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-100',
-      textColor: 'text-orange-600',
-      description: selectedClass === '6' ? 'Ancient India and Early Civilizations' : 'History, Geography, Civics, and Economics'
-    },
-    {
-      name: selectedClass === '6' ? 'Poorvi' : 'English',
-      icon: BookOpen,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-100',
-      textColor: 'text-purple-600',
-      description: selectedClass === '6' ? 'NCERT Poorvi - English Textbook' : 'Enhance your language and literature skills'
-    },
-    {
-      name: 'Hindi',
-      icon: Languages,
-      color: 'from-pink-500 to-pink-600',
-      bgColor: 'bg-pink-100',
-      textColor: 'text-pink-600',
-      description: 'Improve your Hindi language proficiency'
-    }
-  ];
+  // Define subjects based on class
+  let subjects = [];
+  
+  if (selectedClass === '6') {
+    subjects = [
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Master mathematical concepts chapter by chapter'
+      },
+      {
+        name: 'Science',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Explore Physics, Chemistry, and Biology'
+      },
+      {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'Ancient India and Early Civilizations'
+      },
+      {
+        name: 'Poorvi',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'NCERT Poorvi - English Textbook'
+      },
+      {
+        name: 'Hindi',
+        icon: Languages,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'Improve your Hindi language proficiency'
+      }
+    ];
+  } else if (selectedClass === '8') {
+    // Class 8 has separate subjects for Geography, History, and Civics
+    subjects = [
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Master mathematical concepts chapter by chapter'
+      },
+      {
+        name: 'Science',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Explore Physics, Chemistry, and Biology'
+      },
+      {
+        name: 'Geography',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Resources and Development'
+      },
+      {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'Our Pasts III'
+      },
+      {
+        name: 'Civics',
+        icon: Globe,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-600',
+        description: 'Social and Political Life'
+      }
+    ];
+  } else {
+    // Other classes
+    subjects = [
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Master mathematical concepts chapter by chapter'
+      },
+      {
+        name: 'Science',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Explore Physics, Chemistry, and Biology'
+      },
+      {
+        name: 'Social Science',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'History, Geography, Civics, and Economics'
+      },
+      {
+        name: 'English',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'Enhance your language and literature skills'
+      },
+      {
+        name: 'Hindi',
+        icon: Languages,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'Improve your Hindi language proficiency'
+      }
+    ];
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
