@@ -295,10 +295,18 @@ const SoloPractice = () => {
               Practice Again
             </button>
             <button
-              onClick={() => navigate(`/exam/${exam}`)}
-              className="flex-1 bg-white text-gray-700 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all"
+              onClick={() => {
+                if (isClassBased && classBasedData) {
+                  // Navigate back to subject selection for class-based
+                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
+                } else {
+                  // Navigate to exam page for exam-based
+                  navigate(`/exam/${exam}`);
+                }
+              }}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-semibold transition-all shadow-md"
             >
-              Choose Another Subject
+              {isClassBased ? 'Choose Another Chapter' : 'Choose Another Subject'}
             </button>
           </div>
         </div>
