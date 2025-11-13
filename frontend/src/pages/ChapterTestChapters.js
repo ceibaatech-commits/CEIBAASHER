@@ -10,8 +10,14 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ChapterTestChapters = () => {
   const navigate = useNavigate();
-  const { classNumber, subject } = useParams();
-  const selectedClass = classNumber?.replace('class-', '');
+  const { classNumber, subject, stream } = useParams();
+  const location = window.location;
+  
+  // Extract class number from URL path
+  const pathParts = location.pathname.split('/');
+  const classIndex = pathParts.findIndex(part => part.startsWith('class-'));
+  const selectedClass = classIndex >= 0 ? pathParts[classIndex].replace('class-', '') : '';
+  
   const formattedSubject = subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 
   const [chapters, setChapters] = useState([]);
