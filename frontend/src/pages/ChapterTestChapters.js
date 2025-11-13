@@ -164,49 +164,63 @@ const ChapterTestChapters = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Quick Stats Bar - Kahoot Style */}
-        <div className="flex items-center justify-between bg-white rounded-xl shadow-sm p-4 mb-4">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <div className={`w-10 h-10 bg-gradient-to-br ${colorGradient} rounded-lg flex items-center justify-center`}>
-                <BookOpen className="w-5 h-5 text-white" />
+      {/* Decorative Background with Shapes */}
+      <div className="relative bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden">
+        {/* Floating Geometric Shapes */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-20 blur-2xl animate-pulse"></div>
+          <div className="absolute top-40 right-20 w-40 h-40 bg-blue-200 rounded-full opacity-20 blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-pink-200 rounded-full opacity-20 blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
+          <div className="absolute bottom-40 right-1/3 w-28 h-28 bg-yellow-200 rounded-full opacity-20 blur-2xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
+          
+          {/* Geometric Triangles */}
+          <div className="absolute top-20 right-10 w-0 h-0 border-l-[60px] border-l-transparent border-r-[60px] border-r-transparent border-b-[100px] border-b-purple-200 opacity-10 rotate-12"></div>
+          <div className="absolute bottom-32 left-20 w-0 h-0 border-l-[50px] border-l-transparent border-r-[50px] border-r-transparent border-b-[80px] border-b-blue-200 opacity-10 -rotate-45"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 py-6 relative z-10">
+          {/* Quick Stats Bar - Enhanced Kahoot Style */}
+          <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-6 border border-white/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-8">
+                {/* Questions Stat */}
+                <div className="flex items-center space-x-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                  <BookOpen className="w-6 h-6" />
+                  <div>
+                    <p className="text-2xl font-black">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
+                    <p className="text-xs font-semibold opacity-90">Questions</p>
+                  </div>
+                </div>
+                
+                {/* Chapters Stat */}
+                <div className="hidden sm:flex items-center space-x-3 bg-gradient-to-br from-purple-500 to-purple-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                  <Target className="w-6 h-6" />
+                  <div>
+                    <p className="text-2xl font-black">{chapters.length}</p>
+                    <p className="text-xs font-semibold opacity-90">Chapters</p>
+                  </div>
+                </div>
+                
+                {/* NCERT Badge */}
+                <div className="hidden md:flex items-center space-x-3 bg-gradient-to-br from-green-500 to-green-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                  <Zap className="w-6 h-6" />
+                  <div>
+                    <p className="text-lg font-black">NCERT</p>
+                    <p className="text-xs font-semibold opacity-90">Based</p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-black text-gray-900">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
-                <p className="text-xs text-gray-500 font-medium">Questions</p>
-              </div>
-            </div>
-            
-            <div className="hidden sm:flex items-center space-x-2">
-              <div className={`w-10 h-10 bg-gradient-to-br ${colorGradient} rounded-lg flex items-center justify-center`}>
-                <Target className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-black text-gray-900">{chapters.length}</p>
-                <p className="text-xs text-gray-500 font-medium">Chapters</p>
-              </div>
-            </div>
-            
-            <div className="hidden md:flex items-center space-x-2">
-              <div className={`w-10 h-10 bg-gradient-to-br ${colorGradient} rounded-lg flex items-center justify-center`}>
-                <Zap className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl font-black text-gray-900">NCERT</p>
-                <p className="text-xs text-gray-500 font-medium">Based</p>
-              </div>
+              
+              {/* Start Button */}
+              <button 
+                onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
+                className={`bg-gradient-to-br ${colorGradient} text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transform transition-all shadow-2xl flex items-center space-x-3 hover:shadow-3xl`}
+              >
+                <Play className="w-6 h-6 fill-white" />
+                <span>Let's Practice!</span>
+              </button>
             </div>
           </div>
-          
-          <button 
-            onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
-            className={`bg-gradient-to-br ${colorGradient} text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2`}
-          >
-            <Play className="w-5 h-5" />
-            <span>Start Now</span>
-          </button>
-        </div>
 
         {/* Chapters Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
