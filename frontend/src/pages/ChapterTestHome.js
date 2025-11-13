@@ -139,11 +139,30 @@ const ChapterTestHome = () => {
           </div>
         </div>
 
+        {/* Motivational Banner */}
+        <div className="bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 rounded-3xl p-8 mb-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative z-10 text-center">
+            <h2 className="text-4xl font-black text-white mb-3">
+              🚀 Ready to Excel in Your Exams?
+            </h2>
+            <p className="text-xl text-white/90 font-semibold max-w-2xl mx-auto">
+              Practice chapter-wise tests and track your progress across all subjects!
+            </p>
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute top-4 right-8 text-6xl opacity-20">🎯</div>
+          <div className="absolute bottom-4 left-8 text-6xl opacity-20">📚</div>
+        </div>
+
         {/* Class Selection Grid */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+          <h2 className="text-4xl font-black text-gray-900 mb-3 text-center">
             Select Your Class
           </h2>
+          <p className="text-center text-gray-600 text-lg mb-8">
+            Choose your class to start practicing 👇
+          </p>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
