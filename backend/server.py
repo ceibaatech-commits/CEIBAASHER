@@ -26,6 +26,7 @@ from ceep_routes import router as ceep_router
 from admin_routes import router as admin_router
 import ceep_routes
 import admin_routes
+from chapter_test_routes import router as chapter_test_router
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
