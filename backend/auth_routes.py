@@ -261,6 +261,31 @@ async def logout():
     # In a stateless JWT system, logout is handled client-side by removing the token
     return {"message": "Logged out successfully"}
 
+@router.get("/auth/search-user")
+async def search_user(name: str):
+    """
+    Search for a user by name and return their user_id
+    """
+    try:
+        # Try exact match first
+        user = await db.users.find_one({"name": name}, {"_id": 0, "id": 1})
+        if user:
+            return {"user_id": user.get("id")}
+        
+        # Try case-insensitive match
+        user = await db.users.find_one(
+            {"name": {"$regex": f"^{name}$", "$options": "i"}},
+            {"_id": 0, "id": 1}
+        )
+        if user:
+            return {"user_id": user.get("id")}
+        
+        # User not found
+        return {"user_id": None}
+    except Exception as e:
+        print(f"Error searching for user: {e}")
+        return {"user_id": None}
+
 @router.post("/auth/demo-login")
 async def demo_login(login_data: DemoLoginRequest):
     """Demo login endpoint - No social login, only demo accounts"""
