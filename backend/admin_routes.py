@@ -198,8 +198,8 @@ async def create_sheet(sheet: ExamSheet):
                             "chapter": sheet.chapter
                         })
                     
-                    # Insert question into database
-                    await db.questions.insert_one(question_doc)
+                    # Insert question into database (pass copy to avoid _id in original)
+                    await db.questions.insert_one(question_doc.copy())
                 
                 # Update sheet with import status
                 await db.exam_sheets.update_one(
