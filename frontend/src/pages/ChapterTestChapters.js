@@ -351,7 +351,19 @@ const ChapterTestChapters = () => {
                     📚 Solo Practice
                   </button>
                   <button 
-                    onClick={() => navigate(`/create-room/CBSE-Class-${selectedClass}/${formattedSubject}/${chapter.chapter_name}`)}
+                    onClick={() => {
+                      // Encode URL parameters properly
+                      const examParam = `Class-${selectedClass}-${formattedSubject}`;
+                      const chapterParam = encodeURIComponent(chapter.chapter_name);
+                      navigate(`/create-room/${examParam}/${chapterParam}`, {
+                        state: {
+                          isClassBased: true,
+                          class_name: `Class ${selectedClass}`,
+                          subject: formattedSubject,
+                          chapter: chapter.chapter_name
+                        }
+                      });
+                    }}
                     className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2.5 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
                   >
                     🎯 Create Room
