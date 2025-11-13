@@ -49,6 +49,7 @@ const ExamSheetManager = () => {
     'IBPS PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
     'IBPS Clerk': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
     'RRB NTPC': ['General Awareness', 'Mathematics', 'General Intelligence'],
+    'AFCAT': ['English', 'General Awareness', 'Numerical Ability', 'Reasoning & Military Aptitude'],
     'GATE': ['Engineering Mathematics', 'General Aptitude', 'Technical Subject'],
     'CAT': ['Verbal Ability', 'Data Interpretation', 'Logical Reasoning', 'Quantitative Aptitude'],
     'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
