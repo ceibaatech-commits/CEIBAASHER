@@ -138,6 +138,34 @@ const ChapterTestSubjects = () => {
         description: 'NCERT Vasant - Hindi Textbook'
       }
     ];
+  } else if (selectedClass === '9') {
+    // Class 9 has separate Geography and multiple English books
+    subjects = [
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Master mathematical concepts chapter by chapter'
+      },
+      {
+        name: 'Science',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Physics, Chemistry, and Biology'
+      },
+      {
+        name: 'Geography',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Contemporary India I'
+      }
+    ];
   } else if (selectedClass === '10') {
     // Class 10 has separate subjects and multiple English/Hindi books
     subjects = [
