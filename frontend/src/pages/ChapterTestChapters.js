@@ -336,29 +336,22 @@ const ChapterTestChapters = () => {
                   )}
                 </AnimatePresence>
 
-                    {/* Action Buttons - Bold & Playful */}
-                    <div className="flex gap-3">
-                      <button 
-                        onClick={() => handleStartPractice(chapter)} 
-                        className={`flex-1 bg-gradient-to-br ${cardColor} text-white py-3 rounded-xl font-black hover:scale-105 transform transition-all shadow-lg flex items-center justify-center space-x-2`}
-                      >
-                        <Play className="w-5 h-5 fill-white" />
-                        <span>Practice</span>
-                      </button>
-                      <button 
-                        onClick={() => handleCreateRoom(chapter)} 
-                        className="flex-1 bg-gradient-to-br from-gray-700 to-gray-900 text-white py-3 rounded-xl font-black hover:scale-105 transform transition-all shadow-lg flex items-center justify-center space-x-2"
-                      >
-                        <Users className="w-5 h-5" />
-                        <span>Battle</span>
-                      </button>
-                    </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleStartPractice(chapter)} 
+                      className={`flex-1 bg-gradient-to-br ${colorGradient} text-white py-2 rounded-lg font-bold hover:opacity-90 transition-all flex items-center justify-center space-x-1 text-sm`}
+                    >
+                      <Play className="w-4 h-4 fill-white" />
+                      <span>Solo Practice</span>
+                    </button>
+                    <button 
+                      onClick={() => handleCreateRoom(chapter)} 
+                      className="flex-1 bg-gray-800 text-white py-2 rounded-lg font-bold hover:bg-gray-700 transition-all flex items-center justify-center space-x-1 text-sm"
+                    >
+                      <Users className="w-4 h-4" />
+                      <span>Create Room</span>
+                    </button>
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
 
         {chapters.length === 0 && (
           <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
