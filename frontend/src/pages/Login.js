@@ -33,10 +33,15 @@ const Login = () => {
 
       // Store token in localStorage
       localStorage.setItem('auth_token', response.data.access_token);
-      localStorage.setItem('ceibaa_user', JSON.stringify(response.data.user));
+      const userData = response.data.user;
+      
+      // Update AuthContext with user data
+      localStorage.setItem('ceibaa_user', JSON.stringify(userData));
+      updateUser(userData);
 
-      // Navigate to dashboard
-      navigate('/dashboard');
+      // Navigate back to where user came from, or to social feed by default
+      const from = location.state?.from || '/social-feed';
+      navigate(from, { replace: true });
       
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed. Please try again.');
