@@ -365,7 +365,7 @@ const ModernExamSyllabus = () => {
                     📚 Solo Practice
                   </button>
                   <div className="grid grid-cols-2 gap-2">
-                    <button onClick={() => navigate(`/create-room/${examId}/${topic.subject}/${topic.topic}`)}
+                    <button onClick={() => navigate(`/create-room/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
                       className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all">
                       🎯 Room
                     </button>
