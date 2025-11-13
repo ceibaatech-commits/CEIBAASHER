@@ -53,6 +53,8 @@ function App() {
           <Route path="/social-feed" element={<SocialFeed />} />
           
           {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/sheets" element={<SheetManager />} />
           <Route path="/sheet-manager" element={<SheetManager />} />
           
