@@ -2709,6 +2709,211 @@ class BattleServerTester:
             self.log_result("Database Collection Verification", False, f"Database error: {e}")
             return False
 
+    def test_admin_get_all_users(self):
+        """Test GET /api/admin/users endpoint"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/users",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if data.get('success') and 'users' in data and 'count' in data:
+                    users = data['users']
+                    count = data['count']
+                    
+                    self.log_result("Admin Get All Users - Response Structure", True, 
+                                  f"✅ Valid response structure with {count} users")
+                    
+                    if users:
+                        # Check first user structure
+                        sample_user = users[0]
+                        required_fields = ['id', 'name', 'email', 'created_at', 'status']
+                        
+                        missing_fields = [field for field in required_fields if field not in sample_user]
+                        if not missing_fields:
+                            self.log_result("Admin Get All Users - User Fields", True, 
+                                          "✅ All required user fields present")
+                            
+                            # Check for sensitive data exposure
+                            sensitive_fields = ['password', 'token', 'secret', 'key']
+                            exposed_sensitive = [field for field in sensitive_fields if field in sample_user]
+                            
+                            if not exposed_sensitive:
+                                self.log_result("Admin Get All Users - Security", True, 
+                                              "✅ No sensitive data exposed")
+                            else:
+                                self.log_result("Admin Get All Users - Security", False, 
+                                              f"❌ Sensitive fields exposed: {exposed_sensitive}")
+                            
+                            # Log sample user data (first 2 users)
+                            sample_users = users[:2]
+                            for i, user in enumerate(sample_users, 1):
+                                user_info = {
+                                    'id': user.get('id', 'N/A'),
+                                    'name': user.get('name', 'N/A'),
+                                    'email': user.get('email', 'N/A'),
+                                    'status': user.get('status', 'N/A'),
+                                    'created_at': user.get('created_at', 'N/A')
+                                }
+                                self.log_result(f"Sample User {i} Data", True, 
+                                              f"User: {user_info}")
+                            
+                            return True
+                        else:
+                            self.log_result("Admin Get All Users - User Fields", False, 
+                                          f"❌ Missing required fields: {missing_fields}")
+                            return False
+                    else:
+                        self.log_result("Admin Get All Users - Empty Users", False, 
+                                      "❌ Users array is empty")
+                        return False
+                else:
+                    self.log_result("Admin Get All Users - Response Structure", False, 
+                                  f"❌ Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Get All Users", False, 
+                              f"❌ HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Get All Users", False, f"❌ Request error: {e}")
+            return False
+
+    def test_admin_overview_stats(self):
+        """Test GET /api/admin/stats/overview endpoint"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/stats/overview",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if data.get('success') and 'stats' in data:
+                    stats = data['stats']
+                    required_stats = ['total_users', 'total_posts', 'total_battles', 'recent_users']
+                    
+                    missing_stats = [stat for stat in required_stats if stat not in stats]
+                    if not missing_stats:
+                        self.log_result("Admin Overview Stats - Structure", True, 
+                                      "✅ All required stats fields present")
+                        
+                        # Validate that all stats are integers
+                        invalid_stats = []
+                        for stat_name, stat_value in stats.items():
+                            if not isinstance(stat_value, int) or stat_value < 0:
+                                invalid_stats.append(f"{stat_name}: {stat_value}")
+                        
+                        if not invalid_stats:
+                            self.log_result("Admin Overview Stats - Values", True, 
+                                          f"✅ All stats are valid integers: {stats}")
+                            return True
+                        else:
+                            self.log_result("Admin Overview Stats - Values", False, 
+                                          f"❌ Invalid stat values: {invalid_stats}")
+                            return False
+                    else:
+                        self.log_result("Admin Overview Stats - Structure", False, 
+                                      f"❌ Missing stats fields: {missing_stats}")
+                        return False
+                else:
+                    self.log_result("Admin Overview Stats", False, 
+                                  f"❌ Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Overview Stats", False, 
+                              f"❌ HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Overview Stats", False, f"❌ Request error: {e}")
+            return False
+
+    def test_admin_search_users(self):
+        """Test GET /api/admin/users/search endpoint"""
+        try:
+            # Test search with query "demo" and limit 10
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/users/search",
+                params={"query": "demo", "limit": 10},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check response structure
+                if data.get('success') and 'users' in data and 'count' in data:
+                    users = data['users']
+                    count = data['count']
+                    
+                    self.log_result("Admin Search Users - Response Structure", True, 
+                                  f"✅ Valid response structure with {count} matching users")
+                    
+                    # Verify limit is respected
+                    if len(users) <= 10:
+                        self.log_result("Admin Search Users - Limit Respected", True, 
+                                      f"✅ Returned {len(users)} users (≤ 10 limit)")
+                    else:
+                        self.log_result("Admin Search Users - Limit Respected", False, 
+                                      f"❌ Returned {len(users)} users (> 10 limit)")
+                    
+                    if users:
+                        # Check if search results are relevant (contain "demo")
+                        relevant_users = []
+                        for user in users:
+                            name = user.get('name', '').lower()
+                            email = user.get('email', '').lower()
+                            user_id = user.get('id', '').lower()
+                            
+                            if 'demo' in name or 'demo' in email or 'demo' in user_id:
+                                relevant_users.append(user)
+                        
+                        if relevant_users:
+                            self.log_result("Admin Search Users - Relevance", True, 
+                                          f"✅ Found {len(relevant_users)} relevant users containing 'demo'")
+                            
+                            # Check user structure matches /api/admin/users
+                            sample_user = users[0]
+                            required_fields = ['id', 'name', 'email']
+                            missing_fields = [field for field in required_fields if field not in sample_user]
+                            
+                            if not missing_fields:
+                                self.log_result("Admin Search Users - User Structure", True, 
+                                              "✅ User structure matches expected format")
+                                return True
+                            else:
+                                self.log_result("Admin Search Users - User Structure", False, 
+                                              f"❌ Missing fields: {missing_fields}")
+                                return False
+                        else:
+                            self.log_result("Admin Search Users - Relevance", False, 
+                                          "❌ No users found containing 'demo' in search results")
+                            return False
+                    else:
+                        self.log_result("Admin Search Users - Results", True, 
+                                      "✅ Search completed (no matching users found)")
+                        return True
+                else:
+                    self.log_result("Admin Search Users", False, 
+                                  f"❌ Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Search Users", False, 
+                              f"❌ HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Search Users", False, f"❌ Request error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
