@@ -25,6 +25,7 @@ import social_feed_routes
 from ceep_routes import router as ceep_router
 from admin_routes import router as admin_router
 import ceep_routes
+import admin_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
