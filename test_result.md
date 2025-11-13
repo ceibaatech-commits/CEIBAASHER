@@ -427,6 +427,42 @@ frontend:
         agent: "main"
         comment: "Completely rebuilt SocialFeed.js with ALL requested features: 5 feed tabs (For You, Trending, Following, Leaderboard, My Circle), Rich post cards with different types (battle_victory, quiz_announcement, study_tip, achievement, government, video), Full engagement buttons (Like with heart animation, Comment with nested replies, Share, Gift modal with 4 gift types, Challenge button for battle posts), Create post modal with post types and exam categories, Guest access (no login required to view feed), Login prompt for engagement actions, Beautiful UI with gradients and hover effects, Real-time updates on engagement. Integrated with Auth Context for seamless authentication. No bookmark feature as per user request."
 
+  - task: "Rename Ceep to Follow in Battle Room"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/LiveBattle.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Updated LiveBattle.js: (1) Imported useAuth hook for authentication check, (2) Renamed handleCeep to handleFollow, (3) Changed button text from 'Ceep' to 'Follow', (4) Added authentication check - only logged-in users can see Follow button, (5) Updated alert messages to say 'following' instead of 'ceeping', (6) Button only visible when user is authenticated. Backend API endpoint remains at /api/ceep/ceep but frontend now displays as 'Follow'."
+
+  - task: "Mixed For You Feed - Following + Trending"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/social_feed_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Completely rewrote /feed/for-you endpoint: (1) PART 1: Fetches posts from users the current user follows (using ceeps collection), (2) PART 2: Calculates trending score for all posts using formula: (likes*2 + comments*3 + shares*4) * recency_factor, (3) Recency factors: 2.0x for <24hrs, 1.5x for <3days, 1.2x for <7days, 1.0x for older, (4) Merges following + trending posts and sorts by created_at, (5) Updates trending_score in database for future use, (6) Shows all activity types: scores, battle results, achievements, room codes. Mixed feed successfully implemented with engagement-based trending algorithm."
+
+  - task: "Room Code Sharing in Social Feed"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/social_feed_routes.py, /app/frontend/src/pages/SocialFeed.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added room code sharing feature: (1) Backend: Added 'room_code' to PostCreate and Post models, included room_code field in post creation, (2) Frontend: Added 'Share Room Code' option in post type dropdown, added conditional room code input field (6-digit, uppercase, centered display), added Room Code Card display with green gradient styling showing room code in large text, added 'Join Battle Now' button that navigates to battle lobby with room code. Users can now share battle room codes in social feed and others can join directly from the feed."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
