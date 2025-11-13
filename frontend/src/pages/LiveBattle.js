@@ -432,27 +432,33 @@ const LiveBattle = () => {
     }
   };
 
-  const handleCeep = async (player) => {
+  const handleFollow = async (player) => {
+    // Check if user is logged in
+    if (!isAuthenticated()) {
+      alert('Please log in to follow other players');
+      return;
+    }
+
     try {
-      // Generate simple user IDs from names for demo
-      const userId = playerName.toLowerCase().replace(/\s+/g, '_');
-      const ceepUserId = player.name.toLowerCase().replace(/\s+/g, '_');
+      // Use actual user ID if logged in
+      const userId = user?.id || playerName.toLowerCase().replace(/\s+/g, '_');
+      const followUserId = player.name.toLowerCase().replace(/\s+/g, '_');
       
       const response = await axios.post(`${BATTLE_SERVER_URL}/api/ceep/ceep`, {
         user_id: userId,
-        ceep_user_id: ceepUserId,
-        user_name: playerName,
+        ceep_user_id: followUserId,
+        user_name: user?.name || playerName,
         ceep_user_name: player.name
       });
       
       if (response.data.success) {
-        alert(`✅ You are now ceeping ${player.name}!`);
+        alert(`✅ You are now following ${player.name}!`);
       } else {
         alert(response.data.message);
       }
     } catch (error) {
-      console.error('Error ceeping user:', error);
-      alert('Failed to ceep user. Please try again.');
+      console.error('Error following user:', error);
+      alert('Failed to follow user. Please try again.');
     }
   };
 
