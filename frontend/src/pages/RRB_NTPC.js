@@ -616,7 +616,7 @@ const RRB_NTPC = () => {
               <h3 className="text-xl font-bold mb-4">Start Practicing</h3>
               <div className="space-y-3">
                 <button
-                  onClick={() => navigate('/create-room')}
+                  onClick={() => navigate('/exam/RRB_NTPC')}
                   className="w-full bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center space-x-2"
                 >
                   <Play className="w-5 h-5" />
