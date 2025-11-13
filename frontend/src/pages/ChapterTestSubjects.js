@@ -35,12 +35,12 @@ const ChapterTestSubjects = () => {
       description: 'History, Geography, Civics, and Economics'
     },
     {
-      name: 'English',
+      name: selectedClass === '6' ? 'Poorvi' : 'English',
       icon: BookOpen,
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-100',
       textColor: 'text-purple-600',
-      description: 'Enhance your language and literature skills'
+      description: selectedClass === '6' ? 'NCERT Poorvi - English Textbook' : 'Enhance your language and literature skills'
     },
     {
       name: 'Hindi',
