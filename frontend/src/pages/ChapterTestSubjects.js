@@ -87,7 +87,7 @@ const ChapterTestSubjects = () => {
       }
     ];
   } else if (selectedClass === '8') {
-    // Class 8 has separate subjects for Geography, History, and Civics
+    // Class 8 has all subjects including English and Hindi books
     subjects = [
       {
         name: 'Mathematics',
@@ -130,12 +130,44 @@ const ChapterTestSubjects = () => {
         description: 'Social and Political Life'
       },
       {
-        name: 'Hindi',
+        name: 'English Honeydew',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'NCERT English Textbook'
+      },
+      {
+        name: 'English It So Happened',
+        icon: BookOpen,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'Supplementary Reader'
+      },
+      {
+        name: 'Hindi Vasant',
         icon: Languages,
         color: 'from-pink-500 to-pink-600',
         bgColor: 'bg-pink-100',
         textColor: 'text-pink-600',
         description: 'NCERT Vasant - Hindi Textbook'
+      },
+      {
+        name: 'Hindi Durva',
+        icon: Languages,
+        color: 'from-rose-500 to-rose-600',
+        bgColor: 'bg-rose-100',
+        textColor: 'text-rose-600',
+        description: 'NCERT Durva - Hindi Textbook'
+      },
+      {
+        name: 'Hindi Bharat Ki Khoj',
+        icon: Languages,
+        color: 'from-fuchsia-500 to-fuchsia-600',
+        bgColor: 'bg-fuchsia-100',
+        textColor: 'text-fuchsia-600',
+        description: 'NCERT Bharat Ki Khoj'
       }
     ];
   } else if (selectedClass === '9') {
