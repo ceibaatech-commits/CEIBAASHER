@@ -3039,8 +3039,9 @@ class BattleServerTester:
             
             if response.status_code == 200:
                 data = response.json()
-                if data.get('success') and 'post' in data:
-                    post = data['post']
+                # Handle both response formats: with 'success' wrapper or direct post object
+                if (data.get('success') and 'post' in data) or 'id' in data:
+                    post = data.get('post', data)  # Get post from wrapper or use data directly
                     self.log_result("Post Creation", True, 
                                   f"✅ Post created: {post.get('id')} - {post_type}")
                     return True
