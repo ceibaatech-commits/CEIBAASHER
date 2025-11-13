@@ -2629,7 +2629,7 @@ class BattleServerTester:
                     return False
             elif response.status_code == 401:
                 # Authentication required for this endpoint, but we can still verify the post exists in the database
-                if self.db:
+                if self.db is not None:
                     post = self.db.social_posts.find_one({"id": post_id})
                     if post:
                         likes_count = post.get('likes_count', 0)
