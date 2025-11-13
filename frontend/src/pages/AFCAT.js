@@ -374,10 +374,10 @@ const AFCAT = () => {
                         </div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-3">
-                        {data.topics.map((topic, index) => (
+                        {data.subjects.map((subjectItem, index) => (
                           <div key={index} className="flex items-start">
                             <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-1 flex-shrink-0" />
-                            <span className="text-gray-700">{topic}</span>
+                            <span className="text-gray-700">{subjectItem}</span>
                           </div>
                         ))}
                       </div>
