@@ -241,81 +241,61 @@ const ChapterTestChapters = () => {
             </div>
           </div>
 
-          {/* Chapters Grid - Colorful Kahoot Cards */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
-            {chapters.map((chapter, idx) => {
-              // Vibrant color schemes for each card
-              const cardColors = [
-                'from-purple-500 to-purple-600',
-                'from-blue-500 to-blue-600',
-                'from-pink-500 to-pink-600',
-                'from-green-500 to-green-600',
-                'from-orange-500 to-orange-600',
-                'from-teal-500 to-teal-600',
-                'from-red-500 to-red-600',
-                'from-indigo-500 to-indigo-600',
-                'from-yellow-500 to-yellow-600',
-              ];
-              const cardColor = cardColors[idx % cardColors.length];
-              
-              return (
-                <motion.div 
-                  key={idx} 
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all transform"
-                >
-                  {/* Colorful Header */}
-                  <div className={`bg-gradient-to-br ${cardColor} p-6 relative`}>
-                    {/* Decorative Circle */}
-                    <div className="absolute top-2 right-2 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-                    <div className="absolute bottom-2 left-2 w-12 h-12 bg-white/10 rounded-full blur-lg"></div>
-                    
-                    <div className="relative">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-3">
-                            <span className="bg-white text-gray-900 px-3 py-1.5 rounded-full text-xs font-black">
-                              Ch. {chapter.chapter_number}
+          {/* Chapters Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {chapters.map((chapter, idx) => (
+              <motion.div 
+                key={idx} 
+                whileHover={{ y: -4 }}
+                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
+              >
+                <div className={`bg-gradient-to-br ${colorGradient} p-4 relative`}>
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="relative">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="bg-white/30 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-bold">
+                            Chapter {chapter.chapter_number}
+                          </span>
+                          {chapter.attempted && (
+                            <span className="bg-green-400/30 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-bold">
+                              ✓ Done
                             </span>
-                            {chapter.attempted && (
-                              <span className="bg-green-400 text-white px-3 py-1.5 rounded-full text-xs font-black">
-                                ✓ Completed
-                              </span>
-                            )}
-                          </div>
-                          <h4 className="text-white font-black text-lg leading-tight">{chapter.chapter_name}</h4>
+                          )}
                         </div>
-                        <button 
-                          onClick={() => setExpandedChapters(p => ({ ...p, [idx]: !p[idx] }))}
-                          className="bg-white/20 backdrop-blur-sm p-2 rounded-lg hover:bg-white/30 transition-all"
-                        >
-                          {expandedChapters[idx] ? 
-                            <ChevronUp className="w-5 h-5 text-white" /> : 
-                            <ChevronDown className="w-5 h-5 text-white" />
-                          }
-                        </button>
+                        <h4 className="text-white font-bold text-base drop-shadow-md">{chapter.chapter_name}</h4>
                       </div>
+                      <button 
+                        onClick={() => setExpandedChapters(p => ({ ...p, [idx]: !p[idx] }))}
+                        className="bg-white/20 p-1 rounded hover:bg-white/30 transition-all"
+                      >
+                        {expandedChapters[idx] ? 
+                          <ChevronUp className="w-4 h-4 text-white" /> : 
+                          <ChevronDown className="w-4 h-4 text-white" />
+                        }
+                      </button>
                     </div>
                   </div>
+                </div>
               
-                  {/* Card Content */}
-                  <div className="p-5">
-                    {/* Quick Stats - Colorful Badges */}
-                    <div className="flex items-center justify-between gap-2 mb-4">
-                      <div className="flex-1 bg-blue-50 rounded-xl p-3 text-center">
-                        <p className="text-2xl font-black text-blue-600">{chapter.total_questions}</p>
-                        <p className="text-xs font-bold text-blue-600/70">Questions</p>
-                      </div>
-                      <div className="flex-1 bg-purple-50 rounded-xl p-3 text-center">
-                        <p className="text-2xl font-black text-purple-600">{chapter.duration}m</p>
-                        <p className="text-xs font-bold text-purple-600/70">Duration</p>
-                      </div>
-                      <div className="flex-1 bg-green-50 rounded-xl p-3 text-center">
-                        <span className={`text-xs font-black px-2 py-1 rounded-full ${getDifficultyColor(chapter.difficulty)}`}>
-                          {chapter.difficulty}
-                        </span>
-                      </div>
+                <div className="p-4">
+                  <div className="grid grid-cols-3 gap-2 mb-3">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-600">Questions</p>
+                      <p className="font-bold text-blue-600 text-lg">{chapter.total_questions}</p>
                     </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-600">Duration</p>
+                      <p className="font-bold text-purple-600 text-lg">{chapter.duration}m</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-600">Level</p>
+                      <span className={`text-xs font-semibold px-2 py-1 rounded ${getDifficultyColor(chapter.difficulty)}`}>
+                        {chapter.difficulty}
+                      </span>
+                    </div>
+                  </div>
 
                 {chapter.last_score && (
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-2 mb-3">
