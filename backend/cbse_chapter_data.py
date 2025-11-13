@@ -228,7 +228,8 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 7, "chapter_name": "Public Facilities", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 8, "chapter_name": "Law and Social Justice", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ]
-    },
+    }
+}
 
 # Add similar data for classes 7, 9, 11, 12 (keeping it concise for now)
 # These can be expanded based on NCERT syllabus
