@@ -47,6 +47,7 @@ const AdminDashboard = () => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, color: 'blue' },
     { id: 'users', label: 'User Management', icon: Users, color: 'green' },
+    { id: 'sheets', label: 'Exam Sheet Manager', icon: BookOpen, color: 'indigo' },
     { id: 'content', label: 'Content Moderation', icon: FileText, color: 'purple' },
     { id: 'revenue', label: 'Revenue & Finance', icon: DollarSign, color: 'yellow' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, color: 'pink' },
