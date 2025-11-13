@@ -106,18 +106,28 @@ async def start_quiz(request: QuizStartRequest):
                 sheets_service = GoogleSheetsService()
                 # Pass sub_topic filter if available
                 filter_topic = sub_topic if sub_topic else topic
-                questions = sheets_service.fetch_questions(
-                    sheet_mapping["sheet_url"],
-                    sheet_mapping.get("sheet_name"),
-                    topic_filter=filter_topic  # Filter by sub-topic or topic
-                )
                 
-                if questions:
-                    source = "google_sheets"
-                    filter_info = f"{topic}/{sub_topic}" if sub_topic else topic
-                    print(f"✅ Loaded {len(questions)} questions from Google Sheets for {exam}/{subject}/{filter_info}")
+                # Extract sheet_url (no MongoDB ObjectId serialization issues)
+                sheet_url = sheet_mapping.get("sheet_url")
+                sheet_name = sheet_mapping.get("sheet_name")
+                
+                if not sheet_url:
+                    print(f"⚠️ No sheet_url found in mapping for {exam}/{subject}/{topic}")
+                else:
+                    questions = sheets_service.fetch_questions(
+                        sheet_url,
+                        sheet_name,
+                        topic_filter=filter_topic  # Filter by sub-topic or topic
+                    )
+                    
+                    if questions:
+                        source = "google_sheets"
+                        filter_info = f"{topic}/{sub_topic}" if sub_topic else topic
+                        print(f"✅ Loaded {len(questions)} questions from Google Sheets for {exam}/{subject}/{filter_info}")
             except Exception as e:
+                import traceback
                 print(f"⚠️ Error fetching from Google Sheets: {e}")
+                print(traceback.format_exc())
     
     # Fallback to demo questions if Google Sheets failed or not configured
     if not questions:
