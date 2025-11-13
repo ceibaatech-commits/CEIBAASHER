@@ -322,11 +322,17 @@ const SoloPractice = () => {
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="mb-6">
               <button
-                onClick={() => navigate('/')}
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                onClick={() => {
+                  if (isClassBased && classBasedData) {
+                    navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`);
+                  } else {
+                    navigate('/');
+                  }
+                }}
+                className="bg-white text-gray-700 hover:text-gray-900 flex items-center border-2 border-gray-300 hover:border-gray-400 px-4 py-2 rounded-lg transition-all font-semibold"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to Home
+                Back to {isClassBased ? 'Chapters' : 'Home'}
               </button>
             </div>
 
