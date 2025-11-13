@@ -1442,3 +1442,35 @@ agent_communication:
       - ✅ Multiple posts creation and feed updates working
       
       **CONCLUSION**: Complete social feed workflow is FULLY OPERATIONAL. Post creation, following users, and timeline/feed integration all working correctly as requested.
+
+  - agent: "main"
+    message: |
+      🔧 GOOGLE SHEETS 8-COLUMN FORMAT PARSER FIX IMPLEMENTED
+      
+      **Issue**: User reported sheet import failing with "Failed to parse questions from sheet. Check format." 
+      **Root Cause**: User's new sheet format has 8 columns instead of 7: QUESTION NUMBER | Question | A | B | C | D | Answer | Explanation
+      
+      **Fix Implemented in /app/backend/google_sheets_service.py**:
+      1. ✅ Added CSV header logging to debug column name detection
+      2. ✅ Implemented case-insensitive column lookup with whitespace trimming
+      3. ✅ Created lowercase lookup dictionary for flexible column name matching
+      4. ✅ Enhanced error logging to show which rows are skipped and why
+      5. ✅ Better handling for empty rows (skip rows where all values are empty)
+      6. ✅ Support for multiple column name variations (Answer vs Correct Answer, etc.)
+      7. ✅ Full traceback logging on parsing exceptions
+      8. ✅ The extra "QUESTION NUMBER" column is now gracefully ignored
+      
+      **Technical Details**:
+      - Uses csv.DictReader which automatically handles different column counts
+      - Extra QUESTION NUMBER column is simply ignored (not referenced in code)
+      - All column lookups now try: exact case match → lowercase match → alternative names
+      - Whitespace is stripped from both column names and values
+      - Detailed logging shows exactly what's happening during parsing
+      
+      **Status**: Backend restarted successfully. Ready for testing with user's actual 8-column Google Sheet.
+      
+      **Next Step**: Need to test with a real Google Sheet in the new 8-column format to verify:
+      - CSV headers are detected correctly
+      - Questions are parsed successfully
+      - All fields (Question, A, B, C, D, Answer, Explanation) are extracted properly
+      - Import completes without "Failed to parse" error
