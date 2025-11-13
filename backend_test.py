@@ -1725,6 +1725,26 @@ class BattleServerTester:
         try:
             test_user_id = "test_user_trending"
             
+            # First create a test user in the database using pymongo
+            if self.db:
+                try:
+                    user_doc = {
+                        "id": test_user_id,
+                        "name": "Trending Test User",
+                        "email": "trending@example.com",
+                        "avatar": None,
+                        "verified": False,
+                        "location": "Test City"
+                    }
+                    self.db.users.update_one(
+                        {"id": test_user_id},
+                        {"$set": user_doc},
+                        upsert=True
+                    )
+                    self.log_result("Trending Test User Creation", True, "✅ Trending test user created in database")
+                except Exception as e:
+                    self.log_result("Trending Test User Creation", False, f"Failed to create user: {e}")
+            
             # Create multiple test posts with different engagement
             test_posts = [
                 {
