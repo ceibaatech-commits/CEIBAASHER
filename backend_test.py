@@ -3556,6 +3556,287 @@ class BattleServerTester:
             self.log_result("For You Feed Integration", False, f"Request error: {e}")
             return False
 
+    def test_admin_add_exam_sheet(self):
+        """Test adding exam-based sheet via admin API"""
+        try:
+            payload = {
+                "type": "exam",
+                "exam_name": "NEET",
+                "syllabus_topic": "Physics",
+                "subject": "Mechanics",
+                "sub_topic": "Kinematics",
+                "sub_sub_topic": "Motion in a Straight Line",
+                "sheet_link": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/admin/sheets",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'sheet' in data:
+                    sheet = data['sheet']
+                    self.log_result("Admin Add Exam Sheet", True, 
+                                  f"✅ Exam sheet created successfully with ID: {sheet.get('id')}")
+                    
+                    # Verify response structure
+                    required_fields = ['id', 'type', 'exam_name', 'subject', 'sheet_link', 'created_at']
+                    missing_fields = [f for f in required_fields if f not in sheet]
+                    
+                    if not missing_fields:
+                        self.log_result("Exam Sheet Response Structure", True, 
+                                      "All required fields present in response")
+                    else:
+                        self.log_result("Exam Sheet Response Structure", False, 
+                                      f"Missing fields: {missing_fields}")
+                    
+                    # Check questions imported count
+                    questions_imported = data.get('questions_imported', 0)
+                    self.log_result("Exam Sheet Questions Import", True, 
+                                  f"Questions imported: {questions_imported}")
+                    
+                    # Store sheet ID for later tests
+                    self.test_exam_sheet_id = sheet.get('id')
+                    return True
+                else:
+                    self.log_result("Admin Add Exam Sheet", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Add Exam Sheet", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Add Exam Sheet", False, f"Request error: {e}")
+            return False
+
+    def test_admin_add_class_sheet(self):
+        """Test adding class-based sheet via admin API"""
+        try:
+            payload = {
+                "type": "class",
+                "class_name": "Class 10",
+                "subject": "Mathematics",
+                "chapter": "1. Real Numbers",
+                "sheet_link": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/admin/sheets",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'sheet' in data:
+                    sheet = data['sheet']
+                    self.log_result("Admin Add Class Sheet", True, 
+                                  f"✅ Class sheet created successfully with ID: {sheet.get('id')}")
+                    
+                    # Verify response structure
+                    required_fields = ['id', 'type', 'class_name', 'subject', 'chapter', 'sheet_link', 'created_at']
+                    missing_fields = [f for f in required_fields if f not in sheet]
+                    
+                    if not missing_fields:
+                        self.log_result("Class Sheet Response Structure", True, 
+                                      "All required fields present in response")
+                    else:
+                        self.log_result("Class Sheet Response Structure", False, 
+                                      f"Missing fields: {missing_fields}")
+                    
+                    # Check questions imported count
+                    questions_imported = data.get('questions_imported', 0)
+                    self.log_result("Class Sheet Questions Import", True, 
+                                  f"Questions imported: {questions_imported}")
+                    
+                    # Store sheet ID for later tests
+                    self.test_class_sheet_id = sheet.get('id')
+                    return True
+                else:
+                    self.log_result("Admin Add Class Sheet", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Add Class Sheet", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Add Class Sheet", False, f"Request error: {e}")
+            return False
+
+    def test_admin_fetch_all_sheets(self):
+        """Test fetching all sheets via admin API"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/sheets",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'sheets' in data:
+                    sheets = data['sheets']
+                    count = data.get('count', len(sheets))
+                    
+                    self.log_result("Admin Fetch All Sheets", True, 
+                                  f"✅ Retrieved {count} sheets successfully")
+                    
+                    # Verify each sheet has proper structure
+                    if sheets:
+                        sample_sheet = sheets[0]
+                        required_fields = ['id', 'type', 'sheet_link', 'created_at']
+                        missing_fields = [f for f in required_fields if f not in sample_sheet]
+                        
+                        if not missing_fields:
+                            self.log_result("Sheets List Structure", True, 
+                                          "Sheets have proper structure with required fields")
+                        else:
+                            self.log_result("Sheets List Structure", False, 
+                                          f"Missing fields in sheets: {missing_fields}")
+                        
+                        # Check for question_count field
+                        sheets_with_count = [s for s in sheets if 'question_count' in s]
+                        if len(sheets_with_count) == len(sheets):
+                            self.log_result("Sheets Question Count Field", True, 
+                                          "All sheets have question_count field")
+                        else:
+                            self.log_result("Sheets Question Count Field", False, 
+                                          f"Only {len(sheets_with_count)}/{len(sheets)} sheets have question_count")
+                    
+                    return True
+                else:
+                    self.log_result("Admin Fetch All Sheets", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Fetch All Sheets", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Fetch All Sheets", False, f"Request error: {e}")
+            return False
+
+    def test_admin_sheets_database_verification(self):
+        """Test that sheets are properly saved to database"""
+        if self.db is None:
+            self.log_result("Admin Sheets Database Verification", False, "No database connection")
+            return False
+        
+        try:
+            # Check exam_sheets collection
+            sheets_collection = self.db.exam_sheets
+            sheet_count = sheets_collection.count_documents({})
+            
+            if sheet_count > 0:
+                self.log_result("Database Sheets Count", True, 
+                              f"Found {sheet_count} sheet(s) in exam_sheets collection")
+                
+                # Get all sheets
+                sheets = list(sheets_collection.find({}))
+                
+                # Verify sheet structure
+                for sheet in sheets:
+                    # Check for proper id field (UUID, not ObjectId)
+                    if 'id' in sheet and isinstance(sheet['id'], str):
+                        self.log_result("Sheet ID Field Type", True, 
+                                      f"Sheet {sheet['id']} has proper UUID id field")
+                    else:
+                        self.log_result("Sheet ID Field Type", False, 
+                                      f"Sheet missing proper id field: {sheet}")
+                    
+                    # Check for metadata fields
+                    required_fields = ['type', 'sheet_link', 'created_at', 'questions_imported']
+                    missing_fields = [f for f in required_fields if f not in sheet]
+                    
+                    if not missing_fields:
+                        self.log_result("Sheet Metadata Fields", True, 
+                                      f"Sheet {sheet.get('id', 'unknown')} has all metadata fields")
+                    else:
+                        self.log_result("Sheet Metadata Fields", False, 
+                                      f"Sheet {sheet.get('id', 'unknown')} missing: {missing_fields}")
+                
+                # Check if test sheets exist
+                if hasattr(self, 'test_exam_sheet_id'):
+                    exam_sheet = sheets_collection.find_one({'id': self.test_exam_sheet_id})
+                    if exam_sheet:
+                        self.log_result("Test Exam Sheet in Database", True, 
+                                      "Test exam sheet found in database")
+                    else:
+                        self.log_result("Test Exam Sheet in Database", False, 
+                                      "Test exam sheet not found in database")
+                
+                if hasattr(self, 'test_class_sheet_id'):
+                    class_sheet = sheets_collection.find_one({'id': self.test_class_sheet_id})
+                    if class_sheet:
+                        self.log_result("Test Class Sheet in Database", True, 
+                                      "Test class sheet found in database")
+                    else:
+                        self.log_result("Test Class Sheet in Database", False, 
+                                      "Test class sheet not found in database")
+                
+                return True
+            else:
+                self.log_result("Database Sheets Count", False, 
+                              "No sheets found in exam_sheets collection")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Sheets Database Verification", False, f"Database error: {e}")
+            return False
+
+    def test_admin_sheets_objectid_serialization(self):
+        """Test that there are no ObjectId serialization errors in responses"""
+        try:
+            # Test creating a sheet and verify response is valid JSON without ObjectId errors
+            payload = {
+                "type": "exam",
+                "exam_name": "Test Serialization",
+                "syllabus_topic": "Test Topic",
+                "subject": "Test Subject",
+                "sub_topic": "Test Sub Topic",
+                "sub_sub_topic": "Test Sub Sub Topic",
+                "sheet_link": "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/admin/sheets",
+                json=payload,
+                timeout=30
+            )
+            
+            # Check if response is valid JSON (no ObjectId serialization errors)
+            try:
+                data = response.json()
+                self.log_result("ObjectId Serialization Test", True, 
+                              "✅ Response is valid JSON - no ObjectId serialization errors")
+                
+                # Verify no ObjectId references in response
+                response_text = response.text
+                if 'ObjectId' in response_text or '_id' in response_text:
+                    self.log_result("ObjectId References in Response", False, 
+                                  "❌ Found ObjectId or _id references in response")
+                else:
+                    self.log_result("ObjectId References in Response", True, 
+                                  "✅ No ObjectId references in response")
+                
+                return True
+                
+            except json.JSONDecodeError as e:
+                self.log_result("ObjectId Serialization Test", False, 
+                              f"❌ Response is not valid JSON - possible ObjectId serialization error: {e}")
+                return False
+                
+        except Exception as e:
+            self.log_result("ObjectId Serialization Test", False, f"Test error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
