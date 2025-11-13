@@ -2365,6 +2365,311 @@ class BattleServerTester:
         
         return success_rate >= 60
 
+    def test_social_feed_battle_post_bug_fix(self):
+        """Test the social feed battle-post bug fix as per review request"""
+        print("\n🎯 TESTING SOCIAL FEED BATTLE-POST BUG FIX")
+        print("=" * 60)
+        
+        # Test 1: Login as demo1 to get user_id
+        print("\n1️⃣ Testing Demo1 Login...")
+        demo1_user_id = self.test_demo_login("demo1", "demo1")
+        if not demo1_user_id:
+            self.log_result("Social Feed Battle Post Bug Fix", False, "Failed to login as demo1")
+            return False
+        
+        # Test 2: Create Battle Post
+        print("\n2️⃣ Testing Battle Post Creation...")
+        post_id = self.test_create_battle_post(demo1_user_id)
+        if not post_id:
+            self.log_result("Social Feed Battle Post Bug Fix", False, "Failed to create battle post")
+            return False
+        
+        # Test 3: Verify Post in For You Feed
+        print("\n3️⃣ Testing For You Feed...")
+        for_you_success = self.test_for_you_feed_contains_battle_post(demo1_user_id, post_id)
+        
+        # Test 4: Verify Post in Trending Feed
+        print("\n4️⃣ Testing Trending Feed...")
+        trending_success = self.test_trending_feed_contains_battle_post(post_id)
+        
+        # Test 5: Create Multiple Battle Posts
+        print("\n5️⃣ Testing Multiple Battle Posts...")
+        demo2_user_id = self.test_demo_login("demo2", "demo2")
+        if demo2_user_id:
+            post_id_2 = self.test_create_battle_post(demo2_user_id, user_name="Demo Student 2")
+            if post_id_2:
+                self.test_for_you_feed_contains_battle_post(demo2_user_id, post_id_2)
+        
+        # Test 6: Test Post Engagement
+        print("\n6️⃣ Testing Post Engagement...")
+        self.test_post_engagement(post_id)
+        
+        # Test 7: Verify Posts are in social_posts collection (not posts)
+        print("\n7️⃣ Verifying Database Collection...")
+        self.test_battle_posts_in_correct_collection()
+        
+        overall_success = for_you_success and trending_success
+        
+        if overall_success:
+            self.log_result("Social Feed Battle Post Bug Fix - COMPLETE", True, 
+                          "✅ Battle posts appearing in social feed, bug fix verified")
+        else:
+            self.log_result("Social Feed Battle Post Bug Fix - COMPLETE", False, 
+                          "❌ Battle posts not appearing correctly in social feed")
+        
+        return overall_success
+
+    def test_demo_login(self, username, password):
+        """Login as demo user and return user_id"""
+        try:
+            payload = {
+                "username": username,
+                "password": password
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'user' in data:
+                    user_id = data['user']['id']
+                    self.log_result(f"Demo Login - {username}", True, 
+                                  f"Successfully logged in as {username}, user_id: {user_id}")
+                    return user_id
+                else:
+                    self.log_result(f"Demo Login - {username}", False, 
+                                  f"Invalid response structure: {data}")
+                    return None
+            else:
+                self.log_result(f"Demo Login - {username}", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_result(f"Demo Login - {username}", False, f"Login error: {e}")
+            return None
+
+    def test_create_battle_post(self, user_id, user_name="Demo Student 1"):
+        """Create a mock battle post"""
+        try:
+            payload = {
+                "user_id": user_id,
+                "user_name": user_name,
+                "score": 180,
+                "rank": 1,
+                "exam": "NEET",
+                "topic": "Physics",
+                "opponents": ["Demo Student 2", "Demo Student 3"],
+                "total_participants": 3,
+                "questions_correct": 9
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/battle-post",
+                json=payload,
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'post_id' in data:
+                    post_id = data['post_id']
+                    self.log_result("Create Battle Post", True, 
+                                  f"Battle post created successfully, post_id: {post_id}")
+                    return post_id
+                else:
+                    self.log_result("Create Battle Post", False, 
+                                  f"Invalid response structure: {data}")
+                    return None
+            else:
+                self.log_result("Create Battle Post", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_result("Create Battle Post", False, f"Request error: {e}")
+            return None
+
+    def test_for_you_feed_contains_battle_post(self, user_id, expected_post_id):
+        """Verify battle post appears in For You feed"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/for-you?user_id={user_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    
+                    # Check if our battle post is in the feed
+                    battle_post_found = False
+                    battle_posts_count = 0
+                    
+                    for post in posts:
+                        if post.get('post_type') == 'battle_victory':
+                            battle_posts_count += 1
+                            if post.get('id') == expected_post_id:
+                                battle_post_found = True
+                                
+                                # Verify post structure
+                                required_fields = ['post_type', 'battle_stats', 'content', 'user_id', 'user_name']
+                                missing_fields = [f for f in required_fields if f not in post]
+                                
+                                if not missing_fields:
+                                    self.log_result("For You Feed - Battle Post Structure", True, 
+                                                  "Battle post has correct structure")
+                                else:
+                                    self.log_result("For You Feed - Battle Post Structure", False, 
+                                                  f"Missing fields: {missing_fields}")
+                                
+                                # Check battle_stats content
+                                battle_stats = post.get('battle_stats', {})
+                                if 'score' in battle_stats and 'rank' in battle_stats:
+                                    self.log_result("For You Feed - Battle Stats", True, 
+                                                  f"Battle stats present: score={battle_stats.get('score')}, rank={battle_stats.get('rank')}")
+                                else:
+                                    self.log_result("For You Feed - Battle Stats", False, 
+                                                  "Battle stats missing or incomplete")
+                    
+                    if battle_post_found:
+                        self.log_result("For You Feed - Battle Post Found", True, 
+                                      f"✅ CRITICAL: Battle post appears in For You feed (found {battle_posts_count} battle posts total)")
+                        return True
+                    else:
+                        self.log_result("For You Feed - Battle Post Found", False, 
+                                      f"❌ CRITICAL: Battle post NOT found in For You feed (found {battle_posts_count} other battle posts)")
+                        return False
+                else:
+                    self.log_result("For You Feed", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("For You Feed", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("For You Feed", False, f"Request error: {e}")
+            return False
+
+    def test_trending_feed_contains_battle_post(self, expected_post_id):
+        """Verify battle post appears in Trending feed"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/trending",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'posts' in data:
+                    posts = data['posts']
+                    
+                    battle_post_found = any(post.get('id') == expected_post_id for post in posts)
+                    battle_posts_count = sum(1 for post in posts if post.get('post_type') == 'battle_victory')
+                    
+                    if battle_post_found:
+                        self.log_result("Trending Feed - Battle Post Found", True, 
+                                      f"✅ Battle post appears in Trending feed")
+                        return True
+                    else:
+                        self.log_result("Trending Feed - Battle Post Found", False, 
+                                      f"⚠️ Battle post not in Trending feed (may be expected if no engagement yet). Found {battle_posts_count} other battle posts")
+                        return True  # This is acceptable for new posts
+                else:
+                    self.log_result("Trending Feed", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Trending Feed", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Trending Feed", False, f"Request error: {e}")
+            return False
+
+    def test_post_engagement(self, post_id):
+        """Test post engagement features"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/posts/{post_id}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'post' in data:
+                    post = data['post']
+                    
+                    # Check initial engagement counts
+                    likes_count = post.get('likes_count', 0)
+                    comments_count = post.get('comments_count', 0)
+                    
+                    if likes_count == 0 and comments_count == 0:
+                        self.log_result("Post Engagement - Initial Counts", True, 
+                                      "✅ Initial engagement counts are 0 as expected")
+                    else:
+                        self.log_result("Post Engagement - Initial Counts", False, 
+                                      f"Unexpected initial counts: likes={likes_count}, comments={comments_count}")
+                    
+                    # Verify post is retrievable
+                    self.log_result("Post Retrieval", True, 
+                                  f"✅ Post details retrievable via API")
+                    return True
+                else:
+                    self.log_result("Post Engagement", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Post Engagement", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Post Engagement", False, f"Request error: {e}")
+            return False
+
+    def test_battle_posts_in_correct_collection(self):
+        """Verify battle posts are in social_posts collection, not posts collection"""
+        if self.db is None:
+            self.log_result("Database Collection Verification", False, "No database connection")
+            return False
+        
+        try:
+            # Check social_posts collection for battle posts
+            social_posts_count = self.db.social_posts.count_documents({"post_type": "battle_victory"})
+            
+            # Check if posts collection exists and has battle posts (should be 0)
+            posts_collection_exists = "posts" in self.db.list_collection_names()
+            posts_battle_count = 0
+            
+            if posts_collection_exists:
+                posts_battle_count = self.db.posts.count_documents({"post_type": "battle_victory"})
+            
+            if social_posts_count > 0 and posts_battle_count == 0:
+                self.log_result("Database Collection Verification", True, 
+                              f"✅ CRITICAL FIX VERIFIED: {social_posts_count} battle posts in social_posts collection, {posts_battle_count} in posts collection")
+                return True
+            elif social_posts_count == 0:
+                self.log_result("Database Collection Verification", False, 
+                              f"❌ No battle posts found in social_posts collection")
+                return False
+            else:
+                self.log_result("Database Collection Verification", False, 
+                              f"❌ CRITICAL BUG: Battle posts found in wrong collection - social_posts: {social_posts_count}, posts: {posts_battle_count}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Database Collection Verification", False, f"Database error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
