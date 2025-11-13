@@ -91,6 +91,25 @@ const ChapterTestChapters = () => {
     });
   };
 
+  const handleStartPractice = (chapter) => {
+    startTest(chapter);
+  };
+
+  const handleCreateRoom = (chapter) => {
+    // Format parameters for URL
+    const examParam = `Class-${selectedClass}`;
+    const subjectParam = formattedSubject.replace(/\s+/g, '-');
+    const chapterParam = chapter.chapter_name.replace(/\s+/g, '-');
+    navigate(`/create-room/${examParam}/${subjectParam}/${chapterParam}`, {
+      state: {
+        isClassBased: true,
+        class_name: `Class ${selectedClass}`,
+        subject: formattedSubject,
+        chapter: chapter.chapter_name
+      }
+    });
+  };
+
   const getDifficultyColor = (difficulty) => {
     switch (difficulty?.toLowerCase()) {
       case 'easy': return 'bg-green-100 text-green-700';
