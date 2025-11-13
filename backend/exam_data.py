@@ -1867,7 +1867,7 @@ def get_all_exams():
             "color": data["color"],
             "total_questions": data["total_questions"],
             "duration": data["duration"],
-            "subjects": list(data["syllabus_topics"].keys()),
+            "syllabus_topics": list(data["syllabus_topics"].keys()),
             "category": data.get("category", "Other")
         }
         for exam_id, data in EXAM_DATA.items()
@@ -1881,43 +1881,53 @@ def get_exam_details(exam_id):
     return EXAM_DATA[exam_id]
 
 
-def get_exam_subjects(exam_id):
-    """Get all subjects for an exam"""
+def get_syllabus_topics(exam_id):
+    """Get all syllabus topics for an exam (what was previously called subjects)"""
     if exam_id not in EXAM_DATA:
         return []
     return list(EXAM_DATA[exam_id]["syllabus_topics"].keys())
 
 
-def get_subject_topics(exam_id, subject):
-    """Get all topics for a subject"""
+def get_exam_subjects(exam_id):
+    """Alias for backwards compatibility - returns syllabus topics"""
+    return get_syllabus_topics(exam_id)
+
+
+def get_topic_subjects(exam_id, syllabus_topic):
+    """Get all subjects for a syllabus topic (what was previously called topics)"""
     if exam_id not in EXAM_DATA:
         return []
-    if subject not in EXAM_DATA[exam_id]["syllabus_topics"]:
+    if syllabus_topic not in EXAM_DATA[exam_id]["syllabus_topics"]:
         return []
     
-    topics = EXAM_DATA[exam_id]["syllabus_topics"][subject]["topics"]
+    subjects = EXAM_DATA[exam_id]["syllabus_topics"][syllabus_topic]["subjects"]
     return [
         {
-            "name": topic_name,
+            "name": subject_name,
             "sub_topics": subject_data["sub_topics"],
             "questions": subject_data["questions"]
         }
-        for subject_name, subject_data in topics.items()
+        for subject_name, subject_data in subjects.items()
     ]
 
 
+def get_subject_topics(exam_id, syllabus_topic):
+    """Alias for backwards compatibility"""
+    return get_topic_subjects(exam_id, syllabus_topic)
+
+
 def get_all_topics_flat(exam_id):
-    """Get all topics across all subjects in flat structure"""
+    """Get all subjects across all syllabus topics in flat structure"""
     if exam_id not in EXAM_DATA:
         return []
     
-    all_topics = []
+    all_subjects = []
     for syllabus_topic, syllabus_topic_data in EXAM_DATA[exam_id]["syllabus_topics"].items():
         for subject_name, subject_data in syllabus_topic_data["subjects"].items():
-            all_topics.append({
-                "subject": subject,
-                "topic": topic_name,
+            all_subjects.append({
+                "syllabus_topic": syllabus_topic,
+                "subject": subject_name,
                 "sub_topics": subject_data["sub_topics"],
                 "questions": subject_data["questions"]
             })
-    return all_topics
+    return all_subjects
