@@ -202,9 +202,19 @@ const CreateRoom = () => {
           <div className="bg-blue-50 rounded-xl p-4 mb-6">
             <h3 className="font-semibold text-blue-900 mb-2">Battle Details</h3>
             <div className="space-y-1 text-sm text-blue-800">
-              <p>📚 <strong>Exam:</strong> {examId}</p>
-              <p>📖 <strong>Subject:</strong> {subject}</p>
-              <p>🎯 <strong>Topic:</strong> {topic}</p>
+              {isClassBased && classBasedData ? (
+                <>
+                  <p>📚 <strong>Class:</strong> {classBasedData.class_name}</p>
+                  <p>📖 <strong>Subject:</strong> {classBasedData.subject}</p>
+                  <p>🎯 <strong>Chapter:</strong> {classBasedData.chapter}</p>
+                </>
+              ) : (
+                <>
+                  <p>📚 <strong>Exam:</strong> {examId}</p>
+                  <p>📖 <strong>Subject:</strong> {subject}</p>
+                  <p>🎯 <strong>Topic:</strong> {topic}</p>
+                </>
+              )}
             </div>
           </div>
 
