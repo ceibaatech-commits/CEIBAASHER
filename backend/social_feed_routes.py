@@ -93,6 +93,7 @@ class Post(BaseModel):
     content: str
     battle_stats: Optional[dict] = None
     quiz_details: Optional[dict] = None
+    room_code: Optional[str] = None
     media_urls: Optional[List[str]] = None
     tags: Optional[List[str]] = None
     exam_category: Optional[str] = None
