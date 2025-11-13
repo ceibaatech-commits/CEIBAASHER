@@ -421,10 +421,17 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
 
 @router.get("/feed/following")
 async def get_following_feed(user_id: str, skip: int = 0, limit: int = 10):
-    """Get feed from users you follow"""
-    # Get list of users being followed
-    following = await db.followers.find({"follower_id": user_id}, {"_id": 0}).to_list(1000)
-    following_ids = [f["following_id"] for f in following]
+    """Get feed from users you follow (uses ceeps collection for battle room follows)"""
+    # Get list of users being followed from ceeps collection (battle room follows)
+    ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
+    following_ids = [c["ceep_user_id"] for c in ceeps]
+    
+    # Also check followers collection (social feed follows) for backward compatibility
+    followers = await db.followers.find({"follower_id": user_id}, {"_id": 0}).to_list(1000)
+    following_ids.extend([f["following_id"] for f in followers])
+    
+    # Remove duplicates
+    following_ids = list(set(following_ids))
     
     if not following_ids:
         return {"success": True, "posts": [], "count": 0}
@@ -433,6 +440,14 @@ async def get_following_feed(user_id: str, skip: int = 0, limit: int = 10):
         {"user_id": {"$in": following_ids}},
         {"_id": 0}
     ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Enrich with like status
+    for post in posts:
+        liked = await db.post_likes.find_one({
+            "user_id": user_id,
+            "post_id": post["id"]
+        })
+        post["liked_by_user"] = liked is not None
     
     return {"success": True, "posts": posts, "count": len(posts)}
 
