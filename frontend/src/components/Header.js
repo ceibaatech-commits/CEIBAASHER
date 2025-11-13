@@ -113,6 +113,9 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               <button onClick={() => { navigate('/'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
                 Exams
               </button>
+              <button onClick={() => { navigate('/chapter-tests'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
+                Chapter Test
+              </button>
               <button onClick={() => { navigate('/social'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
                 Social Feed
               </button>
