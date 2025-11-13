@@ -1516,6 +1516,321 @@ class BattleServerTester:
             self.log_result("Multi-Client Battle Flow", False, f"Multi-client test error: {e}")
             return False
 
+    def test_admin_stats_overview(self):
+        """Test GET /api/admin/stats/overview endpoint"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/stats/overview",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get('success') and 'stats' in data:
+                    stats = data['stats']
+                    
+                    # Check required fields
+                    required_fields = ['total_users', 'total_posts', 'total_battles', 'recent_users']
+                    missing_fields = [field for field in required_fields if field not in stats]
+                    
+                    if not missing_fields:
+                        # Validate data types and values
+                        all_valid = True
+                        field_values = {}
+                        
+                        for field in required_fields:
+                            value = stats[field]
+                            field_values[field] = value
+                            
+                            if not isinstance(value, int) or value < 0:
+                                self.log_result(f"Admin Stats Overview - {field} validation", False, 
+                                              f"Invalid value: {value} (expected non-negative integer)")
+                                all_valid = False
+                            else:
+                                self.log_result(f"Admin Stats Overview - {field} validation", True, 
+                                              f"Valid value: {value}")
+                        
+                        if all_valid:
+                            self.log_result("Admin Stats Overview", True, 
+                                          f"✅ All stats valid: users={field_values['total_users']}, posts={field_values['total_posts']}, battles={field_values['total_battles']}, recent={field_values['recent_users']}")
+                            return True
+                        else:
+                            return False
+                    else:
+                        self.log_result("Admin Stats Overview", False, 
+                                      f"Missing required fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_result("Admin Stats Overview", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Stats Overview", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Stats Overview", False, f"Request error: {e}")
+            return False
+
+    def test_admin_stats_follows(self):
+        """Test GET /api/admin/stats/follows endpoint"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/stats/follows",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get('success') and 'count' in data:
+                    count = data['count']
+                    
+                    if isinstance(count, int) and count >= 0:
+                        self.log_result("Admin Stats Follows", True, 
+                                      f"✅ Valid follows count: {count}")
+                        
+                        # Verify against ceeps collection
+                        if self.db:
+                            try:
+                                actual_count = self.db.ceeps.count_documents({})
+                                if actual_count == count:
+                                    self.log_result("Admin Stats Follows - Database Verification", True, 
+                                                  f"✅ Count matches ceeps collection: {actual_count}")
+                                else:
+                                    self.log_result("Admin Stats Follows - Database Verification", False, 
+                                                  f"❌ Count mismatch: API={count}, DB={actual_count}")
+                            except Exception as e:
+                                self.log_result("Admin Stats Follows - Database Verification", False, 
+                                              f"Database check error: {e}")
+                        
+                        return True
+                    else:
+                        self.log_result("Admin Stats Follows", False, 
+                                      f"Invalid count value: {count} (expected non-negative integer)")
+                        return False
+                else:
+                    self.log_result("Admin Stats Follows", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Stats Follows", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Stats Follows", False, f"Request error: {e}")
+            return False
+
+    def test_admin_stats_likes(self):
+        """Test GET /api/admin/stats/likes endpoint"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/stats/likes",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get('success') and 'count' in data:
+                    count = data['count']
+                    
+                    if isinstance(count, int) and count >= 0:
+                        self.log_result("Admin Stats Likes", True, 
+                                      f"✅ Valid likes count: {count}")
+                        
+                        # Verify against post_likes collection
+                        if self.db:
+                            try:
+                                actual_count = self.db.post_likes.count_documents({})
+                                if actual_count == count:
+                                    self.log_result("Admin Stats Likes - Database Verification", True, 
+                                                  f"✅ Count matches post_likes collection: {actual_count}")
+                                else:
+                                    self.log_result("Admin Stats Likes - Database Verification", False, 
+                                                  f"❌ Count mismatch: API={count}, DB={actual_count}")
+                            except Exception as e:
+                                self.log_result("Admin Stats Likes - Database Verification", False, 
+                                              f"Database check error: {e}")
+                        
+                        return True
+                    else:
+                        self.log_result("Admin Stats Likes", False, 
+                                      f"Invalid count value: {count} (expected non-negative integer)")
+                        return False
+                else:
+                    self.log_result("Admin Stats Likes", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Stats Likes", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Stats Likes", False, f"Request error: {e}")
+            return False
+
+    def test_admin_stats_comments(self):
+        """Test GET /api/admin/stats/comments endpoint"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/admin/stats/comments",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                if data.get('success') and 'count' in data:
+                    count = data['count']
+                    
+                    if isinstance(count, int) and count >= 0:
+                        self.log_result("Admin Stats Comments", True, 
+                                      f"✅ Valid comments count: {count}")
+                        
+                        # Verify against post_comments collection
+                        if self.db:
+                            try:
+                                actual_count = self.db.post_comments.count_documents({})
+                                if actual_count == count:
+                                    self.log_result("Admin Stats Comments - Database Verification", True, 
+                                                  f"✅ Count matches post_comments collection: {actual_count}")
+                                else:
+                                    self.log_result("Admin Stats Comments - Database Verification", False, 
+                                                  f"❌ Count mismatch: API={count}, DB={actual_count}")
+                            except Exception as e:
+                                self.log_result("Admin Stats Comments - Database Verification", False, 
+                                              f"Database check error: {e}")
+                        
+                        return True
+                    else:
+                        self.log_result("Admin Stats Comments", False, 
+                                      f"Invalid count value: {count} (expected non-negative integer)")
+                        return False
+                else:
+                    self.log_result("Admin Stats Comments", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Admin Stats Comments", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Admin Stats Comments", False, f"Request error: {e}")
+            return False
+
+    def test_admin_stats_data_accuracy(self):
+        """Test data accuracy by comparing overview stats with individual endpoints"""
+        try:
+            # Get overview stats
+            overview_response = requests.get(f"{BACKEND_URL}/api/admin/stats/overview", timeout=10)
+            if overview_response.status_code != 200:
+                self.log_result("Admin Stats Data Accuracy", False, "Failed to get overview stats")
+                return False
+            
+            overview_data = overview_response.json()
+            if not overview_data.get('success'):
+                self.log_result("Admin Stats Data Accuracy", False, "Overview stats not successful")
+                return False
+            
+            overview_stats = overview_data['stats']
+            
+            # Verify total_users matches actual user count
+            if self.db:
+                try:
+                    actual_users = self.db.users.count_documents({})
+                    if actual_users == overview_stats['total_users']:
+                        self.log_result("Admin Stats Data Accuracy - Users", True, 
+                                      f"✅ User count accurate: {actual_users}")
+                    else:
+                        self.log_result("Admin Stats Data Accuracy - Users", False, 
+                                      f"❌ User count mismatch: Overview={overview_stats['total_users']}, DB={actual_users}")
+                except Exception as e:
+                    self.log_result("Admin Stats Data Accuracy - Users", False, f"User count check error: {e}")
+                
+                # Verify total_posts matches actual post count
+                try:
+                    actual_posts = self.db.social_posts.count_documents({})
+                    if actual_posts == overview_stats['total_posts']:
+                        self.log_result("Admin Stats Data Accuracy - Posts", True, 
+                                      f"✅ Post count accurate: {actual_posts}")
+                    else:
+                        self.log_result("Admin Stats Data Accuracy - Posts", False, 
+                                      f"❌ Post count mismatch: Overview={overview_stats['total_posts']}, DB={actual_posts}")
+                except Exception as e:
+                    self.log_result("Admin Stats Data Accuracy - Posts", False, f"Post count check error: {e}")
+            
+            # Check if numbers are realistic (>0 for active platform)
+            realistic_check = True
+            if overview_stats['total_users'] == 0:
+                self.log_result("Admin Stats Data Accuracy - Realistic Check", False, 
+                              "❌ No users found - platform appears empty")
+                realistic_check = False
+            elif overview_stats['total_posts'] == 0:
+                self.log_result("Admin Stats Data Accuracy - Realistic Check", False, 
+                              "⚠️ No posts found - social features may not be used")
+            else:
+                self.log_result("Admin Stats Data Accuracy - Realistic Check", True, 
+                              f"✅ Platform has activity: {overview_stats['total_users']} users, {overview_stats['total_posts']} posts")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Admin Stats Data Accuracy", False, f"Accuracy test error: {e}")
+            return False
+
+    def test_admin_stats_response_time(self):
+        """Test response times for admin stats endpoints"""
+        try:
+            import time
+            
+            endpoints = [
+                "/api/admin/stats/overview",
+                "/api/admin/stats/follows", 
+                "/api/admin/stats/likes",
+                "/api/admin/stats/comments"
+            ]
+            
+            all_fast = True
+            
+            for endpoint in endpoints:
+                start_time = time.time()
+                
+                response = requests.get(f"{BACKEND_URL}{endpoint}", timeout=10)
+                
+                end_time = time.time()
+                response_time = (end_time - start_time) * 1000  # Convert to milliseconds
+                
+                if response.status_code == 200:
+                    if response_time < 500:  # Less than 500ms
+                        self.log_result(f"Admin Stats Response Time - {endpoint}", True, 
+                                      f"✅ Fast response: {response_time:.0f}ms")
+                    else:
+                        self.log_result(f"Admin Stats Response Time - {endpoint}", False, 
+                                      f"❌ Slow response: {response_time:.0f}ms (>500ms)")
+                        all_fast = False
+                else:
+                    self.log_result(f"Admin Stats Response Time - {endpoint}", False, 
+                                  f"❌ Failed request: HTTP {response.status_code}")
+                    all_fast = False
+            
+            if all_fast:
+                self.log_result("Admin Stats Response Time - Overall", True, 
+                              "✅ All endpoints respond quickly (<500ms)")
+            else:
+                self.log_result("Admin Stats Response Time - Overall", False, 
+                              "❌ Some endpoints are slow or failing")
+            
+            return all_fast
+            
+        except Exception as e:
+            self.log_result("Admin Stats Response Time", False, f"Response time test error: {e}")
+            return False
     def test_social_feed_for_you_mixed(self):
         """Test Mixed 'For You' Feed with following + trending content"""
         try:
