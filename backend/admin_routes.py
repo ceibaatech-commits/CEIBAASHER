@@ -320,6 +320,11 @@ async def import_sheet_questions(sheet_id: str):
         # Import questions
         imported_count = 0
         for idx, question in enumerate(questions):
+            # Convert correctAnswer index to letter if needed
+            correct_answer = question["correctAnswer"]
+            if isinstance(correct_answer, int):
+                correct_answer = chr(ord('A') + correct_answer)
+            
             question_doc = {
                 "id": str(uuid.uuid4()),
                 "sheet_id": sheet_id,
@@ -327,7 +332,7 @@ async def import_sheet_questions(sheet_id: str):
                 "question_number": idx + 1,
                 "question": question["question"],
                 "options": question["options"],
-                "correctAnswer": question["correctAnswer"],
+                "correctAnswer": correct_answer,
                 "explanation": question.get("explanation", ""),
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
