@@ -52,6 +52,15 @@ def init_oauth():
             client_kwargs={'scope': 'email public_profile'},
         )
         
+        # Google OAuth 2.0
+        oauth.register(
+            name='google',
+            client_id=os.getenv('GOOGLE_CLIENT_ID'),
+            client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+            server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+            client_kwargs={'scope': 'openid email profile'},
+        )
+        
         oauth._initialized = True
 
 # Pydantic models
