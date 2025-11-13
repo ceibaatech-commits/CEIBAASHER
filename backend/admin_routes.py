@@ -141,8 +141,8 @@ async def get_admin_overview_stats():
             pass
         
         # Get recent registrations (last 7 days)
-        seven_days_ago = datetime.now(timezone.utc)
-        seven_days_ago = seven_days_ago.replace(day=seven_days_ago.day - 7)
+        from datetime import timedelta
+        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
         
         recent_users = await db.users.count_documents({
             "created_at": {"$gte": seven_days_ago.isoformat()}
@@ -160,6 +160,33 @@ async def get_admin_overview_stats():
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching overview stats: {str(e)}")
+
+@router.get("/admin/stats/follows")
+async def get_follows_count():
+    """Get total number of follow relationships"""
+    try:
+        total_follows = await db.ceeps.count_documents({})
+        return {"success": True, "count": total_follows}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching follows: {str(e)}")
+
+@router.get("/admin/stats/likes")
+async def get_likes_count():
+    """Get total number of likes"""
+    try:
+        total_likes = await db.post_likes.count_documents({})
+        return {"success": True, "count": total_likes}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching likes: {str(e)}")
+
+@router.get("/admin/stats/comments")
+async def get_comments_count():
+    """Get total number of comments"""
+    try:
+        total_comments = await db.post_comments.count_documents({})
+        return {"success": True, "count": total_comments}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching comments: {str(e)}")
 
 @router.put("/admin/users/{user_id}/status")
 async def update_user_status(user_id: str, status: str):
