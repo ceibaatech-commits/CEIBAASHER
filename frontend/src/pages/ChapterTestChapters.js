@@ -164,79 +164,48 @@ const ChapterTestChapters = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Animated Poster */}
-        <div className="relative overflow-hidden rounded-3xl mb-8">
-          <div className={`relative bg-gradient-to-br ${colorGradient} p-8 md:p-12`}>
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
-              <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-            </div>
-
-            <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div className="space-y-4">
-                <div className="bg-white/20 backdrop-blur-xl px-4 py-2 rounded-full border border-white/30 inline-block">
-                  <p className="text-white font-semibold flex items-center space-x-2">
-                    <Zap className="w-4 h-4" />
-                    <span>NCERT Chapter-wise Tests</span>
-                  </p>
-                </div>
-
-                <h2 className="text-3xl md:text-4xl font-black text-white">
-                  Master Every Chapter!
-                </h2>
-
-                <p className="text-lg text-white/90">
-                  Practice {chapters.length} Chapters with Detailed MCQs
-                </p>
-
-                <div className="flex flex-wrap gap-4">
-                  <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-2 border border-white/30">
-                    <div className="flex items-center space-x-2">
-                      <BookOpen className="w-4 h-4 text-white" />
-                      <div>
-                        <p className="text-xl font-bold text-white">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
-                        <p className="text-white/80 text-xs">Questions</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-white/20 backdrop-blur-xl rounded-xl px-4 py-2 border border-white/30">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-4 h-4 text-white" />
-                      <div>
-                        <p className="text-xl font-bold text-white">30-50m</p>
-                        <p className="text-white/80 text-xs">Per Test</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button 
-                    onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
-                    className="bg-white text-gray-900 px-5 py-2 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2"
-                  >
-                    <Play className="w-4 h-4" />
-                    <span>Start Practice</span>
-                  </button>
-                </div>
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        {/* Quick Stats Bar - Kahoot Style */}
+        <div className="flex items-center justify-between bg-white rounded-xl shadow-sm p-4 mb-4">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <div className={`w-10 h-10 bg-gradient-to-br ${colorGradient} rounded-lg flex items-center justify-center`}>
+                <BookOpen className="w-5 h-5 text-white" />
               </div>
-
-              <div className="relative h-64 hidden md:block">
-                <div className="absolute top-0 right-0 w-48 bg-white/20 backdrop-blur-xl rounded-xl p-4 border border-white/30 shadow-xl">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <div className="w-8 h-8 bg-blue-500/30 rounded-lg flex items-center justify-center">
-                      <Brain className="w-4 h-4 text-blue-300" />
-                    </div>
-                    <div>
-                      <p className="text-white font-bold text-sm">NCERT Based</p>
-                    </div>
-                  </div>
-                  <p className="text-white/80 text-xs">All questions aligned with latest NCERT syllabus</p>
-                </div>
+              <div>
+                <p className="text-2xl font-black text-gray-900">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
+                <p className="text-xs text-gray-500 font-medium">Questions</p>
+              </div>
+            </div>
+            
+            <div className="hidden sm:flex items-center space-x-2">
+              <div className={`w-10 h-10 bg-gradient-to-br ${colorGradient} rounded-lg flex items-center justify-center`}>
+                <Target className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-black text-gray-900">{chapters.length}</p>
+                <p className="text-xs text-gray-500 font-medium">Chapters</p>
+              </div>
+            </div>
+            
+            <div className="hidden md:flex items-center space-x-2">
+              <div className={`w-10 h-10 bg-gradient-to-br ${colorGradient} rounded-lg flex items-center justify-center`}>
+                <Zap className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-2xl font-black text-gray-900">NCERT</p>
+                <p className="text-xs text-gray-500 font-medium">Based</p>
               </div>
             </div>
           </div>
+          
+          <button 
+            onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
+            className={`bg-gradient-to-br ${colorGradient} text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2`}
+          >
+            <Play className="w-5 h-5" />
+            <span>Start Now</span>
+          </button>
         </div>
 
         {/* Chapters Grid */}
