@@ -279,23 +279,24 @@ const ChapterTestChapters = () => {
                     </div>
                   </div>
               
-              <div className="p-4">
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-600">Questions</p>
-                    <p className="font-bold text-blue-600 text-lg">{chapter.total_questions}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-600">Duration</p>
-                    <p className="font-bold text-purple-600 text-lg">{chapter.duration}m</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-600">Level</p>
-                    <span className={`text-xs font-semibold px-2 py-1 rounded ${getDifficultyColor(chapter.difficulty)}`}>
-                      {chapter.difficulty}
-                    </span>
-                  </div>
-                </div>
+                  {/* Card Content */}
+                  <div className="p-5">
+                    {/* Quick Stats - Colorful Badges */}
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <div className="flex-1 bg-blue-50 rounded-xl p-3 text-center">
+                        <p className="text-2xl font-black text-blue-600">{chapter.total_questions}</p>
+                        <p className="text-xs font-bold text-blue-600/70">Questions</p>
+                      </div>
+                      <div className="flex-1 bg-purple-50 rounded-xl p-3 text-center">
+                        <p className="text-2xl font-black text-purple-600">{chapter.duration}m</p>
+                        <p className="text-xs font-bold text-purple-600/70">Duration</p>
+                      </div>
+                      <div className="flex-1 bg-green-50 rounded-xl p-3 text-center">
+                        <span className={`text-xs font-black px-2 py-1 rounded-full ${getDifficultyColor(chapter.difficulty)}`}>
+                          {chapter.difficulty}
+                        </span>
+                      </div>
+                    </div>
 
                 {chapter.last_score && (
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-2 mb-3">
