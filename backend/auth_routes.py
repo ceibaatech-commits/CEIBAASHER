@@ -187,6 +187,45 @@ async def facebook_callback(request: Request):
         print(f"Facebook auth error: {e}")
         return RedirectResponse(url=f"{FRONTEND_URL}/auth/error?message=Facebook login failed")
 
+@router.get("/auth/google")
+async def google_login(request: Request):
+    init_oauth()
+    redirect_uri = os.getenv('GOOGLE_CALLBACK_URL', f"{request.base_url}api/auth/google/callback")
+    return await oauth.google.authorize_redirect(request, redirect_uri)
+
+@router.get("/auth/google/callback")
+async def google_callback(request: Request):
+    try:
+        token = await oauth.google.authorize_access_token(request)
+        
+        # Get user info from ID token
+        user_info = token.get('userinfo')
+        if not user_info:
+            # Fallback: fetch from userinfo endpoint
+            resp = await oauth.google.get('https://www.googleapis.com/oauth2/v3/userinfo')
+            user_info = resp.json()
+        
+        # Extract user info
+        provider_id = user_info['sub']  # Google's unique user ID
+        name = user_info.get('name', user_info.get('email', 'Unknown'))
+        email = user_info.get('email')
+        profile_picture = user_info.get('picture')
+        
+        # Get or create user
+        user = await get_or_create_user('google', provider_id, name, email, profile_picture)
+        
+        # Create JWT token
+        access_token = create_access_token({"sub": user["id"], "provider": "google"})
+        
+        # Redirect to frontend with token
+        return RedirectResponse(url=f"{FRONTEND_URL}/auth/callback?token={access_token}")
+        
+    except Exception as e:
+        print(f"Google auth error: {e}")
+        import traceback
+        traceback.print_exc()
+        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=Google login failed")
+
 @router.get("/auth/me")
 async def get_current_user(request: Request):
     # Get token from Authorization header
