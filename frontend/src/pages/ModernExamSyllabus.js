@@ -297,13 +297,13 @@ const ModernExamSyllabus = () => {
                 <div className="absolute inset-0 bg-black/20"></div>
                 <div className="relative">
                   <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-white font-bold text-base flex-1 drop-shadow-md">{topic.topic}</h4>
+                    <h4 className="text-white font-bold text-base flex-1 drop-shadow-md">{topic.subject}</h4>
                     <button onClick={() => setExpandedTopics(p => ({ ...p, [idx]: !p[idx] }))}
                       className="bg-white/20 p-1 rounded hover:bg-white/30 transition-all">
                       {expandedTopics[idx] ? <ChevronUp className="w-4 h-4 text-white" /> : <ChevronDown className="w-4 h-4 text-white" />}
                     </button>
                   </div>
-                  <span className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-semibold drop-shadow-md">{topic.subject}</span>
+                  <span className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-semibold drop-shadow-md">{topic.syllabus_topic}</span>
                 </div>
               </div>
               
