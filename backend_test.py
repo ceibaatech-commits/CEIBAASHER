@@ -3249,8 +3249,18 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Social Feed Battle Post Bug Fix (CRITICAL - Review Request Focus)
-        print("\n🎯 SOCIAL FEED BATTLE POST BUG FIX (CRITICAL - REVIEW REQUEST)")
+        # PRIORITY 1: Admin Dashboard Statistics Tests (CRITICAL - Review Request Focus)
+        print("\n📊 ADMIN DASHBOARD STATISTICS TESTS (CRITICAL - REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_admin_stats_overview()
+        self.test_admin_stats_follows()
+        self.test_admin_stats_likes()
+        self.test_admin_stats_comments()
+        self.test_admin_stats_data_accuracy()
+        self.test_admin_stats_response_time()
+        
+        # PRIORITY 2: Social Feed Battle Post Bug Fix
+        print("\n🎯 SOCIAL FEED BATTLE POST BUG FIX")
         print("=" * 60)
         self.test_social_feed_battle_post_bug_fix()
         
