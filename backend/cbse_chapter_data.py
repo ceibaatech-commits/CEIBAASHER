@@ -172,9 +172,69 @@ CBSE_CHAPTER_DATA = {
     }
 }
 
-# Add similar data for classes 7, 8, 9, 11, 12 (keeping it concise for now)
+    "8": {
+        "Mathematics": [
+            {"chapter_number": 1, "chapter_name": "Rational Numbers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Linear Equations in One Variable", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Understanding Quadrilaterals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Data Handling", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Squares and Square Roots", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Cubes and Cube Roots", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Comparing Quantities", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Algebraic Expressions and Identities", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Mensuration", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Exponents and Powers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Direct and Inverse Proportions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Factorisation", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 13, "chapter_name": "Introduction to Graphs", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Crop Production and Management", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Microorganisms: Friend and Foe", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Coal and Petroleum", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Combustion and Flame", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Conservation of Plants and Animals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Reproduction in Animals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Reaching the Age of Adolescence", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Force and Pressure", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Friction", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Sound", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Chemical Effects of Electric Current", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Some Natural Phenomena", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Light", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        ],
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "Resources", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Land, Soil, Water, Natural Vegetation and Wildlife Resources", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Agriculture", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Industries", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Human Resources", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "History": [
+            {"chapter_number": 1, "chapter_name": "Introduction: How, When and Where", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Trade to Territory", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Ruling The Countryside", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Tribals, Dikus, and the Vision of a Golden Age", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "When People Revolt 1857 and After", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Civilising the Native Educating the Nation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Women Caste and Reform", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "The Making of National Movement: 1870s–1947", "total_questions": 60, "difficulty": "Hard", "duration": 45}
+        ],
+        "Civics": [
+            {"chapter_number": 1, "chapter_name": "The Indian Constitution", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Understanding Secularism", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Parliament and The Making of Laws", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Judiciary", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Understanding Marginalisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Confronting Marginalisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Public Facilities", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Law and Social Justice", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        ]
+    },
+
+# Add similar data for classes 7, 9, 11, 12 (keeping it concise for now)
 # These can be expanded based on NCERT syllabus
-for class_num in ["7", "8", "9", "11", "12"]:
+for class_num in ["7", "9", "11", "12"]:
     CBSE_CHAPTER_DATA[class_num] = {
         "Mathematics": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
