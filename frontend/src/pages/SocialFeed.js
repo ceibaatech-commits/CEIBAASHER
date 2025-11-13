@@ -633,8 +633,26 @@ const SocialFeed = () => {
                     <option value="study_tip">Study Tip</option>
                     <option value="achievement">Achievement</option>
                     <option value="quiz_announcement">Quiz Announcement</option>
+                    <option value="room_code">Share Room Code</option>
                   </select>
                 </div>
+
+                {/* Room Code Input (only shown when post type is room_code) */}
+                {newPost.post_type === 'room_code' && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Room Code
+                    </label>
+                    <input
+                      type="text"
+                      value={newPost.room_code || ''}
+                      onChange={(e) => setNewPost({ ...newPost, room_code: e.target.value.toUpperCase() })}
+                      placeholder="Enter 6-digit room code"
+                      maxLength={6}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 font-mono text-2xl tracking-widest text-center"
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
