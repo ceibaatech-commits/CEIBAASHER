@@ -113,8 +113,8 @@ async def start_quiz(request: QuizStartRequest):
     
     if query:
         
-        # If sub_topic provided, try to find specific mapping
-        if sub_topic:
+        # If sub_topic provided, try to find specific mapping (only for exam-based)
+        if sub_topic and not request.isClassBased:
             specific_query = {**query, "sub_topic": sub_topic}
             print(f"🔍 Looking for specific sub-topic: {specific_query}")
             specific_mapping = await db.exam_sheets.find_one(specific_query)
