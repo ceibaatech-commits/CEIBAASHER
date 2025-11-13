@@ -79,14 +79,14 @@ EXAM_DATA = {
         }
     },
     "NEET": {
-        "name": "NEET UG",
+        "name": "NEET",
         "full_name": "National Eligibility cum Entrance Test",
-        "description": "Medical entrance exam for MBBS, BDS, and medical courses",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/6xb3ng3r_Gemini_Generated_Image_isva0cisva0cisva_2-removebg-preview.png",
-        "color": "from-emerald-500 to-teal-600",
-        "total_questions": 180,
-        "duration": "3.5 hours",
-        "category": "Admission Tests",
+        "description": "Medical entrance exam for MBBS/BDS courses in India",
+        "icon": "🏥",
+        "color": "from-green-500 to-emerald-600",
+        "total_questions": 200,
+        "duration": "3 hours",
+        "category": "Medical Entrance",
         "syllabus_topics": {
             "Physics": {
                 "subjects": {
