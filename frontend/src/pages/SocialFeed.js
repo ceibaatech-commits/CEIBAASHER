@@ -579,8 +579,8 @@ const SocialFeed = () => {
           </button>
         )}
 
-        {/* Guest Banner */}
-        {!user && (
+        {/* Guest Banner - Only show if not loading and user is not logged in */}
+        {!authLoading && !user && (
           <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-6 mb-6 text-center">
             <h3 className="text-xl font-bold mb-2">Join Ceibaa Social 🚀</h3>
             <p className="mb-4">Connect with learners, share your achievements, and grow together!</p>
