@@ -13,6 +13,7 @@ import UserManagement from '../components/admin/UserManagement';
 import ContentModeration from '../components/admin/ContentModeration';
 import RevenueManagement from '../components/admin/RevenueManagement';
 import SystemSettings from '../components/admin/SystemSettings';
+import ExamSheetManager from '../components/admin/ExamSheetManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
