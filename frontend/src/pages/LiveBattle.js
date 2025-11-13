@@ -40,6 +40,7 @@ const LiveBattle = () => {
   const [showGiftMenu, setShowGiftMenu] = useState(false);
   const [selectedGiftRecipient, setSelectedGiftRecipient] = useState(null);
   const [giftNotification, setGiftNotification] = useState(null);
+  const [followingStatus, setFollowingStatus] = useState({}); // Track who we're following
   const chatEndRef = useRef(null);
 
   // Fetch room details and questions when auto-joining
