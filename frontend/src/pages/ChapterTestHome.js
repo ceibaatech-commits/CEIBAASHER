@@ -1,0 +1,153 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { GraduationCap, BookOpen, Award } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+const ChapterTestHome = () => {
+  const navigate = useNavigate();
+
+  const classes = [
+    { class: 6, color: 'from-blue-500 to-blue-600', icon: '📚' },
+    { class: 7, color: 'from-purple-500 to-purple-600', icon: '📖' },
+    { class: 8, color: 'from-pink-500 to-pink-600', icon: '✏️' },
+    { class: 9, color: 'from-orange-500 to-orange-600', icon: '📝' },
+    { class: 10, color: 'from-red-500 to-red-600', icon: '🎓' },
+    { class: 11, color: 'from-teal-500 to-teal-600', icon: '📊' },
+    { class: 12, color: 'from-indigo-500 to-indigo-600', icon: '🏆' }
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <Header />
+      
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-4 rounded-full">
+              <GraduationCap className="w-16 h-16 text-white" />
+            </div>
+          </div>
+          <h1 className="text-5xl font-black text-gray-900 mb-4">
+            CBSE Chapter Tests
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Master every chapter with focused practice tests. Select your class to get started!
+          </p>
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+            <div className="flex items-center space-x-4">
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <BookOpen className="w-8 h-8 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-gray-900">500+</p>
+                <p className="text-gray-600">Chapter Tests</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+            <div className="flex items-center space-x-4">
+              <div className="bg-purple-100 p-3 rounded-lg">
+                <Award className="w-8 h-8 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-gray-900">10,000+</p>
+                <p className="text-gray-600">Practice Questions</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
+            <div className="flex items-center space-x-4">
+              <div className="bg-pink-100 p-3 rounded-lg">
+                <GraduationCap className="w-8 h-8 text-pink-600" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-gray-900">5</p>
+                <p className="text-gray-600">Core Subjects</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Class Selection Grid */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+            Select Your Class
+          </h2>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {classes.map((item) => (
+            <button
+              key={item.class}
+              onClick={() => navigate(`/chapter-tests/class-${item.class}`)}
+              className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent overflow-hidden"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+              
+              <div className="relative z-10">
+                <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                  {item.icon}
+                </div>
+                <h3 className="text-3xl font-black text-gray-900 group-hover:text-white transition-colors duration-300">
+                  Class {item.class}
+                </h3>
+                <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-300 mt-2">
+                  CBSE Curriculum
+                </p>
+              </div>
+              
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${item.color}"></div>
+            </button>
+          ))}
+        </div>
+
+        {/* Features Section */}
+        <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+            Why Choose Chapter Tests?
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🎯</span>
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2">Focused Practice</h4>
+              <p className="text-gray-600 text-sm">Chapter-wise tests for targeted learning</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">📊</span>
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2">Track Progress</h4>
+              <p className="text-gray-600 text-sm">Monitor your performance over time</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-pink-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">💡</span>
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2">NCERT Aligned</h4>
+              <p className="text-gray-600 text-sm">Based on latest NCERT curriculum</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">⚡</span>
+              </div>
+              <h4 className="font-bold text-gray-900 mb-2">Instant Results</h4>
+              <p className="text-gray-600 text-sm">Get immediate feedback and scores</p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default ChapterTestHome;
