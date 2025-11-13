@@ -45,69 +45,36 @@ const RRB_NTPC = () => {
 
   const syllabusData = {
     'General Awareness': {
-      topics: [
-        'Current Affairs (National & International)',
-        'Indian History (Ancient, Medieval, Modern)',
-        'Indian Geography (Physical, Economic, Social)',
-        'Indian Polity and Governance',
-        'Economic and Social Development',
-        'General Science (Physics, Chemistry, Biology up to 10th standard)',
-        'Environmental Issues',
-        'Sports',
-        'Books and Authors',
-        'Important Days and Events',
-        'Indian Culture and Heritage'
+      subjects: [
+        'Current Affairs',
+        'Static GK',
+        'Banking Awareness',
+        'Economics'
       ],
       weight: 'High',
       questions_cbt1: 40,
       questions_cbt2: 50
     },
     'Mathematics': {
-      topics: [
-        'Number System',
-        'BODMAS',
-        'Decimals and Fractions',
-        'LCM and HCF',
-        'Ratio and Proportion',
-        'Percentage',
-        'Mensuration',
-        'Time and Work',
-        'Time and Distance',
-        'Simple and Compound Interest',
-        'Profit and Loss',
+      subjects: [
         'Algebra',
-        'Geometry',
+        'Calculus',
+        'Coordinate Geometry',
         'Trigonometry',
-        'Elementary Statistics',
-        'Square Root',
-        'Age Calculations',
-        'Calendar & Clock',
-        'Pipes & Cisterns'
+        'Statistics',
+        'Probability',
+        'Vectors',
+        'Differential Equations'
       ],
       weight: 'High',
       questions_cbt1: 30,
       questions_cbt2: 35
     },
-    'General Intelligence & Reasoning': {
-      topics: [
-        'Analogies',
-        'Alphabetical and Number Series',
-        'Coding and Decoding',
-        'Mathematical Operations',
-        'Similarities and Differences',
-        'Relationships',
-        'Analytical Reasoning',
-        'Syllogism',
-        'Jumbling',
-        'Venn Diagrams',
-        'Puzzle',
-        'Data Interpretation',
-        'Data Sufficiency',
-        'Statement - Conclusions',
-        'Statement - Courses of Action',
-        'Decision Making',
-        'Maps',
-        'Interpretation of Graphs'
+    'General Intelligence': {
+      subjects: [
+        'Verbal Reasoning',
+        'Non-Verbal Reasoning',
+        'Analytical Reasoning'
       ],
       weight: 'High',
       questions_cbt1: 30,
