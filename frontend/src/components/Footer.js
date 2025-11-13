@@ -12,18 +12,61 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/ceibaa-logo-new.png"
-                alt="Ceibaa Logo"
-                className="w-10 h-10 object-contain"
-              />
-              <div>
-                <h3 className="text-2xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <div className="flex items-center">
+              <svg width="160" height="50" viewBox="0 0 280 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="footerMultiColorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: '#3b82f6', stopOpacity: 1 }} />
+                    <stop offset="20%" style={{ stopColor: '#8b5cf6', stopOpacity: 1 }} />
+                    <stop offset="40%" style={{ stopColor: '#d946ef', stopOpacity: 1 }} />
+                    <stop offset="60%" style={{ stopColor: '#f97316', stopOpacity: 1 }} />
+                    <stop offset="80%" style={{ stopColor: '#facc15', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#3b82f6', stopOpacity: 1 }} />
+                  </linearGradient>
+                  <linearGradient id="footerGlossEffect" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style={{ stopColor: '#ffffff', stopOpacity: 0.4 }} />
+                    <stop offset="50%" style={{ stopColor: '#ffffff', stopOpacity: 0 }} />
+                    <stop offset="100%" style={{ stopColor: '#000000', stopOpacity: 0.1 }} />
+                  </linearGradient>
+                </defs>
+                <text
+                  x="140"
+                  y="55"
+                  fontFamily="Arial, Helvetica, sans-serif"
+                  fontSize="60"
+                  fontWeight="900"
+                  textAnchor="middle"
+                  fill="url(#footerMultiColorGradient)"
+                  style={{ letterSpacing: '2px' }}
+                >
                   Ceibaa
-                </h3>
-                <p className="text-xs text-cyan-300 font-bold tracking-wide">Neural Battle Arena</p>
-              </div>
+                </text>
+                <text
+                  x="140"
+                  y="55"
+                  fontFamily="Arial, Helvetica, sans-serif"
+                  fontSize="60"
+                  fontWeight="900"
+                  textAnchor="middle"
+                  fill="url(#footerGlossEffect)"
+                  opacity="0.5"
+                  style={{ letterSpacing: '2px', mixBlendMode: 'overlay' }}
+                >
+                  Ceibaa
+                </text>
+                <text
+                  x="140"
+                  y="78"
+                  fontFamily="system-ui, -apple-system, sans-serif"
+                  fontSize="12"
+                  fontWeight="400"
+                  textAnchor="middle"
+                  fill="#9ca3af"
+                  style={{ letterSpacing: '2px' }}
+                >
+                  Mind Vs Mind
+                </text>
+              </svg>
             </div>
             <p className="text-gray-400 text-sm">
               India's premier live quiz battle platform. Master competitive exams through engaging multiplayer battles.
