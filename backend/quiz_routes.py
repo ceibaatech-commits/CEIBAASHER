@@ -119,12 +119,13 @@ async def start_quiz(request: QuizStartRequest):
                 # Pass sub_topic filter if available
                 filter_topic = sub_topic if sub_topic else topic
                 
-                # Extract sheet_url (no MongoDB ObjectId serialization issues)
-                sheet_url = sheet_mapping.get("sheet_url")
+                # Extract sheet_link (admin saves as 'sheet_link' not 'sheet_url')
+                sheet_url = sheet_mapping.get("sheet_link") or sheet_mapping.get("sheet_url")
                 sheet_name = sheet_mapping.get("sheet_name")
                 
                 if not sheet_url:
-                    print(f"⚠️ No sheet_url found in mapping for {exam}/{subject}/{topic}")
+                    print(f"⚠️ No sheet_link/sheet_url found in mapping for {exam}/{subject}/{topic}")
+                    print(f"   Available keys: {list(sheet_mapping.keys())}")
                 else:
                     questions = sheets_service.fetch_questions(
                         sheet_url,
