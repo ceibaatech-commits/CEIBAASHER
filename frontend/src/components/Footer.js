@@ -12,18 +12,12 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center">
               <img 
                 src="/ceibaa-logo.png" 
                 alt="Ceibaa Logo" 
-                className="h-10 w-auto object-contain"
+                className="h-12 w-auto object-contain"
               />
-              <div className="flex flex-col">
-                <span className="text-xl font-black bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  Ceibaa
-                </span>
-                <span className="text-xs text-cyan-300 font-semibold tracking-wide">Mind Vs Mind</span>
-              </div>
             </div>
             <p className="text-gray-400 text-sm">
               India's premier live quiz battle platform. Master competitive exams through engaging multiplayer battles.
