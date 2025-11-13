@@ -77,10 +77,14 @@ const ChapterTestChapters = () => {
   const startTest = (chapter) => {
     navigate('/quiz', { 
       state: { 
-        exam: `CBSE Class ${selectedClass}`,
+        isClassBased: true,
+        class_name: `Class ${selectedClass}`,
         subject: formattedSubject,
         chapter: chapter.chapter_name,
-        chapterNumber: chapter.chapter_number
+        chapterNumber: chapter.chapter_number,
+        // Also pass exam-style data for backward compatibility
+        exam: `CBSE Class ${selectedClass}`,
+        topic: chapter.chapter_name
       } 
     });
   };
