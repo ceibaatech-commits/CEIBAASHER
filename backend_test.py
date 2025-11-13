@@ -3845,8 +3845,17 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Admin Dashboard Statistics Tests (CRITICAL - Review Request Focus)
-        print("\n📊 ADMIN DASHBOARD STATISTICS TESTS (CRITICAL - REVIEW REQUEST)")
+        # PRIORITY 1: Admin Sheet Manager Tests (CRITICAL - Review Request Focus)
+        print("\n📋 ADMIN SHEET MANAGER TESTS (CRITICAL - REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_admin_add_exam_sheet()
+        self.test_admin_add_class_sheet()
+        self.test_admin_fetch_all_sheets()
+        self.test_admin_sheets_database_verification()
+        self.test_admin_sheets_objectid_serialization()
+        
+        # PRIORITY 2: Admin Dashboard Statistics Tests
+        print("\n📊 ADMIN DASHBOARD STATISTICS TESTS")
         print("=" * 60)
         self.test_admin_stats_overview()
         self.test_admin_stats_follows()
