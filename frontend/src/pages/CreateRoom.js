@@ -10,6 +10,15 @@ const CreateRoom = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
+  
+  // Check if this is class-based
+  const isClassBased = location.state?.isClassBased || false;
+  const classBasedData = isClassBased ? {
+    class_name: location.state?.class_name,
+    subject: location.state?.subject,
+    chapter: location.state?.chapter
+  } : null;
+  
   const [hostName, setHostName] = useState('');
   const [loading, setLoading] = useState(false);
   const [room, setRoom] = useState(null);
@@ -25,25 +34,40 @@ const CreateRoom = () => {
     try {
       const response = await axios.post(`${BATTLE_URL}/api/battle/create-room`, {
         hostName,
-        examId,
-        subject,
-        topic
+        examId: isClassBased ? `${classBasedData.class_name}-${classBasedData.subject}` : examId,
+        subject: isClassBased ? classBasedData.subject : subject,
+        topic: isClassBased ? classBasedData.chapter : topic
       });
 
       if (response.data.success) {
         const { pin } = response.data;
         
         // Get questions for this topic
-        const quizRequestData = {
-          exam: examId,  // Changed from examId to exam
-          subject,
-          topic,
-          numberOfQuestions: 10
-        };
+        let quizRequestData;
         
-        // Include sub_topic if available
-        if (subTopic) {
-          quizRequestData.sub_topic = subTopic;
+        if (isClassBased && classBasedData) {
+          // Class-based quiz request
+          quizRequestData = {
+            isClassBased: true,
+            class_name: classBasedData.class_name,
+            subject: classBasedData.subject,
+            chapter: classBasedData.chapter,
+            exam: `${classBasedData.class_name}-${classBasedData.subject}`,
+            numberOfQuestions: 10
+          };
+        } else {
+          // Exam-based quiz request
+          quizRequestData = {
+            exam: examId,
+            subject,
+            topic,
+            numberOfQuestions: 10
+          };
+          
+          // Include sub_topic if available
+          if (subTopic) {
+            quizRequestData.sub_topic = subTopic;
+          }
         }
         
         const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, quizRequestData);
