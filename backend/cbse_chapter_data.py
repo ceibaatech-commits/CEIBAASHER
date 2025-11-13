@@ -297,12 +297,96 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Paani Ki Kahani", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 13, "chapter_name": "Baaz Aur Saap", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ]
+    },
+    "9": {
+        "Mathematics": [
+            {"chapter_number": 1, "chapter_name": "Number Systems", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Polynomials", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Coordinate Geometry", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Linear Equations in Two Variables", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "Introduction to Euclids Geometry", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Lines and Angles", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Triangles", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Quadrilaterals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Circles", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Heron's Formula", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Surface Areas and Volumes", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 12, "chapter_name": "Statistics", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        ],
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Matters in Our Surroundings", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Is Matter Around Us Pure", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Atoms and Molecules", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "Structure of the Atom", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "The Fundamental Unit of Life", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Tissues", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Motion", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Force and Laws of Motion", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Gravitation", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "Work and Energy", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Sound", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Improvement in Food Resources", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "India - Size and Location", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Physical Features of India", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Drainage", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Climate", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Natural Vegetation and Wildlife", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Population", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Kshitij": [
+            {"chapter_number": 1, "chapter_name": "Do Bailon Ki Katha", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Lhasa Ki Aur", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Upbhoktaavad Ki Sanskriti", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Saanvle Sapno Ki Yaad", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Premchand Ke Fate Joote", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Mere Bachpan Ke Din", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Sakhiyan Evam Sabad", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Vaakh", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Savaiye", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Kaidi Aur Kokila", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Gram Shri", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Megh Aaye", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Bacche Kaam Par Ja Rahe Hain", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "English Beehive Poems": [
+            {"chapter_number": 1, "chapter_name": "The Road Not Taken", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Wind", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Rain On The Roof", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "The Lake Isle of Innisfree", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "A Legend of The Northland", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "No Men Are Foreign", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "On Killing A Tree", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "A Slumber Did My Spirit Seal", "total_questions": 40, "difficulty": "Easy", "duration": 30}
+        ],
+        "English Beehive Prose": [
+            {"chapter_number": 1, "chapter_name": "The Fun They Had", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "The Sound of Music", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "The Little Girl", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "A Truly Beautiful Mind", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "The Snake and The Mirror", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "My Childhood", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Reach for the Top", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "The Bond of Love", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "If I Were You", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "English Moments": [
+            {"chapter_number": 1, "chapter_name": "The Lost Child", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "The Adventures of Toto", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Iswaran The Storyteller", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "In The Kingdom of Fools", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "The Happy Prince", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "The Last Leaf", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "A House is Not a Home", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "The Beggar", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ]
     }
 }
 
-# Add similar data for classes 7, 9, 11, 12 (keeping it concise for now)
+# Add similar data for classes 7, 11, 12 (keeping it concise for now)
 # These can be expanded based on NCERT syllabus
-for class_num in ["7", "9", "11", "12"]:
+for class_num in ["7", "11", "12"]:
     CBSE_CHAPTER_DATA[class_num] = {
         "Mathematics": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
