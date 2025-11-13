@@ -66,19 +66,40 @@ const ChapterTestHome = () => {
       />
       
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
+        {/* Hero Section - Enhanced */}
+        <div className="text-center mb-12 relative">
           <div className="flex justify-center mb-6">
-            <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-4 rounded-full">
-              <GraduationCap className="w-16 h-16 text-white" />
+            <div className="relative">
+              <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-6 rounded-full shadow-2xl animate-bounce">
+                <GraduationCap className="w-20 h-20 text-white" />
+              </div>
+              {/* Decorative rings around icon */}
+              <div className="absolute inset-0 rounded-full border-4 border-cyan-300 opacity-20 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-purple-300 opacity-30 scale-125"></div>
             </div>
           </div>
-          <h1 className="text-5xl font-black text-gray-900 mb-4">
+          <h1 className="text-6xl font-black text-gray-900 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
             CBSE Chapter Tests
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Master every chapter with focused practice tests. Select your class to get started!
+          <p className="text-2xl text-gray-700 max-w-3xl mx-auto font-semibold">
+            Master every chapter with focused practice tests ✨
           </p>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mt-3">
+            Select your class to get started on your learning journey!
+          </p>
+          
+          {/* Floating badges */}
+          <div className="flex justify-center gap-4 mt-8 flex-wrap">
+            <span className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-bold text-blue-600 shadow-lg border border-blue-200">
+              🎯 Chapter-wise Practice
+            </span>
+            <span className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-bold text-purple-600 shadow-lg border border-purple-200">
+              📚 NCERT Aligned
+            </span>
+            <span className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-bold text-pink-600 shadow-lg border border-pink-200">
+              ⚡ Instant Feedback
+            </span>
+          </div>
         </div>
 
         {/* Stats Section */}
