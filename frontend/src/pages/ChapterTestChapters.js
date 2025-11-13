@@ -31,11 +31,11 @@ const ChapterTestChapters = () => {
   }, [chapters, searchQuery, filterType, sortBy]);
 
   const fetchChapters = async () => {
-    try {
+    try:
       setLoading(true);
       const response = await axios.get(`${API_URL}/api/chapter-tests/chapters`, {
         params: {
-          class: selectedClass,
+          class_param: selectedClass,
           subject: formattedSubject
         }
       });
