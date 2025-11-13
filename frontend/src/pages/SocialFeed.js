@@ -585,7 +585,7 @@ const SocialFeed = () => {
             <h3 className="text-xl font-bold mb-2">Join Ceibaa Social 🚀</h3>
             <p className="mb-4">Connect with learners, share your achievements, and grow together!</p>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/login', { state: { from: '/social-feed' } })}
               className="bg-white text-purple-600 px-6 py-2 rounded-lg font-bold hover:shadow-lg transition-all"
             >
               Login to Continue
