@@ -1165,6 +1165,16 @@ const ExamSheetManager = () => {
                           <option value="Geography">Geography</option>
                           <option value="History">History</option>
                           <option value="Civics">Civics</option>
+                          <option value="English">English</option>
+                          <option value="Hindi">Hindi</option>
+                        </>
+                      ) : classForm.class_name === 'Class 9' ? (
+                        <>
+                          <option value="Geography">Geography</option>
+                          <option value="Hindi Kshitij">Hindi Kshitij</option>
+                          <option value="English Beehive Poems">English Beehive Poems</option>
+                          <option value="English Beehive Prose">English Beehive Prose</option>
+                          <option value="English Moments">English Moments</option>
                         </>
                       ) : classForm.class_name === 'Class 10' ? (
                         <>
@@ -1187,12 +1197,6 @@ const ExamSheetManager = () => {
                         </>
                       )}
                       {classForm.class_name === 'Class 6' && <option value="Poorvi">Poorvi</option>}
-                      {classForm.class_name === 'Class 8' && (
-                        <>
-                          <option value="English">English</option>
-                          <option value="Hindi">Hindi</option>
-                        </>
-                      )}
                     </select>
                   </div>
 
