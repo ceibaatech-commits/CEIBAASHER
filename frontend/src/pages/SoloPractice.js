@@ -13,6 +13,14 @@ const SoloPractice = () => {
   const location = useLocation();
   const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
   
+  // Check if this is a class-based quiz
+  const isClassBased = location.state?.isClassBased || false;
+  const classBasedData = isClassBased ? {
+    class_name: location.state?.class_name,
+    subject: location.state?.subject,
+    chapter: location.state?.chapter
+  } : null;
+  
   // Use examId if available (from topic-quiz route), otherwise use examName (from solo-practice route)
   const exam = examId || examName;
   const subject = subjectName;
