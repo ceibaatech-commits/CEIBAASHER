@@ -24,19 +24,19 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <button onClick={() => navigate('/')} className="hover:text-cyan-400 transition-colors font-semibold">
+            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Home
             </button>
-            <button onClick={() => navigate('/')} className="hover:text-cyan-400 transition-colors font-semibold">
+            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Exams
             </button>
-            <button onClick={() => navigate('/social')} className="hover:text-cyan-400 transition-colors font-semibold">
+            <button onClick={() => navigate('/social')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Social Feed
             </button>
-            <button onClick={() => navigate('/join-room')} className="hover:text-cyan-400 transition-colors font-semibold">
+            <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Join Battle Room
             </button>
-            <button onClick={() => navigate('/about')} className="hover:text-cyan-400 transition-colors font-semibold">
+            <button onClick={() => navigate('/about')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               About Us
             </button>
           </nav>
