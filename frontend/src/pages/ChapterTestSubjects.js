@@ -128,6 +128,14 @@ const ChapterTestSubjects = () => {
         bgColor: 'bg-red-100',
         textColor: 'text-red-600',
         description: 'Social and Political Life'
+      },
+      {
+        name: 'Hindi',
+        icon: Languages,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'NCERT Vasant - Hindi Textbook'
       }
     ];
   } else {
