@@ -85,7 +85,14 @@ const ChapterTestHome = () => {
           {classes.map((item) => (
             <button
               key={item.class}
-              onClick={() => navigate(`/chapter-tests/class-${item.class}`)}
+              onClick={() => {
+                // Classes 11 and 12 go to stream selection
+                if (item.class === 11 || item.class === 12) {
+                  navigate(`/chapter-tests/class-${item.class}/select-stream`);
+                } else {
+                  navigate(`/chapter-tests/class-${item.class}`);
+                }
+              }}
               className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent overflow-hidden"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
