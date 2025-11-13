@@ -446,8 +446,8 @@ const LiveBattle = () => {
 
     try {
       const statusMap = {};
-      for (const player of players) {
-        if (player.name !== playerName) {
+      for (const player of participants) {
+        if (player.username !== playerName) {
           // Try to find the actual user ID by searching for the player
           const userSearchResponse = await axios.get(`${BATTLE_SERVER_URL}/api/auth/search-user?name=${encodeURIComponent(player.name)}`);
           const targetUserId = userSearchResponse.data?.user_id || player.name.toLowerCase().replace(/\s+/g, '_');
