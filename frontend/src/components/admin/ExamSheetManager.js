@@ -339,18 +339,23 @@ const ExamSheetManager = () => {
             'Prose'
           ],
           'Hindi': [
-            'व्याकरण - संज्ञा',
-            'व्याकरण - सर्वनाम',
-            'व्याकरण - विशेषण',
-            'व्याकरण - क्रिया',
-            'व्याकरण - काल',
-            'व्याकरण - वाक्य',
-            'अपठित गद्यांश',
-            'पत्र लेखन',
-            'निबंध लेखन',
-            'कहानी लेखन',
-            'कविता',
-            'गद्य पाठ'
+            '1. Vah Pakshee Jo',
+            '2. Bachapan',
+            '3. Naadaan Dost',
+            '4. Ch Se Sa See Gappe',
+            '5. Akshar Ka Mahatv',
+            '6. Paar Nazar Ke',
+            '7. Saathee Haath Badhaana',
+            '8. Aise',
+            '9. Tikat Alabam',
+            '10. Jhaansee Kee Raanee',
+            '11. Jo Dekhakar Bhee Nahin Dekha',
+            '12. Sansaar Pustak Hai',
+            '13. Main Sabase Chhotee Hooon',
+            '14. Lokageet',
+            '15. Sarv',
+            '16. Van Ke Maarg Mein',
+            '17. Shvaas-shvaas Mein Baans'
           ]
         },
         'Class 7': {
