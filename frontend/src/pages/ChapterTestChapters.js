@@ -75,16 +75,18 @@ const ChapterTestChapters = () => {
   };
 
   const startTest = (chapter) => {
-    navigate('/quiz', { 
+    // Navigate to solo-practice with proper params
+    const className = `Class-${selectedClass}`;
+    const subjectParam = formattedSubject.toLowerCase().replace(/\s+/g, '-');
+    const chapterParam = chapter.chapter_name.toLowerCase().replace(/\s+/g, '-');
+    
+    navigate(`/topic-quiz/${className}/${subjectParam}/${chapterParam}`, { 
       state: { 
         isClassBased: true,
         class_name: `Class ${selectedClass}`,
         subject: formattedSubject,
         chapter: chapter.chapter_name,
-        chapterNumber: chapter.chapter_number,
-        // Also pass exam-style data for backward compatibility
-        exam: `CBSE Class ${selectedClass}`,
-        topic: chapter.chapter_name
+        chapterNumber: chapter.chapter_number
       } 
     });
   };
