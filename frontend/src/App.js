@@ -60,8 +60,17 @@ function App() {
           
           {/* Chapter Test Routes */}
           <Route path="/chapter-tests" element={<ChapterTestHome />} />
-          <Route path="/chapter-tests/:classNumber" element={<ChapterTestSubjects />} />
-          <Route path="/chapter-tests/:classNumber/:subject" element={<ChapterTestChapters />} />
+          {/* For Classes 11 and 12 - Stream Selection */}
+          <Route path="/chapter-tests/:classNumber/select-stream" element={<ChapterTestStreams />} />
+          <Route path="/chapter-tests/:classNumber/:stream" element={<ChapterTestStreamSubjects />} />
+          <Route path="/chapter-tests/:classNumber/:stream/:subject" element={<ChapterTestChapters />} />
+          {/* For Classes 6-10 - Direct Subject Selection */}
+          <Route path="/chapter-tests/class-6" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/class-7" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/class-8" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/class-9" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/class-10" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/class-:classNumber/:subject" element={<ChapterTestChapters />} />
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
