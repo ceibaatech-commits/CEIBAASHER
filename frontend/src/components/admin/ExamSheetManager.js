@@ -1176,6 +1176,26 @@ const ExamSheetManager = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
+                      <div className="text-sm">
+                        {sheet.questions_imported ? (
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <span className="font-semibold text-green-700">{sheet.question_count || 0} questions</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-2">
+                            <AlertCircle className="w-4 h-4 text-orange-500" />
+                            <span className="text-orange-700">Not imported</span>
+                          </div>
+                        )}
+                        {sheet.last_import && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            Last: {new Date(sheet.last_import).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
                       <a
                         href={sheet.sheet_link}
                         target="_blank"
