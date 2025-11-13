@@ -12,23 +12,46 @@ const SoloPractice = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Check if this is a class-based quiz (priority check)
-  const isClassBased = location.state?.isClassBased || false;
-  const classBasedData = isClassBased ? {
-    class_name: location.state?.class_name,
-    subject: location.state?.subject,
-    chapter: location.state?.chapter
-  } : null;
+  // Detect class-based quiz from URL pattern (Class-6, Class-10, etc.)
+  const urlExamName = examId || examName;
+  const isClassBasedFromUrl = urlExamName?.startsWith('Class-') || urlExamName?.toLowerCase().startsWith('class-');
+  
+  // Check if this is a class-based quiz (from state OR from URL pattern)
+  const isClassBased = location.state?.isClassBased || isClassBasedFromUrl;
+  
+  // Extract class-based data
+  let classBasedData = null;
+  if (isClassBased) {
+    if (location.state?.class_name) {
+      // Use state if available
+      classBasedData = {
+        class_name: location.state.class_name,
+        subject: location.state.subject,
+        chapter: location.state.chapter
+      };
+    } else if (isClassBasedFromUrl) {
+      // Extract from URL if state not available
+      // URL format: /topic-quiz/Class-6/science/components-of-food
+      const className = urlExamName; // "Class-6"
+      const subjectName = subjectName; // "science"
+      const chapterName = topicName; // "components-of-food"
+      
+      classBasedData = {
+        class_name: className.replace('Class-', 'Class '),
+        subject: subjectName.charAt(0).toUpperCase() + subjectName.slice(1),
+        chapter: chapterName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+      };
+    }
+  }
   
   const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
   
   // Use examId if available (from topic-quiz route), otherwise use examName (from solo-practice route)
-  // But only if NOT class-based
   const exam = examId || examName;
   const subject = subjectName;
   const topic = topicName;
   
-  console.log('🔍 SoloPractice Debug:', { isClassBased, classBasedData, exam, subject, topic });
+  console.log('🔍 SoloPractice Debug:', { isClassBased, isClassBasedFromUrl, classBasedData, exam, subject, topic });
   
   const [numberOfQuestions, setNumberOfQuestions] = useState(10); // NEW: Question count selector
   const [quizState, setQuizState] = useState('setup'); // NEW: Changed from 'loading' to 'setup'
