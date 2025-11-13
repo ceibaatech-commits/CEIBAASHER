@@ -1137,7 +1137,7 @@ const ExamSheetManager = () => {
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-12 text-center">
+                  <td colSpan="5" className="px-6 py-12 text-center">
                     <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-2" />
                     <p className="text-gray-500">Loading sheets...</p>
                   </td>
