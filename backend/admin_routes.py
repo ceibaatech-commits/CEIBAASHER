@@ -356,7 +356,7 @@ async def import_sheet_questions(sheet_id: str):
                     "chapter": sheet.get("chapter")
                 })
             
-            await db.questions.insert_one(question_doc)
+            await db.questions.insert_one(question_doc.copy())
             imported_count += 1
         
         # Update sheet metadata
