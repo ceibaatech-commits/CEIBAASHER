@@ -322,7 +322,7 @@ const ModernExamSyllabus = () => {
                         <span>Focus on Specific Concepts:</span>
                       </div>
                       <div className="space-y-2">
-                        {topic.subtopics.map((sub, i) => (
+                        {topic.sub_topics && topic.sub_topics.map((sub, i) => (
                           <div key={i} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-2 hover:from-blue-50 hover:to-blue-100 transition-all group">
                             <div className="flex items-center justify-between">
                               <div className="flex items-start gap-2 flex-1">
