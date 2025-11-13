@@ -19,10 +19,10 @@ def init_db(database):
 
 
 class CeepRequest(BaseModel):
-    user_id: str  # User doing the ceeping
-    ceep_user_id: str  # User being ceeped
-    user_name: str  # Name of user doing the ceeping
-    ceep_user_name: str  # Name of user being ceeped
+    user_id: str
+    ceep_user_id: str
+    user_name: Optional[str] = None
+    ceep_user_name: Optional[str] = None
 
 
 class UnceepRequest(BaseModel):
