@@ -84,7 +84,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             ) : (
               <button
                 onClick={onLogin}
-                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-6 py-2 rounded-lg font-bold transition-all shadow-lg"
+                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-6 py-2 rounded-lg font-bold transition-all shadow-lg text-white"
               >
                 Join Battle
               </button>
