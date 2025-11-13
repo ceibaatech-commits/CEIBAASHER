@@ -15,9 +15,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 9, "chapter_name": "Data Handling", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 10, "chapter_name": "Mensuration", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 11, "chapter_name": "Algebra", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 12, "chapter_name": "Ratio and Proportion", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "Symmetry", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 14, "chapter_name": "Practical Geometry", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 12, "chapter_name": "Ratio and Proportion", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Science": [
             {"chapter_number": 1, "chapter_name": "Food: Where Does It Come From?", "total_questions": 40, "difficulty": "Easy", "duration": 25},
