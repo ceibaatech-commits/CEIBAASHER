@@ -301,6 +301,7 @@ async def create_post(post_data: PostCreate, user_id: str):
         "content": post_data.content,
         "battle_stats": post_data.battle_stats,
         "quiz_details": post_data.quiz_details,
+        "room_code": post_data.room_code,
         "media_urls": post_data.media_urls,
         "tags": post_data.tags or [],
         "exam_category": post_data.exam_category,
