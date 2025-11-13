@@ -282,7 +282,7 @@ const ModernExamSyllabus = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                   selectedSubject === subject ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}>
-                {subject} ({allTopics.filter(t => t.subject === subject).length})
+                {subject} ({allTopics.filter(t => t.syllabus_topic === subject).length})
               </button>
             ))}
           </div>
