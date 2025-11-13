@@ -66,12 +66,13 @@ class BattlePostCreate(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class PostCreate(BaseModel):
-    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general"]
+    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code"]
     content: str
     
     # Optional fields based on post type
     battle_stats: Optional[dict] = None  # For battle_victory
     quiz_details: Optional[dict] = None  # For quiz_announcement
+    room_code: Optional[str] = None  # For room_code posts
     media_urls: Optional[List[str]] = None  # For video/images
     tags: Optional[List[str]] = None
     exam_category: Optional[str] = None  # JEE, NEET, etc.
