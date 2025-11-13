@@ -2373,8 +2373,13 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Socket.io Battle System Flow (CRITICAL - Review Request Focus)
-        print("\n🎮 SOCKET.IO BATTLE SYSTEM FLOW TESTING (CRITICAL)")
+        # PRIORITY 1: Follow/Ceep System Testing (CRITICAL - Review Request Focus)
+        print("\n🎯 FOLLOW/CEEP SYSTEM TESTING (CRITICAL - REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_follow_ceep_system_comprehensive()
+        
+        # PRIORITY 2: Socket.io Battle System Flow
+        print("\n🎮 SOCKET.IO BATTLE SYSTEM FLOW TESTING")
         print("=" * 60)
         self.test_socket_io_battle_system_flow()
         
