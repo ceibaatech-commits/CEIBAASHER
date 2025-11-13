@@ -1,99 +1,62 @@
 <analysis>
-The trajectory details a focused effort to enhance the Ceibaa competitive exam platform. The work began by investigating a reported  error. After confirming all services were running and backend APIs were responsive, the engineer concluded the error was transient and moved on to the user's next priority: fixing the  and question loading issues.
+The trajectory documents a comprehensive development cycle on the Ceibaa competitive exam platform. The work began by addressing a series of user-reported issues, starting with implementing a configurable question limit for quizzes and integrating the KaTeX library to render mathematical and chemical notations.
 
-The core problem was identified not as a UI bug, but as a lack of question content; most subjects lacked mapped Google Sheets. The engineer demonstrated this by successfully adding a new NDA Algebra sheet provided by the user. This led to a follow-on task to enable sub-topic selection, which required modifying  and  to handle  state.
+A significant portion of the effort was dedicated to building and debugging a complex social feature set. This involved renaming the Ceep follow system to Follow, implementing a mixed For You feed (combining posts from followed users with trending content), and adding the ability for users to share battle room codes on the feed. Multiple bugs were fixed in this area, including ensuring the Follow button state updated correctly and correcting database collection names ( vs. ,  vs. ) to ensure interactions appeared on the feed.
 
-Subsequently, the user reported that LaTeX mathematical notation was not rendering correctly. The engineer diagnosed the absence of a rendering library, installed , created a  wrapper component, and integrated it into  and . When rendering issues persisted, the engineer clarified the difference between document LaTeX and web KaTeX, proving with a test page () that the issue was missing  delimiters in the source Google Sheet data.
+A major effort was then channeled into fixing the authentication and authorization flow. This included resolving a bug where the social feed didn't wait for user authentication to complete, leading to a premature login prompt. The engineer implemented a full Google OAuth 2.0 login flow, from adding backend routes and credentials to fixing the frontend callback component to correctly fetch user data and update the application state.
 
-Finally, the user requested support for special chemical notations and a higher question limit per quiz. The engineer made the question limit configurable in  and added a setup UI in , successfully demonstrating a 50-question quiz. The work concluded by showing that the code was ready to render special characters once the source data was correctly formatted.
+Most recently, development has focused on building an Admin Panel, starting with a live-data dashboard and a full-featured Exam Sheet Manager. The core of this work involved creating backend APIs to fetch user data and manage Google Sheet links, and then fixing a series of bugs in the sheet import process, including a critical MongoDB  serialization error and, currently, a parsing error due to a new column format in the user's Google Sheets.
 </analysis>
 
 <product_requirements>
-The Ceibaa platform is a web-based competitive exam preparation tool featuring Solo Practice and real-time Live Battles.
+The Ceibaa platform is a web-based competitive exam preparation tool with two main user-facing features: Solo Practice and real-time Live Battles. A central requirement is that all question content is sourced dynamically from Google Sheets.
 
-**Core Requirements:**
-1.  **Question Content Management:** The system must source all quiz questions from Google Sheets. An admin-facing SheetManager UI () is required to map specific Google Sheet URLs to an Exam, Subject, Topic, and Sub-topic.
-2.  **Quiz Functionality:**
-    *   Users must be able to select an exam, topic, and sub-topic to start a quiz.
-    *   In Solo Practice, users should be able to configure the number of questions (e.g., 10, 25, 50, 100) before starting.
-    *   The system must correctly handle quizzes for subjects that do not have a corresponding Google Sheet mapped, failing gracefully.
-3.  **Advanced Content Rendering:** The application must accurately render complex mathematical and chemical notations (e.g., fractions, exponents,  bonds, ) within question and answer text. This was implemented using the KaTeX library, which requires source text in the Google Sheets to be formatted with standard LaTeX delimiters ( for inline,  for display).
-4.  **Battle Room:** Live battles must support sub-topic selection to ensure the correct question set is loaded for all participants.
-5.  **System Stability:** The underlying services (FastAPI backend, React frontend, Node.js battle-server) must be stable, with robust connectivity.
+The platform must include a social layer that allows users to follow each other, view a mixed timeline of posts from followed users and trending content, and share battle room codes. This social functionality must be integrated with the core quiz experience, allowing users to follow others from a battle room and see battle results posted to the feed.
+
+A secure, role-based Admin Panel is required for platform management. This panel must provide a real-time overview of platform statistics (users, posts, battles), a detailed user management table, and a crucial Exam Sheet Manager. The Sheet Manager is the interface for connecting Google Sheets to the system, mapping them to specific exams or classes, and importing the questions into the database. The import process must be robust, handling specific sheet formats and providing clear feedback to the admin. Authentication includes both demo accounts and social logins (Google, Facebook, Twitter), with a seamless flow that maintains the user's session across the application.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI**: Backend for REST APIs and data validation.
-- **React**: Frontend framework, using hooks, , and Context.
-- **Node.js/Socket.io**: Real-time engine for the battle server.
-- **Google Sheets API**: Used as the primary data source for all quiz questions.
-- **KaTeX ()**: JavaScript library integrated into the frontend to parse and render LaTeX mathematical and chemical notation on the web.
-- **Pydantic**: Used in the backend for request model validation, including the configurable question limit.
+- **Backend**: FastAPI for REST APIs, Pydantic for data validation, JWT for authentication.
+- **Frontend**: React (including Hooks, ),  for global state management.
+- **Database**: MongoDB, with a key challenge being the handling of non-serializable  types in API responses.
+- **Data Source**: Google Sheets API, used as the primary CMS for all question content.
+- **Real-time**: Node.js and Socket.io for the .
+- **Rendering**: KaTeX () for client-side rendering of mathematical and chemical formulas.
 </key_technical_concepts>
 
 <code_architecture>
-The application follows a standard microservices pattern with a React frontend, a FastAPI backend, and a separate Node.js server for real-time battles.
+The application uses a microservices architecture with a separate frontend, backend, and real-time battle server.
 
-
-
-- ****
-    - **Importance:** Defines the API endpoints for starting quizzes and fetching questions.
-    - **Changes:** The  Pydantic model was updated to include an optional  parameter. The  endpoint logic was modified to use this parameter, allowing the number of questions per quiz to be configurable via the API instead of being hardcoded to 10.
-
-- ****
-    - **Importance:** The main component for the single-player quiz experience. It handles fetching questions, displaying them, and managing quiz state.
-    - **Changes:**
-        1.  **State Management:** Added logic to handle  from  to fetch questions for specific sub-topics.
-        2.  **Question Limit UI:** Implemented a new setup screen () that appears before the quiz, allowing users to select the number of questions (10, 25, 50, 100). The selected value is passed to the backend API.
-        3.  **LaTeX Integration:** Imported the new  component and used it to wrap the rendering of ,  text, and the  to enable LaTeX rendering.
-
-- ****
-    - **Importance:** The UI for the real-time multiplayer battle mode.
-    - **Changes:** Imported the  component and used it to render questions, options, and explanations, ensuring mathematical formulas render correctly for all battle participants.
-
-- ****
-    - **Importance:** Allows users to set up a new battle room.
-    - **Changes:** Updated to read  from  and include it in the data sent to the backend when creating a room, ensuring battles use the correct, specific question set.
-
-- ** (New File)**
-    - **Importance:** A reusable wrapper component created to render text containing LaTeX. It uses 's  and  to parse strings and render mathematical formulas. It intelligently handles text with and without LaTeX delimiters.
-    - **Changes:** File was created.
-
-- ****
-    - **Importance:** Manages frontend dependencies.
-    - **Changes:** The  and  libraries were added as dependencies.
-
-- ****
-    - **Importance:** Main stylesheet for the application.
-    - **Changes:** Added  to make KaTeX's styling globally available.
-
-- ** (New File)**
-    - **Importance:** A temporary diagnostic page created to prove to the user that the KaTeX library was installed and functioning correctly. It demonstrates how text with and without proper  delimiters is rendered.
-    - **Changes:** File was created and added to  routes for testing.
+   - ****
+      - **Importance**: Contains all API endpoints for the Admin Panel, secured by a JWT-based  dependency. It handles fetching users, getting dashboard stats, and managing sheet links.
+      - **Changes**: This file was created from scratch. Key changes included adding endpoints for , , , and . A critical fix was implemented in the  (POST) endpoint to convert the MongoDB  (an ) to a string to prevent a JSON serialization error (500).
+   - ****
+      - **Importance**: This service is responsible for the core logic of fetching a Google Sheet URL, parsing it as a CSV, and transforming the rows into structured question data. It's central to the entire question import process.
+      - **Changes**: The parsing logic was updated to correctly map the  from a numeric index to a letter ('A'-'D'). It is the focus of the current bug, as it expects a 7-column format and is failing on the user's new 8-column format.
+   - ****
+      - **Importance**: Defines the logic for the social feed, including post creation and the For You and Following timelines.
+      - **Changes**: Multiple significant fixes were made here. The  endpoint was corrected to query the  collection instead of the non-existent . The  endpoint was fixed to insert into  instead of .
+   - ****
+      - **Importance**: The frontend component for the Sheet Manager. It provides the UI for admins to add new sheet links and view their import status.
+      - **Changes**: This file was created and later enhanced to include Test and Import buttons, an Import Status column, and loading indicators, providing admins with real-time feedback on the question import process. The cascading dropdown logic was also rewritten here to use comprehensive, hardcoded data.
+   - ****
+      - **Importance**: Handles the redirect from an external OAuth provider (like Google). It's responsible for exchanging the token for user data and establishing the session.
+      - **Changes**: This file was completely rewritten to fetch user data from the  endpoint after receiving a token, update the global  with the user's information, and then redirect to the social feed.
 </code_architecture>
 
 <pending_tasks>
-- **Content Formatting:** The user needs to update their Google Sheets to include proper LaTeX delimiters ( for inline,  for block) around all mathematical and chemical formulas so the new KaTeX integration can render them correctly.
-- **Social Feed Debugging:** The issue of quiz results not being posted to the social feed remains unresolved.
-- **Admin Dashboard:** The core implementation of the Admin Dashboard is still pending.
-- **SheetManager UI:** The initial problem statement mentioned a UI bug with dynamic dropdowns in . This was not explicitly fixed and should be re-verified.
+- **Solo Practice Social Posting**: The feature to post quiz results from  to the social feed has not been implemented.
+- **Admin Dashboard Completeness**: While the User Management and Sheet Manager sections are functional, other placeholder sections like Content Moderation and Revenue Management are not yet built.
+- **Social Feed Debugging**: The issue of quiz results (from Solo Practice) not being posted to the social feed remains unresolved as it was never implemented.
 </pending_tasks>
 
 <current_work>
-The most recent work focused on resolving two user requests simultaneously: increasing the quiz question limit and correctly rendering special chemical/mathematical notations.
+The immediate task is to debug and fix the Google Sheet import functionality within the Exam Sheet Manager. The user has reported that saving a new sheet fails, and provided a screenshot showing a frontend error message: Failed to parse questions from sheet. Check format. They also specified the new, correct format for the Google Sheet columns: .
 
-1.  **Increased Question Limit:**
-    *   **Backend:** The  endpoint in  was modified to accept a  parameter, removing the hardcoded limit of 10.
-    *   **Frontend:** The  component was significantly updated to include a quiz setup screen. Before starting a quiz, the user is now presented with options to select the number of questions (10, 25, 50, 100). The component was successfully tested to start a quiz with 50 questions.
-
-2.  **Special Notation Rendering:**
-    *   **Investigation:** The root cause of improper rendering for notations like  and  was identified as the source data in Google Sheets lacking the necessary LaTeX delimiters (). The previously integrated KaTeX library was already capable of rendering them.
-    *   **Frontend:** The  component was refined to better handle strings containing Unicode characters.
-    *   **Verification:** A test page () was updated with examples of chemical formulas to demonstrate to the user how the notations *will* appear once the source sheets are formatted correctly.
-
-The system is now fully capable of handling configurable quiz lengths and rendering complex notations; the remaining work is on the user's side to provide correctly formatted data.
+Previously, a  was resolved, which was caused by a MongoDB  serialization issue in . The current problem is a logical error in the parsing service itself. The  is written to handle a 7-column CSV, but the user's sheet now provides 8 columns. The parsing logic needs to be adjusted to account for the additional  column at the beginning and correctly map the subsequent columns (, , , , , , ) to the corresponding fields in the database model. The system is now stable on the API side, but the data processing logic is incorrect for the new sheet format.
 </current_work>
 
 <optional_next_step>
-Guide the user to update a few questions in their NDA - Physical Chemistry Google Sheet with the correct  delimiters, and then verify that the notations render correctly in a live quiz.
+I will read  and modify the  function to correctly handle the new 8-column format by adjusting the indices used when unpacking each row from the sheet data.
 </optional_next_step>
