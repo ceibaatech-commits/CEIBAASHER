@@ -45,81 +45,45 @@ const AFCAT = () => {
 
   const syllabusData = {
     'English': {
-      topics: [
+      subjects: [
         'Reading Comprehension',
-        'Error Detection (Spotting Errors)',
-        'Sentence Completion',
-        'Synonyms and Antonyms',
-        'Testing of Vocabulary',
-        'Idioms and Phrases',
-        'One Word Substitution',
-        'Spelling Errors',
-        'Sentence Improvement',
-        'Active and Passive Voice',
-        'Direct and Indirect Speech'
+        'Vocabulary',
+        'Grammar',
+        'Error Detection',
+        'Sentence Improvement'
       ],
       weight: 'High',
       questions: 30,
       marks: 90
     },
     'General Awareness': {
-      topics: [
-        'History (Ancient, Medieval, Modern)',
-        'Geography (India and World)',
-        'Indian Polity and Governance',
-        'Economics',
-        'Physics (10+2 level)',
-        'Chemistry (10+2 level)',
-        'Current Affairs (National & International)',
-        'Defence (Army, Navy, Air Force)',
-        'Sports',
-        'Awards and Honours',
-        'Books and Authors',
-        'Important Days and Events',
-        'Indian Culture and Heritage',
-        'Science and Technology'
+      subjects: [
+        'Current Affairs',
+        'Static GK',
+        'Banking Awareness',
+        'Economics'
       ],
       weight: 'High',
       questions: 25,
       marks: 75
     },
     'Numerical Ability': {
-      topics: [
-        'Decimal Fraction',
-        'Simplification',
-        'Average',
-        'Percentage',
-        'Ratio and Proportion',
-        'Square Root and Cube Root',
-        'Surds and Indices',
-        'Profit and Loss',
-        'Simple Interest and Compound Interest',
-        'Time and Work',
-        'Time and Distance',
-        'Use of Tables and Graphs',
+      subjects: [
+        'Arithmetic',
+        'Algebra',
         'Mensuration',
-        'Permutation and Combination',
-        'Probability'
+        'Data Interpretation'
       ],
       weight: 'Medium',
       questions: 20,
       marks: 60
     },
-    'Reasoning & Military Aptitude Test': {
-      topics: [
-        'Verbal Reasoning (Analogies, Coding-Decoding, Blood Relations)',
-        'Non-Verbal Reasoning (Figure Series, Paper Folding, Pattern Completion)',
+    'Reasoning & Military Aptitude': {
+      subjects: [
+        'Verbal Reasoning',
+        'Non-Verbal Reasoning',
         'Spatial Ability',
-        'Numerical Sequence',
-        'Mechanical Aptitude',
-        'Logical Reasoning',
-        'Pattern Recognition',
-        'Hidden Figures',
-        'Mirror Images',
-        'Water Images',
-        'Embedded Figures',
-        'Critical Reasoning',
-        'Problem Solving'
+        'Military Aptitude'
       ],
       weight: 'High',
       questions: 25,
