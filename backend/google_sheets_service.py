@@ -6,12 +6,26 @@ class GoogleSheetsService:
     
     @staticmethod
     def extract_sheet_id(url: str) -> str:
-        """Extract Google Sheet ID from URL"""
-        # Pattern: /spreadsheets/d/{SHEET_ID}/
+        """
+        Extract Google Sheet ID from URL
+        Handles formats:
+        - https://docs.google.com/spreadsheets/d/{ID}/edit
+        - https://docs.google.com/spreadsheets/d/{ID}/htmlview
+        - https://docs.google.com/spreadsheets/u/0/d/{ID}/edit
+        - Just the ID itself
+        """
+        # Pattern 1: /spreadsheets/d/{SHEET_ID}/ (most common)
         match = re.search(r'/spreadsheets/d/([a-zA-Z0-9-_]+)', url)
         if match:
             return match.group(1)
-        return url  # Assume it's already an ID
+        
+        # Pattern 2: /spreadsheets/u/0/d/{SHEET_ID}/ (with user number)
+        match = re.search(r'/spreadsheets/u/\d+/d/([a-zA-Z0-9-_]+)', url)
+        if match:
+            return match.group(1)
+        
+        # If no pattern matches, assume it's already an ID
+        return url
     
     def fetch_questions(self, sheet_url: str, sheet_name: str = None, topic_filter: str = None) -> List[Dict]:
         """
