@@ -11,9 +11,8 @@ const SoloPractice = () => {
   const { examName, subjectName, examId, topicName } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
   
-  // Check if this is a class-based quiz
+  // Check if this is a class-based quiz (priority check)
   const isClassBased = location.state?.isClassBased || false;
   const classBasedData = isClassBased ? {
     class_name: location.state?.class_name,
@@ -21,10 +20,15 @@ const SoloPractice = () => {
     chapter: location.state?.chapter
   } : null;
   
+  const subTopic = location.state?.subTopic; // Get sub-topic from navigation state
+  
   // Use examId if available (from topic-quiz route), otherwise use examName (from solo-practice route)
+  // But only if NOT class-based
   const exam = examId || examName;
   const subject = subjectName;
   const topic = topicName;
+  
+  console.log('🔍 SoloPractice Debug:', { isClassBased, classBasedData, exam, subject, topic });
   
   const [numberOfQuestions, setNumberOfQuestions] = useState(10); // NEW: Question count selector
   const [quizState, setQuizState] = useState('setup'); // NEW: Changed from 'loading' to 'setup'
