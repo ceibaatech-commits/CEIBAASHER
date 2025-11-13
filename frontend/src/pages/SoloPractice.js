@@ -436,13 +436,45 @@ const SoloPractice = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
       <div className="max-w-4xl mx-auto px-4">
+        {/* Breadcrumb for class-based */}
+        {isClassBased && classBasedData && (
+          <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
+            <button 
+              onClick={() => navigate('/chapter-tests')} 
+              className="hover:text-cyan-600 font-semibold"
+            >
+              Home
+            </button>
+            <span>/</span>
+            <button 
+              onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`)} 
+              className="hover:text-cyan-600 font-semibold"
+            >
+              {classBasedData.class_name}
+            </button>
+            <span>/</span>
+            <button 
+              onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`)} 
+              className="hover:text-cyan-600 font-semibold"
+            >
+              {classBasedData.subject}
+            </button>
+            <span>/</span>
+            <span className="text-gray-900 font-semibold">{classBasedData.chapter}</span>
+          </div>
+        )}
+        
         {/* Header */}
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => {
                 if (window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
-                  navigate('/');
+                  if (isClassBased && classBasedData) {
+                    navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`);
+                  } else {
+                    navigate('/');
+                  }
                 }
               }}
               className="flex items-center text-gray-600 hover:text-gray-900"
