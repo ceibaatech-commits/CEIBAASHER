@@ -12,15 +12,11 @@ class GoogleSheetsService:
         - https://docs.google.com/spreadsheets/d/{ID}/edit
         - https://docs.google.com/spreadsheets/d/{ID}/htmlview
         - https://docs.google.com/spreadsheets/u/0/d/{ID}/edit
+        - https://docs.google.com/spreadsheets/u/0/d/{ID}/htmlview
         - Just the ID itself
         """
-        # Pattern 1: /spreadsheets/d/{SHEET_ID}/ (most common)
-        match = re.search(r'/spreadsheets/d/([a-zA-Z0-9-_]+)', url)
-        if match:
-            return match.group(1)
-        
-        # Pattern 2: /spreadsheets/u/0/d/{SHEET_ID}/ (with user number)
-        match = re.search(r'/spreadsheets/u/\d+/d/([a-zA-Z0-9-_]+)', url)
+        # Try to find /d/{SHEET_ID}/ pattern (works for all formats)
+        match = re.search(r'/d/([a-zA-Z0-9-_]+)', url)
         if match:
             return match.group(1)
         
