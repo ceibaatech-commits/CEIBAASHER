@@ -234,6 +234,103 @@ const ChapterTestHome = () => {
             </div>
           </div>
         </div>
+
+        {/* Why Ceibaa is Best for India Section */}
+        <div className="mt-16 relative">
+          <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 rounded-3xl p-12 shadow-2xl relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
+            
+            <div className="relative z-10">
+              <div className="text-center mb-12">
+                <div className="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
+                  <span className="text-white font-bold text-sm">🇮🇳 MADE FOR INDIA</span>
+                </div>
+                <h2 className="text-5xl font-black text-white mb-4">
+                  Why Ceibaa is Perfect for Indian Students
+                </h2>
+                <p className="text-xl text-white/90 max-w-3xl mx-auto font-semibold">
+                  India's first gamified learning platform designed specifically for CBSE curriculum
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Feature 1 */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
+                    <span className="text-3xl">🎮</span>
+                  </div>
+                  <h4 className="text-xl font-black text-white mb-3">Fun Learning Experience</h4>
+                  <p className="text-white/90">Turn boring studies into exciting games. Battle with friends and compete on leaderboards!</p>
+                </div>
+
+                {/* Feature 2 */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
+                    <span className="text-3xl">📚</span>
+                  </div>
+                  <h4 className="text-xl font-black text-white mb-3">100% NCERT Aligned</h4>
+                  <p className="text-white/90">Every question mapped to NCERT chapters. Perfect for CBSE board exam preparation.</p>
+                </div>
+
+                {/* Feature 3 */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
+                    <span className="text-3xl">🏆</span>
+                  </div>
+                  <h4 className="text-xl font-black text-white mb-3">Compete & Win</h4>
+                  <p className="text-white/90">Live battles with students across India. Earn badges, rewards, and climb the rankings!</p>
+                </div>
+
+                {/* Feature 4 */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
+                    <span className="text-3xl">💰</span>
+                  </div>
+                  <h4 className="text-xl font-black text-white mb-3">100% Free Forever</h4>
+                  <p className="text-white/90">No hidden charges, no subscriptions. Quality education accessible to every Indian student.</p>
+                </div>
+
+                {/* Feature 5 */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
+                    <span className="text-3xl">🌐</span>
+                  </div>
+                  <h4 className="text-xl font-black text-white mb-3">Study Anywhere</h4>
+                  <p className="text-white/90">Works on mobile, tablet, or computer. Learn from home, school, or anywhere in India!</p>
+                </div>
+
+                {/* Feature 6 */}
+                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all transform hover:scale-105">
+                  <div className="bg-white rounded-xl w-14 h-14 flex items-center justify-center mb-4">
+                    <span className="text-3xl">⚡</span>
+                  </div>
+                  <h4 className="text-xl font-black text-white mb-3">Instant Feedback</h4>
+                  <p className="text-white/90">Get results immediately with detailed explanations. Learn from mistakes and improve faster!</p>
+                </div>
+              </div>
+
+              {/* CTA Section */}
+              <div className="mt-12 text-center">
+                <div className="bg-white rounded-2xl p-8 inline-block shadow-2xl">
+                  <h3 className="text-3xl font-black text-gray-900 mb-3">
+                    Join 50,000+ Students Across India! 🚀
+                  </h3>
+                  <p className="text-gray-600 mb-6 text-lg">
+                    Start your journey to exam success with India's most engaging learning platform
+                  </p>
+                  <button 
+                    onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+                    className="bg-gradient-to-r from-orange-500 to-pink-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 transform transition-all shadow-lg"
+                  >
+                    Start Learning Now - It's Free! 🎉
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
 
       <Footer />
