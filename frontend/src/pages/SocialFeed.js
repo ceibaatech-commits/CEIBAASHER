@@ -13,7 +13,7 @@ import Footer from '../components/Footer';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SocialFeed = () => {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState('for-you');
