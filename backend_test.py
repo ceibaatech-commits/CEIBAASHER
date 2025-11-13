@@ -2963,7 +2963,7 @@ class BattleServerTester:
         
         # Step 8: Create Another Post and verify it appears
         print("\n8️⃣ Testing Additional Post Creation...")
-        second_post_created = self.test_create_post(demo1_id, "achievement", "Just scored 100% in Physics! 🎉")
+        second_post_created = self.test_create_post(demo1_id, "achievement", "Just scored 100% in Physics! 🎉", demo1_data.get('access_token'))
         if second_post_created:
             # Check if new post appears in Demo2's Following feed
             self.test_following_feed(demo2_id, demo1_id, expect_multiple_posts=True)
