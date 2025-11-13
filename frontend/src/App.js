@@ -32,6 +32,10 @@ import LiveBattleMode from "@/pages/LiveBattleMode";
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 
+// Exam Pages
+import RRB_NTPC from "@/pages/RRB_NTPC";
+import AFCAT from "@/pages/AFCAT";
+
 function App() {
   return (
     <AuthProvider>
