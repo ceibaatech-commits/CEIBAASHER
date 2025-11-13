@@ -139,7 +139,7 @@ const ChapterTestSubjects = () => {
       }
     ];
   } else if (selectedClass === '9') {
-    // Class 9 has all 7 subjects including Geography and multiple English/Hindi books
+    // Class 9 has all 10 subjects including separate Social Science subjects
     subjects = [
       {
         name: 'Mathematics',
@@ -166,6 +166,30 @@ const ChapterTestSubjects = () => {
         description: 'Contemporary India I'
       },
       {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'India and the Contemporary World - I'
+      },
+      {
+        name: 'Civics',
+        icon: Globe,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-600',
+        description: 'Democratic Politics - I'
+      },
+      {
+        name: 'Economics',
+        icon: Globe,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'Understanding Economic Development'
+      },
+      {
         name: 'Hindi Kshitij',
         icon: Languages,
         color: 'from-pink-500 to-pink-600',
@@ -184,17 +208,17 @@ const ChapterTestSubjects = () => {
       {
         name: 'English Beehive Prose',
         icon: BookOpen,
-        color: 'from-indigo-500 to-indigo-600',
-        bgColor: 'bg-indigo-100',
-        textColor: 'text-indigo-600',
+        color: 'from-violet-500 to-violet-600',
+        bgColor: 'bg-violet-100',
+        textColor: 'text-violet-600',
         description: 'Prose Stories and Essays'
       },
       {
         name: 'English Moments',
         icon: BookOpen,
-        color: 'from-violet-500 to-violet-600',
-        bgColor: 'bg-violet-100',
-        textColor: 'text-violet-600',
+        color: 'from-fuchsia-500 to-fuchsia-600',
+        bgColor: 'bg-fuchsia-100',
+        textColor: 'text-fuchsia-600',
         description: 'Supplementary Reader'
       }
     ];
