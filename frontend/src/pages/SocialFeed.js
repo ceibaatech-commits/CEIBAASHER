@@ -926,6 +926,58 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
           <span className="font-semibold">{post.shares_count || 0}</span>
         </button>
       </div>
+
+      {/* Comments Section */}
+      {showComments && (
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          {/* Comment Input */}
+          {user && (
+            <div className="mb-4 flex gap-2">
+              <input
+                type="text"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Write a comment..."
+                className="flex-1 px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                onKeyPress={(e) => e.key === 'Enter' && handlePostComment()}
+              />
+              <button
+                onClick={handlePostComment}
+                disabled={!newComment.trim() || postingComment}
+                className="px-4 py-2 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {postingComment ? 'Posting...' : 'Post'}
+              </button>
+            </div>
+          )}
+
+          {/* Comments List */}
+          {loadingComments ? (
+            <div className="text-center py-4 text-gray-500">Loading comments...</div>
+          ) : comments.length > 0 ? (
+            <div className="space-y-3">
+              {comments.map((comment) => (
+                <div key={comment.id} className="flex gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                    {comment.user_name?.[0] || 'U'}
+                  </div>
+                  <div className="flex-1">
+                    <div className="bg-gray-50 rounded-xl px-4 py-2">
+                      <p className="font-semibold text-sm text-gray-800">{comment.user_name || 'User'}</p>
+                      <p className="text-gray-700 mt-1">{comment.content}</p>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 ml-4">
+                      {new Date(comment.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-gray-500">No comments yet. Be the first to comment!</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
