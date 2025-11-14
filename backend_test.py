@@ -7878,7 +7878,7 @@ class BattleServerTester:
             print("4️⃣ Testing missing Authorization header...")
             
             response = requests.put(
-                f"{BACKEND_URL}/api/profile/update",
+                f"{BACKEND_URL}/api/profile/profile/update",
                 json={"name": "Test"},
                 timeout=30
             )
