@@ -59,6 +59,12 @@ const SocialFeed = () => {
   const [creatingRoom, setCreatingRoom] = useState(false);
   const [roomCreated, setRoomCreated] = useState(null);
   const [copiedCode, setCopiedCode] = useState(false);
+  
+  // Search State
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   useEffect(() => {
     fetchFeed();
