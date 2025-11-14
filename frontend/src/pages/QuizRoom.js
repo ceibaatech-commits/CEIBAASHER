@@ -32,11 +32,11 @@ const QuizRoom = () => {
     }
   }, [loading, user, navigate]);
 
-  // Enforce: only host can attempt the quiz
+  // Check privacy: private quizzes only accessible to host
   useEffect(() => {
     if (!roomData || !user) return;
-    if (roomData.host_id && roomData.host_id !== user.id) {
-      alert('Only the host who created this quiz can attempt it.');
+    if (roomData.privacy === 'private' && roomData.host_id && roomData.host_id !== user.id) {
+      alert('This is a private quiz. Only the host can attempt it.');
       navigate('/social-feed');
     }
   }, [roomData, user, navigate]);
