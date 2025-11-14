@@ -7349,7 +7349,7 @@ class BattleServerTester:
             print("4️⃣ Testing unfollow endpoint with JWT...")
             
             unfollow_response = requests.delete(
-                f"{BACKEND_URL}/api/profile/profile/unfollow/demo2-uuid",
+                f"{BACKEND_URL}/api/profile/unfollow/demo2-uuid",
                 headers=headers,
                 timeout=30
             )
