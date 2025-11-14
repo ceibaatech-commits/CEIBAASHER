@@ -65,6 +65,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('ceibaa_user');
+    localStorage.removeItem('token');
   };
 
   const updateUser = (userData) => {
