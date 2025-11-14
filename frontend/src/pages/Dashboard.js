@@ -106,12 +106,14 @@ const Dashboard = () => {
 
           {/* Profile Info Section */}
           <div className="relative px-6 pb-6">
-            {/* Profile Picture */}
+            {/* Profile Picture with Quick Upload */}
             <div className="absolute -top-16 left-6">
-              <img
-                src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
-                alt={profile.name}
-                className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover"
+              <ProfilePictureUpload
+                currentPicture={profile.profile_picture}
+                onUploadComplete={(newUrl) => {
+                  setProfile(prev => ({ ...prev, profile_picture: newUrl }));
+                }}
+                size="large"
               />
             </div>
 
