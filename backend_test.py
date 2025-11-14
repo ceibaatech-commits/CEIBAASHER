@@ -8142,7 +8142,12 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Profile Update and Follow System Fixes (CRITICAL - Current Review Request Focus)
+        # PRIORITY 1: JWT Token Debugging for Profile Update (CRITICAL - Current Review Request Focus)
+        print("\n🔍 JWT TOKEN DEBUGGING FOR PROFILE UPDATE (CRITICAL - CURRENT REVIEW REQUEST)")
+        print("=" * 70)
+        self.test_profile_update_jwt_debugging()
+        
+        # PRIORITY 2: Profile Update and Follow System Fixes (CRITICAL - Current Review Request Focus)
         print("\n🎯 PROFILE UPDATE AND FOLLOW SYSTEM FIXES (CRITICAL - CURRENT REVIEW REQUEST)")
         print("=" * 70)
         self.test_profile_update_and_follow_system_fixes()
