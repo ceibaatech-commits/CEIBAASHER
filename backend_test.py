@@ -7434,8 +7434,13 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Admin Sheet Manager Tests (CRITICAL - Review Request Focus)
-        print("\n📋 ADMIN SHEET MANAGER TESTS (CRITICAL - REVIEW REQUEST)")
+        # PRIORITY 1: Profile and Social Feed Fixes (CRITICAL - Current Review Request Focus)
+        print("\n🎯 PROFILE AND SOCIAL FEED FIXES (CRITICAL - CURRENT REVIEW REQUEST)")
+        print("=" * 70)
+        self.test_profile_and_social_feed_fixes()
+        
+        # PRIORITY 2: Admin Sheet Manager Tests (CRITICAL - Review Request Focus)
+        print("\n📋 ADMIN SHEET MANAGER TESTS (CRITICAL - Review Request)")
         print("=" * 60)
         self.test_admin_add_exam_sheet()
         self.test_admin_add_class_sheet()
