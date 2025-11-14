@@ -7855,7 +7855,7 @@ class BattleServerTester:
             }
             
             response = requests.put(
-                f"{BACKEND_URL}/api/profile/update",
+                f"{BACKEND_URL}/api/profile/profile/update",
                 json={"name": "Test"},
                 headers=invalid_headers,
                 timeout=30
