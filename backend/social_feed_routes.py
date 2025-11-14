@@ -84,6 +84,7 @@ class Post(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     user_id: str
     user_name: str
+    username: Optional[str] = None
     user_avatar: Optional[str] = None
     user_verified: bool = False
     user_verified_type: Optional[str] = None
