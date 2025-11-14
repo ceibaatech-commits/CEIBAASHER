@@ -270,8 +270,10 @@ const SocialFeed = () => {
       navigate('/login');
       return;
     }
-    // Navigate to battle lobby with room code (as path parameter)
-    navigate(`/battle-lobby/${roomCode}`);
+    // FIX: Use path parameter format as required by route definition
+    const targetPath = `/battle-lobby/${roomCode}`;
+    console.log('🔧 NAVIGATING TO:', targetPath);
+    navigate(targetPath);
   };
 
   // ENGAGEMENT FUNCTIONS
