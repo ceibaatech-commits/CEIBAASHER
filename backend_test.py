@@ -5585,7 +5585,7 @@ class BattleServerTester:
                     "exam": "JEE",
                     "topic": "Physics"
                 },
-                "created_at": old_timestamp.isoformat(),
+                "created_at": old_timestamp.isoformat().replace('+00:00', 'Z'),
                 "likes": 5,
                 "comments": 2,
                 "shares": 1,
