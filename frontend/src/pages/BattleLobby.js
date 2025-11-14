@@ -45,15 +45,17 @@ const BattleLobby = () => {
     // Connection events
     newSocket.on('connect', () => {
       console.log('✅ Socket CONNECTED! Socket ID:', newSocket.id);
-      console.log('📤 Emitting join-room with:', {
-        pin,
-        playerName: isHost ? hostName : playerName,
-        isHost: isHost || false
+      const username = isHost ? hostName : playerName;
+      console.log('📤 Emitting join_room with:', {
+        roomId: pin,
+        userData: { username, isHost: isHost || false }
       });
-      newSocket.emit('join-room', { 
-        pin, 
-        playerName: isHost ? hostName : playerName,
-        isHost: isHost || false
+      newSocket.emit('join_room', { 
+        roomId: pin,
+        userData: {
+          username: username,
+          isHost: isHost || false
+        }
       });
     });
 
