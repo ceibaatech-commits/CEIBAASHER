@@ -297,14 +297,17 @@ class PostCreateRequest(BaseModel):
 @router.post("/posts")
 async def create_post(post_data: PostCreateRequest):
     """Create a new post"""
-    # Get user info
-    user = await db.users.find_one({"user_id": post_data.user_id}, {"_id": 0})
+    # Get user info - try both user_id and id fields
+    user = await db.users.find_one({"id": post_data.user_id}, {"_id": 0})
+    if not user:
+        user = await db.users.find_one({"user_id": post_data.user_id}, {"_id": 0})
     
     # Create post document
     post_doc = {
         "id": str(uuid.uuid4()),
         "user_id": post_data.user_id,
         "user_name": post_data.user_name,
+        "username": user.get("username") if user else None,
         "user_avatar": user.get("avatar") if user else "👤",
         "user_verified": user.get("verified", False) if user else False,
         "user_verified_type": user.get("verified_type") if user else None,
