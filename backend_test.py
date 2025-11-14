@@ -3996,7 +3996,7 @@ class BattleServerTester:
     def test_quiz_room_ttl(self, room_code):
         """Test 24-hour TTL behavior by manipulating database"""
         try:
-            if not self.db:
+            if self.db is None:
                 self.log_result("Quiz Room TTL Test", False, "No database connection for TTL manipulation")
                 return False
             
