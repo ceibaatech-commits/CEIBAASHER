@@ -280,6 +280,9 @@ const SocialFeed = () => {
     try {
       // Fetch the quiz room details and questions
       const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
+        params: {
+          user_id: user.id
+        },
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -305,6 +308,8 @@ const SocialFeed = () => {
         alert('Quiz room not found or has been deleted');
       } else if (error.response?.status === 410) {
         alert('This quiz has expired (24 hours elapsed)');
+      } else if (error.response?.status === 403) {
+        alert(error.response?.data?.detail || 'You do not have access to this quiz');
       } else {
         alert('Failed to load quiz room. Please try again.');
       }
