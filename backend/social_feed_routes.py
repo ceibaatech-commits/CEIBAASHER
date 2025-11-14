@@ -1258,13 +1258,25 @@ async def get_all_quiz_rooms(
 @router.get("/quiz-rooms/{room_code}")
 async def get_quiz_room(room_code: str):
     """
-    Get quiz room details by room code
+    Get quiz room details by room code with 24-hour TTL check
     """
     try:
         room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
         
         if not room:
             raise HTTPException(status_code=404, detail="Quiz room not found")
+        
+        # Check 24-hour TTL
+        created_at = room.get("created_at")
+        if created_at:
+            if isinstance(created_at, str):
+                created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            
+            room_age = datetime.now(timezone.utc) - created_at
+            TWENTY_FOUR_HOURS = timedelta(hours=24)
+            
+            if room_age > TWENTY_FOUR_HOURS:
+                raise HTTPException(status_code=410, detail="This quiz expired (24 hours elapsed)")
         
         room.pop("_id", None)
         
