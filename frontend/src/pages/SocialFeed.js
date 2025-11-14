@@ -264,38 +264,44 @@ const SocialFeed = () => {
     setRoomCreated(null);
   };
 
-  const handleJoinRoom = (roomCode, post) => {
+  const handleJoinRoom = async (roomCode, post) => {
     if (!user) {
-      alert('Please login to join quiz rooms');
+      alert('Please login to take this quiz');
       navigate('/login');
       return;
     }
     
-    // Check if current user is the room creator (host)
-    const isHost = post && post.user_id === user.id;
-    
-    if (isHost) {
-      // User is the host - navigate directly to lobby
-      navigate(`/battle-lobby/${roomCode}`, {
-        state: {
-          isHost: true,
-          hostName: user.name || user.username || 'Host'
+    try {
+      // Fetch the quiz room details and questions
+      const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-    } else {
-      // User is a player - prompt for name
-      const playerName = prompt('Enter your name to join the quiz:');
-      if (!playerName || !playerName.trim()) {
-        alert('Name is required to join the room');
-        return;
-      }
       
-      navigate(`/battle-lobby/${roomCode}`, {
-        state: {
-          isHost: false,
-          playerName: playerName.trim()
-        }
-      });
+      if (response.data.success) {
+        const quizData = response.data.room;
+        
+        // Navigate directly to the quiz (skip lobby)
+        navigate(`/quiz-room/${roomCode}`, {
+          state: {
+            room: quizData,
+            questions: quizData.questions,
+            playerName: user.name || user.username,
+            roomTitle: quizData.title,
+            category: quizData.category
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading quiz room:', error);
+      if (error.response?.status === 404) {
+        alert('Quiz room not found or has been deleted');
+      } else if (error.response?.status === 410) {
+        alert('This quiz has expired (24 hours elapsed)');
+      } else {
+        alert('Failed to load quiz room. Please try again.');
+      }
     }
   };
 
