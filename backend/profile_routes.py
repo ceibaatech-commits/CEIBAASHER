@@ -710,3 +710,158 @@ async def get_follow_status(
     except Exception as e:
         print(f"Error checking follow status: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error checking follow status: {str(e)}")
+
+
+# ==================== USER ACTIVITY ENDPOINTS ====================
+
+@router.get("/profile/{username}/posts")
+async def get_user_posts(username: str, current_user_id: Optional[str] = None):
+    """Get all posts by a specific user"""
+    try:
+        # Get user by username
+        user = await get_user_by_username(username)
+        user_id = user["id"]
+        
+        # Check if can view (privacy check)
+        is_private = user.get("is_private", False)
+        can_view = True
+        
+        if is_private and current_user_id != user_id:
+            # Check if following
+            if current_user_id:
+                relationship = await check_follow_relationship(current_user_id, user_id)
+                can_view = relationship and relationship.get("status") == "approved"
+            else:
+                can_view = False
+        
+        if not can_view:
+            return {
+                "success": False,
+                "message": "This account is private"
+            }
+        
+        # Fetch user's posts from social_posts collection
+        posts = await db.social_posts.find({"user_id": user_id}).sort("created_at", -1).to_list(length=100)
+        
+        # Remove MongoDB _id field from each post
+        for post in posts:
+            post.pop("_id", None)
+        
+        return {
+            "success": True,
+            "posts": posts
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error fetching user posts: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching user posts: {str(e)}")
+
+@router.get("/profile/{username}/quiz-rooms")
+async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = None):
+    """Get all quiz rooms created by a specific user"""
+    try:
+        # Get user by username
+        user = await get_user_by_username(username)
+        user_id = user["id"]
+        
+        # Check if can view (privacy check)
+        is_private = user.get("is_private", False)
+        can_view = True
+        
+        if is_private and current_user_id != user_id:
+            # Check if following
+            if current_user_id:
+                relationship = await check_follow_relationship(current_user_id, user_id)
+                can_view = relationship and relationship.get("status") == "approved"
+            else:
+                can_view = False
+        
+        if not can_view:
+            return {
+                "success": False,
+                "message": "This account is private"
+            }
+        
+        # Fetch user's quiz rooms
+        # First get all quiz room posts by this user
+        quiz_room_posts = await db.social_posts.find({
+            "user_id": user_id,
+            "post_type": "quiz_room"
+        }).sort("created_at", -1).to_list(length=100)
+        
+        # Extract room codes and fetch full room details
+        room_codes = [post.get("room_code") for post in quiz_room_posts if post.get("room_code")]
+        
+        quiz_rooms = []
+        for room_code in room_codes:
+            room = await db.quiz_rooms.find_one({"room_code": room_code})
+            if room:
+                room.pop("_id", None)
+                # Don't include full questions array in list view
+                room["question_count"] = len(room.get("questions", []))
+                room.pop("questions", None)
+                quiz_rooms.append(room)
+        
+        return {
+            "success": True,
+            "quiz_rooms": quiz_rooms
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error fetching user quiz rooms: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching user quiz rooms: {str(e)}")
+
+@router.get("/profile/{username}/liked-posts")
+async def get_user_liked_posts(username: str, current_user_id: Optional[str] = None):
+    """Get all posts liked by a specific user"""
+    try:
+        # Get user by username
+        user = await get_user_by_username(username)
+        user_id = user["id"]
+        
+        # Check if can view (privacy check) - only own user or if public
+        is_private = user.get("is_private", False)
+        can_view = (current_user_id == user_id) or not is_private
+        
+        if is_private and current_user_id != user_id:
+            # Check if following
+            if current_user_id:
+                relationship = await check_follow_relationship(current_user_id, user_id)
+                can_view = relationship and relationship.get("status") == "approved"
+            else:
+                can_view = False
+        
+        if not can_view:
+            return {
+                "success": False,
+                "message": "This account is private"
+            }
+        
+        # Fetch all likes by this user
+        likes = await db.post_likes.find({"user_id": user_id}).sort("created_at", -1).to_list(length=100)
+        
+        # Get the post IDs
+        post_ids = [like.get("post_id") for like in likes]
+        
+        # Fetch the actual posts
+        posts = await db.social_posts.find({"id": {"$in": post_ids}}).to_list(length=100)
+        
+        # Remove MongoDB _id field
+        for post in posts:
+            post.pop("_id", None)
+        
+        return {
+            "success": True,
+            "posts": posts
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error fetching liked posts: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching liked posts: {str(e)}")
+
