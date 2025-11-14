@@ -753,11 +753,11 @@ const SocialFeed = () => {
 
 // Post Card Component
 const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
-  const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [loadingComments, setLoadingComments] = useState(false);
-  const [postingComment, setPostingComment] = useState(false);
+  const [showComments, setShowComments] = React.useState(false);
+  const [comments, setComments] = React.useState([]);
+  const [newComment, setNewComment] = React.useState('');
+  const [loadingComments, setLoadingComments] = React.useState(false);
+  const [postingComment, setPostingComment] = React.useState(false);
   const navigate = useNavigate();
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
