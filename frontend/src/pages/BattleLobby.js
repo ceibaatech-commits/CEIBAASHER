@@ -215,7 +215,8 @@ const BattleLobby = () => {
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
