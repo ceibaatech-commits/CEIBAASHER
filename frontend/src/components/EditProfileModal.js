@@ -103,15 +103,25 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
       );
 
       if (response.data.success) {
-        alert('Profile updated successfully!');
+        // Close modal first
+        onClose();
+        
+        // Update profile state in parent
         if (onProfileUpdated) {
           onProfileUpdated({ ...currentProfile, ...formData });
         }
-        onClose();
+        
+        // Show success message after a brief delay
+        setTimeout(() => {
+          alert('Profile updated successfully!');
+        }, 300);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert(error.response?.data?.detail || 'Failed to update profile');
+      const errorMessage = typeof error.response?.data?.detail === 'string' 
+        ? error.response.data.detail 
+        : 'Failed to update profile';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
