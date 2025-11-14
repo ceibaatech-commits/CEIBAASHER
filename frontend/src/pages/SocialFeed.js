@@ -264,16 +264,39 @@ const SocialFeed = () => {
     setRoomCreated(null);
   };
 
-  const handleJoinRoom = (roomCode) => {
+  const handleJoinRoom = (roomCode, post) => {
     if (!user) {
       alert('Please login to join quiz rooms');
       navigate('/login');
       return;
     }
-    // FIX: Use path parameter format as required by route definition
-    const targetPath = `/battle-lobby/${roomCode}`;
-    console.log('🔧 NAVIGATING TO:', targetPath);
-    navigate(targetPath);
+    
+    // Check if current user is the room creator (host)
+    const isHost = post && post.user_id === user.id;
+    
+    if (isHost) {
+      // User is the host - navigate directly to lobby
+      navigate(`/battle-lobby/${roomCode}`, {
+        state: {
+          isHost: true,
+          hostName: user.name || user.username || 'Host'
+        }
+      });
+    } else {
+      // User is a player - prompt for name
+      const playerName = prompt('Enter your name to join the quiz:');
+      if (!playerName || !playerName.trim()) {
+        alert('Name is required to join the room');
+        return;
+      }
+      
+      navigate(`/battle-lobby/${roomCode}`, {
+        state: {
+          isHost: false,
+          playerName: playerName.trim()
+        }
+      });
+    }
   };
 
   // ENGAGEMENT FUNCTIONS
