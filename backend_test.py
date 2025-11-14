@@ -5556,7 +5556,7 @@ class BattleServerTester:
             self.log_result("Expired Quiz Room Direct Access", False, f"Test error: {e}")
             return False
 
-    async def test_mixed_feed_filtering(self):
+    def test_mixed_feed_filtering(self):
         """
         Test Scenario 5: Mixed Feed with Fresh and Expired Rooms
         1. Ensure database has both fresh (<24hr) and expired (>24hr) quiz room posts
