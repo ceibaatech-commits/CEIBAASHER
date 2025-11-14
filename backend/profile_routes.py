@@ -762,7 +762,7 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
         print(f"Error fetching user posts: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching user posts: {str(e)}")
 
-@router.get("/profile/{username}/quiz-rooms")
+@router.get("/{username}/quiz-rooms")
 async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = None):
     """Get all quiz rooms created by a specific user"""
     try:
