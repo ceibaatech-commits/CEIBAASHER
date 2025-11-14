@@ -80,7 +80,7 @@ const PublicProfile = () => {
     try {
       if (tab === 'posts') {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/profile/${username}/posts`,
+          `${BACKEND_URL}/api/profile/${username}/posts`,
           {
             params: { current_user_id: user?.id }
           }
