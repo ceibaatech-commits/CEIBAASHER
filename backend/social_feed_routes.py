@@ -429,7 +429,7 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
     # Get all posts
     all_posts = await db.social_posts.find({}, {"_id": 0}).to_list(None)
     
-    from datetime import datetime, timezone, timedelta, timedelta
+    from datetime import datetime, timezone, timedelta
     
     # Categorize posts: recent (< 24h) vs older
     recent_cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
