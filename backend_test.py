@@ -5802,6 +5802,11 @@ class BattleServerTester:
         print("=" * 60)
         self.test_solo_quiz_room_system_comprehensive()
         
+        # 24-Hour TTL Enforcement Tests (NEW - Current Review Request)
+        print("\n🕐 24-HOUR TTL ENFORCEMENT TESTS (CURRENT REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_24_hour_ttl_enforcement_comprehensive()
+        
         # Summary
         print("\n" + "=" * 60)
         print("📊 TEST SUMMARY")
