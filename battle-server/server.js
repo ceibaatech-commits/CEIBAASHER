@@ -129,10 +129,17 @@ io.on('connection', (socket) => {
 
   // Join battle room
   socket.on('join_room', ({ roomId, userData }) => {
+    console.log(`[JOIN ATTEMPT] ${userData?.username || 'Unknown'} trying to join room ${roomId} (isHost: ${userData?.isHost})`);
+    
     const room = battleRooms.get(roomId);
 
     if (!room) {
-      socket.emit('join_error', { error: 'Room not found' });
+      console.log(`[JOIN ERROR] Room ${roomId} not found`);
+      socket.emit('join_error', { 
+        error: 'Room not found',
+        code: 'ROOM_NOT_FOUND',
+        statusCode: 404
+      });
       return;
     }
 
@@ -141,40 +148,60 @@ io.on('connection', (socket) => {
     const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
     
     if (roomAge > TWENTY_FOUR_HOURS) {
-      socket.emit('join_error', { error: 'Room expired. Create a new room.' });
+      console.log(`[JOIN ERROR] Room ${roomId} expired (age: ${Math.floor(roomAge / 1000 / 60 / 60)} hours)`);
+      socket.emit('join_error', { 
+        error: 'This quiz expired (24 hours elapsed)',
+        code: 'ROOM_EXPIRED',
+        statusCode: 410
+      });
       battleRooms.delete(roomId);
       return;
     }
 
     // Allow joining even if battle is active (users can join anytime within 24h)
     if (room.status === 'completed') {
-      socket.emit('join_error', { error: 'Battle already completed' });
+      console.log(`[JOIN ERROR] Room ${roomId} already completed`);
+      socket.emit('join_error', { 
+        error: 'Battle already completed',
+        code: 'BATTLE_COMPLETED',
+        statusCode: 410
+      });
       return;
     }
 
     // Store userData on socket for later use (chat, reactions, etc.)
     socket.userData = userData;
 
-    // CRITICAL FIX: If this is the host joining, update their socket ID
-    // This fixes the mismatch between HTTP room creation and Socket.io connection
+    // CRITICAL FIX: If this is the host joining, replace the temporary HTTP host
     if (userData.isHost === true) {
-      console.log(`[HOST UPDATE] Updating host socket ID from ${room.host.userId} to ${socket.id}`);
+      console.log(`[HOST UPDATE] Host ${userData.username} connecting to room ${roomId}`);
+      
+      // Remove the temporary HTTP host from participants
+      room.participants = room.participants.filter(p => !p.userId.startsWith('http-'));
+      
+      // Update host info
       room.host.userId = socket.id;
       room.host.username = userData.username || room.host.username;
       room.host.avatar = userData.avatar || room.host.avatar;
+      room.host.isHost = true;
     }
 
     const result = room.addParticipant(socket.id, userData);
 
     if (!result.success) {
-      socket.emit('join_error', { error: result.error });
+      console.log(`[JOIN ERROR] ${result.error} for room ${roomId}`);
+      socket.emit('join_error', { 
+        error: result.error,
+        code: 'JOIN_FAILED',
+        statusCode: 403
+      });
       return;
     }
 
     userRooms.set(socket.id, roomId);
     socket.join(roomId);
 
-    console.log(`[JOIN] ${userData.username} joined room ${roomId} (isHost: ${userData.isHost})`);
+    console.log(`[JOIN SUCCESS] ${userData.username} joined room ${roomId} (${room.participants.length} participants, isHost: ${userData.isHost})`);
 
     // Notify all participants
     io.to(roomId).emit('participant_joined', {
