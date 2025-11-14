@@ -787,12 +787,21 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
     <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all">
       {/* Post Header */}
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+        <div 
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => {
+            // Get username from post - need to fetch it properly
+            // For now, navigate to profile if we have user_id
+            if (post.username) {
+              navigate(`/profile/${post.username}`);
+            }
+          }}
+        >
           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
             {post.user_name?.[0] || 'U'}
           </div>
           <div>
-            <p className="font-bold text-gray-800">{post.user_name || 'User'}</p>
+            <p className="font-bold text-gray-800 hover:underline">{post.user_name || 'User'}</p>
             <p className="text-sm text-gray-500">
               {new Date(post.created_at).toLocaleDateString()}
             </p>
