@@ -3837,6 +3837,463 @@ class BattleServerTester:
             self.log_result("ObjectId Serialization Test", False, f"Test error: {e}")
             return False
 
+    def test_solo_quiz_room_flow(self):
+        """Test the complete solo quiz room backend flow as per review request"""
+        print("\n🎯 TESTING SOLO QUIZ ROOM BACKEND FLOW")
+        print("=" * 60)
+        
+        # Step 1: Create a quiz room with 5+ questions
+        print("\n1️⃣ Creating Quiz Room with 5+ Questions...")
+        room_code = self.test_create_quiz_room()
+        if not room_code:
+            self.log_result("Solo Quiz Room Flow", False, "Failed to create quiz room")
+            return False
+        
+        # Step 2: Test GET /api/social/quiz-rooms/{room_code}
+        print(f"\n2️⃣ Testing GET /api/social/quiz-rooms/{room_code}...")
+        room_fetch_success = self.test_get_quiz_room(room_code)
+        if not room_fetch_success:
+            self.log_result("Solo Quiz Room Flow", False, "Failed to fetch quiz room")
+            return False
+        
+        # Step 3: Test TTL behavior (simulate 24h expiry)
+        print(f"\n3️⃣ Testing TTL Behavior for room {room_code}...")
+        ttl_test_success = self.test_quiz_room_ttl(room_code)
+        
+        # Step 4: Test POST /api/social/quiz-rooms/{room_code}/submit
+        print(f"\n4️⃣ Testing Quiz Result Submission for room {room_code}...")
+        submit_success = self.test_submit_quiz_results(room_code)
+        if not submit_success:
+            self.log_result("Solo Quiz Room Flow", False, "Failed to submit quiz results")
+            return False
+        
+        # Step 5: Test GET /api/social/quiz-rooms/{room_code}/leaderboard
+        print(f"\n5️⃣ Testing Leaderboard for room {room_code}...")
+        leaderboard_success = self.test_get_quiz_leaderboard(room_code)
+        if not leaderboard_success:
+            self.log_result("Solo Quiz Room Flow", False, "Failed to get leaderboard")
+            return False
+        
+        # Step 6: Test social feed post creation
+        print(f"\n6️⃣ Testing Social Feed Post Creation for room {room_code}...")
+        social_post_success = self.test_quiz_room_social_post(room_code)
+        
+        # Overall success
+        overall_success = room_fetch_success and submit_success and leaderboard_success
+        
+        if overall_success:
+            self.log_result("Solo Quiz Room Flow - COMPLETE", True, 
+                          "✅ All critical solo quiz room backend functionality working")
+        else:
+            self.log_result("Solo Quiz Room Flow - COMPLETE", False, 
+                          "❌ Some solo quiz room functionality has issues")
+        
+        return overall_success
+
+    def test_create_quiz_room(self):
+        """Create a quiz room with 5+ questions and return room code"""
+        try:
+            # Create sample questions
+            questions = []
+            for i in range(5):
+                questions.append({
+                    "question_text": f"Sample Question {i+1}: What is the capital of India?",
+                    "option_a": "Mumbai",
+                    "option_b": "New Delhi", 
+                    "option_c": "Kolkata",
+                    "option_d": "Chennai",
+                    "correct_answer": "B",
+                    "time_limit": 30
+                })
+            
+            payload = {
+                "user_id": "test-user-solo-1",
+                "user_name": "Solo Quiz Tester",
+                "title": "Sample Solo Quiz Room",
+                "description": "Testing solo quiz room functionality with backend API",
+                "category": "General Knowledge",
+                "privacy": "public",
+                "questions": questions
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/quiz-rooms",
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'room_code' in data:
+                    room_code = data['room_code']
+                    self.log_result("Create Quiz Room", True, 
+                                  f"✅ Quiz room created successfully with code: {room_code}")
+                    
+                    # Store for subsequent tests
+                    self.solo_room_code = room_code
+                    self.solo_room_id = data.get('room_id')
+                    return room_code
+                else:
+                    self.log_result("Create Quiz Room", False, 
+                                  f"Invalid response structure: {data}")
+                    return None
+            else:
+                self.log_result("Create Quiz Room", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return None
+                
+        except Exception as e:
+            self.log_result("Create Quiz Room", False, f"Request error: {e}")
+            return None
+
+    def test_get_quiz_room(self, room_code):
+        """Test GET /api/social/quiz-rooms/{room_code}"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'room' in data:
+                    room = data['room']
+                    
+                    # Verify room structure
+                    required_fields = ['id', 'room_code', 'title', 'description', 'questions', 'created_at']
+                    missing_fields = [f for f in required_fields if f not in room]
+                    
+                    if not missing_fields:
+                        self.log_result("Get Quiz Room", True, 
+                                      f"✅ Room fetched successfully. Questions: {len(room.get('questions', []))}")
+                        
+                        # Verify questions array is present
+                        if 'questions' in room and len(room['questions']) >= 5:
+                            self.log_result("Quiz Room Questions Array", True, 
+                                          f"✅ Questions array present with {len(room['questions'])} questions")
+                        else:
+                            self.log_result("Quiz Room Questions Array", False, 
+                                          f"❌ Questions array missing or insufficient: {len(room.get('questions', []))}")
+                        
+                        return True
+                    else:
+                        self.log_result("Get Quiz Room", False, 
+                                      f"Missing required fields: {missing_fields}")
+                        return False
+                else:
+                    self.log_result("Get Quiz Room", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Get Quiz Room", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Get Quiz Room", False, f"Request error: {e}")
+            return False
+
+    def test_quiz_room_ttl(self, room_code):
+        """Test 24-hour TTL behavior by manipulating database"""
+        try:
+            if not self.db:
+                self.log_result("Quiz Room TTL Test", False, "No database connection for TTL manipulation")
+                return False
+            
+            # First, verify current room works (should be < 24h old)
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                self.log_result("Quiz Room TTL - Fresh Room", True, 
+                              "✅ Fresh room (< 24h) accessible as expected")
+            else:
+                self.log_result("Quiz Room TTL - Fresh Room", False, 
+                              f"Fresh room should be accessible: {response.status_code}")
+                return False
+            
+            # Manipulate created_at to simulate 24+ hours ago
+            from datetime import datetime, timezone, timedelta
+            old_time = datetime.now(timezone.utc) - timedelta(hours=25)  # 25 hours ago
+            
+            # Update the room's created_at in database
+            result = self.db.quiz_rooms.update_one(
+                {"room_code": room_code},
+                {"$set": {"created_at": old_time.isoformat()}}
+            )
+            
+            if result.modified_count > 0:
+                self.log_result("Quiz Room TTL - Database Update", True, 
+                              "✅ Successfully updated room created_at to 25 hours ago")
+                
+                # Now test the TTL check
+                response = requests.get(
+                    f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}",
+                    timeout=10
+                )
+                
+                if response.status_code == 410:
+                    data = response.json()
+                    if "24 hours elapsed" in data.get('detail', ''):
+                        self.log_result("Quiz Room TTL - Expired Room", True, 
+                                      "✅ Expired room correctly returns 410 with TTL message")
+                        
+                        # Restore the room for subsequent tests
+                        fresh_time = datetime.now(timezone.utc)
+                        self.db.quiz_rooms.update_one(
+                            {"room_code": room_code},
+                            {"$set": {"created_at": fresh_time.isoformat()}}
+                        )
+                        
+                        return True
+                    else:
+                        self.log_result("Quiz Room TTL - Expired Room", False, 
+                                      f"Wrong error message: {data.get('detail')}")
+                        return False
+                else:
+                    self.log_result("Quiz Room TTL - Expired Room", False, 
+                                  f"Expected 410, got {response.status_code}: {response.text}")
+                    return False
+            else:
+                self.log_result("Quiz Room TTL - Database Update", False, 
+                              "Failed to update room created_at in database")
+                return False
+                
+        except Exception as e:
+            self.log_result("Quiz Room TTL Test", False, f"TTL test error: {e}")
+            return False
+
+    def test_submit_quiz_results(self, room_code):
+        """Test POST /api/social/quiz-rooms/{room_code}/submit"""
+        try:
+            # Submit results for multiple users to test leaderboard
+            users = [
+                {
+                    "user_id": "test-user-1",
+                    "user_name": "Alice Johnson",
+                    "score": 350,
+                    "total_questions": 5,
+                    "answers": [
+                        {"is_correct": True, "time_taken": 12},
+                        {"is_correct": True, "time_taken": 8},
+                        {"is_correct": False, "time_taken": 15},
+                        {"is_correct": True, "time_taken": 10},
+                        {"is_correct": True, "time_taken": 7}
+                    ]
+                },
+                {
+                    "user_id": "test-user-2", 
+                    "user_name": "Bob Smith",
+                    "score": 280,
+                    "total_questions": 5,
+                    "answers": [
+                        {"is_correct": True, "time_taken": 18},
+                        {"is_correct": False, "time_taken": 20},
+                        {"is_correct": True, "time_taken": 14},
+                        {"is_correct": True, "time_taken": 16},
+                        {"is_correct": False, "time_taken": 22}
+                    ]
+                },
+                {
+                    "user_id": "test-user-3",
+                    "user_name": "Carol Davis", 
+                    "score": 420,
+                    "total_questions": 5,
+                    "answers": [
+                        {"is_correct": True, "time_taken": 5},
+                        {"is_correct": True, "time_taken": 6},
+                        {"is_correct": True, "time_taken": 8},
+                        {"is_correct": True, "time_taken": 7},
+                        {"is_correct": True, "time_taken": 4}
+                    ]
+                }
+            ]
+            
+            success_count = 0
+            
+            for user in users:
+                response = requests.post(
+                    f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}/submit",
+                    json=user,
+                    timeout=15
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('success') and 'result' in data:
+                        result = data['result']
+                        
+                        # Verify result structure
+                        expected_fields = ['user_id', 'user_name', 'score', 'correct_answers', 'time_taken_seconds']
+                        if all(field in result for field in expected_fields):
+                            # Verify correct_answers calculation
+                            expected_correct = sum(1 for ans in user['answers'] if ans['is_correct'])
+                            actual_correct = result['correct_answers']
+                            
+                            # Verify time_taken_seconds calculation
+                            expected_time = sum(ans['time_taken'] for ans in user['answers'])
+                            actual_time = result['time_taken_seconds']
+                            
+                            if expected_correct == actual_correct and expected_time == actual_time:
+                                success_count += 1
+                                self.log_result(f"Submit Results - {user['user_name']}", True, 
+                                              f"✅ Results submitted. Score: {result['score']}, Correct: {actual_correct}/{user['total_questions']}, Time: {actual_time}s")
+                            else:
+                                self.log_result(f"Submit Results - {user['user_name']}", False, 
+                                              f"Calculation error. Expected correct: {expected_correct}, got: {actual_correct}. Expected time: {expected_time}, got: {actual_time}")
+                        else:
+                            missing = [f for f in expected_fields if f not in result]
+                            self.log_result(f"Submit Results - {user['user_name']}", False, 
+                                          f"Missing result fields: {missing}")
+                    else:
+                        self.log_result(f"Submit Results - {user['user_name']}", False, 
+                                      f"Invalid response structure: {data}")
+                else:
+                    self.log_result(f"Submit Results - {user['user_name']}", False, 
+                                  f"HTTP {response.status_code}: {response.text}")
+            
+            # Verify database storage
+            if self.db and success_count > 0:
+                results_count = self.db.quiz_results.count_documents({"room_code": room_code})
+                if results_count >= success_count:
+                    self.log_result("Quiz Results Database Storage", True, 
+                                  f"✅ {results_count} results stored in quiz_results collection")
+                else:
+                    self.log_result("Quiz Results Database Storage", False, 
+                                  f"Expected {success_count} results, found {results_count} in database")
+            
+            return success_count >= 2  # At least 2 successful submissions for leaderboard testing
+            
+        except Exception as e:
+            self.log_result("Submit Quiz Results", False, f"Submit error: {e}")
+            return False
+
+    def test_get_quiz_leaderboard(self, room_code):
+        """Test GET /api/social/quiz-rooms/{room_code}/leaderboard"""
+        try:
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}/leaderboard",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'leaderboard' in data:
+                    leaderboard = data['leaderboard']
+                    
+                    if len(leaderboard) >= 2:  # Should have at least 2 entries from submit test
+                        self.log_result("Get Quiz Leaderboard", True, 
+                                      f"✅ Leaderboard retrieved with {len(leaderboard)} entries")
+                        
+                        # Verify sorting: score DESC, then time_taken_seconds ASC
+                        is_sorted_correctly = True
+                        for i in range(len(leaderboard) - 1):
+                            current = leaderboard[i]
+                            next_entry = leaderboard[i + 1]
+                            
+                            # Check if current score > next score, OR same score but current time <= next time
+                            if not (current['score'] > next_entry['score'] or 
+                                   (current['score'] == next_entry['score'] and 
+                                    current['time_taken_seconds'] <= next_entry['time_taken_seconds'])):
+                                is_sorted_correctly = False
+                                break
+                        
+                        if is_sorted_correctly:
+                            self.log_result("Leaderboard Sorting", True, 
+                                          "✅ Leaderboard correctly sorted by score DESC, time ASC")
+                        else:
+                            self.log_result("Leaderboard Sorting", False, 
+                                          "❌ Leaderboard sorting is incorrect")
+                        
+                        # Verify entry structure
+                        required_fields = ['user_id', 'user_name', 'score', 'correct_answers', 
+                                         'total_questions', 'completed_at', 'time_taken_seconds']
+                        
+                        first_entry = leaderboard[0]
+                        missing_fields = [f for f in required_fields if f not in first_entry]
+                        
+                        if not missing_fields:
+                            self.log_result("Leaderboard Entry Structure", True, 
+                                          "✅ Leaderboard entries have all required fields")
+                            
+                            # Show top entry details
+                            top_entry = leaderboard[0]
+                            self.log_result("Leaderboard Top Entry", True, 
+                                          f"🏆 Top: {top_entry['user_name']} - Score: {top_entry['score']}, "
+                                          f"Correct: {top_entry['correct_answers']}/{top_entry['total_questions']}, "
+                                          f"Time: {top_entry['time_taken_seconds']}s")
+                        else:
+                            self.log_result("Leaderboard Entry Structure", False, 
+                                          f"Missing fields in leaderboard entries: {missing_fields}")
+                        
+                        return is_sorted_correctly and not missing_fields
+                    else:
+                        self.log_result("Get Quiz Leaderboard", False, 
+                                      f"Expected at least 2 leaderboard entries, got {len(leaderboard)}")
+                        return False
+                else:
+                    self.log_result("Get Quiz Leaderboard", False, 
+                                  f"Invalid response structure: {data}")
+                    return False
+            else:
+                self.log_result("Get Quiz Leaderboard", False, 
+                              f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Get Quiz Leaderboard", False, f"Leaderboard error: {e}")
+            return False
+
+    def test_quiz_room_social_post(self, room_code):
+        """Test that quiz room creation creates a social feed post"""
+        try:
+            if not self.db:
+                self.log_result("Quiz Room Social Post", False, "No database connection")
+                return False
+            
+            # Check if social post was created for this room
+            social_post = self.db.social_posts.find_one({
+                "post_type": "quiz_room",
+                "room_code": room_code
+            })
+            
+            if social_post:
+                # Verify post structure
+                required_fields = ['user_id', 'user_name', 'post_type', 'content', 'quiz_details', 'room_code']
+                missing_fields = [f for f in required_fields if f not in social_post]
+                
+                if not missing_fields:
+                    self.log_result("Quiz Room Social Post Creation", True, 
+                                  f"✅ Social post created with post_type='quiz_room' and room_code='{room_code}'")
+                    
+                    # Verify quiz_details structure
+                    quiz_details = social_post.get('quiz_details', {})
+                    expected_details = ['room_code', 'title', 'description', 'category', 'question_count']
+                    missing_details = [f for f in expected_details if f not in quiz_details]
+                    
+                    if not missing_details:
+                        self.log_result("Quiz Room Post Details", True, 
+                                      f"✅ Quiz details complete: {quiz_details['question_count']} questions, category: {quiz_details['category']}")
+                    else:
+                        self.log_result("Quiz Room Post Details", False, 
+                                      f"Missing quiz details: {missing_details}")
+                    
+                    return not missing_details
+                else:
+                    self.log_result("Quiz Room Social Post Creation", False, 
+                                  f"Social post missing fields: {missing_fields}")
+                    return False
+            else:
+                self.log_result("Quiz Room Social Post Creation", False, 
+                              f"No social post found for room_code: {room_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Quiz Room Social Post", False, f"Social post check error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
