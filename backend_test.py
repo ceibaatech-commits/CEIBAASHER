@@ -7316,7 +7316,7 @@ class BattleServerTester:
             }
             
             invalid_follow_response = requests.post(
-                f"{BACKEND_URL}/api/profile/profile/follow",
+                f"{BACKEND_URL}/api/profile/follow",
                 json={"target_user_id": "demo2-uuid"},
                 headers=invalid_headers,
                 timeout=30
