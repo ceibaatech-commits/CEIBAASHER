@@ -19,6 +19,10 @@ const Dashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [followModalType, setFollowModalType] = useState('followers');
+  const [posts, setPosts] = useState([]);
+  const [quizRooms, setQuizRooms] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [loadingContent, setLoadingContent] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
