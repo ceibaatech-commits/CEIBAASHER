@@ -809,7 +809,7 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (showComments) {
       fetchComments();
     }
