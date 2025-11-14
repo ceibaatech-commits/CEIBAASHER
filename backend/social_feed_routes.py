@@ -429,8 +429,14 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
         created_at = post.get("created_at", now.isoformat())
         if isinstance(created_at, str):
             post_time = datetime.fromisoformat(created_at)
+            # Ensure timezone awareness
+            if post_time.tzinfo is None:
+                post_time = post_time.replace(tzinfo=timezone.utc)
         elif isinstance(created_at, datetime):
             post_time = created_at
+            # Ensure timezone awareness
+            if post_time.tzinfo is None:
+                post_time = post_time.replace(tzinfo=timezone.utc)
         else:
             post_time = now  # Fallback to current time
         hours_old = (now - post_time).total_seconds() / 3600
