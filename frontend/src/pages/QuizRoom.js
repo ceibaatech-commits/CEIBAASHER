@@ -130,6 +130,16 @@ const QuizRoom = () => {
     return 100;
   };
 
+  const optionKeyToLetter = (key) => {
+    const map = {
+      option_a: 'A',
+      option_b: 'B',
+      option_c: 'C',
+      option_d: 'D'
+    };
+    return map[key] || null;
+  };
+
   const handleAnswerSelect = (answer) => {
     if (selectedAnswer === null) {
       setSelectedAnswer(answer);
