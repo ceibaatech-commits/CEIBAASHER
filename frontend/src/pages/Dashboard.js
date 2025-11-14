@@ -68,7 +68,7 @@ const Dashboard = () => {
         }
       } else if (tab === 'quizzes') {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/profile/${profile.username}/quiz-rooms`,
+          `${BACKEND_URL}/api/profile/${profile.username}/quiz-rooms`,
           {
             params: { current_user_id: user.id }
           }
