@@ -595,6 +595,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Battle Lobby Socket.IO Integration Testing"
     - "Manual Quiz Room Creation System"
     - "Social Feed with Manual Quiz Room UI"
   stuck_tasks: []
