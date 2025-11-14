@@ -225,13 +225,26 @@ async def update_user_profile(
 ):
     """Update user profile"""
     try:
-        # Extract user_id from token (simplified - you should decode JWT properly)
+        # Extract user_id from token
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
-        # For now, extract user_id from header (you should implement proper JWT validation)
-        # This is a placeholder - implement proper auth
-        user_id = authorization.replace("Bearer ", "")
+        # Decode JWT to get user_id
+        from jose import jwt, JWTError
+        import os
+        
+        JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+        JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+        
+        token = authorization.replace("Bearer ", "")
+        
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            user_id = payload.get("sub")
+            if not user_id:
+                raise HTTPException(status_code=401, detail="Invalid token")
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")
         
         # Get current user
         user = await get_user_by_id(user_id)
