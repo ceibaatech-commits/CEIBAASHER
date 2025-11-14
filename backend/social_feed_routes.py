@@ -519,7 +519,10 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
 
 @router.get("/feed/following")
 async def get_following_feed(user_id: str, skip: int = 0, limit: int = 10):
-    """Get feed from users you follow (uses ceeps collection for battle room follows)"""
+    """
+    Get feed from users you follow (uses ceeps collection for battle room follows)
+    Filters out expired quiz room posts (>24 hours)
+    """
     # Get list of users being followed from ceeps collection (battle room follows)
     ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
     following_ids = [c["ceep_user_id"] for c in ceeps]
@@ -537,17 +540,23 @@ async def get_following_feed(user_id: str, skip: int = 0, limit: int = 10):
     posts = await db.social_posts.find(
         {"user_id": {"$in": following_ids}},
         {"_id": 0}
-    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    ).sort("created_at", -1).to_list(None)
+    
+    # Filter out expired quiz room posts
+    posts = await filter_expired_quiz_posts(posts)
+    
+    # Apply pagination after filtering
+    paginated_posts = posts[skip:skip + limit]
     
     # Enrich with like status
-    for post in posts:
+    for post in paginated_posts:
         liked = await db.post_likes.find_one({
             "user_id": user_id,
             "post_id": post["id"]
         })
         post["liked_by_user"] = liked is not None
     
-    return {"success": True, "posts": posts, "count": len(posts)}
+    return {"success": True, "posts": paginated_posts, "count": len(paginated_posts)}
 
 @router.get("/feed/leaderboard")
 async def get_leaderboard_feed(skip: int = 0, limit: int = 10):
