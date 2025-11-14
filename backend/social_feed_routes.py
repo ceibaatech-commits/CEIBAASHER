@@ -422,14 +422,44 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
 
 @router.get("/feed/trending")
 async def get_trending_feed(skip: int = 0, limit: int = 10):
-    """Get trending posts"""
-    posts = await db.social_posts.find({}, {"_id": 0}) \
-        .sort([("trending_score", -1), ("created_at", -1)]) \
-        .skip(skip) \
-        .limit(limit) \
-        .to_list(limit)
+    """
+    Get trending posts with boost for recent content
+    Strategy: Show recent posts (< 24 hours) first, then by trending score
+    """
+    # Get all posts
+    all_posts = await db.social_posts.find({}, {"_id": 0}).to_list(None)
     
-    return {"success": True, "posts": posts, "count": len(posts)}
+    from datetime import datetime, timezone, timedelta
+    
+    # Categorize posts: recent (< 24h) vs older
+    recent_cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+    recent_posts = []
+    older_posts = []
+    
+    for post in all_posts:
+        created_at_str = post.get("created_at", "")
+        try:
+            created_at = datetime.fromisoformat(created_at_str.replace('Z', '+00:00'))
+            if created_at > recent_cutoff:
+                recent_posts.append(post)
+            else:
+                older_posts.append(post)
+        except:
+            older_posts.append(post)
+    
+    # Sort recent posts by created_at (newest first)
+    recent_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    # Sort older posts by trending score
+    older_posts.sort(key=lambda x: x.get("trending_score", 0), reverse=True)
+    
+    # Combine: recent posts first, then trending older posts
+    combined_posts = recent_posts + older_posts
+    
+    # Apply pagination
+    paginated_posts = combined_posts[skip:skip + limit]
+    
+    return {"success": True, "posts": paginated_posts, "count": len(paginated_posts)}
 
 @router.get("/feed/following")
 async def get_following_feed(user_id: str, skip: int = 0, limit: int = 10):
