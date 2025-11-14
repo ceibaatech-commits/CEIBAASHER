@@ -718,7 +718,7 @@ async def get_follow_status(
 
 # ==================== USER ACTIVITY ENDPOINTS ====================
 
-@router.get("/profile/{username}/posts")
+@router.get("/{username}/posts")
 async def get_user_posts(username: str, current_user_id: Optional[str] = None):
     """Get all posts by a specific user"""
     try:
