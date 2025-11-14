@@ -838,14 +838,11 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
 
               <button
                 onClick={() => onJoinRoom(post.room_code, post)}
-                disabled={!isHost}
-                className={`w-full px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all ${
-                  isHost
-                    ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white'
-                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                }`}
+                className="w-full px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-green-500 to-teal-500 text-white hover:shadow-lg transition-all"
               >
-                {isHost ? 'Start Quiz 🚀' : 'Only host can attempt this quiz'}
+                {post.quiz_details.privacy === 'private' && !isHost
+                  ? '🔒 Private Quiz (Host Only)'
+                  : 'Start Quiz 🚀'}
               </button>
             </>
           )}
