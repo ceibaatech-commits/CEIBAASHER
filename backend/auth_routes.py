@@ -8,6 +8,12 @@ from authlib.integrations.starlette_client import OAuth
 from jose import jwt, JWTError
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load environment variables
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
 
 router = APIRouter()
 
