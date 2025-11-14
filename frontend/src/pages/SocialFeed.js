@@ -760,6 +760,61 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
   const [postingComment, setPostingComment] = useState(false);
   const navigate = useNavigate();
 
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  const fetchComments = async () => {
+    if (!showComments) return;
+    
+    setLoadingComments(true);
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/posts/${post.id}/comments`);
+      if (response.data.success) {
+        setComments(response.data.comments || []);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handlePostComment = async () => {
+    if (!user) {
+      alert('Please login to comment');
+      navigate('/login');
+      return;
+    }
+
+    if (!newComment.trim()) {
+      return;
+    }
+
+    setPostingComment(true);
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/comment`, {
+        user_id: user.id,
+        user_name: user.name || user.username || 'User',
+        content: newComment
+      });
+
+      if (response.data.success) {
+        setNewComment('');
+        fetchComments();
+      }
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      alert('Failed to post comment');
+    } finally {
+      setPostingComment(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showComments) {
+      fetchComments();
+    }
+  }, [showComments]);
+
   const getPostIcon = (type) => {
     switch (type) {
       case 'quiz_room': return <Target className="w-5 h-5" />;
