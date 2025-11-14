@@ -477,9 +477,13 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
     """
     Get trending posts with boost for recent content
     Strategy: Show recent posts (< 24 hours) first, then by trending score
+    Filters out expired quiz room posts (>24 hours)
     """
     # Get all posts
     all_posts = await db.social_posts.find({}, {"_id": 0}).to_list(None)
+    
+    # Filter out expired quiz room posts
+    all_posts = await filter_expired_quiz_posts(all_posts)
     
     from datetime import datetime, timezone, timedelta
     
