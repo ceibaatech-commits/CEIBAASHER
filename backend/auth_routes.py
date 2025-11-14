@@ -336,33 +336,57 @@ async def demo_login(login_data: DemoLoginRequest):
         demo_users = {
             "demo1": {
                 "id": "demo1-uuid",
+                "username": "demostudent1",
                 "name": "Demo Student 1",
                 "email": "demo1@ceibaa.com",
                 "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+1&background=3B82F6&color=fff&size=200",
                 "provider": "demo",
                 "provider_id": "demo1",
                 "password": "demo1",
-                "created_at": datetime.utcnow().isoformat()
+                "bio": "Preparing for JEE Main 2025",
+                "location": "Mumbai, India",
+                "exam_focus": ["JEE"],
+                "is_private": False,
+                "streak_days": 5,
+                "badges": ["Quiz Master"],
+                "created_at": datetime.utcnow().isoformat(),
+                "joined_at": datetime.utcnow().isoformat()
             },
             "demo2": {
                 "id": "demo2-uuid",
+                "username": "demostudent2",
                 "name": "Demo Student 2",
                 "email": "demo2@ceibaa.com",
                 "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+2&background=10B981&color=fff&size=200",
                 "provider": "demo",
                 "provider_id": "demo2",
                 "password": "demo2",
-                "created_at": datetime.utcnow().isoformat()
+                "bio": "NEET aspirant | Class 12",
+                "location": "Delhi, India",
+                "exam_focus": ["NEET"],
+                "is_private": False,
+                "streak_days": 3,
+                "badges": ["Top Scorer"],
+                "created_at": datetime.utcnow().isoformat(),
+                "joined_at": datetime.utcnow().isoformat()
             },
             "demo3": {
                 "id": "demo3-uuid",
+                "username": "demostudent3",
                 "name": "Demo Student 3",
                 "email": "demo3@ceibaa.com",
                 "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+3&background=F59E0B&color=fff&size=200",
                 "provider": "demo",
                 "provider_id": "demo3",
                 "password": "demo3",
-                "created_at": datetime.utcnow().isoformat()
+                "bio": "SSC CGL 2025 preparation",
+                "location": "Bangalore, India",
+                "exam_focus": ["SSC"],
+                "is_private": True,
+                "streak_days": 7,
+                "badges": ["Consistent Learner"],
+                "created_at": datetime.utcnow().isoformat(),
+                "joined_at": datetime.utcnow().isoformat()
             }
         }
         
