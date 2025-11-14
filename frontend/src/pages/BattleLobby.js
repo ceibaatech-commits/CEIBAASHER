@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 // Connect to battle server through the backend domain
 // Browser cannot access localhost:5001 (container internal)
 // So we use the external backend URL
-const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://quiz-switch.preview.emergentagent.com';
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://solo-quiz-app.preview.emergentagent.com';
 const SOCKET_PATH = '/socket.io'; // Default Socket.io path
 
 const BattleLobby = () => {
