@@ -1199,7 +1199,7 @@ class BattleServerTester:
             print(f"📤 Sending PUT request to /api/profile/update...")
             
             response = requests.put(
-                f"{BACKEND_URL}/api/profile/profile/update",
+                f"{BACKEND_URL}/api/profile/update",
                 json=profile_update_payload,
                 headers={"Authorization": auth_header},
                 timeout=30
