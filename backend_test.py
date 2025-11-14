@@ -1742,13 +1742,12 @@ class BattleServerTester:
             # Step 2: Verify can_view=false and limited info returned
             print("2️⃣ Verifying limited profile info for private account...")
             
-            can_view = profile_data.get('can_view')
+            profile = profile_data['profile']
+            can_view = profile.get('can_view')
             if can_view != False:
                 self.log_result("Private Profile can_view", False, 
                               f"Expected can_view=False, got {can_view}")
                 return False
-            
-            profile = profile_data['profile']
             
             # Should have limited fields only
             expected_limited_fields = ['user_id', 'username', 'name', 'profile_picture', 'is_private', 'followers_count', 'following_count']
