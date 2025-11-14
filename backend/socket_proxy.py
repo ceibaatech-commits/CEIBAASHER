@@ -90,7 +90,28 @@ async def connect(sid, environ):
         logger.error(f'📬 Received error from battle-server for {sid}: {data}')
         await sio_server.emit('error', data, room=sid)
     
-    # Register all handlers
+    # NEW: Handle underscore events from battle-server and translate to hyphens for frontend
+    async def handle_room_joined(data):
+        logger.info(f'📬 Received room_joined from battle-server for {sid}: {data}')
+        await sio_server.emit('player-joined', data, room=sid)
+    
+    async def handle_participant_joined(data):
+        logger.info(f'📬 Received participant_joined from battle-server for {sid}: {data}')
+        await sio_server.emit('player-joined', data, room=sid)
+    
+    async def handle_participant_left(data):
+        logger.info(f'📬 Received participant_left from battle-server for {sid}: {data}')
+        await sio_server.emit('player-left', data, room=sid)
+    
+    async def handle_battle_started(data):
+        logger.info(f'📬 Received battle_started from battle-server for {sid}: {data}')
+        await sio_server.emit('quiz-started', data, room=sid)
+    
+    async def handle_join_error(data):
+        logger.error(f'📬 Received join_error from battle-server for {sid}: {data}')
+        await sio_server.emit('error', data, room=sid)
+    
+    # Register all handlers (old hyphenated events)
     battle_client.on('player-joined', handle_player_joined)
     battle_client.on('match-found', handle_match_found)
     battle_client.on('waiting', handle_waiting)
@@ -105,6 +126,13 @@ async def connect(sid, environ):
     battle_client.on('gift-received', handle_gift_received)
     battle_client.on('player-left', handle_player_left)
     battle_client.on('error', handle_error)
+    
+    # Register new underscore event handlers from battle-server
+    battle_client.on('room_joined', handle_room_joined)
+    battle_client.on('participant_joined', handle_participant_joined)
+    battle_client.on('participant_left', handle_participant_left)
+    battle_client.on('battle_started', handle_battle_started)
+    battle_client.on('join_error', handle_join_error)
     
     # Connect this client to battle-server
     try:
