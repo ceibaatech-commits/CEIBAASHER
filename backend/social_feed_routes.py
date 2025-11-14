@@ -1235,11 +1235,17 @@ async def create_quiz_room(room_data: QuizRoomCreate):
             print(f"⚠️ Could not register with battle server: {str(e)}")
             # Don't fail the quiz room creation if battle server is down
         
+        # Get user info for username
+        user = await db.users.find_one({"id": room_data.user_id}, {"_id": 0})
+        if not user:
+            user = await db.users.find_one({"user_id": room_data.user_id}, {"_id": 0})
+        
         # Create social feed post for the quiz room
         post = {
             "id": str(uuid.uuid4()),
             "user_id": room_data.user_id,
             "user_name": room_data.user_name,
+            "username": user.get("username") if user else None,
             "user_avatar": "👤",
             "user_verified": False,
             "post_type": "quiz_room",
