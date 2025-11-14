@@ -248,7 +248,7 @@ async def get_user_profile_by_id(user_id: str, current_user_id: Optional[str] = 
         print(f"Error fetching profile: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching profile: {str(e)}")
 
-@router.put("/profile/update")
+@router.put("/update")
 async def update_user_profile(
     profile_data: ProfileUpdate,
     authorization: Optional[str] = Header(None)
