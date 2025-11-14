@@ -7375,7 +7375,7 @@ class BattleServerTester:
             print("5️⃣ Re-following to test complete flow...")
             
             refollow_response = requests.post(
-                f"{BACKEND_URL}/api/profile/follow",
+                f"{BACKEND_URL}/api/profile/profile/follow",
                 json=follow_data,
                 headers=headers,
                 timeout=30
