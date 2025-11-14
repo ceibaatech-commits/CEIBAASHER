@@ -206,17 +206,25 @@ async def find_match(sid, data):
 
 @sio_server.on('start-quiz')
 async def start_quiz_hyphen(sid, data):
-    """Handle start-quiz (JavaScript naming)"""
-    logger.info(f'📨 Forwarding start-quiz from {sid}')
+    """Handle start-quiz and translate to start_battle for battle-server"""
+    logger.info(f'📨 Translating start-quiz to start_battle from {sid}: {data}')
     if sid in client_connections:
-        await client_connections[sid].emit('start-quiz', data)
+        try:
+            # Translate to battle-server format
+            # Battle-server expects { roomId }
+            pin = data.get('pin')
+            translated_data = {
+                'roomId': pin
+            }
+            logger.info(f'📤 Sending start_battle to battle-server: {translated_data}')
+            await client_connections[sid].emit('start_battle', translated_data)
+        except Exception as e:
+            logger.error(f'❌ Error forwarding start-quiz: {e}')
 
 @sio_server.event
 async def start_quiz(sid, data):
-    """Handle start_quiz (Python naming)"""
-    logger.info(f'📨 Forwarding start_quiz from {sid}')
-    if sid in client_connections:
-        await client_connections[sid].emit('start-quiz', data)
+    """Handle start_quiz (Python naming) - same as start-quiz"""
+    await start_quiz_hyphen(sid, data)
 
 @sio_server.on('submit-answer')
 async def submit_answer_hyphen(sid, data):
