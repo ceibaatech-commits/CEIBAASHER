@@ -694,11 +694,11 @@ const SocialFeed = () => {
 
                   {/* Create Room Button */}
                   <div className="border-t border-gray-200 pt-6">
-                    {questions.length < 20 && (
+                    {questions.length < 5 && (
                       <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                         <div className="text-sm text-yellow-800">
-                          <strong>Need more questions:</strong> Add at least {20 - questions.length} more questions to create the room.
+                          <strong>Need more questions:</strong> Add at least {5 - questions.length} more questions to create the room.
                         </div>
                       </div>
                     )}
