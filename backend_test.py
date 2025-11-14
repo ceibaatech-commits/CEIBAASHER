@@ -7399,7 +7399,7 @@ class BattleServerTester:
             print("6️⃣ Verifying follow status...")
             
             status_response = requests.get(
-                f"{BACKEND_URL}/api/profile/follow-status/demo2-uuid",
+                f"{BACKEND_URL}/api/profile/profile/follow-status/demo2-uuid",
                 headers=headers,
                 timeout=30
             )
