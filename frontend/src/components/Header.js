@@ -93,11 +93,8 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           <div className="flex items-center space-x-4">
             {isLoggedIn && user ? (
               <>
-                {/* Notifications */}
-                <button className="relative p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-700">
-                  <Bell className="w-6 h-6" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
+                {/* Notifications Bell */}
+                <NotificationBell />
 
                 {/* User Profile (Desktop) - Click to go to Dashboard */}
                 <button 
