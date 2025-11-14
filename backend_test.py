@@ -4249,7 +4249,7 @@ class BattleServerTester:
     def test_quiz_room_social_post(self, room_code):
         """Test that quiz room creation creates a social feed post"""
         try:
-            if not self.db:
+            if self.db is None:
                 self.log_result("Quiz Room Social Post", False, "No database connection")
                 return False
             
