@@ -16,7 +16,7 @@ load_dotenv('/app/backend/.env')
 
 # Configuration from review request
 BATTLE_SERVER_URL = "http://localhost:5001"  # Battle Server: Node.js + Socket.io
-BACKEND_URL = "https://exam-prep-kahoot.preview.emergentagent.com"  # Backend FastAPI: HTTP API
+BACKEND_URL = "https://social-feed-ceibaa.preview.emergentagent.com"  # Backend FastAPI: HTTP API
 
 class SocketBattleSystemTester:
     def __init__(self):

@@ -1,71 +1,98 @@
 <analysis>
-The trajectory details the final implementation phase of a user-requested UI enhancement for the Ceibaa exam platform. The initial context establishes a history of significant feature development (expanding CBSE chapter tests) and UI redesigns. The immediate task began with a user request to add a Why Ceibaa is Great section to the  page, inspired by a user-provided Kahoot-style reference image.
+The trajectory details the development of a major new feature for the Ceibaa exam platform: a comprehensive social feed system. The work began after the completion of a UI enhancement. The user provided a detailed specification for a Twitter-like social feed with two primary post types: simple text posts and complex Quiz Rooms.
 
-The AI engineer's workflow was methodical. First, it confirmed the plan with the user. Upon receiving the reference image, it analyzed its design elements (vibrant colors, bold typography, card-based layout). The engineer then updated its plan to incorporate these killing UI elements.
+Initially, the scope was narrowed to Phase 1: implementing the social feed with text posts and **manual** quiz room creation, deferring the complex AI-based question extraction.
 
-The core of the work was a single, focused code modification to . The engineer enhanced an existing Why Ceibaa section, applying unique gradients and stronger visual styles to the feature cards to match the provided inspiration.
-
-Finally, the engineer validated the changes through a series of screenshots, adjusting the scroll position to capture all the new elements (title, feature cards, and CTA). After confirming the implementation was absolutely stunning, the engineer prepared to deliver this summary, marking the conclusion of the assigned task.
+The development process was iterative and involved significant debugging. The engineer first built the backend endpoints in Python (FastAPI) for creating quiz rooms and posts, and then created a new React component for the social feed UI. This led to a series of bug fixes:
+1.  **Authentication**: A  error on post creation was traced to conflicting API routes between an old and new social feed system. The fix involved disabling the old router in .
+2.  **Commenting**:  and  errors were resolved by adding a missing  endpoint to fetch comments in .
+3.  **UI/UX**: User feedback led to changing the minimum questions for a room from 20 to 5 and moving the user search bar from the main feed into the global header.
+4.  **Architectural Disconnect**: The most critical issue was that the Python backend generated alphanumeric room codes, while a separate Node.js  only accepted numeric codes, preventing users from joining rooms. The fix involved modifying the Node.js server to accept alphanumeric codes and updating the Python backend to register the room and its questions with the battle server via an HTTP call upon creation.
+5.  **Feed Sorting**: A final bug where new quiz rooms were not appearing on the timeline was fixed by adjusting the feed's sorting logic to prioritize newly created posts.
 </analysis>
 
 <product_requirements>
-The Ceibaa platform is an online tool for competitive exam preparation, with a primary focus on building a comprehensive CBSE Chapter Test feature for Indian students. The core requirement is to create an engaging, multi-level user flow (Class -> Subject -> Chapter) populated with curriculum data for Classes 7-10.
+The goal is to build a social feed and quiz creation system for the Ceibaa platform, inspired by Twitter/X.
 
-A key product pillar is delivering a modern, visually appealing User Experience (UX) inspired by platforms like Kahoot. This involves moving away from a plain or empty look towards a more vibrant, game-like interface using colorful gradients, animations, and dynamic layouts.
+**Core Features Implemented (Phase 1):**
+1.  **Unified Feed:** A central timeline displaying two types of posts:
+    *   **Text Posts:** Simple text-based updates with a 280-character limit.
+    *   **Quiz Room Posts:** Special cards for user-created quizzes.
+2.  **Manual Quiz Room Creation:**
+    *   A modal allows logged-in users to create a quiz room by manually adding questions.
+    *   **Rules:** A minimum of 5 questions and a maximum of 100 are required. Each question must have exactly 4 options and one designated correct answer.
+    *   **Metadata:** Users must provide a title, description, category, and privacy setting.
+    *   A unique, 6-character alphanumeric room code is automatically generated and displayed prominently on the post.
+3.  **Social Interaction:** Users can like and comment on all post types.
+4.  **User Search:** A search bar was added to the main header to find other users on the platform.
 
-The most recent task was to implement a promotional section titled Why Ceibaa is Great and new in India on the Chapter Test home page. The goal was to use a user-provided reference image to create a killing UI that effectively communicates the platform's key benefits (e.g., 100% Free, Study Anywhere) in a visually compelling way to attract and retain users.
+**Deferred Features (Phase 2):**
+*   AI-powered automatic extraction of Multiple Choice Questions (MCQs) from uploaded PDF, Excel, or image files.
+*   A dedicated user profile page with tabs to view a user's text posts and created quiz rooms.
+*   A hashtag discovery system.
 </product_requirements>
 
 <key_technical_concepts>
-- **Backend**: FastAPI (Python), serving curriculum data from a static Python file ().
-- **Frontend**: React.js, using  for navigation.
-- **Styling**: Tailwind CSS for layout and creating vibrant, gradient-based, and animated UI elements.
-- **Data Architecture**: A centralized Python dictionary () acts as the single source of truth for curriculum data, which is then mirrored in frontend components.
+- **Microservices Architecture**: The system comprises a React frontend, a main FastAPI (Python) backend, and a separate Node.js/Socket.IO  for real-time quizzes.
+- **Inter-Service Communication**: The FastAPI backend communicates with the Node.js  via an HTTP POST request to register newly created quiz rooms, bridging the two systems.
+- **Backend Technology**: FastAPI for REST APIs, Pydantic for data modeling and validation, and MongoDB for data persistence.
+- **Frontend Technology**: React.js with hooks (, ) for state management, and  for API communication.
+- **Styling**: Tailwind CSS for UI components.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a standard microservice architecture with a React frontend and a FastAPI backend.
+The application follows a microservice architecture with a distinct frontend, backend, and a real-time battle server.
 
 
 
-- ****
-  - **Importance**: This is the main landing page for the Chapter Test feature and the primary entry point for users. It sets the visual tone for the entire section.
-  - **Summary of Changes**: The file was significantly modified to implement the Why Ceibaa is Perfect for Indian Students section. Following a user request for a killing UI based on a Kahoot-style image, the existing feature cards were enhanced with unique, vibrant gradients and stronger visual styling to make them more impactful and engaging.
+-   ****
+    -   **Importance**: This is the main entry point for the FastAPI application. It configures and includes all the API routers.
+    -   **Changes**: A critical change was made to comment out an old, conflicting router () that was causing  errors by hijacking requests intended for the new . This resolved a major authentication bug.
 
-- ****
-  - **Importance**: This file acts as a quasi-database, holding all the subject and chapter information for the CBSE curriculum. Any change to the curriculum offering requires editing this file.
-  - **Summary of Changes**: No changes were made in the most recent session. Historically, it was heavily modified to add data for Classes 7, 8, 9, and 10.
+-   ****
+    -   **Importance**: This file contains all the business logic for the social feed, including creating posts, comments, and quiz rooms.
+    -   **Changes**: This file was heavily modified.
+        -   New Pydantic models (, ) and a  endpoint were added for manual quiz creation.
+        -   A  endpoint was added to fix a bug where comments couldn't be fetched.
+        -   The quiz creation logic was updated to make an HTTP call to the , registering the new room and its questions.
+        -   The  endpoint logic was adjusted to boost the score of new posts, ensuring they appear at the top of the feed.
+        -   The minimum question requirement was changed from 20 to 5.
 
-- ****
-  - **Importance**: Renders the subject selection screen for a chosen class. It's a key step in the user's navigation flow.
-  - **Summary of Changes**: No changes were made in the most recent session. Historically, it was updated to display new subjects and had a URL formatting bug fixed.
+-   ****
+    -   **Importance**: This is the primary UI component for the entire social feed feature. It handles post creation, the quiz room modal, and rendering the feed.
+    -   **Changes**: The original file was replaced with a new version built from scratch to accommodate the complex new requirements. It includes logic for the Create Room modal, state management for questions, rendering different post card types (text vs. quiz room), and displaying comments. Search functionality was initially added here but later moved to the  component.
 
-- ****
-  - **Importance**: Displays the final list of chapters for a subject, leading directly to the quiz. Its design is critical for user engagement.
-  - **Summary of Changes**: No changes were made in the most recent session. Historically, it underwent a major UI overhaul to make it more Kahoot-like and had a critical navigation bug fixed.
+-   ****
+    -   **Importance**: The global header component for the application.
+    -   **Changes**: Modified to integrate a user search bar, replacing a Join Battle button. This involved adding state and API call logic for searching users and displaying results in a dropdown, centralizing the search feature.
 
-- ****
-  - **Importance**: The admin panel interface for managing quiz content. It must stay synchronized with the curriculum data in the backend.
-  - **Summary of Changes**: No changes were made in the most recent session. Historically, it was updated to reflect the new classes and subjects added to .
+-   ****
+    -   **Importance**: A standalone Node.js and Socket.IO server that manages real-time quiz battles. It was architecturally disconnected from the main application.
+    -   **Changes**: The  endpoint was modified to accept a custom  and  in the request body. This was the key change that allowed the main Python backend to register its alphanumeric room codes, bridging the gap between the two services and fixing the Invalid Code bug.
 </code_architecture>
 
 <pending_tasks>
-- **Advanced Chapter Test Features**: Implement features mentioned in the initial product scope but not yet built, such as:
-  - Bookmarking chapters for later review.
-  - User performance analytics.
-  - A Recently Attempted section for quick access.
+- Implement Phase 2 of the social feed feature: AI-powered automatic extraction of MCQs from uploaded files (PDF, Excel) and images.
+- Build the user profile page to display statistics and separate tabs for a user's text posts and created quiz rooms.
+- Implement the hashtag discovery system for searching and browsing posts by topic.
+- Add advanced privacy controls for posts and rooms, such as Followers-only and Private (invite-only).
 </pending_tasks>
 
 <current_work>
-The most recent work involved a significant UI enhancement of the  page. The user requested the implementation of a new section, Why Ceibaa is great and new in India, and provided a reference image from Kahoot, asking for a killing UI that matched its vibrant and engaging aesthetic.
+The most recent work focused on implementing and debugging the Phase 1 social feed with manual quiz room creation. The system is now stable and the core user flows are functional.
 
-The AI engineer's process was:
-1.  **Analyze Reference**: The engineer analyzed the user-provided  to understand its design language, noting the use of bold typography, a card-based layout, and a vibrant color palette.
-2.  **Confirm Plan**: A plan to implement a similar design was confirmed with the user.
-3.  **Implement Changes**: The engineer edited . Instead of adding a completely new section, an existing Why Ceibaa component was enhanced. The code for the feature cards (e.g., 100% Free Forever, Study Anywhere) was modified to give each card unique, colorful gradients and a stronger visual presence, aligning with the Kahoot-inspired design.
-4.  **Validate**: The successful implementation was confirmed by taking a series of screenshots to view the newly styled header, the full grid of colorful feature cards, and the call-to-action banner. The work was concluded upon verifying the stunning new look.
+**Work Completed:**
+1.  **Feature Implementation:** A new social feed page was created where users can create text posts or manually create quiz rooms via a modal. Quiz rooms are posted to the feed as special cards with a prominent, unique alphanumeric room code.
+2.  **Bug Fixes:** A series of critical bugs were resolved:
+    *   **Authentication:** Fixed  errors during post creation by resolving conflicting API routes.
+    *   **Commenting:** Fixed  errors by adding the missing backend endpoint to fetch comments.
+    *   **Feed Visibility:** Fixed new quiz rooms not appearing at the top of the feed by adjusting the backend's sorting logic.
+    *   **Room Joining:** Solved the most critical issue where users couldn't join quiz rooms. This was an architectural problem where the Python backend (alphanumeric codes) and a Node.js  (numeric codes) were incompatible. The fix involved modifying both services to allow the Python backend to register its alphanumeric rooms with the battle server via an API call.
+
+**Current State:**
+The application now has a functional social feed. Users can create text posts, create manual quiz rooms with 5+ questions, see these rooms appear immediately on the feed, and use the generated room codes to join a real-time battle lobby.
 </current_work>
 
 <optional_next_step>
-The implementation of the Why Ceibaa is Great UI enhancement is complete. The next logical step is to begin work on the pending advanced features, such as bookmarking chapters or displaying performance analytics.
+Begin implementation of Phase 2: AI-powered quiz question extraction from uploaded PDF and Excel files, as per the original, detailed user request.
 </optional_next_step>
