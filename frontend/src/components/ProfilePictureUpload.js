@@ -51,7 +51,10 @@ const ProfilePictureUpload = ({ currentPicture, onUploadComplete, size = 'large'
           }
         } catch (error) {
           console.error('Error uploading image:', error);
-          alert('Failed to upload image');
+          const errorMessage = typeof error.response?.data?.detail === 'string' 
+            ? error.response.data.detail 
+            : error.response?.data?.message || error.message || 'Failed to upload profile picture. Please try again.';
+          alert(errorMessage);
           setPreviewUrl(currentPicture);
         } finally {
           setUploading(false);
