@@ -302,7 +302,7 @@ async def update_user_profile(
         print(f"Error updating profile: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error updating profile: {str(e)}")
 
-@router.put("/profile/privacy")
+@router.put("/privacy")
 async def update_privacy_settings(
     is_private: bool,
     authorization: Optional[str] = Header(None)
