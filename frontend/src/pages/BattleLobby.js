@@ -183,7 +183,9 @@ const BattleLobby = () => {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {players.map((player, index) => (
+              {players.map((player, index) => {
+                const displayName = player.username || player.name || 'Player';
+                return (
                 <div
                   key={index}
                   className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-blue-200"
@@ -191,10 +193,10 @@ const BattleLobby = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg">
-                        {player.name.charAt(0).toUpperCase()}
+                        {displayName.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{player.name}</p>
+                        <p className="font-semibold text-gray-900">{displayName}</p>
                         {player.isHost && (
                           <div className="flex items-center space-x-1 text-xs text-yellow-600">
                             <Crown className="w-3 h-3" />
