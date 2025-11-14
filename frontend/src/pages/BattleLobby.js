@@ -107,16 +107,37 @@ const BattleLobby = () => {
       });
     });
 
-    // Listen for join errors
+    // Listen for join errors with specific messages based on error codes
     newSocket.on('join_error', (data) => {
       console.error('❌ Join error:', data);
-      alert(data.error || 'Failed to join room');
+      
+      let errorMessage = data.error || 'Failed to join room';
+      
+      // Customize message based on error code
+      switch(data.code) {
+        case 'ROOM_NOT_FOUND':
+          errorMessage = '🔍 Room not found - The room code may be invalid or the room may have been deleted.';
+          break;
+        case 'ROOM_EXPIRED':
+          errorMessage = '⏰ This quiz expired (24 hours elapsed). Please create a new quiz room.';
+          break;
+        case 'BATTLE_COMPLETED':
+          errorMessage = '✅ This battle has already been completed. You can no longer join.';
+          break;
+        case 'JOIN_FAILED':
+          errorMessage = data.error; // Use the specific error (e.g., "Room is full")
+          break;
+        default:
+          errorMessage = data.error || 'Failed to join room';
+      }
+      
+      alert(errorMessage);
       navigate('/social-feed');
     });
 
     newSocket.on('error', (data) => {
       console.error('❌ Error:', data);
-      alert(data.message || 'An error occurred');
+      alert(data.message || 'An error occurred. Please try again.');
     });
 
     return () => {
