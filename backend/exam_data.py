@@ -312,22 +312,215 @@ EXAM_DATA = {
         "color": "from-green-700 to-emerald-800",
         "total_questions": 270,
         "duration": "5 hours",
+        "marks_distribution": {
+            "Mathematics": 300,
+            "General Ability Test": 600
+        },
         "syllabus_topics": {
-            "Mathematics": {
+            "Mathematics (300 Marks)": {
                 "subjects": {
-                    "Algebra": {"sub_topics": ["Complex Numbers", "Quadratic Equations", "Logarithms", "Permutations"], "questions": 20},
-                    "Matrices & Determinants": {"sub_topics": ["Types of Matrices", "Determinants", "Inverse", "Properties"], "questions": 15},
-                    "Trigonometry": {"sub_topics": ["Ratios", "Identities", "Heights & Distances", "Equations"], "questions": 20},
-                    "Calculus": {"sub_topics": ["Differentiation", "Integration", "Applications", "Limits"], "questions": 25},
-                    "Vector Algebra": {"sub_topics": ["Vectors", "Dot Product", "Cross Product"], "questions": 15}
+                    "Algebra": {
+                        "sub_topics": [
+                            "Basic Operations",
+                            "Statements & Logical Operations",
+                            "Venn Diagrams",
+                            "Real Numbers (Rational & Irrational)",
+                            "Complex Numbers (Modulus, Argument, Algebra)",
+                            "Square Roots of Complex Numbers",
+                            "Quadratic Equations (Solution, Nature of Roots)",
+                            "Linear Inequalities",
+                            "Set Theory (Union, Intersection, Cartesian Product)",
+                            "Functions (Domain, Range, Composite)",
+                            "Binary Operations (Types & Properties)",
+                            "Matrices & Determinants (Types, Properties, Inverse)",
+                            "Permutation & Combination (Basic Formulas)",
+                            "Binomial Theorem (General Term, Coefficients)",
+                            "Probability (Basic Rules)"
+                        ],
+                        "questions": 35
+                    },
+                    "Trigonometry": {
+                        "sub_topics": [
+                            "Trigonometric Ratios & Identities",
+                            "Angles & Their Measures (Degree, Radian)",
+                            "Trigonometric Equations",
+                            "Inverse Trigonometric Functions",
+                            "Height & Distance Problems",
+                            "Properties of Triangles (Sine Rule, Cosine Rule, Tangent Rule)"
+                        ],
+                        "questions": 25
+                    },
+                    "Analytical Geometry 2D": {
+                        "sub_topics": [
+                            "Cartesian Coordinate System",
+                            "Distance Formula",
+                            "Section & Midpoint Formula",
+                            "Straight Lines (Slope, Intercepts, Normal Form)",
+                            "Angle Between Two Lines",
+                            "Circle (Equation, Tangent, Normal)",
+                            "Conic Sections (Parabola, Ellipse, Hyperbola)"
+                        ],
+                        "questions": 25
+                    },
+                    "Analytical Geometry 3D": {
+                        "sub_topics": [
+                            "Direction Cosines & Direction Ratios",
+                            "Equation of Line in Space",
+                            "Angle Between Two Lines",
+                            "Equation of Plane",
+                            "Distance of Point from Line/Plane"
+                        ],
+                        "questions": 15
+                    },
+                    "Differential Calculus": {
+                        "sub_topics": [
+                            "Concept of Function & Limits",
+                            "Continuity & Differentiability",
+                            "Derivatives of Standard Functions",
+                            "Chain Rule",
+                            "Maxima & Minima",
+                            "Rolle's Theorem (Simple Applications)",
+                            "Lagrange's Theorem (Simple Applications)"
+                        ],
+                        "questions": 25
+                    },
+                    "Integral Calculus & Differential Equations": {
+                        "sub_topics": [
+                            "Integration as Inverse Differentiation",
+                            "Definite & Indefinite Integrals",
+                            "Standard Integrals",
+                            "Applications of Integrals (Area Under Curves)",
+                            "Differential Equations (First Order, First Degree)",
+                            "Variables Separable Method",
+                            "Homogeneous Differential Equations"
+                        ],
+                        "questions": 25
+                    },
+                    "Vector Algebra": {
+                        "sub_topics": [
+                            "Magnitude & Direction of Vectors",
+                            "Addition & Subtraction of Vectors",
+                            "Scalar Product (Dot Product)",
+                            "Vector Product (Cross Product)"
+                        ],
+                        "questions": 15
+                    },
+                    "Statistics & Probability": {
+                        "sub_topics": [
+                            "Data Types",
+                            "Measures of Central Tendency (Mean, Median, Mode)",
+                            "Measures of Dispersion (Variance, Standard Deviation)",
+                            "Correlation & Regression (Basic)",
+                            "Probability Rules & Theorems"
+                        ],
+                        "questions": 15
+                    }
                 }
             },
-            "General Ability": {
+            "General Ability Test - GAT (600 Marks)": {
                 "subjects": {
-                    "English": {"sub_topics": ["Grammar", "Vocabulary", "Comprehension", "Sentence Correction"], "questions": 50},
-                    "General Knowledge": {"sub_topics": ["History", "Geography", "Current Affairs", "Polity"], "questions": 40},
-                    "Physics": {"sub_topics": ["Mechanics", "Heat", "Light", "Electricity"], "questions": 30},
-                    "Chemistry": {"sub_topics": ["Physical Chemistry", "Inorganic", "Organic"], "questions": 25}
+                    "English (200 Marks)": {
+                        "sub_topics": [
+                            "Grammar & Usage",
+                            "Vocabulary",
+                            "Comprehension",
+                            "Sentence Improvement",
+                            "Spotting Errors",
+                            "Para-Jumbles",
+                            "Synonyms & Antonyms",
+                            "Idioms & Phrases"
+                        ],
+                        "questions": 50
+                    },
+                    "Physics": {
+                        "sub_topics": [
+                            "Motion, Force, Work, Energy",
+                            "Gravitation",
+                            "Heat & Thermodynamics",
+                            "Sound",
+                            "Light (Reflection, Refraction)",
+                            "Electricity & Magnetism",
+                            "Modern Physics (Atoms, Nuclei, Radioactivity)"
+                        ],
+                        "questions": 25
+                    },
+                    "Chemistry": {
+                        "sub_topics": [
+                            "Basic Concepts of Chemistry",
+                            "Atomic Structure",
+                            "Chemical Bonding",
+                            "Acids, Bases & Salts",
+                            "Metals & Non-Metals",
+                            "Carbon & its Compounds",
+                            "Industrial Chemistry",
+                            "Environmental Chemistry"
+                        ],
+                        "questions": 25
+                    },
+                    "General Science (Biology)": {
+                        "sub_topics": [
+                            "Cell Structure & Functions",
+                            "Tissues",
+                            "Human Body Systems",
+                            "Nutrition",
+                            "Diseases & Prevention",
+                            "Food & Resources",
+                            "Biotechnology (Basics)"
+                        ],
+                        "questions": 20
+                    },
+                    "History": {
+                        "sub_topics": [
+                            "Ancient India",
+                            "Medieval India",
+                            "Modern India",
+                            "Indian National Movement",
+                            "Indian Freedom Struggle",
+                            "Constitution Formation"
+                        ],
+                        "questions": 25
+                    },
+                    "Geography": {
+                        "sub_topics": [
+                            "Earth & Its Structure",
+                            "Climate & Weather",
+                            "Latitudes & Longitudes",
+                            "Types of Soils",
+                            "Agriculture in India",
+                            "Water Resources",
+                            "Minerals & Industries"
+                        ],
+                        "questions": 20
+                    },
+                    "Current Affairs": {
+                        "sub_topics": [
+                            "National Events",
+                            "International Events",
+                            "Defence News",
+                            "Sports & Awards",
+                            "Government Schemes"
+                        ],
+                        "questions": 15
+                    },
+                    "Polity": {
+                        "sub_topics": [
+                            "Constitution of India",
+                            "Fundamental Rights & Duties",
+                            "Parliament & Judiciary",
+                            "Panchayati Raj",
+                            "Executive & Legislative Systems"
+                        ],
+                        "questions": 20
+                    },
+                    "Economics": {
+                        "sub_topics": [
+                            "Basic Economic Concepts",
+                            "Indian Economy",
+                            "Budget & Taxation",
+                            "Economic Growth & Development"
+                        ],
+                        "questions": 15
+                    }
                 }
             }
         }
