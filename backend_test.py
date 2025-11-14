@@ -7068,6 +7068,8 @@ class BattleServerTester:
             print("2️⃣ Creating new post to test username field...")
             
             post_data = {
+                "user_id": "demo1-uuid",
+                "user_name": "Demo Student 1",
                 "content": "Testing username field in posts - Profile and Social Feed Fix Test",
                 "post_type": "general"
             }
