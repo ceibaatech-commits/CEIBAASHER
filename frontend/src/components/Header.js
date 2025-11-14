@@ -129,7 +129,69 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                   <span className="text-sm font-semibold">Logout</span>
                 </button>
               </>
-            ) : (
+            ) : null}
+            
+            {/* Search Button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowSearch(!showSearch)}
+                className="p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
+              >
+                <Search className="w-6 h-6" />
+              </button>
+              
+              {/* Search Dropdown */}
+              {showSearch && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-2xl border-2 border-gray-200 p-4">
+                  <div className="relative mb-3">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search users..."
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                      autoFocus
+                      className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-all"
+                    />
+                  </div>
+                  
+                  {/* Search Results */}
+                  <div className="max-h-96 overflow-y-auto">
+                    {searchLoading ? (
+                      <div className="p-4 text-center text-gray-500 text-sm">Searching...</div>
+                    ) : searchQuery && searchResults.length > 0 ? (
+                      <div className="space-y-2">
+                        {searchResults.map((result) => (
+                          <div
+                            key={result.user_id || result.id}
+                            onClick={() => {
+                              setShowSearch(false);
+                              setSearchQuery('');
+                              setSearchResults([]);
+                            }}
+                            className="px-3 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-all rounded-lg"
+                          >
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                              {result.name?.[0] || result.username?.[0] || 'U'}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-800 text-sm">{result.name || result.username || 'User'}</p>
+                              {result.email && <p className="text-xs text-gray-500">{result.email}</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : searchQuery ? (
+                      <div className="p-4 text-center text-gray-500 text-sm">No users found</div>
+                    ) : (
+                      <div className="p-4 text-center text-gray-500 text-sm">Type to search users...</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {!isLoggedIn && (
               <button
                 onClick={onLogin}
                 className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-6 py-2 rounded-lg font-bold transition-all shadow-lg text-white"
