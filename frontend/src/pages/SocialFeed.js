@@ -3,76 +3,71 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
-  Heart, MessageCircle, Share2, Send, Gift, Swords, Trophy, 
-  Users, TrendingUp, UserPlus, Target, Sparkles, Play, Crown,
-  Star, Diamond, Award, Bell, Plus, Image, Video, Smile, X
+  Heart, MessageCircle, Share2, Send, Trophy, Users, TrendingUp, 
+  Target, Sparkles, Plus, X, Copy, CheckCircle, Edit2, Trash2, AlertCircle
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Quiz Room Categories
+const CATEGORIES = [
+  'General Knowledge',
+  'Science & Technology',
+  'History & Geography',
+  'Entertainment & Pop Culture',
+  'Sports & Games',
+  'Business & Economics',
+  'Arts & Literature',
+  'Mathematics',
+  'Language & Literature',
+  'Other'
+];
+
 const SocialFeed = () => {
-  const { user, isAuthenticated, logout, loading: authLoading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   
-  const [activeTab, setActiveTab] = useState('for-you');
+  // State
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCreatePost, setShowCreatePost] = useState(false);
-  const [newPost, setNewPost] = useState({
-    post_type: 'general',
-    content: '',
-    exam_category: '',
-    subject: '',
-    room_code: ''
+  const [showCreatePostModal, setShowCreatePostModal] = useState(false);
+  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
+  
+  // Text Post State
+  const [textPostContent, setTextPostContent] = useState('');
+  
+  // Quiz Room State
+  const [roomForm, setRoomForm] = useState({
+    title: '',
+    description: '',
+    category: 'General Knowledge',
+    privacy: 'public'
   });
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState({
+    question_text: '',
+    option_a: '',
+    option_b: '',
+    option_c: '',
+    option_d: '',
+    correct_answer: 'A',
+    time_limit: 30
+  });
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [creatingRoom, setCreatingRoom] = useState(false);
+  const [roomCreated, setRoomCreated] = useState(null);
+  const [copiedCode, setCopiedCode] = useState(false);
 
-  // Fetch feed based on active tab
   useEffect(() => {
     fetchFeed();
-  }, [activeTab, user]);
+  }, []);
 
   const fetchFeed = async () => {
-    if (!user) {
-      // Allow viewing without login
-      setLoading(false);
-      // Fetch public trending feed
-      try {
-        const response = await axios.get(`${BACKEND_URL}/api/social/feed/trending`);
-        if (response.data.success) {
-          setPosts(response.data.posts);
-        }
-      } catch (error) {
-        console.error('Error fetching feed:', error);
-      }
-      return;
-    }
-
     setLoading(true);
     try {
-      let endpoint = '';
-      switch (activeTab) {
-        case 'for-you':
-          endpoint = `/feed/for-you?user_id=${user.id}`;
-          break;
-        case 'trending':
-          endpoint = '/feed/trending';
-          break;
-        case 'following':
-          endpoint = `/feed/following?user_id=${user.id}`;
-          break;
-        case 'leaderboard':
-          endpoint = '/feed/leaderboard';
-          break;
-        case 'my-circle':
-          endpoint = `/feed/my-circle?user_id=${user.id}`;
-          break;
-        default:
-          endpoint = `/feed/for-you?user_id=${user.id}`;
-      }
-
-      const response = await axios.get(`${BACKEND_URL}/api/social${endpoint}`);
+      const response = await axios.get(`${BACKEND_URL}/api/social/feed/trending`);
       if (response.data.success) {
         setPosts(response.data.posts);
       }
@@ -83,126 +78,37 @@ const SocialFeed = () => {
     }
   };
 
-  const handleLikePost = async (postId, currentlyLiked) => {
+  // TEXT POST FUNCTIONS
+  const handleCreateTextPost = async () => {
     if (!user) {
+      alert('Please login to create posts');
       navigate('/login');
       return;
     }
 
-    try {
-      if (currentlyLiked) {
-        await axios.delete(
-          `${BACKEND_URL}/api/social/posts/${postId}/like?user_id=${user.id}`
-        );
-      } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {
-          user_id: user.id
-        });
-      }
-
-      // Update local state
-      setPosts(posts.map(post => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            liked_by_user: !currentlyLiked,
-            likes_count: currentlyLiked ? post.likes_count - 1 : post.likes_count + 1
-          };
-        }
-        return post;
-      }));
-    } catch (error) {
-      console.error('Error liking post:', error);
+    if (!textPostContent.trim()) {
+      alert('Please write something!');
+      return;
     }
-  };
 
-  const handleComment = async (postId, content) => {
-    if (!user) {
-      navigate('/login');
+    if (textPostContent.length > 280) {
+      alert('Text posts are limited to 280 characters');
       return;
     }
 
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/social/posts/${postId}/comment`,
-        {
-          user_id: user.id,
-          content
-        }
-      );
-
-      if (response.data.success) {
-        // Update comments count
-        setPosts(posts.map(post => {
-          if (post.id === postId) {
-            return {
-              ...post,
-              comments_count: post.comments_count + 1
-            };
-          }
-          return post;
-        }));
-      }
-    } catch (error) {
-      console.error('Error commenting:', error);
-    }
-  };
-
-  const handleShare = async (postId) => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    try {
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {
-        user_id: user.id
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
+        user_id: user.id,
+        user_name: user.name || user.username || 'User',
+        post_type: 'general',
+        content: textPostContent
       });
 
-      // Update shares count
-      setPosts(posts.map(post => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            shares_count: post.shares_count + 1
-          };
-        }
-        return post;
-      }));
-
-      alert('Post shared!');
-    } catch (error) {
-      console.error('Error sharing post:', error);
-    }
-  };
-
-  const handleCreatePost = async () => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    if (!newPost.content.trim()) {
-      alert('Please enter post content');
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/social/posts?user_id=${user.id}`,
-        newPost
-      );
-
       if (response.data.success) {
-        setShowCreatePost(false);
-        setNewPost({
-          post_type: 'general',
-          content: '',
-          exam_category: '',
-          subject: '',
-          room_code: ''
-        });
-        fetchFeed(); // Refresh feed
+        setTextPostContent('');
+        setShowCreatePostModal(false);
+        fetchFeed();
+        alert('Post created successfully!');
       }
     } catch (error) {
       console.error('Error creating post:', error);
@@ -210,511 +116,663 @@ const SocialFeed = () => {
     }
   };
 
-  const PostCard = ({ post }) => {
-    const [showComments, setShowComments] = useState(false);
-    const [commentText, setCommentText] = useState('');
-    const [showGiftModal, setShowGiftModal] = useState(false);
+  // QUIZ ROOM FUNCTIONS
+  const handleAddQuestion = () => {
+    // Validate current question
+    if (!currentQuestion.question_text.trim()) {
+      alert('Please enter a question');
+      return;
+    }
 
-    const handleSendGift = async (giftType) => {
-      if (!user) {
-        navigate('/login');
+    if (!currentQuestion.option_a.trim() || !currentQuestion.option_b.trim() || 
+        !currentQuestion.option_c.trim() || !currentQuestion.option_d.trim()) {
+      alert('Please fill all 4 options');
+      return;
+    }
+
+    if (editingIndex !== null) {
+      // Update existing question
+      const updatedQuestions = [...questions];
+      updatedQuestions[editingIndex] = { ...currentQuestion };
+      setQuestions(updatedQuestions);
+      setEditingIndex(null);
+    } else {
+      // Add new question
+      if (questions.length >= 100) {
+        alert('Maximum 100 questions allowed per room');
         return;
       }
+      setQuestions([...questions, { ...currentQuestion }]);
+    }
 
-      try {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/gift`, {
-          user_id: user.id,
-          gift_type: giftType
+    // Reset form
+    setCurrentQuestion({
+      question_text: '',
+      option_a: '',
+      option_b: '',
+      option_c: '',
+      option_d: '',
+      correct_answer: 'A',
+      time_limit: 30
+    });
+  };
+
+  const handleEditQuestion = (index) => {
+    setCurrentQuestion({ ...questions[index] });
+    setEditingIndex(index);
+  };
+
+  const handleDeleteQuestion = (index) => {
+    setQuestions(questions.filter((_, i) => i !== index));
+  };
+
+  const handleCancelEdit = () => {
+    setCurrentQuestion({
+      question_text: '',
+      option_a: '',
+      option_b: '',
+      option_c: '',
+      option_d: '',
+      correct_answer: 'A',
+      time_limit: 30
+    });
+    setEditingIndex(null);
+  };
+
+  const handleCreateRoom = async () => {
+    if (!user) {
+      alert('Please login to create quiz rooms');
+      navigate('/login');
+      return;
+    }
+
+    // Validate
+    if (!roomForm.title.trim()) {
+      alert('Please enter a room title');
+      return;
+    }
+
+    if (!roomForm.description.trim()) {
+      alert('Please enter a room description');
+      return;
+    }
+
+    if (questions.length < 20) {
+      alert(`Minimum 20 questions required. You have ${questions.length} questions.`);
+      return;
+    }
+
+    if (questions.length > 100) {
+      alert('Maximum 100 questions allowed per room');
+      return;
+    }
+
+    setCreatingRoom(true);
+
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/social/quiz-rooms`, {
+        user_id: user.id,
+        user_name: user.name || user.username || 'User',
+        title: roomForm.title,
+        description: roomForm.description,
+        category: roomForm.category,
+        privacy: roomForm.privacy,
+        questions: questions
+      });
+
+      if (response.data.success) {
+        setRoomCreated({
+          room_code: response.data.room_code,
+          room_id: response.data.room_id
         });
-        setShowGiftModal(false);
-        alert(`${giftType} sent successfully!`);
-      } catch (error) {
-        console.error('Error sending gift:', error);
-        alert(error.response?.data?.detail || 'Failed to send gift');
+        fetchFeed();
       }
-    };
+    } catch (error) {
+      console.error('Error creating room:', error);
+      alert(error.response?.data?.detail || 'Failed to create quiz room');
+    } finally {
+      setCreatingRoom(false);
+    }
+  };
 
-    const handleChallenge = async () => {
-      if (!user) {
-        navigate('/login');
-        return;
-      }
+  const handleCopyRoomCode = (code) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
-      try {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/challenge`, {
-          user_id: user.id,
-          subject: post.subject || 'General',
-          topic: 'Challenge'
-        });
-        alert('Challenge sent!');
-      } catch (error) {
-        console.error('Error sending challenge:', error);
-        alert(error.response?.data?.detail || 'Failed to send challenge');
-      }
-    };
+  const handleCloseRoomModal = () => {
+    setShowCreateRoomModal(false);
+    setRoomForm({
+      title: '',
+      description: '',
+      category: 'General Knowledge',
+      privacy: 'public'
+    });
+    setQuestions([]);
+    setCurrentQuestion({
+      question_text: '',
+      option_a: '',
+      option_b: '',
+      option_c: '',
+      option_d: '',
+      correct_answer: 'A',
+      time_limit: 30
+    });
+    setEditingIndex(null);
+    setRoomCreated(null);
+  };
 
-    return (
-      <div className="bg-white rounded-xl shadow-md p-6 mb-4 hover:shadow-lg transition-shadow">
-        {/* User Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold text-lg">
-              {post.user_name ? post.user_name.charAt(0).toUpperCase() : 'U'}
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-gray-900">{post.user_name}</h3>
-                {post.user_verified && (
-                  <span className="text-blue-500">
-                    {post.user_verified_type === 'educator' && '✓'}
-                    {post.user_verified_type === 'institution' && '🎓'}
-                    {post.user_verified_type === 'government' && '🏛️'}
-                    {post.user_verified_type === 'expert' && '⭐'}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-gray-500">
-                {post.user_location && `${post.user_location} • `}
-                {new Date(post.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        </div>
+  const handleJoinRoom = (roomCode) => {
+    if (!user) {
+      alert('Please login to join quiz rooms');
+      navigate('/login');
+      return;
+    }
+    // Navigate to battle lobby with room code
+    navigate(`/battle-lobby?pin=${roomCode}`);
+  };
 
-        {/* Post Content */}
-        <div className="mb-4">
-          <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
-          
-          {/* Battle Stats Card */}
-          {post.post_type === 'battle_victory' && post.battle_stats && (
-            <div className="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
-              <h4 className="font-bold text-blue-900 mb-2">🏆 Battle Stats</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {post.battle_stats.accuracy && (
-                  <div><span className="text-gray-600">Accuracy:</span> <span className="font-bold">{post.battle_stats.accuracy}%</span></div>
-                )}
-                {post.battle_stats.winStreak && (
-                  <div><span className="text-gray-600">Win Streak:</span> <span className="font-bold">{post.battle_stats.winStreak}</span></div>
-                )}
-                {post.battle_stats.rank && (
-                  <div><span className="text-gray-600">Rank:</span> <span className="font-bold">#{post.battle_stats.rank}</span></div>
-                )}
-                {post.battle_stats.subject && (
-                  <div><span className="text-gray-600">Subject:</span> <span className="font-bold">{post.battle_stats.subject}</span></div>
-                )}
-              </div>
-            </div>
-          )}
+  // ENGAGEMENT FUNCTIONS
+  const handleLikePost = async (postId) => {
+    if (!user) {
+      alert('Please login to like posts');
+      navigate('/login');
+      return;
+    }
 
-          {/* Quiz Announcement Card */}
-          {post.post_type === 'quiz_announcement' && post.quiz_details && (
-            <div className="mt-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
-              <h4 className="font-bold text-orange-900 mb-2">📚 {post.quiz_details.title}</h4>
-              <div className="text-sm space-y-1 mb-3">
-                {post.quiz_details.time && (
-                  <p><span className="text-gray-600">⏰ Time:</span> {post.quiz_details.time}</p>
-                )}
-                {post.quiz_details.maxStudents && (
-                  <p><span className="text-gray-600">👥 Max Students:</span> {post.quiz_details.maxStudents}</p>
-                )}
-                {post.quiz_details.difficulty && (
-                  <p><span className="text-gray-600">🎯 Difficulty:</span> {post.quiz_details.difficulty}</p>
-                )}
-                {post.quiz_details.pin && (
-                  <p><span className="text-gray-600">🔑 PIN:</span> <span className="font-mono font-bold">{post.quiz_details.pin}</span></p>
-                )}
-              </div>
-              <button className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
-                <Play className="inline w-4 h-4 mr-2" />
-                Join Now
-              </button>
-            </div>
-          )}
-
-          {/* Room Code Card */}
-          {post.post_type === 'room_code' && post.room_code && (
-            <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
-              <h4 className="font-bold text-green-900 mb-2">🎮 Join Battle Room</h4>
-              <div className="text-sm mb-3">
-                <p className="text-gray-600 mb-2">Room Code:</p>
-                <p className="text-3xl font-black text-green-600 tracking-widest">{post.room_code}</p>
-              </div>
-              <button 
-                onClick={() => navigate(`/battle-lobby/${post.room_code}`, {
-                  state: { autoJoin: true }
-                })}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors w-full"
-              >
-                <Play className="inline w-4 h-4 mr-2" />
-                Join Battle Now
-              </button>
-            </div>
-          )}
-
-          {/* Media */}
-          {post.media_urls && post.media_urls.length > 0 && (
-            <div className="mt-4">
-              {post.media_urls.map((url, index) => (
-                <img key={index} src={url} alt="Post media" className="rounded-lg w-full" />
-              ))}
-            </div>
-          )}
-
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {post.tags.map((tag, index) => (
-                <span key={index} className="text-sm bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Engagement Buttons */}
-        <div className="flex items-center justify-between border-t border-gray-200 pt-4">
-          <button
-            onClick={() => handleLikePost(post.id, post.liked_by_user)}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-              post.liked_by_user
-                ? 'text-red-500 bg-red-50'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Heart className={`w-5 h-5 ${post.liked_by_user ? 'fill-current' : ''}`} />
-            <span className="font-semibold">{post.likes_count || 0}</span>
-          </button>
-
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span className="font-semibold">{post.comments_count || 0}</span>
-          </button>
-
-          <button
-            onClick={() => handleShare(post.id)}
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            <Share2 className="w-5 h-5" />
-            <span className="font-semibold">{post.shares_count || 0}</span>
-          </button>
-
-          <button
-            onClick={() => setShowGiftModal(true)}
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            <Gift className="w-5 h-5" />
-          </button>
-
-          {post.post_type === 'battle_victory' && (
-            <button
-              onClick={handleChallenge}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-purple-600 hover:bg-purple-50 transition-colors"
-            >
-              <Swords className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-
-        {/* Comments Section */}
-        {showComments && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="flex space-x-2 mb-4">
-              <input
-                type="text"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Write a comment..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
-              />
-              <button
-                onClick={() => {
-                  if (commentText.trim()) {
-                    handleComment(post.id, commentText);
-                    setCommentText('');
-                  }
-                }}
-                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Gift Modal */}
-        {showGiftModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold">Send a Gift 🎁</h3>
-                <button onClick={() => setShowGiftModal(false)}>
-                  <X className="w-6 h-6 text-gray-500" />
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => handleSendGift('star')}
-                  className="bg-gradient-to-br from-yellow-100 to-yellow-200 p-4 rounded-xl hover:shadow-lg transition-all"
-                >
-                  <div className="text-4xl mb-2">⭐</div>
-                  <div className="font-bold">Star</div>
-                  <div className="text-sm text-gray-600">10 coins</div>
-                </button>
-
-                <button
-                  onClick={() => handleSendGift('diamond')}
-                  className="bg-gradient-to-br from-blue-100 to-cyan-200 p-4 rounded-xl hover:shadow-lg transition-all"
-                >
-                  <div className="text-4xl mb-2">💎</div>
-                  <div className="font-bold">Diamond</div>
-                  <div className="text-sm text-gray-600">50 coins</div>
-                </button>
-
-                <button
-                  onClick={() => handleSendGift('crown')}
-                  className="bg-gradient-to-br from-purple-100 to-pink-200 p-4 rounded-xl hover:shadow-lg transition-all"
-                >
-                  <div className="text-4xl mb-2">👑</div>
-                  <div className="font-bold">Crown</div>
-                  <div className="text-sm text-gray-600">100 coins</div>
-                </button>
-
-                <button
-                  onClick={() => handleSendGift('trophy')}
-                  className="bg-gradient-to-br from-amber-100 to-orange-200 p-4 rounded-xl hover:shadow-lg transition-all"
-                >
-                  <div className="text-4xl mb-2">🏆</div>
-                  <div className="font-bold">Trophy</div>
-                  <div className="text-sm text-gray-600">200 coins</div>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
+    try {
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {
+        user_id: user.id
+      });
+      fetchFeed();
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header user={user} logout={logout} />
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <Header />
+      
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Feed Tabs */}
-        <div className="bg-white rounded-xl shadow-md mb-6 p-2 flex overflow-x-auto">
-          <button
-            onClick={() => setActiveTab('for-you')}
-            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-              activeTab === 'for-you'
-                ? 'bg-purple-600 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <Sparkles className="w-5 h-5" />
-            <span>For You</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('trending')}
-            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-              activeTab === 'trending'
-                ? 'bg-orange-500 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <TrendingUp className="w-5 h-5" />
-            <span>Trending</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('following')}
-            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-              activeTab === 'following'
-                ? 'bg-blue-500 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <UserPlus className="w-5 h-5" />
-            <span>Following</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('leaderboard')}
-            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-              activeTab === 'leaderboard'
-                ? 'bg-yellow-500 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <Trophy className="w-5 h-5" />
-            <span>Leaderboard</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('my-circle')}
-            className={`flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold whitespace-nowrap transition-colors ${
-              activeTab === 'my-circle'
-                ? 'bg-green-500 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <Target className="w-5 h-5" />
-            <span>My Circle</span>
-          </button>
-        </div>
-
-        {/* Create Post Button */}
-        {user && (
-          <button
-            onClick={() => setShowCreatePost(true)}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold mb-6 hover:shadow-xl transition-all flex items-center justify-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Create Post</span>
-          </button>
-        )}
-
-        {/* Guest Banner - Only show if not loading and user is not logged in */}
-        {!authLoading && !user && (
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-6 mb-6 text-center">
-            <h3 className="text-xl font-bold mb-2">Join Ceibaa Social 🚀</h3>
-            <p className="mb-4">Connect with learners, share your achievements, and grow together!</p>
+        {/* Create Post/Room Section */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+          <div className="flex gap-3">
+            {/* Text Post Input */}
+            <input
+              type="text"
+              placeholder="Share something with the community..."
+              value={textPostContent}
+              onChange={(e) => setTextPostContent(e.target.value)}
+              maxLength={280}
+              className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all"
+              onFocus={() => !user && navigate('/login')}
+            />
+            
+            {/* Post Button */}
             <button
-              onClick={() => navigate('/login', { state: { from: '/social-feed' } })}
-              className="bg-white text-purple-600 px-6 py-2 rounded-lg font-bold hover:shadow-lg transition-all"
+              onClick={handleCreateTextPost}
+              disabled={!textPostContent.trim()}
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Login to Continue
+              <Send className="w-5 h-5" />
+            </button>
+            
+            {/* Create Room Button */}
+            <button
+              onClick={() => {
+                if (!user) {
+                  alert('Please login to create quiz rooms');
+                  navigate('/login');
+                  return;
+                }
+                setShowCreateRoomModal(true);
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              Create Room
             </button>
           </div>
-        )}
+          
+          {textPostContent && (
+            <div className="mt-2 text-sm text-gray-500 text-right">
+              {textPostContent.length}/280
+            </div>
+          )}
+        </div>
 
-        {/* Feed Content */}
+        {/* Feed */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full mx-auto"></div>
-            <p className="text-gray-600 mt-4">Loading feed...</p>
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600">Loading feed...</p>
           </div>
         ) : posts.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center">
-            <div className="text-6xl mb-4">📭</div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">No posts yet</h3>
-            <p className="text-gray-600">Be the first to share something!</p>
+          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <Sparkles className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-xl font-bold text-gray-700 mb-2">No posts yet</h3>
+            <p className="text-gray-500">Be the first to share something!</p>
           </div>
         ) : (
-          posts.map(post => <PostCard key={post.id} post={post} />)
-        )}
-
-        {/* Create Post Modal */}
-        {showCreatePost && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold">Create Post</h3>
-                <button onClick={() => setShowCreatePost(false)}>
-                  <X className="w-6 h-6 text-gray-500" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Post Type
-                  </label>
-                  <select
-                    value={newPost.post_type}
-                    onChange={(e) => setNewPost({ ...newPost, post_type: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
-                  >
-                    <option value="general">General</option>
-                    <option value="battle_victory">Battle Victory</option>
-                    <option value="study_tip">Study Tip</option>
-                    <option value="achievement">Achievement</option>
-                    <option value="quiz_announcement">Quiz Announcement</option>
-                    <option value="room_code">Share Room Code</option>
-                  </select>
-                </div>
-
-                {/* Room Code Input (only shown when post type is room_code) */}
-                {newPost.post_type === 'room_code' && (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Room Code
-                    </label>
-                    <input
-                      type="text"
-                      value={newPost.room_code || ''}
-                      onChange={(e) => setNewPost({ ...newPost, room_code: e.target.value.toUpperCase() })}
-                      placeholder="Enter 6-digit room code"
-                      maxLength={6}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 font-mono text-2xl tracking-widest text-center"
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Content
-                  </label>
-                  <textarea
-                    value={newPost.content}
-                    onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                    placeholder="What's on your mind?"
-                    rows="6"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Exam Category
-                    </label>
-                    <select
-                      value={newPost.exam_category}
-                      onChange={(e) => setNewPost({ ...newPost, exam_category: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
-                    >
-                      <option value="">Select...</option>
-                      <option value="JEE">JEE</option>
-                      <option value="NEET">NEET</option>
-                      <option value="SSC">SSC</option>
-                      <option value="UPSC">UPSC</option>
-                      <option value="Banking">Banking</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Subject
-                    </label>
-                    <input
-                      type="text"
-                      value={newPost.subject}
-                      onChange={(e) => setNewPost({ ...newPost, subject: e.target.value })}
-                      placeholder="Physics, Chemistry, etc."
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleCreatePost}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
-                >
-                  Post
-                </button>
-              </div>
-            </div>
+          <div className="space-y-6">
+            {posts.map((post) => (
+              <PostCard 
+                key={post.id} 
+                post={post} 
+                onLike={handleLikePost}
+                onJoinRoom={handleJoinRoom}
+                onCopyCode={handleCopyRoomCode}
+                user={user}
+              />
+            ))}
           </div>
         )}
       </div>
 
+      {/* Create Room Modal */}
+      {showCreateRoomModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            {!roomCreated ? (
+              <>
+                {/* Modal Header */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-800">Create Quiz Room</h2>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {questions.length}/100 questions {questions.length < 20 && `(Need ${20 - questions.length} more)`}
+                    </p>
+                  </div>
+                  <button onClick={handleCloseRoomModal} className="text-gray-500 hover:text-gray-700">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  {/* Room Details */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Room Title *</label>
+                      <input
+                        type="text"
+                        value={roomForm.title}
+                        onChange={(e) => setRoomForm({...roomForm, title: e.target.value})}
+                        placeholder="e.g., Science Quiz Challenge"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+                      <textarea
+                        value={roomForm.description}
+                        onChange={(e) => setRoomForm({...roomForm, description: e.target.value})}
+                        placeholder="Describe your quiz room..."
+                        rows="3"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                        <select
+                          value={roomForm.category}
+                          onChange={(e) => setRoomForm({...roomForm, category: e.target.value})}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                        >
+                          {CATEGORIES.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Privacy</label>
+                        <select
+                          value={roomForm.privacy}
+                          onChange={(e) => setRoomForm({...roomForm, privacy: e.target.value})}
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                        >
+                          <option value="public">Public</option>
+                          <option value="followers_only">Followers Only</option>
+                          <option value="private">Private</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Question Builder */}
+                  <div className="border-t border-gray-200 pt-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-4">
+                      {editingIndex !== null ? 'Edit Question' : 'Add Question'}
+                    </h3>
+
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-xl">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Question *</label>
+                        <input
+                          type="text"
+                          value={currentQuestion.question_text}
+                          onChange={(e) => setCurrentQuestion({...currentQuestion, question_text: e.target.value})}
+                          placeholder="Enter your question..."
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Option A *</label>
+                          <input
+                            type="text"
+                            value={currentQuestion.option_a}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, option_a: e.target.value})}
+                            placeholder="Option A"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Option B *</label>
+                          <input
+                            type="text"
+                            value={currentQuestion.option_b}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, option_b: e.target.value})}
+                            placeholder="Option B"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Option C *</label>
+                          <input
+                            type="text"
+                            value={currentQuestion.option_c}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, option_c: e.target.value})}
+                            placeholder="Option C"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Option D *</label>
+                          <input
+                            type="text"
+                            value={currentQuestion.option_d}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, option_d: e.target.value})}
+                            placeholder="Option D"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Correct Answer</label>
+                          <select
+                            value={currentQuestion.correct_answer}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, correct_answer: e.target.value})}
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                          >
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">Time Limit (seconds)</label>
+                          <input
+                            type="number"
+                            value={currentQuestion.time_limit}
+                            onChange={(e) => setCurrentQuestion({...currentQuestion, time_limit: parseInt(e.target.value) || 30})}
+                            min="10"
+                            max="60"
+                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          onClick={handleAddQuestion}
+                          className="flex-1 px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-all"
+                        >
+                          {editingIndex !== null ? 'Update Question' : 'Add Question'}
+                        </button>
+                        {editingIndex !== null && (
+                          <button
+                            onClick={handleCancelEdit}
+                            className="px-6 py-3 bg-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-400 transition-all"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Questions List */}
+                  {questions.length > 0 && (
+                    <div className="border-t border-gray-200 pt-6">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">Questions ({questions.length})</h3>
+                      <div className="space-y-3 max-h-96 overflow-y-auto">
+                        {questions.map((q, index) => (
+                          <div key={index} className="bg-white border-2 border-gray-200 rounded-xl p-4 hover:border-blue-300 transition-all">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <p className="font-semibold text-gray-800">
+                                  {index + 1}. {q.question_text}
+                                </p>
+                                <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-gray-600">
+                                  <div>A) {q.option_a}</div>
+                                  <div>B) {q.option_b}</div>
+                                  <div>C) {q.option_c}</div>
+                                  <div>D) {q.option_d}</div>
+                                </div>
+                                <div className="mt-2 flex gap-4 text-xs text-gray-500">
+                                  <span className="px-2 py-1 bg-green-100 text-green-700 rounded">
+                                    Correct: {q.correct_answer}
+                                  </span>
+                                  <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
+                                    {q.time_limit}s
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 ml-4">
+                                <button
+                                  onClick={() => handleEditQuestion(index)}
+                                  className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteQuestion(index)}
+                                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Create Room Button */}
+                  <div className="border-t border-gray-200 pt-6">
+                    {questions.length < 20 && (
+                      <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                        <div className="text-sm text-yellow-800">
+                          <strong>Need more questions:</strong> Add at least {20 - questions.length} more questions to create the room.
+                        </div>
+                      </div>
+                    )}
+                    <button
+                      onClick={handleCreateRoom}
+                      disabled={questions.length < 20 || creatingRoom || !roomForm.title.trim() || !roomForm.description.trim()}
+                      className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {creatingRoom ? 'Creating Room...' : 'Create Quiz Room'}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              // Success Screen
+              <div className="p-12 text-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-12 h-12 text-green-500" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Quiz Room Created!</h2>
+                <p className="text-gray-600 mb-6">Share this code with others to join</p>
+                
+                <div className="inline-flex items-center gap-4 px-8 py-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl mb-8">
+                  <div className="text-white">
+                    <div className="text-sm font-medium mb-1">Room Code</div>
+                    <div className="text-5xl font-bold tracking-wider">{roomCreated.room_code}</div>
+                  </div>
+                  <button
+                    onClick={() => handleCopyRoomCode(roomCreated.room_code)}
+                    className="p-4 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl transition-all"
+                  >
+                    {copiedCode ? <CheckCircle className="w-6 h-6 text-white" /> : <Copy className="w-6 h-6 text-white" />}
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleCloseRoomModal}
+                  className="px-8 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-300 transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <Footer />
+    </div>
+  );
+};
+
+// Post Card Component
+const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
+  const [showComments, setShowComments] = useState(false);
+
+  const getPostIcon = (type) => {
+    switch (type) {
+      case 'quiz_room': return <Target className="w-5 h-5" />;
+      case 'battle_victory': return <Trophy className="w-5 h-5" />;
+      default: return <Sparkles className="w-5 h-5" />;
+    }
+  };
+
+  const getPostBadgeColor = (type) => {
+    switch (type) {
+      case 'quiz_room': return 'from-green-500 to-teal-500';
+      case 'battle_victory': return 'from-yellow-500 to-orange-500';
+      default: return 'from-blue-500 to-purple-500';
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all">
+      {/* Post Header */}
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold">
+            {post.user_name?.[0] || 'U'}
+          </div>
+          <div>
+            <p className="font-bold text-gray-800">{post.user_name || 'User'}</p>
+            <p className="text-sm text-gray-500">
+              {new Date(post.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+        
+        <div className={`px-3 py-1 rounded-full bg-gradient-to-r ${getPostBadgeColor(post.post_type)} text-white text-sm font-semibold flex items-center gap-1`}>
+          {getPostIcon(post.post_type)}
+          {post.post_type === 'quiz_room' ? 'Quiz Room' : 
+           post.post_type === 'battle_victory' ? 'Battle Victory' : 'Post'}
+        </div>
+      </div>
+
+      {/* Quiz Room Card */}
+      {post.post_type === 'quiz_room' && post.room_code && (
+        <div className="mb-4 p-6 bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-200 rounded-xl">
+          {/* Room Code - Large and Prominent */}
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-green-200">
+            <div>
+              <div className="text-xs text-green-600 font-semibold mb-1">ROOM CODE</div>
+              <div className="text-4xl font-bold text-green-700 tracking-wider">{post.room_code}</div>
+            </div>
+            <button
+              onClick={() => onCopyCode(post.room_code)}
+              className="p-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all"
+            >
+              <Copy className="w-5 h-5" />
+            </button>
+          </div>
+
+          {post.quiz_details && (
+            <>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">{post.quiz_details.title}</h3>
+              <p className="text-gray-600 mb-4">{post.quiz_details.description}</p>
+              
+              <div className="flex gap-3 mb-4">
+                <span className="px-3 py-1 bg-white rounded-full text-sm font-semibold text-gray-700">
+                  📝 {post.quiz_details.question_count} Questions
+                </span>
+                <span className="px-3 py-1 bg-white rounded-full text-sm font-semibold text-gray-700">
+                  🏷️ {post.quiz_details.category}
+                </span>
+                <span className="px-3 py-1 bg-white rounded-full text-sm font-semibold text-gray-700">
+                  {post.quiz_details.privacy === 'public' ? '🌐 Public' : 
+                   post.quiz_details.privacy === 'followers_only' ? '👥 Followers' : '🔒 Private'}
+                </span>
+              </div>
+
+              <button
+                onClick={() => onJoinRoom(post.room_code)}
+                className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-lg transition-all"
+              >
+                Join Room Now 🚀
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Post Content */}
+      <div className="text-gray-800 mb-4 whitespace-pre-wrap">{post.content}</div>
+
+      {/* Engagement Buttons */}
+      <div className="flex gap-6 pt-4 border-t border-gray-200">
+        <button
+          onClick={() => onLike(post.id)}
+          className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-all"
+        >
+          <Heart className="w-5 h-5" />
+          <span className="font-semibold">{post.likes_count || 0}</span>
+        </button>
+        
+        <button
+          onClick={() => setShowComments(!showComments)}
+          className="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-all"
+        >
+          <MessageCircle className="w-5 h-5" />
+          <span className="font-semibold">{post.comments_count || 0}</span>
+        </button>
+        
+        <button className="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-all">
+          <Share2 className="w-5 h-5" />
+          <span className="font-semibold">{post.shares_count || 0}</span>
+        </button>
+      </div>
     </div>
   );
 };
