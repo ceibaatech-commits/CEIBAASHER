@@ -233,7 +233,7 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
         print(f"Error fetching profile: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching profile: {str(e)}")
 
-@router.get("/profile/id/{user_id}")
+@router.get("/id/{user_id}")
 async def get_user_profile_by_id(user_id: str, current_user_id: Optional[str] = None):
     """Get user profile by user ID"""
     try:
