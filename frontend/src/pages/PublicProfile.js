@@ -19,6 +19,9 @@ const PublicProfile = () => {
   const [activeTab, setActiveTab] = useState('posts');
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [followModalType, setFollowModalType] = useState('followers');
+  const [posts, setPosts] = useState([]);
+  const [quizRooms, setQuizRooms] = useState([]);
+  const [loadingContent, setLoadingContent] = useState(false);
 
   useEffect(() => {
     fetchProfile();
