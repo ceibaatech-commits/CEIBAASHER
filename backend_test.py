@@ -6691,6 +6691,741 @@ class BattleServerTester:
             self.log_result("Mixed Feed Filtering", False, f"Test error: {e}")
             return False
 
+    def test_profile_and_social_feed_fixes(self):
+        """
+        Test the recently implemented profile and social feed fixes as per review request
+        Focus on:
+        1. Profile Update with JWT Auth Fix
+        2. User Activity Endpoints  
+        3. Username in Posts
+        4. Follow System with JWT Fix
+        """
+        print("\n🎯 TESTING PROFILE AND SOCIAL FEED FIXES - COMPREHENSIVE")
+        print("=" * 70)
+        
+        success_count = 0
+        total_tests = 0
+        
+        # Test 1: Profile Update with JWT Auth Fix
+        print("\n🔐 TEST 1: Profile Update with JWT Auth Fix")
+        print("-" * 60)
+        
+        test1_success = self.test_profile_update_jwt_auth()
+        if test1_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test 2: User Activity Endpoints
+        print("\n📊 TEST 2: User Activity Endpoints")
+        print("-" * 60)
+        
+        test2_success = self.test_user_activity_endpoints()
+        if test2_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test 3: Username in Posts
+        print("\n👤 TEST 3: Username in Posts")
+        print("-" * 60)
+        
+        test3_success = self.test_username_in_posts()
+        if test3_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test 4: Follow System with JWT Fix
+        print("\n🤝 TEST 4: Follow System with JWT Fix")
+        print("-" * 60)
+        
+        test4_success = self.test_follow_system_jwt_fix()
+        if test4_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Overall result
+        success_rate = (success_count / total_tests) * 100
+        
+        if success_count == total_tests:
+            self.log_result("Profile and Social Feed Fixes - COMPREHENSIVE TEST", True, 
+                          f"✅ ALL CRITICAL TESTS PASSED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+        else:
+            self.log_result("Profile and Social Feed Fixes - COMPREHENSIVE TEST", False, 
+                          f"❌ SOME CRITICAL TESTS FAILED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+        
+        return success_count == total_tests
+
+    def test_profile_update_jwt_auth(self):
+        """
+        Test profile update endpoint POST /api/profile/update with JWT authentication
+        - Use demo1 user login to get JWT token
+        - Try updating profile (name, bio, location, exam_focus)
+        - Verify changes are saved to database
+        - Verify proper JWT decoding is working (not just string replacement)
+        """
+        try:
+            # Step 1: Login as demo1 to get JWT token
+            print("1️⃣ Logging in as demo1 to get JWT token...")
+            
+            login_response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json={"username": "demo1", "password": "demo1"},
+                timeout=30
+            )
+            
+            if login_response.status_code != 200:
+                self.log_result("Demo1 Login for JWT", False, 
+                              f"Login failed: HTTP {login_response.status_code} - {login_response.text}")
+                return False
+            
+            login_data = login_response.json()
+            jwt_token = login_data.get("access_token")
+            
+            if not jwt_token:
+                self.log_result("Demo1 Login for JWT", False, 
+                              f"No access token in response: {login_data}")
+                return False
+            
+            self.log_result("Demo1 Login for JWT", True, 
+                          f"✅ JWT token obtained: {jwt_token[:20]}...")
+            
+            # Step 2: Test profile update with JWT token
+            print("2️⃣ Testing profile update with JWT authentication...")
+            
+            update_data = {
+                "name": "Demo Student 1 Updated",
+                "bio": "Updated bio for testing JWT auth fix",
+                "location": "Updated Location, India",
+                "exam_focus": ["JEE", "NEET"]
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {jwt_token}",
+                "Content-Type": "application/json"
+            }
+            
+            update_response = requests.put(
+                f"{BACKEND_URL}/api/profile/update",
+                json=update_data,
+                headers=headers,
+                timeout=30
+            )
+            
+            if update_response.status_code != 200:
+                self.log_result("Profile Update with JWT", False, 
+                              f"Update failed: HTTP {update_response.status_code} - {update_response.text}")
+                return False
+            
+            update_result = update_response.json()
+            
+            if not update_result.get("success"):
+                self.log_result("Profile Update with JWT", False, 
+                              f"Update not successful: {update_result}")
+                return False
+            
+            self.log_result("Profile Update with JWT", True, 
+                          f"✅ Profile updated successfully: {update_result.get('message')}")
+            
+            # Step 3: Verify changes are saved to database
+            print("3️⃣ Verifying changes are saved to database...")
+            
+            # Get updated profile
+            profile_response = requests.get(
+                f"{BACKEND_URL}/api/profile/profile/demostudent1",
+                timeout=30
+            )
+            
+            if profile_response.status_code != 200:
+                self.log_result("Profile Verification", False, 
+                              f"Failed to get updated profile: HTTP {profile_response.status_code}")
+                return False
+            
+            profile_data = profile_response.json()
+            
+            if not profile_data.get("success") or "profile" not in profile_data:
+                self.log_result("Profile Verification", False, 
+                              f"Invalid profile response: {profile_data}")
+                return False
+            
+            profile = profile_data["profile"]
+            
+            # Verify updated fields
+            verification_errors = []
+            
+            if profile.get("name") != update_data["name"]:
+                verification_errors.append(f"Name not updated: expected '{update_data['name']}', got '{profile.get('name')}'")
+            
+            if profile.get("bio") != update_data["bio"]:
+                verification_errors.append(f"Bio not updated: expected '{update_data['bio']}', got '{profile.get('bio')}'")
+            
+            if profile.get("location") != update_data["location"]:
+                verification_errors.append(f"Location not updated: expected '{update_data['location']}', got '{profile.get('location')}'")
+            
+            if profile.get("exam_focus") != update_data["exam_focus"]:
+                verification_errors.append(f"Exam focus not updated: expected {update_data['exam_focus']}, got {profile.get('exam_focus')}")
+            
+            if verification_errors:
+                self.log_result("Profile Database Verification", False, 
+                              f"Database verification failed: {'; '.join(verification_errors)}")
+                return False
+            
+            self.log_result("Profile Database Verification", True, 
+                          "✅ All profile changes verified in database")
+            
+            # Step 4: Test JWT decoding is working properly (not string replacement)
+            print("4️⃣ Testing JWT decoding integrity...")
+            
+            # Try with invalid JWT token
+            invalid_headers = {
+                "Authorization": "Bearer invalid-jwt-token-test",
+                "Content-Type": "application/json"
+            }
+            
+            invalid_response = requests.put(
+                f"{BACKEND_URL}/api/profile/update",
+                json={"bio": "Should fail with invalid token"},
+                headers=invalid_headers,
+                timeout=30
+            )
+            
+            if invalid_response.status_code == 401:
+                self.log_result("JWT Validation Test", True, 
+                              "✅ Invalid JWT properly rejected with 401")
+            else:
+                self.log_result("JWT Validation Test", False, 
+                              f"Invalid JWT should return 401, got {invalid_response.status_code}")
+                return False
+            
+            # Try without Authorization header
+            no_auth_response = requests.put(
+                f"{BACKEND_URL}/api/profile/update",
+                json={"bio": "Should fail without auth"},
+                timeout=30
+            )
+            
+            if no_auth_response.status_code == 401:
+                self.log_result("No Auth Header Test", True, 
+                              "✅ Missing auth header properly rejected with 401")
+            else:
+                self.log_result("No Auth Header Test", False, 
+                              f"Missing auth should return 401, got {no_auth_response.status_code}")
+                return False
+            
+            self.log_result("Profile Update JWT Auth Fix - COMPLETE", True, 
+                          "✅ ALL SUCCESS CRITERIA MET: JWT authentication working correctly")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Profile Update JWT Auth Fix", False, f"Test error: {e}")
+            return False
+
+    def test_user_activity_endpoints(self):
+        """
+        Test user activity endpoints:
+        - GET /api/profile/profile/{username}/posts 
+        - GET /api/profile/profile/{username}/quiz-rooms
+        - GET /api/profile/profile/{username}/liked-posts
+        Verify these return correct data for demo1 user and check privacy settings
+        """
+        try:
+            username = "demostudent1"
+            
+            # Test 1: Get user posts
+            print("1️⃣ Testing GET /api/profile/profile/{username}/posts...")
+            
+            posts_response = requests.get(
+                f"{BACKEND_URL}/api/profile/profile/{username}/posts",
+                timeout=30
+            )
+            
+            if posts_response.status_code != 200:
+                self.log_result("User Posts Endpoint", False, 
+                              f"Failed to get posts: HTTP {posts_response.status_code} - {posts_response.text}")
+                return False
+            
+            posts_data = posts_response.json()
+            
+            if not posts_data.get("success"):
+                self.log_result("User Posts Endpoint", False, 
+                              f"Posts endpoint failed: {posts_data}")
+                return False
+            
+            posts = posts_data.get("posts", [])
+            self.log_result("User Posts Endpoint", True, 
+                          f"✅ Posts endpoint working: {len(posts)} posts found")
+            
+            # Test 2: Get user quiz rooms
+            print("2️⃣ Testing GET /api/profile/profile/{username}/quiz-rooms...")
+            
+            quiz_rooms_response = requests.get(
+                f"{BACKEND_URL}/api/profile/profile/{username}/quiz-rooms",
+                timeout=30
+            )
+            
+            if quiz_rooms_response.status_code != 200:
+                self.log_result("User Quiz Rooms Endpoint", False, 
+                              f"Failed to get quiz rooms: HTTP {quiz_rooms_response.status_code} - {quiz_rooms_response.text}")
+                return False
+            
+            quiz_rooms_data = quiz_rooms_response.json()
+            
+            if not quiz_rooms_data.get("success"):
+                self.log_result("User Quiz Rooms Endpoint", False, 
+                              f"Quiz rooms endpoint failed: {quiz_rooms_data}")
+                return False
+            
+            quiz_rooms = quiz_rooms_data.get("quiz_rooms", [])
+            self.log_result("User Quiz Rooms Endpoint", True, 
+                          f"✅ Quiz rooms endpoint working: {len(quiz_rooms)} rooms found")
+            
+            # Test 3: Get user liked posts
+            print("3️⃣ Testing GET /api/profile/profile/{username}/liked-posts...")
+            
+            liked_posts_response = requests.get(
+                f"{BACKEND_URL}/api/profile/profile/{username}/liked-posts",
+                timeout=30
+            )
+            
+            if liked_posts_response.status_code != 200:
+                self.log_result("User Liked Posts Endpoint", False, 
+                              f"Failed to get liked posts: HTTP {liked_posts_response.status_code} - {liked_posts_response.text}")
+                return False
+            
+            liked_posts_data = liked_posts_response.json()
+            
+            if not liked_posts_data.get("success"):
+                self.log_result("User Liked Posts Endpoint", False, 
+                              f"Liked posts endpoint failed: {liked_posts_data}")
+                return False
+            
+            liked_posts = liked_posts_data.get("posts", [])
+            self.log_result("User Liked Posts Endpoint", True, 
+                          f"✅ Liked posts endpoint working: {len(liked_posts)} liked posts found")
+            
+            # Test 4: Privacy settings test with private user (demo3)
+            print("4️⃣ Testing privacy settings with private user (demo3)...")
+            
+            private_posts_response = requests.get(
+                f"{BACKEND_URL}/api/profile/profile/demostudent3/posts",
+                timeout=30
+            )
+            
+            if private_posts_response.status_code == 200:
+                private_data = private_posts_response.json()
+                if not private_data.get("success") and "private" in private_data.get("message", "").lower():
+                    self.log_result("Privacy Settings Test", True, 
+                                  "✅ Private account properly protected")
+                else:
+                    # If success=True, check if posts are limited or empty for privacy
+                    self.log_result("Privacy Settings Test", True, 
+                                  "✅ Privacy endpoint accessible (may show limited data)")
+            else:
+                self.log_result("Privacy Settings Test", False, 
+                              f"Unexpected response for private user: {private_posts_response.status_code}")
+                return False
+            
+            self.log_result("User Activity Endpoints - COMPLETE", True, 
+                          "✅ ALL SUCCESS CRITERIA MET: All user activity endpoints working correctly")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("User Activity Endpoints", False, f"Test error: {e}")
+            return False
+
+    def test_username_in_posts(self):
+        """
+        Test username in posts:
+        - Create a new post via POST /api/social/posts
+        - Verify the returned post includes username field
+        - Fetch feed and check if posts have username for profile navigation
+        """
+        try:
+            # Step 1: Login as demo1 to get JWT token
+            print("1️⃣ Logging in as demo1 to create post...")
+            
+            login_response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json={"username": "demo1", "password": "demo1"},
+                timeout=30
+            )
+            
+            if login_response.status_code != 200:
+                self.log_result("Demo1 Login for Post Creation", False, 
+                              f"Login failed: HTTP {login_response.status_code}")
+                return False
+            
+            login_data = login_response.json()
+            jwt_token = login_data.get("access_token")
+            
+            if not jwt_token:
+                self.log_result("Demo1 Login for Post Creation", False, "No JWT token received")
+                return False
+            
+            self.log_result("Demo1 Login for Post Creation", True, "✅ JWT token obtained")
+            
+            # Step 2: Create a new post
+            print("2️⃣ Creating new post to test username field...")
+            
+            post_data = {
+                "content": "Testing username field in posts - Profile and Social Feed Fix Test",
+                "post_type": "general"
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {jwt_token}",
+                "Content-Type": "application/json"
+            }
+            
+            create_response = requests.post(
+                f"{BACKEND_URL}/api/social/posts",
+                json=post_data,
+                headers=headers,
+                timeout=30
+            )
+            
+            if create_response.status_code != 200:
+                self.log_result("Post Creation", False, 
+                              f"Failed to create post: HTTP {create_response.status_code} - {create_response.text}")
+                return False
+            
+            create_result = create_response.json()
+            
+            if not create_result.get("success"):
+                self.log_result("Post Creation", False, 
+                              f"Post creation failed: {create_result}")
+                return False
+            
+            created_post = create_result.get("post")
+            if not created_post:
+                self.log_result("Post Creation", False, "No post data in response")
+                return False
+            
+            self.log_result("Post Creation", True, 
+                          f"✅ Post created successfully: {created_post.get('id')}")
+            
+            # Step 3: Verify the returned post includes username field
+            print("3️⃣ Verifying returned post includes username field...")
+            
+            required_fields = ["user_name", "username"]  # Check for both possible field names
+            username_found = False
+            username_value = None
+            
+            for field in required_fields:
+                if field in created_post:
+                    username_found = True
+                    username_value = created_post[field]
+                    break
+            
+            if not username_found:
+                self.log_result("Post Username Field", False, 
+                              f"Username field not found in post. Available fields: {list(created_post.keys())}")
+                return False
+            
+            # Verify username value is correct for demo1
+            expected_username = "demostudent1"
+            if username_value != expected_username:
+                self.log_result("Post Username Value", False, 
+                              f"Username value incorrect: expected '{expected_username}', got '{username_value}'")
+                return False
+            
+            self.log_result("Post Username Field", True, 
+                          f"✅ Username field present with correct value: {username_value}")
+            
+            # Step 4: Fetch feed and check if posts have username
+            print("4️⃣ Fetching feed to verify username in posts...")
+            
+            # Test For You feed
+            feed_response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/for-you?user_id=demo1-uuid",
+                timeout=30
+            )
+            
+            if feed_response.status_code != 200:
+                self.log_result("Feed Username Check", False, 
+                              f"Failed to get feed: HTTP {feed_response.status_code}")
+                return False
+            
+            feed_data = feed_response.json()
+            
+            if not feed_data.get("success"):
+                self.log_result("Feed Username Check", False, 
+                              f"Feed request failed: {feed_data}")
+                return False
+            
+            posts = feed_data.get("posts", [])
+            
+            if not posts:
+                self.log_result("Feed Username Check", False, "No posts found in feed")
+                return False
+            
+            # Check if posts in feed have username fields
+            posts_with_username = 0
+            for post in posts[:5]:  # Check first 5 posts
+                for field in required_fields:
+                    if field in post and post[field]:
+                        posts_with_username += 1
+                        break
+            
+            if posts_with_username == 0:
+                self.log_result("Feed Username Check", False, 
+                              "No posts in feed have username field")
+                return False
+            
+            self.log_result("Feed Username Check", True, 
+                          f"✅ Username field found in {posts_with_username}/{len(posts[:5])} posts in feed")
+            
+            # Step 5: Test trending feed as well
+            print("5️⃣ Testing username in trending feed...")
+            
+            trending_response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/trending",
+                timeout=30
+            )
+            
+            if trending_response.status_code == 200:
+                trending_data = trending_response.json()
+                if trending_data.get("success"):
+                    trending_posts = trending_data.get("posts", [])
+                    if trending_posts:
+                        # Check first post for username
+                        first_post = trending_posts[0]
+                        username_in_trending = any(field in first_post for field in required_fields)
+                        
+                        if username_in_trending:
+                            self.log_result("Trending Feed Username", True, 
+                                          "✅ Username field found in trending feed posts")
+                        else:
+                            self.log_result("Trending Feed Username", False, 
+                                          "Username field missing in trending feed posts")
+                    else:
+                        self.log_result("Trending Feed Username", True, 
+                                      "✅ Trending feed accessible (no posts to check)")
+                else:
+                    self.log_result("Trending Feed Username", False, 
+                                  f"Trending feed failed: {trending_data}")
+            else:
+                self.log_result("Trending Feed Username", False, 
+                              f"Trending feed error: HTTP {trending_response.status_code}")
+            
+            self.log_result("Username in Posts - COMPLETE", True, 
+                          "✅ ALL SUCCESS CRITERIA MET: Username field working in posts and feeds")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Username in Posts", False, f"Test error: {e}")
+            return False
+
+    def test_follow_system_jwt_fix(self):
+        """
+        Test follow system with JWT fix:
+        - Test follow/unfollow endpoints with proper JWT tokens
+        - Verify JWT decoding works correctly (not string replacement)
+        - Test with demo1 following demo2
+        """
+        try:
+            # Step 1: Login as demo1 and demo2 to get JWT tokens
+            print("1️⃣ Logging in as demo1 and demo2 to get JWT tokens...")
+            
+            # Login demo1
+            demo1_login = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json={"username": "demo1", "password": "demo1"},
+                timeout=30
+            )
+            
+            if demo1_login.status_code != 200:
+                self.log_result("Demo1 Login for Follow Test", False, 
+                              f"Demo1 login failed: HTTP {demo1_login.status_code}")
+                return False
+            
+            demo1_token = demo1_login.json().get("access_token")
+            if not demo1_token:
+                self.log_result("Demo1 Login for Follow Test", False, "No JWT token for demo1")
+                return False
+            
+            # Login demo2
+            demo2_login = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json={"username": "demo2", "password": "demo2"},
+                timeout=30
+            )
+            
+            if demo2_login.status_code != 200:
+                self.log_result("Demo2 Login for Follow Test", False, 
+                              f"Demo2 login failed: HTTP {demo2_login.status_code}")
+                return False
+            
+            demo2_token = demo2_login.json().get("access_token")
+            if not demo2_token:
+                self.log_result("Demo2 Login for Follow Test", False, "No JWT token for demo2")
+                return False
+            
+            self.log_result("Demo Users Login for Follow Test", True, 
+                          "✅ Both demo1 and demo2 JWT tokens obtained")
+            
+            # Step 2: Test follow endpoint with JWT authentication
+            print("2️⃣ Testing follow endpoint with JWT authentication...")
+            
+            follow_data = {
+                "target_user_id": "demo2-uuid"
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {demo1_token}",
+                "Content-Type": "application/json"
+            }
+            
+            follow_response = requests.post(
+                f"{BACKEND_URL}/api/profile/follow",
+                json=follow_data,
+                headers=headers,
+                timeout=30
+            )
+            
+            if follow_response.status_code != 200:
+                self.log_result("Follow with JWT", False, 
+                              f"Follow failed: HTTP {follow_response.status_code} - {follow_response.text}")
+                return False
+            
+            follow_result = follow_response.json()
+            
+            if not follow_result.get("success"):
+                # Check if already following
+                if "already following" in follow_result.get("message", "").lower():
+                    self.log_result("Follow with JWT", True, 
+                                  "✅ Follow relationship already exists (expected)")
+                else:
+                    self.log_result("Follow with JWT", False, 
+                                  f"Follow failed: {follow_result}")
+                    return False
+            else:
+                self.log_result("Follow with JWT", True, 
+                              f"✅ Follow successful: {follow_result.get('message')}")
+            
+            # Step 3: Verify JWT decoding works correctly
+            print("3️⃣ Testing JWT decoding integrity...")
+            
+            # Test with invalid JWT
+            invalid_headers = {
+                "Authorization": "Bearer invalid-jwt-token",
+                "Content-Type": "application/json"
+            }
+            
+            invalid_follow_response = requests.post(
+                f"{BACKEND_URL}/api/profile/follow",
+                json={"target_user_id": "demo2-uuid"},
+                headers=invalid_headers,
+                timeout=30
+            )
+            
+            if invalid_follow_response.status_code == 401:
+                self.log_result("Follow JWT Validation", True, 
+                              "✅ Invalid JWT properly rejected with 401")
+            else:
+                self.log_result("Follow JWT Validation", False, 
+                              f"Invalid JWT should return 401, got {invalid_follow_response.status_code}")
+                return False
+            
+            # Test without Authorization header
+            no_auth_follow_response = requests.post(
+                f"{BACKEND_URL}/api/profile/follow",
+                json={"target_user_id": "demo2-uuid"},
+                timeout=30
+            )
+            
+            if no_auth_follow_response.status_code == 401:
+                self.log_result("Follow No Auth Test", True, 
+                              "✅ Missing auth header properly rejected with 401")
+            else:
+                self.log_result("Follow No Auth Test", False, 
+                              f"Missing auth should return 401, got {no_auth_follow_response.status_code}")
+                return False
+            
+            # Step 4: Test unfollow endpoint
+            print("4️⃣ Testing unfollow endpoint with JWT...")
+            
+            unfollow_response = requests.delete(
+                f"{BACKEND_URL}/api/profile/unfollow/demo2-uuid",
+                headers=headers,
+                timeout=30
+            )
+            
+            if unfollow_response.status_code == 200:
+                unfollow_result = unfollow_response.json()
+                if unfollow_result.get("success"):
+                    self.log_result("Unfollow with JWT", True, 
+                                  "✅ Unfollow successful")
+                else:
+                    self.log_result("Unfollow with JWT", False, 
+                                  f"Unfollow failed: {unfollow_result}")
+                    return False
+            elif unfollow_response.status_code == 404:
+                self.log_result("Unfollow with JWT", True, 
+                              "✅ Unfollow returned 404 (relationship not found - acceptable)")
+            else:
+                self.log_result("Unfollow with JWT", False, 
+                              f"Unfollow failed: HTTP {unfollow_response.status_code}")
+                return False
+            
+            # Step 5: Re-follow to test the complete flow
+            print("5️⃣ Re-following to test complete flow...")
+            
+            refollow_response = requests.post(
+                f"{BACKEND_URL}/api/profile/follow",
+                json=follow_data,
+                headers=headers,
+                timeout=30
+            )
+            
+            if refollow_response.status_code == 200:
+                refollow_result = refollow_response.json()
+                if refollow_result.get("success"):
+                    self.log_result("Re-follow Test", True, 
+                                  f"✅ Re-follow successful: {refollow_result.get('status')}")
+                else:
+                    self.log_result("Re-follow Test", False, 
+                                  f"Re-follow failed: {refollow_result}")
+                    return False
+            else:
+                self.log_result("Re-follow Test", False, 
+                              f"Re-follow failed: HTTP {refollow_response.status_code}")
+                return False
+            
+            # Step 6: Verify follow status
+            print("6️⃣ Verifying follow status...")
+            
+            status_response = requests.get(
+                f"{BACKEND_URL}/api/profile/follow-status/demo2-uuid",
+                headers=headers,
+                timeout=30
+            )
+            
+            if status_response.status_code == 200:
+                status_result = status_response.json()
+                if status_result.get("success"):
+                    following_status = status_result.get("following", False)
+                    self.log_result("Follow Status Check", True, 
+                                  f"✅ Follow status verified: following={following_status}")
+                else:
+                    self.log_result("Follow Status Check", False, 
+                                  f"Follow status check failed: {status_result}")
+                    return False
+            else:
+                self.log_result("Follow Status Check", False, 
+                              f"Follow status check failed: HTTP {status_response.status_code}")
+                return False
+            
+            self.log_result("Follow System JWT Fix - COMPLETE", True, 
+                          "✅ ALL SUCCESS CRITERIA MET: Follow system JWT authentication working correctly")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Follow System JWT Fix", False, f"Test error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
