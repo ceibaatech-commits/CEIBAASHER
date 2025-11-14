@@ -31,8 +31,9 @@ const Login = () => {
         password: demoPassword
       });
 
-      // Store token in localStorage
-      localStorage.setItem('auth_token', response.data.access_token);
+      // Store token in localStorage (using 'token' key for consistency)
+      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('auth_token', response.data.access_token); // Keep for backward compatibility
       const userData = response.data.user;
       
       // Update AuthContext with user data
