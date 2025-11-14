@@ -280,23 +280,34 @@ async def get_user_following(user_id: str):
 
 # ==================== POST ENDPOINTS ====================
 
+class PostCreateRequest(BaseModel):
+    user_id: str
+    user_name: str
+    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code"]
+    content: str
+    battle_stats: Optional[dict] = None
+    quiz_details: Optional[dict] = None
+    room_code: Optional[str] = None
+    media_urls: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
+    exam_category: Optional[str] = None
+    subject: Optional[str] = None
+
 @router.post("/posts")
-async def create_post(post_data: PostCreate, user_id: str):
+async def create_post(post_data: PostCreateRequest):
     """Create a new post"""
     # Get user info
-    user = await db.users.find_one({"id": user_id}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    user = await db.users.find_one({"user_id": post_data.user_id}, {"_id": 0})
     
     # Create post document
     post_doc = {
         "id": str(uuid.uuid4()),
-        "user_id": user_id,
-        "user_name": user.get("name", "Unknown"),
-        "user_avatar": user.get("avatar"),
-        "user_verified": user.get("verified", False),
-        "user_verified_type": user.get("verified_type"),
-        "user_location": user.get("location"),
+        "user_id": post_data.user_id,
+        "user_name": post_data.user_name,
+        "user_avatar": user.get("avatar") if user else "👤",
+        "user_verified": user.get("verified", False) if user else False,
+        "user_verified_type": user.get("verified_type") if user else None,
+        "user_location": user.get("location") if user else None,
         "post_type": post_data.post_type,
         "content": post_data.content,
         "battle_stats": post_data.battle_stats,
@@ -314,13 +325,14 @@ async def create_post(post_data: PostCreate, user_id: str):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.social_posts.insert_one(post_doc)
+    await db.social_posts.insert_one(post_doc.copy())
     
     # Update user's post count
-    await db.users.update_one(
-        {"id": user_id},
-        {"$inc": {"posts_count": 1}}
-    )
+    if user:
+        await db.users.update_one(
+            {"user_id": post_data.user_id},
+            {"$inc": {"posts_count": 1}}
+        )
     
     return {"success": True, "post": post_doc}
 
