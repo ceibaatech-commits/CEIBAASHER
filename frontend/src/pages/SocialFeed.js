@@ -269,8 +269,8 @@ const SocialFeed = () => {
       navigate('/login');
       return;
     }
-    // Navigate to battle lobby with room code
-    navigate(`/battle-lobby?pin=${roomCode}`);
+    // Navigate to battle lobby with room code (as path parameter)
+    navigate(`/battle-lobby/${roomCode}`);
   };
 
   // ENGAGEMENT FUNCTIONS
