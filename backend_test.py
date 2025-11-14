@@ -5091,8 +5091,8 @@ class BattleServerTester:
             
             login_response = response.json()
             
-            # Verify response structure
-            if not login_response.get('success'):
+            # Verify response structure (demo login doesn't have 'success' field)
+            if 'user' not in login_response:
                 self.log_result("Demo3 Login Success", False, 
                               f"Login not successful: {login_response}")
                 return False
