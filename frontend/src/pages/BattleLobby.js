@@ -131,7 +131,8 @@ const BattleLobby = () => {
       alert('Wait for at least 1 player to join!');
       return;
     }
-    socket.emit('start-quiz', { pin });
+    console.log('🚀 Starting battle for room:', pin);
+    socket.emit('start_battle', { roomId: pin });
   };
 
   const kickPlayer = (playerId) => {
