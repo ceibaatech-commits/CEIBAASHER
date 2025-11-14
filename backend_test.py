@@ -1059,6 +1059,235 @@ class BattleServerTester:
             self.log_result("Backend Logs Check", False, f"Log check error: {e}")
             return False
 
+    def test_profile_update_jwt_debugging(self):
+        """
+        Test profile update with token debugging to identify the "Not enough segments" JWT error.
+        
+        SPECIFIC DEBUG TESTS:
+        1. Login and Token Inspection
+        2. Profile Update with Token
+        3. Verify Token Structure
+        """
+        print("\n🔍 JWT TOKEN DEBUGGING - PROFILE UPDATE")
+        print("=" * 70)
+        
+        try:
+            # ==================== STEP 1: LOGIN AND TOKEN INSPECTION ====================
+            print("\n1️⃣ LOGIN AND TOKEN INSPECTION")
+            print("-" * 50)
+            
+            # Login as demo1
+            login_payload = {
+                "username": "demo1",
+                "password": "demo1"
+            }
+            
+            print(f"🔐 Logging in as demo1...")
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=login_payload,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Demo1 Login", False, 
+                              f"Login failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            login_data = response.json()
+            if 'access_token' not in login_data:
+                self.log_result("Demo1 Login", False, 
+                              f"No access token in response: {login_data}")
+                return False
+            
+            jwt_token = login_data['access_token']
+            user_info = login_data.get('user', {})
+            
+            self.log_result("Demo1 Login", True, 
+                          f"✅ Login successful for user: {user_info.get('name')}")
+            
+            # ==================== TOKEN INSPECTION ====================
+            print(f"\n🔍 JWT TOKEN INSPECTION:")
+            print(f"📋 Full Token: {jwt_token}")
+            print(f"📏 Token Length: {len(jwt_token)}")
+            
+            # Count segments (should be 3, separated by dots)
+            token_parts = jwt_token.split('.')
+            segments_count = len(token_parts)
+            
+            print(f"🔢 Token Segments Count: {segments_count}")
+            print(f"📊 Token Structure: {'header.payload.signature' if segments_count == 3 else 'INVALID'}")
+            
+            if segments_count == 3:
+                self.log_result("JWT Token Segments Count", True, 
+                              f"✅ Correct number of segments: {segments_count}")
+                
+                # Print each segment
+                for i, part in enumerate(token_parts):
+                    segment_name = ['header', 'payload', 'signature'][i]
+                    print(f"🔸 {segment_name.upper()}: {part[:50]}{'...' if len(part) > 50 else ''}")
+                
+            else:
+                self.log_result("JWT Token Segments Count", False, 
+                              f"❌ CRITICAL: Token has {segments_count} segments, expected 3")
+                print(f"🚨 TOKEN SEGMENTS BREAKDOWN:")
+                for i, part in enumerate(token_parts):
+                    print(f"   Segment {i+1}: {part}")
+                return False
+            
+            # ==================== MANUAL TOKEN DECODING ====================
+            print(f"\n🔓 MANUAL JWT TOKEN DECODING:")
+            
+            try:
+                import base64
+                import json as json_lib
+                
+                # Decode header
+                header_b64 = token_parts[0]
+                # Add padding if needed
+                header_b64 += '=' * (4 - len(header_b64) % 4)
+                header_decoded = base64.urlsafe_b64decode(header_b64)
+                header_json = json_lib.loads(header_decoded)
+                
+                print(f"📋 HEADER: {header_json}")
+                
+                # Decode payload
+                payload_b64 = token_parts[1]
+                # Add padding if needed
+                payload_b64 += '=' * (4 - len(payload_b64) % 4)
+                payload_decoded = base64.urlsafe_b64decode(payload_b64)
+                payload_json = json_lib.loads(payload_decoded)
+                
+                print(f"📋 PAYLOAD: {payload_json}")
+                
+                # Check for 'sub' field
+                if 'sub' in payload_json:
+                    self.log_result("JWT Token 'sub' Field", True, 
+                                  f"✅ 'sub' field found: {payload_json['sub']}")
+                else:
+                    self.log_result("JWT Token 'sub' Field", False, 
+                                  f"❌ 'sub' field missing from payload")
+                    return False
+                
+                # Store user_id for profile update
+                user_id = payload_json['sub']
+                
+            except Exception as decode_error:
+                self.log_result("Manual JWT Decoding", False, 
+                              f"❌ Manual decoding failed: {decode_error}")
+                return False
+            
+            # ==================== STEP 2: PROFILE UPDATE WITH TOKEN ====================
+            print(f"\n2️⃣ PROFILE UPDATE WITH TOKEN")
+            print("-" * 50)
+            
+            # Profile update payload as specified in review request
+            profile_update_payload = {
+                "name": "Demo Student 1 - Debug Test",
+                "bio": "Testing JWT token segments",
+                "location": "Debug City, USA",
+                "exam_focus": ["JEE", "NEET"]
+            }
+            
+            # Authorization header
+            auth_header = f"Bearer {jwt_token}"
+            
+            print(f"🔐 Authorization Header: {auth_header[:100]}...")
+            print(f"📝 Profile Update Payload: {profile_update_payload}")
+            
+            # Send PUT request to profile update endpoint
+            print(f"📤 Sending PUT request to /api/profile/update...")
+            
+            response = requests.put(
+                f"{BACKEND_URL}/api/profile/profile/update",
+                json=profile_update_payload,
+                headers={"Authorization": auth_header},
+                timeout=30
+            )
+            
+            print(f"📥 Response Status: {response.status_code}")
+            print(f"📥 Response Headers: {dict(response.headers)}")
+            
+            if response.status_code == 200:
+                response_data = response.json()
+                self.log_result("Profile Update with JWT", True, 
+                              f"✅ Profile update successful: {response_data}")
+                
+                # Verify the update worked
+                if response_data.get('success'):
+                    updated_profile = response_data.get('profile', {})
+                    if updated_profile.get('name') == "Demo Student 1 - Debug Test":
+                        self.log_result("Profile Update Verification", True, 
+                                      "✅ Profile changes verified successfully")
+                    else:
+                        self.log_result("Profile Update Verification", False, 
+                                      f"❌ Profile not updated correctly: {updated_profile}")
+                
+            else:
+                response_text = response.text
+                self.log_result("Profile Update with JWT", False, 
+                              f"❌ Profile update failed: HTTP {response.status_code} - {response_text}")
+                
+                # Check for specific JWT errors
+                if "not enough segments" in response_text.lower():
+                    print(f"🚨 FOUND THE ERROR: 'Not enough segments' in response!")
+                    print(f"🔍 This suggests the JWT token is being corrupted or truncated")
+                elif "invalid token" in response_text.lower():
+                    print(f"🚨 JWT Token validation failed")
+                elif "unauthorized" in response_text.lower():
+                    print(f"🚨 Authorization failed")
+                
+                return False
+            
+            # ==================== STEP 3: CHECK BACKEND LOGS FOR DEBUG INFO ====================
+            print(f"\n3️⃣ CHECKING BACKEND LOGS FOR DEBUG INFO")
+            print("-" * 50)
+            
+            try:
+                import subprocess
+                
+                # Check recent backend logs for DEBUG messages
+                result = subprocess.run(
+                    ["tail", "-n", "100", "/var/log/supervisor/backend.out.log"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10
+                )
+                
+                if result.returncode == 0:
+                    log_content = result.stdout
+                    
+                    # Look for DEBUG messages related to JWT
+                    debug_lines = [line for line in log_content.split('\n') if '[DEBUG]' in line]
+                    
+                    if debug_lines:
+                        print(f"🔍 FOUND {len(debug_lines)} DEBUG LOG ENTRIES:")
+                        for line in debug_lines[-10:]:  # Show last 10 debug lines
+                            print(f"   {line}")
+                        
+                        self.log_result("Backend Debug Logs", True, 
+                                      f"✅ Found {len(debug_lines)} debug log entries")
+                    else:
+                        self.log_result("Backend Debug Logs", False, 
+                                      "❌ No DEBUG log entries found")
+                
+            except Exception as log_error:
+                self.log_result("Backend Debug Logs Check", False, 
+                              f"❌ Could not check logs: {log_error}")
+            
+            # ==================== OVERALL RESULT ====================
+            self.log_result("JWT Token Debugging - COMPLETE", True, 
+                          "✅ JWT token debugging completed successfully - no 'not enough segments' error found")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("JWT Token Debugging", False, f"❌ Test error: {e}")
+            import traceback
+            print(f"🚨 FULL ERROR TRACEBACK:")
+            traceback.print_exc()
+            return False
+
     # ==================== PROFILE AND NOTIFICATION SYSTEM TESTS ====================
     
     def test_profile_and_notification_system_comprehensive(self):
