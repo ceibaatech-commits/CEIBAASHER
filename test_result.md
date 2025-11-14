@@ -600,11 +600,11 @@ test_plan:
     - "Social Feed with Manual Quiz Room UI"
   - task: "Solo Quiz Room & Share Score"
     implemented: true
-    working: true
-    file: "/app/frontend/src/pages/QuizRoom.js, /app/backend/social_feed_routes.py, /app/frontend/src/pages/SocialFeed.js"
+    working: "NA"
+    file: "/app/frontend/src/pages/QuizRoom.js, /app/backend/social_feed_routes.py, /app/frontend/src/pages/SocialFeed.js, /app/backend/auth_routes.py"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
