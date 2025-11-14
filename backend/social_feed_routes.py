@@ -426,7 +426,13 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
         )
         
         # Calculate recency factor (higher for recent posts)
-        post_time = datetime.fromisoformat(post.get("created_at", now.isoformat()))
+        created_at = post.get("created_at", now.isoformat())
+        if isinstance(created_at, str):
+            post_time = datetime.fromisoformat(created_at)
+        elif isinstance(created_at, datetime):
+            post_time = created_at
+        else:
+            post_time = now  # Fallback to current time
         hours_old = (now - post_time).total_seconds() / 3600
         
         if hours_old < 24:
