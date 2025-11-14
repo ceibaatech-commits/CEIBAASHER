@@ -6803,6 +6803,11 @@ class BattleServerTester:
         print("=" * 60)
         self.test_solo_quiz_room_system_comprehensive()
         
+        # Profile and Notification Tests (NEW - Current Review Request)
+        print("\n👤 PROFILE AND NOTIFICATION TESTS (CURRENT REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_profile_and_notification_system_comprehensive()
+        
         # 24-Hour TTL Enforcement Tests (NEW - Current Review Request)
         print("\n🕐 24-HOUR TTL ENFORCEMENT TESTS (CURRENT REVIEW REQUEST)")
         print("=" * 60)
