@@ -1056,6 +1056,704 @@ class BattleServerTester:
         except Exception as e:
             self.log_result("Backend Logs Check", False, f"Log check error: {e}")
             return False
+
+    # ==================== SOLO QUIZ ROOM SYSTEM TESTS ====================
+    
+    def test_solo_quiz_room_system_comprehensive(self):
+        """
+        Test the updated solo quiz room system with multiple scenarios as per review request
+        """
+        print("\n🎯 TESTING SOLO QUIZ ROOM SYSTEM - COMPREHENSIVE")
+        print("=" * 70)
+        
+        # Test data as specified in review request
+        self.demo1_data = {
+            "user_id": "demo1-uuid",
+            "user_name": "Demo Student 1"
+        }
+        self.demo2_data = {
+            "user_id": "demo2-uuid", 
+            "user_name": "Demo Student 2"
+        }
+        
+        success_count = 0
+        total_tests = 0
+        
+        # Test Scenario 1: Public Quiz Access (Multiple Users)
+        print("\n📋 TEST SCENARIO 1: Public Quiz Access (Multiple Users)")
+        print("-" * 60)
+        
+        scenario1_success = self.test_public_quiz_multiple_users()
+        if scenario1_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test Scenario 2: Private Quiz Restriction
+        print("\n🔒 TEST SCENARIO 2: Private Quiz Restriction")
+        print("-" * 60)
+        
+        scenario2_success = self.test_private_quiz_restriction()
+        if scenario2_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test Scenario 3: Privacy Field in Quiz Rooms
+        print("\n🛡️ TEST SCENARIO 3: Privacy Field in Quiz Rooms")
+        print("-" * 60)
+        
+        scenario3_success = self.test_privacy_field_verification()
+        if scenario3_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Overall result
+        success_rate = (success_count / total_tests) * 100
+        
+        if success_count == total_tests:
+            self.log_result("Solo Quiz Room System - COMPREHENSIVE TEST", True, 
+                          f"✅ ALL SCENARIOS PASSED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+        else:
+            self.log_result("Solo Quiz Room System - COMPREHENSIVE TEST", False, 
+                          f"❌ SOME SCENARIOS FAILED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+        
+        return success_count == total_tests
+
+    def test_public_quiz_multiple_users(self):
+        """
+        Test Scenario 1: Public Quiz Access (Multiple Users)
+        1. Create a PUBLIC quiz room via POST /api/social/quiz-rooms
+        2. Have demo1 user submit quiz results via POST /api/social/quiz-rooms/{room_code}/submit
+        3. Have demo2 user submit quiz results via POST /api/social/quiz-rooms/{room_code}/submit  
+        4. Fetch leaderboard via GET /api/social/quiz-rooms/{room_code}/leaderboard
+        5. Verify leaderboard shows BOTH demo1 and demo2 with their names, scores, and rankings
+        """
+        try:
+            # Step 1: Create a PUBLIC quiz room
+            print("1️⃣ Creating PUBLIC quiz room...")
+            
+            quiz_room_data = {
+                "user_id": self.demo1_data["user_id"],
+                "user_name": self.demo1_data["user_name"],
+                "title": "Public Math Quiz",
+                "description": "A public quiz for everyone to test their math skills",
+                "category": "Mathematics",
+                "privacy": "public",
+                "questions": [
+                    {
+                        "question_text": "What is 2 + 2?",
+                        "option_a": "3",
+                        "option_b": "4", 
+                        "option_c": "5",
+                        "option_d": "6",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is 5 × 3?",
+                        "option_a": "15",
+                        "option_b": "12",
+                        "option_c": "18", 
+                        "option_d": "20",
+                        "correct_answer": "A",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is 10 ÷ 2?",
+                        "option_a": "4",
+                        "option_b": "5",
+                        "option_c": "6",
+                        "option_d": "8",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is 7 - 3?",
+                        "option_a": "3",
+                        "option_b": "4",
+                        "option_c": "5",
+                        "option_d": "6",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is 8 + 7?",
+                        "option_a": "14",
+                        "option_b": "15",
+                        "option_c": "16",
+                        "option_d": "17",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    }
+                ]
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/quiz-rooms",
+                json=quiz_room_data,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Public Quiz Creation", False, 
+                              f"Failed to create quiz room: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            room_data = response.json()
+            if not room_data.get('success') or 'room_code' not in room_data:
+                self.log_result("Public Quiz Creation", False, 
+                              f"Invalid response structure: {room_data}")
+                return False
+            
+            room_code = room_data['room_code']
+            self.log_result("Public Quiz Creation", True, 
+                          f"✅ PUBLIC quiz room created with code: {room_code}")
+            
+            # Step 2: Demo1 submits quiz results
+            print("2️⃣ Demo1 submitting quiz results...")
+            
+            demo1_results = {
+                "user_id": self.demo1_data["user_id"],
+                "user_name": self.demo1_data["user_name"],
+                "score": 400,  # 4 correct answers × 100 points
+                "total_questions": 5,
+                "answers": [
+                    {"question_id": "q1", "selected_answer": "B", "is_correct": True, "time_taken": 15},
+                    {"question_id": "q2", "selected_answer": "A", "is_correct": True, "time_taken": 12},
+                    {"question_id": "q3", "selected_answer": "B", "is_correct": True, "time_taken": 18},
+                    {"question_id": "q4", "selected_answer": "B", "is_correct": True, "time_taken": 10},
+                    {"question_id": "q5", "selected_answer": "A", "is_correct": False, "time_taken": 25}
+                ]
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}/submit",
+                json=demo1_results,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Demo1 Result Submission", False, 
+                              f"Failed to submit demo1 results: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            result_data = response.json()
+            if not result_data.get('success'):
+                self.log_result("Demo1 Result Submission", False, 
+                              f"Demo1 submission failed: {result_data}")
+                return False
+            
+            self.log_result("Demo1 Result Submission", True, 
+                          f"✅ Demo1 submitted results: {demo1_results['score']} points")
+            
+            # Step 3: Demo2 submits quiz results
+            print("3️⃣ Demo2 submitting quiz results...")
+            
+            demo2_results = {
+                "user_id": self.demo2_data["user_id"],
+                "user_name": self.demo2_data["user_name"],
+                "score": 500,  # 5 correct answers × 100 points
+                "total_questions": 5,
+                "answers": [
+                    {"question_id": "q1", "selected_answer": "B", "is_correct": True, "time_taken": 10},
+                    {"question_id": "q2", "selected_answer": "A", "is_correct": True, "time_taken": 8},
+                    {"question_id": "q3", "selected_answer": "B", "is_correct": True, "time_taken": 12},
+                    {"question_id": "q4", "selected_answer": "B", "is_correct": True, "time_taken": 7},
+                    {"question_id": "q5", "selected_answer": "B", "is_correct": True, "time_taken": 15}
+                ]
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}/submit",
+                json=demo2_results,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Demo2 Result Submission", False, 
+                              f"Failed to submit demo2 results: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            result_data = response.json()
+            if not result_data.get('success'):
+                self.log_result("Demo2 Result Submission", False, 
+                              f"Demo2 submission failed: {result_data}")
+                return False
+            
+            self.log_result("Demo2 Result Submission", True, 
+                          f"✅ Demo2 submitted results: {demo2_results['score']} points")
+            
+            # Step 4: Fetch leaderboard
+            print("4️⃣ Fetching leaderboard...")
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{room_code}/leaderboard",
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Leaderboard Fetch", False, 
+                              f"Failed to fetch leaderboard: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            leaderboard_data = response.json()
+            if not leaderboard_data.get('success') or 'leaderboard' not in leaderboard_data:
+                self.log_result("Leaderboard Fetch", False, 
+                              f"Invalid leaderboard response: {leaderboard_data}")
+                return False
+            
+            leaderboard = leaderboard_data['leaderboard']
+            self.log_result("Leaderboard Fetch", True, 
+                          f"✅ Leaderboard fetched with {len(leaderboard)} entries")
+            
+            # Step 5: Verify leaderboard shows BOTH demo1 and demo2
+            print("5️⃣ Verifying leaderboard contains both users...")
+            
+            demo1_found = False
+            demo2_found = False
+            demo1_entry = None
+            demo2_entry = None
+            
+            for entry in leaderboard:
+                if entry.get('user_id') == self.demo1_data["user_id"]:
+                    demo1_found = True
+                    demo1_entry = entry
+                elif entry.get('user_id') == self.demo2_data["user_id"]:
+                    demo2_found = True
+                    demo2_entry = entry
+            
+            if not demo1_found:
+                self.log_result("Leaderboard Demo1 Verification", False, 
+                              "❌ Demo1 not found in leaderboard")
+                return False
+            
+            if not demo2_found:
+                self.log_result("Leaderboard Demo2 Verification", False, 
+                              "❌ Demo2 not found in leaderboard")
+                return False
+            
+            # Verify names and scores
+            if demo1_entry.get('user_name') != self.demo1_data["user_name"]:
+                self.log_result("Demo1 Name Verification", False, 
+                              f"Demo1 name mismatch: expected '{self.demo1_data['user_name']}', got '{demo1_entry.get('user_name')}'")
+                return False
+            
+            if demo2_entry.get('user_name') != self.demo2_data["user_name"]:
+                self.log_result("Demo2 Name Verification", False, 
+                              f"Demo2 name mismatch: expected '{self.demo2_data['user_name']}', got '{demo2_entry.get('user_name')}'")
+                return False
+            
+            if demo1_entry.get('score') != 400:
+                self.log_result("Demo1 Score Verification", False, 
+                              f"Demo1 score mismatch: expected 400, got {demo1_entry.get('score')}")
+                return False
+            
+            if demo2_entry.get('score') != 500:
+                self.log_result("Demo2 Score Verification", False, 
+                              f"Demo2 score mismatch: expected 500, got {demo2_entry.get('score')}")
+                return False
+            
+            # Verify ranking (demo2 should be first with higher score)
+            leaderboard_sorted = sorted(leaderboard, key=lambda x: (-x.get('score', 0), x.get('time_taken_seconds', 0)))
+            
+            if leaderboard_sorted[0].get('user_id') != self.demo2_data["user_id"]:
+                self.log_result("Leaderboard Ranking", False, 
+                              f"Demo2 should be ranked #1 but found {leaderboard_sorted[0].get('user_name')} at top")
+                return False
+            
+            self.log_result("Public Quiz Multiple Users - COMPLETE", True, 
+                          f"✅ ALL SUCCESS CRITERIA MET: Both users in leaderboard with correct names, scores, and rankings")
+            
+            # Store room code for other tests
+            self.public_room_code = room_code
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Public Quiz Multiple Users", False, f"Test error: {e}")
+            return False
+
+    def test_private_quiz_restriction(self):
+        """
+        Test Scenario 2: Private Quiz Restriction
+        1. Create a PRIVATE quiz room with demo1 as host
+        2. Try to fetch the room with demo1's user_id (should succeed)
+        3. Try to fetch the same room with demo2's user_id (should return 403 Forbidden)
+        4. Verify error message says "This is a private quiz. Only the host can access it."
+        """
+        try:
+            # Step 1: Create a PRIVATE quiz room
+            print("1️⃣ Creating PRIVATE quiz room...")
+            
+            private_quiz_data = {
+                "user_id": self.demo1_data["user_id"],
+                "user_name": self.demo1_data["user_name"],
+                "title": "Private Science Quiz",
+                "description": "A private quiz for invited users only",
+                "category": "Science",
+                "privacy": "private",
+                "questions": [
+                    {
+                        "question_text": "What is H2O?",
+                        "option_a": "Water",
+                        "option_b": "Hydrogen",
+                        "option_c": "Oxygen",
+                        "option_d": "Carbon",
+                        "correct_answer": "A",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is the speed of light?",
+                        "option_a": "300,000 km/s",
+                        "option_b": "150,000 km/s",
+                        "option_c": "450,000 km/s",
+                        "option_d": "600,000 km/s",
+                        "correct_answer": "A",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is CO2?",
+                        "option_a": "Carbon Monoxide",
+                        "option_b": "Carbon Dioxide",
+                        "option_c": "Calcium Oxide",
+                        "option_d": "Copper Oxide",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is the atomic number of Carbon?",
+                        "option_a": "4",
+                        "option_b": "6",
+                        "option_c": "8",
+                        "option_d": "12",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "What is NaCl?",
+                        "option_a": "Sodium Chloride",
+                        "option_b": "Sodium Carbonate",
+                        "option_c": "Nickel Chloride",
+                        "option_d": "Nitrogen Chloride",
+                        "correct_answer": "A",
+                        "time_limit": 30
+                    }
+                ]
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/quiz-rooms",
+                json=private_quiz_data,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Private Quiz Creation", False, 
+                              f"Failed to create private quiz: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            room_data = response.json()
+            if not room_data.get('success') or 'room_code' not in room_data:
+                self.log_result("Private Quiz Creation", False, 
+                              f"Invalid response structure: {room_data}")
+                return False
+            
+            private_room_code = room_data['room_code']
+            self.log_result("Private Quiz Creation", True, 
+                          f"✅ PRIVATE quiz room created with code: {private_room_code}")
+            
+            # Step 2: Try to fetch room with demo1's user_id (should succeed)
+            print("2️⃣ Testing host access to private room...")
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{private_room_code}?user_id={self.demo1_data['user_id']}",
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Host Access to Private Room", False, 
+                              f"Host should have access but got: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            room_data = response.json()
+            if not room_data.get('success') or 'room' not in room_data:
+                self.log_result("Host Access to Private Room", False, 
+                              f"Invalid room data for host: {room_data}")
+                return False
+            
+            self.log_result("Host Access to Private Room", True, 
+                          "✅ Host can access private room successfully")
+            
+            # Step 3: Try to fetch room with demo2's user_id (should return 403 Forbidden)
+            print("3️⃣ Testing non-host access to private room...")
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{private_room_code}?user_id={self.demo2_data['user_id']}",
+                timeout=30
+            )
+            
+            if response.status_code != 403:
+                self.log_result("Non-Host Access Restriction", False, 
+                              f"Expected 403 Forbidden but got: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            # Step 4: Verify error message
+            print("4️⃣ Verifying 403 error message...")
+            
+            error_data = response.json()
+            expected_message = "This is a private quiz. Only the host can access it."
+            
+            if 'detail' not in error_data:
+                self.log_result("Private Quiz Error Message", False, 
+                              f"No error detail in response: {error_data}")
+                return False
+            
+            if error_data['detail'] != expected_message:
+                self.log_result("Private Quiz Error Message", False, 
+                              f"Wrong error message. Expected: '{expected_message}', Got: '{error_data['detail']}'")
+                return False
+            
+            self.log_result("Private Quiz Restriction - COMPLETE", True, 
+                          f"✅ ALL SUCCESS CRITERIA MET: Private quiz enforces host-only access with correct 403 error message")
+            
+            # Store private room code for other tests
+            self.private_room_code = private_room_code
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Private Quiz Restriction", False, f"Test error: {e}")
+            return False
+
+    def test_privacy_field_verification(self):
+        """
+        Test Scenario 3: Privacy Field in Quiz Rooms
+        1. Verify quiz rooms are created with privacy field (public/private/followers_only)
+        2. Check that quiz room posts in social feed include privacy information
+        """
+        try:
+            # Step 1: Verify privacy field in created rooms
+            print("1️⃣ Verifying privacy field in quiz rooms...")
+            
+            # Check public room (from previous test)
+            if hasattr(self, 'public_room_code'):
+                response = requests.get(
+                    f"{BACKEND_URL}/api/social/quiz-rooms/{self.public_room_code}",
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    room_data = response.json()
+                    if room_data.get('success') and 'room' in room_data:
+                        room = room_data['room']
+                        if room.get('privacy') == 'public':
+                            self.log_result("Public Room Privacy Field", True, 
+                                          "✅ Public room has correct privacy field")
+                        else:
+                            self.log_result("Public Room Privacy Field", False, 
+                                          f"Public room privacy mismatch: {room.get('privacy')}")
+                            return False
+                    else:
+                        self.log_result("Public Room Privacy Field", False, 
+                                      f"Invalid public room response: {room_data}")
+                        return False
+                else:
+                    self.log_result("Public Room Privacy Field", False, 
+                                  f"Failed to fetch public room: HTTP {response.status_code}")
+                    return False
+            
+            # Check private room (from previous test)
+            if hasattr(self, 'private_room_code'):
+                response = requests.get(
+                    f"{BACKEND_URL}/api/social/quiz-rooms/{self.private_room_code}?user_id={self.demo1_data['user_id']}",
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    room_data = response.json()
+                    if room_data.get('success') and 'room' in room_data:
+                        room = room_data['room']
+                        if room.get('privacy') == 'private':
+                            self.log_result("Private Room Privacy Field", True, 
+                                          "✅ Private room has correct privacy field")
+                        else:
+                            self.log_result("Private Room Privacy Field", False, 
+                                          f"Private room privacy mismatch: {room.get('privacy')}")
+                            return False
+                    else:
+                        self.log_result("Private Room Privacy Field", False, 
+                                      f"Invalid private room response: {room_data}")
+                        return False
+                else:
+                    self.log_result("Private Room Privacy Field", False, 
+                                  f"Failed to fetch private room: HTTP {response.status_code}")
+                    return False
+            
+            # Step 2: Create a followers_only room to test all privacy types
+            print("2️⃣ Creating followers_only quiz room...")
+            
+            followers_quiz_data = {
+                "user_id": self.demo1_data["user_id"],
+                "user_name": self.demo1_data["user_name"],
+                "title": "Followers Only History Quiz",
+                "description": "A quiz for my followers only",
+                "category": "History",
+                "privacy": "followers_only",
+                "questions": [
+                    {
+                        "question_text": "When did World War II end?",
+                        "option_a": "1944",
+                        "option_b": "1945",
+                        "option_c": "1946",
+                        "option_d": "1947",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "Who was the first President of the USA?",
+                        "option_a": "George Washington",
+                        "option_b": "Thomas Jefferson",
+                        "option_c": "John Adams",
+                        "option_d": "Benjamin Franklin",
+                        "correct_answer": "A",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "In which year did the Berlin Wall fall?",
+                        "option_a": "1987",
+                        "option_b": "1988",
+                        "option_c": "1989",
+                        "option_d": "1990",
+                        "correct_answer": "C",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "Which empire was ruled by Julius Caesar?",
+                        "option_a": "Greek Empire",
+                        "option_b": "Roman Empire",
+                        "option_c": "Persian Empire",
+                        "option_d": "Egyptian Empire",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    },
+                    {
+                        "question_text": "When did the American Civil War begin?",
+                        "option_a": "1860",
+                        "option_b": "1861",
+                        "option_c": "1862",
+                        "option_d": "1863",
+                        "correct_answer": "B",
+                        "time_limit": 30
+                    }
+                ]
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/social/quiz-rooms",
+                json=followers_quiz_data,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Followers Only Quiz Creation", False, 
+                              f"Failed to create followers_only quiz: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            room_data = response.json()
+            if not room_data.get('success') or 'room_code' not in room_data:
+                self.log_result("Followers Only Quiz Creation", False, 
+                              f"Invalid response structure: {room_data}")
+                return False
+            
+            followers_room_code = room_data['room_code']
+            self.log_result("Followers Only Quiz Creation", True, 
+                          f"✅ FOLLOWERS_ONLY quiz room created with code: {followers_room_code}")
+            
+            # Verify followers_only privacy field
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/quiz-rooms/{followers_room_code}?user_id={self.demo1_data['user_id']}",
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                room_data = response.json()
+                if room_data.get('success') and 'room' in room_data:
+                    room = room_data['room']
+                    if room.get('privacy') == 'followers_only':
+                        self.log_result("Followers Only Privacy Field", True, 
+                                      "✅ Followers_only room has correct privacy field")
+                    else:
+                        self.log_result("Followers Only Privacy Field", False, 
+                                      f"Followers_only room privacy mismatch: {room.get('privacy')}")
+                        return False
+                else:
+                    self.log_result("Followers Only Privacy Field", False, 
+                                  f"Invalid followers_only room response: {room_data}")
+                    return False
+            else:
+                self.log_result("Followers Only Privacy Field", False, 
+                              f"Failed to fetch followers_only room: HTTP {response.status_code}")
+                return False
+            
+            # Step 3: Check social feed posts include privacy information
+            print("3️⃣ Checking social feed posts include privacy information...")
+            
+            # Fetch trending feed to see quiz room posts
+            response = requests.get(
+                f"{BACKEND_URL}/api/social/feed/trending",
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Social Feed Privacy Check", False, 
+                              f"Failed to fetch social feed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            feed_data = response.json()
+            if not feed_data.get('success') or 'posts' not in feed_data:
+                self.log_result("Social Feed Privacy Check", False, 
+                              f"Invalid feed response: {feed_data}")
+                return False
+            
+            posts = feed_data['posts']
+            quiz_room_posts = [p for p in posts if p.get('post_type') == 'quiz_room']
+            
+            if not quiz_room_posts:
+                self.log_result("Social Feed Quiz Room Posts", False, 
+                              "No quiz room posts found in social feed")
+                return False
+            
+            self.log_result("Social Feed Quiz Room Posts", True, 
+                          f"✅ Found {len(quiz_room_posts)} quiz room posts in social feed")
+            
+            # Check if posts have privacy information in quiz_details
+            privacy_info_found = False
+            for post in quiz_room_posts:
+                quiz_details = post.get('quiz_details', {})
+                if 'privacy' in quiz_details:
+                    privacy_info_found = True
+                    privacy_value = quiz_details['privacy']
+                    if privacy_value in ['public', 'private', 'followers_only']:
+                        self.log_result("Social Feed Privacy Information", True, 
+                                      f"✅ Quiz room post contains privacy info: {privacy_value}")
+                        break
+                    else:
+                        self.log_result("Social Feed Privacy Information", False, 
+                                      f"Invalid privacy value in post: {privacy_value}")
+                        return False
+            
+            if not privacy_info_found:
+                self.log_result("Social Feed Privacy Information", False, 
+                              "Quiz room posts do not contain privacy information")
+                return False
+            
+            self.log_result("Privacy Field Verification - COMPLETE", True, 
+                          f"✅ ALL SUCCESS CRITERIA MET: Quiz rooms created with privacy field and social feed posts include privacy information")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Privacy Field Verification", False, f"Test error: {e}")
+            return False
     
     def test_socket_io_battle_system_flow(self):
         """Test complete Socket.io Battle System Flow as per review request"""
