@@ -594,56 +594,81 @@ async def unlike_post(post_id: str, user_id: str):
     
     return {"success": True, "message": "Post unliked"}
 
+@router.get("/posts/{post_id}/comments")
+async def get_comments(post_id: str):
+    """Get all comments for a post"""
+    try:
+        # Fetch comments from database
+        comments = await db.comments.find(
+            {"post_id": post_id, "parent_comment_id": None}
+        ).sort("created_at", -1).to_list(length=None)
+        
+        # Remove MongoDB _id
+        for comment in comments:
+            comment.pop("_id", None)
+        
+        return {
+            "success": True,
+            "comments": comments
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching comments: {str(e)}")
+
 @router.post("/posts/{post_id}/comment")
 async def add_comment(post_id: str, comment_data: dict):
     """Add a comment to a post"""
-    user_id = comment_data.get("user_id")
-    content = comment_data.get("content")
-    
-    if not user_id or not content:
-        raise HTTPException(status_code=400, detail="user_id and content required")
-    
-    # Get user info
-    user = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "avatar": 1})
-    
-    # Create comment
-    comment_doc = {
-        "id": str(uuid.uuid4()),
-        "post_id": post_id,
-        "user_id": user_id,
-        "user_name": user.get("name", "Unknown"),
-        "user_avatar": user.get("avatar"),
-        "content": content,
-        "parent_comment_id": comment_data.get("parent_comment_id"),
-        "likes_count": 0,
-        "created_at": datetime.now(timezone.utc).isoformat()
-    }
-    
-    await db.comments.insert_one(comment_doc)
-    
-    # Increment comment count
-    await db.social_posts.update_one(
-        {"id": post_id},
-        {"$inc": {"comments_count": 1, "trending_score": 2}}
-    )
-    
-    # Create notification
-    post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "user_id": 1})
-    if post and post["user_id"] != user_id:
-        notification = {
+    try:
+        user_id = comment_data.get("user_id")
+        user_name = comment_data.get("user_name", "User")
+        content = comment_data.get("content")
+        
+        if not user_id or not content:
+            raise HTTPException(status_code=400, detail="user_id and content required")
+        
+        # Get user info
+        user = await db.users.find_one({"user_id": user_id}, {"_id": 0, "name": 1, "avatar": 1})
+        
+        # Create comment
+        comment_doc = {
             "id": str(uuid.uuid4()),
-            "user_id": post["user_id"],
-            "notification_type": "comment",
-            "content": f"{user.get('name', 'Someone')} commented on your post",
-            "from_user_id": user_id,
-            "from_user_name": user.get('name', 'Unknown'),
             "post_id": post_id,
-            "is_read": False,
+            "user_id": user_id,
+            "user_name": user.get("name") if user else user_name,
+            "user_avatar": user.get("avatar") if user else "👤",
+            "content": content,
+            "parent_comment_id": comment_data.get("parent_comment_id"),
+            "likes_count": 0,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
-        await db.notifications.insert_one(notification)
-    
-    return {"success": True, "comment": comment_doc}
+        
+        await db.comments.insert_one(comment_doc.copy())
+        
+        # Increment comment count
+        await db.social_posts.update_one(
+            {"id": post_id},
+            {"$inc": {"comments_count": 1, "trending_score": 2}}
+        )
+        
+        # Create notification (optional - only if user exists)
+        if user:
+            post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "user_id": 1})
+            if post and post["user_id"] != user_id:
+                notification = {
+                    "id": str(uuid.uuid4()),
+                    "user_id": post["user_id"],
+                    "notification_type": "comment",
+                    "content": f"{user.get('name', 'Someone')} commented on your post",
+                    "from_user_id": user_id,
+                    "from_user_name": user.get('name', 'Unknown'),
+                    "post_id": post_id,
+                    "is_read": False,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.notifications.insert_one(notification)
+        
+        return {"success": True, "comment": comment_doc}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
 
 @router.post("/comments/{comment_id}/reply")
 async def reply_to_comment(comment_id: str, reply_data: dict):
