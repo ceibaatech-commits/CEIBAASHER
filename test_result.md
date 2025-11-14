@@ -598,6 +598,10 @@ test_plan:
     - "Battle Lobby Socket.IO Integration Testing"
     - "Manual Quiz Room Creation System"
     - "Social Feed with Manual Quiz Room UI"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
   - task: "Profile and Notification API Endpoints"
     implemented: true
     working: true
