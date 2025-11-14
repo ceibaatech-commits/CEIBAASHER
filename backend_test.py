@@ -5314,7 +5314,7 @@ class BattleServerTester:
             self.log_result("Fresh Quiz Room Access", False, f"Test error: {e}")
             return False
 
-    async def test_expired_quiz_room_feed_filtering(self):
+    def test_expired_quiz_room_feed_filtering(self):
         """
         Test Scenario 3: Expired Quiz Room (>24 Hours) - Feed Filtering
         1. Manually create a quiz room in database with created_at timestamp >24 hours ago
