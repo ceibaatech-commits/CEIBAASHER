@@ -313,6 +313,16 @@ async def demo_login(login_data: DemoLoginRequest):
                 "provider_id": "demo2",
                 "password": "demo2",
                 "created_at": datetime.utcnow().isoformat()
+            },
+            "demo3": {
+                "id": "demo3-uuid",
+                "name": "Demo Student 3",
+                "email": "demo3@ceibaa.com",
+                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+3&background=F59E0B&color=fff&size=200",
+                "provider": "demo",
+                "provider_id": "demo3",
+                "password": "demo3",
+                "created_at": datetime.utcnow().isoformat()
             }
         }
         
