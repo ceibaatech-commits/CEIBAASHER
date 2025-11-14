@@ -10,7 +10,7 @@ const QuizRoom = () => {
   const { roomCode } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   const [questions, setQuestions] = useState(location.state?.questions || []);
   const [roomData, setRoomData] = useState(location.state?.room || null);
@@ -21,48 +21,72 @@ const QuizRoom = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading] = useState(!questions.length);
+  const [loadingQuiz, setLoadingQuiz] = useState(!questions.length);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [shareError, setShareError] = useState('');
 
+  // Redirect non-logged-in users to login
   useEffect(() => {
-    // If no questions in state, fetch them
-    if (!questions.length && roomCode) {
+    if (!loading && !user) {
+      navigate('/login');
+    }
+  }, [loading, user, navigate]);
+
+  // Fetch quiz data if not provided via navigation state
+  useEffect(() => {
+    if (!questions.length && roomCode && user) {
       fetchQuizData();
     }
-  }, [roomCode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomCode, user]);
 
+  // Fetch leaderboard after quiz completion
   useEffect(() => {
-    if (quizCompleted) {
+    if (quizCompleted && roomCode && user) {
       fetchLeaderboard();
     }
-  }, [quizCompleted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quizCompleted, roomCode, user]);
 
+  // Simple countdown timer (no auto-advance)
   useEffect(() => {
-    if (!quizCompleted && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !quizCompleted) {
-      handleNextQuestion();
-    }
+    if (quizCompleted) return;
+    if (timeLeft <= 0) return;
+
+    const timer = setTimeout(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, [timeLeft, quizCompleted]);
 
   const fetchQuizData = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+
       if (response.data.success) {
-        setQuestions(response.data.room.questions);
-        setRoomData(response.data.room);
+        const room = response.data.room;
+        setQuestions(room.questions || []);
+        setRoomData(room);
+        setTimeLeft((room.questions && room.questions[0]?.time_limit) || 30);
       }
     } catch (error) {
       console.error('Error fetching quiz:', error);
-      alert('Failed to load quiz');
+      const status = error.response?.status;
+      if (status === 404) {
+        alert('Quiz room not found or has been deleted');
+      } else if (status === 410) {
+        alert('This quiz has expired (24 hours elapsed)');
+      } else {
+        alert('Failed to load quiz');
+      }
       navigate('/social-feed');
     } finally {
-      setLoading(false);
+      setLoadingQuiz(false);
     }
   };
 
@@ -70,16 +94,28 @@ const QuizRoom = () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/leaderboard`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      
+
       if (response.data.success) {
-        setLeaderboard(response.data.leaderboard);
+        setLeaderboard(response.data.leaderboard || []);
       }
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
     }
+  };
+
+  const getQuestionPoints = (question) => {
+    if (!question) return 0;
+    const raw = question.points;
+    if (typeof raw === 'number') return raw;
+    if (typeof raw === 'string') {
+      const n = Number(raw);
+      if (!Number.isNaN(n)) return n;
+    }
+    // Fallback: 100 points per question if backend has no explicit points field
+    return 100;
   };
 
   const handleAnswerSelect = (answer) => {
@@ -89,54 +125,114 @@ const QuizRoom = () => {
   };
 
   const handleNextQuestion = () => {
+    if (!questions.length) return;
+
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = selectedAnswer === currentQuestion.correct_answer;
-    
-    setAnswers([...answers, {
+    const points = getQuestionPoints(currentQuestion);
+
+    const answerEntry = {
       question_id: currentQuestionIndex,
       selected_answer: selectedAnswer,
       correct_answer: currentQuestion.correct_answer,
       is_correct: isCorrect,
-      time_taken: currentQuestion.time_limit - timeLeft
-    }]);
+      time_taken: (currentQuestion.time_limit || 30) - timeLeft
+    };
 
-    if (isCorrect) {
-      setScore(score + 100);
-    }
+    const updatedAnswers = [...answers, answerEntry];
+    const updatedScore = isCorrect ? score + points : score;
 
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      const nextQuestion = questions[nextIndex];
+
+      setAnswers(updatedAnswers);
+      setScore(updatedScore);
+      setCurrentQuestionIndex(nextIndex);
       setSelectedAnswer(null);
-      setTimeLeft(questions[currentQuestionIndex + 1]?.time_limit || 30);
+      setTimeLeft(nextQuestion?.time_limit || 30);
     } else {
-      finishQuiz();
+      // Last question – finish quiz
+      handleFinishQuiz(updatedAnswers, updatedScore);
     }
   };
 
-  const finishQuiz = async () => {
+  const handleFinishQuiz = async (finalAnswers = answers, finalScore = score) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (quizCompleted) return;
     setQuizCompleted(true);
-    
-    // Submit results to backend
+
     try {
-      await axios.post(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/submit`, {
-        user_id: user.id,
-        user_name: user.name || user.username,
-        score: score + (selectedAnswer === questions[currentQuestionIndex].correct_answer ? 100 : 0),
-        answers: [...answers, {
-          question_id: currentQuestionIndex,
-          selected_answer: selectedAnswer,
-          correct_answer: questions[currentQuestionIndex].correct_answer,
-          is_correct: selectedAnswer === questions[currentQuestionIndex].correct_answer,
-          time_taken: questions[currentQuestionIndex].time_limit - timeLeft
-        }],
-        total_questions: questions.length
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      await axios.post(
+        `${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/submit`,
+        {
+          user_id: user.id,
+          user_name: user.name || user.username || 'User',
+          score: finalScore,
+          answers: finalAnswers,
+          total_questions: questions.length
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      });
+      );
     } catch (error) {
       console.error('Error submitting quiz results:', error);
+    }
+  };
+
+  const handleShareScore = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!questions.length) {
+      navigate('/social-feed');
+      return;
+    }
+
+    setShareLoading(true);
+    setShareError('');
+
+    const finalScore = score;
+    const correctCount = answers.filter((a) => a.is_correct).length;
+
+    const content =
+      `🎯 I just completed the quiz "${roomData?.title || 'Quiz Room'}"!` +
+      `\n\nScore: ${finalScore} points` +
+      `\nCorrect: ${correctCount}/${questions.length} questions` +
+      `\nRoom Code: ${roomData?.room_code || roomCode}` +
+      `\n\n#QuizResult #Ceibaa`;
+
+    try {
+      await axios.post(`${BACKEND_URL}/api/social/posts`, {
+        user_id: user.id,
+        user_name: user.name || user.username || 'User',
+        post_type: 'achievement',
+        content,
+        quiz_details: {
+          room_code: roomData?.room_code || roomCode,
+          title: roomData?.title,
+          category: roomData?.category,
+          score: finalScore,
+          total_questions: questions.length
+        }
+      });
+
+      // After successful share, redirect back to social feed as requested
+      navigate('/social-feed');
+    } catch (error) {
+      console.error('Error sharing score:', error);
+      setShareError(error.response?.data?.detail || 'Failed to share score. Please try again.');
+    } finally {
+      setShareLoading(false);
     }
   };
 
@@ -145,7 +241,7 @@ const QuizRoom = () => {
     return labels[option] || option;
   };
 
-  if (loading) {
+  if (loading || loadingQuiz) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
         <div className="text-center">
@@ -156,10 +252,28 @@ const QuizRoom = () => {
     );
   }
 
+  if (!questions.length) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
+          <X className="w-10 h-10 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">No questions found</h2>
+          <p className="text-gray-600 mb-6">This quiz room does not have any questions configured.</p>
+          <button
+            onClick={() => navigate('/social-feed')}
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+          >
+            Back to Feed
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (quizCompleted) {
     const finalScore = score;
-    const percentage = (finalScore / (questions.length * 100)) * 100;
-    
+    const percentage = (finalScore / (questions.length * getQuestionPoints(questions[0]) || 1)) * 100;
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
         <div className="max-w-4xl mx-auto">
@@ -180,17 +294,24 @@ const QuizRoom = () => {
               </div>
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 text-center border-2 border-green-200">
                 <Check className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                <p className="text-3xl font-bold text-green-600">{percentage.toFixed(0)}%</p>
+                <p className="text-3xl font-bold text-green-600">{Number.isFinite(percentage) ? percentage.toFixed(0) : '0'}%</p>
                 <p className="text-sm text-gray-600">Accuracy</p>
               </div>
               <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 text-center border-2 border-purple-200">
                 <Users className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                <p className="text-3xl font-bold text-purple-600">{answers.filter(a => a.is_correct).length}/{questions.length}</p>
+                <p className="text-3xl font-bold text-purple-600">{answers.filter((a) => a.is_correct).length}/{questions.length}</p>
                 <p className="text-sm text-gray-600">Correct</p>
               </div>
             </div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center items-center">
+              <button
+                onClick={handleShareScore}
+                disabled={shareLoading}
+                className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {shareLoading ? 'Sharing...' : 'Share my score'}
+              </button>
               <button
                 onClick={() => navigate('/social-feed')}
                 className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
@@ -204,6 +325,10 @@ const QuizRoom = () => {
                 Retake Quiz
               </button>
             </div>
+
+            {shareError && (
+              <p className="mt-4 text-center text-sm text-red-500">{shareError}</p>
+            )}
           </div>
 
           {/* Leaderboard */}
@@ -218,24 +343,31 @@ const QuizRoom = () => {
                   <div
                     key={index}
                     className={`flex items-center justify-between p-4 rounded-xl ${
-                      entry.user_id === user.id
+                      entry.user_id === user?.id
                         ? 'bg-gradient-to-r from-indigo-100 to-purple-100 border-2 border-indigo-300'
                         : 'bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                        index === 0 ? 'bg-yellow-400 text-white' :
-                        index === 1 ? 'bg-gray-300 text-white' :
-                        index === 2 ? 'bg-orange-400 text-white' :
-                        'bg-gray-200 text-gray-600'
-                      }`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                          index === 0
+                            ? 'bg-yellow-400 text-white'
+                            : index === 1
+                            ? 'bg-gray-300 text-white'
+                            : index === 2
+                            ? 'bg-orange-400 text-white'
+                            : 'bg-gray-200 text-gray-600'
+                        }`}
+                      >
                         {index + 1}
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">
                           {entry.user_name}
-                          {entry.user_id === user.id && <span className="ml-2 text-xs text-indigo-600">(You)</span>}
+                          {entry.user_id === user?.id && (
+                            <span className="ml-2 text-xs text-indigo-600">(You)</span>
+                          )}
                         </p>
                         <p className="text-sm text-gray-500">
                           {entry.correct_answers}/{entry.total_questions} correct
@@ -245,7 +377,9 @@ const QuizRoom = () => {
                     <div className="text-right">
                       <p className="text-2xl font-bold text-indigo-600">{entry.score}</p>
                       <p className="text-xs text-gray-500">
-                        {new Date(entry.completed_at).toLocaleDateString()}
+                        {entry.completed_at
+                          ? new Date(entry.completed_at).toLocaleDateString()
+                          : ''}
                       </p>
                     </div>
                   </div>
@@ -313,15 +447,17 @@ const QuizRoom = () => {
                 } ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                    selectedAnswer === option
-                      ? option === currentQuestion.correct_answer
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                      selectedAnswer === option
+                        ? option === currentQuestion.correct_answer
+                          ? 'bg-green-500 text-white'
+                          : 'bg-red-500 text-white'
+                        : selectedAnswer && option === currentQuestion.correct_answer
                         ? 'bg-green-500 text-white'
-                        : 'bg-red-500 text-white'
-                      : selectedAnswer && option === currentQuestion.correct_answer
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
                     {getOptionLabel(option)}
                   </div>
                   <span className="font-medium text-gray-900">{currentQuestion[option]}</span>
@@ -331,7 +467,7 @@ const QuizRoom = () => {
           </div>
         </div>
 
-        {/* Next Button */}
+        {/* Next / Finish Button */}
         {selectedAnswer !== null && (
           <button
             onClick={handleNextQuestion}
