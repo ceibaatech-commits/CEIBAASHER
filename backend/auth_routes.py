@@ -89,6 +89,28 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
+async def generate_unique_username(base_name: str):
+    """Generate a unique username from name"""
+    # Clean and format base name
+    base = base_name.lower().replace(" ", "").replace("_", "")[:15]
+    
+    # Try base name first
+    existing = await db.users.find_one({"username": base})
+    if not existing:
+        return base
+    
+    # Add random suffix if needed
+    import random
+    for _ in range(10):
+        suffix = str(random.randint(100, 999))
+        username = f"{base}{suffix}"
+        existing = await db.users.find_one({"username": username})
+        if not existing:
+            return username
+    
+    # Fallback: use UUID
+    return f"{base}{str(uuid.uuid4())[:8]}"
+
 async def get_or_create_user(provider: str, provider_id: str, name: str, email: Optional[str], profile_picture: Optional[str]):
     # Check if user exists
     user = await db.users.find_one({"provider": provider, "provider_id": provider_id})
@@ -99,19 +121,37 @@ async def get_or_create_user(provider: str, provider_id: str, name: str, email: 
             {"_id": user["_id"]},
             {"$set": {"last_login": datetime.utcnow().isoformat()}}
         )
+        # Ensure username exists
+        if not user.get("username"):
+            username = await generate_unique_username(name)
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {"username": username}}
+            )
+            user["username"] = username
         return user
     
-    # Create new user
+    # Create new user with username
     user_id = str(uuid.uuid4())
+    username = await generate_unique_username(name)
+    
     new_user = {
         "id": user_id,
+        "username": username,
         "name": name,
         "email": email,
         "profile_picture": profile_picture,
         "provider": provider,
         "provider_id": provider_id,
+        "bio": "",
+        "location": "",
+        "exam_focus": [],
+        "is_private": False,
+        "streak_days": 0,
+        "badges": [],
         "created_at": datetime.utcnow().isoformat(),
-        "last_login": datetime.utcnow().isoformat()
+        "last_login": datetime.utcnow().isoformat(),
+        "joined_at": datetime.utcnow().isoformat()
     }
     
     await db.users.insert_one(new_user)
