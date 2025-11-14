@@ -562,6 +562,31 @@ frontend:
         agent: "main"
         comment: "Fixed Google Sheets parsing logic to handle 8-column format. Changes made: (1) Added CSV header logging to debug column names, (2) Implemented case-insensitive column lookup with whitespace trimming, (3) Created lowercase lookup dictionary for flexible column name matching, (4) Enhanced error logging to show which rows are skipped and why, (5) Added better handling for empty rows, (6) Multiple column name variations (Answer vs Correct Answer, etc), (7) Full traceback on parsing errors. The extra QUESTION NUMBER column is now ignored gracefully. Backend restarted successfully."
 
+  - task: "Manual Quiz Room Creation System"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/social_feed_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented comprehensive manual quiz room creation system. Added models: QuizQuestion (question, 4 options, correct answer, time limit), QuizRoomCreate (title, description, category, privacy, questions), QuizRoom (full room with code, stats). Added endpoints: POST /api/social/quiz-rooms (create with min 20, max 100 questions), GET /api/social/quiz-rooms (list rooms), GET /api/social/quiz-rooms/{room_code} (get room details), POST /api/social/quiz-rooms/{room_code}/join (join with privacy validation), DELETE /api/social/quiz-rooms/{room_code} (delete room). Implemented unique 6-character alphanumeric room code generator. Automatically creates social feed post when room is created. Backend restarted successfully."
+
+frontend:
+  - task: "Social Feed with Manual Quiz Room UI"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/SocialFeed.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Completely rebuilt SocialFeed.js with manual quiz room creation. Features implemented: (1) Twitter-like posting interface with text input (280 chars) and 'Create Room' button, (2) Manual question builder modal with add/edit/delete functionality, (3) Question form with 4 options, correct answer, time limit (10-60s), (4) Min 20, max 100 questions enforcement, (5) Room metadata form (title, description, category, privacy), (6) Success screen with prominent room code display, (7) Quiz room cards in feed with LARGE room code at top, (8) 'Join Room' button navigation to battle lobby, (9) Copy room code functionality, (10) Question counter and validation warnings. UI uses vibrant gradients matching Kahoot-inspired design. Old SocialFeed backed up to SocialFeed_old_backup.js."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
@@ -570,7 +595,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Passage-based Quiz Split-Screen UI"
+    - "Manual Quiz Room Creation System"
+    - "Social Feed with Manual Quiz Room UI"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
