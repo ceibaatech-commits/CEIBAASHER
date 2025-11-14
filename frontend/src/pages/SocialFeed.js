@@ -754,6 +754,11 @@ const SocialFeed = () => {
 // Post Card Component
 const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
   const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [postingComment, setPostingComment] = useState(false);
+  const navigate = useNavigate();
 
   const getPostIcon = (type) => {
     switch (type) {
