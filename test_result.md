@@ -1128,6 +1128,65 @@ agent_communication:
 
   - agent: "testing"
     message: |
+      🕐 24-HOUR TTL ENFORCEMENT COMPREHENSIVE TESTING COMPLETE - 100% SUCCESS
+      
+      **Review Request Fulfilled**: Tested the 24-hour TTL enforcement for quiz rooms with all 5 comprehensive scenarios as requested.
+      
+      ## ✅ ALL CRITICAL SUCCESS CRITERIA MET (5/5 tests passed - 100% success):
+      
+      ### 🔐 TEST SCENARIO 1: Demo Login 3 Creation ✅
+      - Demo3 login via POST /api/auth/demo-login with username="demo3", password="demo3" working correctly ✅
+      - Response includes user_id="demo3-uuid", name="Demo Student 3" as expected ✅
+      - JWT token (access_token) generated correctly ✅
+      
+      ### 🆕 TEST SCENARIO 2: Fresh Quiz Room (Within 24 Hours) ✅
+      - Created PUBLIC quiz room with demo3 as host successfully (room code: KH1QPD) ✅
+      - Fresh quiz rooms (<24 hours) accessible via direct GET /api/social/quiz-rooms/{room_code} ✅
+      - Demo1 can access fresh room with user_id parameter ✅
+      - Quiz room creation requires minimum 5 questions (validation working) ✅
+      
+      ### ⏰ TEST SCENARIO 3: Expired Quiz Room Direct Access Blocked ✅
+      - Manually created quiz room in database with created_at timestamp >24 hours ago (25 hours) ✅
+      - Direct access via GET /api/social/quiz-rooms/{expired_room_code} returns 410 Gone status ✅
+      - Error message correctly says "This quiz expired (24 hours elapsed)" ✅
+      - TTL enforcement working at direct access level ✅
+      
+      ### 📱 TEST SCENARIO 4: Feed Filtering ✅
+      - Trending feed GET /api/social/feed/trending correctly filters out expired quiz room posts ✅
+      - filter_expired_quiz_posts() function working correctly ✅
+      - Only fresh quiz room posts appear in feeds ✅
+      - Non-quiz posts (battle_victory, achievement) still appear regardless of age ✅
+      
+      ### 🔀 TEST SCENARIO 5: Mixed Feed with Fresh and Expired Rooms ✅
+      - Database contains both fresh (<24hr) and expired (>24hr) quiz room posts ✅
+      - Expired quiz posts correctly filtered from all social feeds ✅
+      - Fresh quiz posts appear normally in feeds ✅
+      - Filter only affects quiz_room posts, not other post types ✅
+      
+      ## 🏗️ TECHNICAL VERIFICATION:
+      ```
+      Demo3 Authentication: POST /api/auth/demo-login (demo3/demo3) ✅
+      Fresh Room Creation: POST /api/social/quiz-rooms (5+ questions required) ✅
+      Fresh Room Access: GET /api/social/quiz-rooms/{room_code}?user_id=demo1-uuid ✅
+      Expired Room Access: GET /api/social/quiz-rooms/{expired_code} → 410 Gone ✅
+      Feed Filtering: GET /api/social/feed/trending (expired posts filtered) ✅
+      TTL Function: filter_expired_quiz_posts() working correctly ✅
+      Backend URL: https://solo-quiz-app.preview.emergentagent.com/api ✅
+      ```
+      
+      ## 📊 TEST RESULTS SUMMARY:
+      - ✅ Demo3 login functional with correct credentials
+      - ✅ Fresh quiz rooms accessible within 24-hour window
+      - ✅ Expired rooms (>24 hours) return 410 Gone with correct error message
+      - ✅ Social feed filtering prevents expired quiz posts from appearing
+      - ✅ TTL enforcement working at both direct access and feed level
+      - ✅ Filter only affects quiz_room posts, preserves other content types
+      - ✅ Complete 24-hour lifecycle: room visible in feed for 24hrs, then automatically hidden
+      
+      **CONCLUSION**: 24-hour TTL enforcement is FULLY OPERATIONAL and meets all review request requirements. The system correctly enforces the 24-hour expiry at multiple levels: direct room access returns 410 Gone for expired rooms, and social feeds automatically filter out expired quiz posts while preserving other content.
+
+  - agent: "testing"
+    message: |
       🎯 DUAL EMAIL CONTACT FORM TESTING COMPLETE - 100% SUCCESS
       
       ✅ **DUAL EMAIL VERIFICATION RESULTS (8/8 tests passed)**:
