@@ -73,6 +73,45 @@ const PublicProfile = () => {
     }
   };
 
+  const fetchUserContent = async (tab) => {
+    if (!profile || !canView) return;
+    
+    setLoadingContent(true);
+    try {
+      if (tab === 'posts') {
+        const response = await axios.get(
+          `${BACKEND_URL}/api/profile/profile/${username}/posts`,
+          {
+            params: { current_user_id: user?.id }
+          }
+        );
+        if (response.data.success) {
+          setPosts(response.data.posts || []);
+        }
+      } else if (tab === 'quizzes') {
+        const response = await axios.get(
+          `${BACKEND_URL}/api/profile/profile/${username}/quiz-rooms`,
+          {
+            params: { current_user_id: user?.id }
+          }
+        );
+        if (response.data.success) {
+          setQuizRooms(response.data.quiz_rooms || []);
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching ${tab}:`, error);
+    } finally {
+      setLoadingContent(false);
+    }
+  };
+
+  useEffect(() => {
+    if (profile && canView) {
+      fetchUserContent(activeTab);
+    }
+  }, [activeTab, profile, canView]);
+
   // Redirect to dashboard if viewing own profile
   useEffect(() => {
     if (profile && user && profile.username === user.username) {
