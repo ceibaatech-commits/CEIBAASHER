@@ -1189,8 +1189,8 @@ async def create_quiz_room(room_data: QuizRoomCreate):
             "likes_count": 0,
             "comments_count": 0,
             "shares_count": 0,
-            "is_trending": False,
-            "trending_score": 0,
+            "is_trending": True,
+            "trending_score": 100,  # Boost new quiz rooms to top of feed
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
