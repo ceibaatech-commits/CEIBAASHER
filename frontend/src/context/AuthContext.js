@@ -31,12 +31,23 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/login`, {
-        email,
-        password
-      });
+      // Try both endpoints - regular login and demo-login
+      let response;
+      try {
+        response = await axios.post(`${BACKEND_URL}/api/auth/login`, {
+          email,
+          password
+        });
+      } catch (err) {
+        // If regular login fails, try demo-login with username/password
+        response = await axios.post(`${BACKEND_URL}/api/auth/demo-login`, {
+          username: email,
+          password
+        });
+      }
 
-      if (response.data.success) {
+      // Handle successful response
+      if (response.data.access_token || response.data.success) {
         const userData = response.data.user;
         const token = response.data.access_token;
         
@@ -46,18 +57,19 @@ export const AuthProvider = ({ children }) => {
         
         if (token) {
           localStorage.setItem('token', token);
+          localStorage.setItem('auth_token', token); // Keep for backward compatibility
           console.log('JWT token stored successfully');
         }
         
         return { success: true };
       } else {
-        return { success: false, message: response.data.message };
+        return { success: false, message: response.data.message || 'Login failed' };
       }
     } catch (error) {
       console.error('Login error:', error);
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.detail || error.response?.data?.message || 'Login failed'
       };
     }
   };
