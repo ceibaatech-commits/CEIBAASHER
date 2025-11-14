@@ -681,6 +681,8 @@ test_plan:
 agent_communication:
   - agent: "user"
     message: "Battle room joining is STILL not working. Tested with 2 demo accounts. Host creates room successfully, joiner enters PIN, but host never sees the joiner. Shows '0 Players' and 'Waiting for host to start the quiz' on joiner's screen."
+  - agent: "testing"
+    message: "🔍 JWT TOKEN DEBUGGING COMPLETE - ROOT CAUSE IDENTIFIED: The 'Not enough segments' JWT error was successfully debugged. FINDINGS: (1) ✅ JWT system is working correctly - tokens have proper 3-segment structure (header.payload.signature), (2) ✅ Profile update endpoint working with correct path /api/profile/update, (3) ❌ ERROR SOURCE: Some test code was incorrectly passing raw user IDs (e.g., 'Bearer demo2-uuid') instead of actual JWT tokens to Authorization headers. RECOMMENDATION: Update any frontend/test code that uses hardcoded user IDs in Authorization headers to use proper JWT tokens from login responses. The JWT authentication system itself is fully functional."
   
   - agent: "testing"
     message: |
