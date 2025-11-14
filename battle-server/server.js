@@ -465,24 +465,34 @@ app.get('/api/rooms', (req, res) => {
   });
 });
 
-// Create room via HTTP (for backward compatibility with FastAPI)
+// Create room via HTTP (for backward compatibility with FastAPI + Social Feed Quiz Rooms)
 app.post('/api/battle/create-room', (req, res) => {
-  const { examId, subject, topic, hostName } = req.body;
+  const { examId, subject, topic, hostName, customRoomId, questions, maxParticipants } = req.body;
   
-  if (!examId || !subject || !topic || !hostName) {
+  if (!hostName) {
     return res.status(400).json({
       success: false,
-      error: 'Missing required fields: examId, subject, topic, hostName'
+      error: 'Missing required field: hostName'
     });
   }
 
   try {
-    const roomId = generateRoomId();
+    // Use custom room ID if provided (for social feed quiz rooms), otherwise generate numeric
+    const roomId = customRoomId || generateRoomId();
+    
+    // Check if room already exists
+    if (battleRooms.has(roomId)) {
+      return res.status(409).json({
+        success: false,
+        error: 'Room with this ID already exists'
+      });
+    }
+    
     const config = {
-      examId,
-      subject,
-      topic,
-      maxParticipants: 50  // Default limit set to 50
+      examId: examId || 'social-quiz',
+      subject: subject || 'General',
+      topic: topic || 'Quiz Room',
+      maxParticipants: maxParticipants || 50
     };
 
     const room = new BattleRoom(roomId, {
@@ -491,14 +501,20 @@ app.post('/api/battle/create-room', (req, res) => {
       avatar: '👑',
       isHost: true
     }, config);
+    
+    // Set questions if provided (for social feed quiz rooms)
+    if (questions && Array.isArray(questions) && questions.length > 0) {
+      room.questions = questions;
+      console.log(`[HTTP] Room ${roomId} initialized with ${questions.length} questions`);
+    }
 
     battleRooms.set(roomId, room);
 
-    console.log(`[HTTP] Room created: ${roomId} by ${hostName} (max: 50 participants)`);
+    console.log(`[HTTP] Room created: ${roomId} by ${hostName} (type: ${customRoomId ? 'custom' : 'numeric'})`);
 
     res.json({
       success: true,
-      pin: roomId,  // Already numeric, no need for toUpperCase()
+      pin: roomId,
       roomId,
       room: getRoomData(room)
     });
