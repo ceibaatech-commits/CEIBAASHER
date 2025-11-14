@@ -19,6 +19,8 @@ import TestLatex from "@/pages/TestLatex";
 import UserDashboard from "@/pages/UserDashboard";
 import Dashboard from "@/pages/Dashboard";
 import PublicProfile from "@/pages/PublicProfile";
+import Notifications from "@/pages/Notifications";
+import PrivacySettings from "@/pages/PrivacySettings";
 
 // PIN-based Room Quiz (Multiple players, like Kahoot)
 import CreateRoom from "@/pages/CreateRoom";
