@@ -704,7 +704,7 @@ const SocialFeed = () => {
                     )}
                     <button
                       onClick={handleCreateRoom}
-                      disabled={questions.length < 20 || creatingRoom || !roomForm.title.trim() || !roomForm.description.trim()}
+                      disabled={questions.length < 5 || creatingRoom || !roomForm.title.trim() || !roomForm.description.trim()}
                       className="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {creatingRoom ? 'Creating Room...' : 'Create Quiz Room'}
