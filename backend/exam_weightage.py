@@ -156,28 +156,38 @@ EXAM_WEIGHTAGE = {
     },
     "NDA": {
         "total_questions": 270,
+        "marks_distribution": {
+            "Mathematics": 300,
+            "General Ability Test": 600
+        },
         "subjects": {
-            "Mathematics": {
+            "Mathematics (300 Marks)": {
                 "questions": 120,
                 "color": "from-green-600 to-emerald-600",
                 "topics": [
-                    {"name": "Algebra", "expected": "25-30", "importance": "Very High"},
-                    {"name": "Matrices & Determinants", "expected": "15-20", "importance": "High"},
+                    {"name": "Algebra", "expected": "30-35", "importance": "Very High"},
                     {"name": "Trigonometry", "expected": "20-25", "importance": "Very High"},
-                    {"name": "Calculus", "expected": "25-30", "importance": "Very High"},
-                    {"name": "Vector Algebra", "expected": "10-15", "importance": "Medium"},
-                    {"name": "Statistics", "expected": "10-12", "importance": "Medium"}
+                    {"name": "Analytical Geometry 2D", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Analytical Geometry 3D", "expected": "12-15", "importance": "High"},
+                    {"name": "Differential Calculus", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Integral Calculus & Differential Equations", "expected": "20-25", "importance": "Very High"},
+                    {"name": "Vector Algebra", "expected": "12-15", "importance": "High"},
+                    {"name": "Statistics & Probability", "expected": "12-15", "importance": "High"}
                 ]
             },
-            "General Ability": {
+            "General Ability Test - GAT (600 Marks)": {
                 "questions": 150,
                 "color": "from-blue-600 to-cyan-600",
                 "topics": [
-                    {"name": "English", "expected": "50-55", "importance": "Very High"},
-                    {"name": "General Knowledge", "expected": "40-45", "importance": "Very High"},
-                    {"name": "Physics", "expected": "25-30", "importance": "High"},
-                    {"name": "Chemistry", "expected": "20-25", "importance": "Medium"},
-                    {"name": "Biology", "expected": "10-12", "importance": "Low"}
+                    {"name": "English", "expected": "45-50", "importance": "Very High"},
+                    {"name": "Physics", "expected": "22-25", "importance": "High"},
+                    {"name": "Chemistry", "expected": "22-25", "importance": "High"},
+                    {"name": "General Science (Biology)", "expected": "18-20", "importance": "High"},
+                    {"name": "History", "expected": "22-25", "importance": "High"},
+                    {"name": "Geography", "expected": "18-20", "importance": "High"},
+                    {"name": "Current Affairs", "expected": "12-15", "importance": "Very High"},
+                    {"name": "Polity", "expected": "18-20", "importance": "High"},
+                    {"name": "Economics", "expected": "12-15", "importance": "Medium"}
                 ]
             }
         }
