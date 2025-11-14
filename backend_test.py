@@ -7280,7 +7280,7 @@ class BattleServerTester:
             }
             
             follow_response = requests.post(
-                f"{BACKEND_URL}/api/profile/profile/follow",
+                f"{BACKEND_URL}/api/profile/follow",
                 json=follow_data,
                 headers=headers,
                 timeout=30
