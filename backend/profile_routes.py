@@ -163,7 +163,7 @@ async def create_notification(
 
 # ==================== PROFILE ENDPOINTS ====================
 
-@router.get("/profile/{username}")
+@router.get("/{username}")
 async def get_user_profile(username: str, current_user_id: Optional[str] = None):
     """
     Get user profile by username
