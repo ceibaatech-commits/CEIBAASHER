@@ -5590,7 +5590,7 @@ class BattleServerTester:
                 "trending_score": 100
             }
             
-            await self.db.social_posts.insert_one(old_battle_post)
+            self.db.social_posts.insert_one(old_battle_post)
             
             self.log_result("Old Non-Quiz Post Creation", True, 
                           f"✅ Old battle victory post created (30 hours ago)")
