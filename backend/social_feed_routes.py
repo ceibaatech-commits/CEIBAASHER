@@ -336,6 +336,56 @@ async def create_post(post_data: PostCreateRequest):
     
     return {"success": True, "post": post_doc}
 
+
+async def filter_expired_quiz_posts(posts: list) -> list:
+    """
+    Filter out quiz room posts where the associated quiz room has expired (>24 hours)
+    """
+    filtered_posts = []
+    TWENTY_FOUR_HOURS = timedelta(hours=24)
+    now = datetime.now(timezone.utc)
+    
+    for post in posts:
+        # If it's not a quiz_room post, keep it
+        if post.get("post_type") != "quiz_room":
+            filtered_posts.append(post)
+            continue
+        
+        # If it's a quiz_room post, check if the room is expired
+        room_code = post.get("room_code")
+        if not room_code:
+            # No room code, skip this post
+            continue
+        
+        # Fetch the quiz room to check its creation time
+        try:
+            room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+            if not room:
+                # Room doesn't exist anymore, skip post
+                continue
+            
+            # Check 24-hour TTL
+            created_at = room.get("created_at")
+            if created_at:
+                if isinstance(created_at, str):
+                    created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                
+                room_age = now - created_at
+                
+                # Only include if room is less than 24 hours old
+                if room_age <= TWENTY_FOUR_HOURS:
+                    filtered_posts.append(post)
+            else:
+                # No creation time, skip to be safe
+                continue
+        except Exception as e:
+            print(f"Error checking quiz room expiry for {room_code}: {e}")
+            # On error, skip the post to be safe
+            continue
+    
+    return filtered_posts
+
+
 @router.get("/feed/for-you")
 async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
     """
@@ -343,6 +393,7 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
     1. Posts from users you follow (from ceeps collection)
     2. Trending content based on engagement + recency
     All activity types: scores, battle results, achievements, room codes
+    Filters out expired quiz room posts (>24 hours)
     """
     mixed_posts = []
     
