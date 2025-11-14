@@ -38,8 +38,17 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data.success) {
         const userData = response.data.user;
+        const token = response.data.access_token;
+        
+        // Store both user data and JWT token
         setUser(userData);
         localStorage.setItem('ceibaa_user', JSON.stringify(userData));
+        
+        if (token) {
+          localStorage.setItem('token', token);
+          console.log('JWT token stored successfully');
+        }
+        
         return { success: true };
       } else {
         return { success: false, message: response.data.message };
