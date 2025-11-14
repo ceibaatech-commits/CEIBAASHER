@@ -114,6 +114,7 @@ function App() {
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
           <Route path="/battle-lobby/:pin" element={<BattleLobby />} />
+          <Route path="/quiz-room/:roomCode" element={<QuizRoom />} />
           <Route path="/live-battle/:pin" element={<LiveBattle />} />
           <Route path="/battle-results/:pin" element={<BattleResults />} />
           
