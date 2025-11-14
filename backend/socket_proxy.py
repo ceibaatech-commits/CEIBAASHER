@@ -144,11 +144,26 @@ async def join_room(sid, data):
 # Also handle the hyphenated version from JavaScript
 @sio_server.on('join-room')
 async def join_room_hyphen(sid, data):
-    """Handle join-room (JavaScript naming)"""
-    logger.info(f'📨 Forwarding join-room from {sid}: {data}')
+    """Handle join-room and translate to join_room for battle-server"""
+    logger.info(f'📨 Translating join-room to join_room from {sid}: {data}')
     if sid in client_connections:
         try:
-            await client_connections[sid].emit('join-room', data)
+            # Translate hyphen to underscore and reformat data for battle-server
+            # Battle-server expects { roomId, userData: { username, isHost } }
+            pin = data.get('pin')
+            player_name = data.get('playerName')
+            is_host = data.get('isHost', False)
+            
+            translated_data = {
+                'roomId': pin,
+                'userData': {
+                    'username': player_name,
+                    'isHost': is_host
+                }
+            }
+            
+            logger.info(f'📤 Sending join_room to battle-server: {translated_data}')
+            await client_connections[sid].emit('join_room', translated_data)
         except Exception as e:
             logger.error(f'❌ Error forwarding join-room: {e}')
 
