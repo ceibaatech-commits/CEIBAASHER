@@ -31,7 +31,7 @@ const PublicProfile = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${BACKEND_URL}/api/profile/profile/${username}`,
+        `${BACKEND_URL}/api/profile/${username}`,
         {
           params: { current_user_id: user?.id }
         }
