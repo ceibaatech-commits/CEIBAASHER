@@ -5386,7 +5386,7 @@ class BattleServerTester:
             }
             
             # Insert into social_posts collection
-            await self.db.social_posts.insert_one(expired_post)
+            self.db.social_posts.insert_one(expired_post)
             
             self.log_result("Expired Quiz Social Post Creation", True, 
                           f"✅ Social post created for expired quiz room {expired_room_code}")
