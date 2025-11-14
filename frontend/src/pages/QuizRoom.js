@@ -150,12 +150,13 @@ const QuizRoom = () => {
     if (!questions.length) return;
 
     const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = selectedAnswer === currentQuestion.correct_answer;
+    const selectedLetter = optionKeyToLetter(selectedAnswer);
+    const isCorrect = selectedLetter === currentQuestion.correct_answer;
     const points = getQuestionPoints(currentQuestion);
 
     const answerEntry = {
       question_id: currentQuestionIndex,
-      selected_answer: selectedAnswer,
+      selected_answer: selectedLetter,
       correct_answer: currentQuestion.correct_answer,
       is_correct: isCorrect,
       time_taken: (currentQuestion.time_limit || 30) - timeLeft
