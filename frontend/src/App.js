@@ -96,6 +96,8 @@ function App() {
           <Route path="/old-dashboard" element={<UserDashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile/:username" element={<PublicProfile />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/settings/privacy" element={<PrivacySettings />} />
           
           {/* Social Routes */}
           <Route path="/social" element={<SocialFeed />} />
