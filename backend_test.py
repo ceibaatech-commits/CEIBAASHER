@@ -7913,10 +7913,10 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: Profile and Social Feed Fixes (CRITICAL - Current Review Request Focus)
-        print("\n🎯 PROFILE AND SOCIAL FEED FIXES (CRITICAL - CURRENT REVIEW REQUEST)")
+        # PRIORITY 1: Profile Update and Follow System Fixes (CRITICAL - Current Review Request Focus)
+        print("\n🎯 PROFILE UPDATE AND FOLLOW SYSTEM FIXES (CRITICAL - CURRENT REVIEW REQUEST)")
         print("=" * 70)
-        self.test_profile_and_social_feed_fixes()
+        self.test_profile_update_and_follow_system_fixes()
         
         # PRIORITY 2: Admin Sheet Manager Tests (CRITICAL - Review Request Focus)
         print("\n📋 ADMIN SHEET MANAGER TESTS (CRITICAL - Review Request)")
