@@ -51,6 +51,9 @@ const QuizRoom = () => {
       setLoadingQuiz(true);
       try {
         const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
+          params: {
+            user_id: user.id
+          },
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -69,6 +72,8 @@ const QuizRoom = () => {
           alert('Quiz room not found or has been deleted');
         } else if (status === 410) {
           alert('This quiz has expired (24 hours elapsed)');
+        } else if (status === 403) {
+          alert(error.response?.data?.detail || 'You do not have access to this quiz');
         } else {
           alert('Failed to load quiz');
         }
