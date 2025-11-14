@@ -3943,6 +3943,11 @@ class BattleServerTester:
         self.test_admin_overview_stats()
         self.test_admin_search_users()
         
+        # Solo Quiz Room Tests (NEW - Current Review Request)
+        print("\n🎯 SOLO QUIZ ROOM TESTS (CURRENT REVIEW REQUEST)")
+        print("=" * 60)
+        self.test_solo_quiz_room_flow()
+        
         # Summary
         print("\n" + "=" * 60)
         print("📊 TEST SUMMARY")
