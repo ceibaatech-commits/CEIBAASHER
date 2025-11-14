@@ -73,6 +73,42 @@ def test_24_hour_ttl_focused():
                     "option_d": "50",
                     "correct_answer": "B",
                     "time_limit": 30
+                },
+                {
+                    "question_text": "What is 8 × 7?",
+                    "option_a": "54",
+                    "option_b": "56",
+                    "option_c": "58", 
+                    "option_d": "60",
+                    "correct_answer": "B",
+                    "time_limit": 30
+                },
+                {
+                    "question_text": "What is 100 ÷ 4?",
+                    "option_a": "20",
+                    "option_b": "25",
+                    "option_c": "30",
+                    "option_d": "35",
+                    "correct_answer": "B",
+                    "time_limit": 30
+                },
+                {
+                    "question_text": "What is 12 - 5?",
+                    "option_a": "6",
+                    "option_b": "7",
+                    "option_c": "8",
+                    "option_d": "9",
+                    "correct_answer": "B",
+                    "time_limit": 30
+                },
+                {
+                    "question_text": "What is 9 + 16?",
+                    "option_a": "23",
+                    "option_b": "25",
+                    "option_c": "27",
+                    "option_d": "29",
+                    "correct_answer": "B",
+                    "time_limit": 30
                 }
             ]
         }
