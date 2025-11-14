@@ -271,9 +271,9 @@ const SocialFeed = () => {
       return;
     }
 
-    // Only host (creator) can attempt their quiz
-    if (post && post.user_id && user.id !== post.user_id) {
-      alert('Only the host who created this quiz can attempt it.');
+    // Check if quiz is private and user is not the host
+    if (post && post.quiz_details?.privacy === 'private' && post.user_id && user.id !== post.user_id) {
+      alert('This is a private quiz. Only the host can attempt it.');
       return;
     }
     
