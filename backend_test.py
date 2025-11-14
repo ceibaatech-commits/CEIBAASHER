@@ -6897,7 +6897,7 @@ class BattleServerTester:
             
             # Try without Authorization header
             no_auth_response = requests.put(
-                f"{BACKEND_URL}/api/profile/update",
+                f"{BACKEND_URL}/api/profile/profile/update",
                 json={"bio": "Should fail without auth"},
                 timeout=30
             )
