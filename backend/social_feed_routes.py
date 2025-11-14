@@ -1095,6 +1095,47 @@ async def create_quiz_room(room_data: QuizRoomCreate):
         # Insert into database
         await db.quiz_rooms.insert_one(room.copy())
         
+        # Register room with battle server for live gameplay
+        try:
+            import httpx
+            battle_questions = []
+            for idx, q in enumerate(room_data.questions):
+                battle_questions.append({
+                    "id": f"q{idx+1}",
+                    "question": q.question_text,
+                    "options": [
+                        {"id": "A", "text": q.option_a},
+                        {"id": "B", "text": q.option_b},
+                        {"id": "C", "text": q.option_c},
+                        {"id": "D", "text": q.option_d}
+                    ],
+                    "correctAnswer": q.correct_answer,
+                    "timeLimit": q.time_limit,
+                    "points": 100
+                })
+            
+            async with httpx.AsyncClient() as client:
+                battle_response = await client.post(
+                    "http://localhost:5001/api/battle/create-room",
+                    json={
+                        "customRoomId": room_code,
+                        "hostName": room_data.user_name,
+                        "subject": room_data.category,
+                        "topic": room_data.title,
+                        "examId": room["id"],
+                        "questions": battle_questions,
+                        "maxParticipants": 50
+                    },
+                    timeout=5.0
+                )
+                if battle_response.status_code == 200:
+                    print(f"✅ Quiz room {room_code} registered with battle server")
+                else:
+                    print(f"⚠️ Failed to register room with battle server: {battle_response.text}")
+        except Exception as e:
+            print(f"⚠️ Could not register with battle server: {str(e)}")
+            # Don't fail the quiz room creation if battle server is down
+        
         # Create social feed post for the quiz room
         post = {
             "id": str(uuid.uuid4()),
