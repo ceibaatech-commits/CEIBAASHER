@@ -7332,7 +7332,7 @@ class BattleServerTester:
             
             # Test without Authorization header
             no_auth_follow_response = requests.post(
-                f"{BACKEND_URL}/api/profile/profile/follow",
+                f"{BACKEND_URL}/api/profile/follow",
                 json={"target_user_id": "demo2-uuid"},
                 timeout=30
             )
