@@ -2008,3 +2008,61 @@ agent_communication:
       - ✅ Social feed post creation working
       
       **CONCLUSION**: Solo quiz room backend flow is FULLY OPERATIONAL and production-ready. All review request requirements have been successfully tested and verified.
+
+backend:
+  - task: "Profile and Social Feed Bug Fixes"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/profile_routes.py, /app/backend/social_feed_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed multiple critical bugs: (1) JWT token decoding for profile updates - was using string replacement instead of proper JWT decode, (2) Added username field to posts for profile navigation, (3) Created new endpoints for fetching user posts, quiz rooms, and liked posts, (4) Fixed all follow system endpoints to use proper JWT decoding. Created decode_jwt_token() helper function to avoid code duplication."
+
+frontend:
+  - task: "Dashboard and Profile Activity Display"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/Dashboard.js, /app/frontend/src/pages/PublicProfile.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented data fetching and display for user activity tabs: (1) Posts tab now fetches and displays all posts by user, (2) Quiz Rooms tab shows all quiz rooms created by user with proper UI cards, (3) Liked Posts tab shows posts liked by user (Dashboard only). Added loading states and empty states. Connected to new backend endpoints."
+
+  - task: "Profile Navigation from Social Feed"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/SocialFeed.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Made usernames and avatars in PostCard clickable to navigate to user profiles. On click, navigates to /profile/:username route to view the full user profile page."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Profile and Social Feed Bug Fixes"
+    - "Dashboard and Profile Activity Display"
+    - "Profile Navigation from Social Feed"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Implemented comprehensive fixes for profile and social feed issues reported by user. Fixed JWT authentication in profile updates, added endpoints for fetching user activity (posts, quiz rooms, liked posts), implemented UI for displaying this data in Dashboard and PublicProfile pages, and made usernames clickable for profile navigation. All services restarted successfully with no errors. Need backend and frontend testing to verify all fixes are working correctly."
+
