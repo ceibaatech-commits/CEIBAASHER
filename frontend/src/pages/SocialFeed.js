@@ -832,7 +832,7 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
                 onClick={() => onJoinRoom(post.room_code, post)}
                 className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-lg transition-all"
               >
-                Join Room Now 🚀
+                Start Quiz 🚀
               </button>
             </>
           )}
