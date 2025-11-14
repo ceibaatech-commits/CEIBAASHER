@@ -71,37 +71,52 @@ const BattleLobby = () => {
       console.error('❌ Socket error:', error);
     });
 
-    newSocket.on('player-joined', (data) => {
-      console.log('📬 Received player-joined:', data);
-      setPlayers(data.players || []);
+    // Listen for room_joined confirmation
+    newSocket.on('room_joined', (data) => {
+      console.log('📬 Room joined successfully:', data);
+      if (data.room && data.room.participants) {
+        setPlayers(data.room.participants);
+      }
     });
 
-    newSocket.on('player-left', (data) => {
-      console.log('Player left:', data.playerName);
+    // Listen for new participants joining
+    newSocket.on('participant_joined', (data) => {
+      console.log('📬 Participant joined:', data);
+      if (data.room && data.room.participants) {
+        setPlayers(data.room.participants);
+      }
     });
 
-    newSocket.on('player-kicked', (data) => {
-      setPlayers(data.players);
+    // Listen for participants leaving
+    newSocket.on('participant_left', (data) => {
+      console.log('📤 Participant left:', data);
+      if (data.room && data.room.participants) {
+        setPlayers(data.room.participants);
+      }
     });
 
-    newSocket.on('kicked', (data) => {
-      alert(data.message);
-      navigate('/');
-    });
-
-    newSocket.on('quiz-started', (data) => {
+    // Listen for battle started event
+    newSocket.on('battle_started', (data) => {
+      console.log('🚀 Battle started:', data);
       navigate(`/live-battle/${pin}`, { 
         state: { 
           playerName: isHost ? hostName : playerName,
           isHost,
-          firstQuestion: data
+          room: data.room
         } 
       });
     });
 
+    // Listen for join errors
+    newSocket.on('join_error', (data) => {
+      console.error('❌ Join error:', data);
+      alert(data.error || 'Failed to join room');
+      navigate('/social-feed');
+    });
+
     newSocket.on('error', (data) => {
-      alert(data.message);
-      navigate('/');
+      console.error('❌ Error:', data);
+      alert(data.message || 'An error occurred');
     });
 
     return () => {
