@@ -78,7 +78,7 @@ const Dashboard = () => {
         }
       } else if (tab === 'liked') {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/profile/${profile.username}/liked-posts`,
+          `${BACKEND_URL}/api/profile/${profile.username}/liked-posts`,
           {
             params: { current_user_id: user.id }
           }
