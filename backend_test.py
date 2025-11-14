@@ -5357,7 +5357,7 @@ class BattleServerTester:
             }
             
             # Insert into quiz_rooms collection
-            await self.db.quiz_rooms.insert_one(expired_room)
+            self.db.quiz_rooms.insert_one(expired_room)
             
             self.log_result("Expired Quiz Room Database Creation", True, 
                           f"✅ Expired quiz room {expired_room_code} created in database (25 hours ago)")
