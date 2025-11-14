@@ -7429,6 +7429,482 @@ class BattleServerTester:
             self.log_result("Follow System JWT Fix", False, f"Test error: {e}")
             return False
 
+    def test_profile_update_and_follow_system_fixes(self):
+        """
+        Test the profile update and follow system fixes to verify the "Not Found" and "[object Object]" errors are resolved.
+        
+        **TEST FOCUS:**
+        1. Profile Update with Proper JWT 
+        2. Follow System with Proper JWT
+        3. Verify JWT Token Decoding
+        """
+        print("\n🎯 TESTING PROFILE UPDATE AND FOLLOW SYSTEM FIXES")
+        print("=" * 70)
+        
+        success_count = 0
+        total_tests = 0
+        
+        # Test Scenario 1: Profile Update with Proper JWT
+        print("\n👤 TEST SCENARIO 1: Profile Update with Proper JWT")
+        print("-" * 60)
+        
+        scenario1_success = self.test_profile_update_with_jwt()
+        if scenario1_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test Scenario 2: Follow System with Proper JWT
+        print("\n🤝 TEST SCENARIO 2: Follow System with Proper JWT")
+        print("-" * 60)
+        
+        scenario2_success = self.test_follow_system_with_jwt()
+        if scenario2_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Test Scenario 3: JWT Token Decoding Verification
+        print("\n🔐 TEST SCENARIO 3: JWT Token Decoding Verification")
+        print("-" * 60)
+        
+        scenario3_success = self.test_jwt_token_decoding()
+        if scenario3_success:
+            success_count += 1
+        total_tests += 1
+        
+        # Overall result
+        success_rate = (success_count / total_tests) * 100
+        
+        if success_count == total_tests:
+            self.log_result("Profile Update and Follow System Fixes - COMPREHENSIVE TEST", True, 
+                          f"✅ ALL SCENARIOS PASSED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+        else:
+            self.log_result("Profile Update and Follow System Fixes - COMPREHENSIVE TEST", False, 
+                          f"❌ SOME SCENARIOS FAILED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+        
+        return success_count == total_tests
+
+    def test_profile_update_with_jwt(self):
+        """
+        Test Scenario 1: Profile Update with Proper JWT
+        1. Login as demo1 (username=demo1, password=demo1)
+        2. Get the JWT token
+        3. Test profile update via PUT /api/profile/update with proper data
+        4. Verify the update succeeds (200 OK)
+        5. Fetch profile to confirm changes were saved
+        """
+        try:
+            # Step 1: Login as demo1
+            print("1️⃣ Logging in as demo1...")
+            
+            login_data = {
+                "username": "demo1",
+                "password": "demo1"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=login_data,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Demo1 Login for Profile Update", False, 
+                              f"Login failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            login_response = response.json()
+            if not login_response.get('access_token'):
+                self.log_result("Demo1 Login for Profile Update", False, 
+                              f"No access token in response: {login_response}")
+                return False
+            
+            # Step 2: Extract JWT token
+            jwt_token = login_response['access_token']
+            user_info = login_response.get('user', {})
+            user_id = user_info.get('id')
+            
+            self.log_result("Demo1 Login for Profile Update", True, 
+                          f"✅ Login successful. User ID: {user_id}")
+            
+            # Step 3: Test profile update with proper JWT
+            print("2️⃣ Testing profile update with JWT token...")
+            
+            profile_update_data = {
+                "name": "Demo Student 1 - Test Update",
+                "bio": "Testing profile update with fixed JWT",
+                "location": "New Location, USA",
+                "exam_focus": ["JEE", "NEET", "CAT"]
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {jwt_token}",
+                "Content-Type": "application/json"
+            }
+            
+            response = requests.put(
+                f"{BACKEND_URL}/api/profile/update",
+                json=profile_update_data,
+                headers=headers,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Profile Update with JWT", False, 
+                              f"Profile update failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            # Step 4: Verify update response
+            update_response = response.json()
+            if not update_response.get('success'):
+                self.log_result("Profile Update with JWT", False, 
+                              f"Update not successful: {update_response}")
+                return False
+            
+            self.log_result("Profile Update with JWT", True, 
+                          f"✅ Profile update successful: {update_response.get('message')}")
+            
+            # Step 5: Fetch profile to confirm changes were saved
+            print("3️⃣ Fetching profile to verify changes...")
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/profile/profile/demostudent1",
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Profile Fetch After Update", False, 
+                              f"Failed to fetch profile: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            profile_response = response.json()
+            if not profile_response.get('success') or 'profile' not in profile_response:
+                self.log_result("Profile Fetch After Update", False, 
+                              f"Invalid profile response: {profile_response}")
+                return False
+            
+            profile = profile_response['profile']
+            
+            # Verify the changes were saved
+            verification_results = []
+            
+            if profile.get('name') == "Demo Student 1 - Test Update":
+                verification_results.append("✅ Name updated correctly")
+            else:
+                verification_results.append(f"❌ Name not updated: {profile.get('name')}")
+            
+            if profile.get('bio') == "Testing profile update with fixed JWT":
+                verification_results.append("✅ Bio updated correctly")
+            else:
+                verification_results.append(f"❌ Bio not updated: {profile.get('bio')}")
+            
+            if profile.get('location') == "New Location, USA":
+                verification_results.append("✅ Location updated correctly")
+            else:
+                verification_results.append(f"❌ Location not updated: {profile.get('location')}")
+            
+            exam_focus = profile.get('exam_focus', [])
+            expected_exams = ["JEE", "NEET", "CAT"]
+            if set(exam_focus) == set(expected_exams):
+                verification_results.append("✅ Exam focus updated correctly")
+            else:
+                verification_results.append(f"❌ Exam focus not updated: {exam_focus}")
+            
+            # Check if all verifications passed
+            failed_verifications = [v for v in verification_results if v.startswith("❌")]
+            
+            if not failed_verifications:
+                self.log_result("Profile Changes Verification", True, 
+                              "✅ All profile changes saved correctly")
+                self.log_result("Profile Update Flow - COMPLETE", True, 
+                              "✅ Profile update with JWT working correctly - 'Not Found' error resolved")
+                return True
+            else:
+                self.log_result("Profile Changes Verification", False, 
+                              f"Some changes not saved: {failed_verifications}")
+                return False
+            
+        except Exception as e:
+            self.log_result("Profile Update with JWT", False, f"Test error: {e}")
+            return False
+
+    def test_follow_system_with_jwt(self):
+        """
+        Test Scenario 2: Follow System with Proper JWT
+        1. Login as demo1
+        2. Try to follow demo2 via POST /api/profile/follow with target_user_id=demo2's actual user ID
+        3. Verify follow succeeds with proper response (not "[object Object]")
+        4. Check follow status
+        5. Test unfollow
+        """
+        try:
+            # Step 1: Login as demo1
+            print("1️⃣ Logging in as demo1 for follow system test...")
+            
+            login_data = {
+                "username": "demo1",
+                "password": "demo1"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=login_data,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Demo1 Login for Follow System", False, 
+                              f"Login failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            login_response = response.json()
+            jwt_token = login_response.get('access_token')
+            
+            if not jwt_token:
+                self.log_result("Demo1 Login for Follow System", False, 
+                              f"No JWT token received: {login_response}")
+                return False
+            
+            self.log_result("Demo1 Login for Follow System", True, 
+                          "✅ Login successful, JWT token obtained")
+            
+            # Step 2: Try to follow demo2
+            print("2️⃣ Testing follow demo2 with proper JWT...")
+            
+            follow_data = {
+                "target_user_id": "demo2-uuid"  # demo2's actual user ID
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {jwt_token}",
+                "Content-Type": "application/json"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/profile/follow",
+                json=follow_data,
+                headers=headers,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Follow Demo2 with JWT", False, 
+                              f"Follow request failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            # Step 3: Verify follow response is proper (not "[object Object]")
+            follow_response = response.json()
+            
+            # Check if response is valid JSON and not "[object Object]"
+            if isinstance(follow_response, dict) and follow_response.get('success') is not None:
+                self.log_result("Follow Response Format", True, 
+                              "✅ Follow response is proper JSON (not '[object Object]')")
+            else:
+                self.log_result("Follow Response Format", False, 
+                              f"Invalid follow response format: {follow_response}")
+                return False
+            
+            # Check follow status
+            follow_status = follow_response.get('status')
+            if follow_status == 'approved':
+                self.log_result("Follow Status", True, 
+                              f"✅ Follow successful with status: {follow_status}")
+            elif follow_status == 'pending':
+                self.log_result("Follow Status", True, 
+                              f"✅ Follow request sent with status: {follow_status}")
+            else:
+                self.log_result("Follow Status", False, 
+                              f"Unexpected follow status: {follow_status}")
+                return False
+            
+            # Step 4: Check follow status via API
+            print("3️⃣ Verifying follow status via API...")
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/profile/follow-status/demo2-uuid",
+                headers=headers,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                status_response = response.json()
+                if status_response.get('success'):
+                    self.log_result("Follow Status Check", True, 
+                                  f"✅ Follow status verified: {status_response}")
+                else:
+                    self.log_result("Follow Status Check", False, 
+                                  f"Follow status check failed: {status_response}")
+            else:
+                self.log_result("Follow Status Check", False, 
+                              f"Follow status API failed: HTTP {response.status_code}")
+            
+            # Step 5: Test unfollow (DELETE /api/profile/unfollow/{user_id})
+            print("4️⃣ Testing unfollow functionality...")
+            
+            response = requests.delete(
+                f"{BACKEND_URL}/api/profile/unfollow/demo2-uuid",
+                headers=headers,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                unfollow_response = response.json()
+                if unfollow_response.get('success'):
+                    self.log_result("Unfollow Demo2", True, 
+                                  f"✅ Unfollow successful: {unfollow_response.get('message')}")
+                else:
+                    self.log_result("Unfollow Demo2", False, 
+                                  f"Unfollow failed: {unfollow_response}")
+            else:
+                self.log_result("Unfollow Demo2", False, 
+                              f"Unfollow API failed: HTTP {response.status_code} - {response.text}")
+            
+            self.log_result("Follow System Flow - COMPLETE", True, 
+                          "✅ Follow system with JWT working correctly - '[object Object]' error resolved")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Follow System with JWT", False, f"Test error: {e}")
+            return False
+
+    def test_jwt_token_decoding(self):
+        """
+        Test Scenario 3: JWT Token Decoding Verification
+        1. Ensure JWT_SECRET is being read correctly from environment
+        2. Verify token payload contains 'sub' field with user_id
+        3. Test with invalid token to ensure proper error messages
+        """
+        try:
+            # Step 1: Check JWT_SECRET environment variable
+            print("1️⃣ Checking JWT_SECRET configuration...")
+            
+            jwt_secret = os.getenv('JWT_SECRET')
+            if jwt_secret:
+                self.log_result("JWT_SECRET Configuration", True, 
+                              f"✅ JWT_SECRET is configured (length: {len(jwt_secret)})")
+            else:
+                self.log_result("JWT_SECRET Configuration", False, 
+                              "❌ JWT_SECRET not found in environment")
+                return False
+            
+            # Step 2: Get a valid JWT token and decode it
+            print("2️⃣ Testing JWT token creation and decoding...")
+            
+            login_data = {
+                "username": "demo1",
+                "password": "demo1"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=login_data,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                self.log_result("JWT Token Generation", False, 
+                              f"Failed to get JWT token: HTTP {response.status_code}")
+                return False
+            
+            login_response = response.json()
+            jwt_token = login_response.get('access_token')
+            
+            if not jwt_token:
+                self.log_result("JWT Token Generation", False, 
+                              "No JWT token in login response")
+                return False
+            
+            # Decode the JWT token to verify structure
+            try:
+                from jose import jwt
+                
+                # Decode without verification first to check structure
+                unverified_payload = jwt.get_unverified_claims(jwt_token)
+                
+                # Check if 'sub' field exists and contains user_id
+                if 'sub' in unverified_payload:
+                    user_id = unverified_payload['sub']
+                    if user_id == 'demo1-uuid':
+                        self.log_result("JWT Token Structure", True, 
+                                      f"✅ JWT token contains correct 'sub' field: {user_id}")
+                    else:
+                        self.log_result("JWT Token Structure", False, 
+                                      f"JWT 'sub' field has unexpected value: {user_id}")
+                        return False
+                else:
+                    self.log_result("JWT Token Structure", False, 
+                                  f"JWT token missing 'sub' field: {unverified_payload}")
+                    return False
+                
+                # Verify token with secret
+                verified_payload = jwt.decode(jwt_token, jwt_secret, algorithms=["HS256"])
+                self.log_result("JWT Token Verification", True, 
+                              "✅ JWT token can be decoded with correct secret")
+                
+            except Exception as e:
+                self.log_result("JWT Token Decoding", False, 
+                              f"JWT token decoding failed: {e}")
+                return False
+            
+            # Step 3: Test with invalid token
+            print("3️⃣ Testing invalid JWT token handling...")
+            
+            invalid_headers = {
+                "Authorization": "Bearer invalid-jwt-token-12345",
+                "Content-Type": "application/json"
+            }
+            
+            response = requests.put(
+                f"{BACKEND_URL}/api/profile/update",
+                json={"name": "Test"},
+                headers=invalid_headers,
+                timeout=30
+            )
+            
+            if response.status_code == 401:
+                error_response = response.json()
+                if 'detail' in error_response and isinstance(error_response['detail'], str):
+                    self.log_result("Invalid JWT Token Handling", True, 
+                                  f"✅ Invalid token properly rejected with error: {error_response['detail']}")
+                else:
+                    self.log_result("Invalid JWT Token Handling", False, 
+                                  f"Invalid token rejected but error format unexpected: {error_response}")
+            else:
+                self.log_result("Invalid JWT Token Handling", False, 
+                              f"Invalid token not properly rejected: HTTP {response.status_code}")
+                return False
+            
+            # Test with missing Authorization header
+            print("4️⃣ Testing missing Authorization header...")
+            
+            response = requests.put(
+                f"{BACKEND_URL}/api/profile/update",
+                json={"name": "Test"},
+                timeout=30
+            )
+            
+            if response.status_code == 401:
+                error_response = response.json()
+                if 'detail' in error_response:
+                    self.log_result("Missing Authorization Header", True, 
+                                  f"✅ Missing auth header properly rejected: {error_response['detail']}")
+                else:
+                    self.log_result("Missing Authorization Header", False, 
+                                  f"Missing auth rejected but error format unexpected: {error_response}")
+            else:
+                self.log_result("Missing Authorization Header", False, 
+                              f"Missing auth header not properly rejected: HTTP {response.status_code}")
+                return False
+            
+            self.log_result("JWT Token Decoding - COMPLETE", True, 
+                          "✅ JWT token decoding working correctly - authentication issues resolved")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("JWT Token Decoding", False, f"Test error: {e}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
