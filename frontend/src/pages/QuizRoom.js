@@ -32,20 +32,78 @@ const QuizRoom = () => {
     }
   }, [loading, user, navigate]);
 
+  // Enforce: only host can attempt the quiz
+  useEffect(() => {
+    if (!roomData || !user) return;
+    if (roomData.host_id && roomData.host_id !== user.id) {
+      alert('Only the host who created this quiz can attempt it.');
+      navigate('/social-feed');
+    }
+  }, [roomData, user, navigate]);
+
   // Fetch quiz data if not provided via navigation state
   useEffect(() => {
-    if (!questions.length && roomCode && user) {
-      fetchQuizData();
+    if (questions.length || !roomCode || !user) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomCode, user]);
+
+    const fetchQuizData = async () => {
+      setLoadingQuiz(true);
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (response.data.success) {
+          const room = response.data.room;
+          setQuestions(room.questions || []);
+          setRoomData(room);
+          setTimeLeft((room.questions && room.questions[0]?.time_limit) || 30);
+        }
+      } catch (error) {
+        console.error('Error fetching quiz:', error);
+        const status = error.response?.status;
+        if (status === 404) {
+          alert('Quiz room not found or has been deleted');
+        } else if (status === 410) {
+          alert('This quiz has expired (24 hours elapsed)');
+        } else {
+          alert('Failed to load quiz');
+        }
+        navigate('/social-feed');
+      } finally {
+        setLoadingQuiz(false);
+      }
+    };
+
+    fetchQuizData();
+  }, [questions.length, roomCode, user, navigate]);
 
   // Fetch leaderboard after quiz completion
   useEffect(() => {
-    if (quizCompleted && roomCode && user) {
-      fetchLeaderboard();
+    if (!quizCompleted || !roomCode || !user) {
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    const fetchLeaderboard = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/leaderboard`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+
+        if (response.data.success) {
+          setLeaderboard(response.data.leaderboard || []);
+        }
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+      }
+    };
+
+    fetchLeaderboard();
   }, [quizCompleted, roomCode, user]);
 
   // Simple countdown timer (no auto-advance)
@@ -59,52 +117,6 @@ const QuizRoom = () => {
 
     return () => clearTimeout(timer);
   }, [timeLeft, quizCompleted]);
-
-  const fetchQuizData = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (response.data.success) {
-        const room = response.data.room;
-        setQuestions(room.questions || []);
-        setRoomData(room);
-        setTimeLeft((room.questions && room.questions[0]?.time_limit) || 30);
-      }
-    } catch (error) {
-      console.error('Error fetching quiz:', error);
-      const status = error.response?.status;
-      if (status === 404) {
-        alert('Quiz room not found or has been deleted');
-      } else if (status === 410) {
-        alert('This quiz has expired (24 hours elapsed)');
-      } else {
-        alert('Failed to load quiz');
-      }
-      navigate('/social-feed');
-    } finally {
-      setLoadingQuiz(false);
-    }
-  };
-
-  const fetchLeaderboard = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/leaderboard`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (response.data.success) {
-        setLeaderboard(response.data.leaderboard || []);
-      }
-    } catch (error) {
-      console.error('Error fetching leaderboard:', error);
-    }
-  };
 
   const getQuestionPoints = (question) => {
     if (!question) return 0;
@@ -272,7 +284,8 @@ const QuizRoom = () => {
 
   if (quizCompleted) {
     const finalScore = score;
-    const percentage = (finalScore / (questions.length * getQuestionPoints(questions[0]) || 1)) * 100;
+    const perQuestionPoints = getQuestionPoints(questions[0]) || 1;
+    const percentage = (finalScore / (questions.length * perQuestionPoints)) * 100;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">

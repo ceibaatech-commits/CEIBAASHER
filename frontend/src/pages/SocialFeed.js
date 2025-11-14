@@ -270,6 +270,12 @@ const SocialFeed = () => {
       navigate('/login');
       return;
     }
+
+    // Only host (creator) can attempt their quiz
+    if (post && post.user_id && user.id !== post.user_id) {
+      alert('Only the host who created this quiz can attempt it.');
+      return;
+    }
     
     try {
       // Fetch the quiz room details and questions
@@ -770,6 +776,8 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
     }
   };
 
+  const isHost = user && post.user_id && user.id === post.user_id;
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all">
       {/* Post Header */}
@@ -830,9 +838,14 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
 
               <button
                 onClick={() => onJoinRoom(post.room_code, post)}
-                className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-xl font-bold hover:shadow-lg transition-all"
+                disabled={!isHost}
+                className={`w-full px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all ${
+                  isHost
+                    ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white'
+                    : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                }`}
               >
-                Start Quiz 🚀
+                {isHost ? 'Start Quiz 🚀' : 'Only host can attempt this quiz'}
               </button>
             </>
           )}
@@ -841,7 +854,7 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
 
       {/* Post Content */}
       <div className="text-gray-800 mb-4 whitespace-pre-wrap">{post.content}</div>
-
+      
       {/* Engagement Buttons */}
       <div className="flex gap-6 pt-4 border-t border-gray-200">
         <button
