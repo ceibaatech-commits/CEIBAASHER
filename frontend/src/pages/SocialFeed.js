@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Heart, MessageCircle, Share2, Send, Trophy, Users, TrendingUp, 
-  Target, Sparkles, Plus, X, Copy, CheckCircle, Edit2, Trash2, AlertCircle
+  Target, Sparkles, Plus, X, Copy, CheckCircle, Edit2, Trash2, AlertCircle, Search
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
