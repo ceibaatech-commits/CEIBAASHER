@@ -54,7 +54,10 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
       }
     } catch (error) {
       console.error('Error following user:', error);
-      alert(error.response?.data?.detail || 'Failed to follow user');
+      const errorMessage = typeof error.response?.data?.detail === 'string' 
+        ? error.response.data.detail 
+        : error.response?.data?.message || error.message || 'Failed to follow user. Please try again.';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -80,7 +83,10 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
       }
     } catch (error) {
       console.error('Error unfollowing user:', error);
-      alert(error.response?.data?.detail || 'Failed to unfollow user');
+      const errorMessage = typeof error.response?.data?.detail === 'string' 
+        ? error.response.data.detail 
+        : error.response?.data?.message || error.message || 'Failed to unfollow user. Please try again.';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
