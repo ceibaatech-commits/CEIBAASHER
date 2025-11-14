@@ -35,7 +35,7 @@ const Dashboard = () => {
   const fetchProfile = async () => {
     try {
       const response = await axios.get(
-        `${BACKEND_URL}/api/profile/profile/id/${user.id}`,
+        `${BACKEND_URL}/api/profile/id/${user.id}`,
         {
           params: { current_user_id: user.id }
         }
