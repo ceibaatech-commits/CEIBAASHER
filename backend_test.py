@@ -5380,7 +5380,7 @@ class BattleServerTester:
                     "privacy": "public",
                     "questions_count": 1
                 },
-                "created_at": expired_timestamp,
+                "created_at": expired_timestamp.isoformat(),
                 "likes": 0,
                 "comments": 0,
                 "shares": 0,
