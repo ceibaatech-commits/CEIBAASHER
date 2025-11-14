@@ -51,7 +51,10 @@ const CoverPhotoUpload = ({ currentCover, onUploadComplete }) => {
           }
         } catch (error) {
           console.error('Error uploading cover:', error);
-          alert('Failed to upload cover photo');
+          const errorMessage = typeof error.response?.data?.detail === 'string' 
+            ? error.response.data.detail 
+            : error.response?.data?.message || error.message || 'Failed to upload cover photo. Please try again.';
+          alert(errorMessage);
           setPreviewUrl(currentCover);
         } finally {
           setUploading(false);
