@@ -51,6 +51,55 @@ const Dashboard = () => {
     }
   };
 
+  const fetchUserContent = async (tab) => {
+    if (!profile) return;
+    
+    setLoadingContent(true);
+    try {
+      if (tab === 'posts') {
+        const response = await axios.get(
+          `${BACKEND_URL}/api/profile/profile/${profile.username}/posts`,
+          {
+            params: { current_user_id: user.id }
+          }
+        );
+        if (response.data.success) {
+          setPosts(response.data.posts || []);
+        }
+      } else if (tab === 'quizzes') {
+        const response = await axios.get(
+          `${BACKEND_URL}/api/profile/profile/${profile.username}/quiz-rooms`,
+          {
+            params: { current_user_id: user.id }
+          }
+        );
+        if (response.data.success) {
+          setQuizRooms(response.data.quiz_rooms || []);
+        }
+      } else if (tab === 'liked') {
+        const response = await axios.get(
+          `${BACKEND_URL}/api/profile/profile/${profile.username}/liked-posts`,
+          {
+            params: { current_user_id: user.id }
+          }
+        );
+        if (response.data.success) {
+          setLikedPosts(response.data.posts || []);
+        }
+      }
+    } catch (error) {
+      console.error(`Error fetching ${tab}:`, error);
+    } finally {
+      setLoadingContent(false);
+    }
+  };
+
+  useEffect(() => {
+    if (profile) {
+      fetchUserContent(activeTab);
+    }
+  }, [activeTab, profile]);
+
   const handleFollowersClick = () => {
     setFollowModalType('followers');
     setShowFollowModal(true);
