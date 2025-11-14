@@ -108,47 +108,105 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
           {/* Profile Picture */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Profile Picture URL
+              Profile Picture
             </label>
             <div className="flex items-center gap-4">
-              {formData.profile_picture && (
+              {/* Profile Picture Preview */}
+              <div className="relative">
                 <img
-                  src={formData.profile_picture}
+                  src={formData.profile_picture || `https://ui-avatars.com/api/?name=${formData.name}&background=random&size=200`}
                   alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-lg"
                 />
-              )}
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('profile-picture-input').click()}
+                  className="absolute bottom-0 right-0 p-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all shadow-lg"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* File Input (Hidden) */}
               <input
-                type="text"
-                name="profile_picture"
-                value={formData.profile_picture}
-                onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                id="profile-picture-input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, 'profile_picture')}
+                className="hidden"
               />
+
+              {/* Upload Button */}
+              <div className="flex-1">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('profile-picture-input').click()}
+                  className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-purple-600"
+                >
+                  <Upload className="w-5 h-5" />
+                  <span className="font-semibold">Choose from Gallery</span>
+                </button>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  JPG, PNG or GIF (Max 5MB)
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Cover Photo */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cover Photo URL
+              Cover Photo
             </label>
-            <input
-              type="text"
-              name="cover_photo"
-              value={formData.cover_photo}
-              onChange={handleInputChange}
-              placeholder="https://example.com/cover.jpg"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-            {formData.cover_photo && (
-              <img
-                src={formData.cover_photo}
-                alt="Cover"
-                className="mt-2 w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+            <div className="relative">
+              {/* Cover Photo Preview */}
+              <div className="w-full h-40 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg overflow-hidden border-2 border-gray-200">
+                {formData.cover_photo ? (
+                  <img
+                    src={formData.cover_photo}
+                    alt="Cover"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-white">
+                    <div className="text-center">
+                      <Upload className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm opacity-75">No cover photo</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* File Input (Hidden) */}
+              <input
+                id="cover-photo-input"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, 'cover_photo')}
+                className="hidden"
               />
-            )}
+
+              {/* Upload/Remove Buttons */}
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('cover-photo-input').click()}
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition-all flex items-center justify-center gap-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  {formData.cover_photo ? 'Change Cover' : 'Add Cover Photo'}
+                </button>
+                {formData.cover_photo && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, cover_photo: '' })}
+                    className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 font-semibold transition-all"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Name */}
