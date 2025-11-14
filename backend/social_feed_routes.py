@@ -5,7 +5,7 @@ Comprehensive social networking features for educational platform
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 
 router = APIRouter()
@@ -429,7 +429,7 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
     # Get all posts
     all_posts = await db.social_posts.find({}, {"_id": 0}).to_list(None)
     
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timezone, timedelta, timedelta
     
     # Categorize posts: recent (< 24h) vs older
     recent_cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
