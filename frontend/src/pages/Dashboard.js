@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Settings, Edit, Users, FileText, Heart, Trophy, Calendar, MapPin, Award } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModal';
 import FollowListModal from '../components/FollowListModal';
+import ProfilePictureUpload from '../components/ProfilePictureUpload';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
