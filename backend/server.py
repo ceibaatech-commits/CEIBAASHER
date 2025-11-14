@@ -27,6 +27,10 @@ from admin_routes import router as admin_router
 import ceep_routes
 import admin_routes
 from chapter_test_routes import router as chapter_test_router
+from profile_routes import router as profile_router
+from notification_routes import router as notification_router
+import profile_routes
+import notification_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
@@ -42,6 +46,8 @@ db = client[os.environ['DB_NAME']]
 social_feed_routes.init_db(db)
 ceep_routes.init_db(db)
 admin_routes.init_db(db)
+profile_routes.init_db(db)
+notification_routes.init_db(db)
 
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
