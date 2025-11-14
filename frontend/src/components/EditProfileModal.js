@@ -94,6 +94,18 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
 
     try {
       const token = localStorage.getItem('token');
+      
+      // Debug logging
+      console.log('Token from localStorage:', token);
+      console.log('Token length:', token ? token.length : 0);
+      console.log('Token parts count:', token ? token.split('.').length : 0);
+      
+      if (!token) {
+        alert('You are not logged in. Please log in again.');
+        setLoading(false);
+        return;
+      }
+      
       const response = await axios.put(
         `${BACKEND_URL}/api/profile/update`,
         formData,
