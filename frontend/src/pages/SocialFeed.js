@@ -345,50 +345,6 @@ const SocialFeed = () => {
       <Header />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Search Bar */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 mb-6">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search users, posts, topics..."
-              value={searchQuery}
-              onChange={handleSearchInputChange}
-              onFocus={() => setShowSearch(true)}
-              className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-all"
-            />
-          </div>
-          
-          {/* Search Results Dropdown */}
-          {showSearch && searchQuery && (
-            <div className="mt-2 bg-white rounded-xl border-2 border-gray-200 shadow-lg max-h-96 overflow-y-auto">
-              {searchLoading ? (
-                <div className="p-4 text-center text-gray-500">Searching...</div>
-              ) : searchResults.length > 0 ? (
-                <div className="py-2">
-                  {searchResults.map((result) => (
-                    <div
-                      key={result.user_id || result.id}
-                      onClick={() => handleUserClick(result.user_id || result.id)}
-                      className="px-4 py-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-all"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                        {result.name?.[0] || result.username?.[0] || 'U'}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-800">{result.name || result.username || 'User'}</p>
-                        {result.email && <p className="text-sm text-gray-500">{result.email}</p>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-4 text-center text-gray-500">No users found</div>
-              )}
-            </div>
-          )}
-        </div>
-        
         {/* Create Post/Room Section */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex gap-3">
