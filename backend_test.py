@@ -5101,7 +5101,7 @@ class BattleServerTester:
         # Solo Quiz Room Tests (NEW - Current Review Request)
         print("\n🎯 SOLO QUIZ ROOM TESTS (CURRENT REVIEW REQUEST)")
         print("=" * 60)
-        self.test_solo_quiz_room_flow()
+        self.test_solo_quiz_room_system_comprehensive()
         
         # Summary
         print("\n" + "=" * 60)
