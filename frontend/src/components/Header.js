@@ -13,6 +13,44 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   const [searchResults, setSearchResults] = React.useState([]);
   const [searchLoading, setSearchLoading] = React.useState(false);
 
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/auth/search-user?name=${encodeURIComponent(query)}`);
+      
+      if (response.data.success) {
+        setSearchResults(response.data.users || []);
+      }
+    } catch (error) {
+      console.error('Error searching:', error);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSearchInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    
+    if (query.length > 0) {
+      handleSearch(query);
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleUserClick = (userId) => {
+    setShowSearch(false);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
   return (
     <header className="sticky top-0 z-40 shadow-2xl border-b border-gray-300" style={{ background: '#f8f9fa', color: '#1f2937' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
