@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, Bell, LogOut, Menu, X, Flame, Search } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, Search } from 'lucide-react';
 import axios from 'axios';
+import NotificationBell from './NotificationBell';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
