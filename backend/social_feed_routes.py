@@ -344,8 +344,6 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
     2. Trending content based on engagement + recency
     All activity types: scores, battle results, achievements, room codes
     """
-    from datetime import timedelta
-    
     mixed_posts = []
     
     # PART 1: Get posts from users you're following (ceeps)
