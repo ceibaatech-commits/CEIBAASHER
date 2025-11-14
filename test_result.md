@@ -598,6 +598,18 @@ test_plan:
     - "Battle Lobby Socket.IO Integration Testing"
     - "Manual Quiz Room Creation System"
     - "Social Feed with Manual Quiz Room UI"
+  - task: "Solo Quiz Room & Share Score"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/pages/QuizRoom.js, /app/backend/social_feed_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Initial implementation of solo quiz room flow in QuizRoom.js (load quiz, question navigation, scoring respecting per-question points), result submission to /api/social/quiz-rooms/{room_code}/submit, leaderboard display, and share score to social feed posts. Needs backend & frontend testing as a new flow."
+
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
