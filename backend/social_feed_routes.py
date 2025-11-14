@@ -1033,10 +1033,10 @@ async def create_quiz_room(room_data: QuizRoomCreate):
     """
     try:
         # Validate question count
-        if len(room_data.questions) < 20:
+        if len(room_data.questions) < 5:
             raise HTTPException(
                 status_code=400,
-                detail=f"Minimum 20 questions required. You provided {len(room_data.questions)}."
+                detail=f"Minimum 5 questions required. You provided {len(room_data.questions)}."
             )
         
         if len(room_data.questions) > 100:
