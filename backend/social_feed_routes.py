@@ -984,7 +984,7 @@ class QuizRoomCreate(BaseModel):
     description: str
     category: str  # General Knowledge, Science & Technology, etc.
     privacy: Literal["public", "private", "followers_only"] = "public"
-    questions: List[QuizQuestion] = Field(min_items=20, max_items=100)
+    questions: List[QuizQuestion] = Field(min_items=5, max_items=100)
 
 class QuizRoom(BaseModel):
     model_config = ConfigDict(extra="ignore")
