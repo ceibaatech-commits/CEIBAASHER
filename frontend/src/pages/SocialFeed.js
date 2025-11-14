@@ -273,49 +273,6 @@ const SocialFeed = () => {
     navigate(`/battle-lobby?pin=${roomCode}`);
   };
 
-  // SEARCH FUNCTIONS
-  const handleSearch = async (query) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setSearchLoading(true);
-    try {
-      // Search for users and posts
-      const response = await axios.get(`${BACKEND_URL}/api/auth/search-user?name=${encodeURIComponent(query)}`);
-      
-      if (response.data.success) {
-        setSearchResults(response.data.users || []);
-      }
-    } catch (error) {
-      console.error('Error searching:', error);
-      setSearchResults([]);
-    } finally {
-      setSearchLoading(false);
-    }
-  };
-
-  const handleSearchInputChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    
-    // Debounce search
-    if (query.length > 0) {
-      handleSearch(query);
-    } else {
-      setSearchResults([]);
-    }
-  };
-
-  const handleUserClick = (userId) => {
-    // Navigate to user profile or show user posts
-    setShowSearch(false);
-    setSearchQuery('');
-    setSearchResults([]);
-    // For now, just close search
-  };
-
   // ENGAGEMENT FUNCTIONS
   const handleLikePost = async (postId) => {
     if (!user) {
