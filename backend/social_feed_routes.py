@@ -1380,3 +1380,91 @@ async def delete_quiz_room(room_code: str, user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting quiz room: {str(e)}")
 
+
+@router.post("/quiz-rooms/{room_code}/submit")
+async def submit_quiz_results(room_code: str, result_data: dict):
+    """
+    Submit quiz results and add to leaderboard
+    """
+    try:
+        room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+        
+        if not room:
+            raise HTTPException(status_code=404, detail="Quiz room not found")
+        
+        # Create result entry
+        result = {
+            "id": str(uuid.uuid4()),
+            "room_code": room_code.upper(),
+            "room_id": room.get("id"),
+            "user_id": result_data.get("user_id"),
+            "user_name": result_data.get("user_name"),
+            "score": result_data.get("score", 0),
+            "total_questions": result_data.get("total_questions", 0),
+            "correct_answers": sum(1 for ans in result_data.get("answers", []) if ans.get("is_correct")),
+            "answers": result_data.get("answers", []),
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+            "time_taken_seconds": sum(ans.get("time_taken", 0) for ans in result_data.get("answers", []))
+        }
+        
+        # Store in quiz_results collection
+        await db.quiz_results.insert_one(result.copy())
+        
+        # Update room stats
+        await db.quiz_rooms.update_one(
+            {"room_code": room_code.upper()},
+            {
+                "$inc": {"plays_count": 1}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Results submitted successfully",
+            "result": result
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error submitting quiz results: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error submitting results: {str(e)}")
+
+
+@router.get("/quiz-rooms/{room_code}/leaderboard")
+async def get_quiz_leaderboard(room_code: str):
+    """
+    Get leaderboard for a quiz room
+    """
+    try:
+        # Fetch all results for this room, sorted by score (descending) and time (ascending)
+        results_cursor = db.quiz_results.find(
+            {"room_code": room_code.upper()}
+        ).sort([("score", -1), ("time_taken_seconds", 1)])
+        
+        results = await results_cursor.to_list(length=100)  # Top 100
+        
+        # Remove MongoDB _id and format data
+        leaderboard = []
+        for result in results:
+            result.pop("_id", None)
+            leaderboard.append({
+                "user_id": result.get("user_id"),
+                "user_name": result.get("user_name"),
+                "score": result.get("score", 0),
+                "correct_answers": result.get("correct_answers", 0),
+                "total_questions": result.get("total_questions", 0),
+                "completed_at": result.get("completed_at"),
+                "time_taken_seconds": result.get("time_taken_seconds", 0)
+            })
+        
+        return {
+            "success": True,
+            "leaderboard": leaderboard
+        }
+        
+    except Exception as e:
+        print(f"Error fetching leaderboard: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching leaderboard: {str(e)}")
+
+
