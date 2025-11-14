@@ -321,26 +321,126 @@ const Dashboard = () => {
 
           {/* Tab Content */}
           <div className="p-6 min-h-[400px]">
-            {activeTab === 'posts' && (
+            {loadingContent ? (
               <div className="text-center py-12">
-                <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-600 text-lg">No posts yet</p>
-                <p className="text-gray-500 text-sm mt-2">Share your quiz results and achievements!</p>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                <p className="text-gray-600 mt-4">Loading...</p>
               </div>
-            )}
-            {activeTab === 'liked' && (
-              <div className="text-center py-12">
-                <Heart className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-600 text-lg">No liked posts yet</p>
-                <p className="text-gray-500 text-sm mt-2">Start exploring and like posts from others!</p>
-              </div>
-            )}
-            {activeTab === 'quizzes' && (
-              <div className="text-center py-12">
-                <Trophy className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-600 text-lg">No quiz rooms yet</p>
-                <p className="text-gray-500 text-sm mt-2">Create or join quiz rooms to get started!</p>
-              </div>
+            ) : (
+              <>
+                {activeTab === 'posts' && (
+                  posts.length > 0 ? (
+                    <div className="space-y-4">
+                      {posts.map(post => (
+                        <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <p className="text-sm text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
+                              {post.post_type && (
+                                <span className="inline-block mt-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                                  {post.post_type === 'quiz_room' ? 'Quiz Room' : post.post_type}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <p className="text-gray-800">{post.content}</p>
+                          {post.room_code && (
+                            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                              <p className="text-sm text-green-700 font-semibold">Room Code: {post.room_code}</p>
+                            </div>
+                          )}
+                          <div className="mt-3 flex gap-4 text-sm text-gray-600">
+                            <span>❤️ {post.likes_count || 0}</span>
+                            <span>💬 {post.comments_count || 0}</span>
+                            <span>🔄 {post.shares_count || 0}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                      <p className="text-gray-600 text-lg">No posts yet</p>
+                      <p className="text-gray-500 text-sm mt-2">Share your quiz results and achievements!</p>
+                    </div>
+                  )
+                )}
+                {activeTab === 'liked' && (
+                  likedPosts.length > 0 ? (
+                    <div className="space-y-4">
+                      {likedPosts.map(post => (
+                        <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                              {post.user_name?.[0] || 'U'}
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-800">{post.user_name}</p>
+                              <p className="text-xs text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                          <p className="text-gray-800">{post.content}</p>
+                          <div className="mt-3 flex gap-4 text-sm text-gray-600">
+                            <span>❤️ {post.likes_count || 0}</span>
+                            <span>💬 {post.comments_count || 0}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Heart className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                      <p className="text-gray-600 text-lg">No liked posts yet</p>
+                      <p className="text-gray-500 text-sm mt-2">Start exploring and like posts from others!</p>
+                    </div>
+                  )
+                )}
+                {activeTab === 'quizzes' && (
+                  quizRooms.length > 0 ? (
+                    <div className="space-y-4">
+                      {quizRooms.map(room => (
+                        <div key={room.room_code} className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-4 border-2 border-green-200">
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-lg text-gray-800">{room.title}</h3>
+                              <p className="text-sm text-gray-600 mt-1">{room.description}</p>
+                            </div>
+                            <div className="ml-4">
+                              <div className="px-4 py-2 bg-green-500 text-white rounded-lg text-center">
+                                <div className="text-xs font-semibold">ROOM CODE</div>
+                                <div className="text-xl font-bold">{room.room_code}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-2 text-sm">
+                            <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
+                              📝 {room.question_count} Questions
+                            </span>
+                            <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
+                              🏷️ {room.category}
+                            </span>
+                            <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
+                              {room.privacy === 'public' ? '🌐 Public' : room.privacy === 'followers_only' ? '👥 Followers' : '🔒 Private'}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => navigate(`/quiz-room/${room.room_code}`)}
+                            className="mt-3 w-full px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                          >
+                            View Quiz
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Trophy className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                      <p className="text-gray-600 text-lg">No quiz rooms yet</p>
+                      <p className="text-gray-500 text-sm mt-2">Create or join quiz rooms to get started!</p>
+                    </div>
+                  )
+                )}
+              </>
             )}
           </div>
         </div>
