@@ -91,7 +91,9 @@ function App() {
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
+          <Route path="/old-dashboard" element={<UserDashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile/:username" element={<PublicProfile />} />
           
           {/* Social Routes */}
           <Route path="/social" element={<SocialFeed />} />
