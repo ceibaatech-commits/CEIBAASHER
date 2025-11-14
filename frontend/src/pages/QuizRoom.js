@@ -462,10 +462,10 @@ const QuizRoom = () => {
                 disabled={selectedAnswer !== null}
                 className={`p-6 rounded-xl border-2 text-left transition-all ${
                   selectedAnswer === option
-                    ? option === currentQuestion.correct_answer
+                    ? optionKeyToLetter(option) === currentQuestion.correct_answer
                       ? 'bg-green-50 border-green-500'
                       : 'bg-red-50 border-red-500'
-                    : selectedAnswer && option === currentQuestion.correct_answer
+                    : selectedAnswer && optionKeyToLetter(option) === currentQuestion.correct_answer
                     ? 'bg-green-50 border-green-500'
                     : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50'
                 } ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
