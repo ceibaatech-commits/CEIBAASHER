@@ -474,10 +474,10 @@ const QuizRoom = () => {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
                       selectedAnswer === option
-                        ? option === currentQuestion.correct_answer
+                        ? optionKeyToLetter(option) === currentQuestion.correct_answer
                           ? 'bg-green-500 text-white'
                           : 'bg-red-500 text-white'
-                        : selectedAnswer && option === currentQuestion.correct_answer
+                        : selectedAnswer && optionKeyToLetter(option) === currentQuestion.correct_answer
                         ? 'bg-green-500 text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}
