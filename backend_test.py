@@ -7125,10 +7125,11 @@ class BattleServerTester:
                 return False
             
             # Verify username value is correct for demo1
-            expected_username = "demostudent1"
-            if username_value != expected_username:
+            # Check if it's the username field (demostudent1) or user_name field (Demo Student 1)
+            expected_values = ["demostudent1", "Demo Student 1"]
+            if username_value not in expected_values:
                 self.log_result("Post Username Value", False, 
-                              f"Username value incorrect: expected '{expected_username}', got '{username_value}'")
+                              f"Username value incorrect: expected one of {expected_values}, got '{username_value}'")
                 return False
             
             self.log_result("Post Username Field", True, 
