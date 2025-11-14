@@ -5353,7 +5353,7 @@ class BattleServerTester:
                         "time_limit": 30
                     }
                 ],
-                "created_at": expired_timestamp,
+                "created_at": expired_timestamp.isoformat(),
                 "participants_count": 0,
                 "status": "active"
             }
