@@ -953,3 +953,310 @@ async def create_battle_post(battle_data: BattlePostCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating battle post: {str(e)}")
 
+
+# ==================== QUIZ ROOM MODELS ====================
+
+class QuizQuestion(BaseModel):
+    question_text: str
+    option_a: str
+    option_b: str
+    option_c: str
+    option_d: str
+    correct_answer: Literal["A", "B", "C", "D"]
+    time_limit: int = Field(default=30, ge=10, le=60)  # 10-60 seconds
+
+class QuizRoomCreate(BaseModel):
+    user_id: str
+    user_name: str
+    title: str
+    description: str
+    category: str  # General Knowledge, Science & Technology, etc.
+    privacy: Literal["public", "private", "followers_only"] = "public"
+    questions: List[QuizQuestion] = Field(min_items=20, max_items=100)
+
+class QuizRoom(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    room_code: str  # 6-character alphanumeric
+    host_id: str
+    host_name: str
+    title: str
+    description: str
+    category: str
+    privacy: str
+    questions: List[dict]
+    question_count: int
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    # Stats
+    plays_count: int = 0
+    likes_count: int = 0
+    comments_count: int = 0
+
+
+# ==================== QUIZ ROOM ENDPOINTS ====================
+
+def generate_room_code():
+    """Generate unique 6-character alphanumeric room code"""
+    import random
+    import string
+    characters = string.ascii_uppercase + string.digits
+    return ''.join(random.choices(characters, k=6))
+
+async def ensure_unique_room_code():
+    """Generate a unique room code that doesn't exist in database"""
+    while True:
+        code = generate_room_code()
+        existing = await db.quiz_rooms.find_one({"room_code": code})
+        if not existing:
+            return code
+
+@router.post("/quiz-rooms")
+async def create_quiz_room(room_data: QuizRoomCreate):
+    """
+    Create a new quiz room with manual questions
+    Minimum 20 questions, maximum 100 questions
+    All questions must have exactly 4 options
+    """
+    try:
+        # Validate question count
+        if len(room_data.questions) < 20:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Minimum 20 questions required. You provided {len(room_data.questions)}."
+            )
+        
+        if len(room_data.questions) > 100:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Maximum 100 questions allowed. You provided {len(room_data.questions)}."
+            )
+        
+        # Generate unique room code
+        room_code = await ensure_unique_room_code()
+        
+        # Create room document
+        room = {
+            "id": str(uuid.uuid4()),
+            "room_code": room_code,
+            "host_id": room_data.user_id,
+            "host_name": room_data.user_name,
+            "title": room_data.title,
+            "description": room_data.description,
+            "category": room_data.category,
+            "privacy": room_data.privacy,
+            "questions": [q.model_dump() for q in room_data.questions],
+            "question_count": len(room_data.questions),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "plays_count": 0,
+            "likes_count": 0,
+            "comments_count": 0,
+            "is_active": True
+        }
+        
+        # Insert into database
+        await db.quiz_rooms.insert_one(room.copy())
+        
+        # Create social feed post for the quiz room
+        post = {
+            "id": str(uuid.uuid4()),
+            "user_id": room_data.user_id,
+            "user_name": room_data.user_name,
+            "user_avatar": "👤",
+            "user_verified": False,
+            "post_type": "quiz_room",
+            "content": f"🎯 New Quiz Room: {room_data.title}\n\n{room_data.description}\n\n📝 {len(room_data.questions)} Questions | 🏷️ {room_data.category}\n\n🔑 Room Code: {room_code}",
+            "quiz_details": {
+                "room_code": room_code,
+                "title": room_data.title,
+                "description": room_data.description,
+                "category": room_data.category,
+                "question_count": len(room_data.questions),
+                "privacy": room_data.privacy
+            },
+            "room_code": room_code,
+            "tags": [f"#{room_data.category.replace(' ', '')}", "#QuizRoom"],
+            "exam_category": room_data.category,
+            "likes_count": 0,
+            "comments_count": 0,
+            "shares_count": 0,
+            "is_trending": False,
+            "trending_score": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.social_posts.insert_one(post)
+        
+        # Update user stats
+        await db.users.update_one(
+            {"user_id": room_data.user_id},
+            {
+                "$inc": {"posts_count": 1, "quiz_rooms_created": 1},
+                "$set": {"last_activity_at": datetime.now(timezone.utc).isoformat()}
+            },
+            upsert=True
+        )
+        
+        return {
+            "success": True,
+            "message": "Quiz room created successfully!",
+            "room_code": room_code,
+            "room_id": room["id"],
+            "post_id": post["id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating quiz room: {str(e)}")
+
+
+@router.get("/quiz-rooms")
+async def get_all_quiz_rooms(
+    privacy: Optional[str] = None,
+    category: Optional[str] = None,
+    host_id: Optional[str] = None,
+    limit: int = 50
+):
+    """
+    Get list of quiz rooms
+    Can filter by privacy, category, or host
+    """
+    try:
+        query = {"is_active": True}
+        
+        if privacy:
+            query["privacy"] = privacy
+        if category:
+            query["category"] = category
+        if host_id:
+            query["host_id"] = host_id
+        
+        rooms = await db.quiz_rooms.find(query).sort("created_at", -1).limit(limit).to_list(length=None)
+        
+        # Remove MongoDB _id and convert to list
+        for room in rooms:
+            room.pop("_id", None)
+        
+        return {
+            "success": True,
+            "rooms": rooms,
+            "count": len(rooms)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching quiz rooms: {str(e)}")
+
+
+@router.get("/quiz-rooms/{room_code}")
+async def get_quiz_room(room_code: str):
+    """
+    Get quiz room details by room code
+    """
+    try:
+        room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+        
+        if not room:
+            raise HTTPException(status_code=404, detail="Quiz room not found")
+        
+        room.pop("_id", None)
+        
+        return {
+            "success": True,
+            "room": room
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching quiz room: {str(e)}")
+
+
+@router.post("/quiz-rooms/{room_code}/join")
+async def join_quiz_room(room_code: str, user_id: str, user_name: str):
+    """
+    Join a quiz room with room code
+    Validates privacy settings before allowing entry
+    """
+    try:
+        room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+        
+        if not room:
+            raise HTTPException(status_code=404, detail="Invalid room code")
+        
+        if not room.get("is_active", True):
+            raise HTTPException(status_code=400, detail="This quiz room is no longer active")
+        
+        # Check privacy settings
+        if room["privacy"] == "private":
+            # TODO: Check if user is invited
+            raise HTTPException(status_code=403, detail="This is a private room. Invitation required.")
+        
+        if room["privacy"] == "followers_only":
+            # Check if user follows the host
+            follow = await db.ceeps.find_one({
+                "user_id": user_id,
+                "ceep_user_id": room["host_id"]
+            })
+            
+            if not follow:
+                raise HTTPException(
+                    status_code=403,
+                    detail="This room is for followers only. Follow the host to join."
+                )
+        
+        # Increment plays count
+        await db.quiz_rooms.update_one(
+            {"room_code": room_code.upper()},
+            {"$inc": {"plays_count": 1}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Successfully joined quiz room!",
+            "room": {
+                "id": room["id"],
+                "room_code": room["room_code"],
+                "title": room["title"],
+                "description": room["description"],
+                "question_count": room["question_count"],
+                "category": room["category"],
+                "host_name": room["host_name"]
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error joining quiz room: {str(e)}")
+
+
+@router.delete("/quiz-rooms/{room_code}")
+async def delete_quiz_room(room_code: str, user_id: str):
+    """
+    Delete a quiz room (host only)
+    """
+    try:
+        room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+        
+        if not room:
+            raise HTTPException(status_code=404, detail="Quiz room not found")
+        
+        if room["host_id"] != user_id:
+            raise HTTPException(status_code=403, detail="Only the host can delete this room")
+        
+        # Mark as inactive instead of deleting
+        await db.quiz_rooms.update_one(
+            {"room_code": room_code.upper()},
+            {"$set": {"is_active": False, "deleted_at": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Quiz room deleted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting quiz room: {str(e)}")
+
