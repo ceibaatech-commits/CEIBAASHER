@@ -5110,8 +5110,8 @@ class BattleServerTester:
                               f"Expected name 'Demo Student 3', got '{user_data.get('name')}'")
                 return False
             
-            # Verify JWT token
-            token = login_response.get('token')
+            # Verify JWT token (demo login uses 'access_token')
+            token = login_response.get('access_token')
             if not token:
                 self.log_result("Demo3 JWT Token", False, "No JWT token in response")
                 return False
