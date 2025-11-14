@@ -453,6 +453,9 @@ async def get_for_you_feed(user_id: str, skip: int = 0, limit: int = 20):
         if post["id"] not in existing_post_ids:
             mixed_posts.append(post)
     
+    # Filter out expired quiz room posts
+    mixed_posts = await filter_expired_quiz_posts(mixed_posts)
+    
     # Sort mixed feed by created_at (most recent first)
     mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     
