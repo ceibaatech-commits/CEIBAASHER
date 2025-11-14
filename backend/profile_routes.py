@@ -72,6 +72,25 @@ class FollowResponse(BaseModel):
 
 # ==================== HELPER FUNCTIONS ====================
 
+def decode_jwt_token(authorization: str) -> str:
+    """Decode JWT token and extract user_id"""
+    from jose import jwt, JWTError
+    import os
+    
+    JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+    JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+    
+    token = authorization.replace("Bearer ", "")
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return user_id
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 async def get_user_by_id(user_id: str):
     """Get user from database by ID"""
     user = await db.users.find_one({"id": user_id})
