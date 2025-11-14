@@ -86,20 +86,19 @@ const Dashboard = () => {
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Cover Photo & Profile Picture */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Cover Photo */}
-          <div className="relative h-48 bg-gradient-to-r from-purple-600 to-pink-600">
-            {profile.cover_photo && (
-              <img
-                src={profile.cover_photo}
-                alt="Cover"
-                className="w-full h-full object-cover"
-              />
-            )}
+          {/* Cover Photo with Upload */}
+          <div className="relative">
+            <CoverPhotoUpload
+              currentCover={profile.cover_photo}
+              onUploadComplete={(newUrl) => {
+                setProfile(prev => ({ ...prev, cover_photo: newUrl }));
+              }}
+            />
             
             {/* Settings Button */}
             <button
               onClick={() => navigate('/settings/privacy')}
-              className="absolute top-4 right-4 p-3 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all shadow-lg"
+              className="absolute top-4 right-4 p-3 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all shadow-lg z-10"
             >
               <Settings className="w-5 h-5 text-gray-700" />
             </button>
