@@ -475,7 +475,7 @@ const SocialFeed = () => {
                   <div>
                     <h2 className="text-2xl font-bold text-gray-800">Create Quiz Room</h2>
                     <p className="text-sm text-gray-500 mt-1">
-                      {questions.length}/100 questions {questions.length < 20 && `(Need ${20 - questions.length} more)`}
+                      {questions.length}/100 questions {questions.length < 5 && `(Need ${5 - questions.length} more)`}
                     </p>
                   </div>
                   <button onClick={handleCloseRoomModal} className="text-gray-500 hover:text-gray-700">
