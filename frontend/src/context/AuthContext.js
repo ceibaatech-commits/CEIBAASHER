@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem('ceibaa_user');
     localStorage.removeItem('token');
+    localStorage.removeItem('auth_token'); // Remove both tokens for backward compatibility
   };
 
   const updateUser = (userData) => {
