@@ -6881,7 +6881,7 @@ class BattleServerTester:
             }
             
             invalid_response = requests.put(
-                f"{BACKEND_URL}/api/profile/update",
+                f"{BACKEND_URL}/api/profile/profile/update",
                 json={"bio": "Should fail with invalid token"},
                 headers=invalid_headers,
                 timeout=30
