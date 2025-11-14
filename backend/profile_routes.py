@@ -819,7 +819,7 @@ async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = No
         print(f"Error fetching user quiz rooms: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching user quiz rooms: {str(e)}")
 
-@router.get("/profile/{username}/liked-posts")
+@router.get("/{username}/liked-posts")
 async def get_user_liked_posts(username: str, current_user_id: Optional[str] = None):
     """Get all posts liked by a specific user"""
     try:
