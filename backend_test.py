@@ -4155,7 +4155,7 @@ class BattleServerTester:
                                   f"HTTP {response.status_code}: {response.text}")
             
             # Verify database storage
-            if self.db and success_count > 0:
+            if self.db is not None and success_count > 0:
                 results_count = self.db.quiz_results.count_documents({"room_code": room_code})
                 if results_count >= success_count:
                     self.log_result("Quiz Results Database Storage", True, 
