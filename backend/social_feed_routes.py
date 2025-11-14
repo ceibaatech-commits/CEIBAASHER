@@ -1254,9 +1254,9 @@ async def get_all_quiz_rooms(
 
 
 @router.get("/quiz-rooms/{room_code}")
-async def get_quiz_room(room_code: str):
+async def get_quiz_room(room_code: str, user_id: Optional[str] = None):
     """
-    Get quiz room details by room code with 24-hour TTL check
+    Get quiz room details by room code with 24-hour TTL check and privacy validation
     """
     try:
         room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
@@ -1275,6 +1275,27 @@ async def get_quiz_room(room_code: str):
             
             if room_age > TWENTY_FOUR_HOURS:
                 raise HTTPException(status_code=410, detail="This quiz expired (24 hours elapsed)")
+        
+        # Privacy validation (if user_id is provided)
+        if user_id:
+            privacy = room.get("privacy", "public")
+            host_id = room.get("host_id")
+            
+            if privacy == "private" and user_id != host_id:
+                raise HTTPException(status_code=403, detail="This is a private quiz. Only the host can access it.")
+            
+            if privacy == "followers_only" and user_id != host_id:
+                # Check if user follows the host
+                follow = await db.ceeps.find_one({
+                    "user_id": user_id,
+                    "ceep_user_id": host_id
+                })
+                
+                if not follow:
+                    raise HTTPException(
+                        status_code=403,
+                        detail="This quiz is for followers only. Follow the host to access."
+                    )
         
         room.pop("_id", None)
         
