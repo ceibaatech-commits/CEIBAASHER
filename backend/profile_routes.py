@@ -14,6 +14,13 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Import JWT settings after loading env
+import os
+from jose import jwt, JWTError
+
+JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
 router = APIRouter()
 
 # Database connection will be injected
