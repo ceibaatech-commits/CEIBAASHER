@@ -87,19 +87,28 @@ class FollowResponse(BaseModel):
 
 def decode_jwt_token(authorization: str) -> str:
     """Decode JWT token and extract user_id"""
+    print(f"[DEBUG] Received authorization header: {authorization[:50] if authorization else 'None'}...")
+    
     if not authorization or not authorization.startswith("Bearer "):
+        print(f"[DEBUG] Invalid authorization header format")
         raise HTTPException(status_code=401, detail="Invalid authorization header")
     
     token = authorization.replace("Bearer ", "")
+    print(f"[DEBUG] Token after removing Bearer: {token[:50] if len(token) > 50 else token}...")
+    print(f"[DEBUG] Token length: {len(token)}")
+    print(f"[DEBUG] Token parts: {len(token.split('.'))}")
     
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")
         if not user_id:
+            print(f"[DEBUG] No user ID in token payload")
             raise HTTPException(status_code=401, detail="Invalid token - no user ID found")
+        print(f"[DEBUG] Successfully decoded token for user: {user_id}")
         return user_id
     except JWTError as e:
-        print(f"JWT decode error: {str(e)}")
+        print(f"[DEBUG] JWT decode error: {str(e)}")
+        print(f"[DEBUG] JWT_SECRET being used: {JWT_SECRET[:20]}...")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 async def get_user_by_id(user_id: str):
