@@ -443,7 +443,7 @@ async def approve_follow_request(
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
-        user_id = authorization.replace("Bearer ", "")
+        user_id = decode_jwt_token(authorization)
         
         # Get follow request
         follow_request = await db.follows.find_one({
@@ -496,7 +496,7 @@ async def decline_follow_request(
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
-        user_id = authorization.replace("Bearer ", "")
+        user_id = decode_jwt_token(authorization)
         
         # Delete follow request
         result = await db.follows.delete_one({
@@ -622,7 +622,7 @@ async def get_follow_requests(
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
-        user_id = authorization.replace("Bearer ", "")
+        user_id = decode_jwt_token(authorization)
         
         # Get pending requests
         requests_cursor = db.follows.find({
@@ -681,7 +681,7 @@ async def get_follow_status(
                 "status": None
             }
         
-        user_id = authorization.replace("Bearer ", "")
+        user_id = decode_jwt_token(authorization)
         
         # Check relationship
         relationship = await check_follow_relationship(user_id, target_user_id)
