@@ -676,6 +676,82 @@ agent_communication:
       
       **Next Step**: Need comprehensive end-to-end battle flow testing (create room → join room → play quiz) to verify Socket.io connections work properly and players can see each other in lobby.
   
+  - agent: "testing"
+    message: |
+      🎯 BATTLE LOBBY SOCKET.IO INTEGRATION TESTING COMPLETE - MIXED RESULTS
+      
+      **Review Request Fulfilled**: Tested the updated Battle Lobby flow with proper Socket.IO integration per the detailed test scenarios.
+      
+      ## ⚠️ CRITICAL ISSUES IDENTIFIED (60% success rate - 6/10 tests passed):
+      
+      ### ❌ MAJOR PROBLEMS FOUND:
+      1. **Authentication/Routing Issue**: Battle lobby URL redirects to home page instead of showing lobby
+         - Direct navigation to `/battle-lobby/BLAP72` redirects to `/`
+         - "Join Room Now 🚀" button click redirects to login page instead of battle lobby
+         - Users cannot access battle lobby even when logged in
+      
+      2. **Socket.IO Event Format Issue**: Events use HYPHENS instead of required UNDERSCORES
+         - Backend logs show "join-room" events (incorrect format)
+         - Review request specifically requires underscores: join_room, participant_joined, battle_started
+         - This breaks the expected event handling contract
+      
+      ### ✅ WORKING COMPONENTS:
+      1. **Social Feed Integration**: ✅ Quiz room posts display correctly with room codes (BLAP72)
+      2. **"Join Room Now 🚀" Buttons**: ✅ Visible and clickable in social feed
+      3. **Socket.IO Backend Connection**: ✅ Backend logs show active connections to /api/battlews
+      4. **Room Code Display**: ✅ Room codes properly shown in social feed posts
+      5. **Backend Proxy Architecture**: ✅ Socket.io proxy forwarding events to battle-server
+      6. **Demo Login System**: ✅ Demo accounts (demo1/demo2) available for testing
+      
+      ### 🔍 TECHNICAL FINDINGS:
+      - **Backend URL**: https://social-feed-ceibaa.preview.emergentagent.com
+      - **Socket.IO Endpoint**: /api/battlews (working)
+      - **Room Code Found**: BLAP72 (from social feed)
+      - **Event Format**: join-room (should be join_room)
+      - **Authentication**: Required but causing routing issues
+      
+      ### 📊 TEST RESULTS BY SCENARIO:
+      
+      **Test Scenario 1 - Host Creating/Joining Room:**
+      - ✅ Login as demo1: Available but routing issues
+      - ✅ Navigate to social feed: Working
+      - ✅ Find "Join Room Now 🚀": Working  
+      - ❌ Navigate to battle lobby: Redirects to home page
+      - ❌ Socket.IO console messages: Cannot access lobby to test
+      - ❌ Players list verification: Cannot access lobby
+      - ❌ Start Quiz button: Cannot access lobby
+      
+      **Test Scenario 2 - Another Player Joining:**
+      - ✅ Demo2 login available: Working
+      - ❌ Cannot test due to lobby access issues
+      
+      ## 🚨 IMMEDIATE ACTION REQUIRED:
+      
+      1. **Fix Battle Lobby Routing**: 
+         - Battle lobby URLs redirect to home page
+         - Authentication flow breaks navigation
+         - Need to fix route protection/authentication
+      
+      2. **Fix Socket.IO Event Format**:
+         - Change "join-room" to "join_room" 
+         - Change "participant-joined" to "participant_joined"
+         - Change "battle-started" to "battle_started"
+         - Update both frontend and backend event handlers
+      
+      3. **Test Authentication Flow**:
+         - Verify logged-in users can access battle lobby
+         - Fix redirect issues from social feed to battle lobby
+      
+      ## 📋 CONCLUSION:
+      **BATTLE LOBBY SOCKET.IO INTEGRATION: PARTIALLY WORKING BUT BLOCKED**
+      - Core Socket.IO infrastructure is functional
+      - Social feed integration working correctly  
+      - **CRITICAL**: Users cannot access battle lobby due to routing/auth issues
+      - **CRITICAL**: Event format uses hyphens instead of required underscores
+      - Need to fix routing and event format before full testing can be completed
+      
+      **RECOMMENDATION**: Fix routing issues first, then re-test complete Socket.IO flow.
+  
   - agent: "main"
     message: |
       ✅ GOOGLE SHEETS ADDED SUCCESSFULLY
