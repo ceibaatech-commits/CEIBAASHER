@@ -77,7 +77,7 @@ def decode_jwt_token(authorization: str) -> str:
     from jose import jwt, JWTError
     import os
     
-    JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production")
+    JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
     
     token = authorization.replace("Bearer ", "")
