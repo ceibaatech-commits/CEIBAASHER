@@ -1128,7 +1128,7 @@ const Home = () => {
                 </div>
               
                 <div className="p-6">
-                  <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center">{exam.description}</p>
+                  <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center overflow-hidden line-clamp-3">{exam.description}</p>
                   <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
                       <FileText className="w-4 h-4 text-gray-600" />
