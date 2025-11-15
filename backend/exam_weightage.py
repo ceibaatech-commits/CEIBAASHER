@@ -193,34 +193,57 @@ EXAM_WEIGHTAGE = {
         }
     },
     "Agniveer": {
-        "total_questions": 100,
+        "total_questions": 50,
+        "total_marks": 100,
+        "marks_per_question": 2,
+        "negative_marking": "No negative marking",
+        "duration": "1 hour",
         "subjects": {
-            "General Knowledge": {
-                "questions": 30,
+            "General Knowledge (30 Marks)": {
+                "questions": 15,
                 "color": "from-orange-500 to-red-500",
                 "topics": [
-                    {"name": "Indian History", "expected": "8-10", "importance": "High"},
-                    {"name": "Geography", "expected": "8-10", "importance": "High"},
-                    {"name": "Current Affairs", "expected": "8-10", "importance": "Very High"},
-                    {"name": "Indian Polity", "expected": "4-6", "importance": "Medium"}
+                    {"name": "India and Its Neighboring Countries", "expected": "2", "importance": "High"},
+                    {"name": "Abbreviations", "expected": "1", "importance": "Medium"},
+                    {"name": "Sports", "expected": "2", "importance": "High"},
+                    {"name": "Awards and Prizes", "expected": "1", "importance": "Medium"},
+                    {"name": "Terminology", "expected": "1", "importance": "Medium"},
+                    {"name": "Indian Armed Forces", "expected": "2", "importance": "Very High"},
+                    {"name": "Continents and Subcontinents", "expected": "1", "importance": "Medium"},
+                    {"name": "Inventions and Discoveries", "expected": "1", "importance": "Medium"},
+                    {"name": "The Constitution of India", "expected": "1", "importance": "High"},
+                    {"name": "International Organizations", "expected": "1", "importance": "Medium"},
+                    {"name": "Books and Authors", "expected": "1", "importance": "Low"},
+                    {"name": "Important Events", "expected": "1", "importance": "High"},
+                    {"name": "Current World Events", "expected": "1", "importance": "Very High"},
+                    {"name": "Prominent Personalities", "expected": "1", "importance": "Medium"}
                 ]
             },
-            "General Science": {
-                "questions": 35,
-                "color": "from-purple-500 to-pink-500",
+            "Logical Reasoning (10 Marks)": {
+                "questions": 5,
+                "color": "from-indigo-500 to-purple-500",
                 "topics": [
-                    {"name": "Physics", "expected": "12-15", "importance": "Very High"},
-                    {"name": "Chemistry", "expected": "10-12", "importance": "High"},
-                    {"name": "Biology", "expected": "8-10", "importance": "High"}
+                    {"name": "Logical Ability", "expected": "5", "importance": "Very High"}
                 ]
             },
-            "Mathematics": {
-                "questions": 35,
-                "color": "from-blue-500 to-indigo-500",
+            "Mathematics (30 Marks)": {
+                "questions": 15,
+                "color": "from-blue-500 to-cyan-500",
                 "topics": [
-                    {"name": "Arithmetic", "expected": "15-18", "importance": "Very High"},
-                    {"name": "Algebra", "expected": "10-12", "importance": "High"},
-                    {"name": "Geometry", "expected": "8-10", "importance": "Medium"}
+                    {"name": "Number Systems", "expected": "2", "importance": "High"},
+                    {"name": "Fundamental Arithmetical Operations", "expected": "8", "importance": "Very High"},
+                    {"name": "Algebra", "expected": "2", "importance": "High"},
+                    {"name": "Geometry", "expected": "1", "importance": "Medium"},
+                    {"name": "Mensuration", "expected": "1", "importance": "Medium"},
+                    {"name": "Trigonometry", "expected": "1", "importance": "Medium"}
+                ]
+            },
+            "General Science (30 Marks)": {
+                "questions": 15,
+                "color": "from-green-500 to-emerald-500",
+                "topics": [
+                    {"name": "Physics and Chemistry", "expected": "8", "importance": "Very High"},
+                    {"name": "Biology", "expected": "7", "importance": "Very High"}
                 ]
             }
         }
