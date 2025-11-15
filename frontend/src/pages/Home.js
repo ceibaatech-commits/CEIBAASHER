@@ -356,8 +356,8 @@ const Home = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-green-200 via-emerald-200 to-teal-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
-                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-green-300">
-                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
+                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-green-300 min-h-[420px] flex flex-col">
+                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden flex-shrink-0`}>
                     <motion.div 
                       className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16"
                       animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
