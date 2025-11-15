@@ -389,7 +389,7 @@ const Home = () => {
                     </div>
                   </div>
                 
-                  <div className="p-6">
+                  <div className="p-6 flex-grow flex flex-col justify-between">
                     <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center overflow-hidden line-clamp-3">{exam.description}</p>
                     <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
