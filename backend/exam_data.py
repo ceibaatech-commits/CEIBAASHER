@@ -526,33 +526,265 @@ EXAM_DATA = {
         }
     },
     "Agniveer": {
-        "name": "Agniveer Exam",
-        "full_name": "Agniveer Recruitment",
-        "description": "Indian Armed Forces recruitment for soldiers across all three services",
+        "name": "Soldier Tradesman Agniveer",
+        "full_name": "Indian Army Soldier Tradesman Agniveer",
+        "description": "Indian Army recruitment for Soldier Tradesman positions under Agniveer scheme",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
         "color": "from-green-600 to-teal-700",
-        "total_questions": 100,
-        "duration": "2 hours",
+        "total_questions": 50,
+        "total_marks": 100,
+        "duration": "1 hour",
+        "negative_marking": "No negative marking",
+        "marks_per_question": 2,
+        "exam_type": "Objective Type Questions",
         "syllabus_topics": {
-            "General Knowledge": {
+            "General Knowledge (30 Marks)": {
                 "subjects": {
-                    "Indian History": {"sub_topics": ["Ancient India", "Medieval India", "Modern India"], "questions": 10},
-                    "Geography": {"sub_topics": ["Physical Geography", "Economic Geography", "World Geography"], "questions": 10},
-                    "Current Affairs": {"sub_topics": ["National Events", "International Events", "Sports"], "questions": 10}
+                    "India and Its Neighboring Countries": {
+                        "sub_topics": [
+                            "History of India and neighboring countries",
+                            "Culture and traditions",
+                            "Geography of India and neighboring countries",
+                            "Important figures and leaders"
+                        ],
+                        "questions": 2
+                    },
+                    "Abbreviations": {
+                        "sub_topics": [
+                            "Common abbreviations and their meanings",
+                            "National and international organization abbreviations"
+                        ],
+                        "questions": 1
+                    },
+                    "Sports": {
+                        "sub_topics": [
+                            "Major sports events",
+                            "Sports awards and achievements",
+                            "National and international sports records",
+                            "Indian sports personalities"
+                        ],
+                        "questions": 2
+                    },
+                    "Awards and Prizes": {
+                        "sub_topics": [
+                            "National awards (Bharat Ratna, Padma awards)",
+                            "International awards (Nobel Prize, etc.)",
+                            "Military awards and decorations",
+                            "Significance and history of awards"
+                        ],
+                        "questions": 1
+                    },
+                    "Terminology": {
+                        "sub_topics": [
+                            "Important terms from various fields",
+                            "Military terminology",
+                            "Scientific and technical terms"
+                        ],
+                        "questions": 1
+                    },
+                    "Indian Armed Forces": {
+                        "sub_topics": [
+                            "Structure of Indian Armed Forces",
+                            "History and establishment",
+                            "Ranks and hierarchy",
+                            "Role and significance in national defense"
+                        ],
+                        "questions": 2
+                    },
+                    "Continents and Subcontinents": {
+                        "sub_topics": [
+                            "Knowledge of continents and their features",
+                            "Countries and their capitals",
+                            "Major geographical divisions",
+                            "Important rivers, mountains, and landmarks"
+                        ],
+                        "questions": 1
+                    },
+                    "Inventions and Discoveries": {
+                        "sub_topics": [
+                            "Important inventions and discoveries",
+                            "Indian contributions to science",
+                            "Scientists and inventors",
+                            "Historical timeline of discoveries"
+                        ],
+                        "questions": 1
+                    },
+                    "The Constitution of India": {
+                        "sub_topics": [
+                            "Key features of the Constitution",
+                            "Fundamental Rights",
+                            "Fundamental Duties",
+                            "Directive Principles of State Policy"
+                        ],
+                        "questions": 1
+                    },
+                    "International Organizations": {
+                        "sub_topics": [
+                            "Role and importance of UN, WHO, UNESCO",
+                            "International peacekeeping organizations",
+                            "Economic organizations (IMF, World Bank)",
+                            "Regional organizations (SAARC, ASEAN)"
+                        ],
+                        "questions": 1
+                    },
+                    "Books and Authors": {
+                        "sub_topics": [
+                            "Famous books and their authors",
+                            "Indian literary works",
+                            "Global literary contributions",
+                            "Award-winning books"
+                        ],
+                        "questions": 1
+                    },
+                    "Knowledge of Important Events": {
+                        "sub_topics": [
+                            "Major historical events in India",
+                            "World historical events",
+                            "Independence movement milestones",
+                            "Recent significant events"
+                        ],
+                        "questions": 1
+                    },
+                    "Current Important World Events": {
+                        "sub_topics": [
+                            "Ongoing political events",
+                            "Economic developments",
+                            "Scientific and technological advancements",
+                            "International relations"
+                        ],
+                        "questions": 1
+                    },
+                    "Prominent Personalities": {
+                        "sub_topics": [
+                            "Famous personalities from India",
+                            "Global leaders and achievers",
+                            "Military heroes and martyrs",
+                            "Contributions to nation-building"
+                        ],
+                        "questions": 1
+                    }
                 }
             },
-            "General Science": {
+            "Logical Reasoning (10 Marks)": {
                 "subjects": {
-                    "Physics": {"sub_topics": ["Mechanics", "Electricity", "Optics", "Sound"], "questions": 15},
-                    "Chemistry": {"sub_topics": ["Elements", "Compounds", "Reactions", "Acids & Bases"], "questions": 10},
-                    "Biology": {"sub_topics": ["Human Body", "Plants", "Diseases", "Nutrition"], "questions": 10}
+                    "Logical Ability": {
+                        "sub_topics": [
+                            "Logical thinking and pattern recognition",
+                            "Problem-solving ability",
+                            "Analytical reasoning",
+                            "Sequence and series",
+                            "Coding-decoding",
+                            "Blood relations",
+                            "Direction sense",
+                            "Puzzles and arrangements"
+                        ],
+                        "questions": 5
+                    }
                 }
             },
-            "Mathematics": {
+            "Mathematics (30 Marks)": {
                 "subjects": {
-                    "Arithmetic": {"sub_topics": ["Number System", "Percentage", "Ratio & Proportion", "Average"], "questions": 15},
-                    "Algebra": {"sub_topics": ["Linear Equations", "Polynomials", "Factorization"], "questions": 10},
-                    "Geometry": {"sub_topics": ["Triangles", "Circles", "Mensuration", "Angles"], "questions": 10}
+                    "Number Systems": {
+                        "sub_topics": [
+                            "Whole numbers",
+                            "Decimal and fractions",
+                            "Relationship between numbers",
+                            "Types of numbers (prime, composite, odd, even)"
+                        ],
+                        "questions": 2
+                    },
+                    "Fundamental Arithmetical Operations": {
+                        "sub_topics": [
+                            "HCF and LCM",
+                            "Decimal fraction",
+                            "Percentages",
+                            "Ratio and Proportion",
+                            "Square roots",
+                            "Averages",
+                            "Simple Interest and Compound Interest",
+                            "Profit and Loss",
+                            "Discount",
+                            "Partnership Business",
+                            "Time and Distance",
+                            "Time and Work"
+                        ],
+                        "questions": 8
+                    },
+                    "Algebra": {
+                        "sub_topics": [
+                            "Basic algebraic problems",
+                            "Linear equations",
+                            "Quadratic equations",
+                            "Algebraic identities",
+                            "Factorization"
+                        ],
+                        "questions": 2
+                    },
+                    "Geometry": {
+                        "sub_topics": [
+                            "Elementary geometric figures",
+                            "Properties of triangles",
+                            "Properties of quadrilaterals",
+                            "Properties of circles",
+                            "Geometric facts and theorems"
+                        ],
+                        "questions": 1
+                    },
+                    "Mensuration": {
+                        "sub_topics": [
+                            "Area of triangles",
+                            "Perimeter of triangles",
+                            "Area and perimeter of quadrilaterals",
+                            "Area and perimeter of polygons",
+                            "Area and circumference of circles"
+                        ],
+                        "questions": 1
+                    },
+                    "Trigonometry": {
+                        "sub_topics": [
+                            "Trigonometric ratios",
+                            "Complementary angles",
+                            "Height and distance problems",
+                            "Basic trigonometric identities"
+                        ],
+                        "questions": 1
+                    }
+                }
+            },
+            "General Science (30 Marks)": {
+                "subjects": {
+                    "Physics and Chemistry": {
+                        "sub_topics": [
+                            "Fundamental concepts of physics",
+                            "Laws of motion",
+                            "Force, energy, and power",
+                            "Heat and temperature",
+                            "Light and sound",
+                            "Electricity and magnetism",
+                            "Basic concepts of chemistry",
+                            "Elements, compounds, and mixtures",
+                            "Chemical reactions",
+                            "Acids, bases, and salts",
+                            "Day-to-day applications of physics and chemistry"
+                        ],
+                        "questions": 8
+                    },
+                    "Biology": {
+                        "sub_topics": [
+                            "Difference between living and non-living things",
+                            "Cells - structure and functions",
+                            "Tissues - types and functions",
+                            "Growth and reproduction in plants",
+                            "Growth and reproduction in animals",
+                            "Basic human body knowledge",
+                            "Human body systems (digestive, respiratory, circulatory)",
+                            "Common diseases and their causes",
+                            "Disease prevention methods",
+                            "Nutrition and balanced diet",
+                            "Vitamins and minerals"
+                        ],
+                        "questions": 7
+                    }
                 }
             }
         }
