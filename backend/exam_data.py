@@ -526,8 +526,8 @@ EXAM_DATA = {
         }
     },
     "Agniveer": {
-        "name": "Soldier Tradesman Agniveer",
-        "full_name": "Indian Army Soldier Tradesman Agniveer",
+        "name": "Tradesman Agniveer",
+        "full_name": "Indian Army Tradesman Agniveer",
         "description": "Indian Army recruitment for Soldier Tradesman positions under Agniveer scheme",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/5ssemynn_IMG_1343.png",
         "color": "from-green-600 to-teal-700",
