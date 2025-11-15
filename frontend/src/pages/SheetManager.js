@@ -68,11 +68,37 @@ const SheetManager = () => {
       }
     },
     "Agniveer": {
-      "name": "Agniveer Exam",
+      "name": "Tradesman Agniveer",
       "subjects": {
-        "General Knowledge": ["Indian History", "Geography", "Current Affairs"],
-        "General Science": ["Physics", "Chemistry", "Biology"],
-        "Mathematics": ["Arithmetic", "Algebra", "Geometry"]
+        "General Knowledge": [
+          "India and Its Neighboring Countries",
+          "Abbreviations",
+          "Sports",
+          "Awards and Prizes",
+          "Terminology",
+          "Indian Armed Forces",
+          "Continents and Subcontinents",
+          "Inventions and Discoveries",
+          "The Constitution of India",
+          "International Organizations",
+          "Books and Authors",
+          "Important Events",
+          "Current World Events",
+          "Prominent Personalities"
+        ],
+        "Logical Reasoning": ["Logical Ability"],
+        "Mathematics": [
+          "Number Systems",
+          "Fundamental Arithmetical Operations",
+          "Algebra",
+          "Geometry",
+          "Mensuration",
+          "Trigonometry"
+        ],
+        "General Science": [
+          "Physics and Chemistry",
+          "Biology"
+        ]
       }
     },
     "CDS": {
