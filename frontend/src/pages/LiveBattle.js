@@ -93,27 +93,28 @@ const LiveBattle = () => {
       console.log('🔌 Socket connected! ID:', newSocket.id);
       console.log('🔍 Connect Debug - isHost:', isHost, 'questions:', questions ? questions.length : 'undefined', 'pin:', pin);
       
-      // If host has questions, send them IMMEDIATELY upon connection
+      // Join room AFTER connection is established
+      console.log('📤 Emitting join_room event...');
+      newSocket.emit('join_room', {
+        roomId: pin,
+        userData: {
+          username: playerName,
+          isHost: isHost || false,
+          avatar: isHost ? '👑' : '👤'
+        }
+      });
+      console.log('✅ join_room event emitted');
+      
+      // If host has questions, send them after joining
       if (isHost && questions && questions.length > 0) {
-        console.log(`📤 HOST: Sending ${questions.length} questions IMMEDIATELY after connect`);
-        // Send questions right away, before even joining the room
+        console.log(`📤 HOST: Will send ${questions.length} questions after joining`);
         setTimeout(() => {
           newSocket.emit('set_room_questions', {
             roomId: pin,
             questions: questions
           });
           console.log('✅ set_room_questions event emitted');
-        }, 500); // Small delay to ensure connection is stable
-      }
-    });
-
-    // Join room
-    newSocket.emit('join_room', {
-      roomId: pin,
-      userData: {
-        username: playerName,
-        isHost: isHost || false,
-        avatar: isHost ? '👑' : '👤'
+        }, 1000); // Wait for join to complete
       }
     });
 
