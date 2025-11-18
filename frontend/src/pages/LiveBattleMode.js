@@ -42,7 +42,10 @@ const LiveBattleMode = () => {
   useEffect(() => {
     // Initialize socket connection
     console.log('🔗 Connecting to battle server for 1v1:', SOCKET_URL);
-    const newSocket = io(SOCKET_URL);
+    const newSocket = io(SOCKET_URL, {
+      path: '/socket.io',  // Standard Socket.IO path (integrated with FastAPI)
+      transports: ['polling', 'websocket']
+    });
     setSocket(newSocket);
 
     newSocket.on('waiting', (data) => {
