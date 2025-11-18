@@ -55,17 +55,11 @@ fastapi_app = FastAPI()
 # Add session middleware for OAuth
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
-# Import and mount Socket.io apps
-from socket_app import socket_asgi_app
-# Mount Socket.io ASGI app at /api/socketio (routes through ingress /api -> backend)
-# This avoids needing custom ingress rules for /socket.io
-fastapi_app.mount("/api/socketio", socket_asgi_app)
-
-# Mount Battle Socket.IO directly (no proxy needed - battle logic is in Python)
+# Import and mount Battle Socket.IO (Python-based real-time battle server)
 from battle_socketio import socket_app as battle_socket_app, init_socketio_db
-# Initialize battle socketio with database
+# Initialize battle Socket.IO with database (battle rooms stored in MongoDB)
 init_socketio_db(db)
-# Mount at /api/battlews with empty socketio_path since path is in mount
+# Mount at /api/battlews so frontend connects via `${REACT_APP_BACKEND_URL}/api/battlews/socket.io`
 fastapi_app.mount("/api/battlews", battle_socket_app)
 
 # Create a router with the /api prefix
