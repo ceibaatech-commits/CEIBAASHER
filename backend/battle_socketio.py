@@ -379,7 +379,59 @@ async def send_message(sid, data):
     try:
         room_id = data.get('roomId')
         message = data.get('message')
+        
+        room = room_manager.get_room(room_id)
+        if not room:
+            return
+        
+        # Get user data
+        session = await sio.get_session(sid)
+        user_data = session.get('userData', {}) if session else {}
+        
+        chat_message = {
+            'userId': sid,
+            'username': user_data.get('username', 'Anonymous'),
+            'message': message,
+            'timestamp': datetime.now(timezone.utc).timestamp()
+        }
+        
+        await sio.emit('new_message', chat_message, room=room_id)
+        
+    except Exception as e:
+        print(f"[ERROR] send_message: {str(e)}")
 
+
+@sio.event
+async def send_reaction(sid, data):
+    """Send reaction/emoji"""
+    try:
+        room_id = data.get('roomId')
+        reaction = data.get('reaction')
+        
+        room = room_manager.get_room(room_id)
+        if not room:
+            return
+        
+        # Get user data
+        session = await sio.get_session(sid)
+        user_data = session.get('userData', {}) if session else {}
+        
+        await sio.emit('new_reaction', {
+            'userId': sid,
+            'username': user_data.get('username', 'Anonymous'),
+            'reaction': reaction,
+            'timestamp': datetime.now(timezone.utc).timestamp()
+        }, room=room_id)
+        
+    except Exception as e:
+        print(f"[ERROR] send_reaction: {str(e)}")
+
+
+@sio.event
+async def leave_room(sid, data):
+    """Leave a room"""
+    room_id = data.get('roomId')
+    await handle_user_leave(sid, room_id)
 
 
 # ==================== MATCHMAKING EVENTS ====================
