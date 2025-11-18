@@ -8134,6 +8134,414 @@ class BattleServerTester:
             self.log_result("JWT Token Decoding", False, f"Test error: {e}")
             return False
 
+    def test_battle_room_joining_flow_comprehensive(self):
+        """
+        Test the complete battle room joining flow as per review request
+        
+        TEST SCENARIOS:
+        1. Room Creation - Use demo1 login, create room via POST /api/battle/create-room
+        2. Socket.IO Connection - Connect to external URL with /api/battlews/socket.io
+        3. Host Joining Room - Emit 'join_room' event with roomId and userData
+        4. Second Player Joining - Create second client and join same room
+        5. Real-time Room Updates - Verify both players see each other
+        """
+        print("\n🎯 TESTING COMPLETE BATTLE ROOM JOINING FLOW")
+        print("=" * 70)
+        
+        success_count = 0
+        total_tests = 0
+        
+        # Store test data
+        auth_token = None
+        room_pin = None
+        host_client = None
+        player2_client = None
+        
+        try:
+            # ==================== TEST SCENARIO 1: ROOM CREATION ====================
+            print("\n1️⃣ TEST SCENARIO 1: Room Creation")
+            print("-" * 50)
+            
+            # Step 1.1: Demo1 Login
+            print("🔐 Step 1.1: Demo1 Login to get auth token...")
+            
+            login_payload = {
+                "username": "demo1",
+                "password": "demo1"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/auth/demo-login",
+                json=login_payload,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                login_data = response.json()
+                auth_token = login_data.get('access_token')
+                user_info = login_data.get('user', {})
+                
+                if auth_token:
+                    self.log_result("Demo1 Login for Auth Token", True, 
+                                  f"✅ Login successful, token obtained for: {user_info.get('name')}")
+                    success_count += 1
+                else:
+                    self.log_result("Demo1 Login for Auth Token", False, 
+                                  f"No access token in response: {login_data}")
+                    return False
+            else:
+                self.log_result("Demo1 Login for Auth Token", False, 
+                              f"Login failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            total_tests += 1
+            
+            # Step 1.2: Create Battle Room
+            print("🏠 Step 1.2: Create battle room via POST /api/battle/create-room...")
+            
+            room_payload = {
+                "hostName": "Demo Host 1",
+                "examId": "JEE",
+                "subject": "Physics",
+                "topic": "Mechanics"
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/battle/create-room",
+                json=room_payload,
+                headers={"Authorization": f"Bearer {auth_token}"},
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                room_data = response.json()
+                if room_data.get('success') and 'pin' in room_data:
+                    room_pin = room_data['pin']
+                    
+                    # Verify PIN format (6 digits)
+                    if len(room_pin) == 6 and room_pin.isdigit():
+                        self.log_result("Battle Room Creation", True, 
+                                      f"✅ Room created with valid 6-digit PIN: {room_pin}")
+                        success_count += 1
+                    else:
+                        self.log_result("Battle Room Creation", False, 
+                                      f"Invalid PIN format: {room_pin} (expected 6 digits)")
+                        return False
+                else:
+                    self.log_result("Battle Room Creation", False, 
+                                  f"Invalid response structure: {room_data}")
+                    return False
+            else:
+                self.log_result("Battle Room Creation", False, 
+                              f"Room creation failed: HTTP {response.status_code} - {response.text}")
+                return False
+            
+            total_tests += 1
+            
+            # Step 1.3: Verify Room Can Be Fetched
+            print("📋 Step 1.3: Verify room can be fetched via GET /api/battle/room/{PIN}...")
+            
+            response = requests.get(
+                f"{BACKEND_URL}/api/battle/room/{room_pin}",
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                room_info = response.json()
+                if room_info.get('success') and 'room' in room_info:
+                    self.log_result("Room Fetch Verification", True, 
+                                  f"✅ Room {room_pin} can be fetched successfully")
+                    success_count += 1
+                else:
+                    self.log_result("Room Fetch Verification", False, 
+                                  f"Invalid room info response: {room_info}")
+            else:
+                self.log_result("Room Fetch Verification", False, 
+                              f"Room fetch failed: HTTP {response.status_code}")
+            
+            total_tests += 1
+            
+            # ==================== TEST SCENARIO 2: SOCKET.IO CONNECTION ====================
+            print("\n2️⃣ TEST SCENARIO 2: Socket.IO Connection")
+            print("-" * 50)
+            
+            # Step 2.1: Connect to Socket.IO with correct path
+            print("🔌 Step 2.1: Connect to Socket.IO at /api/battlews/socket.io...")
+            
+            socketio_url = f"{BACKEND_URL}"
+            socketio_path = '/api/battlews/socket.io'
+            
+            try:
+                host_client = socketio.SimpleClient()
+                host_client.connect(socketio_url, socketio_path=socketio_path, transports=['polling', 'websocket'])
+                
+                if host_client.connected:
+                    self.log_result("Socket.IO Connection", True, 
+                                  f"✅ Successfully connected to {socketio_url} with path {socketio_path}")
+                    success_count += 1
+                else:
+                    self.log_result("Socket.IO Connection", False, 
+                                  "Failed to connect to Socket.IO server")
+                    return False
+            except Exception as e:
+                self.log_result("Socket.IO Connection", False, 
+                              f"Socket.IO connection error: {e}")
+                return False
+            
+            total_tests += 1
+            
+            # Step 2.2: Verify Socket.IO Handshake
+            print("🤝 Step 2.2: Verify Socket.IO handshake completes...")
+            
+            # Wait a moment for handshake
+            time.sleep(1)
+            
+            if host_client.connected:
+                self.log_result("Socket.IO Handshake", True, 
+                              "✅ Socket.IO handshake completed successfully")
+                success_count += 1
+            else:
+                self.log_result("Socket.IO Handshake", False, 
+                              "Socket.IO handshake failed")
+                return False
+            
+            total_tests += 1
+            
+            # ==================== TEST SCENARIO 3: HOST JOINING ROOM ====================
+            print("\n3️⃣ TEST SCENARIO 3: Host Joining Room")
+            print("-" * 50)
+            
+            # Step 3.1: Emit join_room event as host
+            print("👑 Step 3.1: Host emits 'join_room' event...")
+            
+            host_user_data = {
+                "username": "Host",
+                "isHost": True,
+                "avatar": "👑"
+            }
+            
+            join_room_data = {
+                "roomId": room_pin,
+                "userData": host_user_data
+            }
+            
+            # Set up event listeners for host
+            host_events_received = []
+            
+            def on_room_joined(data):
+                host_events_received.append(('room_joined', data))
+                print(f"🏠 Host received 'room_joined': {data}")
+            
+            def on_participant_joined(data):
+                host_events_received.append(('participant_joined', data))
+                print(f"🏠 Host received 'participant_joined': {data}")
+            
+            host_client.on('room_joined', on_room_joined)
+            host_client.on('participant_joined', on_participant_joined)
+            
+            # Emit join_room event
+            host_client.emit('join_room', join_room_data)
+            
+            # Wait for events
+            time.sleep(3)
+            
+            # Check for room_joined event
+            room_joined_events = [e for e in host_events_received if e[0] == 'room_joined']
+            if room_joined_events:
+                room_data = room_joined_events[0][1]
+                participant_count = len(room_data.get('room', {}).get('participants', []))
+                
+                self.log_result("Host Room Joined Event", True, 
+                              f"✅ Host received 'room_joined' event with {participant_count} participant(s)")
+                success_count += 1
+            else:
+                self.log_result("Host Room Joined Event", False, 
+                              "Host did not receive 'room_joined' event")
+            
+            total_tests += 1
+            
+            # Check for participant_joined event
+            participant_joined_events = [e for e in host_events_received if e[0] == 'participant_joined']
+            if participant_joined_events:
+                self.log_result("Host Participant Joined Event", True, 
+                              "✅ Host received 'participant_joined' event")
+                success_count += 1
+            else:
+                self.log_result("Host Participant Joined Event", False, 
+                              "Host did not receive 'participant_joined' event")
+            
+            total_tests += 1
+            
+            # ==================== TEST SCENARIO 4: SECOND PLAYER JOINING ====================
+            print("\n4️⃣ TEST SCENARIO 4: Second Player Joining")
+            print("-" * 50)
+            
+            # Step 4.1: Create second Socket.IO client
+            print("👤 Step 4.1: Create second Socket.IO client...")
+            
+            try:
+                player2_client = socketio.SimpleClient()
+                player2_client.connect(socketio_url, socketio_path=socketio_path, transports=['polling', 'websocket'])
+                
+                if player2_client.connected:
+                    self.log_result("Second Client Connection", True, 
+                                  "✅ Second Socket.IO client connected successfully")
+                    success_count += 1
+                else:
+                    self.log_result("Second Client Connection", False, 
+                                  "Second Socket.IO client failed to connect")
+                    return False
+            except Exception as e:
+                self.log_result("Second Client Connection", False, 
+                              f"Second client connection error: {e}")
+                return False
+            
+            total_tests += 1
+            
+            # Step 4.2: Second player joins room
+            print("🎮 Step 4.2: Second player emits 'join_room' event...")
+            
+            player2_user_data = {
+                "username": "Player2",
+                "isHost": False,
+                "avatar": "🎮"
+            }
+            
+            player2_join_data = {
+                "roomId": room_pin,
+                "userData": player2_user_data
+            }
+            
+            # Set up event listeners for player2
+            player2_events_received = []
+            
+            def on_player2_room_joined(data):
+                player2_events_received.append(('room_joined', data))
+                print(f"👤 Player2 received 'room_joined': {data}")
+            
+            def on_player2_participant_joined(data):
+                player2_events_received.append(('participant_joined', data))
+                print(f"👤 Player2 received 'participant_joined': {data}")
+            
+            player2_client.on('room_joined', on_player2_room_joined)
+            player2_client.on('participant_joined', on_player2_participant_joined)
+            
+            # Clear host events to track new ones
+            host_events_received.clear()
+            
+            # Emit join_room event for player2
+            player2_client.emit('join_room', player2_join_data)
+            
+            # Wait for events
+            time.sleep(3)
+            
+            # ==================== TEST SCENARIO 5: REAL-TIME ROOM UPDATES ====================
+            print("\n5️⃣ TEST SCENARIO 5: Real-time Room Updates")
+            print("-" * 50)
+            
+            # Step 5.1: Verify player2 receives room_joined with 2 participants
+            print("📊 Step 5.1: Verify player2 receives 'room_joined' with 2 participants...")
+            
+            player2_room_joined = [e for e in player2_events_received if e[0] == 'room_joined']
+            if player2_room_joined:
+                room_data = player2_room_joined[0][1]
+                participants = room_data.get('room', {}).get('participants', [])
+                participant_count = len(participants)
+                
+                if participant_count == 2:
+                    self.log_result("Player2 Room Joined with 2 Participants", True, 
+                                  f"✅ Player2 received 'room_joined' with {participant_count} participants")
+                    success_count += 1
+                    
+                    # Verify participant details
+                    usernames = [p.get('username') for p in participants]
+                    if 'Host' in usernames and 'Player2' in usernames:
+                        self.log_result("Participant List Verification", True, 
+                                      f"✅ Both players in participant list: {usernames}")
+                        success_count += 1
+                    else:
+                        self.log_result("Participant List Verification", False, 
+                                      f"Unexpected participants: {usernames}")
+                else:
+                    self.log_result("Player2 Room Joined with 2 Participants", False, 
+                                  f"Expected 2 participants, got {participant_count}")
+            else:
+                self.log_result("Player2 Room Joined with 2 Participants", False, 
+                              "Player2 did not receive 'room_joined' event")
+            
+            total_tests += 2
+            
+            # Step 5.2: Verify host receives participant_joined when player2 joins
+            print("🔄 Step 5.2: Verify host receives 'participant_joined' when player2 joins...")
+            
+            host_participant_joined = [e for e in host_events_received if e[0] == 'participant_joined']
+            if host_participant_joined:
+                participant_data = host_participant_joined[0][1]
+                joined_username = participant_data.get('participant', {}).get('username')
+                
+                if joined_username == 'Player2':
+                    self.log_result("Host Sees Player2 Join", True, 
+                                  f"✅ Host received 'participant_joined' for {joined_username}")
+                    success_count += 1
+                else:
+                    self.log_result("Host Sees Player2 Join", False, 
+                                  f"Unexpected participant joined: {joined_username}")
+            else:
+                self.log_result("Host Sees Player2 Join", False, 
+                              "Host did not receive 'participant_joined' event for player2")
+            
+            total_tests += 1
+            
+            # Step 5.3: Verify both clients receive participant_joined events
+            print("📡 Step 5.3: Verify BOTH clients receive 'participant_joined' events...")
+            
+            player2_participant_joined = [e for e in player2_events_received if e[0] == 'participant_joined']
+            
+            both_received = len(host_participant_joined) > 0 and len(player2_participant_joined) > 0
+            
+            if both_received:
+                self.log_result("Both Clients Receive Participant Events", True, 
+                              "✅ BOTH clients received 'participant_joined' events")
+                success_count += 1
+            else:
+                self.log_result("Both Clients Receive Participant Events", False, 
+                              f"Host events: {len(host_participant_joined)}, Player2 events: {len(player2_participant_joined)}")
+            
+            total_tests += 1
+            
+            # ==================== OVERALL RESULT ====================
+            success_rate = (success_count / total_tests) * 100
+            
+            print(f"\n📊 BATTLE ROOM JOINING FLOW TEST SUMMARY")
+            print(f"✅ Successful Tests: {success_count}/{total_tests}")
+            print(f"📈 Success Rate: {success_rate:.1f}%")
+            
+            if success_count == total_tests:
+                self.log_result("Complete Battle Room Joining Flow", True, 
+                              f"🎉 ALL SUCCESS CRITERIA MET ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+                return True
+            else:
+                self.log_result("Complete Battle Room Joining Flow", False, 
+                              f"❌ SOME TESTS FAILED ({success_count}/{total_tests} - {success_rate:.1f}% success rate)")
+                return False
+            
+        except Exception as e:
+            self.log_result("Battle Room Joining Flow", False, f"Test error: {e}")
+            import traceback
+            print(f"🚨 FULL ERROR TRACEBACK:")
+            traceback.print_exc()
+            return False
+            
+        finally:
+            # Cleanup connections
+            if host_client and host_client.connected:
+                host_client.disconnect()
+                print("🔌 Host client disconnected")
+            
+            if player2_client and player2_client.connected:
+                player2_client.disconnect()
+                print("🔌 Player2 client disconnected")
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Ceibaa Backend Tests")
