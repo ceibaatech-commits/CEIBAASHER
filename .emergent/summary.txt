@@ -1,98 +1,78 @@
 <analysis>
-The trajectory details the development of a major new feature for the Ceibaa exam platform: a comprehensive social feed system. The work began after the completion of a UI enhancement. The user provided a detailed specification for a Twitter-like social feed with two primary post types: simple text posts and complex Quiz Rooms.
+The trajectory details a multi-stage development process, beginning with a user-driven pivot from implementing new social features (notifications, privacy) to fixing critical bugs in the existing profile and social feed systems. The AI engineer successfully addressed issues related to profile updates not saving, posts not appearing on profiles, and broken navigation links. A significant effort was dedicated to refactoring the backend's JWT authentication, standardizing token handling by creating a central decoding helper function and resolving inconsistencies in how tokens were stored and retrieved on the frontend ( vs. ), which fixed a critical Invalid token bug.
 
-Initially, the scope was narrowed to Phase 1: implementing the social feed with text posts and **manual** quiz room creation, deferring the complex AI-based question extraction.
+Following the bug fixes, the work shifted to content management, where the AI updated static exam syllabus data for NDA and Agniveer exams in the backend and fixed a related UI layout issue on the homepage.
 
-The development process was iterative and involved significant debugging. The engineer first built the backend endpoints in Python (FastAPI) for creating quiz rooms and posts, and then created a new React component for the social feed UI. This led to a series of bug fixes:
-1.  **Authentication**: A  error on post creation was traced to conflicting API routes between an old and new social feed system. The fix involved disabling the old router in .
-2.  **Commenting**:  and  errors were resolved by adding a missing  endpoint to fetch comments in .
-3.  **UI/UX**: User feedback led to changing the minimum questions for a room from 20 to 5 and moving the user search bar from the main feed into the global header.
-4.  **Architectural Disconnect**: The most critical issue was that the Python backend generated alphanumeric room codes, while a separate Node.js  only accepted numeric codes, preventing users from joining rooms. The fix involved modifying the Node.js server to accept alphanumeric codes and updating the Python backend to register the room and its questions with the battle server via an HTTP call upon creation.
-5.  **Feed Sorting**: A final bug where new quiz rooms were not appearing on the timeline was fixed by adjusting the feed's sorting logic to prioritize newly created posts.
+The most substantial task was a major architectural migration: consolidating multiple Node.js backend services (, ) into the main FastAPI application. This involved migrating real-time Socket.IO logic to , integrating it within the FastAPI process, creating new Python modules for battle logic, and removing the legacy Node.js code.
+
+The final phase involved debugging the newly migrated Join Room feature, which was plagued by persistent issues. The AI tackled an infinite loading bug by adding timeouts, implemented MongoDB persistence for battle rooms to prevent data loss on server restarts, and fixed a critical race condition where the frontend tried to join a room before the socket was connected. Despite these fixes, the feature remains broken. The user's primary language is English, and all future responses should be in English.
 </analysis>
 
 <product_requirements>
-The goal is to build a social feed and quiz creation system for the Ceibaa platform, inspired by Twitter/X.
+The application is a social quiz platform that evolved from a real-time, host-led quiz app. The current product requirements, based on user requests and implemented features, are:
 
-**Core Features Implemented (Phase 1):**
-1.  **Unified Feed:** A central timeline displaying two types of posts:
-    *   **Text Posts:** Simple text-based updates with a 280-character limit.
-    *   **Quiz Room Posts:** Special cards for user-created quizzes.
-2.  **Manual Quiz Room Creation:**
-    *   A modal allows logged-in users to create a quiz room by manually adding questions.
-    *   **Rules:** A minimum of 5 questions and a maximum of 100 are required. Each question must have exactly 4 options and one designated correct answer.
-    *   **Metadata:** Users must provide a title, description, category, and privacy setting.
-    *   A unique, 6-character alphanumeric room code is automatically generated and displayed prominently on the post.
-3.  **Social Interaction:** Users can like and comment on all post types.
-4.  **User Search:** A search bar was added to the main header to find other users on the platform.
-
-**Deferred Features (Phase 2):**
-*   AI-powered automatic extraction of Multiple Choice Questions (MCQs) from uploaded PDF, Excel, or image files.
-*   A dedicated user profile page with tabs to view a user's text posts and created quiz rooms.
-*   A hashtag discovery system.
+1.  **Social Network Core**: Users should have public profiles with bios, follower counts, and profile pictures. A social feed displays posts from other users. A follow system enables social connections.
+2.  **Asynchronous Quizzes**: Users can take quizzes posted on the social feed. These quizzes expire after 24 hours.
+3.  **User-Generated Content**: Users' created quiz rooms and posts must appear on their own profile pages.
+4.  **Profile Management**: Users must be able to edit their profile information (name, bio, avatar), and changes must save and reflect immediately.
+5.  **Real-Time Battle Rooms**: A key feature where users can create or join live quiz battles using a room PIN. This functionality, originally a separate Node.js service, must be fully integrated into the main Python backend. It requires persistent rooms that survive server restarts and correct host identification in chat and rankings.
+6.  **Exam Content Management**: The application contains syllabus data for various exams (e.g., NDA, Agniveer), which must be up-to-date and displayed correctly.
 </product_requirements>
 
 <key_technical_concepts>
-- **Microservices Architecture**: The system comprises a React frontend, a main FastAPI (Python) backend, and a separate Node.js/Socket.IO  for real-time quizzes.
-- **Inter-Service Communication**: The FastAPI backend communicates with the Node.js  via an HTTP POST request to register newly created quiz rooms, bridging the two systems.
-- **Backend Technology**: FastAPI for REST APIs, Pydantic for data modeling and validation, and MongoDB for data persistence.
-- **Frontend Technology**: React.js with hooks (, ) for state management, and  for API communication.
-- **Styling**: Tailwind CSS for UI components.
+- **Monorepo Architecture**: A single repository containing a  (React) and  (FastAPI) application.
+- **Backend Technology Stack**: Python with FastAPI for REST APIs and  for real-time communication. MongoDB is used for data persistence, accessed via .
+- **Backend Consolidation**: A major architectural migration from a hybrid Node.js/Python backend to a unified FastAPI-only backend. This involved deprecating and removing Node.js services (, ).
+- **Authentication**: JWT-based authentication. Tokens are created on login, stored in , and sent in the  header for protected endpoints.
 </key_technical_concepts>
 
 <code_architecture>
-The application follows a microservice architecture with a distinct frontend, backend, and a real-time battle server.
+The application follows a monorepo structure with a React frontend and a unified FastAPI backend. All real-time and REST API logic is handled by the Python server.
 
 
 
--   ****
-    -   **Importance**: This is the main entry point for the FastAPI application. It configures and includes all the API routers.
-    -   **Changes**: A critical change was made to comment out an old, conflicting router () that was causing  errors by hijacking requests intended for the new . This resolved a major authentication bug.
+- ****
+  - **Importance**: The main entry point for the FastAPI application. It initializes the app, database connection, middleware, and routers.
+  - **Changes**: Significantly modified to integrate . It now imports the Socket.IO app from  and mounts it to the main FastAPI app, unifying REST and WebSocket traffic. It also initializes and passes the database connection to the battle room manager.
 
--   ****
-    -   **Importance**: This file contains all the business logic for the social feed, including creating posts, comments, and quiz rooms.
-    -   **Changes**: This file was heavily modified.
-        -   New Pydantic models (, ) and a  endpoint were added for manual quiz creation.
-        -   A  endpoint was added to fix a bug where comments couldn't be fetched.
-        -   The quiz creation logic was updated to make an HTTP call to the , registering the new room and its questions.
-        -   The  endpoint logic was adjusted to boost the score of new posts, ensuring they appear at the top of the feed.
-        -   The minimum question requirement was changed from 20 to 5.
+- **, , **
+  - **Importance**: These new files contain the entire migrated logic for the real-time battle room feature, formerly handled by a Node.js server.
+  - **Changes**: Created from scratch.  defines all Socket.IO event handlers (, , ).  manages the state of battle rooms, which was refactored from in-memory storage to use MongoDB for persistence.  provides the supporting REST endpoints (e.g., ).
 
--   ****
-    -   **Importance**: This is the primary UI component for the entire social feed feature. It handles post creation, the quiz room modal, and rendering the feed.
-    -   **Changes**: The original file was replaced with a new version built from scratch to accommodate the complex new requirements. It includes logic for the Create Room modal, state management for questions, rendering different post card types (text vs. quiz room), and displaying comments. Search functionality was initially added here but later moved to the  component.
+- ****
+  - **Importance**: Handles all user profile-related API endpoints.
+  - **Changes**: Underwent major refactoring. A  helper was added to centralize authentication logic. Redundant  prefixes were removed from route definitions to fix a Not Found error, correcting paths like  to .
 
--   ****
-    -   **Importance**: The global header component for the application.
-    -   **Changes**: Modified to integrate a user search bar, replacing a Join Battle button. This involved adding state and API call logic for searching users and displaying results in a dropdown, centralizing the search feature.
+- ** & **
+  - **Importance**: Core frontend components for the real-time battle feature.
+  - **Changes**:  was updated with timeouts and better error handling to fix an infinite loading bug.  was critically fixed to emit the  event only *after* a successful  event, resolving a race condition. Socket.IO connection logic was updated to point to the new unified backend endpoint.
 
--   ****
-    -   **Importance**: A standalone Node.js and Socket.IO server that manages real-time quiz battles. It was architecturally disconnected from the main application.
-    -   **Changes**: The  endpoint was modified to accept a custom  and  in the request body. This was the key change that allowed the main Python backend to register its alphanumeric room codes, bridging the gap between the two services and fixing the Invalid Code bug.
+- ** & **
+  - **Importance**: Central to user authentication and session management.
+  - **Changes**: Fixed a critical authentication bug.  was modified to correctly store the  from the login response into .  was updated to use the standardized  key instead of  to resolve inconsistency.
+
+- **Legacy Node.js Directories (, )**
+  - **Importance**: These were the original backend services for real-time functionality.
+  - **Changes**: These directories and all their contents were deleted as part of the backend consolidation effort.
 </code_architecture>
 
 <pending_tasks>
-- Implement Phase 2 of the social feed feature: AI-powered automatic extraction of MCQs from uploaded files (PDF, Excel) and images.
-- Build the user profile page to display statistics and separate tabs for a user's text posts and created quiz rooms.
-- Implement the hashtag discovery system for searching and browsing posts by topic.
-- Add advanced privacy controls for posts and rooms, such as Followers-only and Private (invite-only).
+- **Re-debug and fix the Join Room by Code feature.** This is the highest priority, as users are still unable to join rooms despite multiple fixes. The entire flow from frontend connection to backend state management needs verification.
+- **Implement original social features**, such as the functional notification system and privacy settings, which were postponed to address the critical bugs.
 </pending_tasks>
 
 <current_work>
-The most recent work focused on implementing and debugging the Phase 1 social feed with manual quiz room creation. The system is now stable and the core user flows are functional.
+The immediate focus is on resolving a persistent, high-priority bug where users cannot join a battle room using a PIN. The user has reported that despite several attempted fixes, the feature remains broken, with the UI showing a continuous loading state upon entering a code.
 
-**Work Completed:**
-1.  **Feature Implementation:** A new social feed page was created where users can create text posts or manually create quiz rooms via a modal. Quiz rooms are posted to the feed as special cards with a prominent, unique alphanumeric room code.
-2.  **Bug Fixes:** A series of critical bugs were resolved:
-    *   **Authentication:** Fixed  errors during post creation by resolving conflicting API routes.
-    *   **Commenting:** Fixed  errors by adding the missing backend endpoint to fetch comments.
-    *   **Feed Visibility:** Fixed new quiz rooms not appearing at the top of the feed by adjusting the backend's sorting logic.
-    *   **Room Joining:** Solved the most critical issue where users couldn't join quiz rooms. This was an architectural problem where the Python backend (alphanumeric codes) and a Node.js  (numeric codes) were incompatible. The fix involved modifying both services to allow the Python backend to register its alphanumeric rooms with the battle server via an API call.
+Previous attempts to fix this involved:
+1.  **Fixing a race condition**: Ensured the  event is sent only after the Socket.IO connection is established in .
+2.  **Implementing persistence**: Migrated battle room state from in-memory storage to MongoDB in  so rooms survive server restarts.
+3.  **Improving Error Handling**: Added timeouts and user-facing error messages in .
+4.  **Fixing Host Identification**: Corrected backend logic in  to ensure the room creator is always identified as the host.
 
-**Current State:**
-The application now has a functional social feed. Users can create text posts, create manual quiz rooms with 5+ questions, see these rooms appear immediately on the feed, and use the generated room codes to join a real-time battle lobby.
+Despite these efforts, the core join functionality is still failing. The last user request was to perform a complete end-to-end debugging of the entire join flow to identify the regression or remaining issue. The agent was about to begin this systematic debugging process.
 </current_work>
 
 <optional_next_step>
-Begin implementation of Phase 2: AI-powered quiz question extraction from uploaded PDF and Excel files, as per the original, detailed user request.
+I will begin a comprehensive end-to-end debugging of the Join Room flow, starting with the first step from the user's explicit instructions: verifying that the Socket.IO connection is being established correctly from the frontend.
 </optional_next_step>
