@@ -1,12 +1,16 @@
 """
 Battle Socket.IO Event Handlers
 Manages real-time battle room events using python-socketio
+Includes matchmaking and WebRTC signaling
 """
 import socketio
 import asyncio
 from typing import Dict, Any, Optional
 from battle_rooms import room_manager, Participant
+from matchmaking import matchmaking_manager
 from datetime import datetime, timezone
+import random
+import string
 
 # Create Socket.IO server with async mode
 sio = socketio.AsyncServer(
