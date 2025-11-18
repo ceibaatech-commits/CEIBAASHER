@@ -137,7 +137,7 @@ async def join_room(sid, data):
                 'code': 'ROOM_EXPIRED',
                 'statusCode': 410
             }, room=sid)
-            room_manager.remove_room(room_id)
+            await room_manager.remove_room(room_id)
             return
         
         # Check if completed
@@ -375,7 +375,7 @@ async def complete_battle(sid, data):
         # Schedule cleanup after 5 minutes
         async def cleanup():
             await asyncio.sleep(5 * 60)
-            room_manager.remove_room(room_id)
+            await room_manager.remove_room(room_id)
             print(f"[CLEANUP] Room {room_id} deleted")
         
         asyncio.create_task(cleanup())
@@ -644,7 +644,7 @@ async def handle_user_leave(sid, room_id):
                 print(f"[HOST] New host assigned in {room_id}")
             else:
                 # No participants left, close room
-                room_manager.remove_room(room_id)
+                await room_manager.remove_room(room_id)
                 print(f"[CLOSE] Room {room_id} closed - no participants")
                 return
         
