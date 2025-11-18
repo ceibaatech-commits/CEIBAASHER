@@ -98,6 +98,8 @@ async def create_room_http(request: CreateRoomRequest):
             room = BattleRoom(room_id, host, room_config)
             room_manager.rooms[room_id] = room
             room_manager.user_rooms[host.user_id] = room_id
+            # Save to database
+            await room_manager.save_room_to_db(room)
         else:
             room = await room_manager.create_room(host_data, config)
         
