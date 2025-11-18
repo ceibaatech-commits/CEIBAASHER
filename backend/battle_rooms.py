@@ -324,7 +324,7 @@ class BattleRoomManager:
             return self.rooms.get(room_id)
         return None
     
-    def remove_room(self, room_id: str):
+    async def remove_room(self, room_id: str):
         """Remove a room and cleanup user mappings"""
         room = self.rooms.get(room_id)
         if room:
@@ -333,6 +333,8 @@ class BattleRoomManager:
                 self.user_rooms.pop(participant.user_id, None)
             # Remove room
             del self.rooms[room_id]
+            # Delete from database
+            await self.delete_room_from_db(room_id)
     
     def get_active_rooms(self) -> List[Dict[str, Any]]:
         """Get list of active rooms (waiting status)"""
