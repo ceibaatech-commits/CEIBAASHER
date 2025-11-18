@@ -8409,28 +8409,34 @@ class BattleServerTester:
                 "userData": player2_user_data
             }
             
-            # Set up event listeners for player2
-            player2_events_received = []
-            
-            def on_player2_room_joined(data):
-                player2_events_received.append(('room_joined', data))
-                print(f"👤 Player2 received 'room_joined': {data}")
-            
-            def on_player2_participant_joined(data):
-                player2_events_received.append(('participant_joined', data))
-                print(f"👤 Player2 received 'participant_joined': {data}")
-            
-            player2_client.on('room_joined', on_player2_room_joined)
-            player2_client.on('participant_joined', on_player2_participant_joined)
-            
             # Clear host events to track new ones
             host_events_received.clear()
             
             # Emit join_room event for player2
             player2_client.emit('join_room', player2_join_data)
             
-            # Wait for events
-            time.sleep(3)
+            # Wait for events from both clients
+            player2_events_received = []
+            
+            # Try to receive events from both clients for 5 seconds
+            for i in range(10):  # 10 attempts, 0.5 seconds each
+                try:
+                    # Try to receive from host client
+                    host_event = host_client.receive(timeout=0.25)
+                    if host_event:
+                        host_events_received.append(host_event)
+                        print(f"🏠 Host received event: {host_event[0]} with data: {host_event[1] if len(host_event) > 1 else 'None'}")
+                except:
+                    pass
+                
+                try:
+                    # Try to receive from player2 client
+                    player2_event = player2_client.receive(timeout=0.25)
+                    if player2_event:
+                        player2_events_received.append(player2_event)
+                        print(f"👤 Player2 received event: {player2_event[0]} with data: {player2_event[1] if len(player2_event) > 1 else 'None'}")
+                except:
+                    pass
             
             # ==================== TEST SCENARIO 5: REAL-TIME ROOM UPDATES ====================
             print("\n5️⃣ TEST SCENARIO 5: Real-time Room Updates")
