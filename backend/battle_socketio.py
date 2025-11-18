@@ -1,0 +1,471 @@
+"""
+Battle Socket.IO Event Handlers
+Manages real-time battle room events using python-socketio
+"""
+import socketio
+import asyncio
+from typing import Dict, Any, Optional
+from battle_rooms import room_manager, Participant
+from datetime import datetime, timezone
+
+# Create Socket.IO server with async mode
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins='*',
+    logger=True,
+    engineio_logger=True
+)
+
+
+@sio.event
+async def connect(sid, environ):
+    """Handle client connection"""
+    print(f"[CONNECT] Client connected: {sid}")
+    return True
+
+
+@sio.event
+async def disconnect(sid):
+    """Handle client disconnection"""
+    print(f"[DISCONNECT] Client disconnected: {sid}")
+    
+    # Find and cleanup user's room
+    room = room_manager.get_user_room(sid)
+    if room:
+        await handle_user_leave(sid, room.room_id)
+
+
+@sio.event
+async def authenticate(sid, data):
+    """Authenticate user and store data on session"""
+    user_data = data.get('userData', {})
+    print(f"[AUTH] User authenticated: {user_data.get('username')} ({sid})")
+    
+    # Store user data in session (Socket.IO will manage this)
+    await sio.save_session(sid, {'userData': user_data})
+    
+    await sio.emit('authenticated', {'success': True}, room=sid)
+
+
+@sio.event
+async def create_room(sid, config):
+    """Create a new battle room"""
+    try:
+        # Get user data from session
+        session = await sio.get_session(sid)
+        user_data = session.get('userData', {}) if session else {}
+        
+        # Create room
+        host_data = {
+            "userId": sid,
+            "username": user_data.get('username', 'Host'),
+            "avatar": user_data.get('avatar', '👑'),
+            "isHost": True
+        }
+        
+        room = room_manager.create_room(host_data, config)
+        
+        # Join Socket.IO room
+        await sio.enter_room(sid, room.room_id)
+        
+        print(f"[ROOM] Created: {room.room_id} by {user_data.get('username')}")
+        
+        # Notify creator
+        await sio.emit('room_created', {
+            'success': True,
+            'roomId': room.room_id,
+            'pin': room.room_id,
+            'room': room.to_dict()
+        }, room=sid)
+        
+        # Broadcast updated room list
+        await sio.emit('room_list_updated', room_manager.get_active_rooms())
+        
+    except Exception as e:
+        print(f"[ERROR] create_room: {str(e)}")
+        await sio.emit('error', {'message': str(e)}, room=sid)
+
+
+@sio.event
+async def join_room(sid, data):
+    """Join an existing battle room"""
+    try:
+        room_id = data.get('roomId')
+        user_data = data.get('userData', {})
+        
+        print(f"[JOIN ATTEMPT] {user_data.get('username')} trying to join room {room_id}")
+        
+        room = room_manager.get_room(room_id)
+        
+        if not room:
+            print(f"[JOIN ERROR] Room {room_id} not found")
+            await sio.emit('join_error', {
+                'error': 'Room not found',
+                'code': 'ROOM_NOT_FOUND',
+                'statusCode': 404
+            }, room=sid)
+            return
+        
+        # Check if expired
+        if room.is_expired():
+            print(f"[JOIN ERROR] Room {room_id} expired")
+            await sio.emit('join_error', {
+                'error': 'This quiz expired (24 hours elapsed)',
+                'code': 'ROOM_EXPIRED',
+                'statusCode': 410
+            }, room=sid)
+            room_manager.remove_room(room_id)
+            return
+        
+        # Check if completed
+        if room.status == 'completed':
+            print(f"[JOIN ERROR] Room {room_id} already completed")
+            await sio.emit('join_error', {
+                'error': 'Battle already completed',
+                'code': 'BATTLE_COMPLETED',
+                'statusCode': 410
+            }, room=sid)
+            return
+        
+        # Store user data in session
+        await sio.save_session(sid, {'userData': user_data})
+        
+        # Handle host reconnection
+        if user_data.get('isHost') == True:
+            print(f"[HOST UPDATE] Host {user_data.get('username')} connecting to room {room_id}")
+            # Remove temporary HTTP host
+            room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
+            # Update host info
+            room.host.user_id = sid
+            room.host.username = user_data.get('username', room.host.username)
+            room.host.avatar = user_data.get('avatar', room.host.avatar)
+        
+        # Add participant
+        result = room.add_participant(sid, user_data)
+        
+        if not result['success']:
+            print(f"[JOIN ERROR] {result.get('error')} for room {room_id}")
+            await sio.emit('join_error', {
+                'error': result.get('error'),
+                'code': 'JOIN_FAILED',
+                'statusCode': 403
+            }, room=sid)
+            return
+        
+        # Join Socket.IO room
+        await sio.enter_room(sid, room_id)
+        room_manager.user_rooms[sid] = room_id
+        
+        print(f"[JOIN SUCCESS] {user_data.get('username')} joined room {room_id} ({len(room.participants)} participants)")
+        
+        # Notify all participants
+        await sio.emit('participant_joined', {
+            'participant': {
+                'userId': sid,
+                **user_data
+            },
+            'room': room.to_dict()
+        }, room=room_id)
+        
+        # Send room data to joiner
+        await sio.emit('room_joined', {
+            'success': True,
+            'room': room.to_dict(),
+            'questions': room.questions
+        }, room=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] join_room: {str(e)}")
+        await sio.emit('error', {'message': str(e)}, room=sid)
+
+
+@sio.event
+async def set_room_questions(sid, data):
+    """Set questions for a room (host only)"""
+    try:
+        room_id = data.get('roomId')
+        questions = data.get('questions', [])
+        
+        room = room_manager.get_room(room_id)
+        
+        if not room:
+            await sio.emit('error', {'message': 'Room not found'}, room=sid)
+            return
+        
+        # Only host can set questions
+        if room.host.user_id != sid:
+            await sio.emit('error', {'message': 'Only host can set questions'}, room=sid)
+            return
+        
+        room.questions = questions
+        print(f"[QUESTIONS] Host set {len(questions)} questions for room {room_id}")
+        
+        # Notify host
+        await sio.emit('questions_set', {'success': True}, room=sid)
+        
+        # Broadcast to all participants
+        await sio.emit('questions_updated', {'questions': questions}, room=room_id)
+        print(f"[BROADCAST] Questions sent to all participants in room {room_id}")
+        
+    except Exception as e:
+        print(f"[ERROR] set_room_questions: {str(e)}")
+        await sio.emit('error', {'message': str(e)}, room=sid)
+
+
+@sio.event
+async def start_battle(sid, data):
+    """Start the battle (host only)"""
+    try:
+        room_id = data.get('roomId')
+        room = room_manager.get_room(room_id)
+        
+        if not room:
+            await sio.emit('error', {'message': 'Room not found'}, room=sid)
+            return
+        
+        if room.host.user_id != sid:
+            await sio.emit('error', {'message': 'Only host can start battle'}, room=sid)
+            return
+        
+        if len(room.participants) < 2:
+            await sio.emit('error', {'message': 'Need at least 2 participants'}, room=sid)
+            return
+        
+        room.status = 'starting'
+        print(f"[START] Battle starting in room {room_id}")
+        
+        # Countdown
+        for countdown in [3, 2, 1]:
+            await sio.emit('countdown', {'count': countdown}, room=room_id)
+            await asyncio.sleep(1)
+        
+        # Start battle
+        room.status = 'active'
+        await sio.emit('battle_started', {
+            'room': room.to_dict(),
+            'currentQuestion': 0
+        }, room=room_id)
+        
+        print(f"[ACTIVE] Battle active in room {room_id}")
+        
+    except Exception as e:
+        print(f"[ERROR] start_battle: {str(e)}")
+        await sio.emit('error', {'message': str(e)}, room=sid)
+
+
+@sio.event
+async def submit_answer(sid, data):
+    """Submit an answer"""
+    try:
+        room_id = data.get('roomId')
+        question_id = data.get('questionId')
+        answer_id = data.get('answerId')
+        time_spent = data.get('timeSpent', 0)
+        is_correct = data.get('isCorrect', False)
+        points = data.get('points', 0)
+        
+        room = room_manager.get_room(room_id)
+        if not room:
+            return
+        
+        # Record answer
+        room.submit_answer(sid, question_id, answer_id, time_spent)
+        
+        # Update score if correct
+        if is_correct:
+            room.update_score(sid, points)
+        
+        # Get session for username
+        session = await sio.get_session(sid)
+        username = session.get('userData', {}).get('username', 'User') if session else 'User'
+        
+        # Notify others that this user answered (without revealing correctness)
+        await sio.emit('participant_answered', {
+            'userId': sid,
+            'questionId': question_id
+        }, room=room_id, skip_sid=sid)
+        
+        # Send feedback to submitter
+        await sio.emit('answer_result', {
+            'correct': is_correct,
+            'points': points if is_correct else 0,
+            'currentScore': room.scores.get(sid, 0)
+        }, room=sid)
+        
+        # Broadcast updated leaderboard
+        leaderboard = room.get_leaderboard()
+        await sio.emit('leaderboard_update', {
+            'leaderboard': leaderboard
+        }, room=room_id)
+        
+        print(f"[ANSWER] {username} answered Q{question_id}: {'Correct' if is_correct else 'Wrong'}")
+        
+    except Exception as e:
+        print(f"[ERROR] submit_answer: {str(e)}")
+
+
+@sio.event
+async def next_question(sid, data):
+    """Move to next question (host only)"""
+    try:
+        room_id = data.get('roomId')
+        room = room_manager.get_room(room_id)
+        
+        if not room or room.host.user_id != sid:
+            return
+        
+        room.current_question += 1
+        
+        await sio.emit('next_question', {
+            'questionNumber': room.current_question,
+            'leaderboard': room.get_leaderboard()
+        }, room=room_id)
+        
+        print(f"[NEXT] Room {room_id} - Question {room.current_question}")
+        
+    except Exception as e:
+        print(f"[ERROR] next_question: {str(e)}")
+
+
+@sio.event
+async def complete_battle(sid, data):
+    """Complete the battle (host only)"""
+    try:
+        room_id = data.get('roomId')
+        room = room_manager.get_room(room_id)
+        
+        if not room or room.host.user_id != sid:
+            return
+        
+        room.status = 'completed'
+        
+        final_results = {
+            'leaderboard': room.get_leaderboard(),
+            'totalQuestions': room.current_question,
+            'participants': len(room.participants)
+        }
+        
+        await sio.emit('battle_completed', final_results, room=room_id)
+        
+        print(f"[COMPLETE] Battle completed in room {room_id}")
+        
+        # Schedule cleanup after 5 minutes
+        async def cleanup():
+            await asyncio.sleep(5 * 60)
+            room_manager.remove_room(room_id)
+            print(f"[CLEANUP] Room {room_id} deleted")
+        
+        asyncio.create_task(cleanup())
+        
+    except Exception as e:
+        print(f"[ERROR] complete_battle: {str(e)}")
+
+
+@sio.event
+async def send_message(sid, data):
+    """Send chat message"""
+    try:
+        room_id = data.get('roomId')
+        message = data.get('message')
+        
+        room = room_manager.get_room(room_id)
+        if not room:
+            return
+        
+        # Get user data
+        session = await sio.get_session(sid)
+        user_data = session.get('userData', {}) if session else {}
+        
+        chat_message = {
+            'userId': sid,
+            'username': user_data.get('username', 'Anonymous'),
+            'message': message,
+            'timestamp': datetime.now(timezone.utc).timestamp()
+        }
+        
+        await sio.emit('new_message', chat_message, room=room_id)
+        
+    except Exception as e:
+        print(f"[ERROR] send_message: {str(e)}")
+
+
+@sio.event
+async def send_reaction(sid, data):
+    """Send reaction/emoji"""
+    try:
+        room_id = data.get('roomId')
+        reaction = data.get('reaction')
+        
+        room = room_manager.get_room(room_id)
+        if not room:
+            return
+        
+        # Get user data
+        session = await sio.get_session(sid)
+        user_data = session.get('userData', {}) if session else {}
+        
+        await sio.emit('new_reaction', {
+            'userId': sid,
+            'username': user_data.get('username', 'Anonymous'),
+            'reaction': reaction,
+            'timestamp': datetime.now(timezone.utc).timestamp()
+        }, room=room_id)
+        
+    except Exception as e:
+        print(f"[ERROR] send_reaction: {str(e)}")
+
+
+@sio.event
+async def leave_room(sid, data):
+    """Leave a room"""
+    room_id = data.get('roomId')
+    await handle_user_leave(sid, room_id)
+
+
+async def handle_user_leave(sid, room_id):
+    """Handle user leaving a room"""
+    try:
+        room = room_manager.get_room(room_id)
+        if not room:
+            return
+        
+        room.remove_participant(sid)
+        room_manager.user_rooms.pop(sid, None)
+        await sio.leave_room(sid, room_id)
+        
+        print(f"[LEAVE] User {sid} left room {room_id}")
+        
+        # If host left, assign new host or close room
+        if room.host.user_id == sid:
+            if len(room.participants) > 0:
+                # Assign new host
+                room.host = room.participants[0]
+                room.host.is_host = True
+                await sio.emit('host_changed', {'newHost': {
+                    'userId': room.host.user_id,
+                    'username': room.host.username,
+                    'avatar': room.host.avatar,
+                    'isHost': True
+                }}, room=room_id)
+                print(f"[HOST] New host assigned in {room_id}")
+            else:
+                # No participants left, close room
+                room_manager.remove_room(room_id)
+                print(f"[CLOSE] Room {room_id} closed - no participants")
+                return
+        
+        # Notify remaining participants
+        await sio.emit('participant_left', {
+            'userId': sid,
+            'room': room.to_dict()
+        }, room=room_id)
+        
+        # Update room list
+        await sio.emit('room_list_updated', room_manager.get_active_rooms())
+        
+    except Exception as e:
+        print(f"[ERROR] handle_user_leave: {str(e)}")
+
+
+# Create ASGI application
+socket_app = socketio.ASGIApp(sio, socketio_path='socket.io')
