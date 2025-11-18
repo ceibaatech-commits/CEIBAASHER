@@ -1,767 +1,448 @@
 """
-
 Battle Room Management
-
 Handles quiz battle room state, participants, scoring, and lifecycle
-
 """
-
-from datetime import datetime, timezone, timedelta
-
-from typing import Dict, List, Optional, Any
+from __future__ import annotations
 
 from dataclasses import dataclass, field
-
+from datetime import datetime, timezone
+from typing import Dict, List, Optional, Any
 import random
+import asyncio
 
 
-
-
+# ---------- Data models -----------------------------------------------------
 
 @dataclass
-
 class Participant:
-
-    """Represents a participant in a battle room"""
-
+    """Represents a participant in a battle room."""
     user_id: str
-
     username: str
-
     avatar: str = "👤"
-
     is_host: bool = False
-
     joined_at: float = field(default_factory=lambda: datetime.now(timezone.utc).timestamp())
 
 
-
-
-
 @dataclass
-
 class RoomConfig:
-
-    """Configuration for a battle room"""
-
+    """Configuration for a battle room."""
     max_participants: int = 50
-
     time_per_question: int = 30
-
     category: str = ""
-
     subject: str = ""
-
     exam_id: str = ""
 
 
-
-
+# ---------- BattleRoom -----------------------------------------------------
 
 class BattleRoom:
-
-    """
-
-    Manages a single battle room with participants, questions, and scoring
-
-    """
-
-   
-
+    """Manages a single battle room with participants, questions, and scoring."""
+    
     def __init__(self, room_id: str, host: Participant, config: Optional[RoomConfig] = None):
-
-        self.room_id = room_id
-
-        self.host = host
-
+        self.room_id: str = room_id
+        self.host: Participant = host
         self.participants: List[Participant] = [host]
-
-        self.config = config or RoomConfig()
-
-        self.status = "waiting"  # waiting, starting, active, completed
-
-        self.current_question = 0
-
+        self.config: RoomConfig = config or RoomConfig()
+        self.status: str = "waiting"  # waiting, starting, active, completed
+        self.current_question: int = 0
         self.questions: List[Dict[str, Any]] = []
-
         self.scores: Dict[str, int] = {host.user_id: 0}
+        self.answers: Dict[str, Dict[str, Any]] = {}  # {user_id: {question_id: {...}}}
+        self.created_at: float = datetime.now(timezone.utc).timestamp()
 
-        self.answers: Dict[str, Dict] = {}  # {user_id: {question_id: {answer, time_spent}}}
-
-        self.created_at = datetime.now(timezone.utc).timestamp()
-
-   
-
-    def add_participant(self, user_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
-
-        """Add a participant to the room"""
-
-        # Check if already in room
-
-        if any(p.user_id == user_id for p in self.participants):
-
+    # --- participant lifecycle ------------------------------------------------
+    
+    def add_participant_object(self, participant: Participant) -> Dict[str, Any]:
+        """Add a Participant object to the room."""
+        if any(p.user_id == participant.user_id for p in self.participants):
             return {"success": True, "message": "Already in room"}
 
-       
-
-        # Check max participants
-
         if len(self.participants) >= self.config.max_participants:
-
             return {"success": False, "error": "Room is full"}
 
-       
-
-        # Add participant
-
-        participant = Participant(
-
-            user_id=user_id,
-
-            username=user_data.get("username", "Anonymous"),
-
-            avatar=user_data.get("avatar", "👤"),
-
-            is_host=user_data.get("isHost", False)
-
-        )
-
-       
-
         self.participants.append(participant)
-
-        self.scores[user_id] = 0
-
-        self.answers[user_id] = {}
-
-       
-
+        self.scores.setdefault(participant.user_id, 0)
+        self.answers.setdefault(participant.user_id, {})
         return {"success": True, "participant": participant}
 
-   
+    def add_participant(self, user_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Create Participant from data and add to the room."""
+        participant = Participant(
+            user_id=str(user_id),
+            username=user_data.get("username", "Anonymous"),
+            avatar=user_data.get("avatar", "👤"),
+            is_host=bool(user_data.get("isHost", False))
+        )
+        return self.add_participant_object(participant)
 
     def remove_participant(self, user_id: str) -> bool:
-
-        """Remove a participant from the room"""
-
+        """Remove a participant by user_id. Returns True if removed."""
+        before = len(self.participants)
         self.participants = [p for p in self.participants if p.user_id != user_id]
-
         self.scores.pop(user_id, None)
-
         self.answers.pop(user_id, None)
+        return len(self.participants) < before
 
-        return True
-
-   
-
+    # --- scoring / answers ---------------------------------------------------
+    
     def update_score(self, user_id: str, points: int) -> int:
-
-        """Update a participant's score"""
-
+        """Add points to user's score and return the new score."""
         if user_id not in self.scores:
-
             self.scores[user_id] = 0
-
-        self.scores[user_id] += points
-
+        self.scores[user_id] += int(points)
         return self.scores[user_id]
 
-   
-
     def submit_answer(self, user_id: str, question_id: str, answer_id: str, time_spent: float):
-
-        """Record an answer submission"""
-
-        if user_id not in self.answers:
-
-            self.answers[user_id] = {}
-
-       
-
-        self.answers[user_id][question_id] = {
-
-            "answer_id": answer_id,
-
-            "time_spent": time_spent,
-
+        """Record an answer submission."""
+        self.answers.setdefault(user_id, {})
+        self.answers[user_id][str(question_id)] = {
+            "answer_id": str(answer_id),
+            "time_spent": float(time_spent),
             "timestamp": datetime.now(timezone.utc).timestamp()
-
         }
 
-   
-
-    def get_leaderboard(self) -> List[Dict[str, Any]]:
-
-        """Get sorted leaderboard"""
-
-        leaderboard = []
-
-        for participant in self.participants:
-
-            leaderboard.append({
-
-                "userId": participant.user_id,
-
-                "username": participant.username,
-
-                "avatar": participant.avatar,
-
-                "score": self.scores.get(participant.user_id, 0),
-
-                "answersCount": len(self.answers.get(participant.user_id, {}))
-
-            })
-
-       
-
-        # Sort by score descending
-
-        leaderboard.sort(key=lambda x: x["score"], reverse=True)
-
-       
-
-        # Add rank
-
-        for i, entry in enumerate(leaderboard):
-
-            entry["rank"] = i + 1
-
-       
-
-        return leaderboard
-
-   
-
-    def is_expired(self) -> bool:
-
-        """Check if room has expired (24 hours old)"""
-
-        age = datetime.now(timezone.utc).timestamp() - self.created_at
-
-        return age > 24 * 60 * 60  # 24 hours in seconds
-
-   
-
-    def to_dict(self) -> Dict[str, Any]:
-
-        """Convert room to dictionary for serialization"""
-
-        return {
-
-            "roomId": self.room_id,
-
-            "host": {
-
-                "userId": self.host.user_id,
-
-                "username": self.host.username,
-
-                "avatar": self.host.avatar,
-
-                "isHost": self.host.is_host
-
-            },
-
-            "participants": [
-
-                {
-
-                    "userId": p.user_id,
-
-                    "username": p.username,
-
-                    "avatar": p.avatar,
-
-                    "isHost": p.is_host
-
-                }
-
-                for p in self.participants
-
-            ],
-
-            "status": self.status,
-
-            "currentQuestion": self.current_question,
-
-            "config": {
-
-                "maxParticipants": self.config.max_participants,
-
-                "timePerQuestion": self.config.time_per_question,
-
-                "category": self.config.category,
-
-                "subject": self.config.subject,
-
-                "examId": self.config.exam_id
-
-            },
-
-            "participantCount": len(self.participants),
-
-            "leaderboard": self.get_leaderboard(),
-
-            "createdAt": self.created_at
-
-        }
-
-
-
-
-
-class BattleRoomManager:
-
-    """
-
-    Manages all battle rooms in memory with MongoDB persistence
-
-    """
-
-   
-
-    def __init__(self):
-
-        self.rooms: Dict[str, BattleRoom] = {}
-
-        self.user_rooms: Dict[str, str] = {}  # {user_id: room_id}
-
-        self.db = None  # Will be set by init_db
-
-   
-
-    async def init_db(self, database):
-
-        """Initialize database connection"""
-
-        self.db = database
-
-        # Load existing rooms from database on startup
-
-        await self.load_rooms_from_db()
-
-   
-
-    async def load_rooms_from_db(self):
-
-        """Load active rooms from MongoDB on startup"""
-
-        if self.db is None:
-
-            print("[WARNING] Database not initialized, cannot load rooms")
-
-            return
-
-       
-
-        try:
-
-            # Load rooms that are not expired
-
-            current_time = datetime.now(timezone.utc).timestamp()
-
-            cutoff_time = current_time - (24 * 60 * 60)  # 24 hours ago
-
-           
-
-            print(f"[STARTUP] Loading rooms created after {cutoff_time}...")
-
-           
-
-            # The field name is createdAt, not created_at
-
-            rooms_data = await self.db.battle_rooms.find({
-
-                "createdAt": {"$gt": cutoff_time},
-
-                "status": {"$ne": "completed"}
-
-            }).to_list(length=1000)
-
-           
-
-            print(f"[STARTUP] Found {len(rooms_data)} rooms in database")
-
-           
-
-            for room_data in rooms_data:
-
-                # Reconstruct room from database
-
-                try:
-
-                    room = self._room_from_dict(room_data)
-
-                    self.rooms[room.room_id] = room
-
-                   
-
-                    # Restore user room mappings
-
-                    for participant in room.participants:
-
-                        self.user_rooms[participant.user_id] = room.room_id
-
-                   
-
-                    print(f"[STARTUP] Loaded room {room.room_id}")
-
-                except Exception as e:
-
-                    print(f"[ERROR] Failed to load room {room_data.get('roomId', 'unknown')}: {str(e)}")
-
-           
-
-            print(f"[STARTUP] Loaded {len(rooms_data)} active rooms from database")
-
-        except Exception as e:
-
-            print(f"[ERROR] Failed to load rooms from database: {str(e)}")
-
-            import traceback
-
-            traceback.print_exc()
-
-   
-
-    async def save_room_to_db(self, room: BattleRoom):
-
-        """Save room to MongoDB"""
-
-        if self.db is None:
-
-            print(f"[WARNING] Cannot save room {room.room_id} - database not initialized")
-
-            return
-
-       
-
-        try:
-
-            room_dict = room.to_dict()
-
-            room_dict["_persistence_timestamp"] = datetime.now(timezone.utc).timestamp()
-
-           
-
-            print(f"[DB] Saving room {room.room_id} to MongoDB...")
-
-           
-
-            # Upsert (update or insert)
-
-            result = await self.db.battle_rooms.update_one(
-
-                {"roomId": room.room_id},
-
-                {"$set": room_dict},
-
-                upsert=True
-
-            )
-
-           
-
-            print(f"[DB] Room {room.room_id} saved successfully (matched: {result.matched_count}, modified: {result.modified_count}, upserted: {result.upserted_id})")
-
-        except Exception as e:
-
-            print(f"[ERROR] Failed to save room {room.room_id} to database: {str(e)}")
-
-            import traceback
-
-            traceback.print_exc()
-
-   
-
-    async def delete_room_from_db(self, room_id: str):
-
-        """Delete room from MongoDB"""
-
-        if self.db is None:
-
-            return
-
-       
-
-        try:
-
-            await self.db.battle_rooms.delete_one({"roomId": room_id})
-
-        except Exception as e:
-
-            print(f"[ERROR] Failed to delete room from database: {str(e)}")
-
-   
-
-    def _room_from_dict(self, data: Dict[str, Any]) -> BattleRoom:
-
-        """Reconstruct BattleRoom from dictionary"""
-
-        from battle_rooms import Participant, RoomConfig
-
-       
-
-        # Reconstruct host
-
-        host_data = data.get("host", {})
-
-        host = Participant(
-
-            user_id=host_data.get("userId", ""),
-
-            username=host_data.get("username", "Host"),
-
-            avatar=host_data.get("avatar", "👑"),
-
-            is_host=True
-
-        )
-
-       
-
-        # Reconstruct config
-
-        config_data = data.get("config", {})
-
-        config = RoomConfig(
-
-            max_participants=config_data.get("maxParticipants", 50),
-
-            time_per_question=config_data.get("timePerQuestion", 30),
-
-            category=config_data.get("category", ""),
-
-            subject=config_data.get("subject", ""),
-
-            exam_id=config_data.get("examId", "")
-
-        )
-
-       
-
-        # Create room
-
-        room = BattleRoom(data["roomId"], host, config)
-
-        room.status = data.get("status", "waiting")
-
-        room.current_question = data.get("currentQuestion", 0)
-
-        room.created_at = data.get("createdAt", datetime.now(timezone.utc).timestamp())
-
-       
-
-        # Restore participants
-
-        room.participants = []
-
-        for p_data in data.get("participants", []):
-
-            participant = Participant(
-
-                user_id=p_data.get("userId", ""),
-
-                username=p_data.get("username", ""),
-
-                avatar=p_data.get("avatar", "👤"),
-
-                is_host=p_data.get("isHost", False)
-
-            )
-
-            room.participants.append(participant)
-
-       
-
-        # Restore scores (convert from leaderboard if needed)
-
-        room.scores = {}
-
-        for participant in room.participants:
-
-            room.scores[participant.user_id] = 0
-
-       
-
-        # Questions would need to be set again by host
-
-        room.questions = []
-
-       
-
-        return room
-
-   
-
-    def generate_room_id(self) -> str:
-
-        """Generate a unique 6-digit room code"""
-
-        while True:
-
-            room_id = str(random.randint(100000, 999999))
-
-            if room_id not in self.rooms:
-
-                return room_id
-
-   
-
-    async def create_room(self, host_data: Dict[str, Any], config: Optional[Dict[str, Any]] = None) -> BattleRoom:
-
-        """Create a new battle room"""
-
-        room_id = self.generate_room_id()
-
-       
-
-        host = Participant(
-
-            user_id=host_data.get("userId", ""),
-
-            username=host_data.get("username", "Host"),
-
-            avatar=host_data.get("avatar", "👑"),
-
-            is_host=True
-
-        )
-
-       
-
-        room_config = None
-
-        if config:
-
-            room_config = RoomConfig(
-
-                max_participants=config.get("maxParticipants", 50),
-
-                time_per_question=config.get("timePerQuestion", 30),
-
-                category=config.get("category", ""),
-
-                subject=config.get("subject", ""),
-
-                exam_id=config.get("examId", "")
-
-            )
-
-       
-
-        room = BattleRoom(room_id, host, room_config)
-
-        self.rooms[room_id] = room
-
-        self.user_rooms[host.user_id] = room_id
-
-       
-
-        # Save to database
-
-        await self.save_room_to_db(room)
-
-       
-
-        return room
-
-   
-
-    def get_room(self, room_id: str) -> Optional[BattleRoom]:
-
-        """Get a room by ID"""
-
-        return self.rooms.get(room_id)
-
-   
-
-    def get_user_room(self, user_id: str) -> Optional[BattleRoom]:
-
-        """Get the room a user is currently in"""
-
-        room_id = self.user_rooms.get(user_id)
-
-        if room_id:
-
-            return self.rooms.get(room_id)
-
+    # --- runtime controls ----------------------------------------------------
+    
+    def set_questions(self, questions: List[Dict[str, Any]]):
+        """Set questions list (host action) and reset current_question."""
+        self.questions = questions or []
+        self.current_question = 0
+
+    def start_room(self):
+        """Start the room; requires questions present."""
+        if not self.questions:
+            raise RuntimeError("Cannot start room without questions.")
+        self.status = "active"
+        self.current_question = 0
+
+    def advance_question(self) -> Optional[int]:
+        """Advance to the next question. Returns new index or None if finished."""
+        if self.current_question + 1 < len(self.questions):
+            self.current_question += 1
+            return self.current_question
+        self.status = "completed"
         return None
 
-   
+    # --- utilities -----------------------------------------------------------
+    
+    def get_leaderboard(self) -> List[Dict[str, Any]]:
+        """Return leaderboard sorted by score (desc) with ranks."""
+        leaderboard: List[Dict[str, Any]] = []
+        for p in self.participants:
+            leaderboard.append({
+                "userId": p.user_id,
+                "username": p.username,
+                "avatar": p.avatar,
+                "score": int(self.scores.get(p.user_id, 0)),
+                "answersCount": len(self.answers.get(p.user_id, {}))
+            })
+
+        leaderboard.sort(key=lambda x: x["score"], reverse=True)
+        for idx, entry in enumerate(leaderboard):
+            entry["rank"] = idx + 1
+        return leaderboard
+
+    def is_expired(self) -> bool:
+        """Return True if the room is older than 24 hours."""
+        age = datetime.now(timezone.utc).timestamp() - self.created_at
+        return age > 24 * 60 * 60
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize room to a dictionary for persistence/transport."""
+        return {
+            "roomId": self.room_id,
+            "host": {
+                "userId": self.host.user_id,
+                "username": self.host.username,
+                "avatar": self.host.avatar,
+                "isHost": self.host.is_host
+            },
+            "participants": [
+                {
+                    "userId": p.user_id,
+                    "username": p.username,
+                    "avatar": p.avatar,
+                    "isHost": p.is_host,
+                    "joinedAt": p.joined_at
+                }
+                for p in self.participants
+            ],
+            "status": self.status,
+            "currentQuestion": self.current_question,
+            "questionsCount": len(self.questions),
+            "questions": self.questions,
+            "config": {
+                "maxParticipants": self.config.max_participants,
+                "timePerQuestion": self.config.time_per_question,
+                "category": self.config.category,
+                "subject": self.config.subject,
+                "examId": self.config.exam_id
+            },
+            "participantCount": len(self.participants),
+            "leaderboard": self.get_leaderboard(),
+            "scores": self.scores,
+            "answers": self.answers,
+            "createdAt": self.created_at
+        }
+
+
+# ---------- BattleRoomManager -----------------------------------------------
+
+class BattleRoomManager:
+    """
+    Manages battle rooms in memory and persists them to a DB (async drivers supported).
+    Thread-safe for concurrent use via asyncio.Lock.
+    """
+    
+    def __init__(self):
+        self.rooms: Dict[str, BattleRoom] = {}
+        self.user_rooms: Dict[str, str] = {}  # {user_id: room_id}
+        self.db: Optional[Any] = None
+        self._lock = asyncio.Lock()
+
+    # --- DB init/load/save ---------------------------------------------------
+    
+    async def init_db(self, database: Any):
+        """Set DB handle and load recent rooms from persistence."""
+        self.db = database
+        await self.load_rooms_from_db()
+
+    async def load_rooms_from_db(self):
+        """Load non-expired, non-completed rooms from DB into memory."""
+        if self.db is None:
+            print("[WARNING] Database not initialized, cannot load rooms")
+            return
+
+        try:
+            now_ts = datetime.now(timezone.utc).timestamp()
+            cutoff = now_ts - (24 * 60 * 60)
+            
+            print(f"[STARTUP] Loading rooms created after {cutoff}...")
+            
+            cursor = await self.db.battle_rooms.find({
+                "createdAt": {"$gt": cutoff},
+                "status": {"$ne": "completed"}
+            }).to_list(length=1000)
+
+            print(f"[STARTUP] Found {len(cursor)} rooms in database")
+
+            for doc in cursor:
+                try:
+                    room = self._room_from_dict(doc)
+                    self.rooms[room.room_id] = room
+                    for p in room.participants:
+                        self.user_rooms[p.user_id] = room.room_id
+                    print(f"[STARTUP] Loaded room {room.room_id}")
+                except Exception as exc:
+                    print(f"[ERROR] Failed to reconstruct room {doc.get('roomId')}: {exc}")
+            
+            print(f"[STARTUP] Successfully loaded {len(self.rooms)} active rooms")
+            
+        except Exception as exc:
+            print(f"[ERROR] load_rooms_from_db failed: {exc}")
+            import traceback
+            traceback.print_exc()
+
+    async def save_room_to_db(self, room: BattleRoom):
+        """Upsert room document to DB; tolerant of different async drivers."""
+        if self.db is None:
+            print(f"[WARNING] Cannot save room {room.room_id} - database not initialized")
+            return
+
+        try:
+            doc = room.to_dict()
+            doc["_persistence_timestamp"] = datetime.now(timezone.utc).timestamp()
+
+            result = await self.db.battle_rooms.update_one(
+                {"roomId": room.room_id},
+                {"$set": doc},
+                upsert=True
+            )
+
+            # Safe logging (not all drivers expose same attrs)
+            matched = getattr(result, "matched_count", "?")
+            modified = getattr(result, "modified_count", "?")
+            upserted = getattr(result, "upserted_id", None)
+            print(f"[DB] Saved room {room.room_id} (matched={matched}, modified={modified}, upserted={upserted})")
+            
+        except Exception as exc:
+            print(f"[ERROR] save_room_to_db failed for {room.room_id}: {exc}")
+            import traceback
+            traceback.print_exc()
+
+    async def delete_room_from_db(self, room_id: str):
+        """Delete a room doc from DB."""
+        if self.db is None:
+            return
+        try:
+            await self.db.battle_rooms.delete_one({"roomId": room_id})
+            print(f"[DB] Deleted room {room_id} from database")
+        except Exception as exc:
+            print(f"[ERROR] delete_room_from_db failed for {room_id}: {exc}")
+
+    # --- reconstruction ------------------------------------------------------
+    
+    def _room_from_dict(self, data: Dict[str, Any]) -> BattleRoom:
+        """Reconstruct BattleRoom from a persisted dictionary."""
+        host_data = data.get("host", {}) or {}
+        host = Participant(
+            user_id=str(host_data.get("userId", "")),
+            username=host_data.get("username", "Host"),
+            avatar=host_data.get("avatar", "👑"),
+            is_host=bool(host_data.get("isHost", True)),
+            joined_at=float(host_data.get("joinedAt", datetime.now(timezone.utc).timestamp()))
+        )
+
+        cfg = data.get("config", {}) or {}
+        config = RoomConfig(
+            max_participants=int(cfg.get("maxParticipants", 50)),
+            time_per_question=int(cfg.get("timePerQuestion", 30)),
+            category=str(cfg.get("category", "")) or "",
+            subject=str(cfg.get("subject", "")) or "",
+            exam_id=str(cfg.get("examId", "")) or ""
+        )
+
+        room_id = str(data.get("roomId", "")) or str(random.randint(100000, 999999))
+        room = BattleRoom(room_id, host, config)
+
+        room.status = data.get("status", "waiting")
+        room.current_question = int(data.get("currentQuestion", 0))
+        room.created_at = float(data.get("createdAt", room.created_at))
+
+        # Reconstruct participants
+        room.participants = []
+        for p in data.get("participants", []) or []:
+            participant = Participant(
+                user_id=str(p.get("userId", "")),
+                username=p.get("username", "") or "Anonymous",
+                avatar=p.get("avatar", "👤"),
+                is_host=bool(p.get("isHost", False)),
+                joined_at=float(p.get("joinedAt", datetime.now(timezone.utc).timestamp()))
+            )
+            room.participants.append(participant)
+
+        # Restore scores and answers if present
+        restored_scores = data.get("scores", {}) or {}
+        room.scores = {p.user_id: int(restored_scores.get(p.user_id, 0)) for p in room.participants}
+
+        room.answers = data.get("answers", {}) or {}
+        room.questions = data.get("questions", []) or []
+
+        return room
+
+    # --- room lifecycle helpers ---------------------------------------------
+    
+    def generate_room_id(self) -> str:
+        """Generate a unique 6-digit room code."""
+        while True:
+            code = str(random.randint(100000, 999999))
+            if code not in self.rooms:
+                return code
+
+    async def create_room(self, host_data: Dict[str, Any], config: Optional[Dict[str, Any]] = None) -> BattleRoom:
+        """Create, persist, and register a new room."""
+        async with self._lock:
+            room_id = self.generate_room_id()
+            host = Participant(
+                user_id=str(host_data.get("userId", "")),
+                username=host_data.get("username", "Host"),
+                avatar=host_data.get("avatar", "👑"),
+                is_host=True
+            )
+
+            room_config = None
+            if config:
+                room_config = RoomConfig(
+                    max_participants=int(config.get("maxParticipants", 50)),
+                    time_per_question=int(config.get("timePerQuestion", 30)),
+                    category=str(config.get("category", "")) or "",
+                    subject=str(config.get("subject", "")) or "",
+                    exam_id=str(config.get("examId", "")) or ""
+                )
+
+            room = BattleRoom(room_id, host, room_config)
+            self.rooms[room_id] = room
+            self.user_rooms[host.user_id] = room_id
+            await self.save_room_to_db(room)
+            return room
+
+    def get_room(self, room_id: str) -> Optional[BattleRoom]:
+        """Return room by ID or None."""
+        return self.rooms.get(room_id)
+
+    def get_user_room(self, user_id: str) -> Optional[BattleRoom]:
+        """Return the room object a user is currently in, or None."""
+        room_id = self.user_rooms.get(user_id)
+        if room_id:
+            return self.rooms.get(room_id)
+        return None
+
+    async def add_user_to_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convenience method: add user (dict) to room, update user_rooms mapping, persist.
+        Returns the same dict shape as BattleRoom.add_participant.
+        """
+        async with self._lock:
+            room = self.get_room(room_id)
+            if room is None:
+                return {"success": False, "error": "Room not found"}
+
+            result = room.add_participant(user_data.get("userId", ""), user_data)
+            if result.get("success"):
+                participant_id = str(user_data.get("userId", ""))
+                self.user_rooms[participant_id] = room_id
+                await self.save_room_to_db(room)
+            return result
+
+    async def remove_user_from_room(self, user_id: str) -> bool:
+        """Remove a user from whichever room they're in and persist changes."""
+        async with self._lock:
+            room_id = self.user_rooms.get(user_id)
+            if not room_id:
+                return False
+            room = self.get_room(room_id)
+            if not room:
+                self.user_rooms.pop(user_id, None)
+                return False
+            removed = room.remove_participant(user_id)
+            self.user_rooms.pop(user_id, None)
+            await self.save_room_to_db(room)
+            return removed
 
     async def remove_room(self, room_id: str):
-
-        """Remove a room and cleanup user mappings"""
-
-        room = self.rooms.get(room_id)
-
-        if room:
-
-            # Remove user mappings
-
-            for participant in room.participants:
-
-                self.user_rooms.pop(participant.user_id, None)
-
-            # Remove room
-
-            del self.rooms[room_id]
-
-            # Delete from database
-
-            await self.delete_room_from_db(room_id)
-
-   
+        """Delete a room from memory and DB, cleaning up user mappings."""
+        async with self._lock:
+            room = self.rooms.get(room_id)
+            if room:
+                for p in room.participants:
+                    self.user_rooms.pop(p.user_id, None)
+                del self.rooms[room_id]
+                await self.delete_room_from_db(room_id)
 
     def get_active_rooms(self) -> List[Dict[str, Any]]:
-
-        """Get list of active rooms (waiting status)"""
-
-        active_rooms = []
-
+        """Return list of waiting (joinable) rooms that are not expired."""
+        out: List[Dict[str, Any]] = []
         for room in self.rooms.values():
-
             if room.status == "waiting" and not room.is_expired():
-
-                active_rooms.append({
-
+                out.append({
                     "roomId": room.room_id,
-
                     "pin": room.room_id,
-
                     "host": room.host.username,
-
                     "participants": len(room.participants),
-
                     "maxParticipants": room.config.max_participants,
-
                     "category": room.config.category,
-
                     "subject": room.config.subject
-
                 })
-
-        return active_rooms
-
-   
+        return out
 
     async def cleanup_expired_rooms(self):
-
-        """Remove expired rooms (24+ hours old)"""
-
-        expired = [room_id for room_id, room in self.rooms.items() if room.is_expired()]
-
-        for room_id in expired:
-
-            print(f"[CLEANUP] Removing expired room: {room_id}")
-
-            await self.remove_room(room_id)
+        """Remove expired rooms older than 24 hours (memory + DB)."""
+        async with self._lock:
+            expired = [rid for rid, r in list(self.rooms.items()) if r.is_expired()]
+            for rid in expired:
+                print(f"[CLEANUP] Removing expired room: {rid}")
+                await self.remove_room(rid)
 
 
-
-
-
-# Global room manager instance
-
+# Global manager instance
 room_manager = BattleRoomManager()
