@@ -130,7 +130,7 @@ async def get_room_details(room_id: str):
         raise HTTPException(status_code=404, detail="Room not found")
     
     if room.is_expired():
-        room_manager.remove_room(room_id)
+        await room_manager.remove_room(room_id)
         raise HTTPException(status_code=410, detail="Room expired")
     
     return {
@@ -147,7 +147,7 @@ async def delete_room(room_id: str):
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
     
-    room_manager.remove_room(room_id)
+    await room_manager.remove_room(room_id)
     
     return {
         "success": True,
