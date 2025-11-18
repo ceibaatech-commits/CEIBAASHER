@@ -60,10 +60,16 @@ async def connect(sid, environ):
 
 @sio.event
 async def disconnect(sid):
-    """Handle client disconnection with detailed logging"""
+    """Handle client disconnection with detailed logging.
+
+    IMPORTANT: We do **not** automatically delete battle rooms on disconnect.
+    Explicit "leave_room" or HTTP cleanup is required to close a room.
+    This prevents rooms from being removed when the host has a brief
+    network hiccup while still playing.
+    """
     print(f"[DISCONNECT] ⚠️ Client disconnecting: {sid}")
 
-    # Cleanup matchmaking
+    # Cleanup matchmaking (1v1 battles)
     matchmaking_manager.cleanup_player(sid)
 
     # Find battle room and notify opponent if in matched battle
@@ -71,10 +77,12 @@ async def disconnect(sid):
     if battle:
         await sio.emit('opponent-disconnected', {}, room=battle.room_id, skip_sid=sid)
 
-    # Find and cleanup user's room
-    room = room_manager.get_user_room(sid)
-    if room:
-        await handle_user_leave(sid, room.room_id)
+    # NOTE: Do NOT call handle_user_leave here.
+    # Rooms are kept alive on socket disconnect to avoid premature
+    # deletion while host is still active in the quiz UI.
+    # - Explicit "leave_room" events (Quit button) still remove users.
+    # - Completed battles schedule their own cleanup after 5 minutes.
+    # - Expired rooms are cleaned up via 24h TTL in BattleRoomManager.
 
 
 @sio.event
