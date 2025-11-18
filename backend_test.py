@@ -8447,7 +8447,7 @@ class BattleServerTester:
             
             player2_room_joined = [e for e in player2_events_received if e[0] == 'room_joined']
             if player2_room_joined:
-                room_data = player2_room_joined[0][1]
+                room_data = player2_room_joined[0][1] if len(player2_room_joined[0]) > 1 else {}
                 participants = room_data.get('room', {}).get('participants', [])
                 participant_count = len(participants)
                 
