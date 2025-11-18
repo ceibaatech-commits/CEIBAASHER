@@ -75,12 +75,18 @@ const LiveBattle = () => {
     let hasJoined = false;
     const joinTimeout = setTimeout(() => {
       if (!hasJoined) {
-        console.error('❌ Join timeout: No response after 30 seconds');
+        console.error('❌ Join timeout: No response after 45 seconds');
+        console.error('⚠️ CACHE ISSUE: Please hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)');
+        console.error('⚠️ Check if room_joined event was received in network tab');
         setLoading(false);
-        alert('Connection timeout. Please check your internet and try again.');
+        alert('Connection timeout. This may be a browser cache issue.\n\n' +
+              'Please try:\n' +
+              '1. Hard refresh (Ctrl+Shift+R on Windows/Linux, Cmd+Shift+R on Mac)\n' +
+              '2. Clear browser cache\n' +
+              '3. Try again');
         navigate('/join-room');
       }
-    }, 30000); // 30 second timeout (increased for slower connections)
+    }, 45000); // 45 second timeout (increased to account for slow connections)
     
     // IMPORTANT: Set up event listeners BEFORE connecting/emitting to avoid race conditions
     
