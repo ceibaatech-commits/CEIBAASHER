@@ -86,7 +86,7 @@ async def create_room(sid, config):
             "isHost": True
         }
         
-        room = room_manager.create_room(host_data, config)
+        room = await room_manager.create_room(host_data, config)
         
         # Join Socket.IO room
         await sio.enter_room(sid, room.room_id)
