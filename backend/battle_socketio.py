@@ -40,15 +40,27 @@ def init_socketio_db(database):
 
 @sio.event
 async def connect(sid, environ):
-    """Handle client connection"""
-    print(f"[CONNECT] Client connected: {sid}")
-    return True
+    """Handle client connection with enhanced logging"""
+    try:
+        print(f"[CONNECT] ✅ Client connected: {sid}")
+        # Log connection details for debugging
+        user_agent = environ.get('HTTP_USER_AGENT', 'Unknown')
+        remote_addr = environ.get('REMOTE_ADDR', 'Unknown')
+        print(f"[CONNECT] User-Agent: {user_agent}")
+        print(f"[CONNECT] Remote Address: {remote_addr}")
+        print(f"[CONNECT] Transport: {environ.get('HTTP_UPGRADE', 'polling')}")
+        return True
+    except Exception as e:
+        print(f"[CONNECT] ❌ Connection error for {sid}: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 
 @sio.event
 async def disconnect(sid):
-    """Handle client disconnection"""
-    print(f"[DISCONNECT] Client disconnected: {sid}")
+    """Handle client disconnection with detailed logging"""
+    print(f"[DISCONNECT] ⚠️ Client disconnecting: {sid}")
     
     # Cleanup matchmaking
     matchmaking_manager.cleanup_player(sid)
