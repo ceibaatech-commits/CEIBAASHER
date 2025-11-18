@@ -350,7 +350,7 @@ class BackendTester:
                 return False
 
             # Create room
-            room_data = {"examId": "JEE", "subject": "Physics", "topic": "Mechanics"}
+            room_data = {"examId": "JEE", "subject": "Physics", "topic": "Mechanics", "hostName": "Demo Host"}
             headers = {"Authorization": f"Bearer {token1}"}
             response = requests.post(f"{BACKEND_URL}/api/battle/create-room", json=room_data, headers=headers)
             
