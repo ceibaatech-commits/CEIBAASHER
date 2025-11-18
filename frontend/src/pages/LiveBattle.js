@@ -81,52 +81,14 @@ const LiveBattle = () => {
       }
     }, 30000); // 30 second timeout (increased for slower connections)
     
-    // Clear timeout on successful join
-    newSocket.on('room_joined', () => {
-      console.log('🎉 Clearing join timeout - room joined successfully');
-      hasJoined = true;
-      clearTimeout(joinTimeout);
-    });
+    // IMPORTANT: Set up event listeners BEFORE connecting/emitting to avoid race conditions
     
-    newSocket.on('join_error', () => {
-      console.log('❌ Clearing join timeout - join error received');
-      hasJoined = true;
-      clearTimeout(joinTimeout);
-    });
-
-    // Connection successful handler
-    newSocket.on('connect', () => {
-      console.log('🔌 Socket connected! ID:', newSocket.id);
-      console.log('🔍 Connect Debug - isHost:', isHost, 'questions:', questions ? questions.length : 'undefined', 'pin:', pin);
-      
-      // Join room AFTER connection is established
-      console.log('📤 Emitting join_room event...');
-      newSocket.emit('join_room', {
-        roomId: pin,
-        userData: {
-          username: playerName,
-          isHost: isHost || false,
-          avatar: isHost ? '👑' : '👤'
-        }
-      });
-      console.log('✅ join_room event emitted');
-      
-      // If host has questions, send them after joining
-      if (isHost && questions && questions.length > 0) {
-        console.log(`📤 HOST: Will send ${questions.length} questions after joining`);
-        setTimeout(() => {
-          newSocket.emit('set_room_questions', {
-            roomId: pin,
-            questions: questions
-          });
-          console.log('✅ set_room_questions event emitted');
-        }, 1000); // Wait for join to complete
-      }
-    });
-
     // Listen for join errors
     newSocket.on('join_error', (data) => {
       console.error('❌ Join error:', data);
+      console.log('❌ Clearing join timeout - join error received');
+      hasJoined = true;
+      clearTimeout(joinTimeout);
       setLoading(false);
       
       let errorMessage = data.error || 'Failed to join room';
@@ -149,6 +111,9 @@ const LiveBattle = () => {
     // Listen for room_joined event (receives questions for joiners)
     newSocket.on('room_joined', (data) => {
       console.log('✅ Room joined successfully:', data);
+      console.log('🎉 Clearing join timeout - room joined successfully');
+      hasJoined = true;
+      clearTimeout(joinTimeout);
       
       // Get host info from backend
       const actualIsHost = data.isHost || false;
@@ -187,6 +152,36 @@ const LiveBattle = () => {
         // This user is the host
         console.log('👑 You are the host of this room');
         setLoading(false);
+      }
+    });
+
+    // Connection successful handler - NOW AFTER event listeners are set up
+    newSocket.on('connect', () => {
+      console.log('🔌 Socket connected! ID:', newSocket.id);
+      console.log('🔍 Connect Debug - isHost:', isHost, 'questions:', questions ? questions.length : 'undefined', 'pin:', pin);
+      
+      // Join room AFTER connection is established
+      console.log('📤 Emitting join_room event...');
+      newSocket.emit('join_room', {
+        roomId: pin,
+        userData: {
+          username: playerName,
+          isHost: isHost || false,
+          avatar: isHost ? '👑' : '👤'
+        }
+      });
+      console.log('✅ join_room event emitted');
+      
+      // If host has questions, send them after joining
+      if (isHost && questions && questions.length > 0) {
+        console.log(`📤 HOST: Will send ${questions.length} questions after joining`);
+        setTimeout(() => {
+          newSocket.emit('set_room_questions', {
+            roomId: pin,
+            questions: questions
+          });
+          console.log('✅ set_room_questions event emitted');
+        }, 1000); // Wait for join to complete
       }
     });
 
