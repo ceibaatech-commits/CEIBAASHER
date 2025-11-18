@@ -8325,30 +8325,27 @@ class BattleServerTester:
                 "userData": host_user_data
             }
             
-            # Set up event listeners for host
-            host_events_received = []
-            
-            def on_room_joined(data):
-                host_events_received.append(('room_joined', data))
-                print(f"🏠 Host received 'room_joined': {data}")
-            
-            def on_participant_joined(data):
-                host_events_received.append(('participant_joined', data))
-                print(f"🏠 Host received 'participant_joined': {data}")
-            
-            host_client.on('room_joined', on_room_joined)
-            host_client.on('participant_joined', on_participant_joined)
-            
             # Emit join_room event
             host_client.emit('join_room', join_room_data)
             
-            # Wait for events
-            time.sleep(3)
+            # Wait for events using receive() method
+            host_events_received = []
+            
+            # Try to receive events for 5 seconds
+            for i in range(10):  # 10 attempts, 0.5 seconds each
+                try:
+                    event = host_client.receive(timeout=0.5)
+                    if event:
+                        host_events_received.append(event)
+                        print(f"🏠 Host received event: {event[0]} with data: {event[1] if len(event) > 1 else 'None'}")
+                except Exception as e:
+                    # Timeout or no event - continue trying
+                    pass
             
             # Check for room_joined event
             room_joined_events = [e for e in host_events_received if e[0] == 'room_joined']
             if room_joined_events:
-                room_data = room_joined_events[0][1]
+                room_data = room_joined_events[0][1] if len(room_joined_events[0]) > 1 else {}
                 participant_count = len(room_data.get('room', {}).get('participants', []))
                 
                 self.log_result("Host Room Joined Event", True, 
