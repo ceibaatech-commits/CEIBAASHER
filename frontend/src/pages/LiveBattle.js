@@ -58,12 +58,35 @@ const LiveBattle = () => {
       return;
     }
 
+    console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
     const newSocket = io(BATTLE_SERVER_URL, {
       path: '/socket.io',  // Standard Socket.IO path (integrated with FastAPI)
       transports: ['polling', 'websocket'],
-      reconnection: true
+      reconnection: true,
+      timeout: 10000, // 10 second connection timeout
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000
     });
     setSocket(newSocket);
+    
+    // Set a timeout for the entire join process
+    const joinTimeout = setTimeout(() => {
+      if (loading) {
+        console.error('❌ Join timeout: No response after 15 seconds');
+        setLoading(false);
+        alert('Connection timeout. Please check your internet and try again.');
+        navigate('/join-room');
+      }
+    }, 15000); // 15 second total timeout
+    
+    // Clear timeout on successful join
+    newSocket.on('room_joined', () => {
+      clearTimeout(joinTimeout);
+    });
+    
+    newSocket.on('join_error', () => {
+      clearTimeout(joinTimeout);
+    });
 
     // Connection successful handler
     newSocket.on('connect', () => {
