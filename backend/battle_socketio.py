@@ -684,4 +684,5 @@ async def handle_user_leave(sid, room_id):
 
 
 # Create ASGI application
-socket_app = socketio.ASGIApp(sio, socketio_path='socket.io')
+# Empty socketio_path because the path is defined in the mount point (/api/battlews)
+socket_app = socketio.ASGIApp(sio, socketio_path='')
