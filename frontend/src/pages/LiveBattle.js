@@ -143,41 +143,44 @@ const LiveBattle = () => {
     // Listen for room_joined event (receives questions for joiners)
     newSocket.on('room_joined', (data) => {
       console.log('✅ Room joined successfully:', data);
-      console.log('🔍 Debug - isHost:', isHost, 'questions:', questions ? questions.length : 'undefined');
+      
+      // Get host info from backend
+      const actualIsHost = data.isHost || false;
+      const hostInfo = data.hostInfo || {};
+      
+      console.log('🔍 Host Info:', {
+        'frontend_isHost': isHost,
+        'backend_isHost': actualIsHost,
+        'hostUsername': hostInfo.username,
+        'myUsername': playerName
+      });
+      
+      // Update participants list with proper host indication
+      if (data.room && data.room.participants) {
+        setParticipants(data.room.participants);
+      }
       
       // If this is a joiner and questions are provided, set them
-      if (!isHost && data.questions && data.questions.length > 0) {
+      if (!actualIsHost && data.questions && data.questions.length > 0) {
         console.log(`📝 Received ${data.questions.length} questions from host`);
         setAllQuestions(data.questions);
         setCurrentQuestion(data.questions[0]);
         setTotalQuestions(data.questions.length);
         setLoading(false);
-      } else if (!isHost) {
+      } else if (!actualIsHost) {
         // Joiner but no questions yet - host hasn't set them
         console.log('⏳ Waiting for host to set questions...');
-        // Set a timeout to stop loading after 10 seconds if no questions
+        setLoading(false); // Stop loading, show waiting state
+        // Set a timeout to show error if no questions after 10 seconds
         setTimeout(() => {
           if ((!allQuestions || allQuestions.length === 0) && !currentQuestion) {
-            setLoading(false);
-            console.error('❌ Timeout: No questions received after 10 seconds');
-            alert('Failed to load questions. The host may not have set up the quiz properly. Please ask the host to refresh.');
+            console.warn('⚠️ No questions received after 10 seconds');
           }
         }, 10000);
-      }
-      
-      // BACKUP: If host didn't send questions on connect, send them now
-      if (isHost && questions && questions.length > 0) {
-        console.log(`📤 HOST (backup): Sending ${questions.length} questions via room_joined`);
-        newSocket.emit('set_room_questions', {
-          roomId: pin,
-          questions: questions
-        });
-      } else if (isHost && (!questions || questions.length === 0)) {
-        console.error('❌ HOST ERROR: No questions available!', { 
-          isHost, 
-          questionsExist: !!questions, 
-          questionsLength: questions?.length 
-        });
+      } else {
+        // This user is the host
+        console.log('👑 You are the host of this room');
+        setLoading(false);
       }
     });
 
