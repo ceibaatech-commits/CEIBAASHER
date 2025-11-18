@@ -66,21 +66,24 @@
    ============================================ */
 
 .reaction-bubble--small {
-  width: 36px;
-  height: 36px;
-  font-size: 16px;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  padding: 2px;
 }
 
 .reaction-bubble--medium {
-  width: 48px;
-  height: 48px;
-  font-size: 20px;
+  width: 52px;
+  height: 52px;
+  font-size: 22px;
+  padding: 4px;
 }
 
 .reaction-bubble--large {
-  width: 64px;
-  height: 64px;
-  font-size: 28px;
+  width: 68px;
+  height: 68px;
+  font-size: 30px;
+  padding: 6px;
 }
 
 /* ============================================
