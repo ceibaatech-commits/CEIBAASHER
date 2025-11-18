@@ -379,7 +379,7 @@ class BattleRoomTester:
             socketio_url = f"{BACKEND_URL}/api/battlews"
             
             host_client = socketio.SimpleClient()
-            host_client.connect(socketio_url, socketio_path='/socket.io')
+            host_client.connect(socketio_url, socketio_path='/socket.io', engineio_logger=False)
             
             if not host_client.connected:
                 self.log_result("Host Socket.IO Connection", False, 
