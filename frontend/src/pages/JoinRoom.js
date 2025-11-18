@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Lock } from 'lucide-react';
+import { ArrowLeft, Users, Lock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 
 const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
@@ -10,18 +10,41 @@ const JoinRoom = () => {
   const [pin, setPin] = useState('');
   const [playerName, setPlayerName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleJoinRoom = async () => {
+    // Clear previous errors
+    setError('');
+    
+    // Validation
     if (!pin.trim() || !playerName.trim()) {
-      alert('Please enter PIN and your name');
+      setError('Please enter both PIN and your name');
+      return;
+    }
+
+    if (pin.length !== 6) {
+      setError('PIN must be 6 digits');
       return;
     }
 
     setLoading(true);
+    console.log('[JOIN] Attempting to join room:', pin);
+    
     try {
-      const response = await axios.get(`${BATTLE_URL}/api/battle/room/${pin}`);
+      // Add timeout to prevent indefinite hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      const response = await axios.get(`${BATTLE_URL}/api/battle/room/${pin}`, {
+        signal: controller.signal,
+        timeout: 10000 // 10 seconds
+      });
+      
+      clearTimeout(timeoutId);
+      console.log('[JOIN] Room response:', response.data);
       
       if (response.data.success) {
+        console.log('[JOIN] Room found, navigating to live battle');
         // Navigate directly to live battle - skip lobby, join and play immediately
         navigate(`/live-battle/${pin}`, { 
           state: { 
@@ -30,10 +53,41 @@ const JoinRoom = () => {
             autoJoin: true  // Flag to indicate auto-joining without waiting
           } 
         });
+      } else {
+        setError(response.data.message || 'Unable to join room');
+        console.error('[JOIN] Room check failed:', response.data);
       }
     } catch (error) {
-      console.error('Error joining room:', error);
-      alert('Room not found or quiz already started');
+      console.error('[JOIN ERROR]', error);
+      
+      // Handle different error types
+      if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+        setError('Connection timeout. Please check your internet and try again.');
+      } else if (error.name === 'AbortError') {
+        setError('Request timed out. Server may be slow or unavailable.');
+      } else if (error.response) {
+        // Server responded with error
+        const status = error.response.status;
+        const detail = error.response.data?.detail;
+        
+        if (status === 404) {
+          setError(`Room ${pin} not found. Please check the PIN.`);
+        } else if (status === 410) {
+          setError(detail || 'This room has expired or already completed.');
+        } else if (status === 403) {
+          setError(detail || 'Unable to join this room.');
+        } else if (status >= 500) {
+          setError('Server error. Please try again in a moment.');
+        } else {
+          setError(detail || 'Unable to join room. Please try again.');
+        }
+      } else if (error.request) {
+        // Request made but no response
+        setError('Cannot reach server. Please check your internet connection.');
+      } else {
+        // Something else went wrong
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
