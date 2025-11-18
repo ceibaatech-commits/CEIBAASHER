@@ -158,7 +158,7 @@ async def delete_room(room_id: str):
 @router.post("/cleanup-expired")
 async def cleanup_expired_rooms():
     """Clean up expired rooms (24+ hours old)"""
-    room_manager.cleanup_expired_rooms()
+    await room_manager.cleanup_expired_rooms()
     
     return {
         "success": True,
