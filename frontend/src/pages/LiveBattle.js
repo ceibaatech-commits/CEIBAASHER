@@ -94,6 +94,28 @@ const LiveBattle = () => {
       }
     });
 
+    // Listen for join errors
+    newSocket.on('join_error', (data) => {
+      console.error('❌ Join error:', data);
+      setLoading(false);
+      
+      let errorMessage = data.error || 'Failed to join room';
+      
+      // Handle specific error codes
+      if (data.code === 'ROOM_NOT_FOUND') {
+        errorMessage = `Room ${pin} not found. Please check the PIN.`;
+      } else if (data.code === 'ROOM_EXPIRED') {
+        errorMessage = 'This room has expired (24 hours elapsed). Please create a new room.';
+      } else if (data.code === 'BATTLE_COMPLETED') {
+        errorMessage = 'This battle has already completed. You cannot join.';
+      } else if (data.code === 'ROOM_FULL') {
+        errorMessage = 'This room is full. Cannot join.';
+      }
+      
+      alert(errorMessage);
+      navigate('/join-room'); // Redirect back to join page
+    });
+
     // Listen for room_joined event (receives questions for joiners)
     newSocket.on('room_joined', (data) => {
       console.log('✅ Room joined successfully:', data);
