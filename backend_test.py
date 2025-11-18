@@ -8550,12 +8550,17 @@ class BattleServerTester:
         # Setup
         mongo_connected = self.setup_mongo()
         
-        # PRIORITY 1: JWT Token Debugging for Profile Update (CRITICAL - Current Review Request Focus)
-        print("\n🔍 JWT TOKEN DEBUGGING FOR PROFILE UPDATE (CRITICAL - CURRENT REVIEW REQUEST)")
+        # PRIORITY 1: Battle Room Joining Flow (CRITICAL - Current Review Request Focus)
+        print("\n🎯 BATTLE ROOM JOINING FLOW TEST (CRITICAL - CURRENT REVIEW REQUEST)")
+        print("=" * 70)
+        self.test_battle_room_joining_flow_comprehensive()
+        
+        # PRIORITY 2: JWT Token Debugging for Profile Update (CRITICAL - Current Review Request Focus)
+        print("\n🔍 JWT TOKEN DEBUGGING FOR PROFILE UPDATE (CRITICAL - Current Review Request Focus)")
         print("=" * 70)
         self.test_profile_update_jwt_debugging()
         
-        # PRIORITY 2: Profile Update and Follow System Fixes (CRITICAL - Current Review Request Focus)
+        # PRIORITY 3: Profile Update and Follow System Fixes (CRITICAL - Current Review Request Focus)
         print("\n🎯 PROFILE UPDATE AND FOLLOW SYSTEM FIXES (CRITICAL - CURRENT REVIEW REQUEST)")
         print("=" * 70)
         self.test_profile_update_and_follow_system_fixes()
