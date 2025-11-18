@@ -3,11 +3,10 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect to battle server through the backend domain
-// Browser cannot access localhost:5001 (container internal)
-// So we use the external backend URL
+// Connect to Socket.IO on main backend (now integrated with FastAPI on port 8001)
+// Socket.IO is mounted at /socket.io/ path
 const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://quizzen-3.preview.emergentagent.com';
-const SOCKET_PATH = '/socket.io'; // Default Socket.io path
+const SOCKET_PATH = '/socket.io'; // Standard Socket.IO path
 
 const BattleLobby = () => {
   const { pin } = useParams();
