@@ -155,6 +155,21 @@ logger = logging.getLogger(__name__)
 @fastapi_app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
-# FastAPI app is now standalone, Socket.io runs separately on port 5002
-app = fastapi_app
+# Import Socket.IO battle server
+from battle_socketio import sio
+
+# Mount Socket.IO to FastAPI
+# Socket.IO will handle /socket.io/* paths, FastAPI handles the rest
+socket_app = socketio.ASGIApp(
+    sio,
+    other_asgi_app=fastapi_app,
+    socketio_path='socket.io'
+)
+
+# Export the combined app (Socket.IO wraps FastAPI)
+app = socket_app
+
+print("[INIT] Socket.IO integrated with FastAPI on port 8001")
+print("[INIT] Socket.IO endpoint: /socket.io/")
+print("[INIT] FastAPI REST endpoints remain on /api/*")
 
