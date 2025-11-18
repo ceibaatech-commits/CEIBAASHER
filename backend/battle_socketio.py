@@ -213,9 +213,10 @@ async def join_room(sid, data):
         await sio.enter_room(sid, room_id)
         room_manager.user_rooms[sid] = room_id
         
-        print(f"[JOIN SUCCESS] {user_data.get('username')} joined room {room_id} ({len(room.participants)} participants)")
+        print(f"[JOIN SUCCESS] ✅ {user_data.get('username')} joined room {room_id} ({len(room.participants)} participants)")
         
         # Notify all participants
+        print(f"[EMIT] Sending participant_joined to room {room_id}")
         await sio.emit('participant_joined', {
             'participant': {
                 'userId': sid,
@@ -225,6 +226,7 @@ async def join_room(sid, data):
         }, room=room_id)
         
         # Send room data to joiner
+        print(f"[EMIT] Sending room_joined to {sid} (isHost: {is_actual_host})")
         await sio.emit('room_joined', {
             'success': True,
             'room': room.to_dict(),
@@ -236,6 +238,7 @@ async def join_room(sid, data):
                 'avatar': room.host.avatar
             }
         }, room=sid)
+        print(f"[EMIT] ✅ room_joined event sent successfully to {sid}")
         
     except Exception as e:
         print(f"[ERROR] join_room: {str(e)}")
