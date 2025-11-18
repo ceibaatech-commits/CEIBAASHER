@@ -144,7 +144,7 @@ class BattleRoomTester:
             
             login_payload = {
                 "username": "demo1",
-                "password": "demo123"
+                "password": "demo1"
             }
             
             response = requests.post(
