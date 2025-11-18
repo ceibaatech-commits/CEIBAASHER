@@ -31,7 +31,7 @@ with open('/app/frontend/.env', 'r') as f:
             BACKEND_URL = line.split('=')[1].strip()
             break
     else:
-        BACKEND_URL = "https://quizroom-revival.preview.emergentagent.com"
+        BACKEND_URL = "https://quizbugs.preview.emergentagent.com"
 
 class BattleServerTester:
     def __init__(self):
