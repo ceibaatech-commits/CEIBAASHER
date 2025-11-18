@@ -75,19 +75,20 @@ const LiveBattle = () => {
     setSocket(newSocket);
     
     // Set a timeout for the entire join process
-    // Use a ref to track if we successfully joined to avoid race conditions
-    let hasJoined = false;
+    // Use a flag to track if we successfully joined to avoid race conditions
+    // IMPORTANT: Hosts already "own" the room via HTTP flow, so we treat them
+    // as joined to avoid bogus timeouts while they are actively playing.
+    let hasJoined = !!isHost;
     const joinTimeout = setTimeout(() => {
       if (!hasJoined) {
-        console.error('❌ Join timeout: No response after 45 seconds');
-        console.error('⚠️ CACHE ISSUE: Please hard refresh the page (Ctrl+Shift+R or Cmd+Shift+R)');
-        console.error('⚠️ Check if room_joined event was received in network tab');
+        console.error('❌ Join timeout: No room_joined response after 45 seconds');
+        console.error('⚠️ This indicates a connection issue between client and battle server, not a cache bug.');
         setLoading(false);
-        alert('Connection timeout. This may be a browser cache issue.\n\n' +
-              'Please try:\n' +
-              '1. Hard refresh (Ctrl+Shift+R on Windows/Linux, Cmd+Shift+R on Mac)\n' +
-              '2. Clear browser cache\n' +
-              '3. Try again');
+        alert(
+          'Connection timeout while joining the room.\n\n' +
+          'We could not establish a stable connection to the quiz server.\n\n' +
+          'Please check your internet connection and try joining again.'
+        );
         navigate('/join-room');
       }
     }, 45000); // 45 second timeout (increased to account for slow connections)
