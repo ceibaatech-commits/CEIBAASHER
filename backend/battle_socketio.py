@@ -13,11 +13,17 @@ import random
 import string
 
 # Create Socket.IO server with async mode
+# PRODUCTION SETTINGS: Increased ping intervals for connection stability
 sio = socketio.AsyncServer(
     async_mode='asgi',
     cors_allowed_origins='*',
     logger=True,
-    engineio_logger=True
+    engineio_logger=True,
+    # CRITICAL: Increase ping intervals to prevent premature disconnections
+    ping_interval=25,  # Send ping every 25 seconds (default: 5s)
+    ping_timeout=60,   # Wait 60 seconds for pong response (default: 20s)
+    max_http_buffer_size=10000000,  # 10MB for large data
+    allow_upgrades=True
 )
 
 # Database will be injected
