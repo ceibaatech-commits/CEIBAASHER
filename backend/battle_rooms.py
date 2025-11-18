@@ -352,12 +352,12 @@ class BattleRoomManager:
                 })
         return active_rooms
     
-    def cleanup_expired_rooms(self):
+    async def cleanup_expired_rooms(self):
         """Remove expired rooms (24+ hours old)"""
         expired = [room_id for room_id, room in self.rooms.items() if room.is_expired()]
         for room_id in expired:
             print(f"[CLEANUP] Removing expired room: {room_id}")
-            self.remove_room(room_id)
+            await self.remove_room(room_id)
 
 
 # Global room manager instance
