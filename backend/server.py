@@ -122,7 +122,7 @@ fastapi_app.include_router(api_router)
 fastapi_app.include_router(quiz_router, prefix="/api")
 fastapi_app.include_router(auth_router, prefix="/api")
 fastapi_app.include_router(sheets_router, prefix="/api")
-fastapi_app.include_router(battle_proxy_router, prefix="/api")
+fastapi_app.include_router(battle_router)
 # fastapi_app.include_router(social_router, prefix="/api")  # Disabled - using social_feed_router instead
 fastapi_app.include_router(contact_router, prefix="/api")
 fastapi_app.include_router(social_feed_router, prefix="/api/social")
