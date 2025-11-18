@@ -297,8 +297,8 @@ class BattleRoomTester:
             
             sio = socketio.SimpleClient()
             
-            # Connect with specific socketio_path
-            sio.connect(socketio_url, socketio_path='/socket.io')
+            # Connect with specific socketio_path and engineio version
+            sio.connect(socketio_url, socketio_path='/socket.io', engineio_logger=False)
             
             if not sio.connected:
                 self.log_result("Socket.IO Connection to /api/battlews", False, 
