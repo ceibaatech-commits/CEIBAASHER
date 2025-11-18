@@ -156,12 +156,125 @@ class BattleRoom:
 
 class BattleRoomManager:
     """
-    Manages all battle rooms in memory
+    Manages all battle rooms in memory with MongoDB persistence
     """
     
     def __init__(self):
         self.rooms: Dict[str, BattleRoom] = {}
         self.user_rooms: Dict[str, str] = {}  # {user_id: room_id}
+        self.db = None  # Will be set by init_db
+    
+    async def init_db(self, database):
+        """Initialize database connection"""
+        self.db = database
+        # Load existing rooms from database on startup
+        await self.load_rooms_from_db()
+    
+    async def load_rooms_from_db(self):
+        """Load active rooms from MongoDB on startup"""
+        if not self.db:
+            return
+        
+        try:
+            # Load rooms that are not expired
+            current_time = datetime.now(timezone.utc).timestamp()
+            cutoff_time = current_time - (24 * 60 * 60)  # 24 hours ago
+            
+            rooms_data = await self.db.battle_rooms.find({
+                "created_at": {"$gt": cutoff_time},
+                "status": {"$ne": "completed"}
+            }).to_list(length=1000)
+            
+            for room_data in rooms_data:
+                # Reconstruct room from database
+                room = self._room_from_dict(room_data)
+                self.rooms[room.room_id] = room
+                
+                # Restore user room mappings
+                for participant in room.participants:
+                    self.user_rooms[participant.user_id] = room.room_id
+            
+            print(f"[STARTUP] Loaded {len(rooms_data)} active rooms from database")
+        except Exception as e:
+            print(f"[ERROR] Failed to load rooms from database: {str(e)}")
+    
+    async def save_room_to_db(self, room: BattleRoom):
+        """Save room to MongoDB"""
+        if not self.db:
+            return
+        
+        try:
+            room_dict = room.to_dict()
+            room_dict["_persistence_timestamp"] = datetime.now(timezone.utc).timestamp()
+            
+            # Upsert (update or insert)
+            await self.db.battle_rooms.update_one(
+                {"roomId": room.room_id},
+                {"$set": room_dict},
+                upsert=True
+            )
+        except Exception as e:
+            print(f"[ERROR] Failed to save room to database: {str(e)}")
+    
+    async def delete_room_from_db(self, room_id: str):
+        """Delete room from MongoDB"""
+        if not self.db:
+            return
+        
+        try:
+            await self.db.battle_rooms.delete_one({"roomId": room_id})
+        except Exception as e:
+            print(f"[ERROR] Failed to delete room from database: {str(e)}")
+    
+    def _room_from_dict(self, data: Dict[str, Any]) -> BattleRoom:
+        """Reconstruct BattleRoom from dictionary"""
+        from battle_rooms import Participant, RoomConfig
+        
+        # Reconstruct host
+        host_data = data.get("host", {})
+        host = Participant(
+            user_id=host_data.get("userId", ""),
+            username=host_data.get("username", "Host"),
+            avatar=host_data.get("avatar", "👑"),
+            is_host=True
+        )
+        
+        # Reconstruct config
+        config_data = data.get("config", {})
+        config = RoomConfig(
+            max_participants=config_data.get("maxParticipants", 50),
+            time_per_question=config_data.get("timePerQuestion", 30),
+            category=config_data.get("category", ""),
+            subject=config_data.get("subject", ""),
+            exam_id=config_data.get("examId", "")
+        )
+        
+        # Create room
+        room = BattleRoom(data["roomId"], host, config)
+        room.status = data.get("status", "waiting")
+        room.current_question = data.get("currentQuestion", 0)
+        room.created_at = data.get("createdAt", datetime.now(timezone.utc).timestamp())
+        
+        # Restore participants
+        room.participants = []
+        for p_data in data.get("participants", []):
+            participant = Participant(
+                user_id=p_data.get("userId", ""),
+                username=p_data.get("username", ""),
+                avatar=p_data.get("avatar", "👤"),
+                is_host=p_data.get("isHost", False)
+            )
+            room.participants.append(participant)
+        
+        # Restore scores (convert from leaderboard if needed)
+        room.scores = {}
+        for participant in room.participants:
+            room.scores[participant.user_id] = 0
+        
+        # Questions would need to be set again by host
+        room.questions = []
+        
+        return room
     
     def generate_room_id(self) -> str:
         """Generate a unique 6-digit room code"""
