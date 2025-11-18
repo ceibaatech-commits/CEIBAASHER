@@ -33,6 +33,14 @@ async def disconnect(sid):
     """Handle client disconnection"""
     print(f"[DISCONNECT] Client disconnected: {sid}")
     
+    # Cleanup matchmaking
+    matchmaking_manager.cleanup_player(sid)
+    
+    # Find battle room and notify opponent if in matched battle
+    battle = matchmaking_manager.get_player_battle(sid)
+    if battle:
+        await sio.emit('opponent-disconnected', {}, room=battle.room_id, skip_sid=sid)
+    
     # Find and cleanup user's room
     room = room_manager.get_user_room(sid)
     if room:
