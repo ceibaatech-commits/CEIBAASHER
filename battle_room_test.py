@@ -447,7 +447,7 @@ class BattleRoomTester:
             print("3️⃣ Connecting second player...")
             
             player2_client = socketio.SimpleClient()
-            player2_client.connect(socketio_url, socketio_path='/socket.io')
+            player2_client.connect(socketio_url, socketio_path='/socket.io', engineio_logger=False)
             
             if not player2_client.connected:
                 self.log_result("Player2 Socket.IO Connection", False, 
