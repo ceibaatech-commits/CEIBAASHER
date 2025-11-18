@@ -120,15 +120,18 @@ code {
 /* Battle Social Features Animations */
 @keyframes float {
     0% {
-        opacity: 0;
-        transform: translateY(0) scale(0.5);
+        /* Start fully visible for maximum clarity */
+        opacity: 1;
+        transform: translateY(0) scale(0.8);
     }
     50% {
+        /* Keep emojis fully opaque while floating */
         opacity: 1;
         transform: translateY(-100px) scale(1.2);
     }
     100% {
-        opacity: 0;
+        /* End of animation still fully opaque; element is then removed by JS */
+        opacity: 1;
         transform: translateY(-200px) scale(0.8);
     }
 }
