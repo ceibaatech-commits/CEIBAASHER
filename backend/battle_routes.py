@@ -99,7 +99,7 @@ async def create_room_http(request: CreateRoomRequest):
             room_manager.rooms[room_id] = room
             room_manager.user_rooms[host.user_id] = room_id
         else:
-            room = room_manager.create_room(host_data, config)
+            room = await room_manager.create_room(host_data, config)
         
         # Set questions if provided
         if request.questions:
