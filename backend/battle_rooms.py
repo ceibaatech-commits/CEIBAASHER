@@ -201,20 +201,27 @@ class BattleRoomManager:
     async def save_room_to_db(self, room: BattleRoom):
         """Save room to MongoDB"""
         if self.db is None:
+            print(f"[WARNING] Cannot save room {room.room_id} - database not initialized")
             return
         
         try:
             room_dict = room.to_dict()
             room_dict["_persistence_timestamp"] = datetime.now(timezone.utc).timestamp()
             
+            print(f"[DB] Saving room {room.room_id} to MongoDB...")
+            
             # Upsert (update or insert)
-            await self.db.battle_rooms.update_one(
+            result = await self.db.battle_rooms.update_one(
                 {"roomId": room.room_id},
                 {"$set": room_dict},
                 upsert=True
             )
+            
+            print(f"[DB] Room {room.room_id} saved successfully (matched: {result.matched_count}, modified: {result.modified_count}, upserted: {result.upserted_id})")
         except Exception as e:
-            print(f"[ERROR] Failed to save room to database: {str(e)}")
+            print(f"[ERROR] Failed to save room {room.room_id} to database: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     async def delete_room_from_db(self, room_id: str):
         """Delete room from MongoDB"""
