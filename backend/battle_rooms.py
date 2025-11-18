@@ -172,7 +172,7 @@ class BattleRoomManager:
     
     async def load_rooms_from_db(self):
         """Load active rooms from MongoDB on startup"""
-        if not self.db:
+        if self.db is None:
             return
         
         try:
