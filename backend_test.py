@@ -8479,7 +8479,7 @@ class BattleServerTester:
             
             host_participant_joined = [e for e in host_events_received if e[0] == 'participant_joined']
             if host_participant_joined:
-                participant_data = host_participant_joined[0][1]
+                participant_data = host_participant_joined[0][1] if len(host_participant_joined[0]) > 1 else {}
                 joined_username = participant_data.get('participant', {}).get('username')
                 
                 if joined_username == 'Player2':
