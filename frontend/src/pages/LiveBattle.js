@@ -60,7 +60,7 @@ const LiveBattle = () => {
 
     console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
     const newSocket = io(BATTLE_SERVER_URL, {
-      path: '/socket.io',  // Standard Socket.IO path (integrated with FastAPI)
+      path: '/api/battlews/socket.io',  // Battle Socket.IO mounted at /api/battlews
       transports: ['polling', 'websocket'],
       reconnection: true,
       timeout: 10000, // 10 second connection timeout
