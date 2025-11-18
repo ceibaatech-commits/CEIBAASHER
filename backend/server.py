@@ -61,9 +61,12 @@ from socket_app import socket_asgi_app
 # This avoids needing custom ingress rules for /socket.io
 fastapi_app.mount("/api/socketio", socket_asgi_app)
 
-# Mount Socket.io Battle Proxy at /api/battlews
-from socketio_battle_proxy import battle_proxy_app
-fastapi_app.mount("/api/battlews", battle_proxy_app)
+# Mount Battle Socket.IO directly (no proxy needed - battle logic is in Python)
+from battle_socketio import socket_app as battle_socket_app, init_socketio_db
+# Initialize battle socketio with database
+init_socketio_db(db)
+# Mount at /api/battlews with empty socketio_path since path is in mount
+fastapi_app.mount("/api/battlews", battle_socket_app)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
