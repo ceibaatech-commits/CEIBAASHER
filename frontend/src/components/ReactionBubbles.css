@@ -11,11 +11,11 @@
 
 .reaction-bubbles {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: 8px;
 }
 
 /* ============================================
