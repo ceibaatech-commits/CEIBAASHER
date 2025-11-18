@@ -319,7 +319,27 @@
 
 @media (max-width: 768px) {
   .reaction-bubbles {
-    gap: 6px;
+    gap: 10px;
+    padding: 6px;
+  }
+  
+  .reaction-bubble--medium {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+  
+  .reaction-bubble--large {
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reaction-bubbles {
+    gap: 8px;
+    padding: 4px;
   }
   
   .reaction-bubble--medium {
@@ -328,21 +348,9 @@
     font-size: 18px;
   }
   
-  .reaction-bubble--large {
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .reaction-bubbles {
-    gap: 4px;
-  }
-  
-  .reaction-bubble--medium {
-    width: 40px;
-    height: 40px;
+  .reaction-bubble--small {
+    width: 38px;
+    height: 38px;
     font-size: 16px;
   }
 }
