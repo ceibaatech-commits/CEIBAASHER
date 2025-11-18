@@ -210,7 +210,13 @@ async def join_room(sid, data):
         await sio.emit('room_joined', {
             'success': True,
             'room': room.to_dict(),
-            'questions': room.questions
+            'questions': room.questions,
+            'isHost': is_actual_host,  # Tell the user if they are the actual host
+            'hostInfo': {
+                'userId': room.host.user_id,
+                'username': room.host.username,
+                'avatar': room.host.avatar
+            }
         }, room=sid)
         
     except Exception as e:
