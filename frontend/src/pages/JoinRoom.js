@@ -114,6 +114,17 @@ const JoinRoom = () => {
           </div>
 
           <div className="space-y-6">
+            {/* Error Alert */}
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-red-900">Error</p>
+                  <p className="text-sm text-red-700 mt-1">{error}</p>
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Room PIN
@@ -121,11 +132,23 @@ const JoinRoom = () => {
               <input
                 type="text"
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) => {
+                  setPin(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  setError(''); // Clear error on input
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && pin.length === 6 && playerName.trim()) {
+                    handleJoinRoom();
+                  }
+                }}
                 placeholder="Enter 6-digit PIN"
                 maxLength="6"
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-center text-2xl font-bold tracking-widest"
+                disabled={loading}
               />
+              <p className="text-xs text-gray-500 mt-1 text-center">
+                {pin.length}/6 digits
+              </p>
             </div>
 
             <div>
@@ -135,18 +158,34 @@ const JoinRoom = () => {
               <input
                 type="text"
                 value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
+                onChange={(e) => {
+                  setPlayerName(e.target.value);
+                  setError(''); // Clear error on input
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && pin.length === 6 && playerName.trim()) {
+                    handleJoinRoom();
+                  }
+                }}
                 placeholder="Enter your name"
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                disabled={loading}
               />
             </div>
 
             <button
               onClick={handleJoinRoom}
               disabled={loading || pin.length !== 6 || !playerName.trim()}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Joining...' : 'Join Room'}
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <span>Joining...</span>
+                </>
+              ) : (
+                'Join Room'
+              )}
             </button>
           </div>
 
