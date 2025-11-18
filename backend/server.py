@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-import socketio
 import os
 import logging
 from pathlib import Path
