@@ -371,6 +371,179 @@ async def send_message(sid, data):
     try:
         room_id = data.get('roomId')
         message = data.get('message')
+
+
+
+# ==================== MATCHMAKING EVENTS ====================
+
+@sio.event
+async def find_match(sid, data):
+    """Find a match for quiz battle"""
+    try:
+        player_name = data.get('playerName', 'Player')
+        exam = data.get('exam', '')
+        subject = data.get('subject', '')
+        
+        print(f"[MATCHMAKING] {player_name} looking for match in {exam} - {subject}")
+        
+        # Try to find a match
+        opponent = matchmaking_manager.add_to_queue(sid, player_name, exam, subject)
+        
+        if opponent:
+            # Match found! Create battle room
+            room_id = f"room_{int(datetime.now(timezone.utc).timestamp())}_{generate_random_id()}"
+            
+            player1_data = {
+                'socketId': sid,
+                'playerName': player_name,
+                'score': 0
+            }
+            
+            player2_data = {
+                'socketId': opponent.socket_id,
+                'playerName': opponent.player_name,
+                'score': 0
+            }
+            
+            # Register battle
+            matchmaking_manager.create_battle(room_id, player1_data, player2_data, exam, subject)
+            
+            # Join both players to Socket.IO room
+            await sio.enter_room(sid, room_id)
+            await sio.enter_room(opponent.socket_id, room_id)
+            
+            # Notify both players
+            await sio.emit('match-found', {
+                'roomId': room_id,
+                'players': [
+                    {'playerName': player_name},
+                    {'playerName': opponent.player_name}
+                ],
+                'exam': exam,
+                'subject': subject
+            }, room=room_id)
+            
+            print(f"[MATCHMAKING] Match created: Room {room_id}")
+            
+        else:
+            # Added to waiting list
+            await sio.emit('waiting', {'message': 'Looking for opponent...'}, room=sid)
+            print(f"[MATCHMAKING] {player_name} added to waiting list")
+            
+    except Exception as e:
+        print(f"[ERROR] find_match: {str(e)}")
+        await sio.emit('error', {'message': str(e)}, room=sid)
+
+
+@sio.event
+async def cancel_match(sid, data=None):
+    """Cancel matchmaking"""
+    try:
+        removed = matchmaking_manager.remove_from_queue(sid)
+        if removed:
+            print(f"[MATCHMAKING] Player {sid} cancelled matchmaking")
+            await sio.emit('match-cancelled', {'success': True}, room=sid)
+    except Exception as e:
+        print(f"[ERROR] cancel_match: {str(e)}")
+
+
+@sio.event
+async def battle_answer(sid, data):
+    """Submit answer in matched battle"""
+    try:
+        room_id = data.get('roomId')
+        question_id = data.get('questionId')
+        answer = data.get('answer')
+        time_taken = data.get('timeTaken', 0)
+        
+        battle = matchmaking_manager.get_battle(room_id)
+        if not battle:
+            return
+        
+        # Update player's last answer
+        if battle.player1['socketId'] == sid:
+            battle.player1['lastAnswer'] = {
+                'questionId': question_id,
+                'answer': answer,
+                'timeTaken': time_taken
+            }
+            player_name = battle.player1['playerName']
+        elif battle.player2['socketId'] == sid:
+            battle.player2['lastAnswer'] = {
+                'questionId': question_id,
+                'answer': answer,
+                'timeTaken': time_taken
+            }
+            player_name = battle.player2['playerName']
+        else:
+            return
+        
+        # Notify opponent
+        await sio.emit('opponent-answered', {
+            'playerName': player_name
+        }, room=room_id, skip_sid=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] battle_answer: {str(e)}")
+
+
+# ==================== WEBRTC SIGNALING EVENTS ====================
+
+@sio.event
+async def webrtc_offer(sid, data):
+    """WebRTC offer signaling"""
+    try:
+        room_id = data.get('roomId')
+        offer = data.get('offer')
+        
+        # Forward to other users in room
+        await sio.emit('webrtc-offer', {
+            'offer': offer,
+            'from': sid
+        }, room=room_id, skip_sid=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] webrtc_offer: {str(e)}")
+
+
+@sio.event
+async def webrtc_answer(sid, data):
+    """WebRTC answer signaling"""
+    try:
+        room_id = data.get('roomId')
+        answer = data.get('answer')
+        
+        # Forward to other users in room
+        await sio.emit('webrtc-answer', {
+            'answer': answer,
+            'from': sid
+        }, room=room_id, skip_sid=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] webrtc_answer: {str(e)}")
+
+
+@sio.event
+async def webrtc_ice_candidate(sid, data):
+    """WebRTC ICE candidate signaling"""
+    try:
+        room_id = data.get('roomId')
+        candidate = data.get('candidate')
+        
+        # Forward to other users in room
+        await sio.emit('webrtc-ice-candidate', {
+            'candidate': candidate,
+            'from': sid
+        }, room=room_id, skip_sid=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] webrtc_ice_candidate: {str(e)}")
+
+
+def generate_random_id(length: int = 9) -> str:
+    """Generate random alphanumeric ID"""
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+
         
         room = room_manager.get_room(room_id)
         if not room:
