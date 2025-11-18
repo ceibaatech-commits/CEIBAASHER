@@ -32,7 +32,7 @@ const BattleLobby = () => {
     
     console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
     const newSocket = io(BATTLE_SERVER_URL, {
-      path: '/api/battlews',  // Custom path to avoid ingress conflicts
+      path: SOCKET_PATH,  // Standard Socket.IO path (integrated with FastAPI)
       transports: ['polling', 'websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
