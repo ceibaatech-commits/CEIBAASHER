@@ -117,8 +117,10 @@ const LiveBattle = () => {
 
     // Listen for room_joined event (receives questions for joiners)
     newSocket.on('room_joined', (data) => {
-      console.log('✅ Room joined successfully:', data);
+      console.log('✅✅✅ ROOM_JOINED EVENT RECEIVED!', data);
       console.log('🎉 Clearing join timeout - room joined successfully');
+      console.log('📊 Event received at:', new Date().toISOString());
+      console.log('📦 Data structure:', JSON.stringify(data, null, 2));
       hasJoined = true;
       clearTimeout(joinTimeout);
       
