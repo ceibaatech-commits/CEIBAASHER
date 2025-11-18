@@ -1,0 +1,367 @@
+/* ============================================
+   REACTION BUBBLES - MODERN TRANSPARENT DESIGN
+   ============================================ */
+
+.reaction-bubbles-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reaction-bubbles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+/* ============================================
+   REACTION BUBBLE - BASE STYLES
+   ============================================ */
+
+.reaction-bubble {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Semi-transparent white background with backdrop blur */
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  /* Crisp border with subtle color */
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  
+  border-radius: 50%;
+  cursor: pointer;
+  
+  /* Smooth transitions */
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Remove default button styles */
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  
+  /* Animation on mount */
+  animation: bubbleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ============================================
+   SIZE VARIANTS
+   ============================================ */
+
+.reaction-bubble--small {
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+.reaction-bubble--medium {
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+}
+
+.reaction-bubble--large {
+  width: 64px;
+  height: 64px;
+  font-size: 28px;
+}
+
+/* ============================================
+   HOVER STATE - ENHANCED VISIBILITY
+   ============================================ */
+
+.reaction-bubble:hover {
+  /* Increased opacity for better feedback */
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.5);
+  
+  /* Enhanced shadow */
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  
+  /* Slight scale up */
+  transform: scale(1.1) translateY(-2px);
+}
+
+/* ============================================
+   ACTIVE/PRESSED STATE
+   ============================================ */
+
+.reaction-bubble:active,
+.reaction-bubble--active {
+  /* Maximum opacity when pressed */
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.6);
+  
+  /* Slight scale down for tactile feedback */
+  transform: scale(0.95);
+  
+  /* Sharper shadow */
+  box-shadow: 
+    0 1px 4px rgba(0, 0, 0, 0.1),
+    inset 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================
+   EMOJI CONTENT
+   ============================================ */
+
+.reaction-emoji {
+  display: block;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  
+  /* Smooth emoji scaling on interaction */
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reaction-bubble:hover .reaction-emoji {
+  transform: scale(1.15);
+}
+
+.reaction-bubble:active .reaction-emoji {
+  transform: scale(0.9);
+}
+
+/* ============================================
+   GLOW EFFECT (SUBTLE HIGHLIGHT)
+   ============================================ */
+
+.reaction-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.reaction-bubble:hover .reaction-glow {
+  opacity: 0.5;
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  .reaction-bubble {
+    /* Slightly less transparent for dark backgrounds */
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    
+    box-shadow: 
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      0 1px 2px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+  
+  .reaction-bubble:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    
+    box-shadow: 
+      0 4px 16px rgba(0, 0, 0, 0.4),
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  
+  .reaction-bubble:active,
+  .reaction-bubble--active {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* ============================================
+   FLOATING REACTIONS ANIMATION
+   ============================================ */
+
+.floating-reactions {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.floating-reaction {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  font-size: 32px;
+  animation: floatUp 2s ease-out forwards;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(-50% + 20px), -80px) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(calc(-50% + 40px), -150px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   BUBBLE IN ANIMATION
+   ============================================ */
+
+@keyframes bubbleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   VARIANTS
+   ============================================ */
+
+/* Compact variant - tighter spacing */
+.reaction-bubbles--compact .reaction-bubbles {
+  gap: 4px;
+}
+
+.reaction-bubbles--compact .reaction-bubble--medium {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+}
+
+/* Static variant - no floating animations */
+.reaction-bubbles--static .floating-reactions {
+  display: none;
+}
+
+/* ============================================
+   FOCUS STATES (ACCESSIBILITY)
+   ============================================ */
+
+.reaction-bubble:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   DISABLED STATE
+   ============================================ */
+
+.reaction-bubble:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.reaction-bubble:disabled:hover {
+  background: rgba(255, 255, 255, 0.55);
+  transform: none;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .reaction-bubbles {
+    gap: 6px;
+  }
+  
+  .reaction-bubble--medium {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+  }
+  
+  .reaction-bubble--large {
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reaction-bubbles {
+    gap: 4px;
+  }
+  
+  .reaction-bubble--medium {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE SUPPORT
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .reaction-bubble {
+    border-width: 2px;
+    border-color: rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.9);
+  }
+  
+  .reaction-bubble:hover {
+    border-color: rgba(0, 0, 0, 0.7);
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .reaction-bubble,
+  .reaction-emoji,
+  .reaction-glow {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .floating-reaction {
+    display: none;
+  }
+}
