@@ -109,17 +109,17 @@
 
 .reaction-bubble:active,
 .reaction-bubble--active {
-  /* Maximum opacity when pressed */
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(255, 255, 255, 0.6);
+  /* Fully opaque when pressed */
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(255, 255, 255, 0.9);
   
   /* Slight scale down for tactile feedback */
-  transform: scale(0.95);
+  transform: scale(0.92);
   
-  /* Sharper shadow */
+  /* Pressed shadow effect */
   box-shadow: 
-    0 1px 4px rgba(0, 0, 0, 0.1),
-    inset 0 2px 4px rgba(0, 0, 0, 0.08);
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
 /* ============================================
