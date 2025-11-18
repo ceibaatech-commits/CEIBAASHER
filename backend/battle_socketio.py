@@ -153,17 +153,33 @@ async def join_room(sid, data):
         # Store user data in session
         await sio.save_session(sid, {'userData': user_data})
         
-        # Handle host reconnection
-        if user_data.get('isHost') == True:
-            print(f"[HOST UPDATE] Host {user_data.get('username')} connecting to room {room_id}")
-            # Remove temporary HTTP host
-            room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
-            # Update host info
-            room.host.user_id = sid
-            room.host.username = user_data.get('username', room.host.username)
-            room.host.avatar = user_data.get('avatar', room.host.avatar)
+        # Check if this user is the actual host (not just claiming to be)
+        is_actual_host = False
         
-        # Add participant
+        # Handle host reconnection - only if this user_id matches an existing HTTP host
+        if user_data.get('isHost') == True:
+            # Check if there's an HTTP host placeholder that needs to be replaced
+            for participant in room.participants:
+                if participant.user_id.startswith('http-') and participant.is_host:
+                    print(f"[HOST RECONNECT] Replacing HTTP host with real Socket.IO connection for {user_data.get('username')}")
+                    # Remove the HTTP placeholder
+                    room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
+                    # Update the host object
+                    room.host.user_id = sid
+                    room.host.username = user_data.get('username', room.host.username)
+                    room.host.avatar = user_data.get('avatar', room.host.avatar)
+                    is_actual_host = True
+                    break
+            
+            # If no HTTP host found, check if this person created the room via Socket.IO
+            if not is_actual_host and room.host.user_id == sid:
+                is_actual_host = True
+                print(f"[HOST] {user_data.get('username')} is the original room creator")
+        
+        # Override isHost flag based on actual host status
+        user_data['isHost'] = is_actual_host
+        
+        # Add participant (or update if already exists)
         result = room.add_participant(sid, user_data)
         
         if not result['success']:
