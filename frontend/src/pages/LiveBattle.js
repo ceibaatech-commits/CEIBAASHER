@@ -70,21 +70,27 @@ const LiveBattle = () => {
     setSocket(newSocket);
     
     // Set a timeout for the entire join process
+    // Use a ref to track if we successfully joined to avoid race conditions
+    let hasJoined = false;
     const joinTimeout = setTimeout(() => {
-      if (loading) {
-        console.error('❌ Join timeout: No response after 15 seconds');
+      if (!hasJoined) {
+        console.error('❌ Join timeout: No response after 30 seconds');
         setLoading(false);
         alert('Connection timeout. Please check your internet and try again.');
         navigate('/join-room');
       }
-    }, 15000); // 15 second total timeout
+    }, 30000); // 30 second timeout (increased for slower connections)
     
     // Clear timeout on successful join
     newSocket.on('room_joined', () => {
+      console.log('🎉 Clearing join timeout - room joined successfully');
+      hasJoined = true;
       clearTimeout(joinTimeout);
     });
     
     newSocket.on('join_error', () => {
+      console.log('❌ Clearing join timeout - join error received');
+      hasJoined = true;
       clearTimeout(joinTimeout);
     });
 
