@@ -93,7 +93,8 @@ class BackendTester:
             room_data = {
                 "examId": "JEE",
                 "subject": "Physics", 
-                "topic": "Mechanics"
+                "topic": "Mechanics",
+                "hostName": "Demo Host"
             }
             
             headers = {"Authorization": f"Bearer {token1}"}
