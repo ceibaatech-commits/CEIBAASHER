@@ -173,6 +173,7 @@ class BattleRoomManager:
     async def load_rooms_from_db(self):
         """Load active rooms from MongoDB on startup"""
         if self.db is None:
+            print("[WARNING] Database not initialized, cannot load rooms")
             return
         
         try:
@@ -180,23 +181,35 @@ class BattleRoomManager:
             current_time = datetime.now(timezone.utc).timestamp()
             cutoff_time = current_time - (24 * 60 * 60)  # 24 hours ago
             
+            print(f"[STARTUP] Loading rooms created after {cutoff_time}...")
+            
+            # The field name is createdAt, not created_at
             rooms_data = await self.db.battle_rooms.find({
-                "created_at": {"$gt": cutoff_time},
+                "createdAt": {"$gt": cutoff_time},
                 "status": {"$ne": "completed"}
             }).to_list(length=1000)
             
+            print(f"[STARTUP] Found {len(rooms_data)} rooms in database")
+            
             for room_data in rooms_data:
                 # Reconstruct room from database
-                room = self._room_from_dict(room_data)
-                self.rooms[room.room_id] = room
-                
-                # Restore user room mappings
-                for participant in room.participants:
-                    self.user_rooms[participant.user_id] = room.room_id
+                try:
+                    room = self._room_from_dict(room_data)
+                    self.rooms[room.room_id] = room
+                    
+                    # Restore user room mappings
+                    for participant in room.participants:
+                        self.user_rooms[participant.user_id] = room.room_id
+                    
+                    print(f"[STARTUP] Loaded room {room.room_id}")
+                except Exception as e:
+                    print(f"[ERROR] Failed to load room {room_data.get('roomId', 'unknown')}: {str(e)}")
             
             print(f"[STARTUP] Loaded {len(rooms_data)} active rooms from database")
         except Exception as e:
             print(f"[ERROR] Failed to load rooms from database: {str(e)}")
+            import traceback
+            traceback.print_exc()
     
     async def save_room_to_db(self, room: BattleRoom):
         """Save room to MongoDB"""
