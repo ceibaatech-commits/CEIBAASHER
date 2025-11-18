@@ -283,7 +283,7 @@ class BattleRoomManager:
             if room_id not in self.rooms:
                 return room_id
     
-    def create_room(self, host_data: Dict[str, Any], config: Optional[Dict[str, Any]] = None) -> BattleRoom:
+    async def create_room(self, host_data: Dict[str, Any], config: Optional[Dict[str, Any]] = None) -> BattleRoom:
         """Create a new battle room"""
         room_id = self.generate_room_id()
         
@@ -307,6 +307,9 @@ class BattleRoomManager:
         room = BattleRoom(room_id, host, room_config)
         self.rooms[room_id] = room
         self.user_rooms[host.user_id] = room_id
+        
+        # Save to database
+        await self.save_room_to_db(room)
         
         return room
     
