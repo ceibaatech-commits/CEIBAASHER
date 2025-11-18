@@ -200,7 +200,7 @@ class BattleRoomManager:
     
     async def save_room_to_db(self, room: BattleRoom):
         """Save room to MongoDB"""
-        if not self.db:
+        if self.db is None:
             return
         
         try:
@@ -218,7 +218,7 @@ class BattleRoomManager:
     
     async def delete_room_from_db(self, room_id: str):
         """Delete room from MongoDB"""
-        if not self.db:
+        if self.db is None:
             return
         
         try:
