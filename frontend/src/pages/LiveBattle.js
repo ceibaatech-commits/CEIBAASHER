@@ -59,6 +59,10 @@ const LiveBattle = () => {
     }
 
     console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
+    console.log('🔧 CODE VERSION: 2025-01-18-v2 (WebSocket-first with enhanced logging)');
+    console.log('⚙️ Transport order: websocket → polling (WebSocket prioritized)');
+    console.log('⏱️ Timeout: 20s connection, 45s join timeout');
+    
     const newSocket = io(BATTLE_SERVER_URL, {
       path: '/api/battlews/socket.io',  // Battle Socket.IO mounted at /api/battlews
       transports: ['websocket', 'polling'],  // CRITICAL: WebSocket first for faster connection
