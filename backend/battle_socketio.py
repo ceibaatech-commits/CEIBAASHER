@@ -20,6 +20,17 @@ sio = socketio.AsyncServer(
     engineio_logger=True
 )
 
+# Database will be injected
+db = None
+
+def init_socketio_db(database):
+    """Initialize database for Socket.IO and room manager"""
+    global db
+    db = database
+    # Initialize room manager database
+    import asyncio
+    asyncio.create_task(room_manager.init_db(database))
+
 
 @sio.event
 async def connect(sid, environ):
