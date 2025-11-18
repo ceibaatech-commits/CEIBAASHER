@@ -152,25 +152,11 @@ logger = logging.getLogger(__name__)
 @fastapi_app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
-# Import Socket.IO battle server
-from battle_socketio import sio, init_socketio_db
+# Export the FastAPI app directly; battle Socket.IO is mounted at /api/battlews
+app = fastapi_app
 
-# Initialize Socket.IO with database
-init_socketio_db(db)
-
-# Mount Socket.IO to FastAPI
-# Socket.IO will handle /socket.io/* paths, FastAPI handles the rest
-socket_app = socketio.ASGIApp(
-    sio,
-    other_asgi_app=fastapi_app,
-    socketio_path='socket.io'
-)
-
-# Export the combined app (Socket.IO wraps FastAPI)
-app = socket_app
-
-print("[INIT] Socket.IO integrated with FastAPI on port 8001")
-print("[INIT] Socket.IO endpoint: /socket.io/")
-print("[INIT] FastAPI REST endpoints remain on /api/*")
+print("[INIT] FastAPI running on port 8001")
+print("[INIT] REST endpoints: /api/*")
+print("[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io")
 print("[INIT] Battle rooms will persist to MongoDB")
 
