@@ -64,11 +64,11 @@ class BackendTester:
 
             # Test 2: Check Socket.IO endpoint accessibility
             try:
-                response = requests.get(f"{SOCKET_URL}/socket.io/", params={'transport': 'polling'})
-                if response.status_code == 200:
+                response = requests.get(f"{SOCKET_URL}/socket.io/", params={'transport': 'polling', 'EIO': '4'})
+                if response.status_code == 200 and 'sid' in response.text:
                     self.log_result("Socket.IO Endpoint", True, f"✅ Socket.IO endpoint accessible at {SOCKET_URL}/socket.io/")
                 else:
-                    self.log_result("Socket.IO Endpoint", False, f"❌ Socket.IO endpoint returned {response.status_code}")
+                    self.log_result("Socket.IO Endpoint", False, f"❌ Socket.IO endpoint returned {response.status_code}: {response.text[:100]}")
             except Exception as e:
                 self.log_result("Socket.IO Endpoint", False, f"❌ Socket.IO endpoint error: {e}")
 
