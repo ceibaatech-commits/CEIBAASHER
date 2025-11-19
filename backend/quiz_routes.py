@@ -36,11 +36,34 @@ async def get_exams():
 
 @router.get("/exam/{exam_id}")
 async def get_exam(exam_id: str):
-    """Get complete exam details with syllabus"""
-    exam = get_exam_details(exam_id)
-    if not exam:
-        raise HTTPException(status_code=404, detail="Exam not found")
-    return {"success": True, "exam": exam}
+    """
+    Get complete exam details with syllabus - DATABASE DRIVEN
+    Now fetches from MongoDB exam_sheets collection, not hardcoded exam_data.py
+    """
+    # Import the database-driven function
+    from exam_structure_routes import get_exam_structure_from_db, db
+    
+    # Try to get from database first
+    structure = await get_exam_structure_from_db(exam_id)
+    
+    if structure:
+        # Database has data - use it!
+        exam = {
+            "name": exam_id,
+            "full_name": exam_id,
+            "description": f"Prepare for {exam_id} with comprehensive practice questions",
+            "syllabus_topics": structure.get("syllabus_topics", {})
+        }
+        return {"success": True, "exam": exam}
+    else:
+        # Fallback to hardcoded data if no database data exists
+        exam = get_exam_details(exam_id)
+        if not exam:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No data found for {exam_id}. Please add question sheets in Admin Panel."
+            )
+        return {"success": True, "exam": exam}
 
 @router.get("/subjects/{exam_id}")
 async def get_subjects(exam_id: str):
