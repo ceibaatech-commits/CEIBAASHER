@@ -298,7 +298,7 @@ const ModernExamSyllabus = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTopics.map((topic, idx) => (
             <motion.div key={idx} whileHover={{ y: -4 }}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all">
+              className={`bg-white ${examData?.game_mode ? 'language-game-card rounded-3xl' : 'rounded-xl'} shadow-md overflow-hidden hover:shadow-lg transition-all`}>
               <div className={`bg-gradient-to-br ${examData.color} p-4 relative`}>
                 {/* Dark overlay for better text contrast */}
                 <div className="absolute inset-0 bg-black/20"></div>
