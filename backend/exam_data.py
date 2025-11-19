@@ -2096,13 +2096,14 @@ EXAM_DATA = {
 
     "KOREAN": {
         "name": "Korean",
-        "full_name": "Korean Language Proficiency Test",
-        "description": "Test your Korean language skills with 100 questions in 2 hours",
+        "full_name": "Korean K-Pop Challenge 🎤",
+        "description": "Level up your Korean like a K-pop star! Play, compete, and shine on the global stage",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-cyan-600 to-sky-600",
+        "color": "from-purple-500 via-pink-500 to-rose-500",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "Quick Play",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
