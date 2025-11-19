@@ -106,8 +106,13 @@ async def start_quiz(request: QuizStartRequest):
         # Build query using NEW field names that match Admin Sheet Manager
         # The 'subject' parameter from URL = 'syllabus_topic' in database
         # The 'topic' parameter from URL = 'subject' in database
+        
+        # Handle exam name variations (e.g., "JEE" vs "JEE Main", "NEET" vs "NEET UG")
+        # Use regex to match exam names flexibly
+        exam_pattern = exam if exam.startswith("^") else f"^{exam}"
+        
         query = {
-            "exam_name": exam,  # Changed from "exam_id" to match admin_routes
+            "exam_name": {"$regex": exam_pattern, "$options": "i"},  # Case-insensitive regex
             "syllabus_topic": subject,
             "subject": topic
         }
