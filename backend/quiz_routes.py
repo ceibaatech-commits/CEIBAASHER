@@ -101,8 +101,8 @@ async def get_all_topics(exam_id: str):
         
         sheets = await db.exam_sheets.find({
             "type": "exam",
-            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
-            "questions_imported": True
+            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
+            # NOTE: Not filtering by questions_imported - show all sheets
         }).to_list(length=1000)
         
         if sheets:
