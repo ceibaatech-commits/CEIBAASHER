@@ -75,11 +75,54 @@ async def get_subjects(exam_id: str):
 
 @router.get("/topics/all/{exam_id}")
 async def get_all_topics(exam_id: str):
-    """Get all topics across all subjects"""
-    topics = get_all_topics_flat(exam_id)
-    if not topics:
-        raise HTTPException(status_code=404, detail="Exam not found")
-    return {"success": True, "exam": exam_id, "topics": topics}
+    """
+    Get all topics across all subjects - DATABASE DRIVEN
+    Builds flat list from MongoDB exam_sheets collection
+    """
+    from exam_structure_routes import db
+    
+    try:
+        # Get structure from database
+        pipeline = [
+            {
+                "$match": {
+                    "type": "exam",
+                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
+                    "questions_imported": True
+                }
+            }
+        ]
+        
+        sheets = await db.exam_sheets.find({
+            "type": "exam",
+            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
+            "questions_imported": True
+        }).to_list(length=1000)
+        
+        if sheets:
+            # Build flat topic list from database
+            topics = []
+            for sheet in sheets:
+                topic_entry = {
+                    "syllabus_topic": sheet.get("syllabus_topic"),
+                    "subject": sheet.get("subject"),
+                    "sub_topics": [sheet.get("sub_topic")] if sheet.get("sub_topic") else [],
+                    "questions": sheet.get("question_count", 0)
+                }
+                topics.append(topic_entry)
+            
+            return {"success": True, "exam": exam_id, "topics": topics}
+        else:
+            # Fallback to hardcoded
+            topics = get_all_topics_flat(exam_id)
+            if not topics:
+                return {"success": True, "exam": exam_id, "topics": []}
+            return {"success": True, "exam": exam_id, "topics": topics}
+    
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/topics/{exam_id}/{subject}")
 async def get_topics(exam_id: str, subject: str):
