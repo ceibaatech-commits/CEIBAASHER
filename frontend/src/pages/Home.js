@@ -932,114 +932,248 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Language Proficiency Tests Section - Enhanced UI */}
+        {/* Language Proficiency Tests - Game Mode Section */}
         <div className="mb-16">
-          {/* Unique Header with Gradient Background */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 rounded-3xl p-8 mb-8 border-2 border-blue-200 shadow-lg"
+            className="bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 rounded-3xl p-8 mb-8 border-2 border-purple-200 shadow-lg"
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-blue-500 via-cyan-500 to-sky-500 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                <img 
-                  src="https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png"
-                  alt="Language Tests" 
-                  className="w-10 h-10 object-contain"
-                />
+                <span className="text-3xl">🎮</span>
               </motion.div>
               <div>
-                <h2 className="text-4xl font-black bg-gradient-to-r from-blue-600 via-cyan-600 to-sky-600 bg-clip-text text-transparent">
+                <h3 className="text-3xl font-black bg-gradient-to-r from-purple-700 via-pink-700 to-rose-700 bg-clip-text text-transparent">
                   Language Proficiency Tests
-                </h2>
-                <p className="text-gray-700 font-medium text-lg">🌍 Master Global Languages • 100 Questions • 2 Hours</p>
+                </h3>
+                <p className="text-gray-600 text-lg font-medium mt-1">
+                  Play, Compete & Master Languages! 🚀
+                </p>
               </div>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-600 mt-4">
-              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-blue-200">
-                📝 Gap-fill & Vocabulary
-              </span>
-              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-cyan-200">
-                🎯 One Word Substitution
-              </span>
-              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-sky-200">
-                🌐 8 Languages Available
-              </span>
             </div>
           </motion.div>
 
-          {/* Enhanced Card Grid with Unique Styling */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {exams.filter(exam => exam.category === 'Language Proficiency Tests').map((exam, index) => (
-              <motion.div
-                key={exam.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                onClick={() => navigate(`/exam/${exam.id}`)}
-                className="group relative"
-              >
-                {/* Animated Background Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-200 via-cyan-200 to-sky-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
-                
-                {/* Card Content */}
-                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-blue-300">
-                  {/* Header with Gradient */}
-                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
-                    {/* Animated Decorative Elements */}
-                    <motion.div 
-                      className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16"
-                      animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
-                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                    ></motion.div>
-                    <motion.div 
-                      className="absolute bottom-0 left-0 w-24 h-24 bg-white/20 rounded-full -ml-12 -mb-12"
-                      animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
-                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    ></motion.div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                    
-                    {/* Icon & Title */}
-                    <div className="relative text-white">
-                      <motion.div 
-                        className="mb-4"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                      >
-                        {exam.icon.startsWith('http') ? (
-                          <div className="w-20 h-20 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-2xl">
-                            <img src={exam.icon} alt={exam.name} className="w-full h-full object-contain drop-shadow-lg" />
-                          </div>
-                        ) : (
-                          <div className="text-6xl">{exam.icon}</div>
-                        )}
-                      </motion.div>
-                      <h3 className="text-2xl font-bold mb-2 drop-shadow-lg text-center">{exam.name}</h3>
-                      <p className="text-white/90 text-sm drop-shadow-md text-center font-medium">{exam.full_name}</p>
-                    </div>
-                  </div>
-                
-                  {/* Simplified Card Body */}
-                  <div className="p-6">
-                    <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center">{exam.description}</p>
-                    <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                        <span className="font-semibold">{exam.total_questions} Qs</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-cyan-600" />
-                        <span className="font-semibold">{exam.duration}</span>
-                      </div>
-                    </div>
-                  </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Spanish Language Legends */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-orange-400"
+              onClick={() => navigate('/exam/SPANISH')}
+            >
+              <div className="bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">Quick Play</span>
                 </div>
-              </motion.div>
-            ))}
+                <div className="text-5xl mb-2">🎮</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Spanish Legends
+                </h4>
+                <p className="text-white/90 text-sm">Earn gems & compete!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* French Quest */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-blue-400"
+              onClick={() => navigate('/exam/FRENCH')}
+            >
+              <div className="bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">5 Min Rounds</span>
+                </div>
+                <div className="text-5xl mb-2">🎯</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  French Quest
+                </h4>
+                <p className="text-white/90 text-sm">Word battles await!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Tamil Trivia Blast */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-amber-400"
+              onClick={() => navigate('/exam/TAMIL')}
+            >
+              <div className="bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">Quick Play</span>
+                </div>
+                <div className="text-5xl mb-2">🚀</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Tamil Trivia Blast
+                </h4>
+                <p className="text-white/90 text-sm">Challenge friends!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-amber-500 to-red-500 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Telugu Word Warriors */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-teal-400"
+              onClick={() => navigate('/exam/TELUGU')}
+            >
+              <div className="bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-500 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">Quick Play</span>
+                </div>
+                <div className="text-5xl mb-2">⚔️</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Telugu Warriors
+                </h4>
+                <p className="text-white/90 text-sm">Battle & collect!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-teal-500 to-blue-500 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Kannada Champions */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-green-400"
+              onClick={() => navigate('/exam/KANNADA')}
+            >
+              <div className="bg-gradient-to-br from-green-400 via-emerald-500 to-teal-500 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">5 Min Rounds</span>
+                </div>
+                <div className="text-5xl mb-2">🏆</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Kannada Champions
+                </h4>
+                <p className="text-white/90 text-sm">Win badges!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Chinese Quest */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-red-400"
+              onClick={() => navigate('/exam/CHINESE')}
+            >
+              <div className="bg-gradient-to-br from-red-500 via-rose-500 to-pink-500 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">Quick Play</span>
+                </div>
+                <div className="text-5xl mb-2">🐉</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Chinese Quest
+                </h4>
+                <p className="text-white/90 text-sm">Solve puzzles!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Japanese Ninja */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-pink-400"
+              onClick={() => navigate('/exam/JAPANESE')}
+            >
+              <div className="bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">5 Min Rounds</span>
+                </div>
+                <div className="text-5xl mb-2">🥷</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Japanese Ninja
+                </h4>
+                <p className="text-white/90 text-sm">Master missions!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-pink-500 to-indigo-600 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Korean K-Pop */}
+            <motion.div
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-3xl shadow-lg overflow-hidden cursor-pointer transition-all hover:shadow-2xl border-2 border-transparent hover:border-purple-400"
+              onClick={() => navigate('/exam/KOREAN')}
+            >
+              <div className="bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 p-6 relative">
+                <div className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="text-white text-xs font-bold">Quick Play</span>
+                </div>
+                <div className="text-5xl mb-2">🎤</div>
+                <h4 className="text-white font-black text-xl mb-1 drop-shadow-lg">
+                  Korean K-Pop
+                </h4>
+                <p className="text-white/90 text-sm">Level up like a star!</p>
+              </div>
+              <div className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-600 text-sm">💎 Gems</span>
+                  <span className="font-bold text-purple-600">100+</span>
+                </div>
+                <button className="w-full bg-gradient-to-r from-purple-500 to-rose-500 text-white py-2 rounded-xl font-bold hover:shadow-lg transition-all">
+                  🎯 Play Now
+                </button>
+              </div>
+            </motion.div>
           </div>
         </div>
 
