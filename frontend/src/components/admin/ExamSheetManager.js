@@ -66,24 +66,26 @@ const ExamSheetManager = () => {
   ];
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
 
-  // Comprehensive syllabus topics map
+  // FIXED: Match exam IDs from exam_data.py exactly
   const syllabusTopicsMap = {
+    'JEE': ['Physics', 'Chemistry', 'Mathematics'],
     'NEET': ['Physics', 'Chemistry', 'Biology'],
-    'JEE Main': ['Physics', 'Chemistry', 'Mathematics'],
-    'JEE Advanced': ['Physics', 'Chemistry', 'Mathematics'],
-    'UPSC CSE': ['General Studies Paper 1', 'General Studies Paper 2', 'General Studies Paper 3', 'General Studies Paper 4', 'Optional Subject', 'Essay'],
-    'UPSC NDA': ['Mathematics', 'General Ability Test'],
-    'SSC CGL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Comprehension'],
-    'SSC CHSL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Language'],
-    'IBPS PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
-    'IBPS Clerk': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
-    'RRB NTPC': ['General Awareness', 'Mathematics', 'General Intelligence'],
+    'UPSC': ['General Studies'],
+    'NDA': ['Mathematics', 'General Ability Test'],
+    'Agniveer': ['General Awareness', 'Mathematics', 'Physical Fitness'],
+    'CDS': ['English', 'General Knowledge', 'Elementary Mathematics'],
+    'CAPF': ['General Ability', 'General Studies', 'Quantitative Aptitude'],
+    'SSC_CGL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Comprehension'],
+    'SSC_CHSL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Language'],
+    'IBPS_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
+    'IBPS_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
+    'SBI_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'SBI_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'RRB_NTPC': ['General Awareness', 'Mathematics', 'General Intelligence'],
     'AFCAT': ['English', 'General Awareness', 'Numerical Ability', 'Reasoning & Military Aptitude'],
     'GATE': ['Engineering Mathematics', 'General Aptitude', 'Technical Subject'],
     'CAT': ['Verbal Ability', 'Data Interpretation', 'Logical Reasoning', 'Quantitative Aptitude'],
-    'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
-    'AIIMS': ['Physics', 'Chemistry', 'Biology', 'General Knowledge'],
-    'JIPMER': ['Physics', 'Chemistry', 'Biology', 'English']
+    'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques']
   };
 
   // Comprehensive subjects map
