@@ -33,6 +33,15 @@ const ExamSheetManager = () => {
     sheet_link: ''
   });
 
+  // Form data for Option 3: Book-based
+  const [bookForm, setBookForm] = useState({
+    book_name: '',
+    chapter_name: '',
+    sheet_link: ''
+  });
+
+  const [books, setBooks] = useState([]);
+
   // Comprehensive dropdown data
   const examNames = ['NEET', 'JEE Main', 'JEE Advanced', 'UPSC CSE', 'UPSC NDA', 'SSC CGL', 'SSC CHSL', 'IBPS PO', 'IBPS Clerk', 'RRB NTPC', 'AFCAT', 'GATE', 'CAT', 'CLAT', 'AIIMS', 'JIPMER'];
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
