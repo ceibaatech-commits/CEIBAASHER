@@ -27,8 +27,8 @@ async def get_all_exams_structure():
         pipeline = [
             {
                 "$match": {
-                    "type": "exam",  # Only exam type, not class or book
-                    "questions_imported": True  # Only sheets with questions
+                    "type": "exam"  # Only exam type, not class or book
+                    # NOTE: Not filtering by questions_imported - show all sheets
                 }
             },
             {
