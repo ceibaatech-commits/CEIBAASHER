@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Clock, FileText, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Target, BarChart, TrendingUp, Award, Star, Play, ChevronRight, Brain, Flame } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, FileText, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Target, BarChart, TrendingUp, Award, Star, Play, ChevronRight, Brain, Flame, Gamepad2, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
+import '../components/LanguageGameCard.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
