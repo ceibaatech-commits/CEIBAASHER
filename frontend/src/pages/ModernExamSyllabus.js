@@ -261,7 +261,8 @@ const ModernExamSyllabus = () => {
                       <CheckCircle className="w-4 h-4 text-green-300" />
                     </div>
                     <div>
-                      <p className="text-white font-bold text-sm">Progress</p>
+                      <p className="text-white font-bold text-sm">{examData?.game_mode ? '🏆 Level Progress' : 'Progress'}</p>
+                      <p className="text-white/70 text-xs">{examData?.game_mode ? 'Lvl 5 Novice' : 'Track your journey'}</p>
                     </div>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-2">
