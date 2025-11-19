@@ -2006,13 +2006,14 @@ EXAM_DATA = {
 
     "KANNADA": {
         "name": "Kannada",
-        "full_name": "Kannada Language Proficiency Test",
-        "description": "Test your Kannada language skills with 100 questions in 2 hours",
+        "full_name": "Kannada Champions League 🏆",
+        "description": "Join the Kannada language arena! Compete, win badges, and become the ultimate word master",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-blue-400 to-cyan-400",
+        "color": "from-green-400 via-emerald-500 to-teal-500",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "5 Min Rounds",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
