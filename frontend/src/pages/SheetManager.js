@@ -377,6 +377,71 @@ const SheetManager = () => {
         "Mathematics/Science": ["Subject & Pedagogy"],
         "Social Studies/EVS": ["Subject & Pedagogy"]
       }
+    },
+    // Language Proficiency Tests - Standardized (3 Categories Only)
+    "SPANISH": {
+      "name": "Spanish Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "FRENCH": {
+      "name": "French Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "TAMIL": {
+      "name": "Tamil Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "TELUGU": {
+      "name": "Telugu Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "KANNADA": {
+      "name": "Kannada Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "CHINESE": {
+      "name": "Chinese Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "JAPANESE": {
+      "name": "Japanese Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
+    },
+    "KOREAN": {
+      "name": "Korean Language Proficiency",
+      "subjects": {
+        "Gap-fill": ["Fill in the blanks", "Complete the sentence"],
+        "Vocabulary Building": ["Synonyms", "Antonyms", "Word meanings"],
+        "One Word Substitution": ["Replace phrases with single words"]
+      }
     }
   };
 
