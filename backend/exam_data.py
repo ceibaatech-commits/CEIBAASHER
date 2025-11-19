@@ -1886,13 +1886,14 @@ EXAM_DATA = {
     # Language Proficiency Tests (8 Languages)
     "SPANISH": {
         "name": "Spanish",
-        "full_name": "Spanish Language Proficiency Test",
-        "description": "Test your Spanish language skills with 100 questions in 2 hours",
+        "full_name": "Spanish Language Legends 🎮",
+        "description": "Master Spanish with fun challenges! Earn gems, unlock achievements, and compete with friends",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-blue-500 to-cyan-500",
+        "color": "from-orange-400 via-red-500 to-pink-500",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "Quick Play",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
