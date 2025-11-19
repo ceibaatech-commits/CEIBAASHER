@@ -1946,13 +1946,14 @@ EXAM_DATA = {
 
     "TAMIL": {
         "name": "Tamil",
-        "full_name": "Tamil Language Proficiency Test",
-        "description": "Test your Tamil language skills with 100 questions in 2 hours",
+        "full_name": "Tamil Trivia Blast 🚀",
+        "description": "Show off your Tamil skills! Challenge friends, earn rewards, and climb the leaderboard",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-sky-500 to-blue-500",
+        "color": "from-amber-400 via-orange-500 to-red-500",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "Quick Play",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
