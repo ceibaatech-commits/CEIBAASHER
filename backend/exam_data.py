@@ -1916,13 +1916,14 @@ EXAM_DATA = {
 
     "FRENCH": {
         "name": "French",
-        "full_name": "French Language Proficiency Test",
-        "description": "Test your French language skills with 100 questions in 2 hours",
+        "full_name": "French Quest Challenge 🎯",
+        "description": "Conquer French through exciting word battles! Level up your skills and become a language champion",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-blue-600 to-indigo-500",
+        "color": "from-blue-500 via-indigo-500 to-purple-600",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "5 Min Rounds",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
