@@ -1895,7 +1895,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -1925,7 +1925,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -1955,7 +1955,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -1985,7 +1985,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -2015,7 +2015,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -2045,7 +2045,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -2075,7 +2075,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
@@ -2105,7 +2105,7 @@ EXAM_DATA = {
         "category": "Language Games",
         "game_mode": True,
         "syllabus_topics": {
-            "Language Test": {
+            "Game Challenges": {
                 "subjects": {
                     "Gap-fill": {
                         "sub_topics": ["Fill in the blanks", "Complete the sentence"],
