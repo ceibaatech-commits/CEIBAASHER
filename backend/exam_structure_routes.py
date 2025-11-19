@@ -118,10 +118,10 @@ async def get_exam_structure_from_db(exam_name: str) -> Dict[str, Any]:
     }
     """
     # Query all sheets for this exam
+    # NOTE: Not filtering by questions_imported to show all registered sheets
     sheets = await db.exam_sheets.find({
         "type": "exam",
-        "exam_name": {"$regex": f"^{exam_name}", "$options": "i"},
-        "questions_imported": True
+        "exam_name": {"$regex": f"^{exam_name}", "$options": "i"}
     }).to_list(length=1000)
     
     if not sheets:
