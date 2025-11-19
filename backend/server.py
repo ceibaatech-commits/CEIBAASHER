@@ -30,6 +30,8 @@ from profile_routes import router as profile_router
 from notification_routes import router as notification_router
 import profile_routes
 import notification_routes
+from books_routes import router as books_router
+import books_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
