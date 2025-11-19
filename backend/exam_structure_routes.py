@@ -311,8 +311,7 @@ async def validate_exam_data(exam_id: str):
     try:
         count = await db.exam_sheets.count_documents({
             "type": "exam",
-            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
-            "questions_imported": True
+            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
         })
         
         return {
