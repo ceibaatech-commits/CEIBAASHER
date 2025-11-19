@@ -2036,13 +2036,14 @@ EXAM_DATA = {
 
     "CHINESE": {
         "name": "Chinese",
-        "full_name": "Chinese Language Proficiency Test",
-        "description": "Test your Chinese language skills with 100 questions in 2 hours",
+        "full_name": "Chinese Mastery Quest 🐉",
+        "description": "Embark on a Chinese adventure! Solve puzzles, earn power-ups, and dominate the rankings",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-blue-600 to-indigo-600",
+        "color": "from-red-500 via-rose-500 to-pink-500",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "Quick Play",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
