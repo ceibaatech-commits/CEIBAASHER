@@ -175,8 +175,8 @@ async def get_exam_topics(exam_id: str):
             {
                 "$match": {
                     "type": "exam",
-                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
-                    "questions_imported": True
+                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
+                    # NOTE: Not filtering by questions_imported
                 }
             },
             {
