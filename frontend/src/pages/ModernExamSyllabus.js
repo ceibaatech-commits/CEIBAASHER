@@ -196,61 +196,50 @@ const ModernExamSyllabus = () => {
         )}
 
 
-        {/* Animated Exam Poster - Compact Version */}
-        <div className="relative overflow-hidden rounded-2xl mb-6">
-          <div className={`relative bg-gradient-to-br ${examData.color} p-4 md:p-6`}>
+        {/* Animated Exam Poster - Ultra Compact for Mobile */}
+        <div className="relative overflow-hidden rounded-xl mb-4">
+          <div className={`relative bg-gradient-to-br ${examData.color} p-3 md:p-4`}>
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute top-5 left-5 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse"></div>
-              <div className="absolute bottom-5 right-5 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute top-3 left-3 w-16 h-16 bg-white/10 rounded-full blur-lg animate-pulse"></div>
+              <div className="absolute bottom-3 right-3 w-20 h-20 bg-white/10 rounded-full blur-lg animate-pulse" style={{animationDelay: '1s'}}></div>
             </div>
 
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="bg-white/20 backdrop-blur-xl px-3 py-1 rounded-full border border-white/30">
-                    <p className="text-white text-xs font-semibold flex items-center space-x-1">
-                      <Zap className="w-3 h-3" />
-                      <span>Sub-Topic Tests</span>
-                    </p>
+            <div className="relative z-10">
+              {/* Mobile: Single compact row */}
+              <div className="flex items-center justify-between gap-2">
+                {/* Stats - Compact */}
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="flex items-center gap-1">
+                    <BookOpen className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                    <div>
+                      <p className="text-sm md:text-base font-bold text-white">{examData.total_questions}+</p>
+                      <p className="text-white/80 text-[10px] leading-tight">{examData?.game_mode ? '🎮 Levels' : 'Qs'}</p>
+                    </div>
+                  </div>
+                  <div className="h-6 w-px bg-white/30"></div>
+                  <div className="flex items-center gap-1">
+                    <Users className="w-3 h-3 md:w-4 md:h-4 text-white" />
+                    <div>
+                      <p className="text-sm md:text-base font-bold text-white">5K+</p>
+                      <p className="text-white/80 text-[10px] leading-tight">{examData?.game_mode ? '🏆 Play' : 'Users'}</p>
+                    </div>
                   </div>
                   {examData?.game_mode && (
-                    <div className="bg-white/20 backdrop-blur-xl px-3 py-1 rounded-full border border-white/30">
-                      <p className="text-white text-xs font-semibold">🏆 Lvl 5 Novice</p>
-                    </div>
+                    <>
+                      <div className="h-6 w-px bg-white/30 hidden sm:block"></div>
+                      <div className="bg-white/20 backdrop-blur-xl px-2 py-1 rounded-full border border-white/30 hidden sm:block">
+                        <p className="text-white text-[10px] font-semibold">Lvl 5</p>
+                      </div>
+                    </>
                   )}
                 </div>
 
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-white" />
-                    <div>
-                      <p className="text-lg font-bold text-white">{examData.total_questions}+</p>
-                      <p className="text-white/80 text-xs">{examData?.game_mode ? '🎮 Levels' : 'Questions'}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-white" />
-                    <div>
-                      <p className="text-lg font-bold text-white">5K+</p>
-                      <p className="text-white/80 text-xs">{examData?.game_mode ? '🏆 Players' : 'Users'}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-white" />
-                    <div>
-                      <p className="text-lg font-bold text-white">{subjects.length}</p>
-                      <p className="text-white/80 text-xs">Subjects</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
+                {/* Button */}
                 <button 
                   onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
-                  className={`${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 pulse-glow' : 'bg-white text-gray-900'} px-4 py-2 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2 ${examData?.game_mode ? 'text-white' : ''} text-sm`}
+                  className={`${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 pulse-glow' : 'bg-white text-gray-900'} px-3 py-1.5 md:px-4 md:py-2 rounded-lg md:rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-1 ${examData?.game_mode ? 'text-white' : ''} text-xs md:text-sm flex-shrink-0`}
                 >
-                  {examData?.game_mode ? <Gamepad2 className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  {examData?.game_mode ? <Gamepad2 className="w-3 h-3 md:w-4 md:h-4" /> : <Play className="w-3 h-3 md:w-4 md:h-4" />}
                   <span>{examData?.game_mode ? '🎮 Play' : 'Start'}</span>
                 </button>
               </div>
