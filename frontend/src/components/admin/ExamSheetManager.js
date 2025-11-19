@@ -230,7 +230,72 @@ const ExamSheetManager = () => {
     // AFCAT subjects
     'English': ['Reading Comprehension', 'Vocabulary', 'Grammar', 'Error Detection', 'Sentence Improvement'],
     'Numerical Ability': ['Arithmetic', 'Algebra', 'Mensuration', 'Data Interpretation'],
-    'Reasoning & Military Aptitude': ['Verbal Reasoning', 'Non-Verbal Reasoning', 'Spatial Ability', 'Military Aptitude']
+    'Reasoning & Military Aptitude': ['Verbal Reasoning', 'Non-Verbal Reasoning', 'Spatial Ability', 'Military Aptitude'],
+    
+    // Banking & Finance specific
+    'Professional Knowledge': ['Banking', 'Finance', 'Marketing', 'IT', 'HR', 'Law'],
+    'Data Analysis': ['Data Interpretation', 'Data Sufficiency', 'Charts & Graphs'],
+    'Economic & Social Issues': ['Indian Economy', 'Economic Survey', 'Union Budget', 'Social Issues'],
+    'Agriculture & Rural Development': ['Agriculture Basics', 'Rural Development', 'Credit & Finance', 'Government Schemes'],
+    
+    // Teaching subjects
+    'Subject Knowledge': ['Content Knowledge', 'Pedagogy', 'Assessment', 'Curriculum'],
+    'Child Development': ['Development Stages', 'Learning Theories', 'Individual Differences', 'Special Needs'],
+    'Teaching Methodology': ['Teaching Methods', 'Classroom Management', 'Evaluation Techniques', 'Educational Technology'],
+    'Child Development & Pedagogy': ['Cognitive Development', 'Learning & Motivation', 'Individual Differences', 'Assessment'],
+    'Teaching Aptitude': ['Teaching Skills', 'Learner Characteristics', 'Communication Skills', 'Evaluation'],
+    'Research Aptitude': ['Research Methodology', 'Research Ethics', 'Data Interpretation', 'ICT'],
+    'Comprehension': ['Reading Comprehension', 'Passage Understanding', 'Critical Analysis'],
+    'Language Proficiency': ['Reading', 'Writing', 'Listening', 'Speaking', 'Grammar'],
+    'Environmental Studies': ['Environment', 'Plants', 'Animals', 'Food', 'Water', 'Shelter'],
+    
+    // GMAT subjects
+    'Quantitative Reasoning': ['Arithmetic', 'Algebra', 'Geometry', 'Word Problems'],
+    'Verbal Reasoning': ['Reading Comprehension', 'Critical Reasoning', 'Sentence Correction'],
+    'Integrated Reasoning': ['Multi-Source Reasoning', 'Graphics Interpretation', 'Table Analysis'],
+    'Analytical Writing': ['Analysis of Argument', 'Issue Analysis'],
+    
+    // CUET & UGC NET
+    'Domain Subjects': ['Subject-Specific Topics', 'Core Concepts', 'Advanced Topics'],
+    'General Test': ['General Knowledge', 'Current Affairs', 'Numerical Ability', 'Logical Reasoning'],
+    'Optional Subjects': ['Subject Choice 1', 'Subject Choice 2', 'Subject Choice 3'],
+    
+    // Agriculture
+    'Agriculture': ['Crop Production', 'Soil Science', 'Plant Breeding', 'Agronomy'],
+    'Horticulture': ['Fruits', 'Vegetables', 'Floriculture', 'Landscaping'],
+    'Animal Husbandry': ['Livestock', 'Poultry', 'Dairy', 'Animal Nutrition'],
+    'Agricultural Economics': ['Farm Management', 'Marketing', 'Cooperatives', 'Agricultural Finance'],
+    
+    // State exams
+    'Geography': ['Physical Geography', 'Indian Geography', 'World Geography', 'Map Reading'],
+    'History': ['Ancient History', 'Medieval History', 'Modern History', 'Rajasthan History'],
+    'Political Science': ['Indian Polity', 'Constitution', 'Political Theory', 'International Relations'],
+    'General Knowledge': ['Static GK', 'Current Affairs', 'Awards', 'Books & Authors'],
+    'General Science': ['Physics', 'Chemistry', 'Biology', 'General Science'],
+    
+    // Defense & Physical
+    'Physical Fitness': ['Running', 'Push-ups', 'Sit-ups', 'Medical Standards'],
+    'Elementary Mathematics': ['Arithmetic', 'Algebra', 'Geometry', 'Mensuration'],
+    
+    // Language subjects
+    'Grammar': ['Parts of Speech', 'Tenses', 'Sentence Structure', 'Punctuation'],
+    'Vocabulary': ['Synonyms', 'Antonyms', 'Idioms', 'Phrases'],
+    'Reading Comprehension': ['Passage Reading', 'Inference', 'Main Idea', 'Vocabulary in Context'],
+    'Writing': ['Essay Writing', 'Letter Writing', 'Composition', 'Creative Writing'],
+    'Listening': ['Audio Comprehension', 'Note Taking', 'Conversation', 'Lectures'],
+    'Speaking': ['Conversation', 'Pronunciation', 'Fluency', 'Presentation'],
+    'Literature': ['Poetry', 'Prose', 'Drama', 'Literary Criticism'],
+    'Composition': ['Essay', 'Story', 'Letter', 'Report'],
+    'Translation': ['Source to Target', 'Technical Translation', 'Literary Translation'],
+    'Characters': ['Writing', 'Reading', 'Recognition', 'Stroke Order'],
+    'Kanji': ['Reading', 'Writing', 'Meaning', 'Compounds'],
+    'Hangul': ['Reading', 'Writing', 'Pronunciation', 'Grammar'],
+    
+    // Stenography
+    'Stenography': ['Shorthand', 'Typing Speed', 'Transcription', 'Dictation'],
+    
+    // Hindi
+    'Hindi': ['Grammar', 'Vocabulary', 'Comprehension', 'Composition']
   };
 
   // Comprehensive sub-topics map
