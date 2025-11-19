@@ -32,6 +32,8 @@ import profile_routes
 import notification_routes
 from books_routes import router as books_router
 import books_routes
+from exam_structure_routes import router as exam_structure_router
+import exam_structure_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
