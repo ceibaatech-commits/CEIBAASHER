@@ -45,24 +45,73 @@ const ExamSheetManager = () => {
   // FIXED: Use exact exam IDs from exam_data.py (backend)
   // This ensures perfect matching between admin and frontend
   const examNames = [
-    'JEE',           // NOT "JEE Main" - must match exam_data.py
-    'NEET', 
-    'UPSC', 
-    'NDA',           // NOT "UPSC NDA"
+    // Engineering & Medical
+    'JEE',
+    'NEET',
+    'GATE',
+    'NATA',
+    
+    // UPSC & Defense
+    'UPSC',
+    'NDA',
     'Agniveer',
     'CDS',
     'CAPF',
-    'GATE', 
-    'CAT', 
-    'CLAT',
-    'IBPS_PO',       // Use underscore format
+    'IES_ISS',
+    'EPFO',
+    
+    // Banking & Finance
+    'IBPS_PO',
     'IBPS_CLERK',
+    'IBPS_SO',
     'SBI_PO',
     'SBI_CLERK',
-    'SSC_CGL', 
+    'RBI_GRADE_B',
+    'NABARD',
+    
+    // SSC
+    'SSC_CGL',
     'SSC_CHSL',
+    'SSC_GD',
+    'SSC_STENO',
+    
+    // Teaching
+    'DSSB_PGT',
+    'DSSB_TGT',
+    'KVS_PRT',
+    'CTET',
+    'MPSET',
+    'TS_SET',
+    'UP_TGT',
+    'UP_PGT',
+    'HTET',
+    
+    // Railways & Defense
     'RRB_NTPC',
-    'AFCAT'
+    'AFCAT',
+    
+    // Management & Law
+    'CAT',
+    'CLAT',
+    'GMAT',
+    'CUET',
+    'UGC_NET',
+    
+    // Agriculture
+    'Agriculture',
+    
+    // State Exams
+    'RPSC',
+    
+    // Language Proficiency
+    'SPANISH',
+    'FRENCH',
+    'TAMIL',
+    'TELUGU',
+    'KANNADA',
+    'CHINESE',
+    'JAPANESE',
+    'KOREAN'
   ];
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
 
