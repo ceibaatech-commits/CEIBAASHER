@@ -316,8 +316,8 @@ const ModernExamSyllabus = () => {
               
               <div className="p-4">
                 <div className="flex justify-between items-center text-xs mb-3">
-                  <span className="text-gray-600">Questions:</span>
-                  <span className="font-bold text-blue-600 text-base">{topic.questions}</span>
+                  <span className="text-gray-600">{examData?.game_mode ? '💎 Gems to Earn:' : 'Questions:'}</span>
+                  <span className={`font-bold ${examData?.game_mode ? 'text-purple-600' : 'text-blue-600'} text-base`}>{topic.questions}</span>
                 </div>
 
                 <AnimatePresence>
