@@ -216,8 +216,7 @@ async def get_topic_subjects(exam_id: str, topic: str):
                 "$match": {
                     "type": "exam",
                     "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
-                    "syllabus_topic": topic,
-                    "questions_imported": True
+                    "syllabus_topic": topic
                 }
             },
             {
