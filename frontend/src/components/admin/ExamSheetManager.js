@@ -1357,16 +1357,15 @@ const ExamSheetManager = () => {
                   {/* Sub Topic */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Sub Topic *
+                      Sub Topic (Optional)
                     </label>
                     <select
-                      required
                       value={examForm.sub_topic}
                       onChange={(e) => setExamForm({ ...examForm, sub_topic: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       disabled={!examForm.subject}
                     >
-                      <option value="">Select Sub Topic</option>
+                      <option value="">Select Sub Topic (Optional)</option>
                       {subTopics.map(topic => (
                         <option key={topic} value={topic}>{topic}</option>
                       ))}
