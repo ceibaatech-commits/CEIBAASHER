@@ -120,6 +120,10 @@ function App() {
           <Route path="/test-latex" element={<TestLatex />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           
+          {/* Books Routes */}
+          <Route path="/books" element={<Books />} />
+          <Route path="/books/:bookId" element={<BookDetails />} />
+          
           {/* PIN-based Room Quiz Routes (Multiple players) */}
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
