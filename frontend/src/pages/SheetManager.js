@@ -564,15 +564,14 @@ const SheetManager = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Topic (Optional)</label>
                   <select
                     value={formData.topic}
                     onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
                     className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
-                    required
                     disabled={!formData.subject}
                   >
-                    <option value="">-- Select Topic --</option>
+                    <option value="">-- Select Topic (Optional) --</option>
                     {availableTopics.map(topic => (
                       <option key={topic} value={topic}>{topic}</option>
                     ))}
