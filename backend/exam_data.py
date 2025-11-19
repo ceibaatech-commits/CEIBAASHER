@@ -2066,13 +2066,14 @@ EXAM_DATA = {
 
     "JAPANESE": {
         "name": "Japanese",
-        "full_name": "Japanese Language Proficiency Test",
-        "description": "Test your Japanese language skills with 100 questions in 2 hours",
+        "full_name": "Japanese Ninja Challenge 🥷",
+        "description": "Train like a language ninja! Master Japanese through exciting missions and boss battles",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-sky-600 to-blue-600",
+        "color": "from-pink-500 via-purple-500 to-indigo-600",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "5 Min Rounds",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
