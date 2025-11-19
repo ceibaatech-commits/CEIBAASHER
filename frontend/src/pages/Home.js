@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2 } from 'lucide-react';
 import axios from 'axios';
 import CeibaaLogo from '../components/CeibaaLogo';
 import Header from '../components/Header';
