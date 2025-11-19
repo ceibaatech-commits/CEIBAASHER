@@ -277,7 +277,12 @@ const ExamSheetManager = () => {
     'Physical Fitness': ['Running', 'Push-ups', 'Sit-ups', 'Medical Standards'],
     'Elementary Mathematics': ['Arithmetic', 'Algebra', 'Geometry', 'Mensuration'],
     
-    // Language subjects
+    // Language Proficiency Tests - STANDARDIZED CATEGORIES (Sub-topic optional)
+    'Gap-fill': ['Fill in the blanks', 'Complete the sentence'],
+    'Vocabulary Building': ['Synonyms', 'Antonyms', 'Word meanings'],
+    'One Word Substitution': ['Replace phrases with single words'],
+    
+    // Other Language subjects (for non-language-proficiency exams)
     'Grammar': ['Parts of Speech', 'Tenses', 'Sentence Structure', 'Punctuation'],
     'Vocabulary': ['Synonyms', 'Antonyms', 'Idioms', 'Phrases'],
     'Reading Comprehension': ['Passage Reading', 'Inference', 'Main Idea', 'Vocabulary in Context'],
