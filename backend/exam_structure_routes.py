@@ -265,8 +265,7 @@ async def get_subject_subtopics(exam_id: str, topic: str, subject: str):
                     "type": "exam",
                     "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
                     "syllabus_topic": topic,
-                    "subject": subject,
-                    "questions_imported": True
+                    "subject": subject
                 }
             },
             {
