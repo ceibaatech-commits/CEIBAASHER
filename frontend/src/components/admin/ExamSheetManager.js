@@ -42,8 +42,28 @@ const ExamSheetManager = () => {
 
   const [books, setBooks] = useState([]);
 
-  // Comprehensive dropdown data
-  const examNames = ['NEET', 'JEE Main', 'JEE Advanced', 'UPSC CSE', 'UPSC NDA', 'SSC CGL', 'SSC CHSL', 'IBPS PO', 'IBPS Clerk', 'RRB NTPC', 'AFCAT', 'GATE', 'CAT', 'CLAT', 'AIIMS', 'JIPMER'];
+  // FIXED: Use exact exam IDs from exam_data.py (backend)
+  // This ensures perfect matching between admin and frontend
+  const examNames = [
+    'JEE',           // NOT "JEE Main" - must match exam_data.py
+    'NEET', 
+    'UPSC', 
+    'NDA',           // NOT "UPSC NDA"
+    'Agniveer',
+    'CDS',
+    'CAPF',
+    'GATE', 
+    'CAT', 
+    'CLAT',
+    'IBPS_PO',       // Use underscore format
+    'IBPS_CLERK',
+    'SBI_PO',
+    'SBI_CLERK',
+    'SSC_CGL', 
+    'SSC_CHSL',
+    'RRB_NTPC',
+    'AFCAT'
+  ];
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
 
   // Comprehensive syllabus topics map
