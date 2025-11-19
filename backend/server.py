@@ -52,6 +52,7 @@ admin_routes.init_db(db)
 profile_routes.init_db(db)
 notification_routes.init_db(db)
 books_routes.init_db(db)
+exam_structure_routes.init_db(db)
 
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
