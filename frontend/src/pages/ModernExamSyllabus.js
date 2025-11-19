@@ -243,9 +243,13 @@ const ModernExamSyllabus = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} className="bg-white text-gray-900 px-5 py-2 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2">
-                    <Play className="w-4 h-4" />
-                    <span>Start Free Test</span>
+                  <button 
+                    onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
+                    className={`${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 pulse-glow' : 'bg-white text-gray-900'} px-5 py-2 rounded-xl font-bold hover:scale-105 transform transition-all shadow-lg flex items-center space-x-2 ${examData?.game_mode ? 'text-white' : ''}`}
+                  >
+                    {examData?.game_mode ? <Gamepad2 className="w-5 h-5" /> : <Play className="w-4 h-4" />}
+                    <span>{examData?.game_mode ? '🎮 Play Now' : 'Start Free Test'}</span>
+                    {examData?.game_mode && <Sparkles className="w-4 h-4" />}
                   </button>
                 </div>
               </div>
