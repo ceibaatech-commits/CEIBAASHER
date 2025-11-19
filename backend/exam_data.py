@@ -1976,13 +1976,14 @@ EXAM_DATA = {
 
     "TELUGU": {
         "name": "Telugu",
-        "full_name": "Telugu Language Proficiency Test",
-        "description": "Test your Telugu language skills with 100 questions in 2 hours",
+        "full_name": "Telugu Word Warriors ⚔️",
+        "description": "Battle through Telugu challenges! Unlock levels, collect gems, and prove your mastery",
         "icon": "https://customer-assets.emergentagent.com/job_examprep-hub-29/artifacts/49xouqbu_Gemini_Generated_Image_y4o4v7y4o4v7y4o4_2-removebg-preview.png",
-        "color": "from-cyan-500 to-sky-500",
+        "color": "from-teal-400 via-cyan-500 to-blue-500",
         "total_questions": 100,
-        "duration": "2 hours",
-        "category": "Language Proficiency Tests",
+        "duration": "Quick Play",
+        "category": "Language Games",
+        "game_mode": True,
         "syllabus_topics": {
             "Language Test": {
                 "subjects": {
