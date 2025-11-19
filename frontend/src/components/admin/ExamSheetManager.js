@@ -175,15 +175,15 @@ const ExamSheetManager = () => {
     // State Exams
     'RPSC': ['General Knowledge', 'General Science', 'Geography', 'History', 'Political Science'],
     
-    // Language Proficiency
-    'SPANISH': ['Grammar', 'Vocabulary', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
-    'FRENCH': ['Grammar', 'Vocabulary', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
-    'TAMIL': ['Grammar', 'Vocabulary', 'Literature', 'Composition', 'Translation'],
-    'TELUGU': ['Grammar', 'Vocabulary', 'Literature', 'Composition', 'Translation'],
-    'KANNADA': ['Grammar', 'Vocabulary', 'Literature', 'Composition', 'Translation'],
-    'CHINESE': ['Grammar', 'Characters', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
-    'JAPANESE': ['Grammar', 'Kanji', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
-    'KOREAN': ['Grammar', 'Hangul', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking']
+    // Language Proficiency Tests (Standardized - 3 Categories Only)
+    'SPANISH': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'FRENCH': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'TAMIL': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'TELUGU': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'KANNADA': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'CHINESE': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'JAPANESE': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
+    'KOREAN': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution']
   };
 
   // Comprehensive subjects map
