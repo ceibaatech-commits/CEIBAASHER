@@ -117,24 +117,73 @@ const ExamSheetManager = () => {
 
   // FIXED: Match exam IDs from exam_data.py exactly
   const syllabusTopicsMap = {
+    // Engineering & Medical
     'JEE': ['Physics', 'Chemistry', 'Mathematics'],
     'NEET': ['Physics', 'Chemistry', 'Biology'],
-    'UPSC': ['General Studies'],
+    'GATE': ['Engineering Mathematics', 'General Aptitude', 'Technical Subject'],
+    'NATA': ['Mathematics', 'General Aptitude', 'Drawing'],
+    
+    // UPSC & Defense
+    'UPSC': ['General Studies', 'Essay', 'Optional Subjects'],
     'NDA': ['Mathematics', 'General Ability Test'],
     'Agniveer': ['General Awareness', 'Mathematics', 'Physical Fitness'],
     'CDS': ['English', 'General Knowledge', 'Elementary Mathematics'],
     'CAPF': ['General Ability', 'General Studies', 'Quantitative Aptitude'],
-    'SSC_CGL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Comprehension'],
-    'SSC_CHSL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Language'],
+    'IES_ISS': ['General Studies', 'Engineering', 'General English'],
+    'EPFO': ['General English', 'General Reasoning', 'Quantitative Aptitude', 'General Awareness'],
+    
+    // Banking & Finance
     'IBPS_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
     'IBPS_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
-    'SBI_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'IBPS_SO': ['Professional Knowledge', 'Reasoning', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'SBI_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Data Analysis'],
     'SBI_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'RBI_GRADE_B': ['General Awareness', 'English Language', 'Quantitative Aptitude', 'Reasoning', 'Economic & Social Issues'],
+    'NABARD': ['Economic & Social Issues', 'Agriculture & Rural Development', 'English Language', 'Reasoning', 'Computer Knowledge'],
+    
+    // SSC
+    'SSC_CGL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Comprehension'],
+    'SSC_CHSL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Language'],
+    'SSC_GD': ['General Intelligence', 'General Knowledge', 'Elementary Mathematics', 'English', 'Hindi'],
+    'SSC_STENO': ['General Intelligence', 'General Awareness', 'English Language', 'Stenography'],
+    
+    // Teaching
+    'DSSB_PGT': ['Subject Knowledge', 'General Awareness', 'Reasoning', 'English Language'],
+    'DSSB_TGT': ['Subject Knowledge', 'Child Psychology', 'Teaching Methodology', 'General Awareness'],
+    'KVS_PRT': ['Child Development', 'Language Proficiency', 'Environmental Studies', 'Mathematics'],
+    'CTET': ['Child Development & Pedagogy', 'Language I', 'Language II', 'Mathematics', 'Environmental Studies'],
+    'MPSET': ['Teaching Aptitude', 'Research Aptitude', 'Comprehension', 'Subject Knowledge'],
+    'TS_SET': ['Teaching Aptitude', 'Research Aptitude', 'Comprehension', 'Subject Knowledge'],
+    'UP_TGT': ['Subject Knowledge', 'General Knowledge', 'Hindi', 'English', 'Teaching Methodology'],
+    'UP_PGT': ['Subject Knowledge', 'General Studies', 'Hindi', 'English'],
+    'HTET': ['Child Development', 'Language I', 'Language II', 'Mathematics', 'Environmental Studies'],
+    
+    // Railways & Others
     'RRB_NTPC': ['General Awareness', 'Mathematics', 'General Intelligence'],
     'AFCAT': ['English', 'General Awareness', 'Numerical Ability', 'Reasoning & Military Aptitude'],
-    'GATE': ['Engineering Mathematics', 'General Aptitude', 'Technical Subject'],
+    
+    // Management & Law
     'CAT': ['Verbal Ability', 'Data Interpretation', 'Logical Reasoning', 'Quantitative Aptitude'],
-    'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques']
+    'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
+    'GMAT': ['Quantitative Reasoning', 'Verbal Reasoning', 'Integrated Reasoning', 'Analytical Writing'],
+    'CUET': ['Domain Subjects', 'General Test', 'Language Proficiency'],
+    'UGC_NET': ['Teaching Aptitude', 'Research Aptitude', 'Comprehension', 'Subject Knowledge'],
+    
+    // Agriculture
+    'Agriculture': ['Agriculture', 'Horticulture', 'Animal Husbandry', 'Agricultural Economics'],
+    
+    // State Exams
+    'RPSC': ['General Knowledge', 'General Science', 'Geography', 'History', 'Political Science'],
+    
+    // Language Proficiency
+    'SPANISH': ['Grammar', 'Vocabulary', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
+    'FRENCH': ['Grammar', 'Vocabulary', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
+    'TAMIL': ['Grammar', 'Vocabulary', 'Literature', 'Composition', 'Translation'],
+    'TELUGU': ['Grammar', 'Vocabulary', 'Literature', 'Composition', 'Translation'],
+    'KANNADA': ['Grammar', 'Vocabulary', 'Literature', 'Composition', 'Translation'],
+    'CHINESE': ['Grammar', 'Characters', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
+    'JAPANESE': ['Grammar', 'Kanji', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking'],
+    'KOREAN': ['Grammar', 'Hangul', 'Reading Comprehension', 'Writing', 'Listening', 'Speaking']
   };
 
   // Comprehensive subjects map
