@@ -236,7 +236,7 @@ const ModernExamSyllabus = () => {
                       <Users className="w-4 h-4 text-white" />
                       <div>
                         <p className="text-xl font-bold text-white">5K+</p>
-                        <p className="text-white/80 text-xs">Active Users</p>
+                        <p className="text-white/80 text-xs">{examData?.game_mode ? '🏆 Players Online' : 'Active Users'}</p>
                       </div>
                     </div>
                   </div>
