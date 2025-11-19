@@ -305,34 +305,6 @@ const Home = () => {
         </div>
 
         {/* Exam Cards Grid */}
-        
-        {/* Language Proficiency Tests - Game Mode Section */}
-        <div className="mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 rounded-3xl p-8 mb-8 border-2 border-purple-200 shadow-lg"
-          >
-            <div className="flex items-center gap-4 mb-3">
-              <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl"
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <span className="text-3xl">🎮</span>
-              </motion.div>
-              <div>
-                <h3 className="text-3xl font-black bg-gradient-to-r from-purple-700 via-pink-700 to-rose-700 bg-clip-text text-transparent">
-                  Language Proficiency Tests
-                </h3>
-                <p className="text-gray-600 text-lg font-medium mt-1">
-                  Play, Compete & Master Languages! 🚀
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Spanish Language Legends */}
             <motion.div
               whileHover={{ y: -8, scale: 1.02 }}
