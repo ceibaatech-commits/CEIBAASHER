@@ -227,7 +227,7 @@ const ModernExamSyllabus = () => {
                       <BookOpen className="w-4 h-4 text-white" />
                       <div>
                         <p className="text-xl font-bold text-white">{examData.total_questions}+</p>
-                        <p className="text-white/80 text-xs">Questions</p>
+                        <p className="text-white/80 text-xs">{examData?.game_mode ? '🎮 Levels' : 'Questions'}</p>
                       </div>
                     </div>
                   </div>
