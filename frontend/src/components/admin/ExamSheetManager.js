@@ -9,7 +9,7 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ExamSheetManager = () => {
-  const [selectedOption, setSelectedOption] = useState('exam'); // 'exam' or 'class'
+  const [selectedOption, setSelectedOption] = useState('exam'); // 'exam', 'class', or 'book'
   const [showAddForm, setShowAddForm] = useState(false);
   const [sheets, setSheets] = useState([]);
   const [loading, setLoading] = useState(false);
