@@ -48,11 +48,17 @@ async def get_exam(exam_id: str):
     
     if structure:
         # Database has data - use it!
+        # First try to get metadata from hardcoded exam_data for display purposes
+        hardcoded_exam = get_exam_details(exam_id)
+        
         exam = {
             "name": exam_id,
-            "full_name": exam_id,
-            "description": f"Prepare for {exam_id} with comprehensive practice questions",
-            "syllabus_topics": structure.get("syllabus_topics", {})
+            "full_name": hardcoded_exam.get("full_name", exam_id) if hardcoded_exam else exam_id,
+            "description": hardcoded_exam.get("description", f"Prepare for {exam_id} with comprehensive practice questions") if hardcoded_exam else f"Prepare for {exam_id} with comprehensive practice questions",
+            "icon": hardcoded_exam.get("icon", "") if hardcoded_exam else "",
+            "color": hardcoded_exam.get("color", "from-blue-500 to-cyan-500") if hardcoded_exam else "from-blue-500 to-cyan-500",
+            "category": hardcoded_exam.get("category", "Competitive Exams") if hardcoded_exam else "Competitive Exams",
+            "syllabus_topics": structure.get("syllabus_topics", {})  # Database-driven structure
         }
         return {"success": True, "exam": exam}
     else:
