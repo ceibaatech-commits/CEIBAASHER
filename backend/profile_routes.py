@@ -134,15 +134,33 @@ async def check_follow_relationship(follower_id: str, following_id: str):
     return relationship
 
 async def get_follow_counts(user_id: str):
-    """Get follower and following counts"""
-    followers_count = await db.follows.count_documents({
+    """Get follower and following counts from all collections"""
+    # Count followers from follows collection
+    followers_count_follows = await db.follows.count_documents({
         "following_id": user_id,
         "status": "approved"
     })
-    following_count = await db.follows.count_documents({
+    
+    # Count followers from ceeps collection
+    followers_count_ceeps = await db.ceeps.count_documents({
+        "ceep_user_id": user_id
+    })
+    
+    # Count following from follows collection
+    following_count_follows = await db.follows.count_documents({
         "follower_id": user_id,
         "status": "approved"
     })
+    
+    # Count following from ceeps collection
+    following_count_ceeps = await db.ceeps.count_documents({
+        "user_id": user_id
+    })
+    
+    # Return combined counts
+    followers_count = followers_count_follows + followers_count_ceeps
+    following_count = following_count_follows + following_count_ceeps
+    
     return followers_count, following_count
 
 async def create_notification(
