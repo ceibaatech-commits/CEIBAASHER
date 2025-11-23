@@ -1256,52 +1256,34 @@ EXAM_DATA = {
     },
     
     "SBI_CLERK": {
-        "name": "SBI Clerk",
-        "full_name": "State Bank of India Junior Associate",
+        "name": "SBI Clerk Prelims",
+        "full_name": "State Bank of India Junior Associate - Preliminary Exam",
         "description": "Entrance exam for Clerical position in SBI",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-teal-500 to-cyan-600",
-        "total_questions": 190,
-        "duration": "2 hours 40 minutes",
+        "total_questions": 100,
+        "duration": "1 hour (20 min per section)",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "Numerical Ability": {
                 "subjects": {
-                    "Simplification": {"sub_topics": ["BODMAS", "Approximation"], "questions": 10},
-                    "Number Series": {"sub_topics": ["Missing Series", "Wrong Term"], "questions": 4},
-                    "Quadratic Equations": {"sub_topics": ["Roots Finding"], "questions": 3},
-                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart"], "questions": 7},
-                    "Arithmetic": {"sub_topics": ["P&L", "Ratio", "Ages", "Time & Work", "Percentage", "SI/CI", "Mensuration"], "questions": 9}
+                    "Speed & Calculation": {"sub_topics": ["Simplification", "Approximation", "Missing Number Series", "Wrong Number Series", "Quadratic Equations", "Quantity Comparison (Q1 & Q2)"], "questions": 18},
+                    "Data Interpretation (DI)": {"sub_topics": ["Tabular DI", "Bar Graph", "Line Graph", "Pie Chart"], "questions": 8},
+                    "Arithmetic (Word Problems)": {"sub_topics": ["Percentage", "Ratio and Proportion", "Average", "Age Problems", "Profit and Loss", "Simple Interest (SI)", "Compound Interest (CI)", "Time and Work", "Pipes and Cisterns", "Time Speed and Distance", "Boats & Streams", "Mixture and Allegations", "Partnership", "Mensuration"], "questions": 14}
                 }
             },
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Linear Seating", "Circular Seating", "Box/Floor Puzzles"], "questions": 22},
-                    "Syllogism": {"sub_topics": ["Basic Syllogism"], "questions": 4},
-                    "Inequality": {"sub_topics": ["Direct Inequality"], "questions": 4},
-                    "Blood Relations": {"sub_topics": ["Family Tree"], "questions": 3},
-                    "Direction Sense": {"sub_topics": ["Direction Problems"], "questions": 3},
-                    "Alphabet Series": {"sub_topics": ["Missing Letters"], "questions": 2},
-                    "Coding-Decoding": {"sub_topics": ["Letter Substitution"], "questions": 2}
+                    "Puzzles & Seating Arrangement": {"sub_topics": ["Floor/Flat Puzzles", "Box Puzzles", "Scheduling (Day/Month/Year)", "Comparison/Ranking", "Designation-based", "Circular Seating", "Linear Seating (Single Row)", "Linear Seating (Double Row)", "Square/Rectangular Arrangement"], "questions": 18},
+                    "Logical Deductions": {"sub_topics": ["Syllogism (Including 'Only a Few')", "Inequalities (Direct)", "Inequalities (Coded)", "Data Sufficiency (Two statements)"], "questions": 8},
+                    "Miscellaneous Logic": {"sub_topics": ["Direction Sense", "Blood Relations (Family Tree)", "Alphanumeric Series", "Symbolic Series", "Order & Ranking", "Coding-Decoding (Simple)", "Coding-Decoding (Fictitious)"], "questions": 7}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Analysis"], "questions": 10},
-                    "Cloze Test": {"sub_topics": ["Fill in Blanks"], "questions": 5},
-                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
-                    "Para Jumbles": {"sub_topics": ["Sentence Arrangement"], "questions": 5},
-                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Fill in Blanks"], "questions": 5}
-                }
-            },
-            "General Awareness": {
-                "subjects": {
-                    "Banking & Current Affairs": {"sub_topics": ["Banking News", "Economy", "Sports", "Current Affairs"], "questions": 30}
-                }
-            },
-            "Computer Aptitude": {
-                "subjects": {
-                    "Computer Knowledge": {"sub_topics": ["MS Office", "Internet", "Networking", "Computer Fundamentals"], "questions": 20}
+                    "Reading Comprehension (RC)": {"sub_topics": ["Passage comprehension", "Theme detection", "Vocabulary (Synonyms/Antonyms) from passage"], "questions": 9},
+                    "Grammar & Structure": {"sub_topics": ["Error Detection (Spotting Errors)", "Sentence Improvement/Correction", "Phrase Replacement"], "questions": 9},
+                    "Vocabulary & Usage": {"sub_topics": ["Cloze Test (Paragraph completion)", "Fillers (Single and Double)", "Word Swap/Usage", "Para Jumbles (Sentence Rearrangement)"], "questions": 12}
                 }
             }
         }
