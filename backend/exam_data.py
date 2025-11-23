@@ -1627,55 +1627,97 @@ EXAM_DATA = {
     },
     
     "LIC_ADO": {
-        "name": "LIC ADO",
-        "full_name": "LIC Apprentice Development Officer",
+        "name": "LIC ADO Prelims",
+        "full_name": "LIC Apprentice Development Officer - Preliminary Exam",
         "description": "Entrance exam for ADO position in Life Insurance Corporation",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-pink-500 to-rose-600",
-        "total_questions": 180,
-        "duration": "2 hours 30 minutes",
+        "total_questions": 110,
+        "duration": "1 hour 30 minutes",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Linear", "Circular", "Box-Based", "Floor-Based", "Day/Month"], "questions": 15},
-                    "Syllogism": {"sub_topics": ["Basic", "Possibility"], "questions": 5},
-                    "Inequality": {"sub_topics": ["Direct", "Coded"], "questions": 5},
-                    "Blood Relations": {"sub_topics": ["Family Tree"], "questions": 3},
-                    "Direction Sense": {"sub_topics": ["Direction"], "questions": 3},
-                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 2},
-                    "Input-Output": {"sub_topics": ["Machine Input"], "questions": 2}
+                    "Puzzles & Seating": {
+                        "sub_topics": ["Linear", "Circular", "Box-Based", "Floor-Based", "Day/Month"],
+                        "questions": 80
+                    },
+                    "Syllogism": {
+                        "sub_topics": ["Basic", "Possibility"],
+                        "questions": 8
+                    },
+                    "Inequality": {
+                        "sub_topics": ["Direct", "Coded"],
+                        "questions": 8
+                    },
+                    "Blood Relations": {
+                        "sub_topics": ["Family Tree"],
+                        "questions": 3
+                    },
+                    "Direction Sense": {
+                        "sub_topics": ["Direction"],
+                        "questions": 3
+                    },
+                    "Coding-Decoding": {
+                        "sub_topics": ["Letter Coding"],
+                        "questions": 3
+                    },
+                    "Input-Output": {
+                        "sub_topics": ["Machine Input"],
+                        "questions": 2
+                    }
                 }
             },
             "Numerical Ability": {
                 "subjects": {
-                    "Simplification": {"sub_topics": ["BODMAS", "Calculation"], "questions": 8},
-                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart"], "questions": 10},
-                    "Number Series": {"sub_topics": ["Missing Number"], "questions": 5},
-                    "Quadratic Equations": {"sub_topics": ["Finding Roots"], "questions": 4},
-                    "Arithmetic": {"sub_topics": ["P&L", "SI/CI", "Ratio", "Partnership", "Time & Work", "Speed", "Mensuration", "Mixture"], "questions": 8}
+                    "Arithmetic": {
+                        "sub_topics": ["P&L", "SI/CI", "Ratio", "Partnership", "Time & Work", "Speed", "Mensuration", "Mixture"],
+                        "questions": 128
+                    },
+                    "Simplification": {
+                        "sub_topics": ["BODMAS", "Calculation"],
+                        "questions": 14
+                    },
+                    "Data Interpretation": {
+                        "sub_topics": ["Table", "Bar Chart"],
+                        "questions": 10
+                    },
+                    "Number Series": {
+                        "sub_topics": ["Missing Number"],
+                        "questions": 4
+                    },
+                    "Quadratic Equations": {
+                        "sub_topics": ["Finding Roots"],
+                        "questions": 3
+                    }
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
-                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
-                    "Sentence Correction": {"sub_topics": ["Grammar"], "questions": 5},
-                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
-                    "Para Jumbles": {"sub_topics": ["Rearrangement"], "questions": 3},
-                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Idioms"], "questions": 2}
-                }
-            },
-            "General Knowledge & Current Affairs": {
-                "subjects": {
-                    "Current Affairs": {"sub_topics": ["Banking", "Insurance", "Economy", "Sports"], "questions": 15},
-                    "Static GK": {"sub_topics": ["Indian Polity", "Geography", "History"], "questions": 15}
-                }
-            },
-            "Insurance Awareness": {
-                "subjects": {
-                    "Insurance Knowledge": {"sub_topics": ["Insurance Types", "IRDA Regulations", "LIC Policies", "Claim Settlement"], "questions": 25},
-                    "Financial Inclusion": {"sub_topics": ["Micro Insurance", "Government Schemes"], "questions": 25}
+                    "Vocabulary": {
+                        "sub_topics": ["Synonyms", "Antonyms", "Idioms"],
+                        "questions": 12
+                    },
+                    "Reading Comprehension": {
+                        "sub_topics": ["Passage Based"],
+                        "questions": 9
+                    },
+                    "Error Spotting": {
+                        "sub_topics": ["Grammar Errors"],
+                        "questions": 5
+                    },
+                    "Cloze Test": {
+                        "sub_topics": ["Fill Blanks"],
+                        "questions": 5
+                    },
+                    "Sentence Correction": {
+                        "sub_topics": ["Grammar"],
+                        "questions": 4
+                    },
+                    "Para Jumbles": {
+                        "sub_topics": ["Rearrangement"],
+                        "questions": 3
+                    }
                 }
             }
         }
