@@ -213,45 +213,90 @@ const ModernExamSyllabus = () => {
                   className="space-y-6"
                 >
                   {weightageData?.sections && weightageData.sections.map((section, idx) => (
-                    <div key={idx} className="border-l-4 border-blue-500 pl-4">
+                    <div key={idx} className="border-l-4 border-blue-500 pl-4 mb-6">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-base font-bold text-gray-800">{section.section_name}</h4>
                         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
                           Total: {section.total_questions} Questions
                         </span>
                       </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="text-left py-2 px-3 font-semibold text-gray-700">Topic</th>
-                              <th className="text-center py-2 px-3 font-semibold text-gray-700">Expected Questions</th>
-                              <th className="text-left py-2 px-3 font-semibold text-gray-700">Importance Level</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {section.topics?.map((topic, tidx) => (
-                              <tr key={tidx} className="border-t border-gray-100 hover:bg-gray-50">
-                                <td className="py-2 px-3 text-gray-800">{topic.topic}</td>
-                                <td className="py-2 px-3 text-center font-semibold text-blue-600">{topic.questions}</td>
-                                <td className="py-2 px-3">
-                                  <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
-                                    topic.importance.includes('VERY HIGH') 
-                                      ? 'bg-red-100 text-red-800' 
-                                      : topic.importance.includes('HIGH') || topic.importance.includes('High')
-                                      ? 'bg-orange-100 text-orange-800'
-                                      : topic.importance.includes('Moderate')
-                                      ? 'bg-yellow-100 text-yellow-800'
-                                      : 'bg-gray-100 text-gray-800'
-                                  }`}>
-                                    {topic.importance}
-                                  </span>
-                                </td>
+                      
+                      {section.description && (
+                        <p className="text-sm text-gray-600 mb-4 italic">{section.description}</p>
+                      )}
+                      
+                      {/* Render subjects if they exist */}
+                      {section.subjects?.map((subject, sidx) => (
+                        <div key={sidx} className="mb-4">
+                          <h5 className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+                            <span className="bg-gradient-to-r from-blue-500 to-teal-500 text-white px-2 py-1 rounded">
+                              {subject.subject_name}
+                            </span>
+                            <span className="text-gray-500">({subject.questions} Questions)</span>
+                          </h5>
+                          
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th className="text-left py-2 px-3 font-semibold text-gray-700">Topic</th>
+                                  <th className="text-left py-2 px-3 font-semibold text-gray-700">Sub-Topics</th>
+                                  <th className="text-center py-2 px-3 font-semibold text-gray-700">Expected Questions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {subject.topics?.map((topic, tidx) => (
+                                  <tr key={tidx} className="border-t border-gray-100 hover:bg-gray-50">
+                                    <td className="py-2 px-3 text-gray-800 font-medium">{topic.topic}</td>
+                                    <td className="py-2 px-3 text-gray-600 text-xs">
+                                      {topic.sub_topics?.join(', ') || 'N/A'}
+                                    </td>
+                                    <td className="py-2 px-3 text-center font-semibold text-blue-600">
+                                      {topic.expected_questions || topic.questions || 'N/A'}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {/* Fallback for old structure with section.topics */}
+                      {!section.subjects && section.topics && (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-50">
+                              <tr>
+                                <th className="text-left py-2 px-3 font-semibold text-gray-700">Topic</th>
+                                <th className="text-center py-2 px-3 font-semibold text-gray-700">Expected Questions</th>
+                                <th className="text-left py-2 px-3 font-semibold text-gray-700">Importance Level</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                            </thead>
+                            <tbody>
+                              {section.topics.map((topic, tidx) => (
+                                <tr key={tidx} className="border-t border-gray-100 hover:bg-gray-50">
+                                  <td className="py-2 px-3 text-gray-800">{topic.topic}</td>
+                                  <td className="py-2 px-3 text-center font-semibold text-blue-600">{topic.questions}</td>
+                                  <td className="py-2 px-3">
+                                    <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                                      topic.importance?.includes('VERY HIGH') 
+                                        ? 'bg-red-100 text-red-800' 
+                                        : topic.importance?.includes('HIGH') || topic.importance?.includes('High')
+                                        ? 'bg-orange-100 text-orange-800'
+                                        : topic.importance?.includes('Moderate')
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : 'bg-gray-100 text-gray-800'
+                                    }`}>
+                                      {topic.importance || 'N/A'}
+                                    </span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </motion.div>
