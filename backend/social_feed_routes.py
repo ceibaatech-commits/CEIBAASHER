@@ -541,54 +541,80 @@ async def get_user_profile(user_id: str):
 
 @router.post("/user/follow/{target_user_id}")
 async def follow_user(target_user_id: str, authorization: Optional[str] = Header(None)):
-    """Follow a user"""
+    """
+    Follow a user with proper privacy checks
+    - Public accounts: Instant follow (status: approved)
+    - Private accounts: Send follow request (status: pending)
+    """
     try:
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
         follower_id = decode_jwt_token(authorization)
         
+        # Validate users exist
         if follower_id == target_user_id:
             raise HTTPException(status_code=400, detail="Cannot follow yourself")
         
-        # Check ceeps collection first
-        existing_ceep = await db.ceeps.find_one({"user_id": follower_id, "ceep_user_id": target_user_id})
-        # Also check follows collection for cross-compatibility
-        existing_follow = await db.follows.find_one({"follower_id": follower_id, "following_id": target_user_id})
-        
-        if existing_ceep or existing_follow:
-            return {"success": True, "message": "Already following"}
-        
-        # Add to ceeps collection (primary)
-        await db.ceeps.insert_one({
-            "id": str(uuid.uuid4()),
-            "user_id": follower_id,
-            "ceep_user_id": target_user_id,
-            "created_at": datetime.now(timezone.utc).isoformat()
+        # Check if already following (only check follows collection - single source of truth)
+        existing_follow = await db.follows.find_one({
+            "follower_id": follower_id, 
+            "following_id": target_user_id
         })
         
-        # Also add to follows collection for compatibility
+        if existing_follow:
+            return {
+                "success": True, 
+                "message": "Already following or request pending",
+                "status": existing_follow.get("status")
+            }
+        
+        # Get target user to check privacy settings
+        target_user = await db.users.find_one({"id": target_user_id}, {"_id": 0})
+        if not target_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get follower info for notification
+        follower = await db.users.find_one({"id": follower_id}, {"_id": 0, "name": 1})
+        if not follower:
+            raise HTTPException(status_code=404, detail="Follower user not found")
+        
+        # Determine follow status based on privacy settings
+        is_private = target_user.get("is_private", False)
+        follow_status = "pending" if is_private else "approved"
+        
+        # Create follow relationship (ONLY in follows collection)
         await db.follows.insert_one({
             "id": str(uuid.uuid4()),
             "follower_id": follower_id,
             "following_id": target_user_id,
-            "status": "approved",
+            "status": follow_status,
             "created_at": datetime.now(timezone.utc).isoformat()
         })
         
-        follower = await db.users.find_one({"id": follower_id}, {"_id": 0, "name": 1})
+        # Create notification
+        notification_content = (
+            f"{follower.get('name', 'Someone')} requested to follow you" 
+            if is_private 
+            else f"{follower.get('name', 'Someone')} started following you"
+        )
+        
         await db.notifications.insert_one({
             "id": str(uuid.uuid4()),
             "user_id": target_user_id,
-            "notification_type": "follow",
-            "content": f"{follower.get('name', 'Someone')} started following you",
+            "notification_type": "follow_request" if is_private else "follow",
+            "content": notification_content,
             "from_user_id": follower_id,
             "from_user_name": follower.get('name', 'Unknown'),
             "is_read": False,
             "created_at": datetime.now(timezone.utc).isoformat()
         })
         
-        return {"success": True, "message": "User followed"}
+        return {
+            "success": True, 
+            "message": "Follow request sent" if is_private else "Now following",
+            "status": follow_status
+        }
     except HTTPException:
         raise
     except Exception as e:
