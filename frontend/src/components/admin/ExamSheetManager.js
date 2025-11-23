@@ -422,8 +422,7 @@ const ExamSheetManager = () => {
       setExamForm(prev => ({
         ...prev,
         subject: '',
-        sub_topic: '',
-        sub_sub_topic: ''
+        sub_topic: ''
       }));
       setSubTopics([]);
     }
