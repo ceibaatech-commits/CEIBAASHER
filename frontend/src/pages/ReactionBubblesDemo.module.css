@@ -1,0 +1,259 @@
+/* ReactionBubbles Demo Styles */
+/* Design Tokens */
+:root {
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 40px;
+  --spacing-xxl: 80px;
+  
+  --font-display: 48px;
+  --font-h1: 32px;
+  --font-body: 18px;
+  --font-small: 16px;
+  
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-dark: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  --gradient-pink: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --gradient-blue: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --gradient-green: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* Global Animations */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container */
+.container {
+  min-height: 100vh;
+  padding: var(--spacing-xl) var(--spacing-lg);
+}
+
+.innerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-xxl);
+}
+
+.title {
+  font-size: var(--font-display);
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-md);
+}
+
+.subtitle {
+  font-size: var(--font-body);
+  color: #64748b;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Background Selector */
+.backgroundSelector {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.backgroundButton {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: capitalize;
+  background: white;
+  border: 2px solid #e2e8f0;
+  color: #64748b;
+}
+
+.backgroundButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.backgroundButton:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.backgroundButtonActive {
+  border-color: #667eea;
+  background: #f8fafc;
+  color: #667eea;
+}
+
+/* Demo Area */
+.demoArea {
+  border-radius: 24px;
+  padding: var(--spacing-xxl) var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.lastReaction {
+  font-size: 72px;
+  margin-bottom: var(--spacing-xl);
+  animation: pulse 0.5s ease-in-out, fadeIn 0.3s ease-out;
+}
+
+.infoText {
+  margin-top: var(--spacing-xl);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--font-small);
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Section Title */
+.sectionTitle {
+  font-size: var(--font-h1);
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+/* Size Variants Grid */
+.sizeVariantsSection {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.variantsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: var(--spacing-lg);
+}
+
+.variantCard {
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.variantTitle {
+  color: white;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Features Grid */
+.featuresSection {
+  margin-bottom: var(--spacing-xxl);
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: var(--spacing-lg);
+}
+
+.featureCard {
+  background: white;
+  border-radius: 16px;
+  padding: var(--spacing-xl);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.featureIcon {
+  font-size: 48px;
+  margin-bottom: var(--spacing-md);
+}
+
+.featureTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: var(--spacing-sm);
+}
+
+.featureDescription {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+  
+  .title {
+    font-size: 36px;
+  }
+  
+  .demoArea {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    min-height: 300px;
+  }
+  
+  .lastReaction {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 28px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+  }
+  
+  .backgroundSelector {
+    gap: 8px;
+  }
+  
+  .backgroundButton {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
