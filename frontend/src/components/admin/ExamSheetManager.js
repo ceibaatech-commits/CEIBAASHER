@@ -136,7 +136,7 @@ const ExamSheetManager = () => {
     'IBPS_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
     'IBPS_SO': ['Reasoning', 'Quantitative Aptitude', 'English Language', 'General Awareness'],
     'SBI_PO': ['Quantitative Aptitude', 'Reasoning Ability', 'English Language'],
-    'SBI_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'SBI_CLERK': ['Numerical Ability', 'Reasoning Ability', 'English Language'],
     'RBI_GRADE_B': ['General Awareness', 'Reasoning Ability', 'English Language', 'Quantitative Aptitude'],
     'NABARD': ['Reasoning Ability', 'Quantitative Aptitude', 'Economic & Social Issues', 'Agriculture & Rural Development', 'General Awareness'],
     
