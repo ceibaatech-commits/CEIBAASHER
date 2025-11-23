@@ -1242,27 +1242,35 @@ EXAM_DATA = {
         "duration": "3 hours",
         "category": "Banking Examinations",
         "syllabus_topics": {
-            "Reasoning Ability": {
-                "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Complex Puzzles", "Seating Arrangement", "Blood Relations"], "questions": 35},
-                    "Verbal Reasoning": {"sub_topics": ["Syllogism", "Input-Output", "Coding"], "questions": 15}
-                }
-            },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Arithmetic": {"sub_topics": ["Percentage", "Profit Loss", "Time Work", "SI CI"], "questions": 20},
-                    "Data Interpretation": {"sub_topics": ["Charts", "Tables", "Graphs", "Caselets"], "questions": 15}
+                    "Data Interpretation": {"sub_topics": ["Caselet DI", "Mixed/Radar Graphs", "Data Sufficiency"], "questions": 12},
+                    "Arithmetic": {"sub_topics": ["Probability", "Permutation & Combination", "Ratio & Proportion"], "questions": 14},
+                    "Simplification": {"sub_topics": ["BODMAS", "Approximation"], "questions": 5},
+                    "Number Series": {"sub_topics": ["Missing Series", "Wrong Term"], "questions": 4}
+                }
+            },
+            "Reasoning Ability": {
+                "subjects": {
+                    "Puzzles & Seating": {"sub_topics": ["Circular Seating", "Linear Seating", "Box & Floor Puzzles"], "questions": 22},
+                    "Syllogism": {"sub_topics": ["Standard Syllogism", "Reverse Syllogism"], "questions": 4},
+                    "Inequality": {"sub_topics": ["Direct Inequality", "Coded Inequality"], "questions": 4},
+                    "Direction & Distance": {"sub_topics": ["Direction Sense", "Distance Calculation"], "questions": 5}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["RC Passages", "Vocabulary"], "questions": 20},
-                    "Grammar": {"sub_topics": ["Error Spotting", "Sentence Correction", "Para Jumbles"], "questions": 15}
+                    "Reading Comprehension": {"sub_topics": ["Passage Analysis", "Inference Questions"], "questions": 10},
+                    "Cloze Test": {"sub_topics": ["Fill in the Blanks"], "questions": 5},
+                    "Error Spotting": {"sub_topics": ["Grammar Errors", "Sentence Correction"], "questions": 5},
+                    "Para Jumbles": {"sub_topics": ["Sentence Rearrangement"], "questions": 5},
+                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms"], "questions": 5}
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Banking Awareness": {"sub_topics": ["Banking News", "Financial Terms", "RBI Policies"], "questions": 30}
+                    "Banking Awareness": {"sub_topics": ["Banking News", "Financial Terms", "RBI Policies"], "questions": 30},
+                    "Current Affairs": {"sub_topics": ["National", "International", "Sports", "Awards"], "questions": 20}
                 }
             },
             "Data Analysis": {
