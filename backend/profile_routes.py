@@ -235,24 +235,28 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
         posts_count = await db.social_posts.count_documents({"user_id": user["id"]})
         user["posts_count"] = posts_count
         
-        # Check if profile is private and viewer is not following
+        # Determine profile visibility based on privacy settings and follow relationship
         is_private = user.get("is_private", False)
-        can_view_full_profile = True
         follow_status = None
         
-        if current_user_id and current_user_id != user["id"]:
-            # Check follow relationship
+        # Case 1: User viewing their own profile - always full access
+        if current_user_id == user["id"]:
+            can_view_full_profile = True
+        
+        # Case 2: No current user (not logged in) - only see public profiles
+        elif not current_user_id:
+            can_view_full_profile = not is_private
+        
+        # Case 3: Logged in user viewing someone else's profile
+        else:
             relationship = await check_follow_relationship(current_user_id, user["id"])
             if relationship:
                 follow_status = relationship.get("status")
+                # Can view if following (approved) OR if profile is public
                 can_view_full_profile = (follow_status == "approved") or not is_private
             else:
+                # Not following - can only view if profile is public
                 can_view_full_profile = not is_private
-        elif not current_user_id:
-            can_view_full_profile = not is_private
-        else:
-            # Viewing own profile
-            can_view_full_profile = True
         
         # If private and not following, return limited info
         if is_private and not can_view_full_profile:
