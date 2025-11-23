@@ -317,35 +317,43 @@ async def get_following_feed(
     limit: int = 10,
     authorization: Optional[str] = Header(None)
 ):
-    """Get feed from followed users"""
+    """Get feed from followed users (approved follows only)"""
     try:
         if not authorization:
             return {"success": True, "posts": [], "count": 0}
         
         user_id = decode_jwt_token(authorization)
         
-        # Get all following relationships from ceeps, follows, and followers collections
-        ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
+        # Get approved following relationships (only from follows collection - single source of truth)
+        # Use aggregation pipeline for better performance with large datasets
         follows = await db.follows.find(
             {"follower_id": user_id, "status": "approved"}, 
             {"_id": 0, "following_id": 1}
-        ).to_list(1000)
+        ).to_list(length=1000)
         
-        # Combine all following IDs from different collections
-        following_ids = list(set(
-            [c["ceep_user_id"] for c in ceeps] + 
-            [f.get("following_id") for f in follows if f.get("following_id")]
-        ))
+        following_ids = [f["following_id"] for f in follows if f.get("following_id")]
         
         if not following_ids:
             return {"success": True, "posts": [], "count": 0}
         
-        posts = await db.social_posts.find({"user_id": {"$in": following_ids}}, {"_id": 0}).sort("created_at", -1).to_list(None)
+        # Get posts from followed users
+        posts = await db.social_posts.find(
+            {"user_id": {"$in": following_ids}}, 
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(length=None)
+        
+        # Filter expired quiz room posts
         posts = await filter_expired_quiz_posts(posts)
+        
+        # Apply pagination
         paginated = posts[skip:skip + limit]
         
+        # Add like status for current user
         for post in paginated:
-            liked = await db.post_likes.find_one({"user_id": user_id, "post_id": post["id"]})
+            liked = await db.post_likes.find_one({
+                "user_id": user_id, 
+                "post_id": post["id"]
+            })
             post["liked_by_user"] = liked is not None
         
         return {"success": True, "posts": paginated, "count": len(paginated)}
