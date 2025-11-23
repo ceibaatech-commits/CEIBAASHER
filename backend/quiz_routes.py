@@ -172,20 +172,18 @@ async def get_exam_weightage(exam_id: str):
             "type": "weightage_analysis"
         })
         
+        # Debug info
+        all_metadata = await db.exam_metadata.find({}).to_list(length=10)
+        
         await client.close()
         
-        if weightage:
+        if weightage and isinstance(weightage, dict):
             # Remove MongoDB _id
             if '_id' in weightage:
                 del weightage['_id']
             return {"success": True, "weightage": weightage}
         else:
-            # Debug: list what's actually in the collection
-            client2 = AsyncIOMotorClient(mongo_url)
-            db2 = client2[db_name]
-            all_docs = await db2.exam_metadata.find({}).to_list(length=5)
-            await client2.close()
-            return {"success": False, "message": f"Not found. Collection has {len(all_docs)} docs. Looking for: {exam_id}"}
+            return {"success": False, "message": f"Not found for {exam_id}. DB has {len(all_metadata)} docs: {[d.get('exam_name') for d in all_metadata]}"}
     
     except Exception as e:
         import traceback
