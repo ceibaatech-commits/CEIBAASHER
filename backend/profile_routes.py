@@ -739,12 +739,24 @@ async def get_follow_requests(
             if requester:
                 requester.pop("_id", None)
                 
-                # Check for mutual followers
-                mutual_count = await db.follows.count_documents({
-                    "follower_id": user_id,
-                    "following_id": {"$in": []},  # TODO: Implement mutual followers logic
+                # Check for mutual followers (people who follow both current user and requester)
+                # Get all followers of the requester
+                requester_followers = await db.follows.find({
+                    "following_id": request["follower_id"],
                     "status": "approved"
-                })
+                }, {"follower_id": 1, "_id": 0}).to_list(length=None)
+                
+                requester_follower_ids = [f["follower_id"] for f in requester_followers]
+                
+                # Count how many of these followers the current user also follows
+                if requester_follower_ids:
+                    mutual_count = await db.follows.count_documents({
+                        "follower_id": user_id,
+                        "following_id": {"$in": requester_follower_ids},
+                        "status": "approved"
+                    })
+                else:
+                    mutual_count = 0
                 
                 requests.append({
                     "request_id": request["id"],
