@@ -503,8 +503,16 @@ async def get_user_profile(user_id: str):
             raise HTTPException(status_code=404, detail="User not found")
         
         user["posts_count"] = await db.social_posts.count_documents({"user_id": user_id})
-        user["followers_count"] = await db.followers.count_documents({"following_id": user_id})
-        user["following_count"] = await db.followers.count_documents({"follower_id": user_id})
+        
+        # Count followers from all collections
+        ceepers_count = await db.ceeps.count_documents({"ceep_user_id": user_id})
+        follows_followers = await db.follows.count_documents({"following_id": user_id, "status": "approved"})
+        user["followers_count"] = ceepers_count + follows_followers
+        
+        # Count following from all collections
+        ceeps_count = await db.ceeps.count_documents({"user_id": user_id})
+        follows_following = await db.follows.count_documents({"follower_id": user_id, "status": "approved"})
+        user["following_count"] = ceeps_count + follows_following
         
         return {"success": True, "user": user}
     except HTTPException:
