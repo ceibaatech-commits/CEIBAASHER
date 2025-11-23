@@ -206,7 +206,7 @@ async def test_weightage_db():
     count = await db.exam_metadata.count_documents({})
     sbi_doc = await db.exam_metadata.find_one({"exam_name": "SBI_PO"})
     
-    await client.close()
+    client.close()
     
     return {"count": count, "has_sbi": sbi_doc is not None}
 
