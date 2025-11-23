@@ -180,7 +180,12 @@ async def get_exam_weightage(exam_id: str):
                 del weightage['_id']
             return {"success": True, "weightage": weightage}
         else:
-            return {"success": False, "message": "Weightage data not available for this exam"}
+            # Debug: list what's actually in the collection
+            client2 = AsyncIOMotorClient(mongo_url)
+            db2 = client2[db_name]
+            all_docs = await db2.exam_metadata.find({}).to_list(length=5)
+            await client2.close()
+            return {"success": False, "message": f"Not found. Collection has {len(all_docs)} docs. Looking for: {exam_id}"}
     
     except Exception as e:
         import traceback
