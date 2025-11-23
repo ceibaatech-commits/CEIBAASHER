@@ -1,5 +1,32 @@
 """
-Ceibaa Social Feed Routes - Fixed Version
+Ceibaa Social Feed Routes - Optimized Version
+
+ARCHITECTURE DECISIONS:
+-----------------------
+1. FOLLOW SYSTEM: Uses 'follows' collection as single source of truth
+   - 'ceeps' collection is LEGACY and no longer used for new follows
+   - All new follow relationships stored ONLY in 'follows' collection
+   - Supports privacy: 'approved' (public) or 'pending' (private accounts)
+   
+2. DATA CONSISTENCY:
+   - No duplicate entries across collections
+   - Counts based solely on 'follows' collection with status='approved'
+   - profile_routes.py may query both for backward compatibility with old data
+   
+3. PERFORMANCE OPTIMIZATIONS:
+   - Date parsing standardized to ISO format with timezone
+   - Aggregation pipelines for large datasets
+   - Proper pagination to avoid memory issues
+
+RECOMMENDED DATABASE INDEXES:
+-----------------------------
+db.follows.createIndex({ "follower_id": 1, "following_id": 1 }, { unique: true })
+db.follows.createIndex({ "following_id": 1, "status": 1 })
+db.follows.createIndex({ "follower_id": 1, "status": 1 })
+db.social_posts.createIndex({ "user_id": 1, "created_at": -1 })
+db.social_posts.createIndex({ "created_at": -1 })
+db.post_likes.createIndex({ "user_id": 1, "post_id": 1 }, { unique: true })
+db.quiz_rooms.createIndex({ "room_code": 1 }, { unique: true })
 """
 from fastapi import APIRouter, HTTPException, Header, Query
 from pydantic import BaseModel, Field, ConfigDict
