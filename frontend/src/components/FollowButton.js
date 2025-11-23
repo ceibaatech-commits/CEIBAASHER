@@ -38,6 +38,23 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      
+      // Additional safeguard - prevent self-following
+      const authToken = localStorage.getItem('auth_token') || token;
+      if (authToken) {
+        try {
+          const payload = JSON.parse(atob(authToken.split('.')[1]));
+          const currentUserId = payload.sub;
+          if (currentUserId === targetUserId) {
+            alert("You cannot follow yourself");
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          // If token parsing fails, continue with the request
+        }
+      }
+      
       const response = await axios.post(
         `${BACKEND_URL}/api/profile/follow`,
         { target_user_id: targetUserId },
