@@ -149,6 +149,15 @@ const PublicProfile = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
         <div className="max-w-2xl mx-auto py-12 px-4">
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 mb-4 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </button>
+
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             {/* Profile Picture */}
             <img
