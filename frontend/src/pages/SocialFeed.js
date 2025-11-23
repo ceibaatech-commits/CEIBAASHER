@@ -27,7 +27,7 @@ const CATEGORIES = [
 ];
 
 const SocialFeed = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   
   // State
