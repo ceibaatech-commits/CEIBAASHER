@@ -136,7 +136,15 @@ async def get_all_topics(exam_id: str):
             # Convert dict to list
             topics = list(topics_dict.values())
             
-            return {"success": True, "exam": exam_id, "topics": topics}
+            from fastapi.responses import JSONResponse
+            return JSONResponse(
+                content={"success": True, "exam": exam_id, "topics": topics},
+                headers={
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Pragma": "no-cache",
+                    "Expires": "0"
+                }
+            )
         else:
             # Fallback to hardcoded
             topics = get_all_topics_flat(exam_id)
