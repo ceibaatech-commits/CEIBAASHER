@@ -878,7 +878,15 @@ const LiveBattle = () => {
                   }}
                 >
                   <div className="bg-white rounded-full shadow-lg p-3">
-                    <div className="text-3xl">{reaction.emoji}</div>
+                    <div 
+                      className="text-3xl"
+                      style={{ 
+                        fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Android Emoji, sans-serif',
+                        lineHeight: '1'
+                      }}
+                    >
+                      {reaction.emoji}
+                    </div>
                     <div className="text-xs text-gray-600 text-center mt-1">{reaction.playerName}</div>
                   </div>
                 </div>
