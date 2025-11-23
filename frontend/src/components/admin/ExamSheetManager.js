@@ -125,7 +125,7 @@ const ExamSheetManager = () => {
     // UPSC & Defense
     'UPSC': ['General Studies', 'Essay', 'Optional Subjects'],
     'NDA': ['Mathematics (300 Marks)', 'General Ability Test - GAT (600 Marks)'],
-    'Agniveer': ['General Awareness', 'Mathematics', 'Physical Fitness'],
+    'Agniveer': ['General Knowledge (30 Marks)', 'Logical Reasoning (10 Marks)', 'Mathematics (30 Marks)', 'General Science (30 Marks)'],
     'CDS': ['English', 'General Knowledge', 'Elementary Mathematics'],
     'CAPF': ['General Ability', 'General Studies', 'Quantitative Aptitude'],
     'IES_ISS': ['General Studies', 'Engineering', 'General English'],
