@@ -959,23 +959,52 @@ EXAM_DATA = {
         "duration": "2 hours",
         "category": "Admission Tests",
         "syllabus_topics": {
-            "Verbal Ability": {
+            "Verbal Ability & RC (VARC)": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Analysis", "Critical Reasoning", "Inference"], "questions": 18},
-                    "Verbal Reasoning": {"sub_topics": ["Para Jumbles", "Para Summary", "Sentence Correction"], "questions": 6}
+                    "Reading Comprehension": {
+                        "sub_topics": ["Passages (Philosophy, Science, Economics, History) followed by questions on Main Idea, Tone, Inference, Structure"],
+                        "questions": 18
+                    },
+                    "Verbal Ability (VA)": {
+                        "sub_topics": ["Para Jumbles (Ordering Sentences)", "Para Summary", "Odd Sentence Out (Critical Reasoning elements)"],
+                        "questions": 6
+                    }
                 }
             },
-            "Data Interpretation": {
+            "Data Interpretation & LR (DILR)": {
                 "subjects": {
-                    "Tables & Charts": {"sub_topics": ["Bar Charts", "Pie Charts", "Line Graphs", "Tables"], "questions": 10},
-                    "Data Analysis": {"sub_topics": ["Caselets", "Data Sufficiency", "Logical DI"], "questions": 10}
+                    "Data Interpretation (DI)": {
+                        "sub_topics": ["Caselets (Text-based)", "Tables", "Charts (Bar, Line, Pie)", "Venn Diagrams (Set Theory)", "Analytical Puzzle-based DI"],
+                        "questions": 10
+                    },
+                    "Logical Reasoning (LR)": {
+                        "sub_topics": ["Seating Arrangements", "Puzzles (Scheduling, Distribution)", "Blood Relations", "Series", "Critical Reasoning (Inference, Assumption, Conclusion)"],
+                        "questions": 10
+                    }
                 }
             },
-            "Quantitative Ability": {
+            "Quantitative Aptitude (QA)": {
                 "subjects": {
-                    "Arithmetic": {"sub_topics": ["Percentages", "Profit & Loss", "Time & Work", "Ratio & Proportion"], "questions": 10},
-                    "Algebra": {"sub_topics": ["Equations", "Inequalities", "Functions"], "questions": 6},
-                    "Geometry": {"sub_topics": ["Mensuration", "Coordinate Geometry", "Trigonometry"], "questions": 6}
+                    "Arithmetic": {
+                        "sub_topics": ["Percentage", "Profit/Loss", "Ratio/Proportion", "Average/Mixtures", "Time/Speed/Distance", "Time & Work", "Simple/Compound Interest"],
+                        "questions": 10
+                    },
+                    "Algebra": {
+                        "sub_topics": ["Linear/Quadratic Equations", "Inequalities", "Functions/Graphs", "Logarithms", "Progressions (AP, GP, HP)", "Sequences & Series"],
+                        "questions": 6
+                    },
+                    "Geometry & Mensuration": {
+                        "sub_topics": ["Lines/Angles", "Triangles", "Circles", "Polygons", "Coordinate Geometry", "Mensuration (Area/Volume of 2D & 3D Shapes)"],
+                        "questions": 6
+                    },
+                    "Modern Math": {
+                        "sub_topics": ["Permutations & Combinations (P&C)", "Probability", "Set Theory"],
+                        "questions": 3
+                    },
+                    "Number System": {
+                        "sub_topics": ["Divisibility Rules", "HCF/LCM", "Remainders", "Factorials"],
+                        "questions": 3
+                    }
                 }
             }
         }
