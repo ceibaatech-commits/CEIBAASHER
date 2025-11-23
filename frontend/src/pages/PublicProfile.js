@@ -266,14 +266,14 @@ const PublicProfile = () => {
 
             {/* Follow Button - only show for other users */}
             <div className="pt-20 flex justify-end">
-              {user && user.id !== profile.user_id ? (
+              {user && user.id !== profile.id ? (
                 <FollowButton
-                  targetUserId={profile.user_id}
+                  targetUserId={profile.id}
                   targetUsername={profile.username}
                   initialStatus={followStatus}
                   onFollowChange={handleFollowChange}
                 />
-              ) : user && user.id === profile.user_id ? (
+              ) : user && user.id === profile.id ? (
                 <button
                   onClick={() => navigate('/dashboard')}
                   className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg"
