@@ -1088,30 +1088,40 @@ EXAM_DATA = {
         "duration": "3 hours",
         "category": "Banking Examinations",
         "syllabus_topics": {
-            "Reasoning Ability": {
-                "subjects": {
-                    "Verbal Reasoning": {"sub_topics": ["Analogies", "Classification", "Series"], "questions": 20},
-                    "Non-Verbal Reasoning": {"sub_topics": ["Mirror Images", "Pattern Completion", "Figure Matrix"], "questions": 15},
-                    "Puzzles & Seating Arrangement": {"sub_topics": ["Linear", "Circular", "Box Type"], "questions": 25}
-                }
-            },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Arithmetic": {"sub_topics": ["Percentage", "Profit & Loss", "Time & Work", "SI & CI"], "questions": 25},
-                    "Data Interpretation": {"sub_topics": ["Tables", "Bar Graph", "Pie Chart", "Line Graph"], "questions": 20},
-                    "Number System": {"sub_topics": ["LCM HCF", "Divisibility", "Squares & Cubes"], "questions": 15}
+                    "Simplification": {"sub_topics": ["BODMAS", "Square Root", "Cube Root"], "questions": 8},
+                    "Approximation": {"sub_topics": ["Estimation", "Rounding"], "questions": 3},
+                    "Number Series": {"sub_topics": ["Missing Number", "Wrong Number"], "questions": 5},
+                    "Quadratic Equations": {"sub_topics": ["Standard Form", "Roots Comparison"], "questions": 4},
+                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart", "Line Chart"], "questions": 7},
+                    "Arithmetic": {"sub_topics": ["Ratio & Proportion", "Profit & Loss", "Time & Work", "SI/CI"], "questions": 8}
+                }
+            },
+            "Reasoning Ability": {
+                "subjects": {
+                    "Puzzles & Seating": {"sub_topics": ["Circular Seating", "Linear Seating", "Box & Floor Puzzles", "Multi-variable Puzzles"], "questions": 22},
+                    "Syllogism": {"sub_topics": ["Advanced Syllogism", "Reverse Syllogism"], "questions": 4},
+                    "Inequality": {"sub_topics": ["Coded Inequality"], "questions": 4},
+                    "Blood Relations": {"sub_topics": ["Family Tree", "Coded Relations"], "questions": 3},
+                    "Direction Sense": {"sub_topics": ["Direction Problems"], "questions": 3},
+                    "Order & Ranking": {"sub_topics": ["Ranking Problems"], "questions": 4}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passages", "Vocabulary", "Inference"], "questions": 20},
-                    "Grammar": {"sub_topics": ["Error Spotting", "Sentence Improvement", "Cloze Test"], "questions": 20}
+                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
+                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
+                    "Phrase Replacement": {"sub_topics": ["Sentence Improvement"], "questions": 5},
+                    "Sentence Connectors": {"sub_topics": ["Joining Sentences"], "questions": 5},
+                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
+                    "Vocabulary": {"sub_topics": ["Single Fillers", "Double Fillers"], "questions": 10}
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Banking Awareness": {"sub_topics": ["Banking Terms", "RBI", "Financial News"], "questions": 20},
-                    "Current Affairs": {"sub_topics": ["National", "International", "Sports"], "questions": 20}
+                    "Banking Awareness": {"sub_topics": ["Banking Terms", "RBI Policies", "Financial News"], "questions": 20},
+                    "Current Affairs": {"sub_topics": ["National", "International", "Sports", "Awards"], "questions": 20}
                 }
             }
         }
