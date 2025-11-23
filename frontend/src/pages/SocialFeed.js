@@ -842,9 +842,12 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
         <div 
           className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => {
-            // Get username from post - need to fetch it properly
-            // For now, navigate to profile if we have user_id
-            if (post.username) {
+            // Check if user is clicking their own profile
+            if (user && post.user_id === user.id) {
+              // Navigate to dashboard for own profile
+              navigate('/dashboard');
+            } else if (post.username) {
+              // Navigate to public profile for others
               navigate(`/profile/${post.username}`);
             }
           }}
