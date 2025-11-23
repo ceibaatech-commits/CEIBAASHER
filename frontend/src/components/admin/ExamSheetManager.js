@@ -1369,7 +1369,7 @@ const ExamSheetManager = () => {
                   </div>
 
                   {/* Sub Topic */}
-                  <div>
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Sub Topic (Optional)
                     </label>
@@ -1384,20 +1384,6 @@ const ExamSheetManager = () => {
                         <option key={topic} value={topic}>{topic}</option>
                       ))}
                     </select>
-                  </div>
-
-                  {/* Sub-Sub Topic */}
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Sub-Sub Topic (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={examForm.sub_sub_topic}
-                      onChange={(e) => setExamForm({ ...examForm, sub_sub_topic: e.target.value })}
-                      placeholder="Enter sub-sub topic if applicable"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
                   </div>
                 </div>
               </>
