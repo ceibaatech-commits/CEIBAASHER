@@ -1355,6 +1355,110 @@ EXAM_DATA = {
             }
         }
     },
+    
+    "IBPS_RRB_PO": {
+        "name": "IBPS RRB PO",
+        "full_name": "IBPS RRB Officer Scale I",
+        "description": "Entrance exam for Officer Scale I in Regional Rural Banks",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-purple-500 to-indigo-600",
+        "total_questions": 120,
+        "duration": "2 hours",
+        "category": "Banking Examinations",
+        "syllabus_topics": {
+            "Reasoning": {
+                "subjects": {
+                    "Logical Reasoning": {"sub_topics": ["Puzzles", "Seating Arrangement", "Syllogism"], "questions": 40}
+                }
+            },
+            "Quantitative Aptitude": {
+                "subjects": {
+                    "Arithmetic & DI": {"sub_topics": ["Number System", "Percentage", "Data Interpretation"], "questions": 40}
+                }
+            },
+            "General Awareness": {
+                "subjects": {
+                    "Banking & Current Affairs": {"sub_topics": ["Banking", "Economy", "Current Events"], "questions": 40}
+                }
+            }
+        }
+    },
+    
+    "LIC_AAO": {
+        "name": "LIC AAO",
+        "full_name": "LIC Assistant Administrative Officer (Generalist)",
+        "description": "Entrance exam for AAO position in Life Insurance Corporation",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-yellow-500 to-orange-600",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "Banking Examinations",
+        "syllabus_topics": {
+            "Reasoning Ability": {
+                "subjects": {
+                    "Logical Reasoning": {"sub_topics": ["Puzzles", "Syllogism", "Inequality"], "questions": 35}
+                }
+            },
+            "Quantitative Aptitude": {
+                "subjects": {
+                    "Mathematics": {"sub_topics": ["Arithmetic", "Data Interpretation", "Number Series"], "questions": 35}
+                }
+            },
+            "English Language": {
+                "subjects": {
+                    "English Proficiency": {"sub_topics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 30}
+                }
+            },
+            "General Knowledge": {
+                "subjects": {
+                    "GK & Current Affairs": {"sub_topics": ["Banking", "Insurance", "Economy", "Current Events"], "questions": 30}
+                }
+            },
+            "Insurance & Financial Market": {
+                "subjects": {
+                    "Insurance Knowledge": {"sub_topics": ["Insurance Concepts", "LIC Products", "Regulations"], "questions": 20}
+                }
+            }
+        }
+    },
+    
+    "LIC_ADO": {
+        "name": "LIC ADO",
+        "full_name": "LIC Apprentice Development Officer",
+        "description": "Entrance exam for ADO position in Life Insurance Corporation",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
+        "color": "from-pink-500 to-rose-600",
+        "total_questions": 180,
+        "duration": "2 hours 30 minutes",
+        "category": "Banking Examinations",
+        "syllabus_topics": {
+            "Reasoning Ability": {
+                "subjects": {
+                    "Logical Reasoning": {"sub_topics": ["Coding-Decoding", "Seating", "Blood Relations"], "questions": 35}
+                }
+            },
+            "Quantitative Aptitude": {
+                "subjects": {
+                    "Mathematics": {"sub_topics": ["Simplification", "Arithmetic", "DI"], "questions": 35}
+                }
+            },
+            "English Language": {
+                "subjects": {
+                    "English Skills": {"sub_topics": ["Grammar", "Vocabulary", "Comprehension"], "questions": 30}
+                }
+            },
+            "General Knowledge & Current Affairs": {
+                "subjects": {
+                    "GK": {"sub_topics": ["Banking", "Insurance", "Economy", "Sports"], "questions": 30}
+                }
+            },
+            "Insurance Awareness": {
+                "subjects": {
+                    "Insurance Knowledge": {"sub_topics": ["Insurance Types", "Regulations", "LIC Policies"], "questions": 50}
+                }
+            }
+        }
+    },
 
     
     # ==================== UPSC EXAMINATIONS ====================
