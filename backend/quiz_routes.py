@@ -155,36 +155,21 @@ async def get_exam_weightage(exam_id: str):
     """
     Get topic-wise weightage analysis for an exam
     """
-    from exam_structure_routes import db
+    # Get DB from server
+    from server import db as server_db
     
     try:
-        # Get weightage data from database - try exact match first
-        print(f"[WEIGHTAGE] Looking for exam_id: {exam_id}")
-        print(f"[WEIGHTAGE] DB object: {db}")
-        
-        weightage = await db.exam_metadata.find_one({
+        # Get weightage data from database
+        weightage = await server_db.exam_metadata.find_one({
             "exam_name": exam_id,
             "type": "weightage_analysis"
         })
-        
-        print(f"[WEIGHTAGE] First attempt result: {weightage is not None}")
-        
-        if not weightage:
-            # Try uppercase
-            weightage = await db.exam_metadata.find_one({
-                "exam_name": exam_id.upper(),
-                "type": "weightage_analysis"
-            })
-            print(f"[WEIGHTAGE] Second attempt (uppercase) result: {weightage is not None}")
         
         if weightage:
             # Remove MongoDB _id
             weightage.pop('_id', None)
             return {"success": True, "weightage": weightage}
         else:
-            # List all weightage data for debugging
-            all_weightage = await db.exam_metadata.find({"type": "weightage_analysis"}).to_list(length=10)
-            print(f"[WEIGHTAGE] Available exams: {[w.get('exam_name') for w in all_weightage]}")
             return {"success": False, "message": "Weightage data not available for this exam"}
     
     except Exception as e:
