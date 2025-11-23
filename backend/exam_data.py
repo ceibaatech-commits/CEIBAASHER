@@ -1398,42 +1398,28 @@ EXAM_DATA = {
     },
     
     "IBPS_RRB_PO": {
-        "name": "IBPS RRB PO",
-        "full_name": "IBPS RRB Officer Scale I",
+        "name": "IBPS RRB PO Prelims",
+        "full_name": "IBPS RRB Officer Scale I - Preliminary Exam",
         "description": "Entrance exam for Officer Scale I in Regional Rural Banks",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-purple-500 to-indigo-600",
-        "total_questions": 120,
-        "duration": "2 hours",
+        "total_questions": 80,
+        "duration": "45 minutes",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Linear Seating", "Circular Seating", "Box/Floor Puzzles", "Day/Month Puzzles"], "questions": 20},
-                    "Syllogism": {"sub_topics": ["Basic Syllogism", "Possibility Cases"], "questions": 4},
-                    "Inequality": {"sub_topics": ["Direct", "Coded"], "questions": 4},
-                    "Blood Relations": {"sub_topics": ["Coded Relations"], "questions": 3},
-                    "Direction Sense": {"sub_topics": ["Distance & Direction"], "questions": 3},
-                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 3},
-                    "Alphabet Series": {"sub_topics": ["Missing Letters"], "questions": 3}
+                    "Puzzles & Seating Arrangement": {"sub_topics": ["Floor/Flat Puzzles", "Box Puzzles", "Scheduling (Day/Month/Year)", "Comparison/Ranking", "Designation-based", "Categorized Puzzles", "Circular Seating", "Linear Seating (Single Row)", "Linear Seating (Double Row)", "Square/Rectangular Arrangement", "Uncertain number of people"], "questions": 22},
+                    "Logical Deductions": {"sub_topics": ["Syllogism (Includes 'Only a Few')", "Inequalities (Direct)", "Inequalities (Coded)", "Data Sufficiency (2 or 3 statements)"], "questions": 8},
+                    "Miscellaneous Logic": {"sub_topics": ["Direction Sense", "Blood Relations (Family Tree)", "Blood Relations (Coded)", "Alphanumeric Series", "Number Series", "Symbol Series", "Order & Ranking", "Coding-Decoding (Simple)", "Coding-Decoding (Fictitious)"], "questions": 9},
+                    "Alphanumeric Series": {"sub_topics": ["Number Series", "Symbol Series", "Alphabet Series"], "questions": 3}
                 }
             },
             "Numerical Ability": {
                 "subjects": {
-                    "Simplification": {"sub_topics": ["BODMAS", "Square Root"], "questions": 12},
-                    "Approximation": {"sub_topics": ["Estimation"], "questions": 4},
-                    "Number Series": {"sub_topics": ["Missing Number", "Wrong Number"], "questions": 5},
-                    "Quadratic Equations": {"sub_topics": ["Finding Roots"], "questions": 3},
-                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart"], "questions": 7},
-                    "Arithmetic": {"sub_topics": ["P&L", "Ratio", "Ages", "Time & Work", "SI/CI"], "questions": 9}
-                }
-            },
-            "General Awareness": {
-                "subjects": {
-                    "Current Affairs": {"sub_topics": ["Last 6 Months", "Rural India Focus"], "questions": 20},
-                    "Banking Awareness": {"sub_topics": ["RBI Policies", "Financial Markets"], "questions": 12},
-                    "Government Schemes": {"sub_topics": ["Rural Development", "Financial Inclusion"], "questions": 5},
-                    "Static GK": {"sub_topics": ["Regional Banks HQ"], "questions": 3}
+                    "Data Interpretation (DI)": {"sub_topics": ["Line Graph", "Bar Graph", "Pie Chart", "Tabular DI", "Caselet DI (Paragraph based)", "Mixed Graphs"], "questions": 12},
+                    "Speed & Calculation": {"sub_topics": ["Simplification", "Approximation", "Missing Number Series", "Wrong Number Series", "Quadratic Equations", "Quantity Comparison (Q1 & Q2)"], "questions": 18},
+                    "Arithmetic (Word Problems)": {"sub_topics": ["Percentage", "Ratio and Proportion", "Average", "Age", "Profit and Loss", "Simple Interest (SI)", "Compound Interest (CI)", "Time and Work", "Time Speed and Distance (Trains)", "Time Speed and Distance (Boats & Streams)", "Mixture and Allegations", "Probability", "Permutation and Combination", "Mensuration (2D & 3D)"], "questions": 14}
                 }
             }
         }
