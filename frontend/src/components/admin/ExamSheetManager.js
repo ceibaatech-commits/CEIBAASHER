@@ -386,7 +386,12 @@ const ExamSheetManager = () => {
     'Analytical Reasoning': ['Logical Deductions', 'Statement Arguments', 'Assumptions', 'Courses of Action'],
     'Number System': ['HCF LCM', 'Divisibility Rules', 'Fractions Decimals', 'Squares Cubes'],
     'Banking Awareness': ['Banking Terms', 'RBI Functions', 'Monetary Policy', 'Banking News'],
-    'Economics': ['Indian Economy', 'Economic Terms', 'Budget', 'GDP']
+    'Economics': ['Indian Economy', 'Economic Terms', 'Budget', 'GDP'],
+    
+    // CAPF specific sub-topics
+    'Essay Writing': ['Current Topics', 'Social Issues', 'National Security'],
+    'Comprehension': ['Reading', 'Analysis', 'Inference'],
+    'Communication Skills': ['Grammar', 'Vocabulary', 'Sentence Formation']
   };
 
   const [syllabusTopics, setSyllabusTopics] = useState([]);
