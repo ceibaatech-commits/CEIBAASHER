@@ -5,6 +5,25 @@
 /* Import mobile-specific styles */
 @import './styles/mobile.css';
 
+/* Global overflow fix for mobile */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Ensure all containers respect viewport width */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix for any absolute/fixed positioned elements */
+#root {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 /* KaTeX CSS for LaTeX rendering */
 @import 'katex/dist/katex.min.css';
 
