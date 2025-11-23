@@ -98,12 +98,25 @@ const SocialFeed = () => {
     }
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
-        user_id: user.id,
-        user_name: user.name || user.username || 'User',
-        post_type: 'general',
-        content: textPostContent
-      });
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        alert('Please login to create posts');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/posts`,
+        {
+          post_type: 'general',
+          content: textPostContent
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
 
       if (response.data.success) {
         setTextPostContent('');
@@ -113,7 +126,7 @@ const SocialFeed = () => {
       }
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Failed to create post');
+      alert('Failed to create post: ' + (error.response?.data?.detail || error.message));
     }
   };
 
