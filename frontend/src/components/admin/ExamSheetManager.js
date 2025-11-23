@@ -667,7 +667,9 @@ const ExamSheetManager = () => {
   useEffect(() => {
     // Update subjects based on syllabus topic
     if (examForm.syllabus_topic) {
-      setSubjects(subjectsMap[examForm.syllabus_topic] || []);
+      // Use dynamic data first, fallback to static
+      const subjMap = examMetadata.loaded ? examMetadata.subjectsMap : subjectsMap;
+      setSubjects(subjMap[examForm.syllabus_topic] || []);
       // Reset dependent fields
       setExamForm(prev => ({
         ...prev,
@@ -676,7 +678,7 @@ const ExamSheetManager = () => {
       }));
       setSubTopics([]);
     }
-  }, [examForm.syllabus_topic]);
+  }, [examForm.syllabus_topic, examMetadata.loaded]);
 
   useEffect(() => {
     // Update sub-topics based on subject
