@@ -1112,23 +1112,40 @@ EXAM_DATA = {
         "duration": "3 hours",
         "category": "Admission Tests",
         "syllabus_topics": {
-            "Mathematics": {
+            "Drawing & Composition": {
                 "subjects": {
-                    "Algebra": {"sub_topics": ["Sets", "Functions", "Quadratic Equations", "Matrices"], "questions": 15},
-                    "Calculus": {"sub_topics": ["Limits", "Differentiation", "Integration", "Applications"], "questions": 15},
-                    "Coordinate Geometry": {"sub_topics": ["2D Geometry", "Circles", "Conic Sections"], "questions": 10}
+                    "Composition & Sketching": {
+                        "sub_topics": ["Visualizing and sketching scenes (Daily life, Urban scape)", "Creative Composition", "Proportion & Scale (Human/Building)"],
+                        "questions": 40
+                    },
+                    "Spatial Visualization": {
+                        "sub_topics": ["Perspective Drawing (One-point, Two-point)", "3D Visualization of Objects", "Memory Drawing", "Understanding Light and Shadow"],
+                        "questions": 40
+                    }
                 }
             },
             "General Aptitude": {
                 "subjects": {
-                    "Visual Perception": {"sub_topics": ["Objects", "Textures", "Building Forms"], "questions": 20},
-                    "Aesthetic Sensitivity": {"sub_topics": ["Design", "Color", "Contrast", "Harmony"], "questions": 15},
-                    "Logical Reasoning": {"sub_topics": ["Sets", "Relationships", "Patterns"], "questions": 10}
+                    "Spatial Reasoning": {
+                        "sub_topics": ["Mental Rotation", "Pattern Recognition", "Visualizing different sides of 3D objects", "Logical Reasoning using Diagrams"],
+                        "questions": 20
+                    },
+                    "Architectural Awareness": {
+                        "sub_topics": ["General Knowledge of Famous Architects", "Buildings (National/International)", "Building Materials", "Aesthetic Sensitivity", "Colour Theory"],
+                        "questions": 15
+                    }
                 }
             },
-            "Drawing Ability": {
+            "Mathematics & Physics": {
                 "subjects": {
-                    "Sketching": {"sub_topics": ["2D Drawing", "3D Perception", "Imagination"], "questions": 40}
+                    "Mathematics": {
+                        "sub_topics": ["Algebra", "Trigonometry (Identities, Heights & Distances)", "Coordinate Geometry", "3D Geometry", "Mensuration", "Statistics", "Probability"],
+                        "questions": 15
+                    },
+                    "Physics": {
+                        "sub_topics": ["Basics of Mechanics (IX-XII level)", "Light", "Electricity", "Heat"],
+                        "questions": 15
+                    }
                 }
             }
         }
