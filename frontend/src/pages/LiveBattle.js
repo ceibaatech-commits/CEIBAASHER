@@ -848,19 +848,34 @@ const LiveBattle = () => {
               <div className="mt-4 flex items-center justify-center space-x-2 p-3 bg-gray-50 rounded-lg">
                 <Smile className="w-5 h-5 text-gray-500" />
                 <span className="text-sm text-gray-600 font-medium mr-2">Quick React:</span>
-                {['👍', '🔥', '😮', '💪', '🎯', '🎉'].map((emoji, index) => (
+                {[
+                  { emoji: '👍', name: 'thumbs up' },
+                  { emoji: '🔥', name: 'fire' },
+                  { emoji: '😮', name: 'wow' },
+                  { emoji: '💪', name: 'strong' },
+                  { emoji: '🎯', name: 'target' },
+                  { emoji: '🎉', name: 'party' }
+                ].map((reaction, index) => (
                   <button
                     key={index}
-                    onClick={() => sendReaction(emoji)}
+                    onClick={() => sendReaction(reaction.emoji)}
                     className="text-2xl hover:scale-125 transition-transform bg-white rounded-lg p-2 shadow-sm hover:shadow-md"
                     style={{ 
-                      fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Android Emoji, sans-serif',
+                      fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", "Twemoji Mozilla", sans-serif',
                       lineHeight: '1',
-                      WebkitFontSmoothing: 'antialiased'
+                      WebkitFontSmoothing: 'antialiased',
+                      MozOsxFontSmoothing: 'grayscale',
+                      textRendering: 'optimizeLegibility'
                     }}
-                    aria-label={`React with ${emoji}`}
+                    aria-label={`React with ${reaction.name}`}
+                    title={reaction.name}
                   >
-                    {emoji}
+                    <span style={{
+                      display: 'inline-block',
+                      fontFamily: 'inherit'
+                    }}>
+                      {reaction.emoji}
+                    </span>
                   </button>
                 ))}
               </div>
