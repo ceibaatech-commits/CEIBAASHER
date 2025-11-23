@@ -1137,32 +1137,45 @@ EXAM_DATA = {
         "duration": "2 hours 40 minutes",
         "category": "Banking Examinations",
         "syllabus_topics": {
-            "Reasoning Ability": {
+            "Numerical Ability": {
                 "subjects": {
-                    "Logical Reasoning": {"sub_topics": ["Syllogism", "Blood Relations", "Coding-Decoding"], "questions": 25},
-                    "Seating Arrangement": {"sub_topics": ["Linear", "Circular", "Square"], "questions": 10}
+                    "Simplification": {"sub_topics": ["BODMAS", "Square Root", "Cube Root"], "questions": 12},
+                    "Approximation": {"sub_topics": ["Estimation"], "questions": 4},
+                    "Number Series": {"sub_topics": ["Missing Number", "Wrong Number"], "questions": 5},
+                    "Quadratic Equations": {"sub_topics": ["Finding Roots"], "questions": 3},
+                    "Data Interpretation": {"sub_topics": ["Table DI", "Bar Chart"], "questions": 7},
+                    "Arithmetic": {"sub_topics": ["P&L", "Ratio", "Partnership", "Time & Work", "SI/CI", "Speed & Distance"], "questions": 9}
                 }
             },
-            "Quantitative Aptitude": {
+            "Reasoning Ability": {
                 "subjects": {
-                    "Arithmetic": {"sub_topics": ["Time & Distance", "Average", "Ratio & Proportion"], "questions": 25},
-                    "Data Interpretation": {"sub_topics": ["Tables", "Charts", "Graphs"], "questions": 10}
+                    "Puzzles & Seating": {"sub_topics": ["Linear Seating", "Circular Seating", "Box Puzzles", "Floor Puzzles"], "questions": 20},
+                    "Syllogism": {"sub_topics": ["Basic Syllogism"], "questions": 4},
+                    "Inequality": {"sub_topics": ["Direct Inequality"], "questions": 4},
+                    "Blood Relations": {"sub_topics": ["Family Tree"], "questions": 3},
+                    "Direction Sense": {"sub_topics": ["Direction"], "questions": 2},
+                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 3},
+                    "Alphabet Series": {"sub_topics": ["Missing Letters"], "questions": 4}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passages", "Vocabulary"], "questions": 15},
-                    "Grammar": {"sub_topics": ["Error Detection", "Sentence Completion"], "questions": 20}
+                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
+                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
+                    "Error Spotting": {"sub_topics": ["Grammar"], "questions": 5},
+                    "Para Jumbles": {"sub_topics": ["Rearrangement"], "questions": 5},
+                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms"], "questions": 5},
+                    "Phrase Replacement": {"sub_topics": ["Improvement"], "questions": 5}
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Banking & Financial Awareness": {"sub_topics": ["Banking News", "Economy", "Monetary Policy"], "questions": 30}
+                    "Banking & Financial Awareness": {"sub_topics": ["Banking News", "Economy", "Monetary Policy", "Current Affairs"], "questions": 30}
                 }
             },
-            "Computer Knowledge": {
+            "Computer Aptitude": {
                 "subjects": {
-                    "Computer Fundamentals": {"sub_topics": ["Hardware", "Software", "Internet", "MS Office"], "questions": 20}
+                    "Computer Knowledge": {"sub_topics": ["MS Office", "Internet", "Computer Fundamentals", "Networking"], "questions": 20}
                 }
             }
         }
