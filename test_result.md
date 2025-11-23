@@ -743,6 +743,18 @@ frontend:
         agent: "main"
         comment: "Implemented comprehensive manual quiz room creation system. Added models: QuizQuestion (question, 4 options, correct answer, time limit), QuizRoomCreate (title, description, category, privacy, questions), QuizRoom (full room with code, stats). Added endpoints: POST /api/social/quiz-rooms (create with min 20, max 100 questions), GET /api/social/quiz-rooms (list rooms), GET /api/social/quiz-rooms/{room_code} (get room details), POST /api/social/quiz-rooms/{room_code}/join (join with privacy validation), DELETE /api/social/quiz-rooms/{room_code} (delete room). Implemented unique 6-character alphanumeric room code generator. Automatically creates social feed post when room is created. Backend restarted successfully."
 
+  - task: "Admin Sheet Manager Dropdown Testing"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/admin/ExamSheetManager.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "🎯 COMPREHENSIVE DROPDOWN TESTING COMPLETE (66.7% success rate - 8/12 exams working): ✅ DEFENCE EXAMS (4/4 working): NDA, Agniveer, CDS, AFCAT all have properly functioning cascading dropdowns with sub-topics populated correctly. ✅ ADMISSION TESTS (4/4 working): JEE, CLAT, CUET, GMAT all have complete dropdown functionality. ❌ BANKING EXAMS (0/4 working): SBI PO, IBPS CLERK, NABARD have empty sub-topics dropdowns (only placeholder), LIC AAO has timeout error. CRITICAL ISSUE: Banking exams sub-topics mapping appears incomplete or missing in the admin component. All other dropdown functionality (Exam → Syllabus Topic → Subject) works correctly with proper parent-child relationships."
+
 frontend:
   - task: "Social Feed with Manual Quiz Room UI"
     implemented: true
