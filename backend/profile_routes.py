@@ -134,34 +134,48 @@ async def check_follow_relationship(follower_id: str, following_id: str):
     return relationship
 
 async def get_follow_counts(user_id: str):
-    """Get follower and following counts from all collections"""
-    # Count followers from follows collection
-    followers_count_follows = await db.follows.count_documents({
+    """
+    Get follower and following counts with proper deduplication
+    Note: App writes to both 'ceeps' (legacy) and 'follows' (current) collections for compatibility
+    We must deduplicate to avoid double-counting
+    """
+    # Get all follower relationships from both collections
+    followers_follows = await db.follows.find({
         "following_id": user_id,
         "status": "approved"
-    })
+    }, {"follower_id": 1, "_id": 0}).to_list(length=None)
     
-    # Count followers from ceeps collection
-    followers_count_ceeps = await db.ceeps.count_documents({
+    followers_ceeps = await db.ceeps.find({
         "ceep_user_id": user_id
-    })
+    }, {"user_id": 1, "_id": 0}).to_list(length=None)
     
-    # Count following from follows collection
-    following_count_follows = await db.follows.count_documents({
+    # Deduplicate follower IDs
+    follower_ids = set()
+    for follow in followers_follows:
+        follower_ids.add(follow.get("follower_id"))
+    for ceep in followers_ceeps:
+        follower_ids.add(ceep.get("user_id"))
+    follower_ids.discard(None)  # Remove any None values
+    
+    # Get all following relationships from both collections
+    following_follows = await db.follows.find({
         "follower_id": user_id,
         "status": "approved"
-    })
+    }, {"following_id": 1, "_id": 0}).to_list(length=None)
     
-    # Count following from ceeps collection
-    following_count_ceeps = await db.ceeps.count_documents({
+    following_ceeps = await db.ceeps.find({
         "user_id": user_id
-    })
+    }, {"ceep_user_id": 1, "_id": 0}).to_list(length=None)
     
-    # Return combined counts
-    followers_count = followers_count_follows + followers_count_ceeps
-    following_count = following_count_follows + following_count_ceeps
+    # Deduplicate following IDs
+    following_ids = set()
+    for follow in following_follows:
+        following_ids.add(follow.get("following_id"))
+    for ceep in following_ceeps:
+        following_ids.add(ceep.get("ceep_user_id"))
+    following_ids.discard(None)  # Remove any None values
     
-    return followers_count, following_count
+    return len(follower_ids), len(following_ids)
 
 async def create_notification(
     user_id: str,
