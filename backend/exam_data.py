@@ -1193,27 +1193,40 @@ EXAM_DATA = {
         "syllabus_topics": {
             "Reasoning": {
                 "subjects": {
-                    "Analytical Reasoning": {"sub_topics": ["Puzzles", "Data Sufficiency", "Inequalities"], "questions": 25}
+                    "Puzzles & Seating": {"sub_topics": ["Linear", "Circular", "Box", "Floor"], "questions": 20},
+                    "Syllogism": {"sub_topics": ["Basic", "Advanced"], "questions": 5},
+                    "Inequality": {"sub_topics": ["Direct", "Coded"], "questions": 4},
+                    "Miscellaneous": {"sub_topics": ["Blood Relations", "Direction", "Coding"], "questions": 11}
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Mathematics": {"sub_topics": ["Algebra", "Geometry", "DI"], "questions": 25}
+                    "Data Interpretation": {"sub_topics": ["Table", "Bar", "Line", "Pie Chart"], "questions": 15},
+                    "Arithmetic": {"sub_topics": ["P&L", "SI/CI", "Time & Work", "Speed", "Ratio", "Percentage"], "questions": 10},
+                    "Simplification": {"sub_topics": ["BODMAS", "Approximation"], "questions": 8},
+                    "Number Series": {"sub_topics": ["Missing", "Wrong"], "questions": 5},
+                    "Quadratic Equations": {"sub_topics": ["Roots"], "questions": 2}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "English Proficiency": {"sub_topics": ["RC", "Grammar", "Vocabulary"], "questions": 25}
+                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
+                    "Error Spotting": {"sub_topics": ["Grammar"], "questions": 5},
+                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
+                    "Para Jumbles": {"sub_topics": ["Rearrangement"], "questions": 5},
+                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Fillers"], "questions": 5}
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Banking & Economy": {"sub_topics": ["Current Affairs", "Banking Terms", "Economy"], "questions": 25}
+                    "Current Affairs": {"sub_topics": ["Last 6 months"], "questions": 20},
+                    "Banking Awareness": {"sub_topics": ["RBI Policies", "Banking Terms"], "questions": 15},
+                    "Static GK": {"sub_topics": ["Indian Geography", "History"], "questions": 5}
                 }
             },
             "Professional Knowledge": {
                 "subjects": {
-                    "Specialized Subject": {"sub_topics": ["IT/Agriculture/Marketing/Law/HR"], "questions": 100}
+                    "Specialized Subject": {"sub_topics": ["IT", "Agriculture", "Marketing", "Law", "HR"], "questions": 60}
                 }
             }
         }
