@@ -1534,54 +1534,93 @@ EXAM_DATA = {
     },
     
     "LIC_AAO": {
-        "name": "LIC AAO",
-        "full_name": "LIC Assistant Administrative Officer (Generalist)",
+        "name": "LIC AAO Prelims",
+        "full_name": "LIC Assistant Administrative Officer (Generalist) - Preliminary Exam",
         "description": "Entrance exam for AAO position in Life Insurance Corporation",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-yellow-500 to-orange-600",
-        "total_questions": 150,
-        "duration": "2.5 hours",
+        "total_questions": 100,
+        "duration": "1 hour",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Box/Floor", "Day/Month", "Linear", "Circular"], "questions": 15},
-                    "Syllogism": {"sub_topics": ["Standard", "Possibility"], "questions": 5},
-                    "Inequality": {"sub_topics": ["Coded Inequality"], "questions": 3},
-                    "Blood Relations": {"sub_topics": ["Family Tree"], "questions": 3},
-                    "Direction Sense": {"sub_topics": ["Direction"], "questions": 3},
-                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 3},
-                    "Input-Output": {"sub_topics": ["Machine Input"], "questions": 3}
+                    "Puzzles & Seating": {
+                        "sub_topics": ["Box/Floor", "Day/Month", "Linear", "Circular"],
+                        "questions": 64
+                    },
+                    "Syllogism": {
+                        "sub_topics": ["Standard", "Possibility"],
+                        "questions": 8
+                    },
+                    "Inequality": {
+                        "sub_topics": ["Coded Inequality"],
+                        "questions": 4
+                    },
+                    "Blood Relations": {
+                        "sub_topics": ["Family Tree"],
+                        "questions": 3
+                    },
+                    "Direction Sense": {
+                        "sub_topics": ["Direction"],
+                        "questions": 3
+                    },
+                    "Coding-Decoding": {
+                        "sub_topics": ["Letter Coding"],
+                        "questions": 3
+                    },
+                    "Input-Output": {
+                        "sub_topics": ["Machine Input"],
+                        "questions": 2
+                    }
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Simplification": {"sub_topics": ["BODMAS"], "questions": 5},
-                    "Data Interpretation": {"sub_topics": ["Table", "Bar", "Line Chart"], "questions": 10},
-                    "Number Series": {"sub_topics": ["Missing Series"], "questions": 5},
-                    "Quadratic Equations": {"sub_topics": ["Roots"], "questions": 5},
-                    "Arithmetic": {"sub_topics": ["P&L", "SI/CI", "Ratio", "Time & Work", "Speed", "Averages", "Mensuration"], "questions": 10}
+                    "Arithmetic": {
+                        "sub_topics": ["P&L", "SI/CI", "Ratio", "Time & Work", "Speed", "Averages", "Mensuration"],
+                        "questions": 112
+                    },
+                    "Data Interpretation": {
+                        "sub_topics": ["Table", "Bar", "Line Chart"],
+                        "questions": 15
+                    },
+                    "Simplification": {
+                        "sub_topics": ["BODMAS"],
+                        "questions": 7
+                    },
+                    "Number Series": {
+                        "sub_topics": ["Missing Series"],
+                        "questions": 4
+                    },
+                    "Quadratic Equations": {
+                        "sub_topics": ["Roots"],
+                        "questions": 3
+                    }
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Analysis"], "questions": 10},
-                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
-                    "Sentence Correction": {"sub_topics": ["Grammar"], "questions": 5},
-                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
-                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Fill in Blanks"], "questions": 5}
-                }
-            },
-            "General Knowledge": {
-                "subjects": {
-                    "Current Affairs": {"sub_topics": ["Banking", "Insurance", "Economy", "Sports"], "questions": 15},
-                    "Static GK": {"sub_topics": ["Indian Polity", "Geography", "History"], "questions": 15}
-                }
-            },
-            "Insurance & Financial Market": {
-                "subjects": {
-                    "Insurance Knowledge": {"sub_topics": ["Insurance Concepts", "LIC Products", "IRDA Regulations"], "questions": 10},
-                    "Financial Market": {"sub_topics": ["Capital Market", "Money Market", "Derivatives"], "questions": 10}
+                    "Vocabulary": {
+                        "sub_topics": ["Synonyms", "Antonyms", "Fill in Blanks"],
+                        "questions": 21
+                    },
+                    "Reading Comprehension": {
+                        "sub_topics": ["Passage Analysis"],
+                        "questions": 9
+                    },
+                    "Error Spotting": {
+                        "sub_topics": ["Grammar Errors"],
+                        "questions": 5
+                    },
+                    "Cloze Test": {
+                        "sub_topics": ["Fill Blanks"],
+                        "questions": 5
+                    },
+                    "Sentence Correction": {
+                        "sub_topics": ["Grammar"],
+                        "questions": 4
+                    }
                 }
             }
         }
