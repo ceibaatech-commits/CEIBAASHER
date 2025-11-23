@@ -272,7 +272,7 @@ const ModernExamSyllabus = () => {
                   exit={{ height: 0, opacity: 0 }}
                   className="space-y-6"
                 >
-                  {weightageData.sections?.map((section, idx) => (
+                  {weightageData?.sections && weightageData.sections.map((section, idx) => (
                     <div key={idx} className="border-l-4 border-blue-500 pl-4">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-base font-bold text-gray-800">{section.section_name}</h4>
