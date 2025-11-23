@@ -407,8 +407,7 @@ const ExamSheetManager = () => {
         ...prev,
         syllabus_topic: '',
         subject: '',
-        sub_topic: '',
-        sub_sub_topic: ''
+        sub_topic: ''
       }));
       setSubjects([]);
       setSubTopics([]);
