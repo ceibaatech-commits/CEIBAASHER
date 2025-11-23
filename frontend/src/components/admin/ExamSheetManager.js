@@ -625,7 +625,26 @@ const ExamSheetManager = () => {
 
   useEffect(() => {
     fetchSheets();
+    fetchExamMetadata(); // Load dynamic metadata from backend
   }, []);
+
+  // Fetch exam metadata dynamically from backend
+  const fetchExamMetadata = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/exam-metadata`);
+      setExamMetadata({
+        loaded: true,
+        exams: response.data.exams || [],
+        syllabusTopicsMap: response.data.syllabusTopicsMap || {},
+        subjectsMap: response.data.subjectsMap || {},
+        subTopicsMap: response.data.subTopicsMap || {}
+      });
+      console.log('✅ Exam metadata loaded dynamically from backend');
+    } catch (error) {
+      console.warn('⚠️ Failed to load exam metadata dynamically, using static fallback:', error);
+      setExamMetadata({ loaded: false, exams: [], syllabusTopicsMap: {}, subjectsMap: {}, subTopicsMap: {} });
+    }
+  };
 
   useEffect(() => {
     // Update syllabus topics based on exam selection
