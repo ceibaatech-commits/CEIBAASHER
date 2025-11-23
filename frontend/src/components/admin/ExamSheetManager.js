@@ -120,8 +120,8 @@ const ExamSheetManager = () => {
     // Engineering & Medical
     'JEE': ['Physics', 'Chemistry', 'Mathematics'],
     'NEET': ['Physics', 'Chemistry', 'Biology'],
-    'GATE': ['Engineering Mathematics', 'General Aptitude', 'Technical Subject'],
-    'NATA': ['Mathematics', 'General Aptitude', 'Drawing'],
+    'GATE': ['General Aptitude (GA)', 'Engineering Mathematics', 'Core Subject (e.g., CSE)'],
+    'NATA': ['Drawing & Composition', 'General Aptitude', 'Mathematics & Physics'],
     
     // UPSC & Defense
     'UPSC': ['General Studies', 'Essay', 'Optional Subjects'],
@@ -135,11 +135,11 @@ const ExamSheetManager = () => {
     // Banking & Finance
     'IBPS_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
     'IBPS_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
-    'IBPS_SO': ['Professional Knowledge', 'Reasoning', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
+    'IBPS_SO': ['Reasoning', 'Quantitative Aptitude', 'English Language', 'General Awareness'],
     'SBI_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Data Analysis'],
     'SBI_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness'],
-    'RBI_GRADE_B': ['General Awareness', 'English Language', 'Quantitative Aptitude', 'Reasoning', 'Economic & Social Issues'],
-    'NABARD': ['Economic & Social Issues', 'Agriculture & Rural Development', 'English Language', 'Reasoning', 'Computer Knowledge'],
+    'RBI_GRADE_B': ['General Awareness', 'Reasoning Ability', 'English Language', 'Quantitative Aptitude'],
+    'NABARD': ['Reasoning Ability', 'Quantitative Aptitude', 'Economic & Social Issues', 'Agriculture & Rural Development', 'General Awareness'],
     
     // SSC
     'SSC_CGL': ['General Intelligence', 'General Awareness', 'Quantitative Aptitude', 'English Comprehension'],
@@ -163,10 +163,10 @@ const ExamSheetManager = () => {
     'AFCAT': ['English', 'General Awareness', 'Numerical Ability', 'Reasoning & Military Aptitude'],
     
     // Management & Law
-    'CAT': ['Verbal Ability', 'Data Interpretation', 'Logical Reasoning', 'Quantitative Aptitude'],
-    'CLAT': ['English Language', 'Current Affairs', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
-    'GMAT': ['Quantitative Reasoning', 'Verbal Reasoning', 'Integrated Reasoning', 'Analytical Writing'],
-    'CUET': ['Domain Subjects', 'General Test', 'Language Proficiency'],
+    'CAT': ['Verbal Ability & RC (VARC)', 'Data Interpretation & LR (DILR)', 'Quantitative Aptitude (QA)'],
+    'CLAT': ['English Language', 'Current Affairs & GK', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
+    'GMAT': ['Quantitative Reasoning', 'Verbal Reasoning', 'Data Insights'],
+    'CUET': ['Section I: Languages', 'Section II: Domain Subjects', 'Section III: General Test'],
     'UGC_NET': ['Teaching Aptitude', 'Research Aptitude', 'Comprehension', 'Subject Knowledge'],
     
     // Agriculture
