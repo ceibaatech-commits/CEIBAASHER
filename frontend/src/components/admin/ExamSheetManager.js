@@ -683,14 +683,16 @@ const ExamSheetManager = () => {
   useEffect(() => {
     // Update sub-topics based on subject
     if (examForm.subject) {
-      setSubTopics(subTopicsMap[examForm.subject] || []);
+      // Use dynamic data first, fallback to static
+      const subTopMap = examMetadata.loaded ? examMetadata.subTopicsMap : subTopicsMap;
+      setSubTopics(subTopMap[examForm.subject] || []);
       // Reset dependent fields
       setExamForm(prev => ({
         ...prev,
         sub_topic: ''
       }));
     }
-  }, [examForm.subject]);
+  }, [examForm.subject, examMetadata.loaded]);
 
   useEffect(() => {
     // Update chapters based on class and subject
