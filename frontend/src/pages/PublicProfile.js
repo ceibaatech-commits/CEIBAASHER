@@ -190,10 +190,10 @@ const PublicProfile = () => {
             </div>
 
             {/* Follow Button - only show for other users' profiles */}
-            {user && user.id !== profile.user_id && (
+            {user && user.id !== profile.id && (
               <div className="mt-6 flex justify-center">
                 <FollowButton
-                  targetUserId={profile.user_id}
+                  targetUserId={profile.id}
                   targetUsername={profile.username}
                   initialStatus={followStatus}
                   onFollowChange={handleFollowChange}
@@ -202,7 +202,7 @@ const PublicProfile = () => {
             )}
 
             {/* Edit Profile Button - only show for own profile */}
-            {user && user.id === profile.user_id && (
+            {user && user.id === profile.id && (
               <div className="mt-6 flex justify-center">
                 <button
                   onClick={() => navigate('/dashboard')}
