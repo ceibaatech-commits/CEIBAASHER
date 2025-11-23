@@ -1322,38 +1322,89 @@ EXAM_DATA = {
     },
     
     "NABARD": {
-        "name": "NABARD Grade A/B",
-        "full_name": "National Bank for Agriculture and Rural Development",
-        "description": "Entrance exam for Grade A and Grade B Officers in NABARD",
+        "name": "NABARD Grade B",
+        "full_name": "National Bank for Agriculture and Rural Development - Grade B Officer",
+        "description": "Entrance exam for Grade B Officers in NABARD focusing on Agriculture, Rural Development and Economic issues",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-green-600 to-teal-700",
         "total_questions": 200,
-        "duration": "3 hours",
+        "duration": "2 hours",
         "category": "Banking Examinations",
         "syllabus_topics": {
-            "Reasoning": {
+            "Reasoning Ability": {
                 "subjects": {
-                    "Logical Reasoning": {"sub_topics": ["Syllogism", "Puzzles", "Seating"], "questions": 40}
+                    "Puzzles": {
+                        "sub_topics": ["Linear", "Circular", "Box", "Floor"],
+                        "questions": 40
+                    },
+                    "Syllogism": {
+                        "sub_topics": ["Standard"],
+                        "questions": 3
+                    },
+                    "Blood Relations": {
+                        "sub_topics": ["Family Tree"],
+                        "questions": 2
+                    }
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Mathematics & DI": {"sub_topics": ["Arithmetic", "Algebra", "Data Interpretation"], "questions": 40}
+                    "Data Interpretation": {
+                        "sub_topics": ["Table", "Bar", "Line"],
+                        "questions": 15
+                    },
+                    "Simplification": {
+                        "sub_topics": ["BODMAS"],
+                        "questions": 5
+                    },
+                    "Arithmetic": {
+                        "sub_topics": ["P&L", "SI/CI", "Ratio", "Time & Work"],
+                        "questions": 32
+                    }
                 }
             },
-            "English Language": {
+            "Economic & Social Issues": {
                 "subjects": {
-                    "English Proficiency": {"sub_topics": ["RC", "Grammar", "Vocabulary"], "questions": 40}
+                    "Socio-Economic Topics": {
+                        "sub_topics": ["Poverty Measurement", "Poverty Alleviation", "Population Trends", "Economic Reforms"],
+                        "questions": 60
+                    },
+                    "Social Justice": {
+                        "sub_topics": ["SC/ST/OBC Issues", "Human Development", "Social Movements", "Positive Discrimination"],
+                        "questions": 48
+                    }
+                }
+            },
+            "Agriculture & Rural Development": {
+                "subjects": {
+                    "Agriculture": {
+                        "sub_topics": ["Soil Science", "Crop Production", "Water Resources", "Farm Machinery", "Climate Change"],
+                        "questions": 80
+                    },
+                    "Rural Development": {
+                        "sub_topics": ["Panchayati Raj", "Rural Credit", "NABARD Role", "Government Schemes"],
+                        "questions": 56
+                    }
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Agriculture & Rural Dev": {"sub_topics": ["Agriculture", "Rural Economy", "Banking"], "questions": 40}
-                }
-            },
-            "Computer Knowledge": {
-                "subjects": {
-                    "IT & Computers": {"sub_topics": ["Computer Basics", "MS Office", "Internet"], "questions": 40}
+                    "Current Affairs": {
+                        "sub_topics": ["Last 6-8 months", "RBI/NABARD Notifications"],
+                        "questions": 30
+                    },
+                    "Financial Awareness": {
+                        "sub_topics": ["RBI Updates", "NABARD Updates", "Banking Terms"],
+                        "questions": 24
+                    },
+                    "Government Schemes": {
+                        "sub_topics": ["ARD/ESI Related"],
+                        "questions": 6
+                    },
+                    "Appointments": {
+                        "sub_topics": ["Key Appointments"],
+                        "questions": 4
+                    }
                 }
             }
         }
