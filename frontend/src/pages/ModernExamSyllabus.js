@@ -136,66 +136,6 @@ const ModernExamSyllabus = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Weightage Toggle */}
-        {weightageData && (
-          <div className="mb-6">
-            <button onClick={() => setShowWeightage(!showWeightage)}
-              className="w-full bg-white rounded-xl shadow-md p-4 flex items-center justify-between hover:shadow-lg transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
-                  <BarChart className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-gray-900">Topic-wise Weightage Analysis</h3>
-                  <p className="text-xs text-gray-600">Click to view preparation strategy</p>
-                </div>
-              </div>
-              {showWeightage ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-            </button>
-
-            <AnimatePresence>
-              {showWeightage && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                  className="bg-white rounded-xl shadow-md p-4 mt-2">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    {Object.entries(weightageData.subjects).map(([name, data]) => (
-                      <div key={name} className={`bg-gradient-to-br ${data.color} p-3 rounded-lg text-white text-center`}>
-                        <p className="text-xs opacity-90">{name}</p>
-                        <p className="text-2xl font-bold">{data.questions}</p>
-                        <p className="text-xs">Questions</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {Object.entries(weightageData.subjects).map(([name, data]) => (
-                    <div key={name} className="mb-3 last:mb-0">
-                      <div className={`bg-gradient-to-r ${data.color} text-white px-3 py-2 rounded-t-lg font-bold text-sm`}>
-                        {name}
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-b-lg grid grid-cols-2 gap-2">
-                        {data.topics.map((topic, idx) => (
-                          <div key={idx} className="flex items-start justify-between text-xs bg-white p-2 rounded">
-                            <span className="font-medium flex-1">{topic.name}</span>
-                            <div className="flex items-center gap-1">
-                              <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${
-                                topic.importance === 'Very High' ? 'bg-red-100 text-red-700' :
-                                topic.importance === 'High' ? 'bg-orange-100 text-orange-700' :
-                                topic.importance === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-green-100 text-green-700'
-                              }`}>{topic.expected}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-
-
         {/* Animated Exam Poster - Ultra Compact for Mobile */}
         <div className="relative overflow-hidden rounded-xl mb-4">
           <div className={`relative bg-gradient-to-br ${examData.color} p-3 md:p-4`}>
