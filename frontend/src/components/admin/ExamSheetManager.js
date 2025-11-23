@@ -257,15 +257,23 @@ const ExamSheetManager = () => {
     'Environmental Studies': ['Environment', 'Plants', 'Animals', 'Food', 'Water', 'Shelter'],
     
     // GMAT subjects
-    'Quantitative Reasoning': ['Arithmetic', 'Algebra', 'Geometry', 'Word Problems'],
-    'Verbal Reasoning': ['Reading Comprehension', 'Critical Reasoning', 'Sentence Correction'],
+    'Quantitative Reasoning': ['Arithmetic', 'Algebra'],
+    'Verbal Reasoning': ['Reading Comprehension', 'Critical Reasoning'],
+    'Data Insights': ['Data Analysis', 'Integrated Reasoning'],
     'Integrated Reasoning': ['Multi-Source Reasoning', 'Graphics Interpretation', 'Table Analysis'],
     'Analytical Writing': ['Analysis of Argument', 'Issue Analysis'],
     
     // CUET & UGC NET
+    'Section I: Languages': ['Reading Comprehension', 'Language Proficiency'],
+    'Section II: Domain Subjects': ['Subject Specific'],
+    'Section III: General Test': ['General Awareness & CA', 'Reasoning & Mental Ability', 'Quantitative Reasoning'],
     'Domain Subjects': ['Subject-Specific Topics', 'Core Concepts', 'Advanced Topics'],
     'General Test': ['General Knowledge', 'Current Affairs', 'Numerical Ability', 'Logical Reasoning'],
     'Optional Subjects': ['Subject Choice 1', 'Subject Choice 2', 'Subject Choice 3'],
+    
+    // NATA subjects
+    'Drawing & Composition': ['Composition & Sketching', 'Spatial Visualization'],
+    'Mathematics & Physics': ['Mathematics', 'Physics'],
     
     // Agriculture
     'Agriculture': ['Crop Production', 'Soil Science', 'Plant Breeding', 'Agronomy'],
