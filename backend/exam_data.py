@@ -1079,49 +1079,34 @@ EXAM_DATA = {
     # ==================== BANKING EXAMINATIONS ====================
     
     "IBPS_PO": {
-        "name": "IBPS PO",
-        "full_name": "Institute of Banking Personnel Selection Probationary Officer",
+        "name": "IBPS PO Prelims",
+        "full_name": "Institute of Banking Personnel Selection Probationary Officer - Preliminary Exam",
         "description": "Entrance exam for Probationary Officer in public sector banks",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-blue-600 to-cyan-600",
-        "total_questions": 200,
-        "duration": "3 hours",
+        "total_questions": 100,
+        "duration": "1 hour",
         "category": "Banking Examinations",
         "syllabus_topics": {
-            "Quantitative Aptitude": {
-                "subjects": {
-                    "Simplification": {"sub_topics": ["BODMAS", "Square Root", "Cube Root"], "questions": 8},
-                    "Approximation": {"sub_topics": ["Estimation", "Rounding"], "questions": 3},
-                    "Number Series": {"sub_topics": ["Missing Number", "Wrong Number"], "questions": 5},
-                    "Quadratic Equations": {"sub_topics": ["Standard Form", "Roots Comparison"], "questions": 4},
-                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart", "Line Chart"], "questions": 7},
-                    "Arithmetic": {"sub_topics": ["Ratio & Proportion", "Profit & Loss", "Time & Work", "SI/CI"], "questions": 8}
-                }
-            },
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Circular Seating", "Linear Seating", "Box & Floor Puzzles", "Multi-variable Puzzles"], "questions": 22},
-                    "Syllogism": {"sub_topics": ["Advanced Syllogism", "Reverse Syllogism"], "questions": 4},
-                    "Inequality": {"sub_topics": ["Coded Inequality"], "questions": 4},
-                    "Blood Relations": {"sub_topics": ["Family Tree", "Coded Relations"], "questions": 3},
-                    "Direction Sense": {"sub_topics": ["Direction Problems"], "questions": 3},
-                    "Order & Ranking": {"sub_topics": ["Ranking Problems"], "questions": 4}
+                    "Puzzles & Seating Arrangement": {"sub_topics": ["Floor/Flat Puzzles", "Box Puzzles", "Scheduling (Day Month Year Time-based)", "Category-based", "Circular Seating (Inward/Outward)", "Linear Seating (Single Row & Double Row)", "Square/Rectangular Arrangement", "Uncertain number of people"], "questions": 24},
+                    "Logical Deductions": {"sub_topics": ["Syllogism (Including 'Only a Few')", "Possibility cases", "Coded Inequalities (Symbols)", "Data Sufficiency (2 or 3 statements)"], "questions": 8},
+                    "Miscellaneous Logic": {"sub_topics": ["Direction Sense", "Blood Relations (Family Tree)", "Blood Relations (Coded)", "Alphanumeric Series", "Order and Ranking", "Coding-Decoding (Simple)", "Coding-Decoding (Fictitious)", "Input-Output"], "questions": 8}
+                }
+            },
+            "Quantitative Aptitude": {
+                "subjects": {
+                    "Data Interpretation (DI)": {"sub_topics": ["Line Graph", "Bar Graph", "Pie Chart (Single & Multiple)", "Tabular DI", "Mixed Graphs", "Caselet DI (Paragraph based)", "Missing Data DI"], "questions": 14},
+                    "Speed & Calculation": {"sub_topics": ["Simplification", "Approximation", "Missing Number Series", "Wrong Number Series", "Quadratic Equations", "Quantity Comparison (Q1 & Q2)"], "questions": 12},
+                    "Arithmetic (Word Problems)": {"sub_topics": ["Percentage", "Ratio and Proportion", "Average", "Age Problems", "Profit and Loss", "Simple Interest (SI)", "Compound Interest (CI)", "Time and Work", "Time Speed and Distance", "Pipes and Cisterns", "Boats and Streams", "Probability", "Permutation and Combination", "Mixture and Allegations", "Mensuration (2D & 3D)"], "questions": 15}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
-                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
-                    "Phrase Replacement": {"sub_topics": ["Sentence Improvement"], "questions": 5},
-                    "Sentence Connectors": {"sub_topics": ["Joining Sentences"], "questions": 5},
-                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
-                    "Vocabulary": {"sub_topics": ["Single Fillers", "Double Fillers"], "questions": 10}
-                }
-            },
-            "General Awareness": {
-                "subjects": {
-                    "Banking Awareness": {"sub_topics": ["Banking Terms", "RBI Policies", "Financial News"], "questions": 20},
-                    "Current Affairs": {"sub_topics": ["National", "International", "Sports", "Awards"], "questions": 20}
+                    "Reading Comprehension (RC)": {"sub_topics": ["Passage comprehension", "Theme detection", "Tone of the Passage", "Inference-based questions", "Vocabulary (Synonyms/Antonyms) from passage"], "questions": 10},
+                    "Grammar & Structure": {"sub_topics": ["Error Detection (Spotting Errors)", "Sentence Improvement/Correction", "Phrase Replacement"], "questions": 9},
+                    "Vocabulary & Usage": {"sub_topics": ["Cloze Test (Paragraph completion)", "Fillers (Single and Double)", "Word Swap", "Correct Usage of Words", "Para Jumbles (Sentence Rearrangement)"], "questions": 10}
                 }
             }
         }
