@@ -191,6 +191,26 @@ async def get_exam_weightage(exam_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@router.get("/test-weightage-db")
+async def test_weightage_db():
+    from motor.motor_asyncio import AsyncIOMotorClient
+    import os
+    
+    mongo_url = os.getenv('MONGO_URL') or 'mongodb://localhost:27017'
+    db_name = os.getenv('DB_NAME') or 'test_database'
+    
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[db_name]
+    
+    count = await db.exam_metadata.count_documents({})
+    sbi_doc = await db.exam_metadata.find_one({"exam_name": "SBI_PO"})
+    
+    await client.close()
+    
+    return {"count": count, "has_sbi": sbi_doc is not None}
+
+
 @router.get("/topics/{exam_id}/{subject}")
 async def get_topics(exam_id: str, subject: str):
     """Get all topics for a subject"""
