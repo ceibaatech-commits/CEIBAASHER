@@ -63,10 +63,13 @@ const ExamSheetManager = () => {
     'IBPS_PO',
     'IBPS_CLERK',
     'IBPS_SO',
+    'IBPS_RRB_PO',
     'SBI_PO',
     'SBI_CLERK',
     'RBI_GRADE_B',
     'NABARD',
+    'LIC_AAO',
+    'LIC_ADO',
     
     // SSC
     'SSC_CGL',
