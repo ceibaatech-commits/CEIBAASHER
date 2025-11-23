@@ -575,9 +575,12 @@ async def unfollow_user(target_user_id: str, authorization: Optional[str] = Head
             raise HTTPException(status_code=401, detail="Not authenticated")
         
         follower_id = decode_jwt_token(authorization)
-        result = await db.followers.delete_one({"follower_id": follower_id, "following_id": target_user_id})
         
-        if result.deleted_count == 0:
+        # Delete from both collections for consistency
+        result_ceeps = await db.ceeps.delete_one({"user_id": follower_id, "ceep_user_id": target_user_id})
+        result_follows = await db.follows.delete_one({"follower_id": follower_id, "following_id": target_user_id})
+        
+        if result_ceeps.deleted_count == 0 and result_follows.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Not following")
         
         return {"success": True, "message": "User unfollowed"}
