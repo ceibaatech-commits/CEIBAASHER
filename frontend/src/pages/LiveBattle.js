@@ -852,6 +852,12 @@ const LiveBattle = () => {
                     key={index}
                     onClick={() => sendReaction(emoji)}
                     className="text-2xl hover:scale-125 transition-transform bg-white rounded-lg p-2 shadow-sm hover:shadow-md"
+                    style={{ 
+                      fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Android Emoji, sans-serif',
+                      lineHeight: '1',
+                      WebkitFontSmoothing: 'antialiased'
+                    }}
+                    aria-label={`React with ${emoji}`}
                   >
                     {emoji}
                   </button>
