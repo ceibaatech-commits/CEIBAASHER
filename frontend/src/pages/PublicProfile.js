@@ -416,11 +416,21 @@ const PublicProfile = () => {
                 {activeTab === 'posts' && (
                   posts.length > 0 ? (
                     <div className="space-y-4">
-                      {posts.map(post => (
+                      {posts
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                        .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <p className="text-sm text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
+                              <p className="text-sm text-gray-500">
+                                {new Date(post.created_at).toLocaleString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
                               {post.post_type && (
                                 <span className="inline-block mt-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
                                   {post.post_type === 'quiz_room' ? 'Quiz Room' : post.post_type}
@@ -435,9 +445,15 @@ const PublicProfile = () => {
                             </div>
                           )}
                           <div className="mt-3 flex gap-4 text-sm text-gray-600">
-                            <span>❤️ {post.likes_count || 0}</span>
-                            <span>💬 {post.comments_count || 0}</span>
-                            <span>🔄 {post.shares_count || 0}</span>
+                            <span className="flex items-center gap-1">
+                              <Heart className="w-4 h-4" /> {post.likes_count || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Repeat2 className="w-4 h-4" /> {post.shares_count || 0}
+                            </span>
                           </div>
                         </div>
                       ))}
