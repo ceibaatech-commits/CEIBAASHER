@@ -1,78 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import ReactionBubbles from '../components/ReactionBubbles';
+import ErrorBoundary from '../components/ErrorBoundary';
+import styles from './ReactionBubblesDemo.module.css';
+
+/**
+ * Design Tokens
+ */
+const PATTERN_SVG = `
+  <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+    <pattern id="a" patternUnits="userSpaceOnUse" width="40" height="40" patternTransform="scale(2) rotate(45)">
+      <rect x="0" y="0" width="100%" height="100%" fill="#667eea"/>
+      <path d="M0 20h40M20 0v40" stroke="#764ba2" stroke-width="1" fill="none"/>
+    </pattern>
+    <rect width="100%" height="100%" fill="url(#a)"/>
+  </svg>
+`;
+
+const BACKGROUNDS = {
+  light: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  dark: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+  gradient1: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  gradient2: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  gradient3: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  image: `url("data:image/svg+xml,${encodeURIComponent(PATTERN_SVG)}")`
+};
+
+const FEATURES = [
+  {
+    icon: '🎨',
+    title: 'Background Adaptable',
+    description: 'Works seamlessly on light, dark, and complex gradient backgrounds with automatic contrast adjustment.'
+  },
+  {
+    icon: '✨',
+    title: 'Smooth Animations',
+    description: 'Carefully crafted hover, click, and transition animations for a delightful user experience.'
+  },
+  {
+    icon: '🌓',
+    title: 'Glass Morphism',
+    description: 'Modern frosted glass effect with backdrop blur for depth and visual hierarchy.'
+  },
+  {
+    icon: '📱',
+    title: 'Mobile Optimized',
+    description: 'Touch-friendly interface with responsive sizing and proper tap targets for all devices.'
+  },
+  {
+    icon: '♿',
+    title: 'Accessible',
+    description: 'WCAG compliant with proper ARIA labels, keyboard navigation, and screen reader support.'
+  },
+  {
+    icon: '⚡',
+    title: 'Performance',
+    description: 'Optimized rendering with CSS transforms and efficient React patterns for smooth 60fps animations.'
+  }
+];
 
 /**
  * ReactionBubbles Demo Page
  * Showcases the reaction bubbles in various scenarios and backgrounds
  */
-
 const ReactionBubblesDemo = () => {
   const [lastReaction, setLastReaction] = useState(null);
   const [backgroundMode, setBackgroundMode] = useState('light');
 
+  // Fix memory leak: Clear timeout on unmount or when lastReaction changes
+  useEffect(() => {
+    if (lastReaction) {
+      const timer = setTimeout(() => setLastReaction(null), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastReaction]);
+
   const handleReaction = (reaction) => {
     setLastReaction(reaction);
-    setTimeout(() => setLastReaction(null), 2000);
-  };
-
-  const backgrounds = {
-    light: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    dark: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-    gradient1: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    gradient2: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    gradient3: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-    image: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpattern id=\'a\' patternUnits=\'userSpaceOnUse\' width=\'40\' height=\'40\' patternTransform=\'scale(2) rotate(45)\'%3E%3Crect x=\'0\' y=\'0\' width=\'100%25\' height=\'100%25\' fill=\'%23667eea\'/%3E%3Cpath d=\'M0 20h40M20 0v40\' stroke=\'%23764ba2\' stroke-width=\'1\' fill=\'none\'/%3E%3C/pattern%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'url(%23a)\'/%3E%3C/svg%3E")'
   };
 
   return (
-    <div style={{ minHeight: '100vh', padding: '40px 20px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className={styles.container}>
+      <div className={styles.innerContainer}>
         {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h1 style={{ 
-            fontSize: '48px', 
-            fontWeight: '800',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            marginBottom: '16px'
-          }}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>
             Reaction Bubbles
           </h1>
-          <p style={{ 
-            fontSize: '18px', 
-            color: '#64748b',
-            maxWidth: '600px',
-            margin: '0 auto'
-          }}>
+          <p className={styles.subtitle}>
             Modern, transparent reaction bubbles designed for quiz interfaces.
             Visible on all backgrounds with smooth interactions.
           </p>
-        </div>
+        </header>
 
         {/* Background Selector */}
-        <div style={{ 
-          display: 'flex', 
-          gap: '12px', 
-          justifyContent: 'center',
-          marginBottom: '40px',
-          flexWrap: 'wrap'
-        }}>
-          {Object.keys(backgrounds).map(mode => (
+        <div className={styles.backgroundSelector} role="tablist" aria-label="Background themes">
+          {Object.keys(BACKGROUNDS).map(mode => (
             <button
               key={mode}
               onClick={() => setBackgroundMode(mode)}
-              style={{
-                padding: '10px 20px',
-                borderRadius: '12px',
-                border: backgroundMode === mode ? '2px solid #667eea' : '2px solid #e2e8f0',
-                background: backgroundMode === mode ? '#f8fafc' : 'white',
-                color: backgroundMode === mode ? '#667eea' : '#64748b',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                textTransform: 'capitalize'
-              }}
+              className={`${styles.backgroundButton} ${
+                backgroundMode === mode ? styles.backgroundButtonActive : ''
+              }`}
+              role="tab"
+              aria-selected={backgroundMode === mode}
+              aria-label={`Switch to ${mode} background`}
+              aria-controls="demo-area"
             >
               {mode}
             </button>
@@ -80,240 +113,125 @@ const ReactionBubblesDemo = () => {
         </div>
 
         {/* Main Demo Area */}
-        <div style={{
-          background: backgrounds[backgroundMode],
-          borderRadius: '24px',
-          padding: '80px 40px',
-          marginBottom: '40px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '400px',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
+        <div 
+          id="demo-area"
+          className={styles.demoArea}
+          style={{ background: BACKGROUNDS[backgroundMode] }}
+          role="region"
+          aria-label="Reaction bubbles demonstration"
+        >
           {/* Last Reaction Display */}
           {lastReaction && (
-            <div style={{
-              fontSize: '72px',
-              marginBottom: '40px',
-              animation: 'pulse 0.5s ease-in-out'
-            }}>
+            <div 
+              className={styles.lastReaction}
+              role="status"
+              aria-live="polite"
+              aria-label={`You selected ${lastReaction} reaction`}
+            >
               {lastReaction}
             </div>
           )}
 
-          {/* Reaction Bubbles */}
-          <ReactionBubbles 
-            onReactionSelect={handleReaction}
-            size="large"
-            variant="floating"
-          />
+          {/* Reaction Bubbles with Error Boundary */}
+          <ErrorBoundary fallback={
+            <div style={{ color: 'white', textAlign: 'center' }}>
+              <p>😞 Oops! Something went wrong with the reactions.</p>
+              <button 
+                onClick={() => window.location.reload()}
+                style={{
+                  marginTop: '16px',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'white',
+                  cursor: 'pointer'
+                }}
+              >
+                Reload Page
+              </button>
+            </div>
+          }>
+            <ReactionBubbles 
+              onReactionSelect={handleReaction}
+              size="large"
+              variant="floating"
+            />
+          </ErrorBoundary>
 
           {/* Info Text */}
-          <div style={{
-            marginTop: '40px',
-            textAlign: 'center',
-            color: 'rgba(255, 255, 255, 0.9)',
-            fontSize: '16px',
-            fontWeight: '500',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
-          }}>
+          <p className={styles.infoText}>
             Click a reaction to see the floating animation
-          </div>
+          </p>
         </div>
 
         {/* Size Variants */}
-        <div style={{ marginBottom: '60px' }}>
-          <h2 style={{ 
-            fontSize: '32px', 
-            fontWeight: '700',
-            color: '#1e293b',
-            marginBottom: '24px',
-            textAlign: 'center'
-          }}>
+        <section className={styles.sizeVariantsSection} aria-labelledby="size-variants-title">
+          <h2 id="size-variants-title" className={styles.sectionTitle}>
             Size Variants
           </h2>
           
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '24px'
-          }}>
+          <div className={styles.variantsGrid}>
             {/* Small */}
-            <div style={{
-              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-              borderRadius: '16px',
-              padding: '40px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '16px'
-            }}>
-              <h3 style={{ color: 'white', fontWeight: '600', margin: 0 }}>Small</h3>
-              <ReactionBubbles size="small" variant="static" />
+            <div 
+              className={styles.variantCard}
+              style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}
+            >
+              <h3 className={styles.variantTitle}>Small</h3>
+              <ErrorBoundary fallback={<p style={{ color: 'white' }}>Error loading reactions</p>}>
+                <ReactionBubbles size="small" variant="static" />
+              </ErrorBoundary>
             </div>
 
             {/* Medium */}
-            <div style={{
-              background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-              borderRadius: '16px',
-              padding: '40px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '16px'
-            }}>
-              <h3 style={{ color: 'white', fontWeight: '600', margin: 0 }}>Medium</h3>
-              <ReactionBubbles size="medium" variant="static" />
+            <div 
+              className={styles.variantCard}
+              style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}
+            >
+              <h3 className={styles.variantTitle}>Medium</h3>
+              <ErrorBoundary fallback={<p style={{ color: 'white' }}>Error loading reactions</p>}>
+                <ReactionBubbles size="medium" variant="static" />
+              </ErrorBoundary>
             </div>
 
             {/* Large */}
-            <div style={{
-              background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-              borderRadius: '16px',
-              padding: '40px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '16px'
-            }}>
-              <h3 style={{ color: 'white', fontWeight: '600', margin: 0 }}>Large</h3>
-              <ReactionBubbles size="large" variant="static" />
+            <div 
+              className={styles.variantCard}
+              style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}
+            >
+              <h3 className={styles.variantTitle}>Large</h3>
+              <ErrorBoundary fallback={<p style={{ color: 'white' }}>Error loading reactions</p>}>
+                <ReactionBubbles size="large" variant="static" />
+              </ErrorBoundary>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Features Grid */}
-        <div style={{ marginBottom: '60px' }}>
-          <h2 style={{ 
-            fontSize: '32px', 
-            fontWeight: '700',
-            color: '#1e293b',
-            marginBottom: '24px',
-            textAlign: 'center'
-          }}>
+        <section className={styles.featuresSection} aria-labelledby="features-title">
+          <h2 id="features-title" className={styles.sectionTitle}>
             Key Features
           </h2>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '24px'
-          }}>
-            {[
-              {
-                icon: '🎨',
-                title: 'Semi-Transparent',
-                desc: '50-65% opacity with backdrop blur for clarity'
-              },
-              {
-                icon: '✨',
-                title: 'Crisp Borders',
-                desc: 'Subtle borders with layered shadows'
-              },
-              {
-                icon: '🌓',
-                title: 'Dark Mode',
-                desc: 'Automatically adapts to dark backgrounds'
-              },
-              {
-                icon: '📱',
-                title: 'Responsive',
-                desc: 'Works perfectly on all screen sizes'
-              },
-              {
-                icon: '♿',
-                title: 'Accessible',
-                desc: 'Keyboard navigation and focus states'
-              },
-              {
-                icon: '⚡',
-                title: 'Performant',
-                desc: 'Smooth 60fps animations'
-              }
-            ].map((feature, i) => (
-              <div key={i} style={{
-                background: 'white',
-                borderRadius: '16px',
-                padding: '24px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '40px', marginBottom: '12px' }}>{feature.icon}</div>
-                <h3 style={{ 
-                  fontSize: '18px', 
-                  fontWeight: '600',
-                  color: '#1e293b',
-                  marginBottom: '8px'
-                }}>
-                  {feature.title}
-                </h3>
-                <p style={{ 
-                  fontSize: '14px', 
-                  color: '#64748b',
-                  margin: 0
-                }}>
-                  {feature.desc}
-                </p>
-              </div>
+          
+          <div className={styles.featuresGrid}>
+            {FEATURES.map((feature, index) => (
+              <article key={index} className={styles.featureCard}>
+                <div className={styles.featureIcon} aria-hidden="true">
+                  {feature.icon}
+                </div>
+                <h3 className={styles.featureTitle}>{feature.title}</h3>
+                <p className={styles.featureDescription}>{feature.description}</p>
+              </article>
             ))}
           </div>
-        </div>
-
-        {/* Code Example */}
-        <div style={{
-          background: '#1e293b',
-          borderRadius: '16px',
-          padding: '32px',
-          marginBottom: '40px'
-        }}>
-          <h3 style={{ 
-            color: 'white', 
-            marginBottom: '16px',
-            fontSize: '20px',
-            fontWeight: '600'
-          }}>
-            Usage Example
-          </h3>
-          <pre style={{
-            color: '#94a3b8',
-            fontSize: '14px',
-            lineHeight: '1.6',
-            margin: 0,
-            overflow: 'auto'
-          }}>
-{`import ReactionBubbles from './components/ReactionBubbles';
-
-function QuizInterface() {
-  const handleReaction = (reaction) => {
-    console.log('User reacted with:', reaction);
-  };
-
-  return (
-    <ReactionBubbles 
-      onReactionSelect={handleReaction}
-      size="medium"
-      variant="floating"
-      availableReactions={['👍', '🔥', '😮', '💪', '🎯', '🎉']}
-    />
-  );
-}`}
-          </pre>
-        </div>
-
-        {/* CSS Animation */}
-        <style>{`
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-          }
-        `}</style>
+        </section>
       </div>
     </div>
   );
+};
+
+// PropTypes for documentation and type checking
+ReactionBubblesDemo.propTypes = {
+  // This component doesn't take props, but we document it for clarity
 };
 
 export default ReactionBubblesDemo;
