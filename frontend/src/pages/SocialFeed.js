@@ -780,11 +780,24 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
 
     setPostingComment(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/comment`, {
-        user_id: user.id,
-        user_name: user.name || user.username || 'User',
-        content: newComment
-      });
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        alert('Please login to comment');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/posts/${post.id}/comment`,
+        {
+          content: newComment
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
 
       if (response.data.success) {
         setNewComment('');
@@ -792,7 +805,7 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
       }
     } catch (error) {
       console.error('Error posting comment:', error);
-      alert('Failed to post comment');
+      alert('Failed to post comment: ' + (error.response?.data?.detail || error.message));
     } finally {
       setPostingComment(false);
     }
