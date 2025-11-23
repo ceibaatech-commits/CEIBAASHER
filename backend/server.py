@@ -111,14 +111,6 @@ async def get_status_checks():
     
     return status_checks
 
-@fastapi_app.get("/api/quiz/weightage/{exam_id}")
-async def get_exam_weightage(exam_id: str):
-    """Get topic-wise weightage analysis for an exam"""
-    weightage_data = EXAM_WEIGHTAGE.get(exam_id)
-    if not weightage_data:
-        return {"success": False, "message": "Weightage data not available for this exam"}
-    return {"success": True, "weightage": weightage_data}
-
 # Include the router in the main app
 fastapi_app.include_router(api_router)
 fastapi_app.include_router(quiz_router, prefix="/api")
