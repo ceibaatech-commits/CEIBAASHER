@@ -305,10 +305,18 @@ async def get_following_feed(
         
         user_id = decode_jwt_token(authorization)
         
+        # Get all following relationships from ceeps, follows, and followers collections
         ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
-        followers = await db.followers.find({"follower_id": user_id}, {"_id": 0}).to_list(1000)
+        follows = await db.follows.find(
+            {"follower_id": user_id, "status": "approved"}, 
+            {"_id": 0, "following_id": 1}
+        ).to_list(1000)
         
-        following_ids = list(set([c["ceep_user_id"] for c in ceeps] + [f["following_id"] for f in followers]))
+        # Combine all following IDs from different collections
+        following_ids = list(set(
+            [c["ceep_user_id"] for c in ceeps] + 
+            [f.get("following_id") for f in follows if f.get("following_id")]
+        ))
         
         if not following_ids:
             return {"success": True, "posts": [], "count": 0}
