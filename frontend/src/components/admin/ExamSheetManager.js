@@ -297,6 +297,9 @@ const ExamSheetManager = () => {
     'Vocabulary Building': ['Synonyms', 'Antonyms', 'Word meanings'],
     'One Word Substitution': ['Replace phrases with single words'],
     
+    // General Studies (CAPF and other exams)
+    'General Studies': ['Essay Writing', 'Comprehension', 'Communication Skills'],
+    
     // Other Language subjects (for non-language-proficiency exams)
     'Grammar': ['Parts of Speech', 'Tenses', 'Sentence Structure', 'Punctuation'],
     'Vocabulary': ['Synonyms', 'Antonyms', 'Idioms', 'Phrases'],
