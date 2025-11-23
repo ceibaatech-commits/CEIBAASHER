@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BookOpen, ArrowLeft, PlayCircle, FileText, User, Building2 } from 'lucide-react';
@@ -42,10 +43,24 @@ const BookDetails = () => {
     });
   };
 
-  if (loading) {
+  if (loading) {  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -56,10 +71,24 @@ const BookDetails = () => {
     );
   }
 
-  if (!book) {
+  if (!book) {  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+        <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -74,11 +103,25 @@ const BookDetails = () => {
         </div>
       </div>
     );
-  }
+  }  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
 
       <div className="container mx-auto px-4 py-8 mt-20">
         {/* Back Button */}

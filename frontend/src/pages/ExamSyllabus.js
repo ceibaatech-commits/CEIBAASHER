@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Clock, FileText, Trophy } from 'lucide-react';
 import axios from 'axios';
@@ -37,7 +38,16 @@ const ExamSyllabus = () => {
     }
   };
 
-  if (loading || !examData) {
+  if (loading || !examData) {  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -52,11 +62,25 @@ const ExamSyllabus = () => {
     ? allTopics 
     : allTopics.filter(t => t.subject === selectedSubject);
 
-  const subjects = Object.keys(examData.subjects || {});
+  const subjects = Object.keys(examData.subjects || {});  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header />
+      <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
       
       {/* Exam Banner */}
       <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`} style={{minHeight: '200px'}}>
@@ -122,7 +146,16 @@ const ExamSyllabus = () => {
               All Topics ({allTopics.length})
             </button>
             {subjects.map((subject) => {
-              const count = allTopics.filter(t => t.subject === subject).length;
+              const count = allTopics.filter(t => t.subject === subject).length;  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
               return (
                 <button
                   key={subject}

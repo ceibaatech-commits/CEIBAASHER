@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Upload, FileText, Users, TrendingUp, DollarSign, Plus, Eye, Edit, Trash2, Award } from 'lucide-react';
 import Header from '../components/Header';
@@ -6,6 +7,7 @@ import Footer from '../components/Footer';
 
 const CreatorDashboard = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
 
   const stats = {
@@ -19,11 +21,25 @@ const CreatorDashboard = () => {
     { id: 1, title: 'NEET Physics - Mechanics', plays: 456, rating: 4.8, revenue: 2300, status: 'active' },
     { id: 2, title: 'JEE Chemistry - Organic', plays: 389, rating: 4.6, revenue: 1950, status: 'active' },
     { id: 3, title: 'UPSC History - Modern India', plays: 523, rating: 4.9, revenue: 2615, status: 'active' },
-  ];
+  ];  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header />
+      <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
       
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">

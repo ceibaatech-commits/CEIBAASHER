@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { Trophy, Medal, Crown, Flame, Filter } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -28,11 +29,25 @@ const Leaderboard = () => {
       case 'Pro': return 'from-green-500 to-emerald-500';
       default: return 'from-gray-500 to-gray-600';
     }
+  };  const handleLogin = () => {
+    navigate('/login');
   };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header />
+      <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
       
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
