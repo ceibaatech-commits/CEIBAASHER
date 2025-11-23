@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { Settings, Edit, Users, FileText, Heart, Trophy, Calendar, MapPin, Award, ArrowLeft } from 'lucide-react';
+import { Settings, Edit, Users, FileText, Heart, Trophy, Calendar, MapPin, Award, ArrowLeft, MessageCircle, Repeat2 } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModal';
 import FollowListModal from '../components/FollowListModal';
 import ProfilePictureUpload from '../components/ProfilePictureUpload';
