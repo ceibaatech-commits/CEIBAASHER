@@ -10,10 +10,6 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [showSearch, setShowSearch] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [searchResults, setSearchResults] = React.useState([]);
-  const [searchLoading, setSearchLoading] = React.useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
   
   // Close dropdown when clicking outside
@@ -26,44 +22,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProfileDropdown]);
-
-  const handleSearch = async (query) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setSearchLoading(true);
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/auth/search-user?name=${encodeURIComponent(query)}`);
-      
-      if (response.data.success) {
-        setSearchResults(response.data.users || []);
-      }
-    } catch (error) {
-      console.error('Error searching:', error);
-      setSearchResults([]);
-    } finally {
-      setSearchLoading(false);
-    }
-  };
-
-  const handleSearchInputChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    
-    if (query.length > 0) {
-      handleSearch(query);
-    } else {
-      setSearchResults([]);
-    }
-  };
-
-  const handleUserClick = (userId) => {
-    setShowSearch(false);
-    setSearchQuery('');
-    setSearchResults([]);
-  };
 
   return (
     <header className="sticky top-0 z-50 shadow-2xl border-b border-gray-300" style={{ background: '#f8f9fa', color: '#1f2937' }}>
