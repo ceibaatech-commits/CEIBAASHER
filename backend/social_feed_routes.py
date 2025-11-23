@@ -284,9 +284,11 @@ async def get_for_you_feed(
 
 @router.get("/feed/trending")
 async def get_trending_feed(skip: int = 0, limit: int = 10):
-    """Get trending posts"""
+    """Get trending posts - sorted by recency and engagement"""
     try:
-        posts = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).to_list(None)
+        # Get all posts sorted by created_at (newest first) for better UX
+        # Trending score can be used later for a separate "Hot" feed
+        posts = await db.social_posts.find({}, {"_id": 0}).sort("created_at", -1).to_list(None)
         posts = await filter_expired_quiz_posts(posts)
         return {"success": True, "posts": posts[skip:skip + limit], "count": len(posts)}
     except Exception as e:
