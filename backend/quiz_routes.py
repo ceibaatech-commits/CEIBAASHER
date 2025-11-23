@@ -149,6 +149,34 @@ async def get_all_topics(exam_id: str):
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.get("/weightage/{exam_id}")
+async def get_exam_weightage(exam_id: str):
+    """
+    Get topic-wise weightage analysis for an exam
+    """
+    from exam_structure_routes import db
+    
+    try:
+        # Get weightage data from database
+        weightage = await db.exam_metadata.find_one({
+            "exam_name": exam_id.upper(),
+            "type": "weightage_analysis"
+        })
+        
+        if weightage:
+            # Remove MongoDB _id
+            weightage.pop('_id', None)
+            return {"success": True, "weightage": weightage}
+        else:
+            return {"success": False, "message": "No weightage data found"}
+    
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/topics/{exam_id}/{subject}")
 async def get_topics(exam_id: str, subject: str):
     """Get all topics for a subject"""
