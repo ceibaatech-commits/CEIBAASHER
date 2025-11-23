@@ -367,6 +367,22 @@ backend:
         agent: "testing"
         comment: "✅ COMPREHENSIVE BATTLE SYSTEM TESTING COMPLETE (76.5% success rate - 13/17 tests passed): ✅ CRITICAL SUCCESS CRITERIA MET: (1) Room creation returns valid 6-digit PIN ✅ - Battle server POST /api/battle/create-room working, generates proper PINs (e.g., 654466), (2) Multiple players can join same room ✅ - Multi-client Socket.io connections successful, both host and joiner connect to battle server, (3) Players see each other in lobby ✅ - participant_joined events working correctly, real-time room updates, (4) Quiz can start and questions are served ✅ - Google Sheets integration working (JEE Inorganic Chemistry topics), 7 questions loaded per topic, (5) Answer submission and scoring work ✅ - answer_result events with correct scoring, real-time chat and reactions functional. ⚠️ MINOR ISSUES: Socket.io proxy at /api/socketio has routing issues (external URL), but direct battle-server connections work perfectly. Battle system core functionality VERIFIED and OPERATIONAL for end-to-end flow: create room → join room → play quiz."
 
+  - task: "Weightage Analysis for All 5 Banking Exams (Auto-Generated from Database)"
+    implemented: true
+    working: true
+    file: "/app/backend/exam_metadata collection, /app/frontend/src/pages/ModernExamSyllabus.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Used existing exam_sheets data to automatically generate weightage analysis for all 5 banking exams. Created Python script that: (1) Fetches all exam sheets from database for each exam, (2) Organizes by syllabus_topic → subject → sub_topics, (3) Calculates question counts per topic/subject, (4) Creates comprehensive weightage documents with proper structure (sections → subjects → topics → sub_topics), (5) Uses correct exam_name keys from exam_data.py (CRITICAL: NABARD not NABARD_GRADE_B, RBI_GRADE_B not RBI Grade B, etc.), (6) Inserts/updates documents in exam_metadata collection. NABARD: Manual weightage with Merit (100q: ESI 40q, ARD 40q, GA 20q) + Qualifying sections (100q: Reasoning 20q, Quant 20q, English 30q, Computer 20q, Decision 10q). Auto-generated weightages: RBI_GRADE_B (391q, 4 sections), IBPS_SO (402q, 4 sections), LIC_AAO (272q, 3 sections), LIC_ADO (304q, 3 sections)."
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFICATION COMPLETE - ALL 5 EXAMS: API endpoints tested for all exams (/api/quiz/weightage/{EXAM_ID}) - all returning success:true. Frontend verified via screenshots: (1) NABARD ✅ - Weightage section visible, Show Details working, Merit + Qualifying sections displaying with all subjects and topics, (2) RBI_GRADE_B ✅ - Weightage section visible, English Language (45q), General Awareness (193q), Quant (70q), Reasoning (83q) all displaying, (3) IBPS_SO ✅ - Weightage section visible, 4 subjects showing correctly, (4) LIC_AAO ✅ - Weightage section visible, 3 subjects (Reasoning, Quant, English), (5) LIC_ADO ✅ - Weightage section visible, 3 subjects (Reasoning, Numerical Ability, English). Frontend code updated to handle new data structure with section.subjects[] containing topics with expected_questions field. All topic-wise breakdowns displaying correctly with sub-topics listed. Naming convention established: ALWAYS use exam_data.py keys as exam_name in weightage documents."
+
+
   - task: "Social Feed Backend APIs"
     implemented: true
     working: true
