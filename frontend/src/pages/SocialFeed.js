@@ -976,12 +976,32 @@ const PostCard = ({ post, onLike, onJoinRoom, onCopyCode, user }) => {
             <div className="space-y-3">
               {comments.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                  <div 
+                    className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0 cursor-pointer hover:opacity-80"
+                    onClick={() => {
+                      if (user && comment.user_id === user.id) {
+                        navigate('/dashboard');
+                      } else if (comment.username) {
+                        navigate(`/profile/${comment.username}`);
+                      }
+                    }}
+                  >
                     {comment.user_name?.[0] || 'U'}
                   </div>
                   <div className="flex-1">
                     <div className="bg-gray-50 rounded-xl px-4 py-2">
-                      <p className="font-semibold text-sm text-gray-800">{comment.user_name || 'User'}</p>
+                      <p 
+                        className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-blue-600"
+                        onClick={() => {
+                          if (user && comment.user_id === user.id) {
+                            navigate('/dashboard');
+                          } else if (comment.username) {
+                            navigate(`/profile/${comment.username}`);
+                          }
+                        }}
+                      >
+                        {comment.user_name || 'User'}
+                      </p>
                       <p className="text-gray-700 mt-1">{comment.content}</p>
                     </div>
                     <p className="text-xs text-gray-500 mt-1 ml-4">
