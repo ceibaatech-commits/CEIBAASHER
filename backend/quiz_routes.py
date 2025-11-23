@@ -175,7 +175,7 @@ async def get_exam_weightage(exam_id: str):
         # Debug info
         all_metadata = await db.exam_metadata.find({}).to_list(length=10)
         
-        await client.close()
+        client.close()
         
         if weightage and isinstance(weightage, dict):
             # Remove MongoDB _id
