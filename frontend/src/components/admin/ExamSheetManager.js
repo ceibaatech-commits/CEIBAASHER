@@ -24,6 +24,15 @@ const ExamSheetManager = () => {
     sheet_link: ''
   });
 
+  // Dynamic exam metadata from backend (auto-sync!)
+  const [examMetadata, setExamMetadata] = useState({
+    loaded: false,
+    exams: [],
+    syllabusTopicsMap: {},
+    subjectsMap: {},
+    subTopicsMap: {}
+  });
+
   // Form data for Option 2: Class-based
   const [classForm, setClassForm] = useState({
     class_name: '',
