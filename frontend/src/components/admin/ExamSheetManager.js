@@ -391,7 +391,135 @@ const ExamSheetManager = () => {
     // CAPF specific sub-topics
     'Essay Writing': ['Current Topics', 'Social Issues', 'National Security'],
     'Comprehension': ['Reading', 'Analysis', 'Inference'],
-    'Communication Skills': ['Grammar', 'Vocabulary', 'Sentence Formation']
+    'Communication Skills': ['Grammar', 'Vocabulary', 'Sentence Formation'],
+    
+    // AFCAT Defence exam sub-topics
+    'English': ['Passage Reading', 'Inference Questions', 'Main Idea', 'Vocabulary in Context'],
+    'Numerical Ability': ['Number System', 'Percentage', 'Profit Loss', 'Simple Interest', 'Compound Interest', 'Time Work', 'Time Speed Distance', 'Ratio Proportion', 'Average', 'Mixture Alligation'],
+    'Reasoning & Military Aptitude': ['Analogies', 'Classification', 'Series', 'Coding-Decoding', 'Blood Relations', 'Direction Sense'],
+    
+    // CAT Admission Test sub-topics
+    'Verbal Ability & RC (VARC)': ['Passages (Philosophy', 'Science', 'Economics', 'History) followed by questions on Main Idea', 'Tone', 'Inference', 'Structure'],
+    'Verbal Ability (VA)': ['Para Jumbles (Ordering Sentences)', 'Para Summary', 'Odd Sentence Out (Critical Reasoning elements)'],
+    'Data Interpretation & LR (DILR)': ['Caselets (Text-based)', 'Tables', 'Charts (Bar', 'Line', 'Pie)', 'Venn Diagrams (Set Theory)', 'Analytical Puzzle-based DI'],
+    'Logical Reasoning (LR)': ['Seating Arrangements', 'Puzzles (Scheduling', 'Distribution)', 'Blood Relations', 'Series', 'Critical Reasoning (Inference', 'Assumption', 'Conclusion)'],
+    'Quantitative Aptitude (QA)': ['Percentage', 'Profit/Loss', 'Ratio/Proportion', 'Average/Mixtures', 'Time/Speed/Distance', 'Time & Work', 'Simple/Compound Interest'],
+    'Geometry & Mensuration': ['Lines/Angles', 'Triangles', 'Circles', 'Polygons', 'Coordinate Geometry', 'Mensuration (Area/Volume of 2D & 3D Shapes)'],
+    'Modern Math': ['Permutations & Combinations (P&C)', 'Probability', 'Set Theory'],
+    
+    // CLAT Admission Test sub-topics
+    'English Language': ['Passages (~450 words) followed by questions on Main Idea', 'Vocabulary', 'Grammar', 'Inference'],
+    'Vocabulary & Grammar': ['Synonyms', 'Antonyms', 'Error Detection', 'Sentence Correction', 'Tenses', 'Parts of Speech'],
+    'Current Affairs & GK': ['National and International events (last 9-12 months)', 'Summits', 'Reports', 'Awards'],
+    'Legal Reasoning': ['Application of legal principles to factual scenarios (Torts', 'Contracts', 'Criminal Law', 'Family Law', 'Constitutional Law)'],
+    'Case Law & Policy': ['Awareness of important contemporary legal and public policy issues', 'major Supreme Court judgments'],
+    'Logical Reasoning': ['Identifying Argument Structure', 'Premise', 'Conclusion', 'Inference', 'Strengthening/Weakening Arguments'],
+    'Quantitative Techniques': ['Sets of Facts', 'Graphs', 'Diagrams (Testing Class 10th level Maths application)'],
+    'Basic Arithmetic': ['Ratios', 'Percentages', 'Averages', 'P&L', 'Interest', 'Time/Speed/Distance'],
+    
+    // CUET Admission Test sub-topics
+    'Section I: Languages': ['Factual', 'Literary', 'and Narrative Passages (Testing Central Theme', 'Vocabulary', 'Tone)'],
+    'Language Proficiency': ['Verbal Ability', 'Grammar (Tenses', 'Parts of Speech)', 'Vocabulary (Synonyms', 'Antonyms)', 'Error Spotting'],
+    'Section II: Domain Subjects': ['Subject syllabi are strictly based on the Class 12 NCERT syllabus only (e.g.', 'Physics', 'History', 'Accountancy', 'Psychology', 'etc.)'],
+    'Section III: General Test': ['General Knowledge', 'Current Affairs (National & International)'],
+    'Reasoning & Mental Ability': ['General Mental Ability', 'Logical & Analytical Reasoning'],
+    'Quantitative Reasoning': ['Numerical Ability', 'Quantitative Reasoning (Arithmetic', 'Algebra', 'Geometry', 'Mensuration up to Grade 8)'],
+    
+    // GATE Admission Test sub-topics
+    'General Aptitude (GA)': ['English Grammar', 'Vocabulary', 'Reading Comprehension', 'Verbal Analogies'],
+    'Quantitative Aptitude': ['Numerical Computation', 'Data Interpretation (Graphs', 'Charts)', 'Quantitative Reasoning'],
+    'Engineering Mathematics': ['Propositional/First-Order Logic', 'Sets', 'Relations', 'Functions', 'Graph Theory', 'Combinatorics'],
+    'Linear Algebra & Calculus': ['Matrices', 'Determinants', 'Eigenvalues/Eigenvectors', 'Limits', 'Continuity', 'Differentiation', 'Integration'],
+    'Probability & Statistics': ['Random Variables', 'Distributions (Uniform', 'Normal', 'Poisson', 'Binomial)', 'Mean', 'Median', 'Mode', "Bayes' Theorem"],
+    'Core Subject (e.g., CSE)': ['Machine Instructions', 'ALU', 'Data Path', 'Control Unit', 'Pipelining', 'Memory Hierarchy (Cache', 'Main Memory)'],
+    'Programming & DS': ['C Programming', 'Recursion', 'Arrays', 'Stacks', 'Queues', 'Linked Lists', 'Trees', 'Binary Search Trees', 'Graphs'],
+    'Algorithms': ['Searching', 'Sorting', 'Hashing', 'Time & Space Complexity', 'Algorithm Design Techniques (Greedy', 'Dynamic', 'Divide-and-Conquer)'],
+    'Operating System': ['System Calls', 'Processes', 'Threads', 'Concurrency', 'Synchronization', 'Deadlock', 'CPU Scheduling', 'Memory Management', 'File Systems'],
+    
+    // GMAT Admission Test sub-topics
+    'Quantitative Reasoning': ['Arithmetic', 'Algebra', 'Geometry'],
+    'Verbal Reasoning': ['Passages', 'Critical Reasoning', 'Inference'],
+    'Sentence Correction': ['Grammar', 'Idioms', 'Meaning'],
+    'Data Insights': ['Graphics', 'Tables', 'Multi-source Reasoning'],
+    
+    // JEE Admission Test sub-topics
+    'Physics': ['Kinematics', 'Laws of Motion', 'Work/Energy/Power', 'Rotational Motion', 'Gravitation', 'Oscillations', 'SHM'],
+    'Thermodynamics & Waves': ['Thermal Properties of Matter', 'Kinetic Theory of Gases', 'Thermodynamics', 'Waves and Sound', 'Simple Harmonic Motion'],
+    'E&M & Optics': ['Electrostatics', 'Current Electricity', 'Magnetism (Moving Charges and Matter)', 'EMI', 'AC', 'Ray Optics', 'Wave Optics'],
+    'Chemistry': ['Atomic Structure', 'Chemical Bonding', 'States of Matter', 'Thermodynamics', 'Equilibrium', 'Solutions', 'Electrochemistry', 'Chemical Kinetics'],
+    'Mathematics': ['Sets/Relations/Functions', 'Complex Numbers', 'Quadratic Equations', 'Sequences & Series', 'Permutations & Combinations', 'Binomial Theorem', 'Matrices & Determinants'],
+    'Statistics & Probability': ['Statistics', 'Probability', 'Vector Algebra', 'Mathematical Reasoning'],
+    
+    // NATA Admission Test sub-topics
+    'Drawing & Composition': ['Visualizing and sketching scenes (Daily life', 'Urban scape)', 'Creative Composition', 'Proportion & Scale (Human/Building)'],
+    'Spatial Visualization': ['Perspective Drawing (One-point', 'Two-point)', '3D Visualization of Objects', 'Memory Drawing', 'Understanding Light and Shadow'],
+    'General Aptitude': ['Mental Rotation', 'Pattern Recognition', 'Visualizing different sides of 3D objects', 'Logical Reasoning using Diagrams'],
+    'Architectural Awareness': ['General Knowledge of Famous Architects', 'Buildings (National/International)', 'Building Materials', 'Aesthetic Sensitivity', 'Colour Theory'],
+    'Mathematics & Physics': ['Algebra', 'Trigonometry (Identities', 'Heights & Distances)', 'Coordinate Geometry', '3D Geometry', 'Mensuration', 'Statistics', 'Probability'],
+    
+    // UGC NET Admission Test sub-topics
+    'Teaching Aptitude': ['Teaching Techniques', 'Evaluation Systems', 'Student Psychology'],
+    'Research Aptitude': ['Research Methods', 'Data Analysis', 'Research Ethics'],
+    'Reasoning': ['Deduction', 'Induction', 'Analogies'],
+    'Mathematical Reasoning': ['Number Series', 'Data Interpretation', 'Problem Solving'],
+    'Higher Education': ['Education System', 'ICT', 'Environment'],
+    'Subject Specific': ['Fundamentals', 'Advanced Topics', 'Recent Developments'],
+    
+    // Banking Exams - IBPS CLERK sub-topics
+    'Numerical Ability': ['Simplification', 'Approximation', 'Missing Number Series', 'Wrong Number Series', 'Quadratic Equations', 'Quantity Comparison (Q1 & Q2)'],
+    'Data Interpretation (DI)': ['Tabular DI', 'Bar Graph', 'Line Graph', 'Pie Chart'],
+    'Arithmetic (Word Problems)': ['Percentage', 'Ratio and Proportion', 'Average', 'Age Problems', 'Profit and Loss', 'Simple Interest (SI)', 'Compound Interest (CI)', 'Time and Work', 'Pipes and Cisterns', 'Time Speed and Distance', 'Boats & Streams', 'Mixture and Allegations', 'Partnership', 'Mensuration'],
+    'Reasoning Ability': ['Floor/Flat Puzzles', 'Box Puzzles', 'Scheduling (Day/Month/Year)', 'Comparison/Ranking', 'Designation-based', 'Circular Seating', 'Linear Seating (Single Row)', 'Linear Seating (Double Row)', 'Square/Rectangular Arrangement'],
+    'Logical Deductions': ["Syllogism (Including 'Only a Few')", 'Inequalities (Direct)', 'Inequalities (Coded)', 'Data Sufficiency (Two statements)'],
+    'Miscellaneous Logic': ['Direction Sense', 'Blood Relations (Family Tree)', 'Alphanumeric Series', 'Symbolic Series', 'Order & Ranking', 'Coding-Decoding (Simple)', 'Coding-Decoding (Fictitious)'],
+    'Grammar & Structure': ['Error Detection (Spotting Errors)', 'Sentence Improvement/Correction', 'Phrase Replacement'],
+    'Vocabulary & Usage': ['Cloze Test (Paragraph completion)', 'Fillers (Single and Double)', 'Word Swap/Usage', 'Para Jumbles (Sentence Rearrangement)'],
+    
+    // Banking Exams - IBPS PO sub-topics
+    'Speed & Calculation': ['Simplification', 'Approximation', 'Missing Number Series', 'Wrong Number Series', 'Quadratic Equations', 'Quantity Comparison (Q1 & Q2)'],
+    
+    // Banking Exams - IBPS SO sub-topics
+    'Reasoning': ['Linear', 'Circular', 'Box', 'Floor'],
+    'Syllogism': ['Basic', 'Advanced'],
+    'Inequality': ['Direct', 'Coded'],
+    'Miscellaneous': ['Blood Relations', 'Direction', 'Coding'],
+    'Data Interpretation': ['Table', 'Bar', 'Line', 'Pie Chart'],
+    'Simplification': ['BODMAS', 'Approximation'],
+    'Number Series': ['Missing', 'Wrong'],
+    'Quadratic Equations': ['Roots'],
+    'Error Spotting': ['Grammar'],
+    'Cloze Test': ['Fill Blanks'],
+    'Para Jumbles': ['Rearrangement'],
+    
+    // Banking Exams - LIC AAO/ADO sub-topics
+    'Input-Output': ['Machine Input'],
+    'Sentence Correction': ['Grammar'],
+    
+    // Banking Exams - NABARD sub-topics
+    'Economic & Social Issues': ['Poverty Measurement', 'Poverty Alleviation', 'Population Trends', 'Economic Reforms'],
+    'Social Justice': ['SC/ST/OBC Issues', 'Human Development', 'Social Movements', 'Positive Discrimination'],
+    'Agriculture & Rural Development': ['Soil Science', 'Crop Production', 'Water Resources', 'Farm Machinery', 'Climate Change'],
+    'Rural Development': ['Panchayati Raj', 'Rural Credit', 'NABARD Role', 'Government Schemes'],
+    'Financial Awareness': ['RBI Updates', 'NABARD Updates', 'Banking Terms'],
+    'Government Schemes': ['ARD/ESI Related'],
+    'Appointments': ['Key Appointments'],
+    
+    // Banking Exams - RBI Grade B sub-topics
+    'Static Knowledge': ['Indian Financial System', 'Banking Terms'],
+    'Reports & Indices': ['World Bank', 'IMF Reports'],
+    'Machine Input-Output': ['Complex Logic'],
+    'Data Sufficiency': ['Statement Based'],
+    
+    // Banking Exams - SBI PO sub-topics
+    'Calculation Speed': ['Simplification', 'Approximation', 'Missing Number Series', 'Wrong Number Series', 'Basic Arithmetic Operations'],
+    'Equations & Relations': ['Quadratic Equations', 'Quantity Comparison (Q1 & Q2)'],
+    'Verbal Logic': ["Syllogism (Includes 'Only a Few' concept)", 'Statement and Assumption'],
+    'Coded Relations': ['Coded Inequalities (Symbols)', 'Coding-Decoding (New Pattern)'],
+    'Non-Verbal/Basic Logic': ['Direction Sense', 'Blood Relations (Family Tree)', 'Order and Ranking', 'Alphanumeric Series', 'Three-digit/Three-letter based problems'],
+    'Sentence Structure': ['Para Jumbles (Sentence Rearrangement)'],
+    
+    // Banking Exams - IBPS RRB PO sub-topics
+    'Alphanumeric Series': ['Number Series', 'Symbol Series', 'Alphabet Series']
   };
 
   const [syllabusTopics, setSyllabusTopics] = useState([]);
