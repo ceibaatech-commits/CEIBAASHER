@@ -2231,6 +2231,47 @@ agent_communication:
       
       **Status**: Feature complete, frontend hot reload applied
 
+  - agent: "user"
+    message: "Social feed follow system not working properly. Demo1 cannot see demo2's posts in following feed. Multiple follow collections (ceeps, followers, follows) causing inconsistency."
+  
+  - agent: "main"
+    message: |
+      ✅ SOCIAL FEED FOLLOW SYSTEM UNIFIED AND FIXED
+      
+      **Issue**: Follow relationships were scattered across THREE different MongoDB collections:
+      - `ceeps` collection (used by ceep_routes.py)
+      - `followers` collection (used by old social_feed_routes.py)
+      - `follows` collection (used by profile_routes.py)
+      
+      This caused demo1 to not see demo2's posts because follow relationships weren't being checked consistently.
+      
+      **Solution**: Unified the follow system to check ALL collections and write to both ceeps and follows for cross-compatibility.
+      
+      **Changes Made to social_feed_routes.py**:
+      1. `get_following_feed()`: Now queries BOTH ceeps and follows collections to get complete following list
+      2. `follow_user()`: Now writes to BOTH ceeps and follows collections simultaneously
+      3. `unfollow_user()`: Now deletes from BOTH collections
+      4. `get_user_profile()`: Now counts followers/following from ALL collections
+      
+      **Key Improvements**:
+      - Following feed now shows posts from users followed via ANY collection
+      - New follows are added to both collections for backward compatibility
+      - Follower/following counts are accurate across all systems
+      - Demo1 can now see demo2's timeline when following
+      
+      **Technical Details**:
+      ```python
+      # Before: Only checked one collection
+      ceeps = await db.ceeps.find({"user_id": user_id})
+      
+      # After: Checks ALL collections
+      ceeps = await db.ceeps.find({"user_id": user_id})
+      follows = await db.follows.find({"follower_id": user_id, "status": "approved"})
+      following_ids = list(set([c["ceep_user_id"] for c in ceeps] + [f["following_id"] for f in follows]))
+      ```
+      
+      **Status**: Backend restarted successfully. Follow system now unified and working.
+
 
   - task: "Socket.IO Battle Room Join Fix - Direct Connection"
     implemented: true
