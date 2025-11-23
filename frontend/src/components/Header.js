@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, LogOut, Menu, X, Flame, Search } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, Search, User, LayoutDashboard, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 
@@ -13,6 +13,18 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchResults, setSearchResults] = React.useState([]);
   const [searchLoading, setSearchLoading] = React.useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
+  
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileDropdown]);
 
   const handleSearch = async (query) => {
     if (!query.trim()) {
