@@ -634,20 +634,49 @@ async def get_following(
     skip: int = 0,
     limit: int = 50
 ):
-    """Get list of users that a user is following"""
+    """Get list of users that a user is following from all collections"""
     try:
-        # Get approved following
+        # Get approved following from follows collection
         following_cursor = db.follows.find({
             "follower_id": user_id,
             "status": "approved"
-        }).sort("created_at", -1).skip(skip).limit(limit)
+        }).sort("created_at", -1)
+        following_data_follows = await following_cursor.to_list(length=None)
         
-        following_data = await following_cursor.to_list(length=limit)
+        # Get following from ceeps collection
+        ceeps_cursor = db.ceeps.find({
+            "user_id": user_id
+        }).sort("created_at", -1)
+        following_data_ceeps = await ceeps_cursor.to_list(length=None)
+        
+        # Combine and deduplicate by following_user_id
+        seen_user_ids = set()
+        all_following_data = []
+        
+        for follow in following_data_follows:
+            if follow["following_id"] not in seen_user_ids:
+                seen_user_ids.add(follow["following_id"])
+                all_following_data.append({
+                    "user_id": follow["following_id"],
+                    "created_at": follow.get("created_at")
+                })
+        
+        for ceep in following_data_ceeps:
+            if ceep["ceep_user_id"] not in seen_user_ids:
+                seen_user_ids.add(ceep["ceep_user_id"])
+                all_following_data.append({
+                    "user_id": ceep["ceep_user_id"],
+                    "created_at": ceep.get("created_at")
+                })
+        
+        # Sort by created_at and apply pagination
+        all_following_data.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        paginated_following = all_following_data[skip:skip + limit]
         
         # Get following user details
         following = []
-        for follow in following_data:
-            followed_user = await db.users.find_one({"id": follow["following_id"]})
+        for follow_data in paginated_following:
+            followed_user = await db.users.find_one({"id": follow_data["user_id"]})
             if followed_user:
                 followed_user.pop("_id", None)
                 following.append({
@@ -656,18 +685,13 @@ async def get_following(
                     "name": followed_user.get("name"),
                     "profile_picture": followed_user.get("profile_picture"),
                     "bio": followed_user.get("bio"),
-                    "followed_at": follow.get("created_at")
+                    "followed_at": follow_data.get("created_at")
                 })
-        
-        total_count = await db.follows.count_documents({
-            "follower_id": user_id,
-            "status": "approved"
-        })
         
         return {
             "success": True,
             "following": following,
-            "total": total_count,
+            "total": len(all_following_data),
             "showing": len(following)
         }
         
