@@ -1238,44 +1238,33 @@ EXAM_DATA = {
         "description": "Entrance exam for PO in State Bank of India",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-cyan-500 to-blue-600",
-        "total_questions": 190,
-        "duration": "3 hours",
+        "total_questions": 100,
+        "duration": "1 hour",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Data Interpretation": {"sub_topics": ["Caselet DI", "Mixed/Radar Graphs", "Data Sufficiency"], "questions": 12},
-                    "Arithmetic": {"sub_topics": ["Probability", "Permutation & Combination", "Ratio & Proportion"], "questions": 14},
-                    "Simplification": {"sub_topics": ["BODMAS", "Approximation"], "questions": 5},
-                    "Number Series": {"sub_topics": ["Missing Series", "Wrong Term"], "questions": 4}
+                    "Data Interpretation (DI)": {"sub_topics": ["Line Graph", "Bar Graph", "Pie Chart (Single & Double)", "Tabular DI", "Caselet DI (Paragraph based)", "Radar Graph"], "questions": 15},
+                    "Calculation Speed": {"sub_topics": ["Simplification", "Approximation", "Missing Number Series", "Wrong Number Series", "Basic Arithmetic Operations"], "questions": 8},
+                    "Equations & Relations": {"sub_topics": ["Quadratic Equations", "Quantity Comparison (Q1 & Q2)"], "questions": 5},
+                    "Arithmetic (Word Problems)": {"sub_topics": ["Percentage", "Ratio and Proportion", "Average", "Age Problems", "Profit and Loss", "Simple Interest (SI)", "Compound Interest (CI)", "Time and Work", "Time Speed and Distance", "Pipes and Cisterns", "Mixture and Allegations", "Probability", "Permutation and Combination", "Mensuration (2D & 3D)"], "questions": 12}
                 }
             },
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Circular Seating", "Linear Seating", "Box & Floor Puzzles"], "questions": 22},
-                    "Syllogism": {"sub_topics": ["Standard Syllogism", "Reverse Syllogism"], "questions": 4},
-                    "Inequality": {"sub_topics": ["Direct Inequality", "Coded Inequality"], "questions": 4},
-                    "Direction & Distance": {"sub_topics": ["Direction Sense", "Distance Calculation"], "questions": 5}
+                    "Puzzles & Arrangements": {"sub_topics": ["Floor/Flat Puzzles", "Scheduling (Day Month Year)", "Box Puzzles", "Categorized Puzzles", "Circular Seating (Inward/Outward)", "Linear Seating (Single Row & Double Row)", "Square/Rectangular Arrangement"], "questions": 22},
+                    "Verbal Logic": {"sub_topics": ["Syllogism (Includes 'Only a Few' concept)", "Statement and Assumption"], "questions": 4},
+                    "Coded Relations": {"sub_topics": ["Coded Inequalities (Symbols)", "Coding-Decoding (New Pattern)"], "questions": 4},
+                    "Non-Verbal/Basic Logic": {"sub_topics": ["Direction Sense", "Blood Relations (Family Tree)", "Order and Ranking", "Alphanumeric Series", "Three-digit/Three-letter based problems"], "questions": 3},
+                    "Data Sufficiency": {"sub_topics": ["Two-statement questions"], "questions": 2}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Analysis", "Inference Questions"], "questions": 10},
-                    "Cloze Test": {"sub_topics": ["Fill in the Blanks"], "questions": 5},
-                    "Error Spotting": {"sub_topics": ["Grammar Errors", "Sentence Correction"], "questions": 5},
-                    "Para Jumbles": {"sub_topics": ["Sentence Rearrangement"], "questions": 5},
-                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms"], "questions": 5}
-                }
-            },
-            "General Awareness": {
-                "subjects": {
-                    "Banking Awareness": {"sub_topics": ["Banking News", "Financial Terms", "RBI Policies"], "questions": 30},
-                    "Current Affairs": {"sub_topics": ["National", "International", "Sports", "Awards"], "questions": 20}
-                }
-            },
-            "Data Analysis": {
-                "subjects": {
-                    "Data Interpretation": {"sub_topics": ["Advanced DI", "Data Sufficiency"], "questions": 50}
+                    "Reading & Comprehension": {"sub_topics": ["Reading Comprehension (RC) Passage", "Theme Detection", "Tone of the Passage", "Vocabulary-based questions (Synonyms/Antonyms) within RC"], "questions": 9},
+                    "Vocabulary & Usage": {"sub_topics": ["Cloze Test (Paragraph completion)", "Fillers (Single and Double)", "Word Swap", "Correct Usage of Words", "Phrasal Verb Usage"], "questions": 7},
+                    "Grammar & Errors": {"sub_topics": ["Error Detection (Spotting Errors)", "Sentence Improvement/Correction", "Phrase Replacement"], "questions": 9},
+                    "Sentence Structure": {"sub_topics": ["Para Jumbles (Sentence Rearrangement)"], "questions": 5}
                 }
             }
         }
