@@ -509,7 +509,7 @@ const PublicProfile = () => {
       <FollowListModal
         isOpen={showFollowModal}
         onClose={() => setShowFollowModal(false)}
-        userId={profile.user_id}
+        userId={profile.id}
         type={followModalType}
       />
     </div>
