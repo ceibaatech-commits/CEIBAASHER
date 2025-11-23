@@ -166,7 +166,7 @@ const ExamSheetManager = () => {
     'CLAT': ['English Language', 'Current Affairs & GK', 'Legal Reasoning', 'Logical Reasoning', 'Quantitative Techniques'],
     'GMAT': ['Quantitative Reasoning', 'Verbal Reasoning', 'Data Insights'],
     'CUET': ['Section I: Languages', 'Section II: Domain Subjects', 'Section III: General Test'],
-    'UGC_NET': ['Teaching Aptitude', 'Research Aptitude', 'Comprehension', 'Subject Knowledge'],
+    'UGC_NET': ['Teaching Aptitude', 'Reasoning', 'General Awareness', 'Subject Specific'],
     
     // Agriculture
     'Agriculture': ['Agriculture', 'Horticulture', 'Animal Husbandry', 'Agricultural Economics'],
