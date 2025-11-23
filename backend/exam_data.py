@@ -1366,19 +1366,33 @@ EXAM_DATA = {
         "duration": "2 hours",
         "category": "Banking Examinations",
         "syllabus_topics": {
-            "Reasoning": {
+            "Reasoning Ability": {
                 "subjects": {
-                    "Logical Reasoning": {"sub_topics": ["Puzzles", "Seating Arrangement", "Syllogism"], "questions": 40}
+                    "Puzzles & Seating": {"sub_topics": ["Linear Seating", "Circular Seating", "Box/Floor Puzzles", "Day/Month Puzzles"], "questions": 20},
+                    "Syllogism": {"sub_topics": ["Basic Syllogism", "Possibility Cases"], "questions": 4},
+                    "Inequality": {"sub_topics": ["Direct", "Coded"], "questions": 4},
+                    "Blood Relations": {"sub_topics": ["Coded Relations"], "questions": 3},
+                    "Direction Sense": {"sub_topics": ["Distance & Direction"], "questions": 3},
+                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 3},
+                    "Alphabet Series": {"sub_topics": ["Missing Letters"], "questions": 3}
                 }
             },
-            "Quantitative Aptitude": {
+            "Numerical Ability": {
                 "subjects": {
-                    "Arithmetic & DI": {"sub_topics": ["Number System", "Percentage", "Data Interpretation"], "questions": 40}
+                    "Simplification": {"sub_topics": ["BODMAS", "Square Root"], "questions": 12},
+                    "Approximation": {"sub_topics": ["Estimation"], "questions": 4},
+                    "Number Series": {"sub_topics": ["Missing Number", "Wrong Number"], "questions": 5},
+                    "Quadratic Equations": {"sub_topics": ["Finding Roots"], "questions": 3},
+                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart"], "questions": 7},
+                    "Arithmetic": {"sub_topics": ["P&L", "Ratio", "Ages", "Time & Work", "SI/CI"], "questions": 9}
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Banking & Current Affairs": {"sub_topics": ["Banking", "Economy", "Current Events"], "questions": 40}
+                    "Current Affairs": {"sub_topics": ["Last 6 Months", "Rural India Focus"], "questions": 20},
+                    "Banking Awareness": {"sub_topics": ["RBI Policies", "Financial Markets"], "questions": 12},
+                    "Government Schemes": {"sub_topics": ["Rural Development", "Financial Inclusion"], "questions": 5},
+                    "Static GK": {"sub_topics": ["Regional Banks HQ"], "questions": 3}
                 }
             }
         }
