@@ -1620,7 +1620,7 @@ const ExamSheetManager = () => {
                           <div className="space-y-1">
                             <p className="font-semibold text-gray-900">{sheet.exam_name}</p>
                             <p className="text-gray-600">{sheet.syllabus_topic} → {sheet.subject}</p>
-                            <p className="text-gray-500 text-xs">{sheet.sub_topic} {sheet.sub_sub_topic && `→ ${sheet.sub_sub_topic}`}</p>
+                            {sheet.sub_topic && <p className="text-gray-500 text-xs">→ {sheet.sub_topic}</p>}
                           </div>
                         ) : (
                           <div className="space-y-1">
