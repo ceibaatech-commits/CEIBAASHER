@@ -106,16 +106,35 @@ async def get_all_topics(exam_id: str):
         }).to_list(length=1000)
         
         if sheets:
-            # Build flat topic list from database
-            topics = []
+            # Build grouped topic list from database
+            # Group by syllabus_topic + subject to show sub-topics together
+            topics_dict = {}
             for sheet in sheets:
-                topic_entry = {
-                    "syllabus_topic": sheet.get("syllabus_topic"),
-                    "subject": sheet.get("subject"),
-                    "sub_topics": [sheet.get("sub_topic")] if sheet.get("sub_topic") else [],
-                    "questions": sheet.get("question_count", 0)
-                }
-                topics.append(topic_entry)
+                syllabus_topic = sheet.get("syllabus_topic")
+                subject = sheet.get("subject")
+                sub_topic = sheet.get("sub_topic")
+                questions = sheet.get("question_count", 0)
+                
+                # Create unique key for grouping
+                key = f"{syllabus_topic}||{subject}"
+                
+                if key not in topics_dict:
+                    topics_dict[key] = {
+                        "syllabus_topic": syllabus_topic,
+                        "subject": subject,
+                        "sub_topics": [],
+                        "questions": 0
+                    }
+                
+                # Add sub-topic if not already present
+                if sub_topic and sub_topic not in topics_dict[key]["sub_topics"]:
+                    topics_dict[key]["sub_topics"].append(sub_topic)
+                
+                # Sum up questions
+                topics_dict[key]["questions"] += questions
+            
+            # Convert dict to list
+            topics = list(topics_dict.values())
             
             return {"success": True, "exam": exam_id, "topics": topics}
         else:
