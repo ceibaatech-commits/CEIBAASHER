@@ -297,12 +297,14 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
                 # Handle both ISO formats (with and without timezone)
                 if date_str:
                     if '+' in date_str or date_str.endswith('Z'):
-                        return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                        dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
                     else:
-                        return datetime.fromisoformat(date_str)
-                return datetime.min
-            except:
-                return datetime.min
+                        # Assume UTC for timezone-naive dates
+                        dt = datetime.fromisoformat(date_str).replace(tzinfo=timezone.utc)
+                    return dt
+                return datetime.min.replace(tzinfo=timezone.utc)
+            except Exception as e:
+                return datetime.min.replace(tzinfo=timezone.utc)
         
         posts.sort(key=parse_date, reverse=True)
         return {"success": True, "posts": posts[skip:skip + limit], "count": len(posts)}
