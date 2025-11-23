@@ -304,9 +304,10 @@ const LiveBattle = () => {
     });
 
     newSocket.on('new_reaction', (data) => {
-      setReactions(prev => [...prev, { ...data, id: Date.now() }]);
+      const reactionId = Date.now() + Math.random(); // Unique ID
+      setReactions(prev => [...prev, { ...data, id: reactionId }]);
       setTimeout(() => {
-        setReactions(prev => prev.filter(r => r.id !== data.id));
+        setReactions(prev => prev.filter(r => r.id !== reactionId));
       }, 3000);
     });
 
