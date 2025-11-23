@@ -351,9 +351,22 @@ const SocialFeed = () => {
     }
 
     try {
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {
-        user_id: user.id
-      });
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        alert('Please login to like posts');
+        navigate('/login');
+        return;
+      }
+
+      await axios.post(
+        `${BACKEND_URL}/api/social/posts/${postId}/like`,
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
       fetchFeed();
     } catch (error) {
       console.error('Error liking post:', error);
