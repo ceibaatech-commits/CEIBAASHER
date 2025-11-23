@@ -224,15 +224,28 @@ const SocialFeed = () => {
     setCreatingRoom(true);
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/social/quiz-rooms`, {
-        user_id: user.id,
-        user_name: user.name || user.username || 'User',
-        title: roomForm.title,
-        description: roomForm.description,
-        category: roomForm.category,
-        privacy: roomForm.privacy,
-        questions: questions
-      });
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        alert('Please login to create quiz rooms');
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/quiz-rooms`,
+        {
+          title: roomForm.title,
+          description: roomForm.description,
+          category: roomForm.category,
+          privacy: roomForm.privacy,
+          questions: questions
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
 
       if (response.data.success) {
         setRoomCreated({
