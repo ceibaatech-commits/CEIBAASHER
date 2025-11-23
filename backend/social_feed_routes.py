@@ -622,21 +622,23 @@ async def follow_user(target_user_id: str, authorization: Optional[str] = Header
 
 @router.delete("/user/follow/{target_user_id}")
 async def unfollow_user(target_user_id: str, authorization: Optional[str] = Header(None)):
-    """Unfollow a user"""
+    """Unfollow a user or cancel follow request"""
     try:
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
         follower_id = decode_jwt_token(authorization)
         
-        # Delete from both collections for consistency
-        result_ceeps = await db.ceeps.delete_one({"user_id": follower_id, "ceep_user_id": target_user_id})
-        result_follows = await db.follows.delete_one({"follower_id": follower_id, "following_id": target_user_id})
+        # Delete from follows collection (single source of truth)
+        result = await db.follows.delete_one({
+            "follower_id": follower_id, 
+            "following_id": target_user_id
+        })
         
-        if result_ceeps.deleted_count == 0 and result_follows.deleted_count == 0:
-            raise HTTPException(status_code=404, detail="Not following")
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Not following this user")
         
-        return {"success": True, "message": "User unfollowed"}
+        return {"success": True, "message": "Unfollowed successfully"}
     except HTTPException:
         raise
     except Exception as e:
