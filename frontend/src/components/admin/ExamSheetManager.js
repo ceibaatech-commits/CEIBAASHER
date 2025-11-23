@@ -302,6 +302,20 @@ const ExamSheetManager = () => {
     // General Studies (CAPF and other exams)
     'General Studies': ['Essay Writing', 'Comprehension', 'Communication Skills'],
     
+    // NDA specific syllabus topics
+    'Mathematics (300 Marks)': ['Algebra', 'Trigonometry', 'Analytical Geometry 2D', 'Analytical Geometry 3D', 'Differential Calculus', 'Integral Calculus & Differential Equations', 'Vector Algebra', 'Statistics & Probability'],
+    'General Ability Test - GAT (600 Marks)': ['English (200 Marks)', 'General Knowledge'],
+    
+    // Agniveer specific syllabus topics
+    'General Knowledge (30 Marks)': ['India and Its Neighboring Countries', 'Abbreviations', 'Sports', 'Awards and Prizes', 'Terminology', 'Indian Armed Forces', 'Continents and Subcontinents', 'Inventions and Discoveries', 'The Constitution of India', 'International Organizations', 'Books and Authors', 'Knowledge of Important Events', 'Current Important World Events', 'Prominent Personalities'],
+    'Logical Reasoning (10 Marks)': ['Logical Ability'],
+    'Mathematics (30 Marks)': ['Number Systems', 'Fundamental Arithmetical Operations', 'Algebra', 'Geometry', 'Mensuration', 'Trigonometry'],
+    'General Science (30 Marks)': ['Physics and Chemistry', 'Biology'],
+    
+    // Additional mappings for GAT sub-syllabus
+    'English (200 Marks)': ['Grammar', 'Vocabulary', 'Comprehension'],
+    'General Knowledge': ['History', 'Geography', 'Polity', 'Economics', 'Science', 'Current Affairs'],
+    
     // Other Language subjects (for non-language-proficiency exams)
     'Grammar': ['Parts of Speech', 'Tenses', 'Sentence Structure', 'Punctuation'],
     'Vocabulary': ['Synonyms', 'Antonyms', 'Idioms', 'Phrases'],
