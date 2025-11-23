@@ -213,17 +213,24 @@ const ExamSheetManager = () => {
     'Computer Knowledge': ['Computer Fundamentals', 'MS Office', 'Internet', 'Networking'],
     
     // CAT subjects
+    'Verbal Ability & RC (VARC)': ['Reading Comprehension', 'Verbal Ability (VA)'],
+    'Data Interpretation & LR (DILR)': ['Data Interpretation (DI)', 'Logical Reasoning (LR)'],
+    'Quantitative Aptitude (QA)': ['Arithmetic', 'Algebra', 'Geometry & Mensuration', 'Modern Math', 'Number System'],
     'Verbal Ability': ['Reading Comprehension', 'Para Jumbles', 'Grammar', 'Vocabulary'],
     'Data Interpretation': ['Tables', 'Graphs', 'Charts', 'Data Analysis'],
     'Logical Reasoning': ['Puzzles', 'Arrangements', 'Blood Relations', 'Direction Sense'],
     
     // CLAT subjects
-    'Legal Reasoning': ['Legal Principles', 'Case Studies', 'Legal Maxims'],
+    'English Language': ['Reading Comprehension', 'Vocabulary & Grammar'],
+    'Current Affairs & GK': ['Current Affairs', 'Static GK'],
+    'Legal Reasoning': ['Legal Principles', 'Case Law & Policy'],
     'Current Affairs': ['National Events', 'International Events', 'Sports', 'Awards'],
-    'Quantitative Techniques': ['Arithmetic', 'Algebra', 'Data Interpretation'],
+    'Quantitative Techniques': ['Data Interpretation', 'Basic Arithmetic'],
     
     // GATE subjects
-    'Engineering Mathematics': ['Linear Algebra', 'Calculus', 'Probability', 'Differential Equations'],
+    'General Aptitude (GA)': ['Verbal Ability', 'Quantitative Aptitude'],
+    'Engineering Mathematics': ['Discrete Mathematics', 'Linear Algebra & Calculus', 'Probability & Statistics'],
+    'Core Subject (e.g., CSE)': ['Computer Org. & Architecture', 'Programming & DS', 'Algorithms', 'Operating System'],
     'General Aptitude': ['Verbal Ability', 'Numerical Ability', 'Reasoning'],
     'Technical Subject': ['Core Concepts', 'Advanced Topics', 'Problem Solving'],
     
