@@ -159,9 +159,10 @@ async def get_exam_weightage(exam_id: str):
     import os
     
     try:
-        # Create direct database connection
-        mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
-        db_name = os.getenv('DB_NAME', 'test_database')
+        # Create direct database connection with explicit values
+        mongo_url = os.getenv('MONGO_URL') or 'mongodb://localhost:27017'
+        db_name = os.getenv('DB_NAME') or 'test_database'
+        
         client = AsyncIOMotorClient(mongo_url)
         db = client[db_name]
         
@@ -171,11 +172,12 @@ async def get_exam_weightage(exam_id: str):
             "type": "weightage_analysis"
         })
         
-        client.close()
+        await client.close()
         
         if weightage:
             # Remove MongoDB _id
-            weightage.pop('_id', None)
+            if '_id' in weightage:
+                del weightage['_id']
             return {"success": True, "weightage": weightage}
         else:
             return {"success": False, "message": "Weightage data not available for this exam"}
