@@ -393,7 +393,9 @@ const Dashboard = () => {
                 {activeTab === 'liked' && (
                   likedPosts.length > 0 ? (
                     <div className="space-y-4">
-                      {likedPosts.map(post => (
+                      {likedPosts
+                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                        .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                           <div className="flex items-center gap-2 mb-2">
                             <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">
@@ -401,13 +403,25 @@ const Dashboard = () => {
                             </div>
                             <div>
                               <p className="font-semibold text-gray-800">{post.user_name}</p>
-                              <p className="text-xs text-gray-500">{new Date(post.created_at).toLocaleDateString()}</p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(post.created_at).toLocaleString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
                             </div>
                           </div>
                           <p className="text-gray-800">{post.content}</p>
                           <div className="mt-3 flex gap-4 text-sm text-gray-600">
-                            <span>❤️ {post.likes_count || 0}</span>
-                            <span>💬 {post.comments_count || 0}</span>
+                            <span className="flex items-center gap-1">
+                              <Heart className="w-4 h-4" /> {post.likes_count || 0}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
+                            </span>
                           </div>
                         </div>
                       ))}
