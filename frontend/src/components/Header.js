@@ -109,35 +109,96 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 {/* Notifications Bell */}
                 <NotificationBell />
 
-                {/* User Profile (Desktop) - Click to go to Dashboard */}
-                <button 
-                  onClick={() => navigate('/dashboard')}
-                  className="hidden md:flex items-center space-x-3 bg-gray-200 hover:bg-gray-300 rounded-lg px-4 py-2 transition-colors cursor-pointer text-gray-800"
-                >
-                  <img
-                    src={user.profile_picture || user.avatar || 'https://ui-avatars.com/api/?name=' + user.name}
-                    alt={user.name}
-                    className="w-8 h-8 rounded-full border-2 border-cyan-400"
-                  />
-                  <div>
-                    <p className="font-semibold text-sm">{user.name}</p>
-                    <div className="flex items-center space-x-2 text-xs">
-                      <Trophy className="w-3 h-3 text-yellow-500" />
-                      <span>{user.rating || 1200}</span>
-                      <Flame className="w-3 h-3 text-orange-500" />
-                      <span>{user.streak || 0}</span>
-                    </div>
-                  </div>
-                </button>
+                {/* User Name (Desktop) */}
+                <div className="hidden md:block text-right mr-2">
+                  <p className="font-semibold text-sm text-gray-800">{user.name}</p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
+                </div>
 
-                {/* Logout */}
-                <button
-                  onClick={onLogout}
-                  className="hidden md:flex items-center space-x-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors text-white"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="text-sm font-semibold">Logout</span>
-                </button>
+                {/* User Profile Avatar with Dropdown (Desktop) */}
+                <div className="hidden md:block relative profile-dropdown-container">
+                  <button 
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                    className="flex items-center space-x-2 hover:opacity-80 transition-opacity focus:outline-none"
+                  >
+                    {/* Profile Avatar */}
+                    {user.profile_picture || user.avatar ? (
+                      <img
+                        src={user.profile_picture || user.avatar}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full border-2 border-gray-300 hover:border-cyan-500 transition-all object-cover cursor-pointer"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg border-2 border-gray-300 hover:border-cyan-500 transition-all cursor-pointer">
+                        {user.name?.[0]?.toUpperCase() || 'U'}
+                      </div>
+                    )}
+                    <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showProfileDropdown && (
+                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-50 animate-fade-in">
+                      {/* User Info Header */}
+                      <div className="px-4 py-3 bg-gradient-to-r from-cyan-50 to-purple-50 border-b border-gray-200">
+                        <div className="flex items-center space-x-3">
+                          {user.profile_picture || user.avatar ? (
+                            <img
+                              src={user.profile_picture || user.avatar}
+                              alt={user.name}
+                              className="w-12 h-12 rounded-full border-2 border-cyan-400 object-cover"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-2 border-cyan-400">
+                              {user.name?.[0]?.toUpperCase() || 'U'}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm text-gray-800 truncate">{user.name}</p>
+                            <p className="text-xs text-gray-600 truncate">{user.email}</p>
+                          </div>
+                        </div>
+                        {/* Stats */}
+                        <div className="flex items-center justify-center space-x-4 mt-2 text-xs">
+                          <div className="flex items-center space-x-1">
+                            <Trophy className="w-3 h-3 text-yellow-500" />
+                            <span className="text-gray-700">{user.rating || 1200}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Flame className="w-3 h-3 text-orange-500" />
+                            <span className="text-gray-700">{user.streak || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+                      <div className="py-2">
+                        <button
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            navigate('/dashboard');
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
+                        >
+                          <LayoutDashboard className="w-4 h-4 text-cyan-600" />
+                          <span className="font-medium text-sm">Dashboard</span>
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            onLogout();
+                            navigate('/');
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-red-50 transition-colors text-left text-red-600"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span className="font-medium text-sm">Logout</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </>
             ) : null}
             
