@@ -2199,6 +2199,37 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented comprehensive fixes for profile and social feed issues reported by user. Fixed JWT authentication in profile updates, added endpoints for fetching user activity (posts, quiz rooms, liked posts), implemented UI for displaying this data in Dashboard and PublicProfile pages, and made usernames clickable for profile navigation. All services restarted successfully with no errors. Need backend and frontend testing to verify all fixes are working correctly."
+  
+  - agent: "user"
+    message: "Add back button to dashboard and profile pages - currently there's no way to navigate back to previous page from https://quizflow-19.preview.emergentagent.com/dashboard"
+  
+  - agent: "main"
+    message: |
+      ✅ BACK BUTTON ADDED TO PROFILE PAGES
+      
+      **Issue**: Dashboard and public profile pages had no navigation button to return to previous page.
+      
+      **Solution**: Added back button with arrow icon at top of both pages using navigate(-1).
+      
+      **Changes Made**:
+      1. Dashboard.js:
+         - Added ArrowLeft icon import from lucide-react
+         - Added back button above profile card with onClick={() => navigate(-1)}
+         - Styled to match app theme (gray text, purple hover)
+      
+      2. PublicProfile.js:
+         - Added ArrowLeft icon import
+         - Added back button to full public profile view
+         - Added back button to private account view
+         - Consistent styling across all views
+      
+      **Verification**:
+      - ✅ Dashboard back button visible and functional
+      - ✅ Public profile back button visible and functional
+      - ✅ Button navigates to previous page in browser history
+      - ✅ Design matches app aesthetic with hover effects
+      
+      **Status**: Feature complete, frontend hot reload applied
 
 
   - task: "Socket.IO Battle Room Join Fix - Direct Connection"
