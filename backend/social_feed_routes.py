@@ -777,8 +777,12 @@ async def get_quiz_rooms(
 
 @router.get("/quiz-rooms/{room_code}")
 async def get_quiz_room(room_code: str, authorization: Optional[str] = Header(None)):
-    """Get quiz room by code"""
+    """Get quiz room details with validation"""
     try:
+        # Validate room code format (alphanumeric, 6 characters)
+        if not room_code or len(room_code) != 6 or not room_code.isalnum():
+            raise HTTPException(status_code=400, detail="Invalid room code format")
+        
         room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
         if not room:
             raise HTTPException(status_code=404, detail="Quiz room not found")
