@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import mobile-specific styles */
+@import './styles/mobile.css';
+
 /* KaTeX CSS for LaTeX rendering */
 @import 'katex/dist/katex.min.css';
 
