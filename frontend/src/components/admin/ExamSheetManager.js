@@ -519,7 +519,10 @@ const ExamSheetManager = () => {
     'Sentence Structure': ['Para Jumbles (Sentence Rearrangement)'],
     
     // Banking Exams - IBPS RRB PO sub-topics
-    'Alphanumeric Series': ['Number Series', 'Symbol Series', 'Alphabet Series']
+    'Alphanumeric Series': ['Number Series', 'Symbol Series', 'Alphabet Series'],
+    
+    // Additional Banking Exam specific subjects
+    'Puzzles & Seating Arrangement': ['Floor/Flat Puzzles', 'Box Puzzles', 'Scheduling (Day/Month/Year)', 'Circular Seating', 'Linear Seating', 'Square/Rectangular Arrangement']
   };
 
   const [syllabusTopics, setSyllabusTopics] = useState([]);
