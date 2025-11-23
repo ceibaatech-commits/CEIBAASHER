@@ -133,7 +133,7 @@ const ExamSheetManager = () => {
     
     // Banking & Finance
     'IBPS_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
-    'IBPS_CLERK': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
+    'IBPS_CLERK': ['Numerical Ability', 'Reasoning Ability', 'English Language'],
     'IBPS_SO': ['Reasoning', 'Quantitative Aptitude', 'English Language', 'General Awareness'],
     'SBI_PO': ['Quantitative Aptitude', 'Reasoning Ability', 'English Language'],
     'SBI_CLERK': ['Numerical Ability', 'Reasoning Ability', 'English Language'],
