@@ -855,29 +855,59 @@ EXAM_DATA = {
     "GATE": {
         "name": "GATE",
         "full_name": "Graduate Aptitude Test in Engineering",
-        "description": "National level engineering entrance exam for M.Tech, PSU recruitment",
+        "description": "National level engineering entrance exam for M.Tech, PSU recruitment (Syllabus varies by paper; CSE as example)",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
         "color": "from-purple-600 to-blue-600",
         "total_questions": 65,
         "duration": "3 hours",
         "category": "Admission Tests",
         "syllabus_topics": {
+            "General Aptitude (GA)": {
+                "subjects": {
+                    "Verbal Ability": {
+                        "sub_topics": ["English Grammar", "Vocabulary", "Reading Comprehension", "Verbal Analogies"],
+                        "questions": 10
+                    },
+                    "Quantitative Aptitude": {
+                        "sub_topics": ["Numerical Computation", "Data Interpretation (Graphs, Charts)", "Quantitative Reasoning"],
+                        "questions": 10
+                    }
+                }
+            },
             "Engineering Mathematics": {
                 "subjects": {
-                    "Linear Algebra": {"sub_topics": ["Matrices", "Determinants", "Eigen Values", "Linear Equations"], "questions": 10},
-                    "Calculus": {"sub_topics": ["Limits", "Differentiation", "Integration", "Differential Equations"], "questions": 12},
-                    "Probability": {"sub_topics": ["Random Variables", "Distributions", "Statistics"], "questions": 8}
+                    "Discrete Mathematics": {
+                        "sub_topics": ["Propositional/First-Order Logic", "Sets, Relations, Functions", "Graph Theory", "Combinatorics"],
+                        "questions": 7
+                    },
+                    "Linear Algebra & Calculus": {
+                        "sub_topics": ["Matrices", "Determinants", "Eigenvalues/Eigenvectors", "Limits", "Continuity", "Differentiation", "Integration"],
+                        "questions": 10
+                    },
+                    "Probability & Statistics": {
+                        "sub_topics": ["Random Variables", "Distributions (Uniform, Normal, Poisson, Binomial)", "Mean, Median, Mode", "Bayes' Theorem"],
+                        "questions": 6
+                    }
                 }
             },
-            "General Aptitude": {
+            "Core Subject (e.g., CSE)": {
                 "subjects": {
-                    "Verbal Ability": {"sub_topics": ["Grammar", "Sentence Completion", "Verbal Analogies"], "questions": 10},
-                    "Numerical Ability": {"sub_topics": ["Data Interpretation", "Numerical Computation", "Quantitative Comparison"], "questions": 10}
-                }
-            },
-            "Core Engineering": {
-                "subjects": {
-                    "Technical Fundamentals": {"sub_topics": ["Core Concepts", "Advanced Topics", "Applications"], "questions": 15}
+                    "Computer Org. & Architecture": {
+                        "sub_topics": ["Machine Instructions", "ALU", "Data Path", "Control Unit", "Pipelining", "Memory Hierarchy (Cache, Main Memory)"],
+                        "questions": 8
+                    },
+                    "Programming & DS": {
+                        "sub_topics": ["C Programming", "Recursion", "Arrays", "Stacks", "Queues", "Linked Lists", "Trees", "Binary Search Trees", "Graphs"],
+                        "questions": 8
+                    },
+                    "Algorithms": {
+                        "sub_topics": ["Searching", "Sorting", "Hashing", "Time & Space Complexity", "Algorithm Design Techniques (Greedy, Dynamic, Divide-and-Conquer)"],
+                        "questions": 8
+                    },
+                    "Operating System": {
+                        "sub_topics": ["System Calls", "Processes", "Threads", "Concurrency", "Synchronization", "Deadlock", "CPU Scheduling", "Memory Management", "File Systems"],
+                        "questions": 8
+                    }
                 }
             }
         }
