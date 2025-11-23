@@ -1410,27 +1410,43 @@ EXAM_DATA = {
         "syllabus_topics": {
             "Reasoning Ability": {
                 "subjects": {
-                    "Logical Reasoning": {"sub_topics": ["Puzzles", "Syllogism", "Inequality"], "questions": 35}
+                    "Puzzles & Seating": {"sub_topics": ["Box/Floor", "Day/Month", "Linear", "Circular"], "questions": 15},
+                    "Syllogism": {"sub_topics": ["Standard", "Possibility"], "questions": 5},
+                    "Inequality": {"sub_topics": ["Coded Inequality"], "questions": 3},
+                    "Blood Relations": {"sub_topics": ["Family Tree"], "questions": 3},
+                    "Direction Sense": {"sub_topics": ["Direction"], "questions": 3},
+                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 3},
+                    "Input-Output": {"sub_topics": ["Machine Input"], "questions": 3}
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Mathematics": {"sub_topics": ["Arithmetic", "Data Interpretation", "Number Series"], "questions": 35}
+                    "Simplification": {"sub_topics": ["BODMAS"], "questions": 5},
+                    "Data Interpretation": {"sub_topics": ["Table", "Bar", "Line Chart"], "questions": 10},
+                    "Number Series": {"sub_topics": ["Missing Series"], "questions": 5},
+                    "Quadratic Equations": {"sub_topics": ["Roots"], "questions": 5},
+                    "Arithmetic": {"sub_topics": ["P&L", "SI/CI", "Ratio", "Time & Work", "Speed", "Averages", "Mensuration"], "questions": 10}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "English Proficiency": {"sub_topics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 30}
+                    "Reading Comprehension": {"sub_topics": ["Passage Analysis"], "questions": 10},
+                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
+                    "Sentence Correction": {"sub_topics": ["Grammar"], "questions": 5},
+                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
+                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Fill in Blanks"], "questions": 5}
                 }
             },
             "General Knowledge": {
                 "subjects": {
-                    "GK & Current Affairs": {"sub_topics": ["Banking", "Insurance", "Economy", "Current Events"], "questions": 30}
+                    "Current Affairs": {"sub_topics": ["Banking", "Insurance", "Economy", "Sports"], "questions": 15},
+                    "Static GK": {"sub_topics": ["Indian Polity", "Geography", "History"], "questions": 15}
                 }
             },
             "Insurance & Financial Market": {
                 "subjects": {
-                    "Insurance Knowledge": {"sub_topics": ["Insurance Concepts", "LIC Products", "Regulations"], "questions": 20}
+                    "Insurance Knowledge": {"sub_topics": ["Insurance Concepts", "LIC Products", "IRDA Regulations"], "questions": 10},
+                    "Financial Market": {"sub_topics": ["Capital Market", "Money Market", "Derivatives"], "questions": 10}
                 }
             }
         }
