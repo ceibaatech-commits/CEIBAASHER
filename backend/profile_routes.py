@@ -1,6 +1,17 @@
 """
 Profile Management Routes
 Handles user profiles, follow system, and social features
+
+RECOMMENDED DATABASE INDEXES FOR PERFORMANCE:
+-----------------------------------------------
+db.follows.createIndex({ "follower_id": 1, "following_id": 1 }, { unique: true })
+db.follows.createIndex({ "following_id": 1, "status": 1 })
+db.follows.createIndex({ "follower_id": 1, "status": 1 })
+db.ceeps.createIndex({ "user_id": 1, "ceep_user_id": 1 }, { unique: true })
+db.ceeps.createIndex({ "ceep_user_id": 1 })
+db.social_posts.createIndex({ "user_id": 1, "created_at": -1 })
+db.users.createIndex({ "username": 1 }, { unique: true })
+db.users.createIndex({ "id": 1 }, { unique: true })
 """
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel, Field
