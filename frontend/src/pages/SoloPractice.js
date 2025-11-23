@@ -327,13 +327,13 @@ const SoloPractice = () => {
                   if (isClassBased && classBasedData) {
                     navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`);
                   } else {
-                    navigate('/');
+                    navigate(`/exam/${exam}`);
                   }
                 }}
                 className="bg-white text-gray-700 hover:text-gray-900 flex items-center border-2 border-gray-300 hover:border-gray-400 px-4 py-2 rounded-lg transition-all font-semibold"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to {isClassBased ? 'Chapters' : 'Home'}
+                Back to {isClassBased ? 'Chapters' : 'Exam Topics'}
               </button>
             </div>
 
