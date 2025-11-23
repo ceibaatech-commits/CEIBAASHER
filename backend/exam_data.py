@@ -3,76 +3,68 @@
 
 EXAM_DATA = {
     "JEE": {
-        "name": "JEE Main & Advanced",
-        "full_name": "Joint Entrance Examination",
+        "name": "JEE Main",
+        "full_name": "Joint Entrance Examination - Main",
         "description": "Engineering entrance exam for IITs, NITs, and premier engineering institutes",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/tlt2dw8j_Gemini_Generated_Image_8fhn578fhn578fhn_2-removebg-preview.png",
         "color": "from-blue-500 to-indigo-600",
-        "total_questions": 75,
+        "total_questions": 90,
         "duration": "3 hours",
         "category": "Admission Tests",
         "syllabus_topics": {
             "Physics": {
                 "subjects": {
                     "Mechanics": {
-                        "sub_topics": ["Kinematics", "Laws of Motion", "Work Energy Power", "Rotational Motion", "Gravitation"],
-                        "questions": 25
+                        "sub_topics": ["Kinematics", "Laws of Motion", "Work/Energy/Power", "Rotational Motion", "Gravitation", "Oscillations", "SHM"],
+                        "questions": 8
                     },
-                    "Thermodynamics": {
-                        "sub_topics": ["Heat and Temperature", "Kinetic Theory", "Thermodynamic Processes"],
-                        "questions": 20
+                    "Thermodynamics & Waves": {
+                        "sub_topics": ["Thermal Properties of Matter", "Kinetic Theory of Gases", "Thermodynamics", "Waves and Sound", "Simple Harmonic Motion"],
+                        "questions": 7
                     },
-                    "Electromagnetism": {
-                        "sub_topics": ["Electrostatics", "Current Electricity", "Magnetic Effects", "Electromagnetic Induction"],
-                        "questions": 30
-                    },
-                    "Optics": {
-                        "sub_topics": ["Ray Optics", "Wave Optics", "Optical Instruments"],
-                        "questions": 20
+                    "E&M & Optics": {
+                        "sub_topics": ["Electrostatics", "Current Electricity", "Magnetism (Moving Charges and Matter)", "EMI", "AC", "Ray Optics", "Wave Optics"],
+                        "questions": 10
                     },
                     "Modern Physics": {
-                        "sub_topics": ["Dual Nature", "Atoms and Nuclei", "Semiconductor Devices"],
-                        "questions": 25
+                        "sub_topics": ["Dual Nature of Radiation/Matter", "Atoms", "Nuclei", "Semiconductor Electronics", "Communication Systems"],
+                        "questions": 5
                     }
                 }
             },
             "Chemistry": {
                 "subjects": {
                     "Physical Chemistry": {
-                        "sub_topics": ["Atomic Structure", "Chemical Bonding", "Thermodynamics", "Equilibrium", "Electrochemistry"],
-                        "questions": 30
-                    },
-                    "Organic Chemistry": {
-                        "sub_topics": ["Hydrocarbons", "Functional Groups", "Biomolecules", "Polymers"],
-                        "questions": 35
+                        "sub_topics": ["Atomic Structure", "Chemical Bonding", "States of Matter", "Thermodynamics", "Equilibrium", "Solutions", "Electrochemistry", "Chemical Kinetics"],
+                        "questions": 10
                     },
                     "Inorganic Chemistry": {
-                        "sub_topics": ["Periodic Table", "Chemical Bonding", "Coordination Compounds", "Metallurgy"],
-                        "questions": 30
+                        "sub_topics": ["Classification of Elements (Periodicity)", "s-Block", "p-Block", "d- and f-Block Elements", "Coordination Compounds"],
+                        "questions": 10
+                    },
+                    "Organic Chemistry": {
+                        "sub_topics": ["Basic Principles", "Hydrocarbons", "Haloalkanes/Haloarenes", "Alcohols/Phenols/Ethers", "Aldehydes/Ketones/Carboxylic Acids", "Amines", "Biomolecules"],
+                        "questions": 10
                     }
                 }
             },
             "Mathematics": {
                 "subjects": {
                     "Algebra": {
-                        "sub_topics": ["Complex Numbers", "Quadratic Equations", "Sequences and Series", "Permutations"],
-                        "questions": 30
+                        "sub_topics": ["Sets/Relations/Functions", "Complex Numbers", "Quadratic Equations", "Sequences & Series", "Permutations & Combinations", "Binomial Theorem", "Matrices & Determinants"],
+                        "questions": 8
                     },
                     "Calculus": {
-                        "sub_topics": ["Limits", "Differentiation", "Integration", "Differential Equations"],
-                        "questions": 35
+                        "sub_topics": ["Limits", "Continuity & Differentiability", "Application of Derivatives", "Indefinite/Definite Integration", "Application of Integrals", "Differential Equations"],
+                        "questions": 8
                     },
                     "Coordinate Geometry": {
-                        "sub_topics": ["Straight Lines", "Circles", "Parabola", "Ellipse", "Hyperbola"],
-                        "questions": 25
+                        "sub_topics": ["Straight Lines", "Circles", "Conic Sections (Parabola, Ellipse, Hyperbola)", "3D Geometry"],
+                        "questions": 7
                     },
-                    "Vectors and 3D": {
-                        "sub_topics": ["Vectors", "3D Geometry", "Vector Algebra"],
-                        "questions": 20
-                    },
-                    "Trigonometry": {
-                        "sub_topics": ["Trigonometric Ratios", "Equations", "Properties of Triangles"],
-                        "questions": 20
+                    "Statistics & Probability": {
+                        "sub_topics": ["Statistics", "Probability", "Vector Algebra", "Mathematical Reasoning"],
+                        "questions": 7
                     }
                 }
             }
