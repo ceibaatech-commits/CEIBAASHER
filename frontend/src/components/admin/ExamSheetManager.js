@@ -522,7 +522,61 @@ const ExamSheetManager = () => {
     'Alphanumeric Series': ['Number Series', 'Symbol Series', 'Alphabet Series'],
     
     // Additional Banking Exam specific subjects
-    'Puzzles & Seating Arrangement': ['Floor/Flat Puzzles', 'Box Puzzles', 'Scheduling (Day/Month/Year)', 'Circular Seating', 'Linear Seating', 'Square/Rectangular Arrangement']
+    'Puzzles & Seating Arrangement': ['Floor/Flat Puzzles', 'Box Puzzles', 'Scheduling (Day/Month/Year)', 'Circular Seating', 'Linear Seating', 'Square/Rectangular Arrangement'],
+    
+    // Defence Exams - NDA sub-topics
+    'Analytical Geometry 2D': ['Cartesian Coordinate System', 'Distance Formula', 'Section & Midpoint Formula', 'Straight Lines', 'Angle Between Two Lines', 'Circle', 'Conic Sections'],
+    'Analytical Geometry 3D': ['Direction Cosines & Direction Ratios', 'Equation of Line in Space', 'Angle Between Two Lines', 'Plane', 'Sphere'],
+    'Calculus': ['Differentiation', 'Integration', 'Application of Calculus', 'Differential Equations'],
+    'Vectors & Matrices': ['Vector Operations', 'Dot Product', 'Cross Product', 'Matrix Operations', 'Determinants', 'Inverse of Matrix'],
+    'Statistics & Probability': ['Statistics', 'Probability', 'Random Variables', 'Distributions', 'Mean', 'Median', 'Mode', "Bayes' Theorem"],
+    
+    // Defence Exams - Agniveer sub-topics
+    'India and Its Neighboring Countries': ['History of India and neighboring countries', 'Culture and traditions', 'Geography', 'Important figures and leaders'],
+    'Abbreviations': ['Common abbreviations', 'National and international organization abbreviations'],
+    'Sports': ['Major sports events', 'Sports awards', 'National and international sports records', 'Indian sports personalities'],
+    'Awards and Prizes': ['National awards (Bharat Ratna, Padma awards)', 'International awards', 'Military awards', 'Significance and history'],
+    'Terminology': ['Important terms from various fields', 'Military terminology', 'Scientific and technical terms'],
+    'Indian Armed Forces': ['Structure of Indian Armed Forces', 'History and establishment', 'Ranks and hierarchy', 'Role in national defense'],
+    'Continents and Subcontinents': ['Knowledge of continents', 'Countries and capitals', 'Major geographical divisions', 'Important rivers and mountains'],
+    'Inventions and Discoveries': ['Important inventions', 'Indian contributions to science', 'Scientists and inventors', 'Historical timeline'],
+    'The Constitution of India': ['Key features', 'Fundamental Rights', 'Fundamental Duties', 'Directive Principles'],
+    'International Organizations': ['UN, WHO, UNESCO', 'International peacekeeping', 'Economic organizations', 'Regional organizations'],
+    'Books and Authors': ['Famous books and authors', 'Indian literary works', 'Global literary contributions', 'Award-winning books'],
+    'Knowledge of Important Events': ['Major historical events', 'World historical events', 'Independence movement', 'Recent significant events'],
+    'Current Important World Events': ['Ongoing political events', 'Economic developments', 'Scientific advancements', 'International relations'],
+    'Prominent Personalities': ['Famous personalities from India', 'Global leaders', 'Military heroes', 'Contributions to nation-building'],
+    'Logical Ability': ['Logical thinking', 'Pattern recognition', 'Problem-solving', 'Analytical reasoning', 'Sequence and series', 'Coding-decoding', 'Blood relations', 'Direction sense', 'Puzzles'],
+    'Number Systems': ['Whole numbers', 'Decimal and fractions', 'Relationship between numbers', 'Types of numbers'],
+    'Fundamental Arithmetical Operations': ['HCF and LCM', 'Decimal fraction', 'Percentages', 'Ratio and Proportion', 'Square roots', 'Averages', 'Simple Interest', 'Compound Interest', 'Profit and Loss', 'Discount', 'Partnership', 'Time and Distance', 'Time and Work'],
+    'Mensuration': ['Area of triangles', 'Perimeter', 'Area and perimeter of quadrilaterals', 'Area and perimeter of polygons', 'Area and circumference of circles'],
+    'Physics and Chemistry': ['Fundamental concepts of physics', 'Laws of motion', 'Force, energy, and power', 'Heat and temperature', 'Light and sound', 'Electricity and magnetism', 'Basic chemistry', 'Elements, compounds, and mixtures', 'Chemical reactions', 'Acids, bases, and salts'],
+    'Biology': ['Living and non-living things', 'Cells - structure and functions', 'Tissues - types and functions', 'Growth and reproduction', 'Human body knowledge', 'Human body systems', 'Common diseases', 'Disease prevention', 'Nutrition', 'Vitamins and minerals'],
+    
+    // Defence Exams - CDS sub-topics (some already exist, adding missing ones)
+    'History': ['Indian History', 'World History', 'Freedom Movement', 'Ancient India', 'Medieval India', 'Modern India'],
+    'Geography': ['Physical Geography', 'Economic Geography', 'Political Geography', 'Indian Geography', 'World Geography'],
+    'Polity': ['Constitution', 'Governance', 'Rights', 'Parliament', 'Judiciary', 'Executive'],
+    'Science': ['Physics', 'Chemistry', 'Biology', 'Technology', 'Scientific Developments'],
+    
+    // Admission Tests - JEE Additional Mappings
+    'Thermodynamics & Waves': ['Thermal Properties of Matter', 'Kinetic Theory of Gases', 'Thermodynamics', 'Waves and Sound', 'Simple Harmonic Motion'],
+    'E&M & Optics': ['Electrostatics', 'Current Electricity', 'Magnetism', 'EMI', 'AC', 'Ray Optics', 'Wave Optics'],
+    'Inorganic Chemistry': ['Chemical Bonding', 'Coordination Chemistry', 'p-Block Elements', 'd & f-Block Elements', 'Periodic Table'],
+    'Organic Chemistry': ['Hydrocarbons', 'Alcohols', 'Aldehydes', 'Ketones', 'Carboxylic Acids', 'Amines', 'Biomolecules', 'Polymers'],
+    'Physical Chemistry': ['Atomic Structure', 'Thermodynamics', 'Equilibrium', 'Electrochemistry', 'Chemical Kinetics', 'Solutions'],
+    'Coordinate Geometry': ['Straight Lines', 'Circles', 'Parabola', 'Ellipse', 'Hyperbola'],
+    'Differential Calculus': ['Limits', 'Continuity', 'Differentiation', 'Applications of Derivatives'],
+    'Integral Calculus & Differential Equations': ['Integration', 'Definite Integrals', 'Area Under Curves', 'Differential Equations'],
+    'Vector Algebra & 3D': ['Vectors', '3D Geometry', 'Scalar Triple Product', 'Vector Triple Product'],
+    
+    // Banking - Additional mappings for SBI, LIC, IBPS exams
+    'Puzzles & Arrangements': ['Linear', 'Circular', 'Box', 'Floor', 'Scheduling'],
+    'Miscellaneous': ['Blood Relations', 'Direction', 'Coding', 'Order & Ranking'],
+    'Para Jumbles': ['Rearrangement', 'Sequencing', 'Ordering Sentences'],
+    'Fillers': ['Single Filler', 'Double Filler', 'Word Usage'],
+    'Word Swap': ['Swap Corrections', 'Context-based Usage'],
+    'Phrase Replacement': ['Error Correction', 'Phrase Improvement']
   };
 
   const [syllabusTopics, setSyllabusTopics] = useState([]);
