@@ -56,6 +56,7 @@ function App() {
     <AuthProvider>
       <div className="App">
         <BrowserRouter>
+          <ScrollRestoration />
           <Routes>
             <Route path="/" element={<Home />} />
           <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
