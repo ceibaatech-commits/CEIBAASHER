@@ -188,11 +188,11 @@ const ExamSheetManager = () => {
 
   // Comprehensive subjects map
   const subjectsMap = {
-    // Science subjects
-    'Physics': ['Mechanics', 'Thermodynamics', 'Optics', 'Electromagnetism', 'Modern Physics', 'Waves', 'Sound', 'Electricity'],
-    'Chemistry': ['Physical Chemistry', 'Organic Chemistry', 'Inorganic Chemistry'],
+    // Science subjects (JEE Main)
+    'Physics': ['Mechanics', 'Thermodynamics & Waves', 'E&M & Optics', 'Modern Physics'],
+    'Chemistry': ['Physical Chemistry', 'Inorganic Chemistry', 'Organic Chemistry'],
     'Biology': ['Botany', 'Zoology', 'Ecology', 'Genetics', 'Evolution', 'Human Physiology'],
-    'Mathematics': ['Algebra', 'Calculus', 'Coordinate Geometry', 'Trigonometry', 'Statistics', 'Probability', 'Vectors', 'Differential Equations'],
+    'Mathematics': ['Algebra', 'Calculus', 'Coordinate Geometry', 'Statistics & Probability'],
     
     // UPSC subjects
     'General Studies Paper 1': ['History', 'Geography', 'Culture', 'Society'],
