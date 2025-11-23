@@ -247,6 +247,79 @@ const ModernExamSyllabus = () => {
           </div>
         </div>
 
+        {/* Topic-Wise Weightage Analysis */}
+        {weightageData && (
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <BarChart className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-bold text-gray-900">Topic-Wise Weightage Analysis</h3>
+              </div>
+              <button 
+                onClick={() => setShowWeightage(!showWeightage)}
+                className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-semibold"
+              >
+                {showWeightage ? 'Hide' : 'Show'} Details
+                {showWeightage ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+            </div>
+            
+            <AnimatePresence>
+              {showWeightage && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }} 
+                  animate={{ height: 'auto', opacity: 1 }} 
+                  exit={{ height: 0, opacity: 0 }}
+                  className="space-y-6"
+                >
+                  {weightageData.sections?.map((section, idx) => (
+                    <div key={idx} className="border-l-4 border-blue-500 pl-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-base font-bold text-gray-800">{section.section_name}</h4>
+                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                          Total: {section.total_questions} Questions
+                        </span>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th className="text-left py-2 px-3 font-semibold text-gray-700">Topic</th>
+                              <th className="text-center py-2 px-3 font-semibold text-gray-700">Expected Questions</th>
+                              <th className="text-left py-2 px-3 font-semibold text-gray-700">Importance Level</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {section.topics?.map((topic, tidx) => (
+                              <tr key={tidx} className="border-t border-gray-100 hover:bg-gray-50">
+                                <td className="py-2 px-3 text-gray-800">{topic.topic}</td>
+                                <td className="py-2 px-3 text-center font-semibold text-blue-600">{topic.questions}</td>
+                                <td className="py-2 px-3">
+                                  <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                                    topic.importance.includes('VERY HIGH') 
+                                      ? 'bg-red-100 text-red-800' 
+                                      : topic.importance.includes('HIGH') || topic.importance.includes('High')
+                                      ? 'bg-orange-100 text-orange-800'
+                                      : topic.importance.includes('Moderate')
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {topic.importance}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
         {/* Subject Filter */}
         <div className="bg-white rounded-xl shadow-md p-4 mb-6">
           <div className="flex flex-wrap gap-2">
