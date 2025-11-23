@@ -21,7 +21,6 @@ const ExamSheetManager = () => {
     syllabus_topic: '',
     subject: '',
     sub_topic: '',
-    sub_sub_topic: '',
     sheet_link: ''
   });
 
