@@ -1345,29 +1345,41 @@ EXAM_DATA = {
         "syllabus_topics": {
             "General Awareness": {
                 "subjects": {
-                    "Economy & Banking": {"sub_topics": ["Indian Economy", "Monetary Policy", "Banking Structure"], "questions": 40},
-                    "Current Affairs": {"sub_topics": ["National", "International", "Financial News"], "questions": 40}
+                    "Current Affairs": {"sub_topics": ["Last 6-8 months", "RBI Circulars", "Monetary Policy"], "questions": 40},
+                    "Static Knowledge": {"sub_topics": ["Indian Financial System", "Banking Terms"], "questions": 15},
+                    "Reports & Indices": {"sub_topics": ["World Bank", "IMF Reports"], "questions": 15},
+                    "Government Schemes": {"sub_topics": ["Union Budget", "Economic Survey"], "questions": 10}
+                }
+            },
+            "Reasoning Ability": {
+                "subjects": {
+                    "Puzzles & Seating": {"sub_topics": ["Multi-variable", "Complex Arrangements"], "questions": 15},
+                    "Machine Input-Output": {"sub_topics": ["Complex Logic"], "questions": 5},
+                    "Data Sufficiency": {"sub_topics": ["3 Statements"], "questions": 5},
+                    "Logical Reasoning": {"sub_topics": ["Statement/Argument"], "questions": 3},
+                    "Inequality": {"sub_topics": ["Complex Inequality"], "questions": 2}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Business Passages", "Economic Articles"], "questions": 20},
-                    "Grammar & Vocabulary": {"sub_topics": ["Error Correction", "Idioms", "Synonyms"], "questions": 20}
+                    "Reading Comprehension": {"sub_topics": ["Advanced RC", "Inference Based"], "questions": 15},
+                    "Error Spotting": {"sub_topics": ["Advanced Grammar"], "questions": 5},
+                    "Para Jumbles": {"sub_topics": ["Complex Rearrangement"], "questions": 5},
+                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms"], "questions": 5},
+                    "Sentence Completion": {"sub_topics": ["Fill Blanks"], "questions": 10}
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Advanced Mathematics": {"sub_topics": ["Probability", "Permutation", "Algebra"], "questions": 20}
-                }
-            },
-            "Reasoning": {
-                "subjects": {
-                    "Analytical Reasoning": {"sub_topics": ["Complex Puzzles", "Data Sufficiency"], "questions": 20}
+                    "Data Interpretation": {"sub_topics": ["Caselets", "Radar DI", "Missing DI"], "questions": 15},
+                    "Data Sufficiency": {"sub_topics": ["Statement Based"], "questions": 5},
+                    "Arithmetic": {"sub_topics": ["Time Speed Distance", "P&L", "Probability"], "questions": 10},
+                    "Simplification": {"sub_topics": ["Advanced BODMAS"], "questions": 10}
                 }
             },
             "Economic & Social Issues": {
                 "subjects": {
-                    "Economics": {"sub_topics": ["Macro Economics", "Micro Economics", "Indian Economy"], "questions": 40}
+                    "Economics": {"sub_topics": ["Macro Economics", "Micro Economics", "Indian Economy", "Global Economy"], "questions": 40}
                 }
             }
         }
