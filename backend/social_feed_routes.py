@@ -524,14 +524,28 @@ async def follow_user(target_user_id: str, authorization: Optional[str] = Header
         if follower_id == target_user_id:
             raise HTTPException(status_code=400, detail="Cannot follow yourself")
         
-        existing = await db.followers.find_one({"follower_id": follower_id, "following_id": target_user_id})
-        if existing:
+        # Check ceeps collection first
+        existing_ceep = await db.ceeps.find_one({"user_id": follower_id, "ceep_user_id": target_user_id})
+        # Also check follows collection for cross-compatibility
+        existing_follow = await db.follows.find_one({"follower_id": follower_id, "following_id": target_user_id})
+        
+        if existing_ceep or existing_follow:
             return {"success": True, "message": "Already following"}
         
-        await db.followers.insert_one({
+        # Add to ceeps collection (primary)
+        await db.ceeps.insert_one({
+            "id": str(uuid.uuid4()),
+            "user_id": follower_id,
+            "ceep_user_id": target_user_id,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        # Also add to follows collection for compatibility
+        await db.follows.insert_one({
             "id": str(uuid.uuid4()),
             "follower_id": follower_id,
             "following_id": target_user_id,
+            "status": "approved",
             "created_at": datetime.now(timezone.utc).isoformat()
         })
         
