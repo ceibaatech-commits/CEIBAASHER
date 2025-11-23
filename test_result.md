@@ -378,6 +378,22 @@ backend:
       - working: "NA"
         agent: "main"
         comment: "Used existing exam_sheets data to automatically generate weightage analysis for all 5 banking exams. Created Python script that: (1) Fetches all exam sheets from database for each exam, (2) Organizes by syllabus_topic → subject → sub_topics, (3) Calculates question counts per topic/subject, (4) Creates comprehensive weightage documents with proper structure (sections → subjects → topics → sub_topics), (5) Uses correct exam_name keys from exam_data.py (CRITICAL: NABARD not NABARD_GRADE_B, RBI_GRADE_B not RBI Grade B, etc.), (6) Inserts/updates documents in exam_metadata collection. NABARD: Manual weightage with Merit (100q: ESI 40q, ARD 40q, GA 20q) + Qualifying sections (100q: Reasoning 20q, Quant 20q, English 30q, Computer 20q, Decision 10q). Auto-generated weightages: RBI_GRADE_B (391q, 4 sections), IBPS_SO (402q, 4 sections), LIC_AAO (272q, 3 sections), LIC_ADO (304q, 3 sections)."
+
+  - task: "Weightage Analysis for 4 Defence Exams (NDA, Agniveer, CDS, CAPF)"
+    implemented: true
+    working: true
+    file: "/app/backend/exam_metadata collection"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created comprehensive weightage analysis for all 4 defence exams based on user-provided detailed structures. NDA: 270 questions, 900 marks (Paper I: Maths 120Q/300M covering Algebra, Calculus, Geometry, Trigonometry, Vectors/Matrices, Statistics; Paper II: GAT 150Q/600M covering English and General Knowledge). Agniveer Tradesman: 50 questions, 100 marks (GK 15-20Q, Science 10-15Q, Maths 10-15Q, Reasoning 5Q). CDS: 340 questions, 300 marks (Paper I: English 120Q/100M, Paper II: GK 120Q/100M, Paper III: Maths 100Q/100M for IMA/INA/AFA). CAPF: 125 questions objective + descriptive, 450 marks total (Paper I: GA & Intelligence 125Q/250M, Paper II: Essay & Comprehension descriptive 200M). All weightage documents inserted into exam_metadata collection with correct exam_name keys from exam_data.py (NDA, Agniveer, CDS, CAPF)."
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFICATION COMPLETE - ALL 4 DEFENCE EXAMS: API endpoints tested (/api/quiz/weightage/{EXAM_ID}) - all returning success. Frontend verified via screenshots: (1) NDA ✅ - Weightage visible, Show Details working, Paper I Mathematics (6 subjects: Algebra, Calculus, Geometry, Trigonometry, Vectors/Matrices, Statistics) and Paper II GAT (6 subjects: English Language, English Comprehension, Science, Social Studies, Geography, Current Events) displaying correctly. (2) Agniveer ✅ - Weightage visible, Written Test section with 4 subjects (GK, Science, Maths, Reasoning) all showing. (3) CDS ✅ - Weightage visible, 3 papers (English, GK, Elementary Maths) with all subjects displaying. (4) CAPF ✅ - Weightage visible, Paper I (5 subjects: History & Geography, Polity & Economy, General Science, Current Affairs, Mental Ability) and Paper II (2 subjects: Essay Writing, Language Skills) displaying. All topic-wise breakdowns with sub-topics and expected questions/marks showing correctly. Total 4 defence exams + 5 banking exams = 9 exams with complete weightage analysis."
+
       - working: true
         agent: "main"
         comment: "✅ VERIFICATION COMPLETE - ALL 5 EXAMS: API endpoints tested for all exams (/api/quiz/weightage/{EXAM_ID}) - all returning success:true. Frontend verified via screenshots: (1) NABARD ✅ - Weightage section visible, Show Details working, Merit + Qualifying sections displaying with all subjects and topics, (2) RBI_GRADE_B ✅ - Weightage section visible, English Language (45q), General Awareness (193q), Quant (70q), Reasoning (83q) all displaying, (3) IBPS_SO ✅ - Weightage section visible, 4 subjects showing correctly, (4) LIC_AAO ✅ - Weightage section visible, 3 subjects (Reasoning, Quant, English), (5) LIC_ADO ✅ - Weightage section visible, 3 subjects (Reasoning, Numerical Ability, English). Frontend code updated to handle new data structure with section.subjects[] containing topics with expected_questions field. All topic-wise breakdowns displaying correctly with sub-topics listed. Naming convention established: ALWAYS use exam_data.py keys as exam_name in weightage documents."
