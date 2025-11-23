@@ -189,8 +189,8 @@ const PublicProfile = () => {
               </div>
             </div>
 
-            {/* Follow Button */}
-            {user && (
+            {/* Follow Button - only show for other users' profiles */}
+            {user && user.id !== profile.user_id && (
               <div className="mt-6 flex justify-center">
                 <FollowButton
                   targetUserId={profile.user_id}
@@ -198,6 +198,18 @@ const PublicProfile = () => {
                   initialStatus={followStatus}
                   onFollowChange={handleFollowChange}
                 />
+              </div>
+            )}
+
+            {/* Edit Profile Button - only show for own profile */}
+            {user && user.id === profile.user_id && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold transition-all shadow-lg"
+                >
+                  Go to Dashboard
+                </button>
               </div>
             )}
 
