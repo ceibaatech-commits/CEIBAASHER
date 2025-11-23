@@ -897,8 +897,12 @@ const LiveBattle = () => {
                     <div 
                       className="text-3xl"
                       style={{ 
-                        fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, Android Emoji, sans-serif',
-                        lineHeight: '1'
+                        fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", "Twemoji Mozilla", sans-serif',
+                        lineHeight: '1',
+                        WebkitFontSmoothing: 'antialiased',
+                        MozOsxFontSmoothing: 'grayscale',
+                        textRendering: 'optimizeLegibility',
+                        display: 'inline-block'
                       }}
                     >
                       {reaction.emoji}
