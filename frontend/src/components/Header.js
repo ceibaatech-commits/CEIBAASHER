@@ -29,13 +29,13 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo & Brand */}
           <div 
-            className="cursor-pointer flex items-center"
+            className="cursor-pointer flex items-center flex-shrink-0"
             onClick={() => navigate('/')}
           >
             <img 
               src="/ceibaa-logo.png" 
               alt="Ceibaa Logo" 
-              className="h-14 w-auto object-contain"
+              className="h-10 sm:h-12 md:h-14 w-auto object-contain"
             />
           </div>
 
