@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BookOpen, ChevronRight, Search, Filter } from 'lucide-react';
 import Header from '../components/Header';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Books = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
