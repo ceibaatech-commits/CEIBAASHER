@@ -993,22 +993,62 @@ EXAM_DATA = {
         "syllabus_topics": {
             "English Language": {
                 "subjects": {
-                    "Comprehension": {"sub_topics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 28}
+                    "Reading Comprehension": {
+                        "sub_topics": ["Passages (~450 words) followed by questions on Main Idea, Vocabulary, Grammar, Inference"],
+                        "questions": 20
+                    },
+                    "Vocabulary & Grammar": {
+                        "sub_topics": ["Synonyms", "Antonyms", "Error Detection", "Sentence Correction", "Tenses", "Parts of Speech"],
+                        "questions": 8
+                    }
                 }
             },
-            "Current Affairs": {
+            "Current Affairs & GK": {
                 "subjects": {
-                    "General Knowledge": {"sub_topics": ["National News", "International News", "Static GK"], "questions": 35}
+                    "Current Affairs": {
+                        "sub_topics": ["National and International events (last 9-12 months)", "Summits", "Reports", "Awards"],
+                        "questions": 20
+                    },
+                    "Static GK": {
+                        "sub_topics": ["Constitution of India", "Basic Economics", "History (Freedom Struggle)", "Art & Culture"],
+                        "questions": 10
+                    }
                 }
             },
             "Legal Reasoning": {
                 "subjects": {
-                    "Legal Aptitude": {"sub_topics": ["Legal Principles", "Case Analysis", "Legal Logic"], "questions": 35}
+                    "Legal Principles": {
+                        "sub_topics": ["Application of legal principles to factual scenarios (Torts, Contracts, Criminal Law, Family Law, Constitutional Law)"],
+                        "questions": 25
+                    },
+                    "Case Law & Policy": {
+                        "sub_topics": ["Awareness of important contemporary legal and public policy issues", "major Supreme Court judgments"],
+                        "questions": 5
+                    }
                 }
             },
             "Logical Reasoning": {
                 "subjects": {
-                    "Critical Thinking": {"sub_topics": ["Analytical Reasoning", "Logical Puzzles", "Critical Analysis"], "questions": 22}
+                    "Critical Reasoning": {
+                        "sub_topics": ["Identifying Argument Structure", "Premise", "Conclusion", "Inference", "Strengthening/Weakening Arguments"],
+                        "questions": 15
+                    },
+                    "Analytical Reasoning": {
+                        "sub_topics": ["Syllogisms", "Sequences", "Analogies", "Puzzles", "Blood Relations"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Quantitative Techniques": {
+                "subjects": {
+                    "Data Interpretation": {
+                        "sub_topics": ["Sets of Facts", "Graphs", "Diagrams (Testing Class 10th level Maths application)"],
+                        "questions": 6
+                    },
+                    "Basic Arithmetic": {
+                        "sub_topics": ["Ratios", "Percentages", "Averages", "P&L", "Interest", "Time/Speed/Distance"],
+                        "questions": 4
+                    }
                 }
             }
         }
