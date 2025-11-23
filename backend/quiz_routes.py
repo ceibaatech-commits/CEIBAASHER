@@ -155,15 +155,23 @@ async def get_exam_weightage(exam_id: str):
     """
     Get topic-wise weightage analysis for an exam
     """
-    # Get DB from server
-    from server import db as server_db
+    from motor.motor_asyncio import AsyncIOMotorClient
+    import os
     
     try:
+        # Create direct database connection
+        mongo_url = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
+        db_name = os.getenv('DB_NAME', 'test_database')
+        client = AsyncIOMotorClient(mongo_url)
+        db = client[db_name]
+        
         # Get weightage data from database
-        weightage = await server_db.exam_metadata.find_one({
+        weightage = await db.exam_metadata.find_one({
             "exam_name": exam_id,
             "type": "weightage_analysis"
         })
+        
+        client.close()
         
         if weightage:
             # Remove MongoDB _id
