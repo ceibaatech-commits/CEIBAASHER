@@ -884,8 +884,8 @@ EXAM_DATA = {
     },
     
     "CUET": {
-        "name": "CUET",
-        "full_name": "Common University Entrance Test",
+        "name": "CUET UG",
+        "full_name": "Common University Entrance Test - Undergraduate",
         "description": "National level entrance exam for undergraduate programs in central universities",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/9pbxgmoq_Gemini_Generated_Image_1zgyxl1zgyxl1zgy_2-removebg-preview.png",
         "color": "from-green-600 to-teal-600",
@@ -893,21 +893,40 @@ EXAM_DATA = {
         "duration": "3 hours",
         "category": "Admission Tests",
         "syllabus_topics": {
-            "General Test": {
+            "Section I: Languages": {
                 "subjects": {
-                    "General Knowledge": {"sub_topics": ["Current Affairs", "History", "Geography", "Polity"], "questions": 40},
-                    "General Mental Ability": {"sub_topics": ["Logical Reasoning", "Analytical Reasoning", "Quantitative Reasoning"], "questions": 40},
-                    "Numerical Ability": {"sub_topics": ["Arithmetic", "Data Interpretation", "Modern Math"], "questions": 40}
+                    "Reading Comprehension": {
+                        "sub_topics": ["Factual, Literary, and Narrative Passages (Testing Central Theme, Vocabulary, Tone)"],
+                        "questions": 25
+                    },
+                    "Language Proficiency": {
+                        "sub_topics": ["Verbal Ability", "Grammar (Tenses, Parts of Speech)", "Vocabulary (Synonyms, Antonyms)", "Error Spotting"],
+                        "questions": 25
+                    }
                 }
             },
-            "Language": {
+            "Section II: Domain Subjects": {
                 "subjects": {
-                    "English": {"sub_topics": ["Reading Comprehension", "Grammar", "Vocabulary"], "questions": 40}
+                    "Subject Specific": {
+                        "sub_topics": ["Subject syllabi are strictly based on the Class 12 NCERT syllabus only (e.g., Physics, History, Accountancy, Psychology, etc.)"],
+                        "questions": 50
+                    }
                 }
             },
-            "Domain Subject": {
+            "Section III: General Test": {
                 "subjects": {
-                    "Subject Specific": {"sub_topics": ["Core Concepts", "Applications", "Problem Solving"], "questions": 40}
+                    "General Awareness & CA": {
+                        "sub_topics": ["General Knowledge", "Current Affairs (National & International)"],
+                        "questions": 40
+                    },
+                    "Reasoning & Mental Ability": {
+                        "sub_topics": ["General Mental Ability", "Logical & Analytical Reasoning"],
+                        "questions": 40
+                    },
+                    "Quantitative Reasoning": {
+                        "sub_topics": ["Numerical Ability", "Quantitative Reasoning (Arithmetic, Algebra, Geometry, Mensuration up to Grade 8)"],
+                        "questions": 40
+                    }
                 }
             }
         }
