@@ -1272,50 +1272,99 @@ EXAM_DATA = {
     "RBI_GRADE_B": {
         "name": "RBI Grade B",
         "full_name": "Reserve Bank of India Grade B Officer",
-        "description": "Entrance exam for Grade B Officer in RBI",
+        "description": "Entrance exam for Grade B Officer in RBI - Phase I",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-red-600 to-orange-600",
         "total_questions": 200,
-        "duration": "3.5 hours",
+        "duration": "2 hours",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "General Awareness": {
                 "subjects": {
-                    "Current Affairs": {"sub_topics": ["Last 6-8 months", "RBI Circulars", "Monetary Policy"], "questions": 40},
-                    "Static Knowledge": {"sub_topics": ["Indian Financial System", "Banking Terms"], "questions": 15},
-                    "Reports & Indices": {"sub_topics": ["World Bank", "IMF Reports"], "questions": 15},
-                    "Government Schemes": {"sub_topics": ["Union Budget", "Economic Survey"], "questions": 10}
+                    "Current Affairs": {
+                        "sub_topics": ["Last 6-8 months", "RBI Circulars", "Monetary Policy"],
+                        "questions": 99
+                    },
+                    "Static Knowledge": {
+                        "sub_topics": ["Indian Financial System", "Banking Terms"],
+                        "questions": 54
+                    },
+                    "Government Schemes": {
+                        "sub_topics": ["Union Budget", "Economic Survey"],
+                        "questions": 20
+                    },
+                    "Reports & Indices": {
+                        "sub_topics": ["World Bank", "IMF Reports"],
+                        "questions": 20
+                    }
                 }
             },
             "Reasoning Ability": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Multi-variable", "Complex Arrangements"], "questions": 15},
-                    "Machine Input-Output": {"sub_topics": ["Complex Logic"], "questions": 5},
-                    "Data Sufficiency": {"sub_topics": ["3 Statements"], "questions": 5},
-                    "Logical Reasoning": {"sub_topics": ["Statement/Argument"], "questions": 3},
-                    "Inequality": {"sub_topics": ["Complex Inequality"], "questions": 2}
+                    "Puzzles & Seating": {
+                        "sub_topics": ["Multi-variable", "Complex Arrangements"],
+                        "questions": 46
+                    },
+                    "Logical Reasoning": {
+                        "sub_topics": ["Statement/Argument"],
+                        "questions": 13
+                    },
+                    "Inequality": {
+                        "sub_topics": ["Complex Inequality"],
+                        "questions": 9
+                    },
+                    "Machine Input-Output": {
+                        "sub_topics": ["Complex Logic"],
+                        "questions": 9
+                    },
+                    "Data Sufficiency": {
+                        "sub_topics": ["3 Statements"],
+                        "questions": 6
+                    }
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Advanced RC", "Inference Based"], "questions": 15},
-                    "Error Spotting": {"sub_topics": ["Advanced Grammar"], "questions": 5},
-                    "Para Jumbles": {"sub_topics": ["Complex Rearrangement"], "questions": 5},
-                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms"], "questions": 5},
-                    "Sentence Completion": {"sub_topics": ["Fill Blanks"], "questions": 10}
+                    "Reading Comprehension": {
+                        "sub_topics": ["Advanced RC", "Inference Based"],
+                        "questions": 22
+                    },
+                    "Vocabulary": {
+                        "sub_topics": ["Synonyms", "Antonyms"],
+                        "questions": 8
+                    },
+                    "Error Spotting": {
+                        "sub_topics": ["Advanced Grammar"],
+                        "questions": 7
+                    },
+                    "Para Jumbles": {
+                        "sub_topics": ["Complex Rearrangement"],
+                        "questions": 5
+                    },
+                    "Sentence Completion": {
+                        "sub_topics": ["Fill Blanks"],
+                        "questions": 3
+                    }
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Data Interpretation": {"sub_topics": ["Caselets", "Radar DI", "Missing DI"], "questions": 15},
-                    "Data Sufficiency": {"sub_topics": ["Statement Based"], "questions": 5},
-                    "Arithmetic": {"sub_topics": ["Time Speed Distance", "P&L", "Probability"], "questions": 10},
-                    "Simplification": {"sub_topics": ["Advanced BODMAS"], "questions": 10}
-                }
-            },
-            "Economic & Social Issues": {
-                "subjects": {
-                    "Economics": {"sub_topics": ["Macro Economics", "Micro Economics", "Indian Economy", "Global Economy"], "questions": 40}
+                    "Data Interpretation": {
+                        "sub_topics": ["Caselets", "Radar DI", "Missing DI"],
+                        "questions": 33
+                    },
+                    "Arithmetic": {
+                        "sub_topics": ["Time Speed Distance", "P&L", "Probability"],
+                        "questions": 27
+                    },
+                    "Data Sufficiency": {
+                        "sub_topics": ["Statement Based"],
+                        "questions": 5
+                    },
+                    "Simplification": {
+                        "sub_topics": ["Advanced BODMAS"],
+                        "questions": 5
+                    }
                 }
             }
         }
