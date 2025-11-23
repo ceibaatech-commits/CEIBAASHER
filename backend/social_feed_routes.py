@@ -286,10 +286,25 @@ async def get_for_you_feed(
 async def get_trending_feed(skip: int = 0, limit: int = 10):
     """Get trending posts - sorted by recency and engagement"""
     try:
-        # Get all posts sorted by created_at (newest first) for better UX
-        # Trending score can be used later for a separate "Hot" feed
-        posts = await db.social_posts.find({}, {"_id": 0}).sort("created_at", -1).to_list(None)
+        # Get all posts
+        posts = await db.social_posts.find({}, {"_id": 0}).to_list(None)
         posts = await filter_expired_quiz_posts(posts)
+        
+        # Sort by created_at in Python to handle mixed date formats
+        def parse_date(post):
+            try:
+                date_str = post.get('created_at', '')
+                # Handle both ISO formats (with and without timezone)
+                if date_str:
+                    if '+' in date_str or date_str.endswith('Z'):
+                        return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    else:
+                        return datetime.fromisoformat(date_str)
+                return datetime.min
+            except:
+                return datetime.min
+        
+        posts.sort(key=parse_date, reverse=True)
         return {"success": True, "posts": posts[skip:skip + limit], "count": len(posts)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching trending: {str(e)}")
