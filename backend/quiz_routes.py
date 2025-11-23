@@ -158,11 +158,16 @@ async def get_exam_weightage(exam_id: str):
     from exam_structure_routes import db
     
     try:
-        # Get weightage data from database - try exact match first, then case-insensitive
+        # Get weightage data from database - try exact match first
+        print(f"[WEIGHTAGE] Looking for exam_id: {exam_id}")
+        print(f"[WEIGHTAGE] DB object: {db}")
+        
         weightage = await db.exam_metadata.find_one({
             "exam_name": exam_id,
             "type": "weightage_analysis"
         })
+        
+        print(f"[WEIGHTAGE] First attempt result: {weightage is not None}")
         
         if not weightage:
             # Try uppercase
@@ -170,12 +175,16 @@ async def get_exam_weightage(exam_id: str):
                 "exam_name": exam_id.upper(),
                 "type": "weightage_analysis"
             })
+            print(f"[WEIGHTAGE] Second attempt (uppercase) result: {weightage is not None}")
         
         if weightage:
             # Remove MongoDB _id
             weightage.pop('_id', None)
             return {"success": True, "weightage": weightage}
         else:
+            # List all weightage data for debugging
+            all_weightage = await db.exam_metadata.find({"type": "weightage_analysis"}).to_list(length=10)
+            print(f"[WEIGHTAGE] Available exams: {[w.get('exam_name') for w in all_weightage]}")
             return {"success": False, "message": "Weightage data not available for this exam"}
     
     except Exception as e:
