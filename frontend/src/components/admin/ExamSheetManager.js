@@ -540,6 +540,16 @@ const ExamSheetManager = () => {
     
     // Additional Banking Exam specific subjects
     'Puzzles & Seating Arrangement': ['Floor/Flat Puzzles', 'Box Puzzles', 'Scheduling (Day/Month/Year)', 'Circular Seating', 'Linear Seating', 'Square/Rectangular Arrangement'],
+    'Puzzles & Arrangements': ['Linear Seating', 'Circular Seating', 'Box Puzzles', 'Floor Puzzles', 'Scheduling', 'Comparison/Ranking'],
+    'Puzzles': ['Linear', 'Circular', 'Box', 'Floor', 'Scheduling'],
+    'Puzzles & Seating': ['Linear Seating', 'Circular Seating', 'Floor/Flat Puzzles'],
+    'Grammar & Errors': ['Error Detection', 'Sentence Improvement', 'Phrase Replacement'],
+    'Reading & Comprehension': ['Passage Reading', 'Inference', 'Main Idea', 'Vocabulary in Context'],
+    'Reading Comprehension (RC)': ['Passage Reading', 'Inference Questions', 'Main Idea', 'Vocabulary in Context'],
+    'Agriculture': ['Crop Production', 'Soil Science', 'Water Resources', 'Farm Machinery', 'Climate Change'],
+    'Rural Development': ['Panchayati Raj', 'Rural Credit', 'NABARD Role', 'Government Schemes'],
+    'Socio-Economic Topics': ['Poverty', 'Employment', 'Education', 'Health'],
+    'Social Justice': ['SC/ST/OBC Issues', 'Human Development', 'Social Movements'],
     
     // Defence Exams - NDA sub-topics
     'Analytical Geometry 2D': ['Cartesian Coordinate System', 'Distance Formula', 'Section & Midpoint Formula', 'Straight Lines', 'Angle Between Two Lines', 'Circle', 'Conic Sections'],
