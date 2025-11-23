@@ -62,7 +62,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           </nav>
 
           {/* User Section */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
             {isLoggedIn && user ? (
               <>
                 {/* Navbar Search - YouTube style expanding search */}
