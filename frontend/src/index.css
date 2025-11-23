@@ -15,6 +15,20 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Ensure emojis render properly across all browsers */
+.emoji,
+button:has(emoji),
+div:has(emoji) {
+    font-family: 
+        "Apple Color Emoji", 
+        "Segoe UI Emoji", 
+        "Segoe UI Symbol", 
+        "Noto Color Emoji", 
+        "Android Emoji", 
+        "EmojiSymbols", 
+        sans-serif;
+}
+
 code {
     font-family:
         source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
