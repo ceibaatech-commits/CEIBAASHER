@@ -1464,27 +1464,44 @@ EXAM_DATA = {
         "syllabus_topics": {
             "Reasoning Ability": {
                 "subjects": {
-                    "Logical Reasoning": {"sub_topics": ["Coding-Decoding", "Seating", "Blood Relations"], "questions": 35}
+                    "Puzzles & Seating": {"sub_topics": ["Linear", "Circular", "Box-Based", "Floor-Based", "Day/Month"], "questions": 15},
+                    "Syllogism": {"sub_topics": ["Basic", "Possibility"], "questions": 5},
+                    "Inequality": {"sub_topics": ["Direct", "Coded"], "questions": 5},
+                    "Blood Relations": {"sub_topics": ["Family Tree"], "questions": 3},
+                    "Direction Sense": {"sub_topics": ["Direction"], "questions": 3},
+                    "Coding-Decoding": {"sub_topics": ["Letter Coding"], "questions": 2},
+                    "Input-Output": {"sub_topics": ["Machine Input"], "questions": 2}
                 }
             },
-            "Quantitative Aptitude": {
+            "Numerical Ability": {
                 "subjects": {
-                    "Mathematics": {"sub_topics": ["Simplification", "Arithmetic", "DI"], "questions": 35}
+                    "Simplification": {"sub_topics": ["BODMAS", "Calculation"], "questions": 8},
+                    "Data Interpretation": {"sub_topics": ["Table", "Bar Chart"], "questions": 10},
+                    "Number Series": {"sub_topics": ["Missing Number"], "questions": 5},
+                    "Quadratic Equations": {"sub_topics": ["Finding Roots"], "questions": 4},
+                    "Arithmetic": {"sub_topics": ["P&L", "SI/CI", "Ratio", "Partnership", "Time & Work", "Speed", "Mensuration", "Mixture"], "questions": 8}
                 }
             },
             "English Language": {
                 "subjects": {
-                    "English Skills": {"sub_topics": ["Grammar", "Vocabulary", "Comprehension"], "questions": 30}
+                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
+                    "Error Spotting": {"sub_topics": ["Grammar Errors"], "questions": 5},
+                    "Sentence Correction": {"sub_topics": ["Grammar"], "questions": 5},
+                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
+                    "Para Jumbles": {"sub_topics": ["Rearrangement"], "questions": 3},
+                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Idioms"], "questions": 2}
                 }
             },
             "General Knowledge & Current Affairs": {
                 "subjects": {
-                    "GK": {"sub_topics": ["Banking", "Insurance", "Economy", "Sports"], "questions": 30}
+                    "Current Affairs": {"sub_topics": ["Banking", "Insurance", "Economy", "Sports"], "questions": 15},
+                    "Static GK": {"sub_topics": ["Indian Polity", "Geography", "History"], "questions": 15}
                 }
             },
             "Insurance Awareness": {
                 "subjects": {
-                    "Insurance Knowledge": {"sub_topics": ["Insurance Types", "Regulations", "LIC Policies"], "questions": 50}
+                    "Insurance Knowledge": {"sub_topics": ["Insurance Types", "IRDA Regulations", "LIC Policies", "Claim Settlement"], "questions": 25},
+                    "Financial Inclusion": {"sub_topics": ["Micro Insurance", "Government Schemes"], "questions": 25}
                 }
             }
         }
