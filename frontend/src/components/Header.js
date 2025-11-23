@@ -44,11 +44,11 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Home
             </button>
-            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
-              Exams
+            <button onClick={() => navigate('/social-feed')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+              Victory Lane
             </button>
             <button onClick={() => navigate('/chapter-tests')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
-              Chapter Test
+              Skill Drills
             </button>
             <button onClick={() => navigate('/books')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Books
