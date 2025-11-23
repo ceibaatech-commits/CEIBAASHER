@@ -435,8 +435,7 @@ const ExamSheetManager = () => {
       // Reset dependent fields
       setExamForm(prev => ({
         ...prev,
-        sub_topic: '',
-        sub_sub_topic: ''
+        sub_topic: ''
       }));
     }
   }, [examForm.subject]);
