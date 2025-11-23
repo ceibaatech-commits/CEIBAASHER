@@ -41,9 +41,23 @@ const Books = () => {
 
   const categories = ['all', 'Academic', 'Competitive Exam', 'General'];
 
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      <Header 
+        isLoggedIn={isAuthenticated()}
+        user={user}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
 
       <div className="container mx-auto px-4 py-8 mt-20">
         {/* Header Section */}
