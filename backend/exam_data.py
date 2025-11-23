@@ -1147,51 +1147,97 @@ EXAM_DATA = {
     },
     
     "IBPS_SO": {
-        "name": "IBPS SO",
-        "full_name": "Institute of Banking Personnel Selection Specialist Officer",
+        "name": "IBPS SO Prelims",
+        "full_name": "Institute of Banking Personnel Selection Specialist Officer - Preliminary Exam",
         "description": "Entrance exam for IT, Agricultural, Marketing and other specialist officers",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png",
         "color": "from-purple-600 to-indigo-600",
-        "total_questions": 200,
-        "duration": "3 hours",
+        "total_questions": 150,
+        "duration": "2 hours",
         "category": "Banking Examinations",
         "syllabus_topics": {
             "Reasoning": {
                 "subjects": {
-                    "Puzzles & Seating": {"sub_topics": ["Linear", "Circular", "Box", "Floor"], "questions": 20},
-                    "Syllogism": {"sub_topics": ["Basic", "Advanced"], "questions": 5},
-                    "Inequality": {"sub_topics": ["Direct", "Coded"], "questions": 4},
-                    "Miscellaneous": {"sub_topics": ["Blood Relations", "Direction", "Coding"], "questions": 11}
+                    "Puzzles & Seating": {
+                        "sub_topics": ["Linear", "Circular", "Box", "Floor"],
+                        "questions": 80
+                    },
+                    "Syllogism": {
+                        "sub_topics": ["Basic", "Advanced"],
+                        "questions": 10
+                    },
+                    "Inequality": {
+                        "sub_topics": ["Direct", "Coded"],
+                        "questions": 10
+                    },
+                    "Miscellaneous": {
+                        "sub_topics": ["Blood Relations", "Direction", "Coding"],
+                        "questions": 30
+                    }
                 }
             },
             "Quantitative Aptitude": {
                 "subjects": {
-                    "Data Interpretation": {"sub_topics": ["Table", "Bar", "Line", "Pie Chart"], "questions": 15},
-                    "Arithmetic": {"sub_topics": ["P&L", "SI/CI", "Time & Work", "Speed", "Ratio", "Percentage"], "questions": 10},
-                    "Simplification": {"sub_topics": ["BODMAS", "Approximation"], "questions": 8},
-                    "Number Series": {"sub_topics": ["Missing", "Wrong"], "questions": 5},
-                    "Quadratic Equations": {"sub_topics": ["Roots"], "questions": 2}
+                    "Arithmetic": {
+                        "sub_topics": ["P&L", "SI/CI", "Time & Work", "Speed", "Ratio", "Percentage"],
+                        "questions": 90
+                    },
+                    "Data Interpretation": {
+                        "sub_topics": ["Table", "Bar", "Line", "Pie Chart"],
+                        "questions": 40
+                    },
+                    "Simplification": {
+                        "sub_topics": ["BODMAS", "Approximation"],
+                        "questions": 16
+                    },
+                    "Number Series": {
+                        "sub_topics": ["Missing", "Wrong"],
+                        "questions": 8
+                    },
+                    "Quadratic Equations": {
+                        "sub_topics": ["Roots"],
+                        "questions": 3
+                    }
                 }
             },
             "English Language": {
                 "subjects": {
-                    "Reading Comprehension": {"sub_topics": ["Passage Based"], "questions": 10},
-                    "Error Spotting": {"sub_topics": ["Grammar"], "questions": 5},
-                    "Cloze Test": {"sub_topics": ["Fill Blanks"], "questions": 5},
-                    "Para Jumbles": {"sub_topics": ["Rearrangement"], "questions": 5},
-                    "Vocabulary": {"sub_topics": ["Synonyms", "Antonyms", "Fillers"], "questions": 5}
+                    "Vocabulary": {
+                        "sub_topics": ["Synonyms", "Antonyms", "Fillers"],
+                        "questions": 15
+                    },
+                    "Reading Comprehension": {
+                        "sub_topics": ["Passage Based"],
+                        "questions": 10
+                    },
+                    "Error Spotting": {
+                        "sub_topics": ["Grammar"],
+                        "questions": 6
+                    },
+                    "Cloze Test": {
+                        "sub_topics": ["Fill Blanks"],
+                        "questions": 5
+                    },
+                    "Para Jumbles": {
+                        "sub_topics": ["Rearrangement"],
+                        "questions": 4
+                    }
                 }
             },
             "General Awareness": {
                 "subjects": {
-                    "Current Affairs": {"sub_topics": ["Last 6 months"], "questions": 20},
-                    "Banking Awareness": {"sub_topics": ["RBI Policies", "Banking Terms"], "questions": 15},
-                    "Static GK": {"sub_topics": ["Indian Geography", "History"], "questions": 5}
-                }
-            },
-            "Professional Knowledge": {
-                "subjects": {
-                    "Specialized Subject": {"sub_topics": ["IT", "Agriculture", "Marketing", "Law", "HR"], "questions": 60}
+                    "Banking Awareness": {
+                        "sub_topics": ["RBI Policies", "Banking Terms"],
+                        "questions": 30
+                    },
+                    "Current Affairs": {
+                        "sub_topics": ["Last 6 months"],
+                        "questions": 25
+                    },
+                    "Static GK": {
+                        "sub_topics": ["Indian Geography", "History"],
+                        "questions": 20
+                    }
                 }
             }
         }
