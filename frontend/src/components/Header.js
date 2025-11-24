@@ -229,6 +229,11 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 Join Battle Room
               </button>
 
+              {/* Mobile Search */}
+              <div className="py-2">
+                <NavbarSearch />
+              </div>
+
               {/* Mobile-only user actions */}
               {isLoggedIn && user && (
                 <>
