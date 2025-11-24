@@ -113,40 +113,40 @@ const HomeBannerCarousel = () => {
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '1s'}}></div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10">
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center w-full">
+            <div className="grid md:grid-cols-2 gap-4 items-center w-full">
               {/* Left: Text Content */}
-              <div className="text-white home-banner-content">
+              <div className="text-white home-banner-content compact-banner">
                 {/* Icon & Badge */}
-                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4 animate-slide-in-left">
-                  <div className="banner-icon-bounce text-3xl sm:text-4xl md:text-5xl">{currentBanner.icon}</div>
-                  <span className="bg-white/30 backdrop-blur-md px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold border border-white/40 shadow-lg">
+                <div className="flex items-center space-x-1.5 sm:space-x-2 mb-1.5 sm:mb-2 animate-slide-in-left">
+                  <div className="banner-icon-bounce text-xl sm:text-2xl md:text-3xl">{currentBanner.icon}</div>
+                  <span className="bg-white/30 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-bold border border-white/40">
                     {currentBanner.exam}
                   </span>
                 </div>
 
                 {/* Title with Gradient Text */}
-                <div className="mb-3 sm:mb-4 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-1 sm:mb-2 leading-tight banner-title-glow">
+                <div className="mb-1.5 sm:mb-2 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
+                  <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black mb-0.5 sm:mb-1 leading-tight banner-title-glow">
                     {currentBanner.title}
                   </h2>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 font-semibold banner-subtitle-shine">
+                  <p className="text-xs sm:text-sm md:text-base text-white/95 font-semibold banner-subtitle-shine">
                     {currentBanner.subtitle}
                   </p>
                 </div>
 
-                {/* Description */}
-                <p className="text-sm sm:text-base md:text-lg text-white/90 mb-3 sm:mb-4 animate-slide-in-left" style={{animationDelay: '0.2s'}}>
+                {/* Description - Hidden on mobile */}
+                <p className="hidden sm:block text-sm md:text-base text-white/90 mb-2 animate-slide-in-left" style={{animationDelay: '0.2s'}}>
                   {currentBanner.description}
                 </p>
 
                 {/* Highlights with Icons */}
-                <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
+                <div className="space-y-1 mb-2 sm:mb-3">
                   {currentBanner.highlights.map((highlight, index) => (
-                    <div key={index} className="flex items-center space-x-2 animate-slide-in-left" style={{animationDelay: `${0.3 + index * 0.1}s`}}>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0 border border-white/30">
-                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                    <div key={index} className="flex items-center space-x-1.5 animate-slide-in-left" style={{animationDelay: `${0.3 + index * 0.1}s`}}>
+                      <div className="w-4 h-4 bg-white/20 backdrop-blur-sm rounded flex items-center justify-center flex-shrink-0">
+                        <TrendingUp className="w-2.5 h-2.5 text-white" />
                       </div>
-                      <span className="text-sm sm:text-base text-white font-medium">{highlight}</span>
+                      <span className="text-xs sm:text-sm text-white font-medium">{highlight}</span>
                     </div>
                   ))}
                 </div>
@@ -155,10 +155,10 @@ const HomeBannerCarousel = () => {
                 <div className="animate-slide-in-left" style={{animationDelay: '0.6s'}}>
                   <button
                     onClick={() => navigate(currentBanner.ctaLink)}
-                    className="banner-cta-button bg-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-gray-100 transition-all inline-flex items-center space-x-2 shadow-2xl hover:shadow-white/50 relative overflow-hidden group"
+                    className="banner-cta-button bg-white text-gray-900 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-gray-100 transition-all inline-flex items-center space-x-1.5 shadow-lg hover:shadow-white/50 relative overflow-hidden group"
                   >
                     <span className="relative z-10">{currentBanner.ctaText}</span>
-                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 relative z-10 group-hover:rotate-12 transition-transform" />
+                    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10 group-hover:rotate-12 transition-transform" />
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity"></div>
                   </button>
                 </div>
