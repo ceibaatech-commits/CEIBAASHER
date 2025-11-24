@@ -176,6 +176,11 @@ const RRB_NTPC = () => {
         </div>
       </div>
 
+      {/* Quick Actions - Mobile/Tablet View */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:hidden">
+        <ExamActions examId="RRB_NTPC" />
+      </div>
+
       {/* Sticky Navigation */}
       <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
