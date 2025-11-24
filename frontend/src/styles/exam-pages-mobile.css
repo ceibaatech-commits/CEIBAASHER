@@ -430,6 +430,49 @@ input[type="search"] {
     height: 0.75rem !important;
   }
   
+
+/* ===== Exam Detail Pages - Make Banner Cards Smaller (4 visible) ===== */
+@media (max-width: 640px) {
+  /* Target exam detail page banners (AFCAT, RRB, etc) */
+  .bg-gradient-to-r.from-blue-600,
+  .bg-gradient-to-r.from-sky-500,
+  [class*="exam-hero-banner"] {
+    min-height: 180px !important;
+    max-height: 200px !important;
+    padding: 1rem !important;
+  }
+  
+  /* Make hero content more compact */
+  .exam-hero-content {
+    padding: 0.5rem 0 !important;
+  }
+  
+  /* Reduce all text in hero banners */
+  .exam-hero-title {
+    font-size: 1.25rem !important;
+    line-height: 1.1 !important;
+    margin-bottom: 0.25rem !important;
+  }
+  
+  .exam-subtitle {
+    font-size: 0.75rem !important;
+    margin-top: 0.25rem !important;
+  }
+  
+  /* Stat cards in hero smaller */
+  .exam-stat-card {
+    padding: 0.375rem !important;
+  }
+  
+  .stat-value {
+    font-size: 0.875rem !important;
+  }
+  
+  .stat-label {
+    font-size: 0.625rem !important;
+  }
+}
+
   section#exams .grid > button .flex span {
     font-size: 0.625rem !important;
   }
