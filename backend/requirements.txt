@@ -99,3 +99,4 @@ wsproto==1.2.0
 yarl==1.22.0
 httpx
 python-socketio[asyncio]
+httpx==0.28.1
