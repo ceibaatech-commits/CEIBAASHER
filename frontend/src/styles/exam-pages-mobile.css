@@ -1,0 +1,345 @@
+/**
+ * Mobile-First Responsive CSS for Exam Pages
+ * Optimized for touch interactions and mobile viewports
+ */
+
+/* ===== Typography Scale - Mobile First ===== */
+:root {
+  --font-h1-mobile: clamp(1.75rem, 5vw, 2rem); /* 28-32px */
+  --font-h2-mobile: clamp(1.375rem, 4vw, 1.5rem); /* 22-24px */
+  --font-body: 1rem; /* 16px */
+  --font-small: 0.875rem; /* 14px */
+  --font-subtitle: clamp(0.875rem, 3vw, 1rem); /* 14-16px */
+  
+  --spacing-unit: 0.5rem; /* 8px base */
+  --touch-target: 2.75rem; /* 44px minimum */
+  
+  --transition-standard: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Exam Hero Banner Optimization ===== */
+.exam-hero-banner {
+  max-height: 60vh;
+  padding: 1.25rem 1rem; /* 20px 16px */
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .exam-hero-banner {
+    padding: 1rem; /* 16px */
+    max-height: 55vh;
+  }
+  
+  .exam-hero-banner h1 {
+    font-size: var(--font-h1-mobile) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.5rem !important; /* 8px */
+  }
+  
+  .exam-hero-banner .exam-subtitle {
+    font-size: var(--font-subtitle) !important;
+    line-height: 1.5 !important;
+    margin-top: 0.5rem !important;
+    opacity: 0.95 !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* ===== Sub-header Text Optimization ===== */
+.exam-page-subtitle,
+.exam-subtitle-text {
+  font-size: clamp(0.875rem, 3vw, 1rem) !important; /* 14-16px */
+  line-height: 1.5 !important;
+  margin-top: 0.5rem !important;
+  font-weight: 500 !important;
+  opacity: 0.9 !important;
+}
+
+/* Fix for CDS and other exam pages with subtitle */
+.text-white\\/90.text-sm {
+  font-size: var(--font-subtitle) !important;
+  line-height: 1.5 !important;
+}
+
+/* ===== Button Styling - Modern & Touch-Friendly ===== */
+.exam-cta-button,
+.mobile-cta-button {
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+  padding: 1rem 1.5rem; /* 16px 24px */
+  border-radius: 0.75rem; /* 12px */
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all var(--transition-standard);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* 8px */
+  touch-action: manipulation;
+}
+
+.exam-cta-button:active,
+.mobile-cta-button:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) {
+  .exam-cta-button:hover,
+  .mobile-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Gradient Button Styles */
+.btn-gradient-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.btn-gradient-secondary {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+}
+
+.btn-gradient-accent {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+}
+
+/* ===== Button Layout Grid ===== */
+.exam-buttons-container {
+  display: grid;
+  gap: 1rem; /* 16px */
+  padding: 1.5rem 1rem; /* 24px 16px */
+  margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .exam-buttons-container {
+    grid-template-columns: 1fr;
+    gap: 0.75rem; /* 12px */
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .exam-buttons-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .exam-buttons-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* ===== Input Field Fixes ===== */
+.exam-search-input,
+.mobile-input-field {
+  font-size: 1rem !important; /* 16px - prevents iOS zoom */
+  padding: 0.75rem 1rem !important; /* 12px 16px */
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  color: #1f2937 !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 0.5rem !important;
+  transition: all var(--transition-standard) !important;
+  min-height: var(--touch-target) !important;
+}
+
+.exam-search-input:focus,
+.mobile-input-field:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  outline: none !important;
+  background-color: white !important;
+}
+
+.exam-search-input::placeholder,
+.mobile-input-field::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* ===== Spacing System ===== */
+.spacing-xs { margin-bottom: calc(var(--spacing-unit) * 1); } /* 8px */
+.spacing-sm { margin-bottom: calc(var(--spacing-unit) * 2); } /* 16px */
+.spacing-md { margin-bottom: calc(var(--spacing-unit) * 3); } /* 24px */
+.spacing-lg { margin-bottom: calc(var(--spacing-unit) * 4); } /* 32px */
+.spacing-xl { margin-bottom: calc(var(--spacing-unit) * 6); } /* 48px */
+
+/* ===== Responsive Stat Cards ===== */
+@media (max-width: 640px) {
+  .exam-stat-card {
+    padding: 0.75rem !important; /* 12px */
+  }
+  
+  .exam-stat-card .stat-value {
+    font-size: 1.25rem !important; /* 20px */
+  }
+  
+  .exam-stat-card .stat-label {
+    font-size: 0.75rem !important; /* 12px */
+  }
+}
+
+/* ===== Banner Content Spacing ===== */
+@media (max-width: 640px) {
+  .exam-hero-content {
+    padding: 1rem;
+    max-height: calc(60vh - 4rem); /* Account for header */
+  }
+  
+  .exam-hero-title {
+    font-size: var(--font-h1-mobile) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .exam-hero-bullets {
+    margin: 1rem 0 !important;
+    font-size: 0.875rem !important;
+    line-height: 1.6 !important;
+  }
+  
+  .exam-hero-bullets li {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+/* ===== View Syllabus Button Positioning ===== */
+.view-syllabus-button {
+  margin-top: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+@media (max-width: 640px) {
+  .view-syllabus-button {
+    width: 100% !important;
+    margin-bottom: calc(3.5rem + env(safe-area-inset-bottom)) !important; /* Clear browser nav */
+  }
+}
+
+/* ===== Safe Area for Mobile Browsers ===== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-safe-bottom {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* ===== Contrast & Accessibility ===== */
+.high-contrast-text {
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
+
+.accessible-link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.accessible-link:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ===== Loading States ===== */
+.button-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.button-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: button-spin 0.6s linear infinite;
+}
+
+@keyframes button-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Touch Feedback ===== */
+@media (hover: none) {
+  .exam-cta-button:active,
+  .mobile-cta-button:active {
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: background-color 0.1s;
+  }
+}
+
+/* ===== Responsive Grid for Exam Cards ===== */
+@media (max-width: 640px) {
+  .exam-info-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  
+  .exam-info-grid > *:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ===== Better Scrollbar on Mobile ===== */
+@media (max-width: 768px) {
+  .mobile-scroll-container::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .mobile-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+}
+
+/* ===== Prevent Text Selection on Double Tap ===== */
+.no-select-mobile {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== Optimized Animations for Mobile ===== */
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
