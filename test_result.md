@@ -681,7 +681,64 @@ backend:
         agent: "main"
         comment: "✅ VERIFICATION COMPLETE: Homepage screenshots confirm all 5 banking exams are visible (NABARD Grade B, RBI Grade B, IBPS SO Prelims, LIC AAO Prelims, LIC ADO Prelims). NABARD exam page tested - detailed syllabus displaying correctly with hierarchical structure (Economic & Social Issues: Socio-Economic Topics (60q), Social Justice (48q); Agriculture & Rural Development: Agriculture (80q), Rural Development (56q); General Awareness: Current Affairs (30q), Financial Awareness (24q), Government Schemes (6q), Appointments (4q); Reasoning Ability: Puzzles (40q), Syllogism (3q), Blood Relations (2q); Quantitative Aptitude: Arithmetic (32q), Data Interpretation (15q), Simplification (5q)). All question counts match database. Backend restarted successfully. No database changes needed as detailed exam sheets already exist in test_database.exam_sheets collection with proper structure (type='exam', exam_name, syllabus_topic, subject, sub_topic, question_count fields)."
 
+  - task: "Database Performance Optimization - Add Indexes"
+    implemented: true
+    working: true
+    file: "/app/backend/add_indexes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created and executed database indexing script to improve query performance. Added 13 indexes across 5 collections: (1) follows collection - 3 indexes for follower/following queries with status filters, (2) social_posts collection - 4 indexes for user posts, feed queries by date, post types, and likes, (3) exam_sheets collection - 1 compound index for efficient exam sheet queries by type+exam+syllabus+subject, (4) battle_rooms collection - 3 indexes for roomId, host queries, and status filters, (5) users collection - 2 indexes for email and username lookups. All indexes created successfully."
+      - working: true
+        agent: "main"
+        comment: "✅ ALL INDEXES VERIFIED: Script executed successfully with no errors. Performance improvements expected for social feed queries, battle room lookups, and exam sheet filtering. Indexes handle null values and duplicate prevention appropriately."
+
+  - task: "Code Cleanup - Remove Deprecated Files"
+    implemented: true
+    working: true
+    file: "/app/backend/socket_app.py.deprecated"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Removed deprecated socket_app.py file (renamed to .deprecated). This file was commented out as 'not needed anymore' in server.py and has been replaced by battle_socketio.py. Verified no active imports remain."
+
 frontend:
+  - task: "Mobile Tab Bar Scrolling Fix - Exam Pages"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/AFCAT.js, /app/frontend/src/pages/RRB_NTPC.js, /app/frontend/src/styles/mobile.css"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Fixed horizontal tab bar overflow issue on exam detail pages (AFCAT, RRB NTPC). Changes: (1) Replaced 'scrollbar-hide' with 'scrollbar-thin' class for visible scroll indicators, (2) Added gap-2 for better spacing between tabs, (3) Added flex-shrink-0 to prevent tab squishing, (4) Improved touch-friendly styling with touch-manipulation class, (5) Added responsive text sizing (text-sm sm:text-base), (6) Created custom scrollbar styles in mobile.css with thin visible scrollbar (8px on mobile, 6px on desktop). Result: Tab bar now scrolls smoothly with visible scrollbar, all tabs readable and properly spaced."
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFIED: Tested on mobile viewport (390x844). Tab bar scrolls correctly with scrollWidth: 911px, clientWidth: 358px. All 6 tab buttons accessible and readable. Horizontal scrolling working as expected with visible scrollbar indicators."
+
+  - task: "Reusable ExamActions Component"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/ExamActions.js, /app/frontend/src/pages/AFCAT.js, /app/frontend/src/pages/RRB_NTPC.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created reusable ExamActions component to standardize CTA section across exam pages. Component features: (1) Gradient background (blue-600 to purple-700), (2) Three action buttons: Practice Quiz, Join Battle Room, Leaderboard, (3) Responsive design - full-width on mobile (grid-cols-1), 3-column grid on desktop (sm:grid-cols-3), (4) Touch-friendly buttons with proper spacing and icons, (5) Accepts examId prop for correct routing. Applied to AFCAT and RRB_NTPC pages below hero section, hidden on desktop (lg:hidden) as it remains in sidebar."
+      - working: true
+        agent: "main"
+        comment: "✅ VERIFIED: Component displays correctly on both AFCAT and RRB NTPC pages. Mobile screenshots show gradient block with all 3 buttons clearly visible below hero section. Buttons are full-width and touch-friendly. Desktop view maintains sidebar CTA block as before."
+
   - task: "YouTube-style Expanding Search Bar in Header"
     implemented: true
     working: true
