@@ -620,15 +620,28 @@ input[type="search"] {
   animation: bounce-slow 2s ease-in-out infinite;
 }
 
+/* Compact Banner Styles */
+.compact-banner {
+  line-height: 1.3;
+}
+
+.compact-banner h2 {
+  line-height: 1.1 !important;
+}
+
+.compact-banner p {
+  line-height: 1.4 !important;
+}
+
 /* Mobile Optimizations for Banner */
 @media (max-width: 640px) {
   .particle {
-    width: 30px !important;
-    height: 30px !important;
+    width: 20px !important;
+    height: 20px !important;
   }
   
   .banner-title-glow {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
   }
   
   .banner-icon-bounce {
@@ -636,6 +649,15 @@ input[type="search"] {
   }
   
   .animate-pulse-glow {
+    display: none;
+  }
+  
+  .compact-banner {
+    padding: 0.25rem 0 !important;
+  }
+  
+  .banner-ring-1,
+  .banner-ring-2 {
     display: none;
   }
 }
