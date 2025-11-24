@@ -71,12 +71,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 {/* Notifications Bell */}
                 <NotificationBell />
 
-                {/* User Name (Desktop) */}
-                <div className="hidden md:block text-right mr-2">
-                  <p className="font-semibold text-sm text-gray-800">{user.name}</p>
-                  <p className="text-xs text-gray-500">{user.email}</p>
-                </div>
-
                 {/* User Profile Avatar with Dropdown (Desktop) */}
                 <div className="hidden md:block relative profile-dropdown-container">
                   <button 
