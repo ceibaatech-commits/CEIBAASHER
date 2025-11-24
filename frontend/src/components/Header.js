@@ -56,9 +56,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
               Join Battle Room
             </button>
-            <button onClick={() => navigate('/about')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
-              About Us
-            </button>
           </nav>
 
           {/* User Section */}
