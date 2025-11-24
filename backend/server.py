@@ -130,6 +130,7 @@ fastapi_app.include_router(notification_router, prefix="/api")
 fastapi_app.include_router(books_router)
 fastapi_app.include_router(exam_structure_router)
 fastapi_app.include_router(exam_metadata_router)
+fastapi_app.include_router(x_auth_router, prefix="/api")
 # socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
