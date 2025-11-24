@@ -60,11 +60,13 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
 
           {/* User Section */}
           <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+            {/* Navbar Search - Always Visible */}
+            <div className="hidden md:block">
+              <NavbarSearch />
+            </div>
+            
             {isLoggedIn && user ? (
               <>
-                {/* Navbar Search - YouTube style expanding search */}
-                <NavbarSearch />
-
                 {/* Notifications Bell */}
                 <NotificationBell />
 
