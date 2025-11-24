@@ -144,32 +144,32 @@ const RRB_NTPC = () => {
         }}
       />
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white py-12">
+      {/* Hero Section - Mobile Optimized */}
+      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white py-6 sm:py-10 md:py-12 exam-hero-banner">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full mb-4">
-              <span className="text-3xl mr-3">🚂</span>
-              <span className="font-bold text-lg">Railway Recruitment 2026</span>
+          <div className="text-center exam-hero-content">
+            <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 sm:px-6 py-2 rounded-full mb-3 sm:mb-4">
+              <span className="text-2xl sm:text-3xl mr-2 sm:mr-3">🚂</span>
+              <span className="font-bold text-base sm:text-lg">Railway Recruitment 2026</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black mb-4">
+            <h1 className="exam-hero-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 leading-tight px-2">
               RRB NTPC 2026 Complete Guide
             </h1>
-            <p className="text-xl text-white/90 mb-6 max-w-3xl mx-auto">
+            <p className="exam-subtitle text-sm sm:text-base md:text-lg lg:text-xl text-white/90 mb-4 sm:mb-6 max-w-3xl mx-auto px-4 font-medium">
               Railway Recruitment Board - Non-Technical Popular Categories
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <p className="text-sm text-white/80">Expected Vacancies</p>
-                <p className="text-2xl font-bold">5,800+</p>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-2">
+              <div className="bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg exam-stat-card">
+                <p className="text-xs sm:text-sm text-white/80 stat-label">Expected Vacancies</p>
+                <p className="text-xl sm:text-2xl font-bold stat-value">5,800+</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <p className="text-sm text-white/80">Exam Stages</p>
-                <p className="text-2xl font-bold">CBT 1 & 2</p>
+              <div className="bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg exam-stat-card">
+                <p className="text-xs sm:text-sm text-white/80 stat-label">Exam Stages</p>
+                <p className="text-xl sm:text-2xl font-bold stat-value">CBT 1 & 2</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg">
-                <p className="text-sm text-white/80">Total Marks</p>
-                <p className="text-2xl font-bold">100 (CBT 1)</p>
+              <div className="bg-white/10 backdrop-blur-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg exam-stat-card">
+                <p className="text-xs sm:text-sm text-white/80 stat-label">Total Marks</p>
+                <p className="text-xl sm:text-2xl font-bold stat-value">100 (CBT 1)</p>
               </div>
             </div>
           </div>
