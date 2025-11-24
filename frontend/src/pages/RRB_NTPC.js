@@ -145,7 +145,7 @@ const RRB_NTPC = () => {
       />
 
       {/* Hero Section - Mobile Optimized */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white py-6 sm:py-10 md:py-12 exam-hero-banner">
+      <div className="hero-banner bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center exam-hero-content">
             <div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 sm:px-6 py-2 rounded-full mb-3 sm:mb-4">
@@ -155,7 +155,7 @@ const RRB_NTPC = () => {
             <h1 className="exam-hero-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 leading-tight px-2">
               RRB NTPC 2026 Complete Guide
             </h1>
-            <p className="exam-subtitle text-sm sm:text-base md:text-lg lg:text-xl text-white/90 mb-4 sm:mb-6 max-w-3xl mx-auto px-4 font-medium">
+            <p className="exam-subtitle text-white/90 mb-4 sm:mb-6 max-w-3xl mx-auto px-4 font-medium">
               Railway Recruitment Board - Non-Technical Popular Categories
             </p>
             <div className="flex flex-wrap justify-center gap-3 sm:gap-4 px-2">
@@ -177,7 +177,7 @@ const RRB_NTPC = () => {
       </div>
 
       {/* Quick Actions - Mobile/Tablet View */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:hidden">
+      <div className="buttons-outside-banner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 lg:hidden">
         <ExamActions examId="RRB_NTPC" />
       </div>
 
