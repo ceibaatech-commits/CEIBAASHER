@@ -102,7 +102,7 @@ const Home = () => {
               className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
             >
               <Users className="w-5 h-5" />
-              <span>Social Feed</span>
+              <span>Victory Lane</span>
             </button>
             <button
               onClick={() => navigate('/join-room')}
