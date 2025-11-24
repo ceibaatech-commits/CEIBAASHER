@@ -36,30 +36,32 @@
 
 /* ===== Home Banner Carousel ===== */
 .home-banner-carousel {
-  height: 400px;
+  height: 320px;
 }
 
 @media (max-width: 640px) {
   .home-banner-carousel {
-    height: auto;
-    min-height: 450px;
-    max-height: 60vh;
+    height: 280px;
+    min-height: 280px;
+    max-height: 35vh;
   }
   
   .home-banner-content {
-    padding: 1rem 0;
+    padding: 0.5rem 0;
   }
 }
 
 @media (min-width: 641px) and (max-width: 768px) {
   .home-banner-carousel {
-    height: 420px;
+    height: 300px;
+    max-height: 38vh;
   }
 }
 
 @media (min-width: 769px) {
   .home-banner-carousel {
-    height: 450px;
+    height: 350px;
+    max-height: 40vh;
   }
 }
 
