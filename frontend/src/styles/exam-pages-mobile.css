@@ -18,10 +18,20 @@
 }
 
 /* ===== Exam Hero Banner Optimization ===== */
+.hero-banner {
+  max-height: 55vh;
+  padding: 20px;
+  overflow: hidden;
+}
+
 .exam-hero-banner {
   max-height: 60vh;
   padding: 1.25rem 1rem; /* 20px 16px */
   overflow: hidden;
+}
+
+.buttons-outside-banner {
+  margin-top: 20px;
 }
 
 @media (max-width: 640px) {
