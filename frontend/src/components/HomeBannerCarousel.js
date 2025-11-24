@@ -68,7 +68,7 @@ const HomeBannerCarousel = () => {
   return (
     <div className="relative w-full bg-white overflow-hidden shadow-lg">
       {/* Banner Container */}
-      <div className="relative h-[400px] md:h-[450px]">
+      <div className="relative home-banner-carousel">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           {currentBanner.pattern === 'railway' && (
