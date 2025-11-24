@@ -212,21 +212,21 @@ const AFCAT = () => {
       {/* Sticky Navigation */}
       <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex overflow-x-auto scrollbar-hide py-2">
+          <div className="flex overflow-x-auto py-2 gap-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
             {sections.map((section) => {
               const Icon = section.icon;
               return (
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                  className={`flex items-center space-x-2 px-4 sm:px-6 py-3 rounded-lg font-semibold whitespace-nowrap transition-all flex-shrink-0 touch-manipulation ${
                     activeSection === section.id
                       ? 'bg-blue-600 text-white'
                       : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{section.label}</span>
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">{section.label}</span>
                 </button>
               );
             })}
