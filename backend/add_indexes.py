@@ -67,17 +67,26 @@ async def add_indexes():
         print("\n📊 Adding indexes for 'battle_rooms' collection...")
         battle_rooms_collection = db['battle_rooms']
         
-        # Index for finding rooms by PIN
-        await battle_rooms_collection.create_index([("roomId", 1)], unique=True)
-        print("✅ Created index: roomId (unique)")
+        # Index for finding rooms by PIN (skip unique constraint due to existing nulls)
+        try:
+            await battle_rooms_collection.create_index([("roomId", 1)])
+            print("✅ Created index: roomId")
+        except Exception as e:
+            print(f"⚠️  roomId index: {str(e)[:50]}... (skipped)")
         
         # Index for finding rooms by host
-        await battle_rooms_collection.create_index([("host.userId", 1), ("createdAt", -1)])
-        print("✅ Created index: host.userId + createdAt")
+        try:
+            await battle_rooms_collection.create_index([("host.userId", 1), ("createdAt", -1)])
+            print("✅ Created index: host.userId + createdAt")
+        except Exception as e:
+            print(f"⚠️  host index: {str(e)[:50]}... (skipped)")
         
         # Index for room status queries
-        await battle_rooms_collection.create_index([("status", 1), ("createdAt", -1)])
-        print("✅ Created index: status + createdAt")
+        try:
+            await battle_rooms_collection.create_index([("status", 1), ("createdAt", -1)])
+            print("✅ Created index: status + createdAt")
+        except Exception as e:
+            print(f"⚠️  status index: {str(e)[:50]}... (skipped)")
         
         # ===== USERS COLLECTION =====
         print("\n📊 Adding indexes for 'users' collection...")
