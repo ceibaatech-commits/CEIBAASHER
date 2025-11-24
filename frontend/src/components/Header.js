@@ -228,9 +228,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               <button onClick={() => { navigate('/join-room'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
                 Join Battle Room
               </button>
-              <button onClick={() => { navigate('/about'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
-                About Us
-              </button>
 
               {/* Mobile-only user actions */}
               {isLoggedIn && user && (
