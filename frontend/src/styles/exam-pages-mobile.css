@@ -48,7 +48,7 @@
 /* ===== Sub-header Text Optimization ===== */
 .exam-page-subtitle,
 .exam-subtitle-text {
-  font-size: clamp(0.875rem, 3vw, 1rem) !important; /* 14-16px */
+  font-size: 16px !important;
   line-height: 1.5 !important;
   margin-top: 0.5rem !important;
   font-weight: 500 !important;
@@ -56,8 +56,13 @@
 }
 
 /* Fix for CDS and other exam pages with subtitle */
+.exam-subtitle {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
 .text-white\\/90.text-sm {
-  font-size: var(--font-subtitle) !important;
+  font-size: 16px !important;
   line-height: 1.5 !important;
 }
 
