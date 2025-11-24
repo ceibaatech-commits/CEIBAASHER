@@ -98,72 +98,100 @@ const HomeBannerCarousel = () => {
         </div>
 
         {/* Content */}
-        <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+        <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient} banner-animated-gradient overflow-hidden`}>
+          {/* Floating Particles */}
+          <div className="absolute inset-0 banner-particles">
+            <div className="particle particle-1"></div>
+            <div className="particle particle-2"></div>
+            <div className="particle particle-3"></div>
+            <div className="particle particle-4"></div>
+            <div className="particle particle-5"></div>
+          </div>
+          
+          {/* Animated Glow Effects */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-glow"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '1s'}}></div>
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10">
             <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center w-full">
               {/* Left: Text Content */}
-              <div className="text-white home-banner-content z-10">
+              <div className="text-white home-banner-content">
                 {/* Icon & Badge */}
-                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-                  <span className="text-3xl sm:text-4xl md:text-5xl">{currentBanner.icon}</span>
-                  <span className="bg-white/20 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4 animate-slide-in-left">
+                  <div className="banner-icon-bounce text-3xl sm:text-4xl md:text-5xl">{currentBanner.icon}</div>
+                  <span className="bg-white/30 backdrop-blur-md px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-bold border border-white/40 shadow-lg">
                     {currentBanner.exam}
                   </span>
                 </div>
 
-                {/* Title */}
-                <div className="mb-3 sm:mb-4">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-1 sm:mb-2 leading-tight">
+                {/* Title with Gradient Text */}
+                <div className="mb-3 sm:mb-4 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-1 sm:mb-2 leading-tight banner-title-glow">
                     {currentBanner.title}
                   </h2>
-                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 font-medium">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 font-semibold banner-subtitle-shine">
                     {currentBanner.subtitle}
                   </p>
                 </div>
 
                 {/* Description */}
-                <p className="text-sm sm:text-base md:text-lg text-white/80 mb-3 sm:mb-4">
+                <p className="text-sm sm:text-base md:text-lg text-white/90 mb-3 sm:mb-4 animate-slide-in-left" style={{animationDelay: '0.2s'}}>
                   {currentBanner.description}
                 </p>
 
-                {/* Highlights */}
+                {/* Highlights with Icons */}
                 <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
                   {currentBanner.highlights.map((highlight, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full flex-shrink-0"></div>
-                      <span className="text-sm sm:text-base text-white/90">{highlight}</span>
+                    <div key={index} className="flex items-center space-x-2 animate-slide-in-left" style={{animationDelay: `${0.3 + index * 0.1}s`}}>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0 border border-white/30">
+                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                      </div>
+                      <span className="text-sm sm:text-base text-white font-medium">{highlight}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* CTA Button */}
-                <div>
+                {/* CTA Button Enhanced */}
+                <div className="animate-slide-in-left" style={{animationDelay: '0.6s'}}>
                   <button
                     onClick={() => navigate(currentBanner.ctaLink)}
-                    className="bg-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-gray-100 transition-all inline-flex items-center space-x-2 shadow-2xl hover:scale-105 transform touch-manipulation"
+                    className="banner-cta-button bg-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-gray-100 transition-all inline-flex items-center space-x-2 shadow-2xl hover:shadow-white/50 relative overflow-hidden group"
                   >
-                    <span>{currentBanner.ctaText}</span>
-                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="relative z-10">{currentBanner.ctaText}</span>
+                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 relative z-10 group-hover:rotate-12 transition-transform" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity"></div>
                   </button>
                 </div>
               </div>
 
-              {/* Right: Decorative Element */}
-              <div className="hidden md:flex items-center justify-center">
-                <div className="relative">
-                  {/* Animated Circle */}
-                  <div className="w-72 h-72 bg-white/10 backdrop-blur-sm rounded-full animate-pulse flex items-center justify-center">
-                    <div className="w-56 h-56 bg-white/10 rounded-full flex items-center justify-center">
+              {/* Right: Enhanced Decorative Element */}
+              <div className="hidden md:flex items-center justify-center relative">
+                <div className="relative banner-3d-element">
+                  {/* Rotating Ring 1 */}
+                  <div className="absolute inset-0 banner-ring-1"></div>
+                  {/* Rotating Ring 2 */}
+                  <div className="absolute inset-0 banner-ring-2"></div>
+                  
+                  {/* Center Content */}
+                  <div className="w-72 h-72 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-4 border-white/20 shadow-2xl relative z-10">
+                    <div className="w-56 h-56 bg-gradient-to-br from-white/20 to-white/5 rounded-full flex items-center justify-center border-2 border-white/30">
                       <div className="text-center">
-                        <FileText className="w-24 h-24 text-white/80 mx-auto mb-4" />
-                        <p className="text-white font-bold text-2xl">2026</p>
-                        <p className="text-white/80">Exam Ready</p>
+                        <div className="relative">
+                          <FileText className="w-20 h-20 text-white mx-auto mb-4 animate-float" />
+                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-ping"></div>
+                        </div>
+                        <p className="text-white font-black text-3xl mb-1 banner-year-glow">2026</p>
+                        <p className="text-white/90 font-semibold">Exam Ready</p>
                       </div>
                     </div>
                   </div>
-                  {/* Floating Badge */}
-                  <div className="absolute top-0 right-0 bg-yellow-400 text-yellow-900 px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-bounce">
-                    New Batch
+                  
+                  {/* Floating Badges */}
+                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm shadow-2xl animate-bounce-slow border-2 border-white/50">
+                    🔥 Hot
+                  </div>
+                  <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm shadow-2xl animate-bounce-slow border-2 border-white/50" style={{animationDelay: '0.5s'}}>
+                    ✨ New
                   </div>
                 </div>
               </div>
