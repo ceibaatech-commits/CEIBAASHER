@@ -99,39 +99,39 @@ const HomeBannerCarousel = () => {
 
         {/* Content */}
         <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`}>
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 h-full flex items-center">
-            <div className="grid md:grid-cols-2 gap-8 items-center w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center w-full">
               {/* Left: Text Content */}
-              <div className="text-white space-y-6 z-10">
+              <div className="text-white home-banner-content z-10">
                 {/* Icon & Badge */}
-                <div className="flex items-center space-x-3">
-                  <span className="text-5xl">{currentBanner.icon}</span>
-                  <span className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-semibold">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                  <span className="text-3xl sm:text-4xl md:text-5xl">{currentBanner.icon}</span>
+                  <span className="bg-white/20 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-semibold">
                     {currentBanner.exam}
                   </span>
                 </div>
 
                 {/* Title */}
-                <div>
-                  <h2 className="text-4xl md:text-5xl font-black mb-2 leading-tight">
+                <div className="mb-3 sm:mb-4">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-1 sm:mb-2 leading-tight">
                     {currentBanner.title}
                   </h2>
-                  <p className="text-lg md:text-xl text-white/90 font-medium">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 font-medium">
                     {currentBanner.subtitle}
                   </p>
                 </div>
 
                 {/* Description */}
-                <p className="text-lg text-white/80">
+                <p className="text-sm sm:text-base md:text-lg text-white/80 mb-3 sm:mb-4">
                   {currentBanner.description}
                 </p>
 
                 {/* Highlights */}
-                <div className="space-y-2">
+                <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
                   {currentBanner.highlights.map((highlight, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                      <span className="text-white/90">{highlight}</span>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full flex-shrink-0"></div>
+                      <span className="text-sm sm:text-base text-white/90">{highlight}</span>
                     </div>
                   ))}
                 </div>
@@ -140,10 +140,10 @@ const HomeBannerCarousel = () => {
                 <div>
                   <button
                     onClick={() => navigate(currentBanner.ctaLink)}
-                    className="bg-white text-gray-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all inline-flex items-center space-x-2 shadow-2xl hover:scale-105 transform"
+                    className="bg-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-bold text-base sm:text-lg hover:bg-gray-100 transition-all inline-flex items-center space-x-2 shadow-2xl hover:scale-105 transform touch-manipulation"
                   >
                     <span>{currentBanner.ctaText}</span>
-                    <ExternalLink className="w-5 h-5" />
+                    <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
