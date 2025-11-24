@@ -371,7 +371,43 @@ agent_communication:
 #====================================================================================================
 
 user_problem_statement: |
-  Ceibaa - Enhanced Battle Platform with Mobile UI Fixes + Database Optimization
+  Ceibaa - Enhanced Battle Platform with Comprehensive Mobile UI/UX Optimization
+  
+  Phase 5: Comprehensive Mobile UI/UX Optimization (COMPLETE - Nov 24, 2025)
+  - Fixed oversized sub-headers on all exam pages
+    * Reduced subtitle font size to 14-16px (from 24px) with clamp()
+    * Added proper line-height (1.5) for better readability  
+    * Improved visual hierarchy with 8px gap between heading and subtitle
+    * Applied to ModernExamSyllabus, AFCAT, RRB_NTPC pages
+  - Fixed banner content overflow issues
+    * Reduced banner height to max 60vh on mobile (55vh on small screens)
+    * Ensured all content visible without cutting off
+    * Added proper padding (16px-20px) around banner content
+    * Fixed stat cards to be more compact on mobile
+  - Enhanced button styling with modern gradients
+    * Implemented 3 gradient styles (primary, secondary, accent)
+    * Added box shadows (0 4px 12px rgba(0,0,0,0.15))
+    * Rounded corners (12px border-radius)
+    * Proper padding (16px vertical, 24px horizontal)
+    * Minimum 44x44px touch targets
+    * Smooth transitions (0.3s ease) with scale effects
+  - Implemented responsive typography system
+    * H1: clamp(28px - 32px) on mobile
+    * H2: clamp(22px - 24px) on mobile
+    * Body: 16px (prevents iOS zoom)
+    * Subtitle: clamp(14px - 16px)
+  - Added comprehensive mobile-first CSS
+    * Created exam-pages-mobile.css with all mobile optimizations
+    * Responsive grid for buttons (1 column mobile, 2 columns tablet, 3 columns desktop)
+    * 8px base spacing system
+    * WCAG AA contrast ratios
+    * Safe area support for mobile browsers
+    * Loading states and touch feedback
+  - Input field improvements
+    * 16px minimum font size (prevents iOS zoom)
+    * Proper padding (12-16px)
+    * High contrast background (rgba(255,255,255,0.95))
+    * Clear focus states with blue border
   
   Phase 4: Mobile UI Fixes (COMPLETE - Nov 24, 2025)
   - Fixed broken tab bar on exam detail pages (AFCAT, RRB NTPC)
