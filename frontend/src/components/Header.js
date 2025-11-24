@@ -93,7 +93,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
 
                   {/* Dropdown Menu */}
                   {showProfileDropdown && (
-                    <div className="fixed right-4 top-16 w-56 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden animate-fade-in" style={{zIndex: 9999}}
+                    <div className="fixed right-4 top-16 w-56 bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden animate-fade-in" style={{ zIndex: 9999 }}>
                       {/* User Info Header */}
                       <div className="px-4 py-3 bg-gradient-to-r from-cyan-50 to-purple-50 border-b border-gray-200">
                         <div className="flex items-center space-x-3">
