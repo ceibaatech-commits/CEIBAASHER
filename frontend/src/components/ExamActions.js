@@ -30,10 +30,10 @@ const ExamActions = ({ examId }) => {
         <button
           onClick={() => navigate('/social-feed')}
           className="exam-cta-button btn-gradient-accent w-full"
-          aria-label="View Leaderboard"
+          aria-label="View Victory Lane"
         >
           <Award className="w-5 h-5 flex-shrink-0" />
-          <span>Leaderboard</span>
+          <span>Victory Lane</span>
         </button>
       </div>
     </div>
