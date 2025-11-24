@@ -8,6 +8,7 @@ import {
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
+import ExamActions from '../components/ExamActions';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
