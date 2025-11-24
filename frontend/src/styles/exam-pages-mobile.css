@@ -472,59 +472,43 @@ input[type="search"] {
 
 /* ===== Home Page 3 Buttons Layout - 1 Top, 2 Bottom ===== */
 @media (max-width: 640px) {
-  /* Target the button container on homepage */
-  .flex.flex-wrap.justify-center.gap-4.mb-16 {
+  /* Target Home.js button container */
+  div.flex.flex-wrap.justify-center.gap-4 {
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     grid-template-rows: auto auto !important;
-    gap: 1rem !important;
+    gap: 0.75rem !important;
     width: 100% !important;
-    padding: 0 1rem !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 2rem !important;
   }
   
-  /* First button - full width */
-  .flex.flex-wrap.justify-center.gap-4.mb-16 > button:first-child {
+  /* First button (Victory Lane) - Full Width Top */
+  div.flex.flex-wrap.justify-center.gap-4 > button:nth-child(1) {
     grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
     width: 100% !important;
   }
   
-  /* Second and third buttons container */
-  .flex.flex-wrap.justify-center.gap-4.mb-16 > button:nth-child(2),
-  .flex.flex-wrap.justify-center.gap-4.mb-16 > button:nth-child(3) {
-    width: 100% !important;
-  }
-  
-  .flex.flex-wrap.justify-center.gap-4.mb-16 > button:nth-child(2) {
-    grid-column: 1 !important;
+  /* Second button (Join Battle Room) - Bottom Left */
+  div.flex.flex-wrap.justify-center.gap-4 > button:nth-child(2) {
+    grid-column: 1 / 2 !important;
     grid-row: 2 !important;
+    width: 100% !important;
   }
   
-  .flex.flex-wrap.justify-center.gap-4.mb-16 > button:nth-child(3) {
-    grid-column: 1 !important;
-    grid-row: 3 !important;
+  /* Third button (Leaderboard) - Bottom Right */
+  div.flex.flex-wrap.justify-center.gap-4 > button:nth-child(3) {
+    grid-column: 2 / 3 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
   }
   
-  /* Alternative: Make it 2 columns for second row */
-  @supports (display: grid) {
-    .flex.flex-wrap.justify-center.gap-4.mb-16 {
-      grid-template-columns: repeat(2, 1fr) !important;
-      grid-template-rows: auto auto !important;
-    }
-    
-    .flex.flex-wrap.justify-center.gap-4.mb-16 > button:first-child {
-      grid-column: 1 / -1 !important;
-      grid-row: 1 !important;
-    }
-    
-    .flex.flex-wrap.justify-center.gap-4.mb-16 > button:nth-child(2) {
-      grid-column: 1 !important;
-      grid-row: 2 !important;
-    }
-    
-    .flex.flex-wrap.justify-center.gap-4.mb-16 > button:nth-child(3) {
-      grid-column: 2 !important;
-      grid-row: 2 !important;
-    }
+  /* Make all buttons same padding on mobile */
+  div.flex.flex-wrap.justify-center.gap-4 > button {
+    padding: 1rem 1.5rem !important;
+    font-size: 1rem !important;
   }
 }
 
