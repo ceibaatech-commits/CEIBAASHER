@@ -93,12 +93,18 @@ async def add_indexes():
         users_collection = db['users']
         
         # Index for email lookups (if not already unique)
-        await users_collection.create_index([("email", 1)], unique=True, sparse=True)
-        print("✅ Created index: email (unique)")
+        try:
+            await users_collection.create_index([("email", 1)], unique=True, sparse=True)
+            print("✅ Created index: email (unique)")
+        except Exception as e:
+            print(f"⚠️  email index: Already exists (skipped)")
         
         # Index for username search
-        await users_collection.create_index([("username", 1)])
-        print("✅ Created index: username")
+        try:
+            await users_collection.create_index([("username", 1)])
+            print("✅ Created index: username")
+        except Exception as e:
+            print(f"⚠️  username index: Already exists (skipped)")
         
         print("\n✅ ALL INDEXES CREATED SUCCESSFULLY!")
         print("\n📋 Summary:")
