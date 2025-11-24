@@ -661,3 +661,109 @@ input[type="search"] {
     display: none;
   }
 }
+
+/* ===== Fix Homepage Exam Cards Cropping ===== */
+@media (max-width: 640px) {
+  /* Exam cards container */
+  #exams {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Grid fix for exam cards */
+  #exams .grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  /* Individual exam card */
+  #exams .grid > div,
+  #exams .grid > a {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Ensure card content fits */
+  #exams .rounded-xl,
+  #exams .rounded-2xl {
+    padding: 1rem !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ===== Fix Main Header/Navbar Stability ===== */
+nav {
+  position: sticky !important;
+  top: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+@media (max-width: 640px) {
+  nav {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  nav > div {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Fix nav items wrapping */
+  nav .flex {
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Ensure buttons don't overflow */
+  nav button,
+  nav a {
+    white-space: nowrap !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Logo size control */
+  nav svg,
+  nav img {
+    max-width: 120px !important;
+    height: auto !important;
+  }
+}
+
+/* Additional mobile container fixes */
+@media (max-width: 640px) {
+  body,
+  #root {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Fix all sections that might overflow */
+  section {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Grid layouts universal fix */
+  .grid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* Prevent cards from overflowing */
+  [class*="rounded"],
+  [class*="shadow"] {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
