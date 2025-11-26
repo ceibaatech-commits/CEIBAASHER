@@ -98,12 +98,36 @@ const ChapterTestChapters = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <motion.div 
-          animate={{ rotate: 360 }} 
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} 
-          className="rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent" 
-        />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
+        <div className="flex items-center justify-center h-96">
+          <motion.div 
+            animate={{ rotate: 360 }} 
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} 
+            className="rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"
+            aria-label="Loading chapters" 
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <BookOpen className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <p className="text-xl text-gray-600">{error}</p>
+            <button 
+              onClick={fetchChapters}
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
