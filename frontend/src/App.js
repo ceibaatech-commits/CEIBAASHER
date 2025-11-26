@@ -83,16 +83,8 @@ function App() {
           <Route path="/chapter-tests/class-12/:stream/:subject" element={<ChapterTestChapters />} />
           
           {/* For Classes 6-10 - Direct Subject Selection */}
-          <Route path="/chapter-tests/class-6" element={<ChapterTestSubjects />} />
-          <Route path="/chapter-tests/class-7" element={<ChapterTestSubjects />} />
-          <Route path="/chapter-tests/class-8" element={<ChapterTestSubjects />} />
-          <Route path="/chapter-tests/class-9" element={<ChapterTestSubjects />} />
-          <Route path="/chapter-tests/class-10" element={<ChapterTestSubjects />} />
-          <Route path="/chapter-tests/class-6/:subject" element={<ChapterTestChapters />} />
-          <Route path="/chapter-tests/class-7/:subject" element={<ChapterTestChapters />} />
-          <Route path="/chapter-tests/class-8/:subject" element={<ChapterTestChapters />} />
-          <Route path="/chapter-tests/class-9/:subject" element={<ChapterTestChapters />} />
-          <Route path="/chapter-tests/class-10/:subject" element={<ChapterTestChapters />} />
+          <Route path="/chapter-tests/:classNumber" element={<ChapterTestSubjects />} />
+          <Route path="/chapter-tests/:classNumber/:subject" element={<ChapterTestChapters />} />
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
