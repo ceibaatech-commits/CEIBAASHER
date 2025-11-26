@@ -442,10 +442,10 @@ async def like_post(post_id: str, authorization: Optional[str] = Header(None)):
             raise HTTPException(status_code=404, detail="Post not found")
         
         # Create notification
-        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "user_id": 1})
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "user_id": 1, "likes_count": 1})
         if post and post["user_id"] != user_id:
             user = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1})
-            await db.notifications.insert_one({
+            notification_doc = {
                 "id": str(uuid.uuid4()),
                 "user_id": post["user_id"],
                 "notification_type": "like",
@@ -455,7 +455,14 @@ async def like_post(post_id: str, authorization: Optional[str] = Header(None)):
                 "post_id": post_id,
                 "is_read": False,
                 "created_at": datetime.now(timezone.utc).isoformat()
-            })
+            }
+            await db.notifications.insert_one(notification_doc)
+            # Send real-time notification
+            asyncio.create_task(social_socketio.send_notification(post["user_id"], notification_doc))
+        
+        # Broadcast like in real-time
+        likes_count = post.get("likes_count", 0) + 1 if post else 1
+        asyncio.create_task(social_socketio.broadcast_post_liked(post_id, user_id, likes_count))
         
         return {"success": True, "message": "Post liked"}
     except HTTPException:
