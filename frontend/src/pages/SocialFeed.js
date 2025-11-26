@@ -284,6 +284,67 @@ const SocialFeed = () => {
     }
   };
 
+  const createQuizRoom = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    if (!quizRoomData.title.trim()) {
+      alert('Please enter a quiz title');
+      return;
+    }
+
+    if (quizRoomData.selectedQuestions.length < 5) {
+      alert('Please select at least 5 questions');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Format questions for backend
+      const questions = quizRoomData.selectedQuestions.map(q => ({
+        question_text: q.question,
+        option_a: q.options[0] || '',
+        option_b: q.options[1] || '',
+        option_c: q.options[2] || '',
+        option_d: q.options[3] || '',
+        correct_answer: q.correctAnswer,
+        time_limit: 30
+      }));
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/quiz-rooms`,
+        {
+          title: quizRoomData.title,
+          description: quizRoomData.description,
+          category: quizRoomData.category || 'General',
+          privacy: quizRoomData.privacy,
+          questions: questions
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setShowQuizRoomModal(false);
+        setShowCreatePost(false);
+        setQuizRoomData({
+          title: '',
+          description: '',
+          category: '',
+          privacy: 'public',
+          selectedQuestions: []
+        });
+        fetchFeed();
+        alert(`Quiz Room created! Code: ${response.data.room_code}`);
+      }
+    } catch (error) {
+      console.error('Error creating quiz room:', error);
+      alert('Failed to create quiz room');
+    }
+  };
+
   const postManualMCQ = async () => {
     if (!user) {
       navigate('/login');
