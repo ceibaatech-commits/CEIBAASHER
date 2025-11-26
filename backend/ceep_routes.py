@@ -146,40 +146,59 @@ async def get_ceeps(user_id: str):
     """
     Get all users that a user is ceeping (following)
     """
-    ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
-    return {
-        "success": True,
-        "ceeps": ceeps,
-        "count": len(ceeps)
-    }
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
+    try:
+        ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+        return {
+            "success": True,
+            "ceeps": ceeps,
+            "count": len(ceeps)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching ceeps for user {user_id}: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error fetching ceeps: {str(e)}")
 
 @router.get("/is-following/{user_id}/{target_user_id}")
 async def check_is_following(user_id: str, target_user_id: str):
     """
     Check if user_id is following target_user_id
     """
-    existing = await db.ceeps.find_one({
-        "user_id": user_id,
-        "ceep_user_id": target_user_id
-    })
-    return {
-        "is_following": existing is not None
-    }
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
+    try:
+        existing = await db.ceeps.find_one({
+            "user_id": user_id,
+            "ceep_user_id": target_user_id
+        })
+        return {
+            "is_following": existing is not None
+        }
+    except Exception as e:
+        logger.error(f"Error checking follow status: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error checking follow status: {str(e)}")
 
 
 @router.get("/ceepers/{user_id}")
 async def get_user_ceepers(user_id: str):
     """
-    Get list of users who are ceeping this user
+    Get list of users who are ceeping this user (followers)
     """
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
     try:
         ceepers = await db.ceeps.find({"ceep_user_id": user_id}, {"_id": 0}).to_list(length=None)
         return {
             "success": True,
-            "ceepers": ceepers
+            "ceepers": ceepers,
+            "count": len(ceepers)
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching ceepers: {str(e)}")
+        logger.error(f"Error fetching ceepers for user {user_id}: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error fetching ceepers: {str(e)}")
 
 
 @router.get("/check-ceep/{user_id}/{ceep_user_id}")
