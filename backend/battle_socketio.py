@@ -258,7 +258,7 @@ async def set_room_questions(sid, data):
         room_id = data.get('roomId')
         questions = data.get('questions', [])
 
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
 
         if not room:
             await sio.emit('error', {'message': 'Room not found'}, room=sid)
@@ -294,7 +294,7 @@ async def submit_answer(sid, data):
         is_correct = data.get('isCorrect', False)
         points = data.get('points', 0)
 
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
 
@@ -335,7 +335,7 @@ async def next_question(sid, data):
     """Move to next question (host only)"""
     try:
         room_id = data.get('roomId')
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
 
         if not room or room.host.user_id != sid:
             return
@@ -358,7 +358,7 @@ async def complete_battle(sid, data):
     """Complete the battle (host only)"""
     try:
         room_id = data.get('roomId')
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
 
         if not room or room.host.user_id != sid:
             return
@@ -398,7 +398,7 @@ async def pause_quiz(sid, data):
     """
     try:
         room_id = data.get('pin') or data.get('roomId')
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
         if room.host.user_id != sid:
@@ -422,7 +422,7 @@ async def resume_quiz(sid, data):
     """
     try:
         room_id = data.get('pin') or data.get('roomId')
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
         if room.host.user_id != sid:
@@ -446,7 +446,7 @@ async def skip_question(sid, data):
     """
     try:
         room_id = data.get('pin') or data.get('roomId')
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
         if room.host.user_id != sid:
@@ -475,7 +475,7 @@ async def send_message(sid, data):
         room_id = data.get('roomId') or data.get('pin')
         message = data.get('message')
 
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
 
@@ -504,7 +504,7 @@ async def send_reaction(sid, data):
         # Frontend sends { roomId, emoji, sender }; keep both keys for robustness
         reaction = data.get('reaction') or data.get('emoji')
 
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
 
@@ -543,7 +543,7 @@ async def send_gift(sid, data):
         recipient_id = data.get('recipientId')
         gift_type = (data.get('giftType') or '').lower()
 
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             await sio.emit('gift-error', {'message': 'Room not found'}, room=sid)
             return
@@ -806,7 +806,7 @@ def generate_random_id(length: int = 9) -> str:
 async def handle_user_leave(sid, room_id):
     """Handle user leaving a room with host reassignment"""
     try:
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
 
