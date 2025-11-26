@@ -124,10 +124,10 @@ const ChapterTestChapters = () => {
             <BookOpen className="w-16 h-16 text-red-400 mx-auto mb-4" />
             <p className="text-xl text-gray-600">{error}</p>
             <button 
-              onClick={fetchChapters}
+              onClick={() => navigate('/chapter-tests')}
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Try Again
+              Go Back to Class Selection
             </button>
           </div>
         </div>
