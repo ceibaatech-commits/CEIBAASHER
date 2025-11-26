@@ -424,7 +424,10 @@ const ChapterTestSubjects = () => {
             return (
               <button
                 key={subject.name}
-                onClick={() => navigate(`/chapter-tests/class-${selectedClass}/${subject.name.toLowerCase().replace(/\s+/g, '-')}`)}
+                onClick={() => {
+                  const subjectSlug = subject.name.toLowerCase().replace(/\s+/g, '-');
+                  navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}`);
+                }}
                 className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent text-left overflow-hidden"
               >
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${subject.color} opacity-10 rounded-bl-full`}></div>
