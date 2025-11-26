@@ -173,21 +173,8 @@ const ChapterTestChapters = () => {
         </div>
       </div>
 
-      {/* Decorative Background with Shapes */}
-      <div className="relative bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden">
-        {/* Floating Geometric Shapes */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-purple-200 rounded-full opacity-20 blur-2xl animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-40 h-40 bg-blue-200 rounded-full opacity-20 blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-pink-200 rounded-full opacity-20 blur-2xl animate-pulse" style={{animationDelay: '2s'}}></div>
-          <div className="absolute bottom-40 right-1/3 w-28 h-28 bg-yellow-200 rounded-full opacity-20 blur-2xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
-          
-          {/* Geometric Triangles */}
-          <div className="absolute top-20 right-10 w-0 h-0 border-l-[60px] border-l-transparent border-r-[60px] border-r-transparent border-b-[100px] border-b-purple-200 opacity-10 rotate-12"></div>
-          <div className="absolute bottom-32 left-20 w-0 h-0 border-l-[50px] border-l-transparent border-r-[50px] border-r-transparent border-b-[80px] border-b-blue-200 opacity-10 -rotate-45"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 py-6 relative z-10">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
           {/* Quick Stats Bar - Enhanced Kahoot Style */}
           <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-6 border border-white/20">
             <div className="flex items-center justify-between">
