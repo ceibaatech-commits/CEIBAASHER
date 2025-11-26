@@ -223,7 +223,8 @@ const ChapterTestChapters = () => {
           )}
 
           {/* Chapters Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {chapters.length > 0 && (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {chapters.map((chapter, idx) => (
               <motion.div 
                 key={idx} 
