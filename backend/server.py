@@ -36,6 +36,7 @@ from exam_structure_routes import router as exam_structure_router
 import exam_structure_routes
 from exam_metadata_routes import router as exam_metadata_router
 from x_auth_routes import router as x_auth_router
+from search_routes import router as search_router
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
