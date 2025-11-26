@@ -371,18 +371,16 @@ class BattleRoomManager:
             await self.save_room_to_db(room)
             return room
 
-    async def get_room(self, room_id: str) -> Optional[BattleRoom]:
-        """Return room by ID or None. Access is protected by lock."""
-        async with self._lock:
-            return self.rooms.get(room_id)
+    def get_room(self, room_id: str) -> Optional[BattleRoom]:
+        """Return room by ID or None. Thread-safe read."""
+        return self.rooms.get(room_id)
 
-    async def get_user_room(self, user_id: str) -> Optional[BattleRoom]:
-        """Return the room object a user is currently in, or None. Access is protected by lock."""
-        async with self._lock:
-            room_id = self.user_rooms.get(user_id)
-            if room_id:
-                return self.rooms.get(room_id)
-            return None
+    def get_user_room(self, user_id: str) -> Optional[BattleRoom]:
+        """Return the room object a user is currently in, or None. Thread-safe read."""
+        room_id = self.user_rooms.get(user_id)
+        if room_id:
+            return self.rooms.get(room_id)
+        return None
 
     async def add_user_to_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """
