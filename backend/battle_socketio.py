@@ -76,7 +76,7 @@ async def disconnect(sid):
         await sio.emit('opponent-disconnected', {}, room=battle.room_id, skip_sid=sid)
 
     # Find and handle user leaving the battle room
-    room = room_manager.get_user_room(sid)
+    room = await room_manager.get_user_room(sid)
     if room:
         print(f"[DISCONNECT] User {sid} was in room {room.room_id}. Handling leave.")
         await handle_user_leave(sid, room.room_id)
