@@ -285,6 +285,15 @@ const SocialFeed = () => {
         <div className="mb-4">
           <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
           
+          {/* MCQ Card */}
+          {post.post_type === 'mcq' && post.mcq_data && (
+            <MCQCard 
+              post={post} 
+              user={user} 
+              onAttempt={(postId, answer) => handleMCQAttempt(postId, answer)}
+            />
+          )}
+
           {/* Quiz Result Card */}
           {post.post_type === 'quiz_result' && post.battle_stats && (
             <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
