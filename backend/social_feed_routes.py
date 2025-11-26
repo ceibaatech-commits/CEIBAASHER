@@ -1081,3 +1081,223 @@ async def mark_all_read(authorization: Optional[str] = Header(None)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+# ==================== MCQ POST ENDPOINTS ====================
+
+@router.get("/mcq/browse")
+async def browse_mcqs(
+    exam: Optional[str] = Query(None),
+    subject: Optional[str] = Query(None),
+    topic: Optional[str] = Query(None),
+    limit: int = Query(20, le=100),
+    authorization: Optional[str] = Header(None)
+):
+    """Browse MCQs from database for posting"""
+    try:
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        # Build query
+        query = {}
+        if exam:
+            query["exam_name"] = {"$regex": exam, "$options": "i"}
+        if subject:
+            query["syllabus_topic"] = {"$regex": subject, "$options": "i"}
+        if topic:
+            query["subject"] = {"$regex": topic, "$options": "i"}
+        
+        # Fetch questions
+        questions = await db.questions.find(query, {"_id": 0}).limit(limit).to_list(limit)
+        
+        return {
+            "success": True,
+            "questions": questions,
+            "count": len(questions)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching MCQs: {str(e)}")
+
+
+@router.post("/mcq/post")
+async def create_mcq_post(
+    question_id: str,
+    caption: Optional[str] = None,
+    authorization: Optional[str] = Header(None)
+):
+    """Create a social post with an MCQ"""
+    try:
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        user_id = decode_jwt_token(authorization)
+        
+        # Get user details
+        user = await db.users.find_one({"id": user_id}, {"_id": 0})
+        if not user:
+            user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
+        
+        # Get question from database
+        question = await db.questions.find_one({"id": question_id}, {"_id": 0})
+        if not question:
+            raise HTTPException(status_code=404, detail="Question not found")
+        
+        # Create MCQ post
+        post_doc = {
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "user_name": user.get("name", "User") if user else "User",
+            "username": user.get("username") if user else None,
+            "user_avatar": user.get("avatar", "👤") if user else "👤",
+            "user_verified": user.get("verified", False) if user else False,
+            "user_location": user.get("location") if user else None,
+            "post_type": "mcq",
+            "content": caption or f"Test your knowledge! 🧠",
+            "mcq_data": {
+                "question_id": question_id,
+                "question": question.get("question"),
+                "options": question.get("options", []),
+                "correct_answer": question.get("correctAnswer"),
+                "explanation": question.get("explanation", ""),
+                "subject": question.get("subject"),
+                "topic": question.get("syllabus_topic"),
+                "exam": question.get("exam_name")
+            },
+            "battle_stats": None,
+            "quiz_details": None,
+            "room_code": None,
+            "media_urls": [],
+            "tags": [
+                question.get("exam_name"),
+                question.get("syllabus_topic"),
+                question.get("subject")
+            ],
+            "exam_category": question.get("exam_name"),
+            "subject": question.get("subject"),
+            "likes_count": 0,
+            "comments_count": 0,
+            "shares_count": 0,
+            "attempt_count": 0,
+            "correct_attempt_count": 0,
+            "trending_score": 0,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.social_posts.insert_one(post_doc.copy())
+        
+        if user:
+            await db.users.update_one({"id": user_id}, {"$inc": {"posts_count": 1}})
+        
+        return {"success": True, "post": post_doc}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating MCQ post: {str(e)}")
+
+
+@router.post("/mcq/attempt")
+async def attempt_mcq(
+    post_id: str,
+    selected_answer: str,
+    authorization: Optional[str] = Header(None)
+):
+    """Attempt an MCQ in a post"""
+    try:
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        user_id = decode_jwt_token(authorization)
+        
+        # Get post
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0})
+        if not post or post.get("post_type") != "mcq":
+            raise HTTPException(status_code=404, detail="MCQ post not found")
+        
+        # Check if user already attempted
+        existing_attempt = await db.mcq_attempts.find_one({
+            "post_id": post_id,
+            "user_id": user_id
+        })
+        
+        if existing_attempt:
+            return {
+                "success": False,
+                "message": "Already attempted",
+                "is_correct": existing_attempt.get("is_correct"),
+                "correct_answer": post.get("mcq_data", {}).get("correct_answer"),
+                "explanation": post.get("mcq_data", {}).get("explanation")
+            }
+        
+        # Check answer
+        mcq_data = post.get("mcq_data", {})
+        correct_answer = mcq_data.get("correct_answer")
+        is_correct = selected_answer.upper() == correct_answer.upper()
+        
+        # Save attempt
+        attempt_doc = {
+            "id": str(uuid.uuid4()),
+            "post_id": post_id,
+            "user_id": user_id,
+            "selected_answer": selected_answer.upper(),
+            "is_correct": is_correct,
+            "attempted_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.mcq_attempts.insert_one(attempt_doc.copy())
+        
+        # Update post stats
+        update_data = {"$inc": {"attempt_count": 1}}
+        if is_correct:
+            update_data["$inc"]["correct_attempt_count"] = 1
+            update_data["$inc"]["trending_score"] = 5
+        
+        await db.social_posts.update_one({"id": post_id}, update_data)
+        
+        return {
+            "success": True,
+            "is_correct": is_correct,
+            "correct_answer": correct_answer,
+            "explanation": mcq_data.get("explanation", ""),
+            "message": "✅ Correct!" if is_correct else "❌ Incorrect"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error attempting MCQ: {str(e)}")
+
+
+@router.get("/mcq/stats/{post_id}")
+async def get_mcq_stats(post_id: str):
+    """Get MCQ attempt statistics"""
+    try:
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0})
+        if not post or post.get("post_type") != "mcq":
+            raise HTTPException(status_code=404, detail="MCQ post not found")
+        
+        attempt_count = post.get("attempt_count", 0)
+        correct_count = post.get("correct_attempt_count", 0)
+        success_rate = round((correct_count / attempt_count * 100) if attempt_count > 0 else 0)
+        
+        return {
+            "success": True,
+            "stats": {
+                "attempt_count": attempt_count,
+                "correct_count": correct_count,
+                "success_rate": success_rate
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching stats: {str(e)}")
+
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
