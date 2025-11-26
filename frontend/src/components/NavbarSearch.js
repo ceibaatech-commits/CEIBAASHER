@@ -178,7 +178,7 @@ const NavbarSearch = () => {
 
           {/* Search Results Dropdown */}
           {showResults && (
-            <div className="absolute top-full right-0 mt-2 w-full min-w-[300px] max-w-[400px] bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden z-50 animate-fade-in">
+            <div className="fixed right-4 top-20 w-full min-w-[300px] max-w-[450px] bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden animate-fade-in" style={{ zIndex: 9999 }}>
               <div className="max-h-80 overflow-y-auto">
                 {searchLoading ? (
                   <div className="p-4 text-center text-gray-500">
