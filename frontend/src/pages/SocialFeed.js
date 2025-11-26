@@ -210,6 +210,119 @@ const SocialFeed = () => {
     }
   };
 
+  const MCQCard = ({ post, user, onAttempt }) => {
+    const [selectedAnswer, setSelectedAnswer] = useState(null);
+    const [attempted, setAttempted] = useState(false);
+    const [result, setResult] = useState(null);
+    const [stats, setStats] = useState({ attempt_count: post.attempt_count || 0, success_rate: 0 });
+
+    const mcqData = post.mcq_data || {};
+    const options = mcqData.options || [];
+    const optionLabels = ['A', 'B', 'C', 'D'];
+
+    const handleAttempt = async (answer) => {
+      if (attempted || !user) return;
+      
+      setSelectedAnswer(answer);
+      
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+          `${BACKEND_URL}/api/social/mcq/attempt?post_id=${post.id}&selected_answer=${answer}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
+        setAttempted(true);
+        setResult(response.data);
+        
+        // Fetch updated stats
+        const statsResponse = await axios.get(`${BACKEND_URL}/api/social/mcq/stats/${post.id}`);
+        setStats(statsResponse.data.stats);
+      } catch (error) {
+        console.error('Error attempting MCQ:', error);
+        if (error.response?.data?.message === "Already attempted") {
+          setAttempted(true);
+          setResult({
+            is_correct: error.response.data.is_correct,
+            correct_answer: error.response.data.correct_answer,
+            explanation: error.response.data.explanation
+          });
+        }
+      }
+    };
+
+    return (
+      <div className="mt-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-5 border border-indigo-200">
+        <h4 className="font-bold text-indigo-900 mb-3">🧠 Test Your Knowledge</h4>
+        
+        <div className="bg-white rounded-lg p-4 mb-4">
+          <p className="text-gray-900 font-medium mb-4">{mcqData.question}</p>
+          
+          <div className="space-y-2">
+            {options.map((option, index) => {
+              const label = optionLabels[index];
+              const isSelected = selectedAnswer === label;
+              const isCorrect = result && result.correct_answer === label;
+              const isWrong = attempted && isSelected && !result?.is_correct;
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => !attempted && handleAttempt(label)}
+                  disabled={attempted || !user}
+                  className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
+                    isCorrect && attempted
+                      ? 'border-green-500 bg-green-50'
+                      : isWrong
+                      ? 'border-red-500 bg-red-50'
+                      : isSelected
+                      ? 'border-indigo-500 bg-indigo-50'
+                      : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50'
+                  } ${attempted || !user ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="flex items-center">
+                    <span className="font-bold text-indigo-600 mr-3">{label}.</span>
+                    <span className="text-gray-800">{option}</span>
+                    {isCorrect && attempted && <span className="ml-auto text-green-600">✓</span>}
+                    {isWrong && <span className="ml-auto text-red-600">✗</span>}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        
+        {attempted && result && (
+          <div className={`p-4 rounded-lg mb-3 ${
+            result.is_correct ? 'bg-green-100 border border-green-300' : 'bg-red-100 border border-red-300'
+          }`}>
+            <p className={`font-bold mb-2 ${result.is_correct ? 'text-green-800' : 'text-red-800'}`}>
+              {result.message}
+            </p>
+            {result.explanation && (
+              <p className="text-gray-700 text-sm">
+                <span className="font-semibold">Explanation:</span> {result.explanation}
+              </p>
+            )}
+          </div>
+        )}
+        
+        <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex gap-4">
+            <span>👥 {stats.attempt_count} attempts</span>
+            <span>✅ {stats.success_rate}% success rate</span>
+          </div>
+          {mcqData.subject && (
+            <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold">
+              {mcqData.subject}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const PostCard = ({ post }) => {
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState('');
