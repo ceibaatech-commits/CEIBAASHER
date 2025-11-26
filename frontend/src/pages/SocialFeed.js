@@ -413,6 +413,16 @@ const SocialFeed = () => {
       return;
     }
 
+    // For Quiz Room posts
+    if (newPost.post_type === 'quiz_room') {
+      if (quizRoomData.selectedQuestions.length < 5) {
+        alert('Please create a quiz room with at least 5 questions');
+        return;
+      }
+      await createQuizRoom();
+      return;
+    }
+
     // For MCQ posts, use the dedicated endpoint
     if (newPost.post_type === 'mcq') {
       if (!selectedMCQ) {
