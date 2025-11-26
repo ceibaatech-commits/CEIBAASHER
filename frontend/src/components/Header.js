@@ -69,7 +69,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           <div className="flex items-center space-x-2 md:space-x-3 ml-auto">
             {/* Navbar Search - Always Visible */}
             <div className="hidden md:block">
-              <NavbarSearch onExpandChange={setSearchExpanded} />
+              <NavbarSearch />
             </div>
             
             {isLoggedIn && user ? (
