@@ -103,6 +103,9 @@ async def unceep_user(request: UnceepRequest):
     """
     Remove ceep relationship
     """
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
     try:
         result = await db.ceeps.delete_one({
             "user_id": request.user_id,
@@ -115,16 +118,18 @@ async def unceep_user(request: UnceepRequest):
                 "message": "Not ceeped"
             }
         
-        # Update ceep counts
+        # Update ceep counts (prevent negative counts)
         await db.users.update_one(
-            {"user_id": request.user_id},
+            {"user_id": request.user_id, "ceeping_count": {"$gt": 0}},
             {"$inc": {"ceeping_count": -1}}
         )
         
         await db.users.update_one(
-            {"user_id": request.ceep_user_id},
+            {"user_id": request.ceep_user_id, "ceepers_count": {"$gt": 0}},
             {"$inc": {"ceepers_count": -1}}
         )
+        
+        logger.info(f"User {request.user_id} unceeped {request.ceep_user_id}")
         
         return {
             "success": True,
@@ -132,7 +137,8 @@ async def unceep_user(request: UnceepRequest):
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error unceeping user: {str(e)}")
+        logger.error(f"Error unceeping user: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error unceeping user: {str(e)}")
 
 
 @router.get("/ceeps/{user_id}")
