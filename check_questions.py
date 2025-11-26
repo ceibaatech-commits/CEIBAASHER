@@ -6,8 +6,8 @@ import os
 import json
 
 async def check_questions():
-    MONGO_URL = os.getenv("MONGO_URL")
-    DB_NAME = os.getenv("DB_NAME")
+    MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+    DB_NAME = os.getenv("DB_NAME", "test_database").strip('"')
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
     
