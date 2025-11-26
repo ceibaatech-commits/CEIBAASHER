@@ -195,6 +195,19 @@ const Login = () => {
           <p className="text-center text-xs text-gray-500 mt-6">
             By continuing, you agree to Ceibaa's Terms of Service and Privacy Policy
           </p>
+          
+          {/* Sign Up Link */}
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{' '}
+              <button
+                onClick={() => navigate('/signup')}
+                className="text-cyan-600 hover:text-cyan-700 font-semibold underline"
+              >
+                Sign Up
+              </button>
+            </p>
+          </div>
         </div>
 
         {/* Benefits */}
