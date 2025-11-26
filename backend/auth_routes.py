@@ -99,6 +99,13 @@ class DemoLoginRequest(BaseModel):
     username: str
     password: str
 
+
+
+class SignupRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+
 # Helper functions
 def create_access_token(data: dict):
     to_encode = data.copy()
