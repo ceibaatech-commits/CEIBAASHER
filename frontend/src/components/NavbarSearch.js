@@ -147,17 +147,7 @@ const NavbarSearch = ({ onExpandChange }) => {
   };
 
   const handleBlur = (e) => {
-    // Don't close if clicking inside search results
-    if (searchContainerRef.current && searchContainerRef.current.contains(e.relatedTarget)) {
-      return;
-    }
-    
-    // Delay to allow click event to fire first
-    setTimeout(() => {
-      if (!query.trim() && !showResults) {
-        setIsExpanded(false);
-      }
-    }, 200);
+    // Don't do anything - let clicks handle closing
   };
 
   return (
