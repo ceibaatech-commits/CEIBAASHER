@@ -534,12 +534,18 @@ async def add_comment(
         }
         
         await db.comments.insert_one(comment_doc.copy())
-        await db.social_posts.update_one({"id": post_id}, {"$inc": {"comments_count": 1, "trending_score": 2}})
+        result = await db.social_posts.update_one({"id": post_id}, {"$inc": {"comments_count": 1, "trending_score": 2}})
+        
+        # Get updated comments count
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "user_id": 1, "comments_count": 1})
+        comments_count = post.get("comments_count", 1) if post else 1
+        
+        # Broadcast new comment in real-time
+        asyncio.create_task(social_socketio.broadcast_new_comment(post_id, comment_doc, comments_count))
         
         # Create notification
-        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "user_id": 1})
         if post and post["user_id"] != user_id and user:
-            await db.notifications.insert_one({
+            notification_doc = {
                 "id": str(uuid.uuid4()),
                 "user_id": post["user_id"],
                 "notification_type": "comment",
@@ -549,7 +555,10 @@ async def add_comment(
                 "post_id": post_id,
                 "is_read": False,
                 "created_at": datetime.now(timezone.utc).isoformat()
-            })
+            }
+            await db.notifications.insert_one(notification_doc)
+            # Send real-time notification
+            asyncio.create_task(social_socketio.send_notification(post["user_id"], notification_doc))
         
         return {"success": True, "comment": comment_doc}
     except HTTPException:
