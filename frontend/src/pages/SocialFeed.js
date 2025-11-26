@@ -185,6 +185,49 @@ const SocialFeed = () => {
     console.log('MCQ attempt:', postId, answer);
   };
 
+  const browseMCQs = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (mcqFilters.exam) params.append('exam', mcqFilters.exam);
+      if (mcqFilters.subject) params.append('subject', mcqFilters.subject);
+      if (mcqFilters.topic) params.append('topic', mcqFilters.topic);
+      params.append('limit', '20');
+
+      const response = await axios.get(`${BACKEND_URL}/api/social/mcq/browse?${params.toString()}`);
+      if (response.data.success) {
+        setMcqList(response.data.questions);
+      }
+    } catch (error) {
+      console.error('Error browsing MCQs:', error);
+    }
+  };
+
+  const postSelectedMCQ = async (questionId, caption) => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/mcq/post?question_id=${questionId}${caption ? `&caption=${encodeURIComponent(caption)}` : ''}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setShowMCQBrowser(false);
+        setSelectedMCQ(null);
+        fetchFeed(); // Refresh feed
+        alert('MCQ posted successfully!');
+      }
+    } catch (error) {
+      console.error('Error posting MCQ:', error);
+      alert('Failed to post MCQ');
+    }
+  };
+
   const handleCreatePost = async () => {
     if (!user) {
       navigate('/login');
