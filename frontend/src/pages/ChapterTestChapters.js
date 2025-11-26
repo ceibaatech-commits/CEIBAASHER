@@ -59,7 +59,7 @@ const ChapterTestChapters = () => {
       const response = await axios.get(`${API_URL}/api/chapter-tests/chapters`, {
         params: {
           class_param: selectedClass,
-          subject: formattedSubject
+          subject: subject
         }
       });
       
