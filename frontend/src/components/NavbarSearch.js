@@ -109,22 +109,19 @@ const NavbarSearch = ({ onExpandChange }) => {
   };
 
   const handleResultClick = (result) => {
+    console.log('=== CLICK DETECTED ===');
     console.log('Search result clicked:', result);
     
+    // Navigate immediately and synchronously
     if (result.type === 'exam') {
       const path = `/exam/${result.slug}`;
       console.log('Navigating to exam:', path);
-      navigate(path);
+      window.location.href = path;
     } else if (result.type === 'chapter') {
       const path = `/chapter-tests/class-${result.class}/${result.subject}`;
       console.log('Navigating to chapter:', path);
-      navigate(path);
+      window.location.href = path;
     }
-    
-    setIsExpanded(false);
-    setQuery('');
-    setSearchResults([]);
-    setShowResults(false);
   };
 
   const handleExpandClick = () => {
