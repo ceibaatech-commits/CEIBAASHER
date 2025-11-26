@@ -4,6 +4,7 @@ import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown } fr
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import NavbarSearch from './NavbarSearch';
+import '../styles/navbar-search.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -12,6 +13,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
   const [searchExpanded, setSearchExpanded] = React.useState(false);
+  const searchOverlayRef = React.useRef(null);
   
   // Close dropdown when clicking outside
   React.useEffect(() => {
