@@ -963,7 +963,7 @@ const SocialFeed = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header user={user} logout={logout} />
+      <Header isLoggedIn={!!user} user={user} onLogout={logout} />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Feed Tabs */}
