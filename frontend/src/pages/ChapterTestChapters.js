@@ -337,8 +337,8 @@ const ChapterTestChapters = () => {
                 </div>
               </motion.div>
             ))}
-          </div>
-        </div>
+            </div>
+          )}
 
         {chapters.length === 0 && !loading && !error && (
           <div className="text-center py-12 bg-white rounded-2xl shadow-lg mt-6">
