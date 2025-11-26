@@ -573,6 +573,12 @@ async def share_post(post_id: str, authorization: Optional[str] = Header(None)):
         result = await db.social_posts.update_one({"id": post_id}, {"$inc": {"shares_count": 1, "trending_score": 3}})
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Get updated shares count and broadcast
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "shares_count": 1})
+        shares_count = post.get("shares_count", 1) if post else 1
+        asyncio.create_task(social_socketio.broadcast_post_shared(post_id, shares_count))
+        
         return {"success": True, "message": "Post shared"}
     except HTTPException:
         raise
