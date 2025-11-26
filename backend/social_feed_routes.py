@@ -35,12 +35,16 @@ from datetime import datetime, timezone, timedelta
 import uuid
 from jose import jwt, JWTError
 import os
+import asyncio
 
 JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 router = APIRouter()
 db = None
+
+# Import social socketio for real-time broadcasts
+import social_socketio
 
 def init_db(database):
     global db
