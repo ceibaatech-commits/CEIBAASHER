@@ -103,7 +103,7 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* Search Input */
 .search-input-field {
-  width: 100%;
+  width: 100% !important;
   padding: 10px 50px 10px 20px !important;
   border: none !important;
   outline: none !important;
@@ -111,12 +111,15 @@ input[type="search"]::-webkit-search-cancel-button {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
   background: transparent !important;
-  height: 40px;
+  height: 44px !important;
+  position: relative !important;
+  z-index: 1101 !important;
 }
 
 .search-input-field::placeholder {
   color: #9ca3af !important;
   opacity: 1 !important;
+  -webkit-text-fill-color: #9ca3af !important;
 }
 
 /* Search Icon (Left) */
