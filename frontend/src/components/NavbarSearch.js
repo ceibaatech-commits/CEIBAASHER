@@ -118,6 +118,13 @@ const NavbarSearch = ({ onExpandChange }) => {
     setIsExpanded(true);
   };
 
+  const handleCollapseClick = () => {
+    setIsExpanded(false);
+    setQuery('');
+    setSearchResults([]);
+    setShowResults(false);
+  };
+
   const handleClearClick = () => {
     setQuery('');
     setSearchResults([]);
@@ -130,38 +137,32 @@ const NavbarSearch = ({ onExpandChange }) => {
   return (
     <div 
       ref={searchContainerRef}
-      className="relative flex items-center"
+      className={`search-container ${isExpanded ? 'expanded' : 'collapsed'}`}
     >
       {/* Collapsed state - Just search icon */}
       {!isExpanded && (
         <button
           onClick={handleExpandClick}
-          aria-label="Search users"
-          className="p-2.5 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 min-h-[44px] min-w-[44px] flex items-center justify-center"
+          aria-label="Search"
+          className="search-icon-button"
         >
-          <Search className="w-6 h-6 text-gray-600" />
+          <Search className="w-5 h-5" />
         </button>
       )}
 
       {/* Expanded state - Search bar */}
       {isExpanded && (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center" style={{ zIndex: 100 }}>
+        <>
           <form 
             onSubmit={handleSearchSubmit}
-            className="flex items-center bg-white border-2 border-cyan-500 rounded-full overflow-hidden shadow-2xl transition-all duration-300 ease-out focus-within:border-cyan-600 focus-within:shadow-3xl"
-            style={{
-              width: window.innerWidth < 640 ? 'calc(100vw - 80px)' : '480px',
-              height: '46px'
-            }}
+            className="relative flex items-center w-full h-full"
           >
-            <button
-              type="submit"
-              aria-label="Search"
-              className="pl-4 pr-2 py-3 focus:outline-none hover:bg-gray-50 transition-colors"
-            >
-              <Search className="w-5 h-5 text-cyan-600" />
-            </button>
+            {/* Search Icon (Left) */}
+            <div className="search-icon-left">
+              <Search className="w-5 h-5" />
+            </div>
             
+            {/* Input Field */}
             <input
               ref={inputRef}
               type="text"
@@ -169,32 +170,24 @@ const NavbarSearch = ({ onExpandChange }) => {
               onChange={handleInputChange}
               placeholder="Search exams, topics, courses..."
               aria-label="Search"
-              className="flex-1 py-3 px-2 focus:outline-none text-base"
-              style={{ 
-                height: '44px',
-                color: '#1a1a1a',
-                backgroundColor: '#ffffff'
-              }}
+              className="search-input-field search-input"
+              autoComplete="off"
             />
             
+            {/* Close Button (Right) */}
             <button
               type="button"
-              onClick={() => {
-                setIsExpanded(false);
-                setQuery('');
-                setSearchResults([]);
-                setShowResults(false);
-              }}
+              onClick={handleCollapseClick}
               aria-label="Close search"
-              className="p-2 mr-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
+              className="close-icon-right"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5" />
             </button>
           </form>
 
           {/* Search Results Dropdown */}
           {showResults && (
-            <div className="fixed right-4 top-20 w-full min-w-[300px] max-w-[450px] bg-white rounded-xl shadow-2xl border-2 border-gray-200 overflow-hidden animate-fade-in" style={{ zIndex: 9999 }}>
+            <div className="search-results-dropdown">
               <div className="max-h-80 overflow-y-auto">
                 {searchLoading ? (
                   <div className="p-4 text-center text-gray-500">
