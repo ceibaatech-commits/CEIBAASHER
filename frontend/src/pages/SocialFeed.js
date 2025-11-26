@@ -756,7 +756,38 @@ const SocialFeed = () => {
             </div>
           )}
 
-          {/* Room Code Card */}
+          {/* Quiz Room Card */}
+          {post.post_type === 'quiz_room' && post.room_code && (
+            <div className="mt-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4 border border-orange-200">
+              <h4 className="font-bold text-orange-900 mb-2">🎯 Join Quiz Room</h4>
+              <div className="text-sm mb-3">
+                <p className="text-gray-700 font-semibold">
+                  {post.quiz_details?.title || 'Quiz Challenge'}
+                </p>
+                <p className="text-gray-600 mb-2">
+                  📝 {post.quiz_details?.question_count || 0} Questions
+                </p>
+                <p className="text-gray-600 mb-1">Room Code:</p>
+                <p className="text-3xl font-black text-orange-600 tracking-widest">{post.room_code}</p>
+              </div>
+              <button 
+                onClick={() => {
+                  if (!user) {
+                    navigate('/login');
+                    return;
+                  }
+                  // Navigate to quiz room join page (not battle lobby)
+                  navigate(`/quiz-room/${post.room_code}`);
+                }}
+                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-orange-600 hover:to-red-600 transition-all w-full"
+              >
+                <Play className="inline w-4 h-4 mr-2" />
+                Take Quiz
+              </button>
+            </div>
+          )}
+
+          {/* Battle Room Code Card */}
           {post.post_type === 'room_code' && post.room_code && (
             <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
               <h4 className="font-bold text-green-900 mb-2">🎮 Join Battle Room</h4>
@@ -765,13 +796,18 @@ const SocialFeed = () => {
                 <p className="text-3xl font-black text-green-600 tracking-widest">{post.room_code}</p>
               </div>
               <button 
-                onClick={() => navigate(`/battle-lobby/${post.room_code}`, {
-                  state: { autoJoin: true }
-                })}
+                onClick={() => {
+                  if (!user) {
+                    navigate('/login');
+                    return;
+                  }
+                  // For battle rooms, use join-room flow with proper player name entry
+                  navigate('/join-room', { state: { prefilledPin: post.room_code } });
+                }}
                 className="bg-green-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-600 transition-colors w-full"
               >
                 <Play className="inline w-4 h-4 mr-2" />
-                Join Battle Now
+                Join Battle
               </button>
             </div>
           )}
