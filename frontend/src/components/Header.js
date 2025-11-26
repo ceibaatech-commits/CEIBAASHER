@@ -77,10 +77,10 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             
             {isLoggedIn && user ? (
               <>
-                {/* Notifications Bell */}
+                {/* Notifications Bell - Only for logged-in users */}
                 <NotificationBell />
 
-                {/* User Profile Avatar with Dropdown (Desktop) */}
+                {/* User Profile Avatar with Dropdown (Desktop) - Only for logged-in users */}
                 <div className="hidden md:block relative profile-dropdown-container">
                   <button 
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
