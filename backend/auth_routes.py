@@ -400,6 +400,89 @@ async def demo_login(login_data: DemoLoginRequest):
                 "username": "demostudent3",
                 "name": "Demo Student 3",
                 "email": "demo3@ceibaa.com",
+
+
+
+@router.post("/auth/signup")
+async def signup(request: SignupRequest):
+    """Create new user account"""
+    try:
+        # Validate input
+        if not request.name or len(request.name.strip()) < 2:
+            raise HTTPException(status_code=400, detail="Name must be at least 2 characters")
+        
+        if not request.email or '@' not in request.email:
+            raise HTTPException(status_code=400, detail="Please enter a valid email")
+        
+        if not request.password or len(request.password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+        
+        # Check if email already exists
+        email_lower = request.email.strip().lower()
+        existing_user = await db.users.find_one({"email": email_lower})
+        
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already registered. Please login.")
+        
+        # Hash password
+        hashed_password = hash_password(request.password)
+        
+        # Create user document
+        user_id = str(uuid.uuid4())
+        user_doc = {
+            "id": user_id,
+            "user_id": user_id,  # For backward compatibility
+            "name": request.name.strip(),
+            "email": email_lower,
+            "username": email_lower.split('@')[0],
+            "password": hashed_password,
+            "avatar": None,
+            "verified": False,
+            "rating": 1200,
+            "streak": 0,
+            "posts_count": 0,
+            "ceeping_count": 0,
+            "ceepers_count": 0,
+            "created_at": datetime.utcnow().isoformat(),
+            "last_login": datetime.utcnow().isoformat()
+        }
+        
+        # Insert user
+        await db.users.insert_one(user_doc.copy())
+        
+        # Generate JWT token
+        token_data = {
+            "sub": user_id,
+            "email": email_lower,
+            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        }
+        token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        
+        # Return user data (without password)
+        user_response = {
+            "id": user_id,
+            "user_id": user_id,
+            "name": user_doc["name"],
+            "email": user_doc["email"],
+            "username": user_doc["username"],
+            "avatar": user_doc["avatar"],
+            "verified": user_doc["verified"],
+            "rating": user_doc["rating"],
+            "streak": user_doc["streak"]
+        }
+        
+        return {
+            "user": user_response,
+            "token": token,
+            "access_token": token
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Signup error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Signup failed. Please try again.")
+
                 "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+3&background=F59E0B&color=fff&size=200",
                 "provider": "demo",
                 "provider_id": "demo3",
