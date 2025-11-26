@@ -344,9 +344,8 @@ def generate_random_id(length: int = 9) -> str:
     """Generate random alphanumeric ID"""
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
-# Re-implementing handle_user_leave for production for consistency and correctness
 async def handle_user_leave(sid, room_id):
-    """Handle user leaving a room (Disconnection or explicit leave)"""
+    """Handle user leaving a room with proper host reassignment"""
     try:
         room = room_manager.get_room(room_id)
         if not room:
@@ -354,47 +353,41 @@ async def handle_user_leave(sid, room_id):
 
         is_host_leaving = room.host.user_id == sid
         
-        # Use remove_user_from_room which is a thread-safe operation that updates DB
-        removed = await room_manager.remove_user_from_room(sid)
+        removed = room.remove_participant(sid)
+        room_manager.user_rooms.pop(sid, None)
+        await sio.leave_room(sid, room_id)
         
         if not removed:
             return
 
-        await sio.leave_room(sid, room_id)
-
         logger.info(f"[LEAVE] User {sid} left room {room_id}")
-
-        # Check the room state again after removal
-        room = room_manager.get_room(room_id)
-        if not room:
-            # Room was removed because it's empty
-            logger.info(f"[CLOSE] Room {room_id} closed - no participants left")
-            return
 
         # If host left, assign new host or close room
         if is_host_leaving:
             if len(room.participants) > 0:
-                # Assign new host - the participant list is already updated
-                # The first remaining participant is the new host
+                # Assign first remaining participant as new host
                 new_host = room.participants[0]
                 room.host = new_host
                 room.host.is_host = True
-
-                await sio.emit('host_changed', {'newHost': {
-                    'userId': room.host.user_id,
-                    'username': room.host.username,
-                    'avatar': room.host.avatar,
-                    'isHost': True
-                }}, room=room_id)
+                
+                await sio.emit('host_changed', {
+                    'newHost': {
+                        'userId': room.host.user_id,
+                        'username': room.host.username,
+                        'avatar': room.host.avatar,
+                        'isHost': True
+                    }
+                }, room=room_id)
                 logger.info(f"[HOST] New host assigned in {room_id}: {room.host.username}")
-                # Save after host change
                 await room_manager.save_room_to_db(room)
             else:
-                # No participants left, the room manager should have deleted it.
-                # If not, let's explicitly remove it just in case.
+                # No participants left, close room
                 await room_manager.remove_room(room_id)
-                logger.info(f"[CLOSE] Room {room_id} closed - empty")
+                logger.info(f"[CLOSE] Room {room_id} closed - no participants")
                 return
+        else:
+            # Save room state if a non-host leaves
+            await room_manager.save_room_to_db(room)
 
         # Notify remaining participants
         await sio.emit('participant_left', {
