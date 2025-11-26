@@ -1083,87 +1083,249 @@ const SocialFeed = () => {
         )}
       </div>
 
-      {/* MCQ Browser Modal */}
+      {/* MCQ Browser/Creator Modal */}
       {showMCQBrowser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-bold">Browse MCQ Database</h3>
+          <div className="bg-white rounded-2xl p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold">📚 Post an MCQ Question</h3>
               <button onClick={() => setShowMCQBrowser(false)}>
                 <X className="w-6 h-6 text-gray-500" />
               </button>
             </div>
 
-            {/* Filters */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <input
-                type="text"
-                placeholder="Exam (e.g., JEE, NEET)"
-                value={mcqFilters.exam}
-                onChange={(e) => setMcqFilters({ ...mcqFilters, exam: e.target.value })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
-              />
-              <input
-                type="text"
-                placeholder="Subject"
-                value={mcqFilters.subject}
-                onChange={(e) => setMcqFilters({ ...mcqFilters, subject: e.target.value })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
-              />
+            {/* Mode Tabs */}
+            <div className="flex gap-4 mb-6 border-b">
               <button
-                onClick={browseMCQs}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+                onClick={() => {
+                  setMcqMode('browse');
+                  if (examList.length === 0) fetchExamList();
+                }}
+                className={`pb-3 px-4 font-semibold transition-all ${
+                  mcqMode === 'browse'
+                    ? 'border-b-2 border-indigo-600 text-indigo-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
               >
-                Search
+                🔍 Browse Database
+              </button>
+              <button
+                onClick={() => setMcqMode('create')}
+                className={`pb-3 px-4 font-semibold transition-all ${
+                  mcqMode === 'create'
+                    ? 'border-b-2 border-purple-600 text-purple-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                ✍️ Create Your Own
               </button>
             </div>
 
-            {/* MCQ List */}
-            <div className="space-y-3">
-              {mcqList.length === 0 ? (
-                <p className="text-center text-gray-500 py-8">No questions found. Try different filters.</p>
-              ) : (
-                mcqList.map((mcq) => (
-                  <div
-                    key={mcq.id}
-                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      selectedMCQ?.id === mcq.id
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-gray-200 hover:border-indigo-300'
-                    }`}
-                    onClick={() => setSelectedMCQ(mcq)}
+            {/* Browse Database Mode */}
+            {mcqMode === 'browse' && (
+              <>
+                {/* Dropdown Filters */}
+                <div className="grid grid-cols-4 gap-3 mb-4">
+                  <select
+                    value={mcqFilters.exam}
+                    onChange={(e) => {
+                      setMcqFilters({ exam: e.target.value, subject: '', topic: '' });
+                      setSubjectList([]);
+                      setTopicList([]);
+                      if (e.target.value) fetchSubjects(e.target.value);
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="text-gray-900 font-medium mb-2">{mcq.question}</p>
-                        <div className="flex gap-2 text-xs">
-                          {mcq.exam_name && (
-                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{mcq.exam_name}</span>
-                          )}
-                          {mcq.subject && (
-                            <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full">{mcq.subject}</span>
+                    <option value="">Select Exam</option>
+                    {examList.map(exam => (
+                      <option key={exam} value={exam}>{exam}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={mcqFilters.subject}
+                    onChange={(e) => {
+                      setMcqFilters({ ...mcqFilters, subject: e.target.value, topic: '' });
+                      setTopicList([]);
+                      if (e.target.value) fetchTopics(mcqFilters.exam, e.target.value);
+                    }}
+                    disabled={!mcqFilters.exam}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 disabled:bg-gray-100"
+                  >
+                    <option value="">Select Subject</option>
+                    {subjectList.map(subject => (
+                      <option key={subject} value={subject}>{subject}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={mcqFilters.topic}
+                    onChange={(e) => setMcqFilters({ ...mcqFilters, topic: e.target.value })}
+                    disabled={!mcqFilters.subject}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 disabled:bg-gray-100"
+                  >
+                    <option value="">Select Chapter</option>
+                    {topicList.map(topic => (
+                      <option key={topic} value={topic}>{topic}</option>
+                    ))}
+                  </select>
+
+                  <button
+                    onClick={browseMCQs}
+                    disabled={!mcqFilters.exam}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:bg-gray-300"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                {/* MCQ List */}
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {mcqList.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">Select exam and click Search to see questions</p>
+                  ) : (
+                    mcqList.map((mcq) => (
+                      <div
+                        key={mcq.id}
+                        className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                          selectedMCQ?.id === mcq.id
+                            ? 'border-indigo-500 bg-indigo-50'
+                            : 'border-gray-200 hover:border-indigo-300'
+                        }`}
+                        onClick={() => setSelectedMCQ(mcq)}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p className="text-gray-900 font-medium mb-2">{mcq.question}</p>
+                            <div className="flex gap-2 text-xs">
+                              {mcq.exam_name && (
+                                <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{mcq.exam_name}</span>
+                              )}
+                              {mcq.subject && (
+                                <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full">{mcq.subject}</span>
+                              )}
+                            </div>
+                          </div>
+                          {selectedMCQ?.id === mcq.id && (
+                            <span className="text-indigo-600 font-bold ml-3">✓</span>
                           )}
                         </div>
                       </div>
-                      {selectedMCQ?.id === mcq.id && (
-                        <span className="text-indigo-600 font-bold ml-3">✓</span>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+                    ))
+                  )}
+                </div>
 
-            {/* Post Button */}
-            {selectedMCQ && (
-              <div className="mt-4 pt-4 border-t">
+                {/* Post Button */}
+                {selectedMCQ && (
+                  <div className="mt-4 pt-4 border-t">
+                    <button
+                      onClick={() => {
+                        setShowMCQBrowser(false);
+                      }}
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
+                    >
+                      Select This Question
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Create Your Own Mode */}
+            {mcqMode === 'create' && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Question *</label>
+                  <textarea
+                    value={manualMCQ.question}
+                    onChange={(e) => setManualMCQ({ ...manualMCQ, question: e.target.value })}
+                    placeholder="Enter your question here..."
+                    rows="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Option A *</label>
+                    <input
+                      type="text"
+                      value={manualMCQ.optionA}
+                      onChange={(e) => setManualMCQ({ ...manualMCQ, optionA: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Option B *</label>
+                    <input
+                      type="text"
+                      value={manualMCQ.optionB}
+                      onChange={(e) => setManualMCQ({ ...manualMCQ, optionB: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Option C *</label>
+                    <input
+                      type="text"
+                      value={manualMCQ.optionC}
+                      onChange={(e) => setManualMCQ({ ...manualMCQ, optionC: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Option D *</label>
+                    <input
+                      type="text"
+                      value={manualMCQ.optionD}
+                      onChange={(e) => setManualMCQ({ ...manualMCQ, optionD: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Correct Answer *</label>
+                    <select
+                      value={manualMCQ.correctAnswer}
+                      onChange={(e) => setManualMCQ({ ...manualMCQ, correctAnswer: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    >
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Subject (Optional)</label>
+                    <input
+                      type="text"
+                      value={manualMCQ.subject}
+                      onChange={(e) => setManualMCQ({ ...manualMCQ, subject: e.target.value })}
+                      placeholder="e.g., Physics, Math"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Explanation (Optional)</label>
+                  <textarea
+                    value={manualMCQ.explanation}
+                    onChange={(e) => setManualMCQ({ ...manualMCQ, explanation: e.target.value })}
+                    placeholder="Explain the correct answer..."
+                    rows="2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
+                  />
+                </div>
+
                 <button
-                  onClick={() => {
-                    setShowMCQBrowser(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
+                  onClick={postManualMCQ}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
                 >
-                  Select This Question
+                  Post MCQ
                 </button>
               </div>
             )}
