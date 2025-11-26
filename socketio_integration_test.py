@@ -8,7 +8,7 @@ import json
 import time
 import re
 
-BACKEND_URL = "https://socket-safety.preview.emergentagent.com"
+BACKEND_URL = "https://quizhub-social.preview.emergentagent.com"
 SOCKET_URL = f"{BACKEND_URL}/api/battlews"
 
 def test_socketio_handshake():

@@ -25,7 +25,7 @@ with open('/app/frontend/.env', 'r') as f:
             BACKEND_URL = line.split('=')[1].strip()
             break
     else:
-        BACKEND_URL = "https://socket-safety.preview.emergentagent.com"
+        BACKEND_URL = "https://quizhub-social.preview.emergentagent.com"
 
 class WebSocketTester:
     def __init__(self):
