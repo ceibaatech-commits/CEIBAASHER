@@ -38,7 +38,7 @@ async def ceep_user(request: CeepRequest):
     One-way Ceep - User A ceeps User B
     Similar to Twitter follow
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     # Prevent self-following
