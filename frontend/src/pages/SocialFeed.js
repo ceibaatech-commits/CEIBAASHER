@@ -39,6 +39,14 @@ const SocialFeed = () => {
     subject: '',
     exam: ''
   });
+  const [showQuizRoomModal, setShowQuizRoomModal] = useState(false);
+  const [quizRoomData, setQuizRoomData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    privacy: 'public',
+    selectedQuestions: []
+  });
   const [newPost, setNewPost] = useState({
     post_type: 'general',
     content: '',
