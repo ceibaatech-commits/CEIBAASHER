@@ -993,11 +993,12 @@ const SocialFeed = () => {
                       type="button"
                       onClick={() => {
                         setShowMCQBrowser(true);
-                        browseMCQs();
+                        setMcqMode('browse');
+                        if (examList.length === 0) fetchExamList();
                       }}
                       className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
                     >
-                      🔍 Browse MCQ Database
+                      🔍 Browse & Post MCQ
                     </button>
                     {selectedMCQ && (
                       <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
