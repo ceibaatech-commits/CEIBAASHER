@@ -26,7 +26,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   return (
     <header className="sticky top-0 z-50 shadow-2xl border-b border-gray-300 overflow-x-hidden" style={{ background: '#f8f9fa', color: '#1f2937' }}>
       <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="flex items-center h-16 gap-4 lg:gap-8">
           {/* Logo & Brand */}
           <div 
             className="cursor-pointer flex items-center flex-shrink-0"
@@ -39,27 +39,27 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             />
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6 flex-1">
+            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold text-sm xl:text-base whitespace-nowrap">
               Home
             </button>
-            <button onClick={() => navigate('/social-feed')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+            <button onClick={() => navigate('/social-feed')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold text-sm xl:text-base whitespace-nowrap">
               Victory Lane
             </button>
-            <button onClick={() => navigate('/chapter-tests')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+            <button onClick={() => navigate('/chapter-tests')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold text-sm xl:text-base whitespace-nowrap">
               Skill Drills
             </button>
-            <button onClick={() => navigate('/books')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+            <button onClick={() => navigate('/books')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold text-sm xl:text-base whitespace-nowrap">
               Books
             </button>
-            <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold">
+            <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-colors font-semibold text-sm xl:text-base whitespace-nowrap">
               Join Battle Room
             </button>
           </nav>
 
           {/* User Section */}
-          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-3 ml-auto">
             {/* Navbar Search - Always Visible */}
             <div className="hidden md:block">
               <NavbarSearch />
