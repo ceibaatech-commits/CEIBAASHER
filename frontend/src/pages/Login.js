@@ -3,20 +3,25 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { LogIn, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login: authLogin, setUserData } = useAuth();
+  const { setUserData } = useAuth();
   const [demoUsername, setDemoUsername] = useState('');
   const [demoPassword, setDemoPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSocialLogin = (provider) => {
-    // Redirect to backend OAuth endpoint
     window.location.href = `${BACKEND_URL}/api/auth/${provider}`;
   };
 
@@ -31,15 +36,11 @@ const Login = () => {
         password: demoPassword
       });
 
-      // Store token in localStorage (using 'token' key for consistency)
       localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('auth_token', response.data.access_token); // Keep for backward compatibility
+      localStorage.setItem('auth_token', response.data.access_token);
       const userData = response.data.user;
-      
-      // Update AuthContext with user data
       setUserData(userData);
 
-      // Navigate back to where user came from, or to social feed by default
       const from = location.state?.from || '/social-feed';
       navigate(from, { replace: true });
       
@@ -49,189 +50,145 @@ const Login = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <button
-          onClick={() => navigate('/')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Back to Home
-        </button>
+  const handleGuestMode = () => {
+    navigate('/social-feed', { state: { guestMode: true } });
+  };
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center justify-center mx-auto mb-6">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <Button
+          variant="ghost"
+          onClick={() => navigate('/')}
+          className="mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Home
+        </Button>
+
+        <Card className="shadow-2xl">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex justify-center">
               <img 
                 src="/ceibaa-logo.png" 
                 alt="Ceibaa Logo" 
                 className="h-24 w-auto object-contain"
               />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Ceibaa</h1>
-            <p className="text-gray-600">Sign in to join the battle arena</p>
-          </div>
+            <div>
+              <CardTitle className="text-3xl">Welcome Back</CardTitle>
+              <CardDescription className="text-base">Login to continue your learning journey</CardDescription>
+            </div>
+          </CardHeader>
 
-          {/* Demo Login Section */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl">
-            <h3 className="text-lg font-bold text-gray-800 mb-2 text-center">🎓 Demo Login</h3>
-            <p className="text-sm text-gray-600 text-center mb-4">Use demo accounts to explore the platform</p>
-            
-            <form onSubmit={handleDemoLogin} className="space-y-3">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Username"
+          <CardContent className="space-y-6">
+            <form onSubmit={handleDemoLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
                   value={demoUsername}
                   onChange={(e) => setDemoUsername(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Enter username (e.g., demo1)"
                   required
                 />
               </div>
-              <div>
-                <input
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
                   type="password"
-                  placeholder="Password"
                   value={demoPassword}
                   onChange={(e) => setDemoPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="Enter password"
                   required
                 />
               </div>
+
               {error && (
-                <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg text-center">
-                  {error}
-                </div>
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-              <button
+
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
               >
-                <LogIn className="w-5 h-5" />
-                <span>{loading ? 'Logging in...' : 'Login'}</span>
-              </button>
+                <LogIn className="w-4 h-4 mr-2" />
+                {loading ? 'Logging in...' : 'Login'}
+              </Button>
             </form>
-            
-            <div className="mt-4 p-4 bg-white rounded-lg border-2 border-purple-200">
-              <p className="font-bold text-gray-700 mb-2 text-center">📝 Demo Accounts</p>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center justify-between bg-blue-50 p-2 rounded">
-                  <span className="font-semibold text-gray-700">Demo Student 1:</span>
-                  <span className="font-mono text-blue-600">demo1 / demo1</span>
-                </div>
-                <div className="flex items-center justify-between bg-green-50 p-2 rounded">
-                  <span className="font-semibold text-gray-700">Demo Student 2:</span>
-                  <span className="font-mono text-green-600">demo2 / demo2</span>
-                </div>
-              </div>
-              <p className="text-xs text-gray-500 text-center mt-2">
-                Click username/password to copy
-              </p>
+
+            <div className="relative">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-sm text-gray-500">
+                Or continue with
+              </span>
             </div>
-          </div>
 
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-4 text-sm text-gray-500">or continue with</span>
-            <div className="flex-1 border-t border-gray-300"></div>
-          </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                onClick={() => handleSocialLogin('google')}
+                className="w-full"
+              >
+                <img src="/google-icon.svg" alt="Google" className="w-5 h-5 mr-2" />
+                Google
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => handleSocialLogin('facebook')}
+                className="w-full"
+              >
+                <img src="/facebook-icon.svg" alt="Facebook" className="w-5 h-5 mr-2" />
+                Facebook
+              </Button>
+            </div>
 
-          {/* Social Login Buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={() => handleSocialLogin('google')}
-              className="w-full flex items-center justify-center space-x-3 bg-white border-2 border-gray-300 hover:border-gray-400 text-gray-700 py-3 px-6 rounded-lg font-semibold transition-all hover:shadow-md"
+            <Button
+              variant="ghost"
+              onClick={handleGuestMode}
+              className="w-full"
             >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
-              <span>Continue with Google</span>
-            </button>
+              Continue as Guest
+            </Button>
+          </CardContent>
 
-            <button
-              onClick={() => handleSocialLogin('facebook')}
-              className="w-full flex items-center justify-center space-x-3 bg-[#1877F2] hover:bg-[#166FE5] text-white py-3 px-6 rounded-lg font-semibold transition-all hover:shadow-md"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-              <span>Continue with Facebook</span>
-            </button>
-
-            <button
-              onClick={() => window.location.href = `${BACKEND_URL}/api/login/x`}
-              className="w-full flex items-center justify-center space-x-3 bg-black hover:bg-gray-900 text-white py-3 px-6 rounded-lg font-semibold transition-all hover:shadow-md"
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-              <span>Continue with X</span>
-            </button>
-          </div>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center">
-            <div className="flex-1 border-t border-gray-300"></div>
-            <span className="px-4 text-sm text-gray-500">or</span>
-            <div className="flex-1 border-t border-gray-300"></div>
-          </div>
-
-          {/* Guest Mode */}
-          <button
-            onClick={() => navigate('/')}
-            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold transition-all"
-          >
-            Continue as Guest
-          </button>
-
-          {/* Info */}
-          <p className="text-center text-xs text-gray-500 mt-6">
-            By continuing, you agree to Ceibaa's Terms of Service and Privacy Policy
-          </p>
-          
-          {/* Sign Up Link */}
-          <div className="text-center mt-4">
-            <p className="text-sm text-gray-600">
+          <CardFooter className="flex-col space-y-4">
+            <p className="text-sm text-gray-600 text-center">
               Don't have an account?{' '}
-              <button
+              <Button
+                variant="link"
                 onClick={() => navigate('/signup')}
-                className="text-cyan-600 hover:text-cyan-700 font-semibold underline"
+                className="p-0 h-auto font-semibold text-cyan-600"
               >
                 Sign Up
-              </button>
+              </Button>
             </p>
-          </div>
-        </div>
+            <p className="text-xs text-gray-500 text-center">
+              By continuing, you agree to Ceibaa's Terms of Service and Privacy Policy
+            </p>
+          </CardFooter>
+        </Card>
 
-        {/* Benefits */}
-        <div className="mt-6 bg-white rounded-xl shadow-md p-6">
-          <h3 className="font-bold text-gray-900 mb-3">Why sign in?</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li className="flex items-start">
-              <span className="text-purple-600 mr-2">✓</span>
-              <span>Track your progress and scores</span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-purple-600 mr-2">✓</span>
-              <span>Compete on global leaderboards</span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-purple-600 mr-2">✓</span>
-              <span>Send gifts and reactions to players</span>
-            </li>
-            <li className="flex items-start">
-              <span className="text-purple-600 mr-2">✓</span>
-              <span>Create and host custom battle rooms</span>
-            </li>
-          </ul>
-        </div>
+        <Card className="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+          <CardHeader>
+            <CardTitle className="text-lg">Demo Credentials</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+              <div className="font-semibold">demo1 / demo1</div>
+              <div className="text-gray-600">JEE aspirant</div>
+              <div className="font-semibold">demo2 / demo2</div>
+              <div className="text-gray-600">NEET aspirant</div>
+              <div className="font-semibold">demo3 / demo3</div>
+              <div className="text-gray-600">SSC aspirant</div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
