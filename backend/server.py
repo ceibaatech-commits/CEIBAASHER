@@ -74,6 +74,12 @@ init_socketio_db(db)
 # Mount at /api/battlews so frontend connects via `${REACT_APP_BACKEND_URL}/api/battlews/socket.io`
 fastapi_app.mount("/api/battlews", battle_socket_app)
 
+# Import and mount Social Feed Socket.IO for real-time updates
+from social_socketio import social_socket_app, init_social_socketio_db
+init_social_socketio_db(db)
+# Mount at /api/socialws for social feed real-time updates
+fastapi_app.mount("/api/socialws", social_socket_app)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
