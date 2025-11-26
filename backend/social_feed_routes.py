@@ -1097,6 +1097,67 @@ async def browse_mcqs(
     limit: int = Query(20, le=100),
     authorization: Optional[str] = Header(None)
 ):
+
+
+@router.get("/mcq/exams")
+async def get_exam_list():
+    """Get list of available exams for MCQ filtering"""
+    try:
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        # Get unique exam names
+        exams = await db.questions.distinct("exam_name")
+        exams = [e for e in exams if e]  # Filter out empty values
+        
+        return {
+            "success": True,
+            "exams": sorted(exams)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching exams: {str(e)}")
+
+
+@router.get("/mcq/subjects")
+async def get_subject_list(exam: str = Query(...)):
+    """Get subjects for a specific exam"""
+    try:
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        # Get unique subjects for this exam
+        subjects = await db.questions.distinct("syllabus_topic", {"exam_name": exam})
+        subjects = [s for s in subjects if s]
+        
+        return {
+            "success": True,
+            "subjects": sorted(subjects)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching subjects: {str(e)}")
+
+
+@router.get("/mcq/topics")
+async def get_topic_list(exam: str = Query(...), subject: str = Query(...)):
+    """Get topics for a specific exam and subject"""
+    try:
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
+        
+        # Get unique topics for this exam and subject
+        topics = await db.questions.distinct("subject", {
+            "exam_name": exam,
+            "syllabus_topic": subject
+        })
+        topics = [t for t in topics if t]
+        
+        return {
+            "success": True,
+            "topics": sorted(topics)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching topics: {str(e)}")
+
     """Browse MCQs from database for posting"""
     try:
         if db is None:
