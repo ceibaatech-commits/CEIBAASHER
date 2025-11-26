@@ -125,9 +125,9 @@ const NavbarSearch = () => {
         <button
           onClick={handleExpandClick}
           aria-label="Search users"
-          className="p-2 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          className="p-2.5 rounded-full hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500 min-h-[44px] min-w-[44px] flex items-center justify-center"
         >
-          <Search className="w-5 h-5 text-gray-600" />
+          <Search className="w-6 h-6 text-gray-600" />
         </button>
       )}
 
