@@ -133,13 +133,13 @@ const NavbarSearch = () => {
 
       {/* Expanded state - Search bar */}
       {isExpanded && (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center z-50">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center" style={{ zIndex: 100 }}>
           <form 
             onSubmit={handleSearchSubmit}
-            className="flex items-center bg-white border-2 border-cyan-500 rounded-full overflow-hidden shadow-2xl transition-all duration-300 ease-out"
+            className="flex items-center bg-white border-2 border-cyan-500 rounded-full overflow-hidden shadow-2xl transition-all duration-300 ease-out focus-within:border-cyan-600 focus-within:shadow-3xl"
             style={{
-              width: window.innerWidth < 640 ? 'calc(100vw - 80px)' : '450px',
-              height: '44px'
+              width: window.innerWidth < 640 ? 'calc(100vw - 80px)' : '480px',
+              height: '46px'
             }}
           >
             <button
