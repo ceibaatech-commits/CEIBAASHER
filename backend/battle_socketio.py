@@ -804,7 +804,7 @@ def generate_random_id(length: int = 9) -> str:
 
 
 async def handle_user_leave(sid, room_id):
-    """Handle user leaving a room"""
+    """Handle user leaving a room with host reassignment"""
     try:
         room = room_manager.get_room(room_id)
         if not room:
@@ -824,16 +824,20 @@ async def handle_user_leave(sid, room_id):
         # If host left, assign new host or close room
         if is_host_leaving:
             if len(room.participants) > 0:
-                # Assign new host
-                room.host = room.participants[0]
+                # Assign first remaining participant as new host
+                new_host = room.participants[0]
+                room.host = new_host
                 room.host.is_host = True
-                await sio.emit('host_changed', {'newHost': {
-                    'userId': room.host.user_id,
-                    'username': room.host.username,
-                    'avatar': room.host.avatar,
-                    'isHost': True
-                }}, room=room_id)
-                print(f"[HOST] New host assigned in {room_id}")
+                
+                await sio.emit('host_changed', {
+                    'newHost': {
+                        'userId': room.host.user_id,
+                        'username': room.host.username,
+                        'avatar': room.host.avatar,
+                        'isHost': True
+                    }
+                }, room=room_id)
+                print(f"[HOST] New host assigned in {room_id}: {room.host.username}")
                 await room_manager.save_room_to_db(room)
             else:
                 # No participants left, close room
