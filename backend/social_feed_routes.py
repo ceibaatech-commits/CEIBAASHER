@@ -220,6 +220,9 @@ async def create_post(
         if user:
             await db.users.update_one({"id": user_id}, {"$inc": {"posts_count": 1}})
         
+        # Broadcast new post in real-time
+        asyncio.create_task(social_socketio.broadcast_new_post(post_doc))
+        
         return {"success": True, "post": post_doc}
     except HTTPException:
         raise
@@ -1295,6 +1298,9 @@ async def create_mcq_post(
         
         if user:
             await db.users.update_one({"id": user_id}, {"$inc": {"posts_count": 1}})
+        
+        # Broadcast new post in real-time
+        asyncio.create_task(social_socketio.broadcast_new_post(post_doc))
         
         return {"success": True, "post": post_doc}
     except HTTPException:
