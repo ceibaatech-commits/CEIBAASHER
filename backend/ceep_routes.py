@@ -2,12 +2,14 @@
 Ceep System Routes - One-way following system
 Similar to Twitter follow/unfollow
 """
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime, timezone
 import uuid
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # Will be set by server.py
@@ -19,15 +21,15 @@ def init_db(database):
 
 
 class CeepRequest(BaseModel):
-    user_id: str
-    ceep_user_id: str
+    user_id: str = Field(..., min_length=1)
+    ceep_user_id: str = Field(..., min_length=1)
     user_name: Optional[str] = None
     ceep_user_name: Optional[str] = None
 
 
 class UnceepRequest(BaseModel):
-    user_id: str
-    ceep_user_id: str
+    user_id: str = Field(..., min_length=1)
+    ceep_user_id: str = Field(..., min_length=1)
 
 
 @router.post("/ceep")
