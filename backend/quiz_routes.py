@@ -20,6 +20,7 @@ class QuizStartRequest(BaseModel):
     isClassBased: bool = False
     class_name: Optional[str] = None
     chapter: Optional[str] = None
+    userId: Optional[str] = None  # NEW: User ID for auto-posting results
 
 class QuizSubmitRequest(BaseModel):
     quizId: str
