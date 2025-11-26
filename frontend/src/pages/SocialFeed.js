@@ -285,6 +285,47 @@ const SocialFeed = () => {
         <div className="mb-4">
           <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
           
+          {/* Quiz Result Card */}
+          {post.post_type === 'quiz_result' && post.battle_stats && (
+            <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200">
+              <h4 className="font-bold text-green-900 mb-3">📊 Quiz Performance</h4>
+              <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                {post.battle_stats.accuracy !== undefined && (
+                  <div><span className="text-gray-600">Score:</span> <span className="font-bold text-green-700">{post.battle_stats.accuracy}%</span></div>
+                )}
+                {post.battle_stats.correct_answers !== undefined && (
+                  <div><span className="text-gray-600">Correct:</span> <span className="font-bold">{post.battle_stats.correct_answers}/{post.battle_stats.total_questions}</span></div>
+                )}
+                {post.battle_stats.rank && (
+                  <div><span className="text-gray-600">Rank:</span> <span className="font-bold text-purple-600">#{post.battle_stats.rank}</span></div>
+                )}
+                {post.battle_stats.subject && (
+                  <div><span className="text-gray-600">Subject:</span> <span className="font-bold">{post.battle_stats.subject}</span></div>
+                )}
+                {post.battle_stats.time_taken && (
+                  <div><span className="text-gray-600">Time:</span> <span className="font-bold">{post.battle_stats.time_taken}</span></div>
+                )}
+              </div>
+              <button 
+                onClick={() => {
+                  const quizDetails = post.quiz_details;
+                  if (quizDetails) {
+                    navigate(`/quiz-selection`, {
+                      state: { 
+                        exam: post.exam_category,
+                        subject: post.subject
+                      }
+                    });
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all flex items-center justify-center gap-2"
+              >
+                <Trophy className="w-4 h-4" />
+                Challenge This Quiz
+              </button>
+            </div>
+          )}
+
           {/* Battle Stats Card */}
           {post.post_type === 'battle_victory' && post.battle_stats && (
             <div className="mt-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
