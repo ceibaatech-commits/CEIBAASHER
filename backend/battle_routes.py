@@ -124,7 +124,7 @@ async def create_room_http(request: CreateRoomRequest):
 @router.get("/room/{room_id}")
 async def get_room_details(room_id: str):
     """Get details of a specific room"""
-    room = room_manager.get_room(room_id)
+    room = await room_manager.get_room(room_id)
     
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
@@ -142,7 +142,7 @@ async def get_room_details(room_id: str):
 @router.delete("/room/{room_id}")
 async def delete_room(room_id: str):
     """Delete a room (cleanup)"""
-    room = room_manager.get_room(room_id)
+    room = await room_manager.get_room(room_id)
     
     if not room:
         raise HTTPException(status_code=404, detail="Room not found")
