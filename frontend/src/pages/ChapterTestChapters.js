@@ -108,18 +108,7 @@ const ChapterTestChapters = () => {
     );
   }
 
-  // Color based on class
-  const classColors = {
-    '6': 'from-blue-500 to-blue-600',
-    '7': 'from-purple-500 to-purple-600',
-    '8': 'from-pink-500 to-pink-600',
-    '9': 'from-orange-500 to-orange-600',
-    '10': 'from-red-500 to-red-600',
-    '11': 'from-teal-500 to-teal-600',
-    '12': 'from-indigo-500 to-indigo-600'
-  };
-
-  const colorGradient = classColors[selectedClass] || 'from-blue-600 to-teal-600';
+  const colorGradient = CLASS_COLORS[selectedClass] || 'from-blue-600 to-teal-600';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
