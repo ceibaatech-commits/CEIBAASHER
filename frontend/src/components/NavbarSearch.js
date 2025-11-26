@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../styles/navbar-search.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-const NavbarSearch = () => {
+const NavbarSearch = ({ onExpandChange }) => {
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const [query, setQuery] = useState('');
