@@ -241,7 +241,7 @@ const NavbarSearch = ({ onExpandChange }) => {
               </div>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
