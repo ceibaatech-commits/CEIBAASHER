@@ -32,7 +32,7 @@ async def test_mcq_post():
     # Get JWT token (mock for testing)
     # In real scenario, this comes from login
     from jose import jwt
-    JWT_SECRET = "ceibaa-super-secret-key"
+    JWT_SECRET = "ceibaa-super-secret-key-2024-change-in-production"
     token = jwt.encode({"sub": user_id}, JWT_SECRET, algorithm="HS256")
     
     # Create MCQ post
