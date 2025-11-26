@@ -33,6 +33,7 @@ const ChapterTestChapters = () => {
   const fetchChapters = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await axios.get(`${API_URL}/api/chapter-tests/chapters`, {
         params: {
           class_param: selectedClass,
@@ -42,9 +43,12 @@ const ChapterTestChapters = () => {
       
       if (response.data.success) {
         setChapters(response.data.chapters || []);
+      } else {
+        setError('Failed to load chapters');
       }
     } catch (error) {
       console.error('Error fetching chapters:', error);
+      setError(error.response?.data?.message || 'Failed to load chapters');
       setChapters([]);
     } finally {
       setLoading(false);
