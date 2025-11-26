@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
   Heart, MessageCircle, Share2, Send, Gift, Swords, Trophy, 
   Users, TrendingUp, UserPlus, Target, Sparkles, Play, Crown,
-  Star, Diamond, Award, Bell, Plus, Image, Video, Smile, X
+  Star, Diamond, Award, Bell, Plus, Image, Video, Smile, X, Wifi, WifiOff
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useSocialSocket } from '../hooks/useSocialSocket';
+import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
