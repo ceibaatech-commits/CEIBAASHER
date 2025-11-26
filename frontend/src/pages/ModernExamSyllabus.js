@@ -136,10 +136,10 @@ const ModernExamSyllabus = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 md:py-6 exam-content-container">
         {/* Animated Exam Poster - Ultra Compact for Mobile */}
-        <div className="relative overflow-hidden rounded-xl mb-4">
-          <div className={`relative bg-gradient-to-br ${examData.color} p-3 md:p-4`}>
+        <div className="relative overflow-hidden rounded-lg sm:rounded-xl mb-3 sm:mb-4 exam-poster-mobile">
+          <div className={`relative bg-gradient-to-br ${examData.color} p-2 sm:p-3 md:p-4`}>
             <div className="absolute inset-0 overflow-hidden">
               <div className="absolute top-3 left-3 w-16 h-16 bg-white/10 rounded-full blur-lg animate-pulse"></div>
               <div className="absolute bottom-3 right-3 w-20 h-20 bg-white/10 rounded-full blur-lg animate-pulse" style={{animationDelay: '1s'}}></div>
