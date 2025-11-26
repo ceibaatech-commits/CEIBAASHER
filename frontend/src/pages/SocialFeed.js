@@ -984,13 +984,12 @@ const SocialFeed = () => {
                     onChange={(e) => setNewPost({ ...newPost, post_type: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500"
                   >
-                    <option value="general">General</option>
-                    <option value="mcq">MCQ Question</option>
-                    <option value="battle_victory">Battle Victory</option>
+                    <option value="general">General Post</option>
+                    <option value="quiz_room">Quiz Room (Multiple Questions)</option>
+                    <option value="mcq">Single MCQ</option>
+                    <option value="room_code">Share Battle Room Code</option>
                     <option value="study_tip">Study Tip</option>
                     <option value="achievement">Achievement</option>
-                    <option value="quiz_announcement">Quiz Announcement</option>
-                    <option value="room_code">Share Room Code</option>
                   </select>
                 </div>
 
