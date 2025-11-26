@@ -1,57 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, BookOpen, Clock, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Play, Target, Brain, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+import { useAuth } from '../hooks/useAuth';
+import { API_URL, CLASS_COLORS, DIFFICULTY_COLORS } from '../config/constants';
 
 const ChapterTestChapters = () => {
   const navigate = useNavigate();
-  const { classNumber, subject, stream } = useParams();
-  const location = window.location;
+  const { classNumber, subject } = useParams();
+  const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
   
-  // Extract class number from URL path
-  const pathParts = location.pathname.split('/');
-  const classIndex = pathParts.findIndex(part => part.startsWith('class-'));
-  const selectedClass = classIndex >= 0 ? pathParts[classIndex].replace('class-', '') : '';
-  
-  const formattedSubject = subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const selectedClass = classNumber?.replace('class-', '') || '';
+  const formattedSubject = useMemo(() => 
+    subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+    [subject]
+  );
 
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [expandedChapters, setExpandedChapters] = useState({});
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    checkAuth();
-    fetchChapters();
-  }, [selectedClass, subject]);
-
-  const checkAuth = () => {
-    const token = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (token && storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
+    if (selectedClass && subject) {
+      fetchChapters();
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('ceibaa_user');
-    setUser(null);
-    setIsLoggedIn(false);
-    navigate('/');
-  };
+  }, [selectedClass, subject]);
 
   const fetchChapters = async () => {
     try {
