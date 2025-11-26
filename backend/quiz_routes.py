@@ -365,7 +365,8 @@ async def start_quiz(request: QuizStartRequest):
         "questions": questions,
         "exam": exam,
         "subject": subject,
-        "topic": topic
+        "topic": topic,
+        "user_id": request.userId  # Store user ID for auto-posting
     }
     
     return {
