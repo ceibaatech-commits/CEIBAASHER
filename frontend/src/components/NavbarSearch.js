@@ -201,10 +201,16 @@ const NavbarSearch = ({ onExpandChange }) => {
                     {searchResults.map((result, idx) => (
                       <button
                         key={idx}
-                        onClick={() => handleResultClick(result)}
-                        className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-100 last:border-b-0"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleResultClick(result);
+                        }}
+                        onMouseDown={(e) => e.preventDefault()}
+                        className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-100 active:bg-gray-200 transition-colors text-left border-b border-gray-100 last:border-b-0 cursor-pointer"
+                        style={{ minHeight: '56px' }}
                       >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
                           result.type === 'exam' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
                         }`}>
                           {result.type === 'exam' ? '📝' : '📚'}
@@ -217,6 +223,9 @@ const NavbarSearch = ({ onExpandChange }) => {
                             {result.type === 'exam' ? 'Exam' : `Class ${result.class} - ${result.subject}`}
                           </p>
                         </div>
+                        <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </button>
                     ))}
                   </>
