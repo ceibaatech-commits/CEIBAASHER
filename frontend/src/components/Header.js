@@ -11,6 +11,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
+  const [searchExpanded, setSearchExpanded] = React.useState(false);
   
   // Close dropdown when clicking outside
   React.useEffect(() => {
