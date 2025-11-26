@@ -57,6 +57,10 @@ notification_routes.init_db(db)
 books_routes.init_db(db)
 exam_structure_routes.init_db(db)
 
+# Initialize social auto-post utilities
+import social_auto_post
+social_auto_post.init_db(db)
+
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
 
