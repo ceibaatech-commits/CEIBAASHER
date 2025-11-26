@@ -181,44 +181,37 @@ const NavbarSearch = ({ onExpandChange }) => {
                         Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
                       </p>
                     </div>
-                    {searchResults.map((result, idx) => (
-                      <div
-                        key={idx}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          console.log('=== MOUSEDOWN EVENT ===');
-                          handleResultClick(result);
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          console.log('=== CLICK EVENT ===');
-                          handleResultClick(result);
-                        }}
-                        onTouchStart={(e) => {
-                          console.log('=== TOUCH EVENT ===');
-                          handleResultClick(result);
-                        }}
-                        className="search-result-item w-full flex items-center space-x-3 px-4 py-3 transition-colors text-left border-b border-gray-100 last:border-b-0"
-                        style={{ minHeight: '56px', cursor: 'pointer', touchAction: 'manipulation' }}
-                      >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
-                          result.type === 'exam' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
-                        }`}>
-                          {result.type === 'exam' ? '📝' : '📚'}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm text-gray-800 truncate">
-                            {result.name}
-                          </p>
-                          <p className="text-xs text-gray-500 truncate">
-                            {result.type === 'exam' ? 'Exam' : `Class ${result.class} - ${result.subject}`}
-                          </p>
-                        </div>
-                        <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    ))}
+                    {searchResults.map((result, idx) => {
+                      const path = result.type === 'exam' 
+                        ? `/exam/${result.slug}` 
+                        : `/chapter-tests/class-${result.class}/${result.subject}`;
+                      
+                      return (
+                        <a
+                          key={idx}
+                          href={path}
+                          className="search-result-item w-full flex items-center space-x-3 px-4 py-3 transition-colors text-left border-b border-gray-100 last:border-b-0 no-underline"
+                          style={{ minHeight: '56px', cursor: 'pointer', display: 'flex' }}
+                        >
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
+                            result.type === 'exam' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
+                          }`}>
+                            {result.type === 'exam' ? '📝' : '📚'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm text-gray-800 truncate">
+                              {result.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {result.type === 'exam' ? 'Exam' : `Class ${result.class} - ${result.subject}`}
+                            </p>
+                          </div>
+                          <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </a>
+                      );
+                    })}
                   </>
                 ) : query.trim() ? (
                   <div className="p-8 text-center">
