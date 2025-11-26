@@ -400,7 +400,50 @@ async def demo_login(login_data: DemoLoginRequest):
                 "username": "demostudent3",
                 "name": "Demo Student 3",
                 "email": "demo3@ceibaa.com",
+                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+3&background=F59E0B&color=fff&size=200",
+                "provider": "demo",
+                "provider_id": "demo3",
+                "password": "demo3",
+                "bio": "SSC CGL aspirant",
+                "location": "Bangalore, India",
+                "exam_focus": ["SSC"],
+                "is_private": False,
+                "streak_days": 7,
+                "badges": ["Consistent"],
+                "created_at": datetime.utcnow().isoformat(),
+                "joined_at": datetime.utcnow().isoformat()
+            }
+        }
 
+        # Check credentials
+        username_lower = login_data.username.lower().strip()
+        if username_lower not in demo_users:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        user_data = demo_users[username_lower]
+        if login_data.password != user_data["password"]:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+        
+        # Generate JWT token
+        token_data = {
+            "sub": user_data["id"],
+            "email": user_data["email"],
+            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        }
+        access_token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        
+        # Return user data
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user": user_data
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in demo login: {str(e)}")
+        raise HTTPException(status_code=500, detail="Login failed")
 
 
 @router.post("/auth/signup")
