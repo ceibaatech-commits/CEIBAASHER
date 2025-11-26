@@ -108,11 +108,18 @@ const NavbarSearch = ({ onExpandChange }) => {
   };
 
   const handleResultClick = (result) => {
+    console.log('Search result clicked:', result);
+    
     if (result.type === 'exam') {
-      navigate(`/exam/${result.slug}`);
+      const path = `/exam/${result.slug}`;
+      console.log('Navigating to exam:', path);
+      navigate(path);
     } else if (result.type === 'chapter') {
-      navigate(`/chapter-tests/class-${result.class}/${result.subject}`);
+      const path = `/chapter-tests/class-${result.class}/${result.subject}`;
+      console.log('Navigating to chapter:', path);
+      navigate(path);
     }
+    
     setIsExpanded(false);
     setQuery('');
     setSearchResults([]);
