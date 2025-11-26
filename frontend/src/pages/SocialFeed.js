@@ -1034,6 +1034,14 @@ const SocialFeed = () => {
       <Header isLoggedIn={!!user} user={user} onLogout={logout} />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Real-time Connection Status */}
+        <div className="flex items-center justify-end mb-2">
+          <div className={`flex items-center space-x-1 text-xs ${isConnected ? 'text-green-600' : 'text-gray-400'}`}>
+            {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+            <span>{isConnected ? 'Live' : 'Connecting...'}</span>
+          </div>
+        </div>
+        
         {/* Feed Tabs */}
         <div className="bg-white rounded-xl shadow-md mb-6 p-2 flex overflow-x-auto">
           <button
