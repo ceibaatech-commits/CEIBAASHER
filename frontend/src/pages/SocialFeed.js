@@ -158,7 +158,7 @@ const SocialFeed = () => {
       return;
     }
 
-    try:
+    try {
       await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {
         user_id: user.id
       });
