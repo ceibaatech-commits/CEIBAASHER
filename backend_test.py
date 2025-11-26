@@ -345,9 +345,289 @@ class BackendTester:
             self.log_result("No Node.js Dependencies", False, f"Node.js dependency check error: {e}")
             return False
 
+    def test_ceep_system_endpoints(self):
+        """Test ceep (follow/unfollow) system API endpoints"""
+        try:
+            # Login demo users
+            token1, user_id1 = self.login_demo_user('demo1')
+            token2, user_id2 = self.login_demo_user('demo2')
+            
+            if not token1 or not token2:
+                self.log_result("Ceep System Login", False, "❌ Failed to login demo users")
+                return False
+            
+            self.log_result("Ceep System Login", True, f"✅ Demo users logged in: {user_id1}, {user_id2}")
+            
+            # Test 1: Self-follow prevention
+            self._test_self_follow_prevention(user_id1)
+            
+            # Test 2: Follow/unfollow flow
+            self._test_follow_unfollow_flow(user_id1, user_id2)
+            
+            # Test 3: Duplicate follow prevention
+            self._test_duplicate_follow_prevention(user_id1, user_id2)
+            
+            # Test 4: Query endpoints
+            self._test_query_endpoints(user_id1, user_id2)
+            
+            # Test 5: Counter verification
+            self._test_counter_verification(user_id1, user_id2)
+            
+            # Test 6: Unfollow non-existent relationship
+            self._test_unfollow_nonexistent(user_id1, user_id2)
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Ceep System Endpoints", False, f"Ceep system test error: {e}")
+            return False
+    
+    def _test_self_follow_prevention(self, user_id):
+        """Test that users cannot follow themselves"""
+        try:
+            response = requests.post(f"{BACKEND_URL}/api/ceep/ceep", json={
+                "user_id": user_id,
+                "ceep_user_id": user_id,
+                "user_name": "Demo1",
+                "ceep_user_name": "Demo1"
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                if not data.get('success') and 'cannot ceep yourself' in data.get('message', ''):
+                    self.log_result("Self-Follow Prevention", True, "✅ Self-follow correctly rejected")
+                    return True
+                else:
+                    self.log_result("Self-Follow Prevention", False, f"❌ Self-follow not properly rejected: {data}")
+                    return False
+            else:
+                self.log_result("Self-Follow Prevention", False, f"❌ Unexpected status code: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Self-Follow Prevention", False, f"Self-follow test error: {e}")
+            return False
+    
+    def _test_follow_unfollow_flow(self, user_id1, user_id2):
+        """Test basic follow and unfollow flow"""
+        try:
+            # First, ensure clean state by unfollowing if already following
+            requests.post(f"{BACKEND_URL}/api/ceep/unceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2
+            })
+            
+            # Test follow
+            response = requests.post(f"{BACKEND_URL}/api/ceep/ceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2,
+                "user_name": "Demo1",
+                "ceep_user_name": "Demo2"
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result("Follow User", True, f"✅ User {user_id1} successfully followed {user_id2}")
+                else:
+                    self.log_result("Follow User", False, f"❌ Follow failed: {data.get('message')}")
+                    return False
+            else:
+                self.log_result("Follow User", False, f"❌ Follow request failed: {response.status_code}")
+                return False
+            
+            # Test unfollow
+            response = requests.post(f"{BACKEND_URL}/api/ceep/unceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result("Unfollow User", True, f"✅ User {user_id1} successfully unfollowed {user_id2}")
+                    return True
+                else:
+                    self.log_result("Unfollow User", False, f"❌ Unfollow failed: {data.get('message')}")
+                    return False
+            else:
+                self.log_result("Unfollow User", False, f"❌ Unfollow request failed: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Follow/Unfollow Flow", False, f"Follow/unfollow flow error: {e}")
+            return False
+    
+    def _test_duplicate_follow_prevention(self, user_id1, user_id2):
+        """Test that duplicate follows are prevented"""
+        try:
+            # First follow
+            requests.post(f"{BACKEND_URL}/api/ceep/ceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2,
+                "user_name": "Demo1",
+                "ceep_user_name": "Demo2"
+            })
+            
+            # Attempt duplicate follow
+            response = requests.post(f"{BACKEND_URL}/api/ceep/ceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2,
+                "user_name": "Demo1",
+                "ceep_user_name": "Demo2"
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                if not data.get('success') and 'Already ceeped' in data.get('message', ''):
+                    self.log_result("Duplicate Follow Prevention", True, "✅ Duplicate follow correctly rejected")
+                    return True
+                else:
+                    self.log_result("Duplicate Follow Prevention", False, f"❌ Duplicate follow not properly rejected: {data}")
+                    return False
+            else:
+                self.log_result("Duplicate Follow Prevention", False, f"❌ Unexpected status code: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Duplicate Follow Prevention", False, f"Duplicate follow test error: {e}")
+            return False
+    
+    def _test_query_endpoints(self, user_id1, user_id2):
+        """Test query endpoints for follow relationships"""
+        try:
+            # Test is-following endpoint
+            response = requests.get(f"{BACKEND_URL}/api/ceep/is-following/{user_id1}/{user_id2}")
+            if response.status_code == 200:
+                data = response.json()
+                if 'is_following' in data:
+                    self.log_result("Is-Following Endpoint", True, f"✅ Is-following check working: {data['is_following']}")
+                else:
+                    self.log_result("Is-Following Endpoint", False, f"❌ Missing is_following field: {data}")
+                    return False
+            else:
+                self.log_result("Is-Following Endpoint", False, f"❌ Is-following request failed: {response.status_code}")
+                return False
+            
+            # Test ceeps endpoint (users being followed)
+            response = requests.get(f"{BACKEND_URL}/api/ceep/ceeps/{user_id1}")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'ceeps' in data and 'count' in data:
+                    self.log_result("Ceeps Endpoint", True, f"✅ Ceeps list working: {data['count']} users followed")
+                else:
+                    self.log_result("Ceeps Endpoint", False, f"❌ Invalid ceeps response: {data}")
+                    return False
+            else:
+                self.log_result("Ceeps Endpoint", False, f"❌ Ceeps request failed: {response.status_code}")
+                return False
+            
+            # Test ceepers endpoint (followers)
+            response = requests.get(f"{BACKEND_URL}/api/ceep/ceepers/{user_id2}")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'ceepers' in data and 'count' in data:
+                    self.log_result("Ceepers Endpoint", True, f"✅ Ceepers list working: {data['count']} followers")
+                else:
+                    self.log_result("Ceepers Endpoint", False, f"❌ Invalid ceepers response: {data}")
+                    return False
+            else:
+                self.log_result("Ceepers Endpoint", False, f"❌ Ceepers request failed: {response.status_code}")
+                return False
+            
+            # Test deprecated check-ceep endpoint
+            response = requests.get(f"{BACKEND_URL}/api/ceep/check-ceep/{user_id1}/{user_id2}")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'is_ceeped' in data:
+                    self.log_result("Check-Ceep Endpoint (Deprecated)", True, f"✅ Check-ceep working: {data['is_ceeped']}")
+                else:
+                    self.log_result("Check-Ceep Endpoint (Deprecated)", False, f"❌ Invalid check-ceep response: {data}")
+                    return False
+            else:
+                self.log_result("Check-Ceep Endpoint (Deprecated)", False, f"❌ Check-ceep request failed: {response.status_code}")
+                return False
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Query Endpoints", False, f"Query endpoints test error: {e}")
+            return False
+    
+    def _test_counter_verification(self, user_id1, user_id2):
+        """Test that follow/follower counters are updated correctly"""
+        try:
+            # Test ceep-stats endpoint
+            response = requests.get(f"{BACKEND_URL}/api/ceep/ceep-stats/{user_id1}")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'stats' in data:
+                    stats = data['stats']
+                    if 'ceeping_count' in stats and 'ceepers_count' in stats:
+                        self.log_result("Ceep Stats Endpoint", True, f"✅ Stats working - Following: {stats['ceeping_count']}, Followers: {stats['ceepers_count']}")
+                    else:
+                        self.log_result("Ceep Stats Endpoint", False, f"❌ Missing stats fields: {stats}")
+                        return False
+                else:
+                    self.log_result("Ceep Stats Endpoint", False, f"❌ Invalid stats response: {data}")
+                    return False
+            else:
+                self.log_result("Ceep Stats Endpoint", False, f"❌ Stats request failed: {response.status_code}")
+                return False
+            
+            # Test stats for user2 as well
+            response = requests.get(f"{BACKEND_URL}/api/ceep/ceep-stats/{user_id2}")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success') and 'stats' in data:
+                    stats = data['stats']
+                    self.log_result("Ceep Stats User2", True, f"✅ User2 stats - Following: {stats['ceeping_count']}, Followers: {stats['ceepers_count']}")
+                    return True
+                else:
+                    self.log_result("Ceep Stats User2", False, f"❌ Invalid user2 stats response: {data}")
+                    return False
+            else:
+                self.log_result("Ceep Stats User2", False, f"❌ User2 stats request failed: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Counter Verification", False, f"Counter verification error: {e}")
+            return False
+    
+    def _test_unfollow_nonexistent(self, user_id1, user_id2):
+        """Test unfollowing a non-existent relationship"""
+        try:
+            # First ensure we're not following
+            requests.post(f"{BACKEND_URL}/api/ceep/unceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2
+            })
+            
+            # Try to unfollow again (should fail gracefully)
+            response = requests.post(f"{BACKEND_URL}/api/ceep/unceep", json={
+                "user_id": user_id1,
+                "ceep_user_id": user_id2
+            })
+            
+            if response.status_code == 200:
+                data = response.json()
+                if not data.get('success') and 'Not ceeped' in data.get('message', ''):
+                    self.log_result("Unfollow Non-existent", True, "✅ Unfollow non-existent relationship handled correctly")
+                    return True
+                else:
+                    self.log_result("Unfollow Non-existent", False, f"❌ Unfollow non-existent not handled properly: {data}")
+                    return False
+            else:
+                self.log_result("Unfollow Non-existent", False, f"❌ Unexpected status code: {response.status_code}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Unfollow Non-existent", False, f"Unfollow non-existent test error: {e}")
+            return False
+
     def run_all_tests(self):
-        """Run all battle Socket.IO regression tests"""
-        print("🚀 Starting Battle Socket.IO Regression Tests")
+        """Run all backend tests including ceep system"""
+        print("🚀 Starting Backend API Tests")
         print("=" * 60)
         
         tests = [
@@ -355,7 +635,8 @@ class BackendTester:
             self.test_battle_room_lifecycle,
             self.test_host_control_events,
             self.test_virtual_gifts_system,
-            self.test_no_nodejs_dependencies
+            self.test_no_nodejs_dependencies,
+            self.test_ceep_system_endpoints
         ]
         
         passed = 0
