@@ -142,7 +142,7 @@ async def join_room(sid, data):
 
         print(f"[JOIN ATTEMPT] {user_data.get('username')} trying to join room {room_id}")
 
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
 
         if not room:
             print(f"[JOIN ERROR] Room {room_id} not found")
