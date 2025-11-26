@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 
 // Connect to Socket.IO on main backend (now integrated with FastAPI on port 8001)
 // Socket.IO is mounted at /socket.io/ path
-const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://syllabus-sync-3.preview.emergentagent.com';
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://exprep-mobile-ui.preview.emergentagent.com';
 const SOCKET_PATH = '/socket.io'; // Standard Socket.IO path
 
 const BattleLobby = () => {

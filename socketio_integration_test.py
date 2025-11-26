@@ -8,7 +8,7 @@ import json
 import time
 import re
 
-BACKEND_URL = "https://syllabus-sync-3.preview.emergentagent.com"
+BACKEND_URL = "https://exprep-mobile-ui.preview.emergentagent.com"
 SOCKET_URL = f"{BACKEND_URL}/api/battlews"
 
 def test_socketio_handshake():

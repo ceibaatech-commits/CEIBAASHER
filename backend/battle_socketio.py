@@ -62,10 +62,8 @@ async def connect(sid, environ):
 async def disconnect(sid):
     """Handle client disconnection with detailed logging.
 
-    IMPORTANT: We do **not** automatically delete battle rooms on disconnect.
-    Explicit "leave_room" or HTTP cleanup is required to close a room.
-    This prevents rooms from being removed when the host has a brief
-    network hiccup while still playing.
+    IMPORTANT: User will be removed from the room, ensuring host reassignment
+    or room closure is handled automatically.
     """
     print(f"[DISCONNECT] ⚠️ Client disconnecting: {sid}")
 
@@ -77,12 +75,11 @@ async def disconnect(sid):
     if battle:
         await sio.emit('opponent-disconnected', {}, room=battle.room_id, skip_sid=sid)
 
-    # NOTE: Do NOT call handle_user_leave here.
-    # Rooms are kept alive on socket disconnect to avoid premature
-    # deletion while host is still active in the quiz UI.
-    # - Explicit "leave_room" events (Quit button) still remove users.
-    # - Completed battles schedule their own cleanup after 5 minutes.
-    # - Expired rooms are cleaned up via 24h TTL in BattleRoomManager.
+    # Find and handle user leaving the battle room
+    room = room_manager.get_user_room(sid)
+    if room:
+        print(f"[DISCONNECT] User {sid} was in room {room.room_id}. Handling leave.")
+        await handle_user_leave(sid, room.room_id)
 
 
 @sio.event
@@ -412,6 +409,7 @@ async def pause_quiz(sid, data):
         room.status = 'paused'
         await sio.emit('quiz-paused', {'roomId': room_id}, room=room_id)
         print(f"[PAUSE] Room {room_id} paused by host {sid}")
+        await room_manager.save_room_to_db(room) # Persist state
     except Exception as e:
         print(f"[ERROR] pause_quiz: {str(e)}")
 
@@ -434,6 +432,7 @@ async def resume_quiz(sid, data):
         room.status = 'active'
         await sio.emit('quiz-resumed', {'roomId': room_id}, room=room_id)
         print(f"[RESUME] Room {room_id} resumed by host {sid}")
+        await room_manager.save_room_to_db(room) # Persist state
     except Exception as e:
         print(f"[ERROR] resume_quiz: {str(e)}")
 
@@ -461,6 +460,7 @@ async def skip_question(sid, data):
             'leaderboard': room.get_leaderboard()
         }, room=room_id)
         print(f"[SKIP] Host {sid} skipped to question {room.current_question} in room {room_id}")
+        await room_manager.save_room_to_db(room) # Persist state
 
     except Exception as e:
         print(f"[ERROR] skip_question: {str(e)}")
@@ -616,6 +616,7 @@ async def send_gift(sid, data):
 
         # Broadcast updated leaderboard to entire room
         await sio.emit('leaderboard_update', {'leaderboard': leaderboard}, room=room_id)
+        await room_manager.save_room_to_db(room) # Persist state
 
         print(f"[GIFT] {sender_name} ({sid}) sent {gift_type} to {recipient_name} ({recipient_id}) in room {room_id}")
 
@@ -809,14 +810,19 @@ async def handle_user_leave(sid, room_id):
         if not room:
             return
 
-        room.remove_participant(sid)
+        is_host_leaving = room.host.user_id == sid
+        
+        removed = room.remove_participant(sid)
         room_manager.user_rooms.pop(sid, None)
         await sio.leave_room(sid, room_id)
+        
+        if not removed:
+            return
 
         print(f"[LEAVE] User {sid} left room {room_id}")
 
         # If host left, assign new host or close room
-        if room.host.user_id == sid:
+        if is_host_leaving:
             if len(room.participants) > 0:
                 # Assign new host
                 room.host = room.participants[0]
@@ -828,11 +834,15 @@ async def handle_user_leave(sid, room_id):
                     'isHost': True
                 }}, room=room_id)
                 print(f"[HOST] New host assigned in {room_id}")
+                await room_manager.save_room_to_db(room)
             else:
                 # No participants left, close room
                 await room_manager.remove_room(room_id)
                 print(f"[CLOSE] Room {room_id} closed - no participants")
                 return
+        else:
+            # Save room state if a non-host leaves
+            await room_manager.save_room_to_db(room)
 
         # Notify remaining participants
         await sio.emit('participant_left', {

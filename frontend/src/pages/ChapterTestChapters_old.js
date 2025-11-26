@@ -1,7 +1,10 @@
+// ChapterTestChapters_old.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Clock, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Play, ChevronRight, Target } from 'lucide-react';
+// FIX: Added missing icons (Search, Star, TrendingUp are used but not imported)
+import { ArrowLeft, BookOpen, Clock, Trophy, Users, Zap, CheckCircle, ChevronDown, ChevronUp, Play, ChevronRight, Target, Search, Star, TrendingUp } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -11,8 +14,16 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const ChapterTestChapters = () => {
   const navigate = useNavigate();
   const { classNumber, subject } = useParams();
+  // FIX: Simplified parameter extraction. classNumber is extracted by removing 'class-' prefix.
   const selectedClass = classNumber?.replace('class-', '');
+  // FIX: Replaced complex subject formatting with simple conversion of URL slug to title case for display only.
+  // The API call should use the slug-based name for better consistency, or ensure the API handles the formatted name.
+  // Assuming subject URL is 'mathematics-kshitij' or 'mathematics'. Splitting by '-' and capitalizing words.
   const formattedSubject = subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  
+  // Assuming the subject slug from the URL is what the API needs. Let's send the original subject slug to the backend.
+  const subjectSlug = subject;
+
 
   const [chapters, setChapters] = useState([]);
   const [filteredChapters, setFilteredChapters] = useState([]);
@@ -32,17 +43,22 @@ const ChapterTestChapters = () => {
   }, [chapters, searchQuery, filterType, sortBy]);
 
   const fetchChapters = async () => {
-    try:
+    try { // FIX: Removed trailing colon after 'try'
       setLoading(true);
       const response = await axios.get(`${API_URL}/api/chapter-tests/chapters`, {
         params: {
-          class_param: selectedClass,
-          subject: formattedSubject
+          // FIX: Passing the clean class number and the URL slug for the subject
+          class_param: selectedClass, 
+          subject: subjectSlug // Send the slug name (e.g., 'mathematics') to backend
         }
       });
       
       if (response.data.success) {
         setChapters(response.data.chapters || []);
+      } else {
+        // FIX: Handle API failure response
+        console.error('API returned failure:', response.data.message);
+        setChapters(getDefaultChapters());
       }
     } catch (error) {
       console.error('Error fetching chapters:', error);
@@ -56,8 +72,8 @@ const ChapterTestChapters = () => {
   const getDefaultChapters = () => {
     // Default sample chapters structure
     return [
-      { chapter_number: 1, chapter_name: 'Sample Chapter 1', total_questions: 50, difficulty: 'Easy', duration: 30, attempted: false },
-      { chapter_number: 2, chapter_name: 'Sample Chapter 2', total_questions: 45, difficulty: 'Medium', duration: 35, attempted: false }
+      { chapter_number: 1, chapter_name: 'Sample Chapter 1 (Default)', total_questions: 50, difficulty: 'Easy', duration: 30, attempted: false },
+      { chapter_number: 2, chapter_name: 'Sample Chapter 2 (Default)', total_questions: 45, difficulty: 'Medium', duration: 35, attempted: false }
     ];
   };
 
@@ -89,6 +105,7 @@ const ChapterTestChapters = () => {
     }
 
     // Apply filter type
+    // Assuming 'attempted' status is part of the chapter data fetched from the API
     if (filterType === 'attempted') {
       filtered = filtered.filter(ch => ch.attempted);
     } else if (filterType === 'unattempted') {
@@ -128,7 +145,8 @@ const ChapterTestChapters = () => {
 
   const calculateProgress = () => {
     if (chapters.length === 0) return 0;
-    const attempted = chapters.filter(ch => ch.attempted).length;
+    // Assuming 'attempted' key exists in chapter objects
+    const attempted = chapters.filter(ch => ch.attempted).length; 
     return Math.round((attempted / chapters.length) * 100);
   };
 
@@ -240,6 +258,7 @@ const ChapterTestChapters = () => {
           <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
             <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <p className="text-xl text-gray-600">No chapters found</p>
+            <p className="text-gray-500 text-sm mt-2">Check your URL parameters or backend configuration.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

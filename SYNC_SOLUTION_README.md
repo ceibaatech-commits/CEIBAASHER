@@ -112,12 +112,12 @@ python3 generate_frontend_mappings.py > /tmp/mappings.js
 
 ### Test API Endpoint
 ```bash
-curl https://syllabus-sync-3.preview.emergentagent.com/api/exam-metadata | jq
+curl https://exprep-mobile-ui.preview.emergentagent.com/api/exam-metadata | jq
 ```
 
 ### Test Specific Exam
 ```bash
-curl https://syllabus-sync-3.preview.emergentagent.com/api/exam-metadata/CAPF | jq
+curl https://exprep-mobile-ui.preview.emergentagent.com/api/exam-metadata/CAPF | jq
 ```
 
 ### Validate Sync
