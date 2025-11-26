@@ -98,37 +98,37 @@ const ModernExamSyllabus = () => {
       />
       
       {/* Compact Hero - Mobile Optimized */}
-      <div className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-6 sm:py-8 exam-hero-banner">
-        <div className="max-w-7xl mx-auto px-4">
-          <button onClick={() => navigate('/')} className="flex items-center text-white/90 hover:text-white mb-3 sm:mb-4 touch-manipulation">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Back
+      <div className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-3 sm:py-6 md:py-8 exam-header-section">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 exam-content-container">
+          <button onClick={() => navigate('/')} className="flex items-center text-white/90 hover:text-white mb-2 sm:mb-3 touch-manipulation">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> <span className="text-sm">Back</span>
           </button>
           
-          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-center">
-            <div className="flex items-center gap-3 sm:gap-4">
+          <div className="grid lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6 items-center">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
               {examData.icon.startsWith('http') ? (
-                <img src={examData.icon} alt={examData.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain flex-shrink-0" />
+                <img src={examData.icon} alt={examData.name} className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain flex-shrink-0" />
               ) : (
-                <div className="text-4xl sm:text-5xl flex-shrink-0">{examData.icon}</div>
+                <div className="text-3xl sm:text-4xl md:text-5xl flex-shrink-0">{examData.icon}</div>
               )}
-              <div className="exam-hero-content">
-                <h1 className="exam-hero-title text-2xl sm:text-3xl font-black leading-tight">
-                  {examData.name} 2026 - Test Series, MCQ & Free Practice Quizzes
+              <div className="exam-hero-content min-w-0">
+                <h1 className="exam-hero-title exam-title-mobile text-base sm:text-xl md:text-2xl lg:text-3xl font-black leading-tight">
+                  {examData.name} 2026
                 </h1>
-                <p className="exam-subtitle text-white/90 text-sm sm:text-base mt-1 sm:mt-2 font-medium">{examData.full_name} Preparation Platform</p>
+                <p className="exam-subtitle exam-subtitle-mobile text-white/90 text-xs sm:text-sm md:text-base mt-0.5 sm:mt-1 md:mt-2 font-medium hidden sm:block">{examData.full_name}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 exam-info-grid">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2 md:gap-3 exam-info-grid">
               {[
-                { icon: FileText, label: 'Questions', value: examData.total_questions },
-                { icon: Clock, label: 'Duration', value: examData.duration },
-                { icon: BookOpen, label: 'Subjects', value: subjects.length }
+                { icon: FileText, label: 'Qs', value: examData.total_questions },
+                { icon: Clock, label: 'Time', value: examData.duration },
+                { icon: BookOpen, label: 'Topics', value: subjects.length }
               ].map((stat, idx) => (
-                <div key={idx} className="bg-white/10 backdrop-blur-sm p-2 sm:p-3 rounded-lg sm:rounded-xl text-center exam-stat-card">
-                  <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
-                  <p className="stat-value text-lg sm:text-xl font-bold">{stat.value}</p>
-                  <p className="stat-label text-xs opacity-80">{stat.label}</p>
+                <div key={idx} className="bg-white/10 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-lg sm:rounded-xl text-center exam-stat-card">
+                  <stat.icon className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 mx-auto mb-0.5 sm:mb-1" />
+                  <p className="stat-value text-sm sm:text-base md:text-lg lg:text-xl font-bold">{stat.value}</p>
+                  <p className="stat-label text-[10px] sm:text-xs opacity-80">{stat.label}</p>
                 </div>
               ))}
             </div>
