@@ -5,7 +5,7 @@ import re
 router = APIRouter(prefix="/api", tags=["search"])
 
 # Import exam data
-from exam_data import EXAMS
+from exam_data import EXAM_DATA as EXAMS
 from cbse_chapter_data import CBSE_CHAPTER_DATA
 
 @router.get("/search")
