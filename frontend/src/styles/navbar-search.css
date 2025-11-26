@@ -77,21 +77,23 @@
   border: 1px solid #e5e7eb;
   max-height: 400px;
   overflow-y: auto;
-  z-index: 9999;
-  pointer-events: auto;
+  z-index: 99999 !important;
+  pointer-events: auto !important;
 }
 
-.search-results-dropdown button {
-  cursor: pointer;
-  pointer-events: auto;
+.search-result-item {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.search-results-dropdown button:hover {
-  background-color: #f9fafb;
+.search-result-item:hover {
+  background-color: #f9fafb !important;
 }
 
-.search-results-dropdown button:active {
-  background-color: #f3f4f6;
+.search-result-item:active {
+  background-color: #f3f4f6 !important;
 }
 
 /* Overlay */
