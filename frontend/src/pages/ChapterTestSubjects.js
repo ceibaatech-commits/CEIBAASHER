@@ -3,42 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../hooks/useAuth';
+import { CLASS_COLORS } from '../config/constants';
 
 const ChapterTestSubjects = () => {
   const navigate = useNavigate();
   const { classNumber } = useParams();
-  const location = window.location;
+  const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
   
-  // Extract class number from URL path (e.g., /chapter-tests/class-6)
-  const pathParts = location.pathname.split('/');
-  const classIndex = pathParts.findIndex(part => part.startsWith('class-'));
-  const selectedClass = classIndex >= 0 ? pathParts[classIndex].replace('class-', '') : (classNumber?.replace('class-', '') || '');
-
-  // Check auth state
-  const [user, setUser] = React.useState(null);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
-  React.useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (token && storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('ceibaa_user');
-    setUser(null);
-    setIsLoggedIn(false);
-    navigate('/');
-  };
+  const selectedClass = classNumber?.replace('class-', '') || '';
 
   // Define subjects based on class
   let subjects = [];
