@@ -3,44 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { GraduationCap, BookOpen, Award } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../hooks/useAuth';
+import { CLASS_COLORS } from '../config/constants';
 
 const ChapterTestHome = () => {
   const navigate = useNavigate();
-
-  // Check auth state
-  const [user, setUser] = React.useState(null);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
-  React.useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (token && storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('ceibaa_user');
-    setUser(null);
-    setIsLoggedIn(false);
-    navigate('/');
-  };
+  const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
 
   const classes = [
-    { class: 6, color: 'from-blue-500 to-blue-600', icon: '📚' },
-    { class: 7, color: 'from-purple-500 to-purple-600', icon: '📖' },
-    { class: 8, color: 'from-pink-500 to-pink-600', icon: '✏️' },
-    { class: 9, color: 'from-orange-500 to-orange-600', icon: '📝' },
-    { class: 10, color: 'from-red-500 to-red-600', icon: '🎓' },
-    { class: 11, color: 'from-teal-500 to-teal-600', icon: '📊' },
-    { class: 12, color: 'from-indigo-500 to-indigo-600', icon: '🏆' }
+    { class: 6, color: CLASS_COLORS['6'], icon: '📚' },
+    { class: 7, color: CLASS_COLORS['7'], icon: '📖' },
+    { class: 8, color: CLASS_COLORS['8'], icon: '✏️' },
+    { class: 9, color: CLASS_COLORS['9'], icon: '📝' },
+    { class: 10, color: CLASS_COLORS['10'], icon: '🎓' },
+    { class: 11, color: CLASS_COLORS['11'], icon: '📊' },
+    { class: 12, color: CLASS_COLORS['12'], icon: '🏆' }
   ];
 
   return (
