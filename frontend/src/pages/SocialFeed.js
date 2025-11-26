@@ -993,6 +993,30 @@ const SocialFeed = () => {
                   </select>
                 </div>
 
+                {/* Quiz Room Builder (only shown when post type is quiz_room) */}
+                {newPost.post_type === 'quiz_room' && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowQuizRoomModal(true);
+                        if (examList.length === 0) fetchExamList();
+                      }}
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
+                    >
+                      🎯 Create Quiz Room
+                    </button>
+                    {quizRoomData.selectedQuestions.length > 0 && (
+                      <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                        <p className="text-sm font-semibold text-orange-800">
+                          {quizRoomData.selectedQuestions.length} Questions Selected
+                        </p>
+                        <p className="text-sm text-gray-700 mt-1">Quiz: {quizRoomData.title || 'Untitled'}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* MCQ Browser Button (only shown when post type is mcq) */}
                 {newPost.post_type === 'mcq' && (
                   <div>
@@ -1005,7 +1029,7 @@ const SocialFeed = () => {
                       }}
                       className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
                     >
-                      🔍 Browse & Post MCQ
+                      🔍 Browse & Post Single MCQ
                     </button>
                     {selectedMCQ && (
                       <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
