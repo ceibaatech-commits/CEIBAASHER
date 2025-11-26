@@ -59,13 +59,11 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               Books
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            {/* Only show Join Battle Room for non-logged-in users */}
-            {!isLoggedIn && (
-              <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
-                Join Battle Room
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
-              </button>
-            )}
+            {/* Join Battle Room - visible for everyone */}
+            <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
+              Join Battle Room
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
+            </button>
           </nav>
 
           {/* User Section */}
