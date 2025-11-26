@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { UserPlus, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { login: authLogin, setUserData } = useAuth();
+  const { setUserData } = useAuth();
   
   const [formData, setFormData] = useState({
     name: '',
@@ -19,34 +24,28 @@ const Signup = () => {
   
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     } else if (formData.name.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters';
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
@@ -74,14 +73,9 @@ const Signup = () => {
         password: formData.password
       });
 
-      // Store token
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('auth_token', response.data.token);
-      
-      // Update auth context
       setUserData(response.data.user);
-      
-      // Redirect to social feed
       navigate('/social-feed', { replace: true });
       
     } catch (err) {
@@ -97,7 +91,6 @@ const Signup = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error for this field
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -106,156 +99,128 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <button
+        <Button
+          variant="ghost"
           onClick={() => navigate('/')}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+          className="mb-6"
         >
-          <ArrowLeft className="w-5 h-5 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
-        </button>
+        </Button>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center justify-center mx-auto mb-6">
+        <Card className="shadow-2xl">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex justify-center">
               <img 
                 src="/ceibaa-logo.png" 
                 alt="Ceibaa Logo" 
                 className="h-24 w-auto object-contain"
               />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-            <p className="text-gray-600">Join Ceibaa and start your learning journey</p>
-          </div>
-
-          {/* Signup Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
-                placeholder="Enter your full name"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-              )}
+              <CardTitle className="text-3xl">Create Account</CardTitle>
+              <CardDescription className="text-base">Join Ceibaa and start your learning journey</CardDescription>
             </div>
+          </CardHeader>
 
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`w-full px-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
-                placeholder="your@email.com"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-              )}
-            </div>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name *</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  className={errors.name ? 'border-red-500' : ''}
+                />
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name}</p>
+                )}
+              </div>
 
-            {/* Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password *
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address *</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="your@email.com"
+                  className={errors.email ? 'border-red-500' : ''}
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Password *</Label>
+                <Input
+                  id="password"
                   name="password"
+                  type="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 pr-12 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Min 6 characters"
+                  className={errors.password ? 'border-red-500' : ''}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-              )}
-            </div>
 
-            {/* Confirm Password Field */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Confirm Password *
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password *</Label>
+                <Input
+                  id="confirmPassword"
                   name="confirmPassword"
+                  type="password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 pr-12 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
                   placeholder="Re-enter password"
+                  className={errors.confirmPassword ? 'border-red-500' : ''}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+                )}
               </div>
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+
+              {errors.submit && (
+                <Alert variant="destructive">
+                  <AlertDescription>{errors.submit}</AlertDescription>
+                </Alert>
               )}
-            </div>
 
-            {/* Submit Error */}
-            {errors.submit && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">
-                {errors.submit}
-              </div>
-            )}
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                {loading ? 'Creating Account...' : 'Create Account'}
+              </Button>
+            </form>
+          </CardContent>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-all shadow-md hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              <UserPlus className="w-5 h-5" />
-              <span>{loading ? 'Creating Account...' : 'Create Account'}</span>
-            </button>
-          </form>
-
-          {/* Login Link */}
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600">
+          <CardFooter className="flex-col space-y-4">
+            <p className="text-sm text-gray-600 text-center">
               Already have an account?{' '}
-              <button
+              <Button
+                variant="link"
                 onClick={() => navigate('/login')}
-                className="text-cyan-600 hover:text-cyan-700 font-semibold underline"
+                className="p-0 h-auto font-semibold text-cyan-600"
               >
                 Login
-              </button>
+              </Button>
             </p>
-          </div>
-
-          {/* Terms */}
-          <p className="text-center text-xs text-gray-500 mt-6">
-            By creating an account, you agree to Ceibaa's Terms of Service and Privacy Policy
-          </p>
-        </div>
+            <p className="text-xs text-gray-500 text-center">
+              By creating an account, you agree to Ceibaa's Terms of Service and Privacy Policy
+            </p>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );
