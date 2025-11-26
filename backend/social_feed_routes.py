@@ -1125,18 +1125,21 @@ async def browse_mcqs(
 
 @router.get("/mcq/exams")
 async def get_exam_list():
-    """Get list of available exams for MCQ filtering"""
+    """Get list of available exams for MCQ filtering - synced with main app structure"""
     try:
-        if db is None:
-            raise HTTPException(status_code=500, detail="Database not initialized")
+        from exam_data import EXAM_DATA
         
-        # Get unique exam names
-        exams = await db.questions.distinct("exam_name")
-        exams = [e for e in exams if e]  # Filter out empty values
+        exams = []
+        for exam_id, data in EXAM_DATA.items():
+            exams.append({
+                "id": exam_id,
+                "name": data.get("name", exam_id),
+                "category": data.get("category", "Other")
+            })
         
         return {
             "success": True,
-            "exams": sorted(exams)
+            "exams": exams
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching exams: {str(e)}")
@@ -1144,41 +1147,50 @@ async def get_exam_list():
 
 @router.get("/mcq/subjects")
 async def get_subject_list(exam: str = Query(...)):
-    """Get subjects for a specific exam"""
+    """Get subjects (syllabus topics) for a specific exam"""
     try:
-        if db is None:
-            raise HTTPException(status_code=500, detail="Database not initialized")
+        from exam_data import EXAM_DATA
         
-        # Get unique subjects for this exam
-        subjects = await db.questions.distinct("syllabus_topic", {"exam_name": exam})
-        subjects = [s for s in subjects if s]
+        if exam not in EXAM_DATA:
+            raise HTTPException(status_code=404, detail=f"Exam {exam} not found")
+        
+        exam_data = EXAM_DATA[exam]
+        subjects = list(exam_data.get("syllabus_topics", {}).keys())
         
         return {
             "success": True,
-            "subjects": sorted(subjects)
+            "subjects": subjects
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching subjects: {str(e)}")
 
 
 @router.get("/mcq/topics")
 async def get_topic_list(exam: str = Query(...), subject: str = Query(...)):
-    """Get topics for a specific exam and subject"""
+    """Get topics (chapters/subjects) for a specific exam and syllabus topic"""
     try:
-        if db is None:
-            raise HTTPException(status_code=500, detail="Database not initialized")
+        from exam_data import EXAM_DATA
         
-        # Get unique topics for this exam and subject
-        topics = await db.questions.distinct("subject", {
-            "exam_name": exam,
-            "syllabus_topic": subject
-        })
-        topics = [t for t in topics if t]
+        if exam not in EXAM_DATA:
+            raise HTTPException(status_code=404, detail=f"Exam {exam} not found")
+        
+        exam_data = EXAM_DATA[exam]
+        syllabus_topics = exam_data.get("syllabus_topics", {})
+        
+        if subject not in syllabus_topics:
+            raise HTTPException(status_code=404, detail=f"Subject {subject} not found for {exam}")
+        
+        subject_data = syllabus_topics[subject]
+        topics = list(subject_data.get("subjects", {}).keys())
         
         return {
             "success": True,
-            "topics": sorted(topics)
+            "topics": topics
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching topics: {str(e)}")
 
