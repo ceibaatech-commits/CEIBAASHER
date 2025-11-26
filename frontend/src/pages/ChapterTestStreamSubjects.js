@@ -3,38 +3,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Beaker, Calculator, TrendingUp, Globe, Users, Brain } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useAuth } from '../hooks/useAuth';
+import { STREAM_COLORS, CLASS_COLORS } from '../config/constants';
 
 const ChapterTestStreamSubjects = () => {
   const navigate = useNavigate();
   const { classNumber, stream } = useParams();
+  const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
+  
   const selectedClass = classNumber?.replace('class-', '');
   const formattedStream = stream?.charAt(0).toUpperCase() + stream?.slice(1);
-
-  // Check auth state
-  const [user, setUser] = React.useState(null);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
-  React.useEffect(() => {
-    const token = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (token && storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-        setIsLoggedIn(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-      }
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('ceibaa_user');
-    setUser(null);
-    setIsLoggedIn(false);
-    navigate('/');
-  };
 
   // Subject mapping for each stream
   const streamSubjects = {
