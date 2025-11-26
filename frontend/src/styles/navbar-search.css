@@ -86,14 +86,21 @@
   pointer-events: auto !important;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  text-decoration: none !important;
+  color: inherit !important;
 }
 
 .search-result-item:hover {
   background-color: #f9fafb !important;
+  text-decoration: none !important;
 }
 
 .search-result-item:active {
   background-color: #f3f4f6 !important;
+}
+
+.search-result-item:visited {
+  color: inherit !important;
 }
 
 /* Overlay */
