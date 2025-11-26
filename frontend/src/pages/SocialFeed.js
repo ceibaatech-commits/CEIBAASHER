@@ -234,15 +234,36 @@ const SocialFeed = () => {
       return;
     }
 
+    // For MCQ posts, use the dedicated endpoint
+    if (newPost.post_type === 'mcq') {
+      if (!selectedMCQ) {
+        alert('Please select an MCQ question');
+        return;
+      }
+      await postSelectedMCQ(selectedMCQ.id, newPost.content);
+      setShowCreatePost(false);
+      setSelectedMCQ(null);
+      setNewPost({
+        post_type: 'general',
+        content: '',
+        exam_category: '',
+        subject: '',
+        room_code: ''
+      });
+      return;
+    }
+
     if (!newPost.content.trim()) {
       alert('Please enter post content');
       return;
     }
 
     try {
+      const token = localStorage.getItem('token');
       const response = await axios.post(
-        `${BACKEND_URL}/api/social/posts?user_id=${user.id}`,
-        newPost
+        `${BACKEND_URL}/api/social/posts`,
+        newPost,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
