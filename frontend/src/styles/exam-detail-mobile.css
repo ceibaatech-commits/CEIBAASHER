@@ -1,52 +1,36 @@
-/* Mobile-specific optimizations for exam detail pages */
+/* Mobile-first optimizations for exam detail pages */
 
+/* Back button optimization */
+.back-button-container {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure proper touch targets on mobile */
 @media (max-width: 768px) {
-  /* Reduce header padding on mobile */
+  /* Header section padding */
   .exam-header-section {
     padding-top: 1rem !important;
     padding-bottom: 1rem !important;
   }
 
-  /* Compact title on mobile */
-  .exam-title-mobile {
-    font-size: 1.25rem !important;
-    line-height: 1.5 !important;
-    margin-bottom: 0.5rem !important;
+  /* Full-width title on mobile */
+  .exam-hero-content {
+    width: 100% !important;
+    flex: 1 1 100% !important;
   }
 
-  /* Compact subtitle */
-  .exam-subtitle-mobile {
-    font-size: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
-  }
-
-  /* Make stats banner more compact */
+  /* Stats cards below title on mobile */
   .exam-info-grid {
-    gap: 0.375rem !important;
-  }
-
-  .exam-stat-card {
-    padding: 0.5rem !important;
-  }
-
-  .stat-value {
-    font-size: 1rem !important;
-    margin-bottom: 0.125rem !important;
-  }
-
-  .stat-label {
-    font-size: 0.625rem !important;
+    grid-column: 1 / -1;
+    margin-top: 1rem;
   }
 
   /* Compact animated poster */
   .exam-poster-mobile {
-    padding: 0.75rem !important;
-    margin-bottom: 1rem !important;
-  }
-
-  /* Hide weightage section initially on mobile */
-  .weightage-section-mobile {
-    display: none;
+    padding: 0.5rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
   /* Compact topic cards */
@@ -55,58 +39,14 @@
     margin-bottom: 0.5rem !important;
   }
 
-  .topic-title-mobile {
-    font-size: 0.875rem !important;
-  }
-
-  .topic-meta-mobile {
-    font-size: 0.625rem !important;
-  }
-
   /* Reduce overall page padding */
   .exam-content-container {
-    padding-left: 0.75rem !important;
-    padding-right: 0.75rem !important;
-    padding-top: 0.75rem !important;
-    padding-bottom: 0.75rem !important;
+    padding: 0.75rem !important;
   }
 
   /* Compact subject filter pills */
   .subject-filter-pill {
     padding: 0.375rem 0.75rem !important;
     font-size: 0.75rem !important;
-  }
-
-  /* Make action buttons more compact */
-  .action-button-mobile {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.75rem !important;
-  }
-}
-
-/* Sticky header that collapses on scroll */
-@media (max-width: 768px) {
-  .exam-header-sticky {
-    position: sticky;
-    top: 60px;
-    z-index: 40;
-    transition: all 0.3s ease;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .exam-header-sticky.collapsed {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-  }
-
-  .exam-header-sticky.collapsed .exam-title-mobile {
-    font-size: 0.875rem !important;
-    line-height: 1.25 !important;
-  }
-
-  .exam-header-sticky.collapsed .exam-subtitle-mobile,
-  .exam-header-sticky.collapsed .exam-info-grid {
-    display: none !important;
   }
 }
