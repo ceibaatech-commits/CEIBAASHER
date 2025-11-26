@@ -47,13 +47,12 @@ const JoinRoom = () => {
       console.log('[JOIN] Room response:', response.data);
       
       if (response.data.success) {
-        console.log('[JOIN] Room found, navigating to live battle');
-        // Navigate directly to live battle - skip lobby, join and play immediately
-        navigate(`/live-battle/${pin}`, { 
+        console.log('[JOIN] Room found, navigating to battle lobby');
+        // Navigate to lobby first - proper join flow
+        navigate(`/battle-lobby/${pin}`, { 
           state: { 
             isHost: false, 
-            playerName,
-            autoJoin: true  // Flag to indicate auto-joining without waiting
+            playerName: playerName
           } 
         });
       } else {
