@@ -388,6 +388,7 @@ async def submit_quiz(request: QuizSubmitRequest):
     
     session = quiz_sessions[quiz_id]
     questions = session["questions"]
+    user_id = session.get("user_id")
     
     correct_answers = 0
     results = []
@@ -410,6 +411,23 @@ async def submit_quiz(request: QuizSubmitRequest):
         })
     
     score = round((correct_answers / len(questions)) * 100)
+    
+    # Auto-post quiz result to social feed
+    if user_id and score >= 50:  # Only post if score is decent
+        try:
+            from social_auto_post import auto_post_quiz_result
+            quiz_data = {
+                "quiz_name": session.get("exam", "Quiz"),
+                "score": score,
+                "total_questions": len(questions),
+                "correct_answers": correct_answers,
+                "subject": session.get("subject", ""),
+                "exam_category": session.get("exam", ""),
+                "quiz_id": quiz_id
+            }
+            await auto_post_quiz_result(user_id, quiz_data)
+        except Exception as e:
+            print(f"[QUIZ] Failed to auto-post result: {str(e)}")
     
     # Clean up session
     del quiz_sessions[quiz_id]
