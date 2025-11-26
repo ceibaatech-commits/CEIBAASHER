@@ -7,7 +7,10 @@ const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const JoinRoom = () => {
   const navigate = useNavigate();
-  const [pin, setPin] = useState('');
+  const location = useLocation();
+  const prefilledPin = location.state?.prefilledPin || '';
+  
+  const [pin, setPin] = useState(prefilledPin);
   const [playerName, setPlayerName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
