@@ -72,15 +72,16 @@ const NavbarSearch = ({ onExpandChange }) => {
     setSearchLoading(true);
     setShowResults(true);
     try {
+      // Search for exams and chapters
       const response = await axios.get(
-        `${BACKEND_URL}/api/auth/search-user?name=${encodeURIComponent(searchQuery)}`
+        `${BACKEND_URL}/api/search?query=${encodeURIComponent(searchQuery)}`
       );
       
       if (response.data.success) {
-        setSearchResults(response.data.users || []);
+        setSearchResults(response.data.results || []);
       }
     } catch (error) {
-      console.error('Error searching users:', error);
+      console.error('Error searching:', error);
       setSearchResults([]);
     } finally {
       setSearchLoading(false);
