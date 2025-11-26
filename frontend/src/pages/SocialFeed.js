@@ -200,13 +200,46 @@ const SocialFeed = () => {
     console.log('MCQ attempt:', postId, answer);
   };
 
+  const fetchExamList = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/mcq/exams`);
+      if (response.data.success) {
+        setExamList(response.data.exams);
+      }
+    } catch (error) {
+      console.error('Error fetching exams:', error);
+    }
+  };
+
+  const fetchSubjects = async (exam) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/mcq/subjects?exam=${encodeURIComponent(exam)}`);
+      if (response.data.success) {
+        setSubjectList(response.data.subjects);
+      }
+    } catch (error) {
+      console.error('Error fetching subjects:', error);
+    }
+  };
+
+  const fetchTopics = async (exam, subject) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/mcq/topics?exam=${encodeURIComponent(exam)}&subject=${encodeURIComponent(subject)}`);
+      if (response.data.success) {
+        setTopicList(response.data.topics);
+      }
+    } catch (error) {
+      console.error('Error fetching topics:', error);
+    }
+  };
+
   const browseMCQs = async () => {
     try {
       const params = new URLSearchParams();
       if (mcqFilters.exam) params.append('exam', mcqFilters.exam);
       if (mcqFilters.subject) params.append('subject', mcqFilters.subject);
       if (mcqFilters.topic) params.append('topic', mcqFilters.topic);
-      params.append('limit', '20');
+      params.append('limit', '50');
 
       const response = await axios.get(`${BACKEND_URL}/api/social/mcq/browse?${params.toString()}`);
       if (response.data.success) {
