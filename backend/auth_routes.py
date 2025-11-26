@@ -525,29 +525,6 @@ async def signup(request: SignupRequest):
     except Exception as e:
         print(f"Signup error: {str(e)}")
         raise HTTPException(status_code=500, detail="Signup failed. Please try again.")
-
-                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+3&background=F59E0B&color=fff&size=200",
-                "provider": "demo",
-                "provider_id": "demo3",
-                "password": "demo3",
-                "bio": "SSC CGL 2025 preparation",
-                "location": "Bangalore, India",
-                "exam_focus": ["SSC"],
-                "is_private": True,
-                "streak_days": 7,
-                "badges": ["Consistent Learner"],
-                "created_at": datetime.utcnow().isoformat(),
-                "joined_at": datetime.utcnow().isoformat()
-            }
-        }
-        
-        # Check if credentials match
-        username = login_data.username.lower().strip()
-        password = login_data.password.strip()
-        
-        if username not in demo_users or demo_users[username]["password"] != password:
-            print(f"❌ Login failed for username: {username}")
-            raise HTTPException(status_code=401, detail="Invalid username or password")
         
         user_data = demo_users[username]
         
