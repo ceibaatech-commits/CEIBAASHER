@@ -180,12 +180,31 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               </>
             ) : null}
 
+            {/* Auth Buttons for Guests */}
+            {!isLoggedIn && (
+              <div className="hidden md:flex items-center space-x-3">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-5 py-2 border-2 border-cyan-500 text-cyan-600 font-semibold rounded-lg hover:bg-cyan-50 transition-all"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate('/signup')}
+                  className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-5 py-2 rounded-lg font-bold transition-all shadow-lg text-white"
+                >
+                  Sign Up
+                </button>
+              </div>
+            )}
+            
+            {/* Mobile Guest Auth Button */}
             {!isLoggedIn && (
               <button
-                onClick={onLogin}
-                className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-6 py-2 rounded-lg font-bold transition-all shadow-lg text-white"
+                onClick={() => navigate('/login')}
+                className="md:hidden bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-4 py-2 rounded-lg font-bold transition-all shadow-lg text-white text-sm"
               >
-                Join Battle
+                Login
               </button>
             )}
 
