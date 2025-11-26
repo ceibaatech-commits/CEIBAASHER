@@ -28,16 +28,17 @@ const NavbarSearch = ({ onExpandChange }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        if (!query.trim()) {
-          setIsExpanded(false);
-        }
+        setIsExpanded(false);
         setShowResults(false);
+        setQuery('');
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [query]);
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isExpanded]);
 
   // Handle Escape key
   useEffect(() => {
