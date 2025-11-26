@@ -184,12 +184,22 @@ const NavbarSearch = ({ onExpandChange }) => {
                     {searchResults.map((result, idx) => (
                       <div
                         key={idx}
-                        onClick={() => {
-                          console.log('Result clicked:', result);
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          console.log('=== MOUSEDOWN EVENT ===');
+                          handleResultClick(result);
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          console.log('=== CLICK EVENT ===');
+                          handleResultClick(result);
+                        }}
+                        onTouchStart={(e) => {
+                          console.log('=== TOUCH EVENT ===');
                           handleResultClick(result);
                         }}
                         className="search-result-item w-full flex items-center space-x-3 px-4 py-3 transition-colors text-left border-b border-gray-100 last:border-b-0"
-                        style={{ minHeight: '56px', cursor: 'pointer' }}
+                        style={{ minHeight: '56px', cursor: 'pointer', touchAction: 'manipulation' }}
                       >
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
                           result.type === 'exam' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
