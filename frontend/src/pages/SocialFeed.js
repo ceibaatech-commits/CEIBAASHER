@@ -1176,6 +1176,186 @@ const SocialFeed = () => {
         )}
       </div>
 
+      {/* Quiz Room Creator Modal */}
+      {showQuizRoomModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold">🎯 Create Quiz Room</h3>
+              <button onClick={() => setShowQuizRoomModal(false)}>
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Quiz Details */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Quiz Title *</label>
+                <input
+                  type="text"
+                  value={quizRoomData.title}
+                  onChange={(e) => setQuizRoomData({ ...quizRoomData, title: e.target.value })}
+                  placeholder="e.g., JEE Physics Practice"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Category</label>
+                <input
+                  type="text"
+                  value={quizRoomData.category}
+                  onChange={(e) => setQuizRoomData({ ...quizRoomData, category: e.target.value })}
+                  placeholder="e.g., JEE Main"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                />
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+              <textarea
+                value={quizRoomData.description}
+                onChange={(e) => setQuizRoomData({ ...quizRoomData, description: e.target.value })}
+                placeholder="Describe your quiz..."
+                rows="2"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Privacy</label>
+              <select
+                value={quizRoomData.privacy}
+                onChange={(e) => setQuizRoomData({ ...quizRoomData, privacy: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+              >
+                <option value="public">Public - Anyone can join</option>
+                <option value="followers_only">Followers Only</option>
+                <option value="private">Private - Code required</option>
+              </select>
+            </div>
+
+            {/* Question Selection */}
+            <div className="border-t pt-6">
+              <h4 className="text-lg font-bold mb-4">Select Questions (Min: 5, Max: 50)</h4>
+              
+              {/* Filters */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <select
+                  value={mcqFilters.exam}
+                  onChange={(e) => {
+                    setMcqFilters({ exam: e.target.value, subject: '', topic: '' });
+                    setSubjectList([]);
+                    setTopicList([]);
+                    if (e.target.value) fetchSubjects(e.target.value);
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                >
+                  <option value="">Select Exam</option>
+                  {examList.map(exam => (
+                    <option key={exam} value={exam}>{exam}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={mcqFilters.subject}
+                  onChange={(e) => {
+                    setMcqFilters({ ...mcqFilters, subject: e.target.value, topic: '' });
+                    setTopicList([]);
+                    if (e.target.value) fetchTopics(mcqFilters.exam, e.target.value);
+                  }}
+                  disabled={!mcqFilters.exam}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 disabled:bg-gray-100"
+                >
+                  <option value="">Select Subject</option>
+                  {subjectList.map(subject => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={browseMCQs}
+                  disabled={!mcqFilters.exam}
+                  className="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors disabled:bg-gray-300"
+                >
+                  Load Questions
+                </button>
+              </div>
+
+              {/* Selected Questions Count */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                <p className="font-semibold text-orange-800">
+                  {quizRoomData.selectedQuestions.length} / 50 Questions Selected
+                </p>
+              </div>
+
+              {/* Question List with Checkboxes */}
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {mcqList.map((mcq) => {
+                  const isSelected = quizRoomData.selectedQuestions.some(q => q.id === mcq.id);
+                  return (
+                    <div
+                      key={mcq.id}
+                      className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
+                        isSelected
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-200 hover:border-orange-300'
+                      }`}
+                      onClick={() => {
+                        if (isSelected) {
+                          setQuizRoomData({
+                            ...quizRoomData,
+                            selectedQuestions: quizRoomData.selectedQuestions.filter(q => q.id !== mcq.id)
+                          });
+                        } else if (quizRoomData.selectedQuestions.length < 50) {
+                          setQuizRoomData({
+                            ...quizRoomData,
+                            selectedQuestions: [...quizRoomData.selectedQuestions, mcq]
+                          });
+                        } else {
+                          alert('Maximum 50 questions allowed');
+                        }
+                      }}
+                    >
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          readOnly
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <p className="text-gray-900 text-sm">{mcq.question.substring(0, 100)}...</p>
+                          <div className="flex gap-2 mt-1">
+                            {mcq.exam_name && (
+                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{mcq.exam_name}</span>
+                            )}
+                            {mcq.subject && (
+                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">{mcq.subject}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Create Button */}
+            <div className="mt-6 pt-4 border-t">
+              <button
+                onClick={createQuizRoom}
+                disabled={quizRoomData.selectedQuestions.length < 5}
+                className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all disabled:from-gray-300 disabled:to-gray-400"
+              >
+                Create Quiz Room ({quizRoomData.selectedQuestions.length} Questions)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MCQ Browser/Creator Modal */}
       {showMCQBrowser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
