@@ -24,9 +24,9 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   }, [showProfileDropdown]);
 
   return (
-    <header className="sticky top-0 z-50 shadow-2xl border-b border-gray-300 overflow-x-hidden" style={{ background: '#f8f9fa', color: '#1f2937' }}>
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
-        <div className="flex items-center h-16 gap-4 lg:gap-8">
+    <header className="sticky top-0 z-50 shadow-lg border-b border-gray-200 overflow-x-hidden" style={{ background: '#ffffff', color: '#1f2937' }}>
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="flex items-center h-16 md:h-18 gap-6 lg:gap-8">
           {/* Logo & Brand */}
           <div 
             className="cursor-pointer flex items-center flex-shrink-0"
