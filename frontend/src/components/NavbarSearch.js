@@ -195,32 +195,26 @@ const NavbarSearch = ({ onExpandChange }) => {
                   <>
                     <div className="px-4 py-2 bg-gray-50 border-b border-gray-200">
                       <p className="text-xs font-semibold text-gray-600">
-                        Found {searchResults.length} user{searchResults.length !== 1 ? 's' : ''}
+                        Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
                       </p>
                     </div>
-                    {searchResults.map((searchUser) => (
+                    {searchResults.map((result, idx) => (
                       <button
-                        key={searchUser.user_id}
-                        onClick={() => handleUserClick(searchUser.user_id)}
+                        key={idx}
+                        onClick={() => handleResultClick(result)}
                         className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-100 last:border-b-0"
                       >
-                        {searchUser.profile_picture || searchUser.avatar ? (
-                          <img
-                            src={searchUser.profile_picture || searchUser.avatar}
-                            alt={searchUser.name}
-                            className="w-10 h-10 rounded-full border-2 border-gray-300 object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border-2 border-gray-300">
-                            {searchUser.name?.[0]?.toUpperCase() || 'U'}
-                          </div>
-                        )}
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
+                          result.type === 'exam' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
+                        }`}>
+                          {result.type === 'exam' ? '📝' : '📚'}
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm text-gray-800 truncate">
-                            {searchUser.name}
+                            {result.name}
                           </p>
                           <p className="text-xs text-gray-500 truncate">
-                            {searchUser.email}
+                            {result.type === 'exam' ? 'Exam' : `Class ${result.class} - ${result.subject}`}
                           </p>
                         </div>
                       </button>
@@ -229,10 +223,8 @@ const NavbarSearch = ({ onExpandChange }) => {
                 ) : query.trim() ? (
                   <div className="p-8 text-center">
                     <Search className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-500 font-medium">No users found</p>
-                    <p className="text-gray-400 text-sm mt-1">
-                      Try searching with a different name
-                    </p>
+                    <p className="text-gray-500 font-medium">No results found</p>
+                    <p className="text-xs text-gray-400 mt-1">Try different keywords</p>
                   </div>
                 ) : null}
               </div>
