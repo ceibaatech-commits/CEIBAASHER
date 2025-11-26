@@ -154,7 +154,7 @@ const SocialFeed = () => {
       return;
     }
 
-    try {
+    try:
       await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {
         user_id: user.id
       });
@@ -174,6 +174,11 @@ const SocialFeed = () => {
     } catch (error) {
       console.error('Error sharing post:', error);
     }
+  };
+
+  const handleMCQAttempt = async (postId, answer) => {
+    // This is handled inside MCQCard component
+    console.log('MCQ attempt:', postId, answer);
   };
 
   const handleCreatePost = async () => {
