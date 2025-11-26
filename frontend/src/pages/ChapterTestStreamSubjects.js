@@ -47,7 +47,7 @@ const ChapterTestStreamSubjects = () => {
       <Header 
         isLoggedIn={isLoggedIn}
         user={user}
-        onLogin={() => navigate('/login')}
+        onLogin={handleLogin}
         onLogout={handleLogout}
       />
       
