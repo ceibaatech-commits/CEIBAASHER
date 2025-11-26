@@ -134,19 +134,20 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* Close Button (Right) */
 .close-icon-right {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #606060;
-  padding: 4px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  position: absolute !important;
+  right: 12px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  cursor: pointer !important;
+  color: #606060 !important;
+  padding: 4px !important;
+  border-radius: 50% !important;
+  transition: background-color 0.2s !important;
+  z-index: 1102 !important;
 }
 
 .close-icon-right:hover {
-  background-color: #f3f4f6;
+  background-color: #f3f4f6 !important;
 }
 
 /* Search Icon Button (Collapsed state) */
