@@ -32,7 +32,8 @@ class BackendTester:
             })
             if response.status_code == 200:
                 data = response.json()
-                return data.get('access_token'), data.get('user', {}).get('user_id')
+                user_id = data.get('user', {}).get('id') or data.get('user', {}).get('user_id')
+                return data.get('access_token'), user_id
             return None, None
         except Exception as e:
             print(f"Login error for {username}: {e}")
