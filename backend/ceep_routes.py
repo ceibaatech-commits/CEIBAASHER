@@ -204,8 +204,11 @@ async def get_user_ceepers(user_id: str):
 @router.get("/check-ceep/{user_id}/{ceep_user_id}")
 async def check_if_ceeped(user_id: str, ceep_user_id: str):
     """
-    Check if user A is ceeping user B
+    Check if user A is ceeping user B (deprecated - use /is-following instead)
     """
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
     try:
         ceep = await db.ceeps.find_one({
             "user_id": user_id,
@@ -217,14 +220,18 @@ async def check_if_ceeped(user_id: str, ceep_user_id: str):
             "is_ceeped": ceep is not None
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error checking ceep: {str(e)}")
+        logger.error(f"Error checking ceep status: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error checking ceep: {str(e)}")
 
 
 @router.get("/ceep-stats/{user_id}")
 async def get_ceep_stats(user_id: str):
     """
-    Get ceep statistics for a user
+    Get ceep statistics for a user (following and followers count)
     """
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
     try:
         user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
         
@@ -236,4 +243,5 @@ async def get_ceep_stats(user_id: str):
             }
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching ceep stats: {str(e)}")
+        logger.error(f"Error fetching ceep stats for user {user_id}: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error fetching ceep stats: {str(e)}")
