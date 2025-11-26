@@ -97,22 +97,6 @@ const NavbarSearch = ({ onExpandChange }) => {
     }
   };
 
-  const handleResultClick = (result) => {
-    console.log('=== CLICK DETECTED ===');
-    console.log('Search result clicked:', result);
-    
-    // Navigate immediately and synchronously
-    if (result.type === 'exam') {
-      const path = `/exam/${result.slug}`;
-      console.log('Navigating to exam:', path);
-      window.location.href = path;
-    } else if (result.type === 'chapter') {
-      const path = `/chapter-tests/class-${result.class}/${result.subject}`;
-      console.log('Navigating to chapter:', path);
-      window.location.href = path;
-    }
-  };
-
   const handleExpandClick = () => {
     setIsExpanded(true);
   };
@@ -122,19 +106,6 @@ const NavbarSearch = ({ onExpandChange }) => {
     setQuery('');
     setSearchResults([]);
     setShowResults(false);
-  };
-
-  const handleClearClick = () => {
-    setQuery('');
-    setSearchResults([]);
-    setShowResults(false);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handleBlur = (e) => {
-    // Don't do anything - let clicks handle closing
   };
 
   return (
