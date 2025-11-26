@@ -155,10 +155,14 @@ const NavbarSearch = () => {
               type="text"
               value={query}
               onChange={handleInputChange}
-              placeholder="Search users..."
-              aria-label="Search users"
-              className="flex-1 py-3 px-2 focus:outline-none text-gray-700 placeholder-gray-400 text-base"
-              style={{ height: '44px' }}
+              placeholder="Search exams, topics, courses..."
+              aria-label="Search"
+              className="flex-1 py-3 px-2 focus:outline-none text-base"
+              style={{ 
+                height: '44px',
+                color: '#1a1a1a',
+                backgroundColor: '#ffffff'
+              }}
             />
             
             <button
