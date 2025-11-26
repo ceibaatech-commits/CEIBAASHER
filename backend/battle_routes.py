@@ -69,7 +69,7 @@ async def create_room_http(request: CreateRoomRequest):
         # Use custom room ID if provided
         if request.customRoomId:
             # Check if room already exists
-            if room_manager.get_room(request.customRoomId):
+            if await room_manager.get_room(request.customRoomId):
                 raise HTTPException(status_code=400, detail="Room ID already exists")
             room_id = request.customRoomId
         else:
