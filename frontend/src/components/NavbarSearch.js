@@ -109,7 +109,7 @@ const NavbarSearch = ({ onExpandChange }) => {
 
   const handleResultClick = (result) => {
     if (result.type === 'exam') {
-      navigate(`/${result.slug}`);
+      navigate(`/exam/${result.slug}`);
     } else if (result.type === 'chapter') {
       navigate(`/chapter-tests/class-${result.class}/${result.subject}`);
     }
