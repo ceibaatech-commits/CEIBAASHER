@@ -484,6 +484,12 @@ async def unlike_post(post_id: str, authorization: Optional[str] = Header(None))
             return {"success": True, "message": "Not liked"}
         
         await db.social_posts.update_one({"id": post_id}, {"$inc": {"likes_count": -1, "trending_score": -1}})
+        
+        # Get updated likes count and broadcast
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "likes_count": 1})
+        likes_count = post.get("likes_count", 0) if post else 0
+        asyncio.create_task(social_socketio.broadcast_post_unliked(post_id, user_id, likes_count))
+        
         return {"success": True, "message": "Post unliked"}
     except HTTPException:
         raise
