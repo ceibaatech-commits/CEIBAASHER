@@ -8,6 +8,7 @@ import ModernExamSyllabus from "@/pages/ModernExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
 import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
 import SocialFeed from "@/pages/SocialFeed";
