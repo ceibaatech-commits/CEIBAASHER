@@ -133,20 +133,21 @@ const NavbarSearch = () => {
 
       {/* Expanded state - Search bar */}
       {isExpanded && (
-        <div className="absolute right-0 top-0 flex items-center">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center z-50">
           <form 
             onSubmit={handleSearchSubmit}
-            className="flex items-center bg-white border-2 border-gray-300 rounded-full overflow-hidden shadow-lg transition-all duration-300 ease-out"
+            className="flex items-center bg-white border-2 border-cyan-500 rounded-full overflow-hidden shadow-2xl transition-all duration-300 ease-out"
             style={{
-              width: window.innerWidth < 640 ? 'calc(100vw - 80px)' : '400px'
+              width: window.innerWidth < 640 ? 'calc(100vw - 80px)' : '450px',
+              height: '44px'
             }}
           >
             <button
               type="submit"
               aria-label="Search"
-              className="pl-4 pr-2 py-2 focus:outline-none"
+              className="pl-4 pr-2 py-3 focus:outline-none hover:bg-gray-50 transition-colors"
             >
-              <Search className="w-5 h-5 text-gray-500" />
+              <Search className="w-5 h-5 text-cyan-600" />
             </button>
             
             <input
@@ -156,19 +157,23 @@ const NavbarSearch = () => {
               onChange={handleInputChange}
               placeholder="Search users..."
               aria-label="Search users"
-              className="flex-1 py-2 px-2 focus:outline-none text-gray-700 placeholder-gray-400"
+              className="flex-1 py-3 px-2 focus:outline-none text-gray-700 placeholder-gray-400 text-base"
+              style={{ height: '44px' }}
             />
             
-            {query && (
-              <button
-                type="button"
-                onClick={handleClearClick}
-                aria-label="Clear search"
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setIsExpanded(false);
+                setQuery('');
+                setSearchResults([]);
+                setShowResults(false);
+              }}
+              aria-label="Close search"
+              className="p-2 mr-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
           </form>
 
           {/* Search Results Dropdown */}
