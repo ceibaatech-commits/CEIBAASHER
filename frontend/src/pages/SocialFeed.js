@@ -973,6 +973,94 @@ const SocialFeed = () => {
         )}
       </div>
 
+      {/* MCQ Browser Modal */}
+      {showMCQBrowser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-2xl font-bold">Browse MCQ Database</h3>
+              <button onClick={() => setShowMCQBrowser(false)}>
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Filters */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              <input
+                type="text"
+                placeholder="Exam (e.g., JEE, NEET)"
+                value={mcqFilters.exam}
+                onChange={(e) => setMcqFilters({ ...mcqFilters, exam: e.target.value })}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+              />
+              <input
+                type="text"
+                placeholder="Subject"
+                value={mcqFilters.subject}
+                onChange={(e) => setMcqFilters({ ...mcqFilters, subject: e.target.value })}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+              />
+              <button
+                onClick={browseMCQs}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+              >
+                Search
+              </button>
+            </div>
+
+            {/* MCQ List */}
+            <div className="space-y-3">
+              {mcqList.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No questions found. Try different filters.</p>
+              ) : (
+                mcqList.map((mcq) => (
+                  <div
+                    key={mcq.id}
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      selectedMCQ?.id === mcq.id
+                        ? 'border-indigo-500 bg-indigo-50'
+                        : 'border-gray-200 hover:border-indigo-300'
+                    }`}
+                    onClick={() => setSelectedMCQ(mcq)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-gray-900 font-medium mb-2">{mcq.question}</p>
+                        <div className="flex gap-2 text-xs">
+                          {mcq.exam_name && (
+                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{mcq.exam_name}</span>
+                          )}
+                          {mcq.subject && (
+                            <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full">{mcq.subject}</span>
+                          )}
+                        </div>
+                      </div>
+                      {selectedMCQ?.id === mcq.id && (
+                        <span className="text-indigo-600 font-bold ml-3">✓</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Post Button */}
+            {selectedMCQ && (
+              <div className="mt-4 pt-4 border-t">
+                <button
+                  onClick={() => {
+                    setShowMCQBrowser(false);
+                  }}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
+                >
+                  Select This Question
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
