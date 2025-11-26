@@ -855,6 +855,28 @@ const SocialFeed = () => {
                   </select>
                 </div>
 
+                {/* MCQ Browser Button (only shown when post type is mcq) */}
+                {newPost.post_type === 'mcq' && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowMCQBrowser(true);
+                        browseMCQs();
+                      }}
+                      className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg font-bold hover:shadow-xl transition-all"
+                    >
+                      🔍 Browse MCQ Database
+                    </button>
+                    {selectedMCQ && (
+                      <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-sm font-semibold text-green-800">Selected Question:</p>
+                        <p className="text-sm text-gray-700 mt-1">{selectedMCQ.question.substring(0, 100)}...</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Room Code Input (only shown when post type is room_code) */}
                 {newPost.post_type === 'room_code' && (
                   <div>
