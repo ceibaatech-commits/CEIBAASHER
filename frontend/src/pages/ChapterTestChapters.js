@@ -10,7 +10,7 @@ import { API_URL, CLASS_COLORS, DIFFICULTY_COLORS } from '../config/constants';
 
 const ChapterTestChapters = () => {
   const navigate = useNavigate();
-  const { classNumber, subject } = useParams();
+  const { classNumber, subject, stream } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
   
   const selectedClass = classNumber?.replace('class-', '') || '';
@@ -25,9 +25,12 @@ const ChapterTestChapters = () => {
   const [expandedChapters, setExpandedChapters] = useState({});
 
   useEffect(() => {
-    if (selectedClass && subject) {
-      fetchChapters();
+    if (!selectedClass || !subject) {
+      setError('Invalid class or subject');
+      setLoading(false);
+      return;
     }
+    fetchChapters();
   }, [selectedClass, subject]);
 
   const fetchChapters = async () => {
