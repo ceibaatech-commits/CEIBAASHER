@@ -66,7 +66,8 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               Join Battle Room
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
             </button>
-          </nav>
+            </nav>
+          )}
 
           {/* User Section */}
           <div className="flex items-center space-x-2 md:space-x-3 ml-auto">
