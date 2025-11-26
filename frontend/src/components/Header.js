@@ -265,15 +265,21 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 <NavbarSearch />
               </div>
 
-              {/* Guest Login Button (Mobile) - Sign Up in login flow */}
+              {/* Guest Auth Buttons (Mobile) */}
               {!isLoggedIn && (
                 <>
                   <div className="border-t border-gray-300 my-2"></div>
                   <button 
                     onClick={() => { navigate('/login'); setMobileMenuOpen(false); }} 
+                    className="w-full border-2 border-cyan-500 text-cyan-600 py-3 rounded-lg font-bold hover:bg-cyan-50 transition-all"
+                  >
+                    Login
+                  </button>
+                  <button 
+                    onClick={() => { navigate('/signup'); setMobileMenuOpen(false); }} 
                     className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-3 rounded-lg font-bold hover:from-cyan-600 hover:to-purple-700 transition-all"
                   >
-                    Login / Sign Up
+                    Sign Up
                   </button>
                 </>
               )}
