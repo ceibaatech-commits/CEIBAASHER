@@ -2767,9 +2767,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Profile and Social Feed Bug Fixes"
-    - "Dashboard and Profile Activity Display"
-    - "Profile Navigation from Social Feed"
+    - "Ceep System API Endpoints (Follow/Unfollow System)"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -2777,6 +2775,10 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented comprehensive fixes for profile and social feed issues reported by user. Fixed JWT authentication in profile updates, added endpoints for fetching user activity (posts, quiz rooms, liked posts), implemented UI for displaying this data in Dashboard and PublicProfile pages, and made usernames clickable for profile navigation. All services restarted successfully with no errors. Need backend and frontend testing to verify all fixes are working correctly."
+  - agent: "user"
+    message: "Test the ceep (follow/unfollow) system API endpoints at /api/ceep/*"
+  - agent: "testing"
+    message: "✅ CEEP SYSTEM API ENDPOINTS COMPREHENSIVE TESTING COMPLETE (100% success rate - 11/11 tests passed): Tested all 7 ceep system endpoints per review request: (1) ✅ POST /api/ceep/ceep - Follow user working with self-follow prevention and duplicate prevention, (2) ✅ POST /api/ceep/unceep - Unfollow user working with proper counter management, (3) ✅ GET /api/ceep/is-following/{user_id}/{target_user_id} - Follow status check working correctly, (4) ✅ GET /api/ceep/ceeps/{user_id} - Following list retrieval working (returns 5 users), (5) ✅ GET /api/ceep/ceepers/{user_id} - Followers list retrieval working (returns 1 follower), (6) ✅ GET /api/ceep/check-ceep/{user_id}/{ceep_user_id} - Deprecated endpoint still functional, (7) ✅ GET /api/ceep/ceep-stats/{user_id} - Counter stats working correctly. ALL TEST SCENARIOS PASSED: Self-follow prevention, follow/unfollow flow, duplicate follow prevention, counter increments/decrements, query endpoints return correct data, unfollow non-existent relationship handled gracefully. Backend URL https://socket-safety.preview.emergentagent.com used successfully. CONCLUSION: Ceep system is FULLY OPERATIONAL and ready for production use."
   
   - agent: "user"
     message: "Add back button to dashboard and profile pages - currently there's no way to navigate back to previous page from https://socket-safety.preview.emergentagent.com/dashboard"
