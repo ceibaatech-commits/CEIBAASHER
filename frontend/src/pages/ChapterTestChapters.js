@@ -335,11 +335,17 @@ const ChapterTestChapters = () => {
           </div>
         </div>
 
-        {chapters.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
+        {chapters.length === 0 && !loading && !error && (
+          <div className="text-center py-12 bg-white rounded-2xl shadow-lg mt-6">
             <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <p className="text-xl text-gray-600">No chapters available yet</p>
-            <p className="text-gray-500 mt-2">Chapters will be added soon!</p>
+            <p className="text-gray-500 mt-2">Chapters will be added soon for {formattedSubject}!</p>
+            <button
+              onClick={() => navigate(`/chapter-tests/class-${selectedClass}`)}
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go Back to Subjects
+            </button>
           </div>
         )}
 
