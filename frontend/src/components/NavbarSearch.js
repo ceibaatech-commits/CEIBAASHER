@@ -208,14 +208,15 @@ const NavbarSearch = ({ onExpandChange }) => {
                     {searchResults.map((result, idx) => (
                       <button
                         key={idx}
-                        onClick={(e) => {
+                        onMouseDown={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
+                          console.log('Button clicked:', result);
                           handleResultClick(result);
                         }}
-                        onMouseDown={(e) => e.preventDefault()}
                         className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-gray-100 active:bg-gray-200 transition-colors text-left border-b border-gray-100 last:border-b-0 cursor-pointer"
                         style={{ minHeight: '56px' }}
+                        type="button"
                       >
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
                           result.type === 'exam' ? 'bg-gradient-to-r from-blue-500 to-cyan-500' : 'bg-gradient-to-r from-purple-500 to-pink-500'
