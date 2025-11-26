@@ -134,6 +134,20 @@ const NavbarSearch = ({ onExpandChange }) => {
     }
   };
 
+  const handleBlur = (e) => {
+    // Check if the blur is happening because of clicking inside the search container
+    if (searchContainerRef.current && searchContainerRef.current.contains(e.relatedTarget)) {
+      return;
+    }
+    
+    // If there's no query and results aren't showing, collapse the search
+    if (!query.trim() && !showResults) {
+      setTimeout(() => {
+        setIsExpanded(false);
+      }, 150);
+    }
+  };
+
   return (
     <div 
       ref={searchContainerRef}
