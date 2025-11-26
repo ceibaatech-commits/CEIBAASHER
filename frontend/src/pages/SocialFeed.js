@@ -23,7 +23,22 @@ const SocialFeed = () => {
   const [showMCQBrowser, setShowMCQBrowser] = useState(false);
   const [mcqList, setMcqList] = useState([]);
   const [selectedMCQ, setSelectedMCQ] = useState(null);
+  const [mcqMode, setMcqMode] = useState('browse'); // 'browse' or 'create'
+  const [examList, setExamList] = useState([]);
+  const [subjectList, setSubjectList] = useState([]);
+  const [topicList, setTopicList] = useState([]);
   const [mcqFilters, setMcqFilters] = useState({ exam: '', subject: '', topic: '' });
+  const [manualMCQ, setManualMCQ] = useState({
+    question: '',
+    optionA: '',
+    optionB: '',
+    optionC: '',
+    optionD: '',
+    correctAnswer: 'A',
+    explanation: '',
+    subject: '',
+    exam: ''
+  });
   const [newPost, setNewPost] = useState({
     post_type: 'general',
     content: '',
