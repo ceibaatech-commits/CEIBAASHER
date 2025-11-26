@@ -78,6 +78,20 @@
   max-height: 400px;
   overflow-y: auto;
   z-index: 9999;
+  pointer-events: auto;
+}
+
+.search-results-dropdown button {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.search-results-dropdown button:hover {
+  background-color: #f9fafb;
+}
+
+.search-results-dropdown button:active {
+  background-color: #f3f4f6;
 }
 
 /* Overlay */
