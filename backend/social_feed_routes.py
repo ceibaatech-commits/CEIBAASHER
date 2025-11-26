@@ -196,6 +196,7 @@ async def create_post(
             "content": post_data.content,
             "battle_stats": post_data.battle_stats,
             "quiz_details": post_data.quiz_details,
+            "mcq_data": post_data.mcq_data,
             "room_code": post_data.room_code,
             "media_urls": post_data.media_urls,
             "tags": post_data.tags or [],
@@ -204,6 +205,8 @@ async def create_post(
             "likes_count": 0,
             "comments_count": 0,
             "shares_count": 0,
+            "attempt_count": 0 if post_data.post_type == "mcq" else None,
+            "correct_attempt_count": 0 if post_data.post_type == "mcq" else None,
             "trending_score": 0,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
