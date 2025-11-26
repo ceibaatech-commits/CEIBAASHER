@@ -17,18 +17,27 @@ const NavbarSearch = ({ onExpandChange }) => {
   const searchContainerRef = useRef(null);
   const inputRef = useRef(null);
 
+  // Notify parent component about expansion state
+  useEffect(() => {
+    if (onExpandChange) {
+      onExpandChange(isExpanded);
+    }
+  }, [isExpanded, onExpandChange]);
+
   // Handle click outside to collapse
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
-        setIsExpanded(false);
+        if (!query.trim()) {
+          setIsExpanded(false);
+        }
         setShowResults(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [query]);
 
   // Handle Escape key
   useEffect(() => {
@@ -47,7 +56,9 @@ const NavbarSearch = ({ onExpandChange }) => {
   // Auto-focus input when expanded
   useEffect(() => {
     if (isExpanded && inputRef.current) {
-      inputRef.current.focus();
+      setTimeout(() => {
+        inputRef.current.focus();
+      }, 100);
     }
   }, [isExpanded]);
 
