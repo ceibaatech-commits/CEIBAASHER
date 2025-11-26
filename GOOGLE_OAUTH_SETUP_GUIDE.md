@@ -41,11 +41,11 @@ You're seeing **"Error 401: invalid_client"** because Google OAuth credentials h
 4. Name: **Ceibaa Web Client**
 5. **Authorized JavaScript origins**: Add
    ```
-   https://exprep-mobile-ui.preview.emergentagent.com
+   https://socket-safety.preview.emergentagent.com
    ```
 6. **Authorized redirect URIs**: Add
    ```
-   https://exprep-mobile-ui.preview.emergentagent.com/api/auth/google/callback
+   https://socket-safety.preview.emergentagent.com/api/auth/google/callback
    ```
 7. Click **"CREATE"**
 8. **IMPORTANT**: Copy the **Client ID** and **Client secret** that appear
@@ -66,7 +66,7 @@ sudo supervisorctl restart backend
 ```
 
 ### Step 8: Test Google Login
-1. Go to https://exprep-mobile-ui.preview.emergentagent.com/login
+1. Go to https://socket-safety.preview.emergentagent.com/login
 2. Click **"Continue with Google"**
 3. You should see Google's login/consent screen
 4. After signing in, you'll be redirected to your social feed
@@ -80,7 +80,7 @@ After obtaining credentials, your .env should look like this:
 # Google OAuth
 GOOGLE_CLIENT_ID="123456789-abcdefghijklmnop.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET="GOCSPX-abcdefghijklmnopqrstuvwxyz"
-GOOGLE_CALLBACK_URL="https://exprep-mobile-ui.preview.emergentagent.com/api/auth/google/callback"
+GOOGLE_CALLBACK_URL="https://socket-safety.preview.emergentagent.com/api/auth/google/callback"
 ```
 
 ## Troubleshooting
@@ -92,7 +92,7 @@ GOOGLE_CALLBACK_URL="https://exprep-mobile-ui.preview.emergentagent.com/api/auth
 
 ### Error 400: redirect_uri_mismatch
 - ✅ Make sure the redirect URI in Google Console matches exactly:
-  `https://exprep-mobile-ui.preview.emergentagent.com/api/auth/google/callback`
+  `https://socket-safety.preview.emergentagent.com/api/auth/google/callback`
 - ✅ No trailing slashes
 - ✅ Must include https://
 
