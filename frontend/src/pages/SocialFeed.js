@@ -20,6 +20,10 @@ const SocialFeed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showMCQBrowser, setShowMCQBrowser] = useState(false);
+  const [mcqList, setMcqList] = useState([]);
+  const [selectedMCQ, setSelectedMCQ] = useState(null);
+  const [mcqFilters, setMcqFilters] = useState({ exam: '', subject: '', topic: '' });
   const [newPost, setNewPost] = useState({
     post_type: 'general',
     content: '',
