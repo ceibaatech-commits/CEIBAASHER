@@ -213,7 +213,7 @@ async def join_room(sid, data):
         
         logger.info(f"[JOIN ATTEMPT] {user_data.get('username')} trying to join room {room_id}")
         
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         
         if not room:
             logger.warning(f"[JOIN ERROR] Room {room_id} not found")
@@ -347,7 +347,7 @@ def generate_random_id(length: int = 9) -> str:
 async def handle_user_leave(sid, room_id):
     """Handle user leaving a room with proper host reassignment"""
     try:
-        room = room_manager.get_room(room_id)
+        room = await room_manager.get_room(room_id)
         if not room:
             return
 
