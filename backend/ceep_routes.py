@@ -38,6 +38,16 @@ async def ceep_user(request: CeepRequest):
     One-way Ceep - User A ceeps User B
     Similar to Twitter follow
     """
+    if not db:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
+    
+    # Prevent self-following
+    if request.user_id == request.ceep_user_id:
+        return {
+            "success": False,
+            "message": "You cannot ceep yourself"
+        }
+    
     try:
         # Check if already ceeped
         existing = await db.ceeps.find_one({
@@ -64,27 +74,28 @@ async def ceep_user(request: CeepRequest):
         await db.ceeps.insert_one(ceep_doc)
         
         # Update ceep counts
-        # Increment ceeping_count for user
         await db.users.update_one(
             {"user_id": request.user_id},
             {"$inc": {"ceeping_count": 1}},
             upsert=True
         )
         
-        # Increment ceepers_count for ceeped user
         await db.users.update_one(
             {"user_id": request.ceep_user_id},
             {"$inc": {"ceepers_count": 1}},
             upsert=True
         )
         
+        logger.info(f"User {request.user_id} ceeped {request.ceep_user_id}")
+        
         return {
             "success": True,
-            "message": f"You are now ceeping {request.ceep_user_name}!"
+            "message": f"You are now ceeping {request.ceep_user_name or 'this user'}!"
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error ceeping user: {str(e)}")
+        logger.error(f"Error ceeping user: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error ceeping user: {str(e)}")
 
 
 @router.post("/unceep")
