@@ -149,55 +149,35 @@ const NavbarSearch = ({ onExpandChange }) => {
   };
 
   return (
-    <div 
-      ref={searchContainerRef}
-      className={`search-container ${isExpanded ? 'expanded' : 'collapsed'}`}
-    >
-      {/* Collapsed state - Just search icon */}
-      {!isExpanded && (
+    <div ref={searchContainerRef} className="navbar-search-wrapper">
+      {!isExpanded ? (
         <button
           onClick={handleExpandClick}
+          className="navbar-search-collapsed"
           aria-label="Search"
-          className="search-icon-button"
         >
-          <Search className="w-5 h-5" />
+          <Search className="w-5 h-5 text-gray-600" />
         </button>
-      )}
-
-      {/* Expanded state - Search bar */}
-      {isExpanded && (
-        <>
-          <form 
-            onSubmit={handleSearchSubmit}
-            className="relative flex items-center w-full h-full"
-            style={{ position: 'relative', zIndex: 1101 }}
+      ) : (
+        <div className="navbar-search-expanded">
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            placeholder="Search exams, topics, courses..."
+            autoComplete="off"
+          />
+          <button
+            onClick={handleCollapseClick}
+            className="navbar-search-close"
+            onMouseDown={(e) => e.preventDefault()}
+            aria-label="Close search"
           >
-            {/* Input Field */}
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              placeholder="Search exams, topics, courses..."
-              aria-label="Search"
-              className="search-input-field search-input"
-              autoComplete="off"
-            />
-            
-            {/* Close Button (Right) */}
-            <button
-              type="button"
-              onClick={handleCollapseClick}
-              aria-label="Close search"
-              className="close-icon-right"
-              onMouseDown={(e) => e.preventDefault()}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </form>
-
-          {/* Search Results Dropdown */}
+            <X className="w-4 h-4 text-gray-600" />
+          </button>
+          
           {showResults && (
             <div className="search-results-dropdown">
               <div className="max-h-80 overflow-y-auto">
