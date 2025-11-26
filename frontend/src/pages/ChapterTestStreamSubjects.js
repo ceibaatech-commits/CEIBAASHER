@@ -37,6 +37,14 @@ const ChapterTestStreamSubjects = () => {
       { name: 'Sociology', icon: Users, color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-100', textColor: 'text-purple-600', description: 'Society and Social Change' },
       { name: 'Psychology', icon: Brain, color: 'from-pink-500 to-pink-600', bgColor: 'bg-pink-100', textColor: 'text-pink-600', description: 'Cognitive, Social Psychology' },
       { name: 'English', icon: BookOpen, color: 'from-orange-500 to-orange-600', bgColor: 'bg-orange-100', textColor: 'text-orange-600', description: 'Literature and Language' }
+    ],
+    arts: [
+      { name: 'History', icon: BookOpen, color: 'from-amber-500 to-amber-600', bgColor: 'bg-amber-100', textColor: 'text-amber-600', description: 'Ancient, Medieval, Modern' },
+      { name: 'Geography', icon: Globe, color: 'from-green-500 to-green-600', bgColor: 'bg-green-100', textColor: 'text-green-600', description: 'Physical, Human Geography' },
+      { name: 'Political Science', icon: Users, color: 'from-blue-500 to-blue-600', bgColor: 'bg-blue-100', textColor: 'text-blue-600', description: 'Indian Politics, World Politics' },
+      { name: 'Sociology', icon: Users, color: 'from-purple-500 to-purple-600', bgColor: 'bg-purple-100', textColor: 'text-purple-600', description: 'Society and Social Change' },
+      { name: 'Psychology', icon: Brain, color: 'from-pink-500 to-pink-600', bgColor: 'bg-pink-100', textColor: 'text-pink-600', description: 'Cognitive, Social Psychology' },
+      { name: 'English', icon: BookOpen, color: 'from-orange-500 to-orange-600', bgColor: 'bg-orange-100', textColor: 'text-orange-600', description: 'Literature and Language' }
     ]
   };
 
