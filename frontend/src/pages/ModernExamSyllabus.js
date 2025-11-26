@@ -101,7 +101,7 @@ const ModernExamSyllabus = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <button 
-            onClick={() => navigate('/')} 
+            onClick={() => navigate('/social-feed')} 
             className="flex items-center text-gray-700 hover:text-blue-600 transition-colors min-h-[44px] min-w-[44px] -ml-2 pl-2"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
