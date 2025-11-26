@@ -268,6 +268,14 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
         )}
       </div>
     </header>
+
+      {/* Search Overlay */}
+      <div 
+        ref={searchOverlayRef}
+        className={`search-overlay ${searchExpanded ? 'active' : ''}`}
+        onClick={() => setSearchExpanded(false)}
+      />
+    </>
   );
 };
 
