@@ -57,6 +57,72 @@ const SocialFeed = () => {
     room_code: ''
   });
 
+  // Real-time socket handlers
+  const handleNewPost = useCallback((newPostData) => {
+    // Add new post to top of feed if we're on for-you or trending tab
+    if (activeTab === 'for-you' || activeTab === 'trending') {
+      setPosts(prevPosts => {
+        // Avoid duplicates
+        if (prevPosts.some(p => p.id === newPostData.id)) return prevPosts;
+        return [newPostData, ...prevPosts];
+      });
+      toast.success('New post in feed!', { duration: 2000 });
+    }
+  }, [activeTab]);
+
+  const handlePostLiked = useCallback((data) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+      if (post.id === data.post_id) {
+        return { ...post, likes_count: data.likes_count };
+      }
+      return post;
+    }));
+  }, []);
+
+  const handlePostUnliked = useCallback((data) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+      if (post.id === data.post_id) {
+        return { ...post, likes_count: data.likes_count };
+      }
+      return post;
+    }));
+  }, []);
+
+  const handleNewComment = useCallback((data) => {
+    setPosts(prevPosts => prevPosts.map(post => {
+      if (post.id === data.post_id) {
+        return { ...post, comments_count: data.comments_count };
+      }
+      return post;
+    }));
+  }, []);
+
+  const handleNotification = useCallback((notification) => {
+    toast(notification.content, {
+      icon: notification.notification_type === 'like' ? '❤️' : 
+            notification.notification_type === 'comment' ? '💬' :
+            notification.notification_type === 'follow' ? '👤' : '🔔',
+      duration: 4000
+    });
+  }, []);
+
+  // Initialize socket connection
+  const { isConnected, joinFeed } = useSocialSocket(
+    user?.id,
+    handleNewPost,
+    handlePostLiked,
+    handlePostUnliked,
+    handleNewComment,
+    handleNotification
+  );
+
+  // Join feed room when tab changes
+  useEffect(() => {
+    if (isConnected) {
+      joinFeed(activeTab.replace('-', '_'));
+    }
+  }, [activeTab, isConnected, joinFeed]);
+
   // Fetch feed based on active tab
   useEffect(() => {
     fetchFeed();
