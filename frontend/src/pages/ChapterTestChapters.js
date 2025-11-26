@@ -175,48 +175,52 @@ const ChapterTestChapters = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
-          {/* Quick Stats Bar - Enhanced Kahoot Style */}
-          <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-6 border border-white/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-8">
-                {/* Questions Stat */}
-                <div className="flex items-center space-x-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg">
-                  <BookOpen className="w-6 h-6" />
-                  <div>
-                    <p className="text-2xl font-black">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
-                    <p className="text-xs font-semibold opacity-90">Questions</p>
+          {chapters.length > 0 && (
+            <>
+              {/* Quick Stats Bar - Enhanced Kahoot Style */}
+              <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-6 border border-white/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-8">
+                    {/* Questions Stat */}
+                    <div className="flex items-center space-x-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                      <BookOpen className="w-6 h-6" />
+                      <div>
+                        <p className="text-2xl font-black">{chapters.reduce((acc, ch) => acc + ch.total_questions, 0)}+</p>
+                        <p className="text-xs font-semibold opacity-90">Questions</p>
+                      </div>
+                    </div>
+                    
+                    {/* Chapters Stat */}
+                    <div className="hidden sm:flex items-center space-x-3 bg-gradient-to-br from-purple-500 to-purple-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                      <Target className="w-6 h-6" />
+                      <div>
+                        <p className="text-2xl font-black">{chapters.length}</p>
+                        <p className="text-xs font-semibold opacity-90">Chapters</p>
+                      </div>
+                    </div>
+                    
+                    {/* NCERT Badge */}
+                    <div className="hidden md:flex items-center space-x-3 bg-gradient-to-br from-green-500 to-green-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                      <Zap className="w-6 h-6" />
+                      <div>
+                        <p className="text-lg font-black">NCERT</p>
+                        <p className="text-xs font-semibold opacity-90">Based</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Chapters Stat */}
-                <div className="hidden sm:flex items-center space-x-3 bg-gradient-to-br from-purple-500 to-purple-600 text-white px-5 py-3 rounded-xl shadow-lg">
-                  <Target className="w-6 h-6" />
-                  <div>
-                    <p className="text-2xl font-black">{chapters.length}</p>
-                    <p className="text-xs font-semibold opacity-90">Chapters</p>
-                  </div>
-                </div>
-                
-                {/* NCERT Badge */}
-                <div className="hidden md:flex items-center space-x-3 bg-gradient-to-br from-green-500 to-green-600 text-white px-5 py-3 rounded-xl shadow-lg">
-                  <Zap className="w-6 h-6" />
-                  <div>
-                    <p className="text-lg font-black">NCERT</p>
-                    <p className="text-xs font-semibold opacity-90">Based</p>
-                  </div>
+                  
+                  {/* Start Button */}
+                  <button 
+                    onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
+                    className={`bg-gradient-to-br ${colorGradient} text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transform transition-all shadow-2xl flex items-center space-x-3 hover:shadow-3xl`}
+                  >
+                    <Play className="w-6 h-6 fill-white" />
+                    <span>Let's Practice!</span>
+                  </button>
                 </div>
               </div>
-              
-              {/* Start Button */}
-              <button 
-                onClick={() => window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})} 
-                className={`bg-gradient-to-br ${colorGradient} text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transform transition-all shadow-2xl flex items-center space-x-3 hover:shadow-3xl`}
-              >
-                <Play className="w-6 h-6 fill-white" />
-                <span>Let's Practice!</span>
-              </button>
-            </div>
-          </div>
+            </>
+          )}
 
           {/* Chapters Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
