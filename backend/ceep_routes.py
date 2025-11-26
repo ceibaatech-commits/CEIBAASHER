@@ -103,7 +103,7 @@ async def unceep_user(request: UnceepRequest):
     """
     Remove ceep relationship
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     try:
@@ -146,7 +146,7 @@ async def get_ceeps(user_id: str):
     """
     Get all users that a user is ceeping (following)
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     try:
@@ -165,7 +165,7 @@ async def check_is_following(user_id: str, target_user_id: str):
     """
     Check if user_id is following target_user_id
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     try:
@@ -186,7 +186,7 @@ async def get_user_ceepers(user_id: str):
     """
     Get list of users who are ceeping this user (followers)
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     try:
@@ -206,7 +206,7 @@ async def check_if_ceeped(user_id: str, ceep_user_id: str):
     """
     Check if user A is ceeping user B (deprecated - use /is-following instead)
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     try:
@@ -229,7 +229,7 @@ async def get_ceep_stats(user_id: str):
     """
     Get ceep statistics for a user (following and followers count)
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Database not initialized")
     
     try:
