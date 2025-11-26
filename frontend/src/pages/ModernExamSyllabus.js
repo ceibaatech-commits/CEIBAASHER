@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import '../components/LanguageGameCard.css';
+import '../styles/exam-detail-mobile.css';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
