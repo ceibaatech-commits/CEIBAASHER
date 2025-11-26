@@ -265,6 +265,13 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                 <>
                   <div className="border-t border-gray-300 my-2"></div>
                   <button 
+                    onClick={() => { navigate(`/profile/${user.id || user.user_id}`); setMobileMenuOpen(false); }} 
+                    className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2 flex items-center space-x-2"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>View Profile</span>
+                  </button>
+                  <button 
                     onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }} 
                     className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2 flex items-center space-x-2"
                   >
