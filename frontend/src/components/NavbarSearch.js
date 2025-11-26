@@ -177,6 +177,7 @@ const NavbarSearch = ({ onExpandChange }) => {
               type="text"
               value={query}
               onChange={handleInputChange}
+              onBlur={handleBlur}
               placeholder="Search exams, topics, courses..."
               aria-label="Search"
               className="search-input-field search-input"
