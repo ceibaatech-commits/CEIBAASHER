@@ -676,7 +676,7 @@ async def follow_user(target_user_id: str, authorization: Optional[str] = Header
             else f"{follower.get('name', 'Someone')} started following you"
         )
         
-        await db.notifications.insert_one({
+        notification_doc = {
             "id": str(uuid.uuid4()),
             "user_id": target_user_id,
             "notification_type": "follow_request" if is_private else "follow",
@@ -685,7 +685,13 @@ async def follow_user(target_user_id: str, authorization: Optional[str] = Header
             "from_user_name": follower.get('name', 'Unknown'),
             "is_read": False,
             "created_at": datetime.now(timezone.utc).isoformat()
-        })
+        }
+        await db.notifications.insert_one(notification_doc)
+        
+        # Send real-time notification and broadcast follow event
+        asyncio.create_task(social_socketio.send_notification(target_user_id, notification_doc))
+        if not is_private:
+            asyncio.create_task(social_socketio.broadcast_user_followed(follower_id, target_user_id, follower.get('name', 'Unknown')))
         
         return {
             "success": True, 
