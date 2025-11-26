@@ -44,8 +44,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           </div>
 
           {/* Desktop Navigation - Centered */}
-          {!searchExpanded && (
-            <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 flex-1 ml-4">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 flex-1 ml-4">
             <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
               Home
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
@@ -66,8 +65,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               Join Battle Room
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            </nav>
-          )}
+          </nav>
 
           {/* User Section */}
           <div className="flex items-center space-x-2 md:space-x-3 ml-auto">
