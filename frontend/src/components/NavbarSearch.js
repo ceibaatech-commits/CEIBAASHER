@@ -147,17 +147,17 @@ const NavbarSearch = ({ onExpandChange }) => {
   };
 
   const handleBlur = (e) => {
-    // Check if the blur is happening because of clicking inside the search container
+    // Don't close if clicking inside search results
     if (searchContainerRef.current && searchContainerRef.current.contains(e.relatedTarget)) {
       return;
     }
     
-    // If there's no query and results aren't showing, collapse the search
-    if (!query.trim() && !showResults) {
-      setTimeout(() => {
+    // Delay to allow click event to fire first
+    setTimeout(() => {
+      if (!query.trim() && !showResults) {
         setIsExpanded(false);
-      }, 150);
-    }
+      }
+    }, 200);
   };
 
   return (
