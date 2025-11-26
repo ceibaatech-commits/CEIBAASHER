@@ -107,8 +107,12 @@ const NavbarSearch = ({ onExpandChange }) => {
     }
   };
 
-  const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
+  const handleResultClick = (result) => {
+    if (result.type === 'exam') {
+      navigate(`/${result.slug}`);
+    } else if (result.type === 'chapter') {
+      navigate(`/chapter-tests/class-${result.class}/${result.subject}`);
+    }
     setIsExpanded(false);
     setQuery('');
     setSearchResults([]);
