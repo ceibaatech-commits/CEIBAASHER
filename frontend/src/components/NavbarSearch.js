@@ -170,6 +170,7 @@ const NavbarSearch = ({ onExpandChange }) => {
           <form 
             onSubmit={handleSearchSubmit}
             className="relative flex items-center w-full h-full"
+            style={{ position: 'relative', zIndex: 1101 }}
           >
             {/* Input Field */}
             <input
@@ -182,7 +183,6 @@ const NavbarSearch = ({ onExpandChange }) => {
               aria-label="Search"
               className="search-input-field search-input"
               autoComplete="off"
-              style={{ paddingLeft: '20px', paddingRight: '50px' }}
             />
             
             {/* Close Button (Right) */}
@@ -191,6 +191,7 @@ const NavbarSearch = ({ onExpandChange }) => {
               onClick={handleCollapseClick}
               aria-label="Close search"
               className="close-icon-right"
+              onMouseDown={(e) => e.preventDefault()}
             >
               <X className="w-5 h-5" />
             </button>
