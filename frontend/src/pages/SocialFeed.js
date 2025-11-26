@@ -1263,7 +1263,7 @@ const SocialFeed = () => {
                 >
                   <option value="">Select Exam</option>
                   {examList.map(exam => (
-                    <option key={exam} value={exam}>{exam}</option>
+                    <option key={exam.id} value={exam.id}>{exam.name}</option>
                   ))}
                 </select>
 
