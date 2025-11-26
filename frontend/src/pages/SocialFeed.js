@@ -276,6 +276,68 @@ const SocialFeed = () => {
     }
   };
 
+  const postManualMCQ = async () => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    // Validation
+    if (!manualMCQ.question.trim()) {
+      alert('Please enter a question');
+      return;
+    }
+    if (!manualMCQ.optionA || !manualMCQ.optionB || !manualMCQ.optionC || !manualMCQ.optionD) {
+      alert('Please fill all 4 options');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const mcqData = {
+        question: manualMCQ.question,
+        options: [manualMCQ.optionA, manualMCQ.optionB, manualMCQ.optionC, manualMCQ.optionD],
+        correct_answer: manualMCQ.correctAnswer,
+        explanation: manualMCQ.explanation,
+        subject: manualMCQ.subject,
+        exam: manualMCQ.exam
+      };
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/posts`,
+        {
+          post_type: 'mcq',
+          content: newPost.content || 'Test your knowledge! 🧠',
+          mcq_data: mcqData,
+          exam_category: manualMCQ.exam,
+          subject: manualMCQ.subject,
+          tags: [manualMCQ.exam, manualMCQ.subject].filter(Boolean)
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setShowMCQBrowser(false);
+        setManualMCQ({
+          question: '',
+          optionA: '',
+          optionB: '',
+          optionC: '',
+          optionD: '',
+          correctAnswer: 'A',
+          explanation: '',
+          subject: '',
+          exam: ''
+        });
+        fetchFeed();
+        alert('MCQ posted successfully!');
+      }
+    } catch (error) {
+      console.error('Error posting manual MCQ:', error);
+      alert('Failed to post MCQ');
+    }
+  };
+
   const handleCreatePost = async () => {
     if (!user) {
       navigate('/login');
