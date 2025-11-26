@@ -157,11 +157,6 @@ const NavbarSearch = ({ onExpandChange }) => {
             onSubmit={handleSearchSubmit}
             className="relative flex items-center w-full h-full"
           >
-            {/* Search Icon (Left) */}
-            <div className="search-icon-left">
-              <Search className="w-5 h-5" />
-            </div>
-            
             {/* Input Field */}
             <input
               ref={inputRef}
@@ -172,6 +167,7 @@ const NavbarSearch = ({ onExpandChange }) => {
               aria-label="Search"
               className="search-input-field search-input"
               autoComplete="off"
+              style={{ paddingLeft: '20px', paddingRight: '50px' }}
             />
             
             {/* Close Button (Right) */}
