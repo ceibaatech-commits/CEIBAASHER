@@ -356,7 +356,7 @@ const ChapterTestChapters = () => {
 
         {/* Why Choose Section */}
         {chapters.length > 0 && (
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 mt-12 border border-gray-700">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 mt-12 mb-12 border border-gray-700">
             <h2 className="text-3xl font-bold text-white text-center mb-8">
               🚀 Why Chapter-wise Practice?
             </h2>
