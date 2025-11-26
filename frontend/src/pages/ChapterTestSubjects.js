@@ -418,18 +418,30 @@ const ChapterTestSubjects = () => {
         </div>
 
         {/* Subjects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {subjects.map((subject) => {
-            const Icon = subject.icon;
-            return (
-              <button
-                key={subject.name}
-                onClick={() => {
-                  const subjectSlug = subject.name.toLowerCase().replace(/\s+/g, '-');
-                  navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}`);
-                }}
-                className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent text-left overflow-hidden"
-              >
+        {subjects.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
+            <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-xl text-gray-600">No subjects available for Class {selectedClass}</p>
+            <button
+              onClick={() => navigate('/chapter-tests')}
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {subjects.map((subject) => {
+              const Icon = subject.icon;
+              return (
+                <button
+                  key={subject.name}
+                  onClick={() => {
+                    const subjectSlug = subject.name.toLowerCase().replace(/\s+/g, '-');
+                    navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}`);
+                  }}
+                  className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent text-left overflow-hidden"
+                >
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${subject.color} opacity-10 rounded-bl-full`}></div>
                 
                 <div className="relative z-10">
