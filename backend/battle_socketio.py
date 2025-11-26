@@ -374,6 +374,28 @@ async def complete_battle(sid, data):
         await sio.emit('battle_completed', final_results, room=room_id)
 
         print(f"[COMPLETE] Battle completed in room {room_id}")
+        
+        # Auto-post battle results to social feed for all participants
+        try:
+            from social_auto_post import auto_post_battle_result
+            leaderboard = room.get_leaderboard()
+            
+            for idx, participant in enumerate(leaderboard[:5], 1):  # Top 5 only
+                user_id = participant.get('user_id') or participant.get('userId')
+                if user_id:
+                    battle_data = {
+                        "room_code": room_id,
+                        "score": participant.get('score', 0),
+                        "rank": idx,
+                        "total_participants": len(room.participants),
+                        "subject": room.subject or "",
+                        "exam_category": room.exam or "",
+                        "questions_answered": participant.get('score', 0),
+                        "total_questions": room.current_question
+                    }
+                    await auto_post_battle_result(user_id, battle_data)
+        except Exception as e:
+            print(f"[COMPLETE] Failed to auto-post battle results: {str(e)}")
 
         # Schedule cleanup after 5 minutes
         async def cleanup():
