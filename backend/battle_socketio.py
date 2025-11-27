@@ -431,6 +431,85 @@ async def complete_battle(sid, data):
         print(f"[ERROR] complete_battle: {str(e)}")
 
 
+# ==================== START BATTLE EVENT ====================
+
+@sio.event
+async def start_battle(sid, data):
+    """Start the battle/quiz - ANY PLAYER CAN START (no host requirement).
+    
+    Refactored: Removed host-only restriction. Any player in the room
+    with valid questions can start the quiz.
+    """
+    try:
+        room_id = data.get('roomId')
+        room = await room_manager.get_room(room_id)
+
+        if not room:
+            await sio.emit('start_error', {
+                'error': 'Room not found',
+                'code': 'ROOM_NOT_FOUND'
+            }, room=sid)
+            return
+
+        # Check if room is expired
+        if room.is_expired():
+            await sio.emit('start_error', {
+                'error': 'Room expired. Please create a new room.',
+                'code': 'ROOM_EXPIRED'
+            }, room=sid)
+            return
+
+        # Check if already started or completed
+        if room.status in ['active', 'completed']:
+            status_msg = 'Battle already in progress' if room.status == 'active' else 'Battle already completed'
+            await sio.emit('start_error', {
+                'error': status_msg,
+                'code': 'ALREADY_STARTED' if room.status == 'active' else 'ALREADY_COMPLETED'
+            }, room=sid)
+            return
+
+        # Check if questions are set
+        if not room.questions or len(room.questions) == 0:
+            await sio.emit('start_error', {
+                'error': 'No questions set for this room. Please add questions first.',
+                'code': 'NO_QUESTIONS'
+            }, room=sid)
+            return
+
+        # Start the room - NO HOST CHECK REQUIRED
+        room.status = 'active'
+        room.current_question = 0
+        room.deactivate()  # Prevent new joins once started
+        
+        await room_manager.save_room_to_db(room)
+
+        # Get the username of who started
+        starter_name = 'Unknown'
+        for p in room.participants:
+            if p.user_id == sid:
+                starter_name = p.username
+                break
+
+        print(f"[START] ✅ Battle started in room {room_id} by {starter_name}")
+
+        # Notify all participants
+        await sio.emit('battle_started', {
+            'room': room.to_dict(),
+            'questions': room.questions,
+            'startedBy': starter_name,
+            'message': f'{starter_name} started the quiz!'
+        }, room=room_id)
+
+    except Exception as e:
+        print(f"[ERROR] start_battle: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        await sio.emit('start_error', {
+            'error': str(e),
+            'code': 'START_FAILED'
+        }, room=sid)
+
+
 # ==================== HOST CONTROL EVENTS ====================
 
 @sio.event
