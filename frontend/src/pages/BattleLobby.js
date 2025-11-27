@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle } from 'lucide-react';
+import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import io from 'socket.io-client';
 
-// Connect to Socket.IO on main backend (now integrated with FastAPI on port 8001)
-// Socket.IO is mounted at /socket.io/ path
+// Connect to Socket.IO on main backend
 const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://quizhub-social.preview.emergentagent.com';
-const SOCKET_PATH = '/socket.io'; // Standard Socket.IO path
+const SOCKET_PATH = '/socket.io';
 
 const BattleLobby = () => {
   const { pin } = useParams();
@@ -21,21 +20,20 @@ const BattleLobby = () => {
   const [hasQuestions, setHasQuestions] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [timeRemaining, setTimeRemaining] = useState(null);
 
   useEffect(() => {
     console.log('🚀 BattleLobby useEffect RUNNING');
-    console.log('🔗 BATTLE_SERVER_URL:', BATTLE_SERVER_URL);
     console.log('🔗 Room info:', { pin, isHost, playerName, hostName });
     
-    // Guard clause - don't connect if we don't have the PIN
     if (!pin) {
       console.log('⚠️ No PIN yet, waiting...');
       return;
     }
     
-    console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
+    console.log('📡 Creating Socket.io connection');
     const newSocket = io(BATTLE_SERVER_URL, {
-      path: SOCKET_PATH,  // Standard Socket.IO path (integrated with FastAPI)
+      path: SOCKET_PATH,
       transports: ['polling', 'websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
@@ -48,10 +46,6 @@ const BattleLobby = () => {
     newSocket.on('connect', () => {
       console.log('✅ Socket CONNECTED! Socket ID:', newSocket.id);
       const username = isHost ? hostName : playerName;
-      console.log('📤 Emitting join_room with:', {
-        roomId: pin,
-        userData: { username, isHost: isHost || false }
-      });
       newSocket.emit('join_room', { 
         roomId: pin,
         userData: {
@@ -69,10 +63,6 @@ const BattleLobby = () => {
       console.log('❌ Disconnected:', reason);
     });
 
-    newSocket.on('error', (error) => {
-      console.error('❌ Socket error:', error);
-    });
-
     // Listen for room_joined confirmation
     newSocket.on('room_joined', (data) => {
       console.log('📬 Room joined successfully:', data);
@@ -80,6 +70,9 @@ const BattleLobby = () => {
         setRoomInfo(data.room);
         if (data.room.participants) {
           setPlayers(data.room.participants);
+        }
+        if (data.room.timeRemaining) {
+          setTimeRemaining(data.room.timeRemaining);
         }
         // Check if room has questions
         if (data.questions && data.questions.length > 0) {
@@ -106,7 +99,7 @@ const BattleLobby = () => {
       }
     });
 
-    // Listen for battle started event
+    // Listen for battle started event - ANY PLAYER CAN START
     newSocket.on('battle_started', (data) => {
       console.log('🚀 Battle started:', data);
       navigate(`/live-battle/${pin}`, { 
@@ -132,46 +125,38 @@ const BattleLobby = () => {
       if (data.questions && data.questions.length > 0) {
         setHasQuestions(true);
       }
-    }); 
-        state: { 
-          playerName: isHost ? hostName : playerName,
-          isHost,
-          room: data.room
-        } 
-      });
     });
 
-    // Listen for join errors with specific messages based on error codes
+    // Listen for join errors
     newSocket.on('join_error', (data) => {
       console.error('❌ Join error:', data);
       
-      let errorMessage = data.error || 'Failed to join room';
+      let msg = data.error || 'Failed to join room';
       
-      // Customize message based on error code
       switch(data.code) {
         case 'ROOM_NOT_FOUND':
-          errorMessage = '🔍 Room not found - The room code may be invalid or the room may have been deleted.';
+          msg = '🔍 Room not found - The room code may be invalid or the room may have been deleted.';
           break;
         case 'ROOM_EXPIRED':
-          errorMessage = '⏰ This quiz expired (24 hours elapsed). Please create a new quiz room.';
+          msg = '⏰ This quiz expired (24 hours elapsed). Please create a new quiz room.';
           break;
         case 'BATTLE_COMPLETED':
-          errorMessage = '✅ This battle has already been completed. You can no longer join.';
+          msg = '✅ This battle has already been completed. You can no longer join.';
           break;
         case 'JOIN_FAILED':
-          errorMessage = data.error; // Use the specific error (e.g., "Room is full")
+          msg = data.error;
           break;
         default:
-          errorMessage = data.error || 'Failed to join room';
+          break;
       }
       
-      alert(errorMessage);
+      alert(msg);
       navigate('/social-feed');
     });
 
     newSocket.on('error', (data) => {
       console.error('❌ Error:', data);
-      alert(data.message || 'An error occurred. Please try again.');
+      setErrorMessage(data.message || 'An error occurred');
     });
 
     return () => {
@@ -179,13 +164,16 @@ const BattleLobby = () => {
         newSocket.close();
       }
     };
-  }, [pin, isHost, playerName, hostName]); // Re-run when these values change
+  }, [pin, isHost, playerName, hostName, navigate]);
 
+  // ANY PLAYER CAN START THE QUIZ - No host restriction
   const startQuiz = () => {
-    if (players.length < 1) {
-      alert('Wait for at least 1 player to join!');
+    if (!hasQuestions) {
+      setErrorMessage('No questions available. Please wait for questions to be added.');
+      setTimeout(() => setErrorMessage(''), 5000);
       return;
     }
+    setIsStarting(true);
     console.log('🚀 Starting battle for room:', pin);
     socket.emit('start_battle', { roomId: pin });
   };
@@ -202,6 +190,17 @@ const BattleLobby = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Format time remaining
+  const formatTimeRemaining = (seconds) => {
+    if (!seconds) return '';
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) {
+      return `${hours}h ${minutes}m remaining`;
+    }
+    return `${minutes} minutes remaining`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
@@ -211,14 +210,28 @@ const BattleLobby = () => {
               <Users className="w-10 h-10" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Battle Lobby</h1>
-            <p className="text-gray-600">Waiting for players to join</p>
+            <p className="text-gray-600">Ready to start? Click the button below!</p>
           </div>
+
+          {/* Error Message */}
+          {errorMessage && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded flex items-center space-x-2">
+              <AlertCircle className="w-5 h-5 text-red-500" />
+              <p className="text-red-700">{errorMessage}</p>
+            </div>
+          )}
 
           <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 mb-8">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 mb-1">Room PIN</p>
                 <div className="text-4xl font-black text-purple-600 tracking-widest">{pin}</div>
+                {timeRemaining && (
+                  <div className="flex items-center space-x-1 text-sm text-gray-500 mt-2">
+                    <Clock className="w-4 h-4" />
+                    <span>{formatTimeRemaining(timeRemaining)}</span>
+                  </div>
+                )}
               </div>
               <button
                 onClick={copyPIN}
@@ -275,20 +288,35 @@ const BattleLobby = () => {
             </div>
           </div>
 
-          {isHost && (
-            <button
-              onClick={startQuiz}
-              disabled={players.length < 1}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              <Play className="w-6 h-6" />
-              <span>Start Quiz</span>
-            </button>
+          {/* START QUIZ BUTTON - Available to ALL players */}
+          <button
+            onClick={startQuiz}
+            disabled={isStarting || !hasQuestions}
+            className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+          >
+            {isStarting ? (
+              <>
+                <Loader2 className="w-6 h-6 animate-spin" />
+                <span>Starting...</span>
+              </>
+            ) : (
+              <>
+                <Play className="w-6 h-6" />
+                <span>Start Quiz</span>
+              </>
+            )}
+          </button>
+
+          {/* Info message */}
+          {!hasQuestions && (
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mt-4">
+              <p className="text-yellow-800 font-semibold">⏳ Waiting for questions to be added to this room...</p>
+            </div>
           )}
 
-          {!isHost && (
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-              <p className="text-yellow-800 font-semibold">Waiting for host to start the quiz...</p>
+          {hasQuestions && (
+            <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded mt-4">
+              <p className="text-green-800 font-semibold">✅ Quiz is ready! Any player can start the quiz.</p>
             </div>
           )}
         </div>
