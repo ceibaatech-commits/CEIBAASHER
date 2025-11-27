@@ -135,7 +135,14 @@ async def create_room(sid, config):
 
 @sio.event
 async def join_room(sid, data):
-    """Join an existing battle room"""
+    """Join an existing battle room - NO HOST APPROVAL REQUIRED.
+    
+    Refactored flow:
+    1. Anyone with valid PIN can join instantly
+    2. Room must not be expired (24 hours from creation)
+    3. Room must not be completed
+    4. Room must have capacity
+    """
     try:
         room_id = data.get('roomId')
         user_data = data.get('userData', {})
@@ -147,70 +154,77 @@ async def join_room(sid, data):
         if not room:
             print(f"[JOIN ERROR] Room {room_id} not found")
             await sio.emit('join_error', {
-                'error': 'Room not found',
+                'error': 'Room not found. Please check the PIN.',
                 'code': 'ROOM_NOT_FOUND',
                 'statusCode': 404
             }, room=sid)
             return
 
-        # Check if expired
+        # Check if expired (24 hour limit)
         if room.is_expired():
             print(f"[JOIN ERROR] Room {room_id} expired")
             await sio.emit('join_error', {
-                'error': 'This quiz expired (24 hours elapsed)',
+                'error': 'Room expired. Please create a new room.',
                 'code': 'ROOM_EXPIRED',
                 'statusCode': 410
             }, room=sid)
-            await room_manager.remove_room(room_id)
             return
 
         # Check if completed
         if room.status == 'completed':
             print(f"[JOIN ERROR] Room {room_id} already completed")
             await sio.emit('join_error', {
-                'error': 'Battle already completed',
+                'error': 'Battle already completed.',
                 'code': 'BATTLE_COMPLETED',
                 'statusCode': 410
+            }, room=sid)
+            return
+
+        # Check if room is accepting participants
+        if not room.is_joinable():
+            print(f"[JOIN ERROR] Room {room_id} not joinable")
+            await sio.emit('join_error', {
+                'error': 'Room is not accepting participants.',
+                'code': 'ROOM_CLOSED',
+                'statusCode': 403
             }, room=sid)
             return
 
         # Store user data in session
         await sio.save_session(sid, {'userData': user_data})
 
-        # Check if this user is the actual host (not just claiming to be)
+        # Determine if this user is the host
         is_actual_host = False
 
-        # Handle host reconnection - only if this user_id matches an existing HTTP host
+        # Handle host reconnection
         if user_data.get('isHost') is True:
-            # Check if there's an HTTP host placeholder that needs to be replaced
             for participant in room.participants:
                 if participant.user_id.startswith('http-') and participant.is_host:
-                    print(f"[HOST RECONNECT] Replacing HTTP host with real Socket.IO connection for {user_data.get('username')}")
-                    # Remove the HTTP placeholder
+                    print(f"[HOST RECONNECT] Replacing HTTP host for {user_data.get('username')}")
                     room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
-                    # Update the host object
                     room.host.user_id = sid
                     room.host.username = user_data.get('username', room.host.username)
                     room.host.avatar = user_data.get('avatar', room.host.avatar)
                     is_actual_host = True
                     break
 
-            # If no HTTP host found, check if this person created the room via Socket.IO
             if not is_actual_host and room.host.user_id == sid:
                 is_actual_host = True
                 print(f"[HOST] {user_data.get('username')} is the original room creator")
 
-        # Override isHost flag based on actual host status
+        # Set correct host status
         user_data['isHost'] = is_actual_host
 
-        # Add participant (or update if already exists)
+        # Add participant - NO APPROVAL NEEDED (instant join)
         result = room.add_participant(sid, user_data)
 
-        if not result['success']:
-            print(f"[JOIN ERROR] {result.get('error')} for room {room_id}")
+        if not result.get('success'):
+            error_msg = result.get('error', 'Failed to join room')
+            error_code = result.get('code', 'JOIN_FAILED')
+            print(f"[JOIN ERROR] {error_msg} for room {room_id}")
             await sio.emit('join_error', {
-                'error': result.get('error'),
-                'code': 'JOIN_FAILED',
+                'error': error_msg,
+                'code': error_code,
                 'statusCode': 403
             }, room=sid)
             return
@@ -219,35 +233,43 @@ async def join_room(sid, data):
         await sio.enter_room(sid, room_id)
         room_manager.user_rooms[sid] = room_id
 
+        # Save room state
+        await room_manager.save_room_to_db(room)
+
         print(f"[JOIN SUCCESS] ✅ {user_data.get('username')} joined room {room_id} ({len(room.participants)} participants)")
 
         # Notify all participants
-        print(f"[EMIT] Sending participant_joined to room {room_id}")
         await sio.emit('participant_joined', {
             'participant': {
                 'userId': sid,
-                **user_data
+                'username': user_data.get('username'),
+                'avatar': user_data.get('avatar'),
+                'isHost': is_actual_host,
+                'joinedAt': result.get('participant', {}).joined_at if hasattr(result.get('participant', {}), 'joined_at') else None
             },
             'room': room.to_dict()
         }, room=room_id)
 
         # Send room data to joiner
-        print(f"[EMIT] Sending room_joined to {sid} (isHost: {is_actual_host})")
+        print(f"[EMIT] Sending room_joined to {sid}")
         await sio.emit('room_joined', {
             'success': True,
             'room': room.to_dict(),
             'questions': room.questions,
-            'isHost': is_actual_host,  # Tell the user if they are the actual host
+            'isHost': is_actual_host,
             'hostInfo': {
                 'userId': room.host.user_id,
                 'username': room.host.username,
                 'avatar': room.host.avatar
-            }
+            },
+            'timeRemaining': room.get_time_remaining()
         }, room=sid)
-        print(f"[EMIT] ✅ room_joined event sent successfully to {sid}")
+        print(f"[EMIT] ✅ room_joined sent to {sid}")
 
     except Exception as e:
         print(f"[ERROR] join_room: {str(e)}")
+        import traceback
+        traceback.print_exc()
         await sio.emit('error', {'message': str(e)}, room=sid)
 
 
