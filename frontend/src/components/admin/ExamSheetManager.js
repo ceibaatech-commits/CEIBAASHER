@@ -1326,6 +1326,86 @@ const ExamSheetManager = () => {
             '13. Patjhad Mein Tooti Pattiyan',
             '14. Karthus'
           ]
+        },
+        'Class 11': {
+          'Physics': [
+            '1. Units and Measurements',
+            '2. Motion in a Straight Line',
+            '3. Motion in a Plane',
+            '4. Laws of Motion',
+            '5. Work, Energy and Power',
+            '6. System of Particles and Rotational Motion',
+            '7. Gravitation',
+            '8. Mechanical Properties of Solids',
+            '9. Mechanical Properties of Fluids',
+            '10. Thermal Properties of Matter',
+            '11. Thermodynamics',
+            '12. Kinetic Theory',
+            '13. Oscillations',
+            '14. Waves'
+          ],
+          'Chemistry': [
+            '1. Some Basic Concepts of Chemistry',
+            '2. Structure of Atom',
+            '3. Classification of Elements and Periodicity in Properties',
+            '4. Chemical Bonding and Molecular Structure',
+            '5. Thermodynamics',
+            '6. Equilibrium',
+            '7. Redox Reactions',
+            '8. Organic Chemistry: Some Basic Principles and Techniques',
+            '9. Hydrocarbons'
+          ],
+          'Mathematics': [
+            '1. Sets',
+            '2. Relations and Functions',
+            '3. Trigonometric Functions',
+            '4. Complex Numbers and Quadratic Equations',
+            '5. Linear Inequalities',
+            '6. Permutations and Combinations',
+            '7. Binomial Theorem',
+            '8. Sequences and Series',
+            '9. Straight Lines',
+            '10. Conic Sections',
+            '11. Introduction to Three Dimensional Geometry',
+            '12. Limits and Derivatives',
+            '13. Statistics',
+            '14. Probability'
+          ],
+          'Biology': [
+            '1. The Living World',
+            '2. Biological Classification',
+            '3. Plant Kingdom',
+            '4. Animal Kingdom',
+            '5. Morphology of Flowering Plants',
+            '6. Anatomy of Flowering Plants',
+            '7. Structural Organisation in Animals',
+            '8. Cell: The Unit of Life',
+            '9. Biomolecules',
+            '10. Cell Cycle and Cell Division',
+            '11. Photosynthesis in Higher Plants',
+            '12. Respiration in Plants',
+            '13. Plant Growth and Development',
+            '14. Breathing and Exchange of Gases',
+            '15. Body Fluids and Circulation',
+            '16. Excretory Products and Their Elimination',
+            '17. Locomotion and Movement',
+            '18. Neural Control and Coordination',
+            '19. Chemical Coordination and Integration'
+          ],
+          'English': [
+            '1. The Portrait of a Lady',
+            '2. A Photograph',
+            '3. We are Not Afraid to Die',
+            '4. Discovering Tut: The Saga Continues',
+            '5. The Laburnum Top',
+            '6. Landscape of the Soul',
+            '7. The Voice of the Rain',
+            '8. The Ailing Planet',
+            '9. The Browning Version',
+            '10. Childhood',
+            '11. The Adventure',
+            '12. Silk Road'
+          ]
         }
       };
 
