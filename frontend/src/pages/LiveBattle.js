@@ -778,6 +778,9 @@ const LiveBattle = () => {
                   const isCorrect = answerResult && answerResult.correctAnswer === index;
                   const isWrong = isSelected && answerResult && !answerResult.isCorrect;
                   
+                  // Handle both object format {id, text} and string format
+                  const optionText = typeof option === 'object' ? (option.text || option.label || JSON.stringify(option)) : option;
+                  
                   return (
                     <button
                       key={index}
@@ -808,7 +811,7 @@ const LiveBattle = () => {
                           {String.fromCharCode(65 + index)}
                         </div>
                         <span className="flex-1 font-medium text-gray-900">
-                          <MathText text={option} />
+                          <MathText text={optionText} />
                         </span>
                         {isCorrect && <span className="text-green-600 font-bold">✓</span>}
                         {isWrong && <span className="text-red-600 font-bold">✗</span>}
