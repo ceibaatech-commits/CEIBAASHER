@@ -114,12 +114,21 @@ class BattleRoom:
         """Add a Participant object to the room.
         
         NO HOST APPROVAL REQUIRED - instant join with valid PIN.
+        Allows reconnection during active battles for existing participants.
         """
-        # Check if already in room
-        if any(p.user_id == participant.user_id for p in self.participants):
-            return {"success": True, "message": "Already in room", "alreadyJoined": True}
+        # Check if already in room by user_id OR username (for reconnections)
+        existing = None
+        for p in self.participants:
+            if p.user_id == participant.user_id or p.username == participant.username:
+                existing = p
+                break
+        
+        if existing:
+            # Allow reconnection - update user_id for new socket
+            existing.user_id = participant.user_id
+            return {"success": True, "message": "Reconnected to room", "alreadyJoined": True, "participant": existing}
 
-        # Check room is joinable
+        # For NEW participants, check room is joinable
         if not self.is_joinable():
             if self.is_expired():
                 return {"success": False, "error": "Room expired. Please create a new room.", "code": "ROOM_EXPIRED"}
@@ -127,7 +136,11 @@ class BattleRoom:
                 return {"success": False, "error": "Battle already completed.", "code": "BATTLE_COMPLETED"}
             if len(self.participants) >= self.config.max_participants:
                 return {"success": False, "error": "Room is full.", "code": "ROOM_FULL"}
-            return {"success": False, "error": "Room is not accepting participants.", "code": "ROOM_CLOSED"}
+            # Allow late joins during active battles (within 24h)
+            if self.status == "active" and not self.is_expired():
+                pass  # Allow joining active battles
+            elif not self.is_active:
+                return {"success": False, "error": "Room is not accepting participants.", "code": "ROOM_CLOSED"}
 
         # Add participant instantly - NO APPROVAL NEEDED
         participant.joined_at = datetime.now(timezone.utc).timestamp()
