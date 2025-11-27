@@ -1,11 +1,17 @@
 """
-Battle Room REST API Routes
+Battle Room REST API Routes - Refactored
 HTTP endpoints for battle room management
+
+KEY CHANGES:
+- Added POST /join endpoint for instant join (no host approval)
+- Added validation endpoint for checking room status
+- Clear error messages for expired rooms
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from battle_rooms import room_manager
+from datetime import datetime, timezone
 
 router = APIRouter(prefix="/api/battle", tags=["battle"])
 
@@ -23,13 +29,26 @@ class CreateRoomRequest(BaseModel):
     category: Optional[str] = ""
 
 
+class JoinRoomRequest(BaseModel):
+    """Request model for joining a battle room"""
+    roomId: str
+    playerName: str
+    userId: Optional[str] = None
+    avatar: Optional[str] = "👤"
+
+
+class ValidateRoomRequest(BaseModel):
+    """Request model for validating a room PIN"""
+    roomId: str
+
+
 @router.get("/health")
 async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
         "activeRooms": len(room_manager.rooms),
-        "timestamp": "now"
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -45,13 +64,13 @@ async def get_active_rooms():
 @router.post("/create-room")
 async def create_room_http(request: CreateRoomRequest):
     """
-    Create a battle room via HTTP (for backward compatibility)
-    This creates a room that can be joined via Socket.IO
+    Create a battle room via HTTP.
+    Room will be active for 24 hours after creation.
     """
     try:
         # Create host data
         host_data = {
-            "userId": f"http-{request.hostName}",  # Temporary ID until Socket.IO connection
+            "userId": f"http-{request.hostName}-{datetime.now().timestamp()}",
             "username": request.hostName,
             "avatar": "👑",
             "isHost": True
@@ -68,16 +87,18 @@ async def create_room_http(request: CreateRoomRequest):
         
         # Use custom room ID if provided
         if request.customRoomId:
-            # Check if room already exists
-            if await room_manager.get_room(request.customRoomId):
-                raise HTTPException(status_code=400, detail="Room ID already exists")
+            existing = await room_manager.get_room(request.customRoomId)
+            if existing:
+                if existing.is_expired():
+                    await room_manager.remove_room(request.customRoomId)
+                else:
+                    raise HTTPException(status_code=400, detail="Room ID already exists")
             room_id = request.customRoomId
         else:
             room_id = None
         
         # Create room
         if room_id:
-            # Manual room creation with custom ID
             from battle_rooms import BattleRoom, Participant, RoomConfig
             
             host = Participant(
@@ -98,7 +119,6 @@ async def create_room_http(request: CreateRoomRequest):
             room = BattleRoom(room_id, host, room_config)
             room_manager.rooms[room_id] = room
             room_manager.user_rooms[host.user_id] = room_id
-            # Save to database
             await room_manager.save_room_to_db(room)
         else:
             room = await room_manager.create_room(host_data, config)
@@ -106,18 +126,133 @@ async def create_room_http(request: CreateRoomRequest):
         # Set questions if provided
         if request.questions:
             room.questions = request.questions
+            await room_manager.save_room_to_db(room)
         
         return {
             "success": True,
             "roomId": room.room_id,
             "pin": room.room_id,
-            "room": room.to_dict()
+            "room": room.to_dict(),
+            "expiresAt": room.expires_at,
+            "timeRemaining": room.get_time_remaining()
         }
         
     except HTTPException:
         raise
     except Exception as e:
         print(f"[ERROR] create_room_http: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/join")
+async def join_room_http(request: JoinRoomRequest):
+    """
+    Join a battle room via HTTP - NO HOST APPROVAL REQUIRED.
+    
+    Anyone with a valid room PIN can join instantly.
+    Room must not be expired (24 hour limit from creation).
+    """
+    try:
+        room_id = request.roomId.strip()
+        
+        # Validate room ID format
+        if not room_id or len(room_id) != 6:
+            raise HTTPException(
+                status_code=400, 
+                detail="Invalid room PIN. Must be 6 digits."
+            )
+        
+        # Generate user ID if not provided
+        user_id = request.userId or f"player-{request.playerName}-{datetime.now().timestamp()}"
+        
+        user_data = {
+            "userId": user_id,
+            "username": request.playerName,
+            "avatar": request.avatar,
+            "isHost": False
+        }
+        
+        # Use the refactored join_room method (no approval needed)
+        result = await room_manager.join_room(room_id, user_data)
+        
+        if result.get("success"):
+            return {
+                "success": True,
+                "room": result["room"],
+                "participant": result["participant"],
+                "message": "Successfully joined room"
+            }
+        else:
+            # Map error codes to HTTP status codes
+            error_code = result.get("code", "UNKNOWN")
+            status_map = {
+                "ROOM_NOT_FOUND": 404,
+                "ROOM_EXPIRED": 410,
+                "ROOM_FULL": 403,
+                "ROOM_CLOSED": 403,
+                "BATTLE_COMPLETED": 410
+            }
+            status_code = status_map.get(error_code, 400)
+            raise HTTPException(status_code=status_code, detail=result.get("error", "Failed to join room"))
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] join_room_http: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/validate")
+async def validate_room(request: ValidateRoomRequest):
+    """
+    Validate a room PIN without joining.
+    Returns room status, expiry info, and whether it's joinable.
+    """
+    try:
+        room_id = request.roomId.strip()
+        
+        room = await room_manager.get_room(room_id)
+        
+        if not room:
+            return {
+                "valid": False,
+                "error": "Room not found",
+                "code": "ROOM_NOT_FOUND"
+            }
+        
+        if room.is_expired():
+            return {
+                "valid": False,
+                "error": "Room expired. Please create a new room.",
+                "code": "ROOM_EXPIRED",
+                "expiredAt": room.expires_at
+            }
+        
+        if room.status == "completed":
+            return {
+                "valid": False,
+                "error": "Battle already completed",
+                "code": "BATTLE_COMPLETED"
+            }
+        
+        return {
+            "valid": True,
+            "joinable": room.is_joinable(),
+            "room": {
+                "roomId": room.room_id,
+                "host": room.host.username,
+                "participantCount": len(room.participants),
+                "maxParticipants": room.config.max_participants,
+                "status": room.status,
+                "category": room.config.category,
+                "subject": room.config.subject,
+                "timeRemaining": room.get_time_remaining(),
+                "expiresAt": room.expires_at
+            }
+        }
+        
+    except Exception as e:
+        print(f"[ERROR] validate_room: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -130,8 +265,10 @@ async def get_room_details(room_id: str):
         raise HTTPException(status_code=404, detail="Room not found")
     
     if room.is_expired():
-        await room_manager.remove_room(room_id)
-        raise HTTPException(status_code=410, detail="Room expired")
+        raise HTTPException(
+            status_code=410, 
+            detail="Room expired. Please create a new room."
+        )
     
     return {
         "success": True,

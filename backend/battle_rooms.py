@@ -1,14 +1,24 @@
 """
-Battle Room Management
+Battle Room Management - Refactored
 Handles quiz battle room state, participants, scoring, and lifecycle
+
+KEY CHANGES:
+- No host approval needed - anyone with valid PIN can join instantly
+- Rooms active for 24 hours after creation
+- Clear expired room handling
+- Real-time state sync
 """
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional, Any
 import random
 import asyncio
+
+
+# Room expiry time in seconds (24 hours)
+ROOM_EXPIRY_SECONDS = 24 * 60 * 60
 
 
 # ---------- Data models -----------------------------------------------------
@@ -18,7 +28,7 @@ class Participant:
     """Represents a participant in a battle room."""
     user_id: str
     username: str
-    avatar: str = "側"
+    avatar: str = "👤"
     is_host: bool = False
     joined_at: float = field(default_factory=lambda: datetime.now(timezone.utc).timestamp())
 
@@ -36,41 +46,110 @@ class RoomConfig:
 # ---------- BattleRoom -----------------------------------------------------
 
 class BattleRoom:
-    """Manages a single battle room with participants, questions, and scoring."""
+    """Manages a single battle room with participants, questions, and scoring.
+    
+    JOIN FLOW (Refactored - No Host Approval):
+    1. Room created by host with unique PIN
+    2. Any user with valid PIN can join instantly
+    3. Room remains active for 24 hours
+    4. After 24 hours, room is expired and no new joins allowed
+    """
     
     def __init__(self, room_id: str, host: Participant, config: Optional[RoomConfig] = None):
         self.room_id: str = room_id
         self.host: Participant = host
         self.participants: List[Participant] = [host]
         self.config: RoomConfig = config or RoomConfig()
-        self.status: str = "waiting"  # waiting, starting, active, completed
+        self.status: str = "waiting"  # waiting, starting, active, completed, expired
         self.current_question: int = 0
         self.questions: List[Dict[str, Any]] = []
         self.scores: Dict[str, int] = {host.user_id: 0}
         self.answers: Dict[str, Dict[str, Any]] = {}  # {user_id: {question_id: {...}}}
         self.created_at: float = datetime.now(timezone.utc).timestamp()
+        self.is_active: bool = True  # Room is joinable
+        self.expires_at: float = self.created_at + ROOM_EXPIRY_SECONDS
 
-    # --- participant lifecycle ------------------------------------------------
+    # --- Room State Methods ------------------------------------------------
+    
+    def is_expired(self) -> bool:
+        """Return True if the room is older than 24 hours."""
+        now = datetime.now(timezone.utc).timestamp()
+        return now > self.expires_at
+    
+    def is_joinable(self) -> bool:
+        """Check if room can accept new participants.
+        
+        A room is joinable if:
+        - Not expired (within 24 hours)
+        - Not completed
+        - Has capacity
+        - is_active flag is True
+        """
+        if self.is_expired():
+            self.status = "expired"
+            self.is_active = False
+            return False
+        
+        if self.status in ["completed", "expired"]:
+            return False
+        
+        if len(self.participants) >= self.config.max_participants:
+            return False
+        
+        return self.is_active
+    
+    def get_time_remaining(self) -> int:
+        """Get remaining time in seconds before room expires."""
+        now = datetime.now(timezone.utc).timestamp()
+        remaining = self.expires_at - now
+        return max(0, int(remaining))
+    
+    def deactivate(self):
+        """Manually deactivate room (prevent new joins)."""
+        self.is_active = False
+
+    # --- participant lifecycle (NO HOST APPROVAL NEEDED) -------------------
     
     def add_participant_object(self, participant: Participant) -> Dict[str, Any]:
-        """Add a Participant object to the room."""
+        """Add a Participant object to the room.
+        
+        NO HOST APPROVAL REQUIRED - instant join with valid PIN.
+        """
+        # Check if already in room
         if any(p.user_id == participant.user_id for p in self.participants):
-            return {"success": True, "message": "Already in room"}
+            return {"success": True, "message": "Already in room", "alreadyJoined": True}
 
-        if len(self.participants) >= self.config.max_participants:
-            return {"success": False, "error": "Room is full"}
+        # Check room is joinable
+        if not self.is_joinable():
+            if self.is_expired():
+                return {"success": False, "error": "Room expired. Please create a new room.", "code": "ROOM_EXPIRED"}
+            if self.status == "completed":
+                return {"success": False, "error": "Battle already completed.", "code": "BATTLE_COMPLETED"}
+            if len(self.participants) >= self.config.max_participants:
+                return {"success": False, "error": "Room is full.", "code": "ROOM_FULL"}
+            return {"success": False, "error": "Room is not accepting participants.", "code": "ROOM_CLOSED"}
 
+        # Add participant instantly - NO APPROVAL NEEDED
+        participant.joined_at = datetime.now(timezone.utc).timestamp()
         self.participants.append(participant)
         self.scores.setdefault(participant.user_id, 0)
         self.answers.setdefault(participant.user_id, {})
-        return {"success": True, "participant": participant}
+        
+        return {
+            "success": True, 
+            "participant": participant,
+            "message": "Successfully joined room"
+        }
 
     def add_participant(self, user_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Create Participant from data and add to the room."""
+        """Create Participant from data and add to the room.
+        
+        NO HOST APPROVAL REQUIRED.
+        """
         participant = Participant(
             user_id=str(user_id),
             username=user_data.get("username", "Anonymous"),
-            avatar=user_data.get("avatar", "側"),
+            avatar=user_data.get("avatar", "👤"),
             is_host=bool(user_data.get("isHost", False))
         )
         return self.add_participant_object(participant)
@@ -121,6 +200,7 @@ class BattleRoom:
             self.current_question += 1
             return self.current_question
         self.status = "completed"
+        self.is_active = False
         return None
 
     # --- utilities -----------------------------------------------------------
@@ -142,13 +222,9 @@ class BattleRoom:
             entry["rank"] = idx + 1
         return leaderboard
 
-    def is_expired(self) -> bool:
-        """Return True if the room is older than 24 hours."""
-        age = datetime.now(timezone.utc).timestamp() - self.created_at
-        return age > 24 * 60 * 60
-
     def to_dict(self) -> Dict[str, Any]:
         """Serialize room to a dictionary for persistence/transport."""
+        now = datetime.now(timezone.utc).timestamp()
         return {
             "roomId": self.room_id,
             "host": {
@@ -168,6 +244,9 @@ class BattleRoom:
                 for p in self.participants
             ],
             "status": self.status,
+            "isActive": self.is_active,
+            "isJoinable": self.is_joinable(),
+            "isExpired": self.is_expired(),
             "currentQuestion": self.current_question,
             "questionsCount": len(self.questions),
             "questions": self.questions,
@@ -182,16 +261,21 @@ class BattleRoom:
             "leaderboard": self.get_leaderboard(),
             "scores": self.scores,
             "answers": self.answers,
-            "createdAt": self.created_at
+            "createdAt": self.created_at,
+            "expiresAt": self.expires_at,
+            "timeRemaining": self.get_time_remaining()
         }
 
 
 # ---------- BattleRoomManager -----------------------------------------------
 
 class BattleRoomManager:
-    """
-    Manages battle rooms in memory and persists them to a DB (async drivers supported).
-    Thread-safe for concurrent use via asyncio.Lock.
+    """Manages battle rooms in memory and persists them to a DB.
+    
+    REFACTORED JOIN FLOW:
+    - No host approval required
+    - Anyone with valid PIN joins instantly
+    - Automatic expiry after 24 hours
     """
     
     def __init__(self):
@@ -215,14 +299,13 @@ class BattleRoomManager:
 
         try:
             now_ts = datetime.now(timezone.utc).timestamp()
-            cutoff = now_ts - (24 * 60 * 60)
+            cutoff = now_ts - ROOM_EXPIRY_SECONDS
             
             print(f"[STARTUP] Loading rooms created after {cutoff}...")
             
-            # The field name in DB is 'createdAt'
             cursor = await self.db.battle_rooms.find({
                 "createdAt": {"$gt": cutoff},
-                "status": {"$ne": "completed"}
+                "status": {"$nin": ["completed", "expired"]}
             }).to_list(length=1000)
 
             print(f"[STARTUP] Found {len(cursor)} rooms in database")
@@ -231,6 +314,9 @@ class BattleRoomManager:
                 for doc in cursor:
                     try:
                         room = self._room_from_dict(doc)
+                        # Skip if expired
+                        if room.is_expired():
+                            continue
                         self.rooms[room.room_id] = room
                         for p in room.participants:
                             self.user_rooms[p.user_id] = room.room_id
@@ -246,7 +332,7 @@ class BattleRoomManager:
             traceback.print_exc()
 
     async def save_room_to_db(self, room: BattleRoom):
-        """Upsert room document to DB; tolerant of different async drivers."""
+        """Upsert room document to DB."""
         if self.db is None:
             print(f"[WARNING] Cannot save room {room.room_id} - database not initialized")
             return
@@ -261,7 +347,6 @@ class BattleRoomManager:
                 upsert=True
             )
 
-            # Safe logging (not all drivers expose same attrs)
             matched = getattr(result, "matched_count", "?")
             modified = getattr(result, "modified_count", "?")
             upserted = getattr(result, "upserted_id", None)
@@ -286,12 +371,11 @@ class BattleRoomManager:
     
     def _room_from_dict(self, data: Dict[str, Any]) -> BattleRoom:
         """Reconstruct BattleRoom from a persisted dictionary."""
-        # ... (rest of _room_from_dict remains the same) ...
         host_data = data.get("host", {}) or {}
         host = Participant(
             user_id=str(host_data.get("userId", "")),
             username=host_data.get("username", "Host"),
-            avatar=host_data.get("avatar", "荘"),
+            avatar=host_data.get("avatar", "👑"),
             is_host=bool(host_data.get("isHost", True)),
             joined_at=float(host_data.get("joinedAt", datetime.now(timezone.utc).timestamp()))
         )
@@ -309,8 +393,10 @@ class BattleRoomManager:
         room = BattleRoom(room_id, host, config)
 
         room.status = data.get("status", "waiting")
+        room.is_active = data.get("isActive", True)
         room.current_question = int(data.get("currentQuestion", 0))
         room.created_at = float(data.get("createdAt", room.created_at))
+        room.expires_at = float(data.get("expiresAt", room.created_at + ROOM_EXPIRY_SECONDS))
 
         # Reconstruct participants
         room.participants = []
@@ -318,7 +404,7 @@ class BattleRoomManager:
             participant = Participant(
                 user_id=str(p.get("userId", "")),
                 username=p.get("username", "") or "Anonymous",
-                avatar=p.get("avatar", "側"),
+                avatar=p.get("avatar", "👤"),
                 is_host=bool(p.get("isHost", False)),
                 joined_at=float(p.get("joinedAt", datetime.now(timezone.utc).timestamp()))
             )
@@ -333,12 +419,10 @@ class BattleRoomManager:
 
         return room
 
-
     # --- room lifecycle helpers ---------------------------------------------
     
     def generate_room_id(self) -> str:
         """Generate a unique 6-digit room code."""
-        # This is not async, but the caller (create_room) is locked, so it's safe.
         while True:
             code = str(random.randint(100000, 999999))
             if code not in self.rooms:
@@ -351,7 +435,7 @@ class BattleRoomManager:
             host = Participant(
                 user_id=str(host_data.get("userId", "")),
                 username=host_data.get("username", "Host"),
-                avatar=host_data.get("avatar", "荘"),
+                avatar=host_data.get("avatar", "👑"),
                 is_host=True
             )
 
@@ -372,42 +456,79 @@ class BattleRoomManager:
             return room
 
     async def get_room(self, room_id: str) -> Optional[BattleRoom]:
-        """Return room by ID or None. Access is protected by lock."""
+        """Return room by ID or None."""
         async with self._lock:
-            return self.rooms.get(room_id)
+            room = self.rooms.get(room_id)
+            # Auto-expire check
+            if room and room.is_expired():
+                room.status = "expired"
+                room.is_active = False
+            return room
 
     async def get_user_room(self, user_id: str) -> Optional[BattleRoom]:
-        """Return the room object a user is currently in, or None. Access is protected by lock."""
+        """Return the room object a user is currently in, or None."""
         async with self._lock:
             room_id = self.user_rooms.get(user_id)
             if room_id:
                 return self.rooms.get(room_id)
             return None
 
-    async def add_user_to_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Convenience method: add user (dict) to room, update user_rooms mapping, persist.
-        Returns the same dict shape as BattleRoom.add_participant.
+    async def join_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Join a room - NO HOST APPROVAL REQUIRED.
+        
+        This is the main join entry point. Anyone with valid PIN can join instantly.
+        
+        Returns:
+            {"success": True, "room": room_dict, "participant": {...}}
+            or
+            {"success": False, "error": "...", "code": "..."}
         """
         async with self._lock:
-            # Must use direct access here since the lock is already acquired
             room = self.rooms.get(room_id)
+            
             if room is None:
-                return {"success": False, "error": "Room not found"}
-
+                return {
+                    "success": False, 
+                    "error": "Room not found. Please check the PIN.",
+                    "code": "ROOM_NOT_FOUND"
+                }
+            
+            # Check expiry
+            if room.is_expired():
+                room.status = "expired"
+                room.is_active = False
+                await self.save_room_to_db(room)
+                return {
+                    "success": False,
+                    "error": "Room expired. Please create a new room.",
+                    "code": "ROOM_EXPIRED"
+                }
+            
+            # Add participant (no approval needed)
             result = room.add_participant(user_data.get("userId", ""), user_data)
+            
             if result.get("success"):
                 participant_id = str(user_data.get("userId", ""))
                 self.user_rooms[participant_id] = room_id
-                # Save is done outside the lock to avoid blocking other memory operations while waiting for DB I/O
-                # This is an acceptable risk as the memory state is already updated and locked.
-                pass 
-            # Note: We still save to DB below, outside the lock, or we rely on the caller to save 
-            # if they need to ensure immediate persistence after a chain of synchronous updates.
-            # In this case, we call save_room_to_db outside the lock, or rely on the caller.
-            # For simplicity and thread safety on internal memory state updates:
-            await self.save_room_to_db(room)
+                await self.save_room_to_db(room)
+                return {
+                    "success": True,
+                    "room": room.to_dict(),
+                    "participant": {
+                        "userId": participant_id,
+                        "username": user_data.get("username", "Anonymous"),
+                        "avatar": user_data.get("avatar", "👤"),
+                        "isHost": False,
+                        "joinedAt": datetime.now(timezone.utc).timestamp()
+                    },
+                    "message": result.get("message", "Successfully joined room")
+                }
+            
             return result
+
+    async def add_user_to_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Alias for join_room for backward compatibility."""
+        return await self.join_room(room_id, user_data)
 
     async def remove_user_from_room(self, user_id: str) -> bool:
         """Remove a user from whichever room they're in and persist changes."""
@@ -416,7 +537,6 @@ class BattleRoomManager:
             if not room_id:
                 return False
             
-            # Must use direct access here since the lock is already acquired
             room = self.rooms.get(room_id)
             if not room:
                 self.user_rooms.pop(user_id, None)
@@ -425,18 +545,17 @@ class BattleRoomManager:
             removed = room.remove_participant(user_id)
             self.user_rooms.pop(user_id, None)
             
-            # If the room is now empty, delete it from memory and DB immediately
+            # If the room is now empty, delete it
             if not room.participants:
                 del self.rooms[room_id]
                 await self.delete_room_from_db(room_id)
                 return removed
             
-            # If not empty, save changes
             await self.save_room_to_db(room)
             return removed
 
     async def remove_room(self, room_id: str):
-        """Delete a room from memory and DB, cleaning up user mappings."""
+        """Delete a room from memory and DB."""
         async with self._lock:
             room = self.rooms.get(room_id)
             if room:
@@ -445,63 +564,36 @@ class BattleRoomManager:
                 del self.rooms[room_id]
                 await self.delete_room_from_db(room_id)
 
+    async def cleanup_expired_rooms(self):
+        """Remove all expired rooms from memory and DB."""
+        async with self._lock:
+            expired_ids = [rid for rid, room in self.rooms.items() if room.is_expired()]
+            for room_id in expired_ids:
+                room = self.rooms.get(room_id)
+                if room:
+                    for p in room.participants:
+                        self.user_rooms.pop(p.user_id, None)
+                    del self.rooms[room_id]
+                    await self.delete_room_from_db(room_id)
+            print(f"[CLEANUP] Removed {len(expired_ids)} expired rooms")
+
     def get_active_rooms(self) -> List[Dict[str, Any]]:
-        """Return list of waiting (joinable) rooms that are not expired."""
-        # Reading a dictionary snapshot is generally safe without lock, 
-        # but iterating over a view while it's being mutated by another thread can fail.
-        # Since this is a public endpoint, returning the current state quickly is prioritized.
-        # Python's dict operations are atomic at a low level, so iterating over values() 
-        # of the in-memory copy should be acceptable as long as we're not modifying it here.
-        out: List[Dict[str, Any]] = []
+        """Return list of joinable rooms that are not expired."""
+        active: List[Dict[str, Any]] = []
         for room in self.rooms.values():
-            if room.status == "waiting" and not room.is_expired():
-                out.append({
+            if room.is_joinable():
+                active.append({
                     "roomId": room.room_id,
-                    "pin": room.room_id,
                     "host": room.host.username,
-                    "participants": len(room.participants),
+                    "participantCount": len(room.participants),
                     "maxParticipants": room.config.max_participants,
                     "category": room.config.category,
-                    "subject": room.config.subject
+                    "subject": room.config.subject,
+                    "status": room.status,
+                    "timeRemaining": room.get_time_remaining()
                 })
-        return out
-
-    async def cleanup_expired_rooms(self):
-        """Remove expired rooms older than 24 hours (memory + DB)."""
-        async with self._lock:
-            expired = [rid for rid, r in list(self.rooms.items()) if r.is_expired()]
-            for rid in expired:
-                print(f"[CLEANUP] Removing expired room: {rid}")
-                # Use internal remove_room, which is protected by the lock
-                # We can't await inside this loop's lock, so we delegate.
-                # Since the removal is based on the list 'expired' which was created before the loop,
-                # we must remove from the list, or re-run the whole removal process if we must await.
-                # The implementation of remove_room will handle the deletion from DB/memory, 
-                # but because we're iterating inside a lock, calling an async method inside the lock 
-                # and awaiting it will lead to the entire system halting.
-                # A safer approach is to get the list, release the lock, and then remove.
-                pass
-
-        # Release lock, then perform async removals
-        for rid in expired:
-            await self.remove_room(rid)
-        
-        # Original logic of cleanup_expired_rooms will be re-run with this fix:
-        # We need to ensure that the logic that modifies self.rooms is NOT awaited inside the critical section.
-        # I'll revert to the structure that allows delegation to the full remove_room outside the lock.
-        # The internal _lock approach should be managed more carefully.
-
-        # Corrected cleanup_expired_rooms to prevent deadlock:
-        expired_ids = []
-        async with self._lock:
-            expired_ids = [rid for rid, r in list(self.rooms.items()) if r.is_expired()]
-
-        for rid in expired_ids:
-            print(f"[CLEANUP] Removing expired room: {rid}")
-            # This uses the full async remove_room, which safely acquires the lock inside, 
-            # removing the risk of a long-blocking IO (DB write/delete) inside the critical section.
-            await self.remove_room(rid)
+        return active
 
 
-# Global manager instance
+# Singleton instance
 room_manager = BattleRoomManager()
