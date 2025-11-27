@@ -541,34 +541,64 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 14, "chapter_name": "Sangatkaar Ki Karuna Mein Tungnathji Ho Gaye: Dhanraj", "total_questions": 50, "difficulty": "Hard", "duration": 40},
             {"chapter_number": 15, "chapter_name": "Atma Ka Anumanit Vyay", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ]
-    }
-}
-
-# Add similar data for classes 11, 12 (keeping it concise for now)
-# These can be expanded based on NCERT syllabus
-for class_num in ["11", "12"]:
-    CBSE_CHAPTER_DATA[class_num] = {
+    },
+    "11": {
+        "Physics": [
+            {"chapter_number": 1, "chapter_name": "Units and Measurements", "total_questions": 50, "difficulty": "Medium", "duration": 35, "unit": "Physical World and Measurement"},
+            {"chapter_number": 2, "chapter_name": "Motion in a Straight Line", "total_questions": 55, "difficulty": "Medium", "duration": 40, "unit": "Kinematics"},
+            {"chapter_number": 3, "chapter_name": "Motion in a Plane", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Kinematics"},
+            {"chapter_number": 4, "chapter_name": "Laws of Motion", "total_questions": 60, "difficulty": "Hard", "duration": 45, "unit": "Laws of Motion"},
+            {"chapter_number": 5, "chapter_name": "Work, Energy and Power", "total_questions": 55, "difficulty": "Medium", "duration": 40, "unit": "Work, Energy and Power"},
+            {"chapter_number": 6, "chapter_name": "System of Particles and Rotational Motion", "total_questions": 60, "difficulty": "Hard", "duration": 45, "unit": "Motion of System of Particles and Rigid Body"},
+            {"chapter_number": 7, "chapter_name": "Gravitation", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Gravitation"},
+            {"chapter_number": 8, "chapter_name": "Mechanical Properties of Solids", "total_questions": 50, "difficulty": "Medium", "duration": 35, "unit": "Properties of Bulk Matter"},
+            {"chapter_number": 9, "chapter_name": "Mechanical Properties of Fluids", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Properties of Bulk Matter"},
+            {"chapter_number": 10, "chapter_name": "Thermal Properties of Matter", "total_questions": 50, "difficulty": "Medium", "duration": 35, "unit": "Properties of Bulk Matter"},
+            {"chapter_number": 11, "chapter_name": "Thermodynamics", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Thermodynamics"},
+            {"chapter_number": 12, "chapter_name": "Kinetic Theory", "total_questions": 50, "difficulty": "Medium", "duration": 35, "unit": "Behaviour of Perfect Gases and Kinetic Theory of Gases"},
+            {"chapter_number": 13, "chapter_name": "Oscillations", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Oscillations and Waves"},
+            {"chapter_number": 14, "chapter_name": "Waves", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Oscillations and Waves"}
+        ],
         "Mathematics": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
             for i in range(1, 16)
         ],
-        "Science": [
+        "Chemistry": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
             for i in range(1, 15)
         ],
-        "Social Science": [
+        "Biology": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
-            for i in range(1, 20)
+            for i in range(1, 22)
         ],
         "English": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
             for i in range(1, 8)
+        ]
+    },
+    "12": {
+        "Physics": [
+            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            for i in range(1, 15)
         ],
-        "Hindi": [
+        "Mathematics": [
+            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            for i in range(1, 16)
+        ],
+        "Chemistry": [
+            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            for i in range(1, 15)
+        ],
+        "Biology": [
+            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            for i in range(1, 16)
+        ],
+        "English": [
             {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
             for i in range(1, 8)
         ]
     }
+}
 
 
 def get_chapters_by_class_subject(class_number, subject):
