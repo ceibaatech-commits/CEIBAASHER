@@ -832,7 +832,11 @@ const LiveBattle = () => {
                   <p className="text-sm text-gray-700 mt-1">
                     {answerResult.isCorrect 
                       ? `+${answerResult.points} points earned!` 
-                      : <>Correct answer: <MathText text={currentQuestion.options[answerResult.correctAnswer]} /></>
+                      : <>Correct answer: <MathText text={
+                          typeof currentQuestion.options[answerResult.correctAnswer] === 'object'
+                            ? currentQuestion.options[answerResult.correctAnswer].text || currentQuestion.options[answerResult.correctAnswer].label
+                            : currentQuestion.options[answerResult.correctAnswer]
+                        } /></>
                     }
                   </p>
                   {/* Show explanation if available */}
