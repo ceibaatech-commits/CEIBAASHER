@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { Users, Trophy, Play, Copy, Check, Crown } from 'lucide-react';
+import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle } from 'lucide-react';
 import io from 'socket.io-client';
 
 // Connect to Socket.IO on main backend (now integrated with FastAPI on port 8001)
@@ -18,6 +18,9 @@ const BattleLobby = () => {
   const [players, setPlayers] = useState([]);
   const [roomInfo, setRoomInfo] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [hasQuestions, setHasQuestions] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     console.log('🚀 BattleLobby useEffect RUNNING');
@@ -73,8 +76,17 @@ const BattleLobby = () => {
     // Listen for room_joined confirmation
     newSocket.on('room_joined', (data) => {
       console.log('📬 Room joined successfully:', data);
-      if (data.room && data.room.participants) {
-        setPlayers(data.room.participants);
+      if (data.room) {
+        setRoomInfo(data.room);
+        if (data.room.participants) {
+          setPlayers(data.room.participants);
+        }
+        // Check if room has questions
+        if (data.questions && data.questions.length > 0) {
+          setHasQuestions(true);
+        } else if (data.room.questionsCount > 0) {
+          setHasQuestions(true);
+        }
       }
     });
 
@@ -98,6 +110,29 @@ const BattleLobby = () => {
     newSocket.on('battle_started', (data) => {
       console.log('🚀 Battle started:', data);
       navigate(`/live-battle/${pin}`, { 
+        state: { 
+          playerName: isHost ? hostName : playerName,
+          isHost,
+          room: data.room
+        } 
+      });
+    });
+
+    // Listen for start errors
+    newSocket.on('start_error', (data) => {
+      console.error('❌ Start error:', data);
+      setIsStarting(false);
+      setErrorMessage(data.error || 'Failed to start quiz');
+      setTimeout(() => setErrorMessage(''), 5000);
+    });
+
+    // Listen for questions update
+    newSocket.on('questions_updated', (data) => {
+      console.log('📝 Questions updated:', data);
+      if (data.questions && data.questions.length > 0) {
+        setHasQuestions(true);
+      }
+    }); 
         state: { 
           playerName: isHost ? hostName : playerName,
           isHost,
