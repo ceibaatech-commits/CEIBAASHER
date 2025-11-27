@@ -180,15 +180,23 @@ async def join_room(sid, data):
             }, room=sid)
             return
 
-        # Check if room is accepting participants
-        if not room.is_joinable():
-            print(f"[JOIN ERROR] Room {room_id} not joinable")
-            await sio.emit('join_error', {
-                'error': 'Room is not accepting participants.',
-                'code': 'ROOM_CLOSED',
-                'statusCode': 403
-            }, room=sid)
-            return
+        # Check if user is already a participant (allow reconnection)
+        username = user_data.get('username', '')
+        is_existing_participant = any(
+            p.username == username for p in room.participants
+        )
+
+        # For NEW participants, check if room is accepting
+        if not is_existing_participant and not room.is_joinable():
+            # But allow joining active battles (not completed)
+            if room.status != 'active':
+                print(f"[JOIN ERROR] Room {room_id} not joinable for new participant")
+                await sio.emit('join_error', {
+                    'error': 'Room is not accepting participants.',
+                    'code': 'ROOM_CLOSED',
+                    'statusCode': 403
+                }, room=sid)
+                return
 
         # Store user data in session
         await sio.save_session(sid, {'userData': user_data})
@@ -215,7 +223,7 @@ async def join_room(sid, data):
         # Set correct host status
         user_data['isHost'] = is_actual_host
 
-        # Add participant - NO APPROVAL NEEDED (instant join)
+        # Add participant - NO APPROVAL NEEDED (instant join/reconnect)
         result = room.add_participant(sid, user_data)
 
         if not result.get('success'):
