@@ -106,8 +106,14 @@ async def filter_expired_quiz_posts(posts: list) -> list:
             
             created_at = room.get("created_at") or room.get("createdAt")
             if created_at:
+                # Handle different timestamp formats
                 if isinstance(created_at, str):
                     created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                elif isinstance(created_at, (int, float)):
+                    # Unix timestamp - convert to datetime
+                    created_at = datetime.fromtimestamp(created_at, tz=timezone.utc)
+                
+                # Check if within 24 hours
                 if (now - created_at) <= timedelta(hours=24):
                     filtered.append(post)
         except Exception as e:
