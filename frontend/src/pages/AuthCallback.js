@@ -38,8 +38,8 @@ const AuthCallback = () => {
           // Update AuthContext with user data
           setUserData(userData);
           
-          // Redirect to social feed
-          navigate('/social-feed', { replace: true });
+          // Redirect to Victory Lane
+          navigate('/victory-lane', { replace: true });
         } else {
           throw new Error('Failed to fetch user data');
         }
