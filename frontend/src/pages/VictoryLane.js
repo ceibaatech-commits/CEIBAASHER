@@ -1200,12 +1200,54 @@ const VictoryLane = () => {
                   </div>
                 </div>
 
+                {/* Max Participants & Access Control */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Max Participants</label>
+                    <input
+                      type="number"
+                      min="2"
+                      max="100"
+                      value={quizForm.maxParticipants}
+                      onChange={(e) => setQuizForm(prev => ({ ...prev, maxParticipants: parseInt(e.target.value) || 50 }))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      placeholder="Max 100"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Access Control</label>
+                    <select
+                      value={quizForm.accessControl}
+                      onChange={(e) => setQuizForm(prev => ({ ...prev, accessControl: e.target.value }))}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    >
+                      <option value="public">Public - Anyone can join</option>
+                      <option value="followers">Followers Only</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Access Control Info */}
+                {quizForm.accessControl === 'followers' && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                    <Users className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-blue-800">
+                      <span className="font-semibold">Followers Only:</span> Only users who follow you can join this quiz room
+                    </p>
+                  </div>
+                )}
+
                 {/* Warning */}
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-800">
-                    <span className="font-semibold">Minimum 5 questions required</span> to create a quiz room
-                  </p>
+                  <div className="text-sm text-yellow-800">
+                    <p className="font-semibold mb-1">Quiz Room Requirements:</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>Minimum 5 questions required</li>
+                      <li>Maximum 50 questions allowed</li>
+                      <li>Participant limit: 2-100 users</li>
+                    </ul>
+                  </div>
                 </div>
 
                 {/* Questions */}
