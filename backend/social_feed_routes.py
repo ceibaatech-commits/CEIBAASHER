@@ -99,9 +99,11 @@ async def filter_expired_quiz_posts(posts: list) -> list:
             # If not found, check battle_rooms collection (Victory Lane creates rooms here)
             if not room:
                 room = await db.battle_rooms.find_one({"roomId": str(room_code)})
+                print(f"[FILTER DEBUG] Quiz post with code {room_code}: battle_room found = {room is not None}")
             
             if not room:
                 # Room doesn't exist in either collection, skip
+                print(f"[FILTER DEBUG] Room {room_code} not found in any collection - SKIPPING")
                 continue
             
             created_at = room.get("created_at") or room.get("createdAt")
@@ -113,11 +115,18 @@ async def filter_expired_quiz_posts(posts: list) -> list:
                     # Unix timestamp - convert to datetime
                     created_at = datetime.fromtimestamp(created_at, tz=timezone.utc)
                 
+                age = now - created_at
+                within_24h = age <= timedelta(hours=24)
+                print(f"[FILTER DEBUG] Room {room_code} age: {age}, within 24h: {within_24h}")
+                
                 # Check if within 24 hours
-                if (now - created_at) <= timedelta(hours=24):
+                if within_24h:
                     filtered.append(post)
+                    print(f"[FILTER DEBUG] Room {room_code} ADDED to feed")
+            else:
+                print(f"[FILTER DEBUG] Room {room_code} has no created_at - SKIPPING")
         except Exception as e:
-            print(f"Error checking quiz room: {e}")
+            print(f"[FILTER DEBUG] Error checking quiz room {room_code}: {e}")
             continue
     
     return filtered
