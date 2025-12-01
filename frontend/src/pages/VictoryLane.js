@@ -926,7 +926,7 @@ const VictoryLane = () => {
                       <p className="text-gray-900 mt-1 mb-3 whitespace-pre-wrap">{post.content}</p>
 
                       {/* Quiz Room Card */}
-                      {(post.post_type === 'quiz_room' || post.quiz_data) && post.quiz_data && (
+                      {(post.post_type === 'quiz_room' || post.quiz_details) && post.quiz_details && (
                         <div 
                           className="border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 transition mt-3"
                           style={{ borderColor: `${getGradientColor(post.quiz_data.category)}40` }}
