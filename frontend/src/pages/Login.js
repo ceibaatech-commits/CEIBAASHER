@@ -41,7 +41,7 @@ const Login = () => {
       const userData = response.data.user;
       setUserData(userData);
 
-      const from = location.state?.from || '/social-feed';
+      const from = location.state?.from || '/victory-lane';
       navigate(from, { replace: true });
       
     } catch (err) {
