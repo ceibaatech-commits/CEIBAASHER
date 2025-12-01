@@ -500,11 +500,39 @@ class BattleRoomManager:
             room = self.rooms.get(room_id)
             
             if room is None:
-                return {
-                    "success": False, 
-                    "error": "Room not found. Please check the PIN.",
-                    "code": "ROOM_NOT_FOUND"
-                }
+                # Try to load from database
+                if self.db is not None:
+                    try:
+                        db_room = await self.db.battle_rooms.find_one({"roomId": room_id})
+                        if db_room:
+                            room = self._room_from_dict(db_room)
+                            if not room.is_expired():
+                                self.rooms[room_id] = room
+                            else:
+                                return {
+                                    "success": False,
+                                    "error": "Room expired. Please create a new room.",
+                                    "code": "ROOM_EXPIRED"
+                                }
+                        else:
+                            return {
+                                "success": False, 
+                                "error": f"Room {room_id} not found. Please check the PIN.",
+                                "code": "ROOM_NOT_FOUND"
+                            }
+                    except Exception as e:
+                        print(f"[ERROR] Failed to load room {room_id} from DB: {e}")
+                        return {
+                            "success": False, 
+                            "error": "Room not found. Please check the PIN.",
+                            "code": "ROOM_NOT_FOUND"
+                        }
+                else:
+                    return {
+                        "success": False, 
+                        "error": "Room not found. Please check the PIN.",
+                        "code": "ROOM_NOT_FOUND"
+                    }
             
             # Check expiry
             if room.is_expired():
