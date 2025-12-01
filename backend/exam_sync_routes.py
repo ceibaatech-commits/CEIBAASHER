@@ -149,7 +149,9 @@ async def get_exam(exam_id: str):
         hardcoded = get_exam_details(exam_id)
         
         # Get database metadata
-        db_meta = await db.exam_metadata.find_one({"exam_id": exam_id}, {"_id": 0}) if db else None
+        db_meta = None
+        if db is not None:
+            db_meta = await db.exam_metadata.find_one({"exam_id": exam_id}, {"_id": 0})
         
         if not hardcoded and not db_meta:
             raise HTTPException(status_code=404, detail=f"Exam {exam_id} not found")
