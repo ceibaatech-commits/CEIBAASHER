@@ -83,13 +83,18 @@ async def filter_expired_quiz_posts(posts: list) -> list:
             filtered.append(post)
             continue
         
+        print(f"[FILTER DEBUG] Processing quiz_room post: {post.get('id')}")
+        
         # Check room_code in both root level and quiz_details
         room_code = post.get("room_code")
         if not room_code and post.get("quiz_details"):
             room_code = post.get("quiz_details", {}).get("room_code")
         
+        print(f"[FILTER DEBUG] Extracted room_code: {room_code}")
+        
         if not room_code:
             # If no room code found, skip this post
+            print(f"[FILTER DEBUG] No room_code found - SKIPPING")
             continue
         
         try:
