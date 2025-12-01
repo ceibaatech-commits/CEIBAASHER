@@ -613,7 +613,7 @@ const VictoryLane = () => {
           post_type: 'quiz_room',
           content: `🎯 Created a new quiz room: ${quizForm.title}`,
           user_id: user.id,
-          quiz_data: {
+          quiz_details: {
             title: quizForm.title,
             category: quizForm.category,
             difficulty: quizForm.difficulty,
