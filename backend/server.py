@@ -37,6 +37,8 @@ import exam_structure_routes
 from exam_metadata_routes import router as exam_metadata_router
 from x_auth_routes import router as x_auth_router
 from search_routes import router as search_router
+from exam_sync_routes import router as exam_sync_router
+import exam_sync_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
@@ -56,6 +58,7 @@ profile_routes.init_db(db)
 notification_routes.init_db(db)
 books_routes.init_db(db)
 exam_structure_routes.init_db(db)
+exam_sync_routes.init_db(db)
 
 # Initialize social auto-post utilities
 import social_auto_post
