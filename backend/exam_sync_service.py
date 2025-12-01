@@ -56,7 +56,7 @@ async def audit_exam_data() -> Dict[str, Any]:
         audit_report["hardcoded_exams"] = hardcoded_exams
         
         # 2. Get unique exams from exam_sheets collection
-        if db:
+        if db is not None:
             sheets_pipeline = [
                 {"$group": {"_id": "$exam_name"}},
                 {"$project": {"exam_name": "$_id", "_id": 0}}
