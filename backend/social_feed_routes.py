@@ -337,13 +337,21 @@ async def get_for_you_feed(
                 mixed_posts.extend(following_posts)
         
         # Get trending posts
-        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).limit(limit).to_list(limit)
+        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).limit(limit * 2).to_list(limit * 2)
         
+        # Get recent quiz rooms (last 24 hours) to ensure they appear
+        recent_quiz_rooms = await db.social_posts.find(
+            {"post_type": "quiz_room"}, {"_id": 0}
+        ).sort("created_at", -1).limit(20).to_list(20)
+        
+        # Combine and deduplicate
         existing_ids = {p["id"] for p in mixed_posts}
-        for post in trending:
+        for post in trending + recent_quiz_rooms:
             if post["id"] not in existing_ids:
                 mixed_posts.append(post)
+                existing_ids.add(post["id"])
         
+        # Filter expired quiz rooms
         mixed_posts = await filter_expired_quiz_posts(mixed_posts)
         mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
         paginated = mixed_posts[skip:skip + limit]
