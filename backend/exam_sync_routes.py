@@ -28,7 +28,7 @@ class ExamCreate(BaseModel):
     name: str
     full_name: Optional[str] = None
     description: Optional[str] = ""
-    icon: Optional[str] = "📚"
+    icon: Optional[str] = "\U0001F4DA"
     color: Optional[str] = "from-blue-500 to-cyan-500"
     category: Optional[str] = "Competitive Exams"
     total_questions: Optional[int] = 0
@@ -49,6 +49,151 @@ class ExamUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
+# ==================== UTILITY ENDPOINTS (must come before /{exam_id}) ====================
+
+@router.get("/categories")
+async def get_categories():
+    """
+    GET /api/exam-sync/categories - Get all exam categories
+    """
+    from exam_data import EXAM_DATA
+    
+    categories = set()
+    for exam_id, exam in EXAM_DATA.items():
+        if exam.get("category"):
+            categories.add(exam["category"])
+    
+    # Also get from database
+    if db is not None:
+        db_categories = await db.exam_metadata.distinct("category")
+        categories.update([c for c in db_categories if c])
+    
+    return {
+        "success": True,
+        "categories": sorted(list(categories))
+    }
+
+
+@router.get("/stats")
+async def get_exam_stats():
+    """
+    GET /api/exam-sync/stats - Get exam statistics
+    """
+    from exam_data import EXAM_DATA
+    
+    try:
+        stats = {
+            "total_hardcoded_exams": len(EXAM_DATA),
+            "total_db_metadata": 0,
+            "total_sheets": 0,
+            "total_questions": 0,
+            "sheets_with_questions": 0,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        
+        if db is not None:
+            stats["total_db_metadata"] = await db.exam_metadata.count_documents({})
+            stats["total_sheets"] = await db.exam_sheets.count_documents({})
+            stats["total_questions"] = await db.questions.count_documents({})
+            stats["sheets_with_questions"] = await db.exam_sheets.count_documents({"question_count": {"$gt": 0}})
+        
+            # Category breakdown
+            category_pipeline = [
+                {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+                {"$sort": {"count": -1}}
+            ]
+            categories = await db.exam_metadata.aggregate(category_pipeline).to_list(None)
+            stats["by_category"] = {c["_id"]: c["count"] for c in categories if c["_id"]}
+        
+        return {"success": True, "stats": stats}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/audit")
+async def audit_exams():
+    """
+    GET /api/exam-sync/audit - Run data audit
+    """
+    import exam_sync_service
+    
+    try:
+        result = await exam_sync_service.audit_exam_data()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/audit-log")
+async def get_audit_log(
+    limit: int = Query(100, description="Number of entries to return"),
+    exam_id: Optional[str] = Query(None, description="Filter by exam ID")
+):
+    """
+    GET /api/exam-sync/audit-log - Get exam change history
+    """
+    try:
+        if db is None:
+            return {"success": True, "logs": [], "count": 0}
+        
+        filter_query = {}
+        if exam_id:
+            filter_query["exam_id"] = exam_id
+        
+        logs = await db.exam_audit_log.find(
+            filter_query,
+            {"_id": 0}
+        ).sort("timestamp", -1).limit(limit).to_list(limit)
+        
+        return {
+            "success": True,
+            "logs": logs,
+            "count": len(logs)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== SYNC ENDPOINTS ====================
+
+@router.post("/sync")
+async def trigger_sync(
+    source: str = Query("hardcode", description="Source of truth: 'hardcode' or 'database'"),
+    dry_run: bool = Query(True, description="Preview changes without applying")
+):
+    """
+    POST /api/exam-sync/sync - Manual sync trigger
+    """
+    import exam_sync_service
+    
+    try:
+        result = await exam_sync_service.sync_exam_data(
+            source_of_truth=source,
+            dry_run=dry_run
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/migrate")
+async def run_migration(
+    backup: bool = Query(True, description="Create backup before migration")
+):
+    """
+    POST /api/exam-sync/migrate - Run one-time migration
+    """
+    import exam_sync_service
+    
+    try:
+        result = await exam_sync_service.run_migration(backup_first=backup)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== EXAM CRUD ENDPOINTS ====================
 
 @router.get("")
@@ -57,11 +202,10 @@ async def get_all_exams(
     category: Optional[str] = Query(None, description="Filter by category")
 ):
     """
-    GET /api/exams - Fetch all exams
+    GET /api/exam-sync - Fetch all exams
     Returns merged data from hardcoded exam_data.py and database metadata
     """
     from exam_data import EXAM_DATA, get_all_exams as get_hardcoded_exams
-    import exam_sync_service
     
     try:
         # Get hardcoded exams
@@ -137,10 +281,27 @@ async def get_all_exams(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("")
+async def create_exam(exam: ExamCreate):
+    """
+    POST /api/exam-sync - Create new exam
+    """
+    import exam_sync_service
+    
+    result = await exam_sync_service.create_exam(exam.dict())
+    
+    if not result["success"]:
+        raise HTTPException(status_code=400, detail=result["error"])
+    
+    return result
+
+
+# ==================== EXAM ID ROUTES (must come last) ====================
+
 @router.get("/{exam_id}")
 async def get_exam(exam_id: str):
     """
-    GET /api/exams/:id - Fetch single exam with full details
+    GET /api/exam-sync/:id - Fetch single exam with full details
     """
     from exam_data import get_exam_details
     
@@ -186,25 +347,10 @@ async def get_exam(exam_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("")
-async def create_exam(exam: ExamCreate):
-    """
-    POST /api/exams - Create new exam
-    """
-    import exam_sync_service
-    
-    result = await exam_sync_service.create_exam(exam.dict())
-    
-    if not result["success"]:
-        raise HTTPException(status_code=400, detail=result["error"])
-    
-    return result
-
-
 @router.put("/{exam_id}")
 async def update_exam(exam_id: str, exam: ExamUpdate):
     """
-    PUT /api/exams/:id - Update exam
+    PUT /api/exam-sync/:id - Update exam
     """
     import exam_sync_service
     
@@ -223,7 +369,7 @@ async def delete_exam(
     cascade: bool = Query(False, description="Delete associated sheets and questions")
 ):
     """
-    DELETE /api/exams/:id - Delete exam
+    DELETE /api/exam-sync/:id - Delete exam
     """
     import exam_sync_service
     
@@ -233,145 +379,3 @@ async def delete_exam(
         raise HTTPException(status_code=400, detail=result["error"])
     
     return result
-
-
-# ==================== SYNC ENDPOINTS ====================
-
-@router.post("/sync")
-async def trigger_sync(
-    source: str = Query("hardcode", description="Source of truth: 'hardcode' or 'database'"),
-    dry_run: bool = Query(True, description="Preview changes without applying")
-):
-    """
-    POST /api/exams/sync - Manual sync trigger
-    """
-    import exam_sync_service
-    
-    try:
-        result = await exam_sync_service.sync_exam_data(
-            source_of_truth=source,
-            dry_run=dry_run
-        )
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/audit")
-async def audit_exams():
-    """
-    GET /api/exams/audit - Run data audit
-    """
-    import exam_sync_service
-    
-    try:
-        result = await exam_sync_service.audit_exam_data()
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/migrate")
-async def run_migration(
-    backup: bool = Query(True, description="Create backup before migration")
-):
-    """
-    POST /api/exams/migrate - Run one-time migration
-    """
-    import exam_sync_service
-    
-    try:
-        result = await exam_sync_service.run_migration(backup_first=backup)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# ==================== UTILITY ENDPOINTS ====================
-
-@router.get("/categories")
-async def get_categories():
-    """
-    GET /api/exams/categories - Get all exam categories
-    """
-    from exam_data import EXAM_DATA
-    
-    categories = set()
-    for exam_id, exam in EXAM_DATA.items():
-        if exam.get("category"):
-            categories.add(exam["category"])
-    
-    # Also get from database
-    if db is not None:
-        db_categories = await db.exam_metadata.distinct("category")
-        categories.update([c for c in db_categories if c])
-    
-    return {
-        "success": True,
-        "categories": sorted(list(categories))
-    }
-
-
-@router.get("/stats")
-async def get_exam_stats():
-    """
-    GET /api/exams/stats - Get exam statistics
-    """
-    from exam_data import EXAM_DATA
-    
-    try:
-        stats = {
-            "total_hardcoded_exams": len(EXAM_DATA),
-            "total_db_metadata": 0,
-            "total_sheets": 0,
-            "total_questions": 0,
-            "sheets_with_questions": 0,
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }
-        
-        if db is not None:
-            stats["total_db_metadata"] = await db.exam_metadata.count_documents({})
-            stats["total_sheets"] = await db.exam_sheets.count_documents({})
-            stats["total_questions"] = await db.questions.count_documents({})
-            stats["sheets_with_questions"] = await db.exam_sheets.count_documents({"question_count": {"$gt": 0}})
-        
-            # Category breakdown
-            category_pipeline = [
-                {"$group": {"_id": "$category", "count": {"$sum": 1}}},
-                {"$sort": {"count": -1}}
-            ]
-            categories = await db.exam_metadata.aggregate(category_pipeline).to_list(None)
-            stats["by_category"] = {c["_id"]: c["count"] for c in categories if c["_id"]}
-        
-        return {"success": True, "stats": stats}
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/audit-log")
-async def get_audit_log(
-    limit: int = Query(100, description="Number of entries to return"),
-    exam_id: Optional[str] = Query(None, description="Filter by exam ID")
-):
-    """
-    GET /api/exams/audit-log - Get exam change history
-    """
-    try:
-        filter_query = {}
-        if exam_id:
-            filter_query["exam_id"] = exam_id
-        
-        logs = await db.exam_audit_log.find(
-            filter_query,
-            {"_id": 0}
-        ).sort("timestamp", -1).limit(limit).to_list(limit)
-        
-        return {
-            "success": True,
-            "logs": logs,
-            "count": len(logs)
-        }
-        
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
