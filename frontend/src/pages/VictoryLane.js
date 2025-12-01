@@ -949,23 +949,50 @@ const VictoryLane = () => {
                               </div>
                               <div className="flex items-center gap-1">
                                 <Users className="w-4 h-4" />
-                                <span>{post.quiz_data.participants || 0} playing</span>
+                                <span>{post.quiz_data.participants || 0}/{post.quiz_data.max_participants || 50} players</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Clock className="w-4 h-4" />
                                 <span>{post.quiz_data.time_limit || 15} min</span>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between">
+                            
+                            {/* Access Control Badge */}
+                            {post.quiz_data.access_control === 'followers' && (
+                              <div className="mb-3 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full w-fit">
+                                <Users className="w-3.5 h-3.5" />
+                                <span className="font-medium">Followers Only</span>
+                              </div>
+                            )}
+                            
+                            <div className="flex items-center justify-between gap-3">
                               <span className={`text-xs px-3 py-1 rounded-full font-medium ${getDifficultyColor(post.quiz_data.difficulty || 'Medium')}`}>
                                 {post.quiz_data.difficulty || 'Medium'}
                               </span>
-                              <button 
-                                onClick={() => handleJoinRoom(post.quiz_data.room_code)}
-                                className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition"
-                              >
-                                Join Room
-                              </button>
+                              {(() => {
+                                const isFollowersOnly = post.quiz_data.access_control === 'followers';
+                                const isHostFollowed = followingList.has(post.quiz_data.host_id || post.user_id);
+                                const isOwnRoom = user && post.user_id === user.id;
+                                const canJoin = !isFollowersOnly || isHostFollowed || isOwnRoom;
+                                
+                                if (!canJoin) {
+                                  return (
+                                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                                      <Users className="w-4 h-4" />
+                                      <span>Follow host to join</span>
+                                    </div>
+                                  );
+                                }
+                                
+                                return (
+                                  <button 
+                                    onClick={() => handleJoinRoom(post.quiz_data.room_code)}
+                                    className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition"
+                                  >
+                                    Join Room
+                                  </button>
+                                );
+                              })()}
                             </div>
                           </div>
                         </div>
