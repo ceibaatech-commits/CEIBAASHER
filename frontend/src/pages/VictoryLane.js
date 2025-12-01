@@ -677,6 +677,10 @@ const VictoryLane = () => {
 
   // Add more questions
   const addQuestion = () => {
+    if (quizForm.questions.length >= 50) {
+      toast.error('Maximum 50 questions allowed');
+      return;
+    }
     setQuizForm(prev => ({
       ...prev,
       questions: [...prev.questions, { question: '', options: ['', '', '', ''], correctAnswer: 0 }]
