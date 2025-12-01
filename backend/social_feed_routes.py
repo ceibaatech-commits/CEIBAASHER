@@ -93,12 +93,18 @@ async def filter_expired_quiz_posts(posts: list) -> list:
             continue
         
         try:
+            # Check in quiz_rooms collection first
             room = await db.quiz_rooms.find_one({"room_code": str(room_code).upper()})
+            
+            # If not found, check battle_rooms collection (Victory Lane creates rooms here)
             if not room:
-                # Room doesn't exist in quiz_rooms collection, skip
+                room = await db.battle_rooms.find_one({"roomId": str(room_code)})
+            
+            if not room:
+                # Room doesn't exist in either collection, skip
                 continue
             
-            created_at = room.get("created_at")
+            created_at = room.get("created_at") or room.get("createdAt")
             if created_at:
                 if isinstance(created_at, str):
                     created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
