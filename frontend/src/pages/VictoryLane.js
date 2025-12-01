@@ -1319,7 +1319,14 @@ const VictoryLane = () => {
               </button>
               <button
                 onClick={handleCreateQuizRoom}
-                disabled={quizForm.questions.filter(q => q.question.trim()).length < 5 || !quizForm.title.trim() || !quizForm.category}
+                disabled={
+                  quizForm.questions.filter(q => q.question.trim()).length < 5 || 
+                  quizForm.questions.filter(q => q.question.trim()).length > 50 ||
+                  !quizForm.title.trim() || 
+                  !quizForm.category ||
+                  quizForm.maxParticipants < 2 ||
+                  quizForm.maxParticipants > 100
+                }
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Create Room
