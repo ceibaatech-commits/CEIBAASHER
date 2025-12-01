@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 
 # Configuration
-BACKEND_URL = "https://quizhub-social.preview.emergentagent.com"
+BACKEND_URL = "https://battleroom-fix.preview.emergentagent.com"
 MONGO_URL = "mongodb://localhost:27017"
 DB_NAME = "test_database"
 

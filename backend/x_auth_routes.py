@@ -16,7 +16,7 @@ router = APIRouter()
 X_CLIENT_ID = os.environ.get('X_CLIENT_ID')
 X_CLIENT_SECRET = os.environ.get('X_CLIENT_SECRET')
 X_CALLBACK_URL = os.environ.get('X_CALLBACK_URL')
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://quizhub-social.preview.emergentagent.com')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://battleroom-fix.preview.emergentagent.com')
 JWT_SECRET = os.environ.get('JWT_SECRET')
 MONGO_URL = os.environ.get('MONGO_URL')
 
