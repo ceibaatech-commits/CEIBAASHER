@@ -1291,13 +1291,20 @@ const VictoryLane = () => {
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={addQuestion}
-                    className="mt-3 text-blue-500 hover:text-blue-600 font-medium text-sm flex items-center gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add More Questions
-                  </button>
+                  {quizForm.questions.length < 50 ? (
+                    <button
+                      onClick={addQuestion}
+                      className="mt-3 text-blue-500 hover:text-blue-600 font-medium text-sm flex items-center gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add More Questions ({quizForm.questions.length}/50)
+                    </button>
+                  ) : (
+                    <div className="mt-3 text-gray-500 font-medium text-sm flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      Maximum 50 questions reached
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
