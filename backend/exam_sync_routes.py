@@ -164,11 +164,15 @@ async def get_exam(exam_id: str):
                     exam[key] = value
         
         # Get question count
-        question_count = await db.questions.count_documents({"exam_name": exam_id}) if db else 0
+        question_count = 0
+        if db is not None:
+            question_count = await db.questions.count_documents({"exam_name": exam_id})
         exam["questions_in_db"] = question_count
         
         # Get sheets count
-        sheets_count = await db.exam_sheets.count_documents({"exam_name": exam_id}) if db else 0
+        sheets_count = 0
+        if db is not None:
+            sheets_count = await db.exam_sheets.count_documents({"exam_name": exam_id})
         exam["sheets_count"] = sheets_count
         
         return {
