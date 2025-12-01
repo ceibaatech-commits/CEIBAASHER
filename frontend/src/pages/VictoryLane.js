@@ -5,7 +5,7 @@ import axios from 'axios';
 import { 
   Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Users, 
   Clock, Trophy, Play, Send, X, Plus, AlertCircle, CheckCircle2,
-  Sparkles, TrendingUp, UserPlus, Wifi, WifiOff
+  Sparkles, TrendingUp, UserPlus, Wifi, WifiOff, UserMinus, MapPin, Calendar, Link2
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -24,8 +24,16 @@ const VictoryLane = () => {
   const [loading, setLoading] = useState(true);
   const [newPostContent, setNewPostContent] = useState('');
   const [showQuizModal, setShowQuizModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  
+  // Dynamic user data
+  const [usersData, setUsersData] = useState({});
+  const [followingList, setFollowingList] = useState(new Set());
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
+  const [myFollowingCount, setMyFollowingCount] = useState(0);
+  const [myFollowersCount, setMyFollowersCount] = useState(0);
   
   // Quiz Room Creation State
   const [quizForm, setQuizForm] = useState({
@@ -109,9 +117,42 @@ const VictoryLane = () => {
     }
   }, [activeTab, isConnected, joinFeed]);
 
+  // Fetch my following list
+  const fetchMyFollowing = async () => {
+    if (!user) return;
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/user/${user.id}/following`);
+      if (response.data.success) {
+        const followingIds = new Set(response.data.following?.map(f => f.id || f.user_id) || []);
+        setFollowingList(followingIds);
+        setMyFollowingCount(followingIds.size);
+      }
+    } catch (error) {
+      console.error('Error fetching following:', error);
+    }
+  };
+
+  // Fetch my followers count
+  const fetchMyStats = async () => {
+    if (!user) return;
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/user/${user.id}`);
+      if (response.data.success) {
+        setMyFollowersCount(response.data.user?.followers_count || 0);
+        setMyFollowingCount(response.data.user?.following_count || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
   // Fetch feed
   useEffect(() => {
     fetchFeed();
+    if (user) {
+      fetchMyFollowing();
+      fetchMyStats();
+    }
   }, [activeTab, user]);
 
   const fetchFeed = async () => {
@@ -123,14 +164,36 @@ const VictoryLane = () => {
       
       const response = await axios.get(endpoint);
       if (response.data.success) {
-        setPosts(response.data.posts || []);
+        const postsData = response.data.posts || [];
+        setPosts(postsData);
+        
+        // Build users data from posts
+        const users = {};
+        postsData.forEach(post => {
+          if (post.user_id) {
+            users[post.user_id] = {
+              id: post.user_id,
+              name: post.user_name || post.username || 'Anonymous',
+              username: post.username || 'user',
+              avatar: post.user_avatar,
+              is_verified: post.is_verified || false,
+              followers_count: post.user_followers_count || 0,
+              following_count: post.user_following_count || 0,
+              posts_count: post.user_posts_count || 0,
+              bio: post.user_bio || '',
+              location: post.user_location || '',
+              joined_at: post.user_joined_at
+            };
+          }
+        });
+        setUsersData(prev => ({ ...prev, ...users }));
         
         // Initialize liked/bookmarked states
         const liked = new Set();
         const bookmarked = new Set();
-        response.data.posts?.forEach(post => {
-          if (post.user_liked) liked.add(post.id);
-          if (post.user_bookmarked) bookmarked.add(post.id);
+        postsData.forEach(post => {
+          if (post.liked_by?.includes(user?.id) || post.user_liked) liked.add(post.id);
+          if (post.bookmarked_by?.includes(user?.id) || post.user_bookmarked) bookmarked.add(post.id);
         });
         setLikedPosts(liked);
         setBookmarkedPosts(bookmarked);
@@ -139,6 +202,75 @@ const VictoryLane = () => {
       console.error('Error fetching feed:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Follow/Unfollow user
+  const toggleFollow = async (targetUserId) => {
+    if (!user) {
+      toast.error('Please login to follow users');
+      return;
+    }
+    
+    if (targetUserId === user.id) {
+      toast.error('You cannot follow yourself');
+      return;
+    }
+
+    const isFollowing = followingList.has(targetUserId);
+    
+    // Optimistic update
+    setFollowingList(prev => {
+      const newSet = new Set(prev);
+      if (isFollowing) {
+        newSet.delete(targetUserId);
+      } else {
+        newSet.add(targetUserId);
+      }
+      return newSet;
+    });
+    
+    // Update following count
+    setMyFollowingCount(prev => isFollowing ? prev - 1 : prev + 1);
+    
+    // Update target user's followers count in usersData
+    setUsersData(prev => {
+      if (prev[targetUserId]) {
+        return {
+          ...prev,
+          [targetUserId]: {
+            ...prev[targetUserId],
+            followers_count: isFollowing 
+              ? (prev[targetUserId].followers_count || 1) - 1 
+              : (prev[targetUserId].followers_count || 0) + 1
+          }
+        };
+      }
+      return prev;
+    });
+
+    try {
+      if (isFollowing) {
+        await axios.delete(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        toast.success('Unfollowed successfully');
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {}, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        toast.success('Following!');
+      }
+    } catch (error) {
+      // Revert on error
+      setFollowingList(prev => {
+        const newSet = new Set(prev);
+        if (isFollowing) newSet.add(targetUserId);
+        else newSet.delete(targetUserId);
+        return newSet;
+      });
+      setMyFollowingCount(prev => isFollowing ? prev + 1 : prev - 1);
+      toast.error('Failed to update follow status');
     }
   };
 
@@ -161,7 +293,14 @@ const VictoryLane = () => {
     
     setPosts(prev => prev.map(post => {
       if (post.id === postId) {
-        return { ...post, likes_count: isLiked ? post.likes_count - 1 : post.likes_count + 1 };
+        const newLikedBy = isLiked 
+          ? (post.liked_by || []).filter(id => id !== user.id)
+          : [...(post.liked_by || []), user.id];
+        return { 
+          ...post, 
+          likes_count: isLiked ? (post.likes_count || 1) - 1 : (post.likes_count || 0) + 1,
+          liked_by: newLikedBy
+        };
       }
       return post;
     }));
@@ -189,10 +328,18 @@ const VictoryLane = () => {
   };
 
   // Toggle bookmark
-  const toggleBookmark = (postId) => {
+  const toggleBookmark = async (postId) => {
+    if (!user) {
+      toast.error('Please login to bookmark posts');
+      return;
+    }
+
+    const isBookmarked = bookmarkedPosts.has(postId);
+    
+    // Optimistic update
     setBookmarkedPosts(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(postId)) {
+      if (isBookmarked) {
         newSet.delete(postId);
         toast.success('Removed from bookmarks');
       } else {
@@ -201,6 +348,55 @@ const VictoryLane = () => {
       }
       return newSet;
     });
+    
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        const newBookmarkedBy = isBookmarked 
+          ? (post.bookmarked_by || []).filter(id => id !== user.id)
+          : [...(post.bookmarked_by || []), user.id];
+        return { ...post, bookmarked_by: newBookmarkedBy };
+      }
+      return post;
+    }));
+
+    // API call would go here for persistence
+  };
+
+  // Open profile modal
+  const openProfile = async (userId) => {
+    if (!userId) return;
+    
+    // First check if we have cached data
+    let profileData = usersData[userId];
+    
+    // Try to fetch fresh data
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}`);
+      if (response.data.success) {
+        profileData = {
+          id: userId,
+          name: response.data.user?.name || 'User',
+          username: response.data.user?.username || 'user',
+          avatar: response.data.user?.avatar,
+          is_verified: response.data.user?.is_verified || false,
+          followers_count: response.data.user?.followers_count || 0,
+          following_count: response.data.user?.following_count || 0,
+          posts_count: response.data.user?.posts_count || 0,
+          bio: response.data.user?.bio || '',
+          location: response.data.user?.location || '',
+          website: response.data.user?.website || '',
+          joined_at: response.data.user?.joined_at || response.data.user?.created_at
+        };
+        setUsersData(prev => ({ ...prev, [userId]: profileData }));
+      }
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+    }
+    
+    if (profileData) {
+      setSelectedProfile(profileData);
+      setShowProfileModal(true);
+    }
   };
 
   // Create text post
@@ -239,7 +435,6 @@ const VictoryLane = () => {
     }
 
     try {
-      // Create battle room with questions
       const response = await axios.post(`${BACKEND_URL}/api/battle/create-room`, {
         hostName: user?.name || 'Quiz Host',
         subject: quizForm.category,
@@ -254,7 +449,6 @@ const VictoryLane = () => {
       });
 
       if (response.data.success) {
-        // Also create a social post about the quiz room
         await axios.post(`${BACKEND_URL}/api/social/posts`, {
           post_type: 'quiz_room',
           content: `Created a new quiz room: ${quizForm.title}`,
@@ -359,6 +553,48 @@ const VictoryLane = () => {
     });
   };
 
+  // Follow Button Component
+  const FollowButton = ({ userId, size = 'sm' }) => {
+    const isFollowing = followingList.has(userId);
+    const isMe = user?.id === userId;
+    const [isHovered, setIsHovered] = useState(false);
+    
+    if (isMe) return null;
+    
+    if (isFollowing) {
+      return (
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleFollow(userId); }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`px-4 ${size === 'sm' ? 'py-1.5 text-sm' : 'py-2 text-base'} rounded-full font-semibold transition-all border-2 ${
+            isHovered 
+              ? 'border-red-300 bg-red-50 text-red-600' 
+              : 'border-gray-300 bg-white text-gray-700'
+          }`}
+        >
+          {isHovered ? (
+            <span className="flex items-center gap-1">
+              <UserMinus className="w-4 h-4" />
+              Unfollow
+            </span>
+          ) : (
+            'Following'
+          )}
+        </button>
+      );
+    }
+    
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); toggleFollow(userId); }}
+        className={`px-4 ${size === 'sm' ? 'py-1.5 text-sm' : 'py-2 text-base'} bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition-all`}
+      >
+        Follow
+      </button>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -368,15 +604,19 @@ const VictoryLane = () => {
         <div className="max-w-2xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold text-gray-900">Victory Lane</h1>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              {/* My Stats */}
+              {user && (
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <span><strong>{myFollowingCount}</strong> Following</span>
+                  <span><strong>{myFollowersCount}</strong> Followers</span>
+                </div>
+              )}
               {/* Connection Status */}
               <div className={`flex items-center gap-1 text-xs ${isConnected ? 'text-green-600' : 'text-gray-400'}`}>
                 {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
                 <span>{isConnected ? 'Live' : 'Offline'}</span>
               </div>
-              <button className="p-2 hover:bg-gray-100 rounded-full transition">
-                <MoreHorizontal className="w-5 h-5 text-gray-600" />
-              </button>
             </div>
           </div>
           
@@ -410,7 +650,10 @@ const VictoryLane = () => {
         {user ? (
           <div className="bg-white border-b border-gray-200 p-4">
             <div className="flex gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+              <div 
+                onClick={() => openProfile(user.id)}
+                className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-100 transition-all"
+              >
                 {user.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div className="flex-1">
@@ -471,22 +714,33 @@ const VictoryLane = () => {
               posts.map(post => (
                 <div key={post.id} className="bg-white p-4 hover:bg-gray-50 transition">
                   <div className="flex gap-3">
-                    {/* User Avatar */}
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
+                    {/* User Avatar - Clickable */}
+                    <div 
+                      onClick={() => openProfile(post.user_id)}
+                      className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 cursor-pointer hover:ring-4 hover:ring-purple-100 transition-all"
+                    >
                       {post.user_name?.charAt(0).toUpperCase() || post.username?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      {/* User Info */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-gray-900 hover:underline cursor-pointer">
-                          {post.user_name || post.username || 'Anonymous'}
-                        </span>
-                        {post.is_verified && (
-                          <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
+                      {/* User Info with Follow Button */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span 
+                            onClick={() => openProfile(post.user_id)}
+                            className="font-bold text-gray-900 hover:underline cursor-pointer"
+                          >
+                            {post.user_name || post.username || 'Anonymous'}
+                          </span>
+                          {post.is_verified && (
+                            <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
+                          )}
+                          <span className="text-gray-500 text-sm">@{post.username || 'user'}</span>
+                          <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
+                        </div>
+                        {user && post.user_id !== user.id && (
+                          <FollowButton userId={post.user_id} />
                         )}
-                        <span className="text-gray-500 text-sm">@{post.username || 'user'}</span>
-                        <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
                       </div>
 
                       {/* Post Content */}
@@ -587,7 +841,7 @@ const VictoryLane = () => {
                           }`}
                         >
                           <div className="p-2 rounded-full group-hover:bg-red-50 transition">
-                            <Heart className={`w-5 h-5 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                            <Heart className={`w-5 h-5 transition-all ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
                           </div>
                           <span className="text-sm font-medium">{post.likes_count || 0}</span>
                         </button>
@@ -598,7 +852,7 @@ const VictoryLane = () => {
                             bookmarkedPosts.has(post.id) ? 'text-blue-500 bg-blue-50' : 'text-gray-500 hover:bg-gray-100'
                           }`}
                         >
-                          <Bookmark className={`w-5 h-5 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                          <Bookmark className={`w-5 h-5 transition-all ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
                         </button>
                       </div>
                     </div>
@@ -609,6 +863,91 @@ const VictoryLane = () => {
           </div>
         )}
       </div>
+
+      {/* Profile Modal */}
+      {showProfileModal && selectedProfile && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowProfileModal(false)}>
+          <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden" onClick={e => e.stopPropagation()}>
+            {/* Cover Photo */}
+            <div className="h-32 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            
+            {/* Profile Info */}
+            <div className="px-6 pb-6">
+              {/* Avatar */}
+              <div className="-mt-16 mb-4 flex justify-between items-end">
+                <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-lg">
+                  {selectedProfile.name?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                <FollowButton userId={selectedProfile.id} size="md" />
+              </div>
+              
+              {/* Name & Username */}
+              <div className="mb-4">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedProfile.name}</h2>
+                  {selectedProfile.is_verified && (
+                    <CheckCircle2 className="w-6 h-6 text-blue-500 fill-blue-500" />
+                  )}
+                </div>
+                <p className="text-gray-500">@{selectedProfile.username}</p>
+              </div>
+              
+              {/* Bio */}
+              {selectedProfile.bio && (
+                <p className="text-gray-700 mb-4">{selectedProfile.bio}</p>
+              )}
+              
+              {/* Location & Website & Joined */}
+              <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+                {selectedProfile.location && (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {selectedProfile.location}
+                  </span>
+                )}
+                {selectedProfile.website && (
+                  <span className="flex items-center gap-1 text-blue-500 hover:underline cursor-pointer">
+                    <Link2 className="w-4 h-4" />
+                    {selectedProfile.website}
+                  </span>
+                )}
+                {selectedProfile.joined_at && (
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    Joined {new Date(selectedProfile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                )}
+              </div>
+              
+              {/* Stats */}
+              <div className="flex gap-6 border-t border-gray-200 pt-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-gray-900">{selectedProfile.posts_count || 0}</p>
+                  <p className="text-sm text-gray-500">Posts</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-gray-900">
+                    {usersData[selectedProfile.id]?.followers_count ?? selectedProfile.followers_count ?? 0}
+                  </p>
+                  <p className="text-sm text-gray-500">Followers</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-gray-900">{selectedProfile.following_count || 0}</p>
+                  <p className="text-sm text-gray-500">Following</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setShowProfileModal(false)}
+              className="absolute top-4 right-4 p-2 bg-black/50 hover:bg-black/70 rounded-full text-white transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Quiz Creation Modal */}
       {showQuizModal && (
