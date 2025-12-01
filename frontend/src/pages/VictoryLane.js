@@ -41,16 +41,160 @@ const VictoryLane = () => {
     category: '',
     difficulty: 'Medium',
     timeLimit: 15,
+    maxParticipants: 50,
+    accessControl: 'public', // 'public' or 'followers'
     questions: Array(5).fill({ question: '', options: ['', '', '', ''], correctAnswer: 0 })
   });
 
-  // Categories for quiz rooms
+  // Comprehensive exam categories - All exams from backend
   const categories = [
-    'JEE Main Physics', 'JEE Main Chemistry', 'JEE Main Mathematics',
-    'NEET Biology', 'NEET Physics', 'NEET Chemistry',
-    'UPSC General Studies', 'UPSC History', 'UPSC Geography',
-    'SSC Reasoning', 'SSC Quantitative', 'SSC English',
-    'Banking Aptitude', 'CAT Verbal', 'CAT Quant'
+    // Engineering & Medical
+    'JEE Main - Physics',
+    'JEE Main - Chemistry',
+    'JEE Main - Mathematics',
+    'NEET - Physics',
+    'NEET - Chemistry',
+    'NEET - Biology',
+    'GATE - General Aptitude',
+    'GATE - Engineering Mathematics',
+    'NATA - Drawing & Composition',
+    'NATA - General Aptitude',
+    
+    // UPSC & Civil Services
+    'UPSC - General Studies',
+    'UPSC - History',
+    'UPSC - Geography',
+    'UPSC - Polity',
+    'UPSC - Economy',
+    'UPSC - Science & Technology',
+    'UPSC - Current Affairs',
+    'IES/ISS - General Studies',
+    'IES/ISS - Engineering',
+    
+    // Defense Services
+    'NDA - Mathematics',
+    'NDA - General Ability Test',
+    'CDS - English',
+    'CDS - General Knowledge',
+    'CDS - Elementary Mathematics',
+    'AFCAT - General Awareness',
+    'AFCAT - Verbal Ability',
+    'AFCAT - Numerical Ability',
+    'AFCAT - Reasoning',
+    
+    // Banking & Finance
+    'IBPS PO - Reasoning Ability',
+    'IBPS PO - Quantitative Aptitude',
+    'IBPS PO - English Language',
+    'IBPS PO - General Awareness',
+    'IBPS Clerk - Numerical Ability',
+    'IBPS Clerk - Reasoning Ability',
+    'IBPS Clerk - English Language',
+    'IBPS SO - Reasoning',
+    'IBPS SO - English Language',
+    'IBPS RRB PO - Reasoning',
+    'IBPS RRB PO - Quantitative Aptitude',
+    'SBI PO - Reasoning',
+    'SBI PO - Quantitative Aptitude',
+    'SBI PO - English Language',
+    'SBI Clerk - Reasoning',
+    'SBI Clerk - Quantitative Aptitude',
+    'SBI Clerk - English',
+    'RBI Grade B - General Awareness',
+    'RBI Grade B - English Language',
+    'RBI Grade B - Quantitative Aptitude',
+    'NABARD Grade B - Reasoning',
+    'NABARD Grade B - Quantitative Aptitude',
+    'NABARD Grade B - Economic & Social Issues',
+    'LIC AAO - Reasoning',
+    'LIC AAO - Quantitative Aptitude',
+    'LIC AAO - English Language',
+    'LIC ADO - Reasoning',
+    'LIC ADO - Numerical Ability',
+    'LIC ADO - English Language',
+    'EPFO EO/AO - General English',
+    'EPFO EO/AO - General Reasoning',
+    'EPFO EO/AO - Quantitative Aptitude',
+    
+    // SSC Exams
+    'SSC CGL - General Intelligence',
+    'SSC CGL - General Awareness',
+    'SSC CGL - Quantitative Aptitude',
+    'SSC CGL - English Comprehension',
+    'SSC CHSL - English Language',
+    'SSC CHSL - General Intelligence',
+    'SSC CHSL - Quantitative Aptitude',
+    'SSC CHSL - General Awareness',
+    'SSC GD - Reasoning',
+    'SSC GD - General Knowledge',
+    'SSC GD - Mathematics',
+    'SSC GD - English',
+    
+    // Railway Exams
+    'RRB NTPC - Mathematics',
+    'RRB NTPC - General Intelligence',
+    'RRB NTPC - General Awareness',
+    'RRB NTPC - General Science',
+    
+    // Teaching Exams
+    'CTET - Child Development',
+    'CTET - Language I',
+    'CTET - Language II',
+    'CTET - Mathematics',
+    'CTET - Environmental Studies',
+    'CTET - Social Studies',
+    'DSSB PGT - Subject Knowledge',
+    'DSSB TGT - General Awareness',
+    'KVS PRT - General Knowledge',
+    'HTET - Child Development',
+    'MPSET - General Aptitude',
+    
+    // Management & Law
+    'CAT - Verbal Ability',
+    'CAT - Quantitative Aptitude',
+    'CAT - Data Interpretation',
+    'CAT - Logical Reasoning',
+    'CLAT - Legal Reasoning',
+    'CLAT - Logical Reasoning',
+    'CLAT - English Language',
+    'CLAT - Current Affairs',
+    'GMAT - Quantitative',
+    'GMAT - Verbal',
+    'GMAT - Integrated Reasoning',
+    
+    // University Entrance
+    'CUET UG - General Test',
+    'CUET UG - Domain Subjects',
+    
+    // Agriculture
+    'Agriculture - Agronomy',
+    'Agriculture - Horticulture',
+    'Agriculture - Soil Science',
+    'Agriculture - Plant Protection',
+    
+    // State Exams
+    'RPSC - General Knowledge',
+    'RPSC - Reasoning',
+    'RPSC - Mathematics',
+    
+    // Language Proficiency
+    'French - Grammar',
+    'French - Vocabulary',
+    'Chinese - Grammar',
+    'Chinese - Vocabulary',
+    'Japanese - Grammar',
+    'Japanese - Vocabulary',
+    'Korean - Grammar',
+    'Korean - Vocabulary',
+    'Kannada - Grammar',
+    
+    // General Categories
+    'General Knowledge',
+    'Current Affairs',
+    'Reasoning & Aptitude',
+    'English Grammar',
+    'Mathematics',
+    'General Science'
   ];
 
   // Real-time socket handlers
