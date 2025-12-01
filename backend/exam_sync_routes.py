@@ -121,7 +121,9 @@ async def get_all_exams(
         
         # Get question counts for each exam
         for exam in merged_exams:
-            count = await db.questions.count_documents({"exam_name": exam["id"]}) if db else 0
+            count = 0
+            if db is not None:
+                count = await db.questions.count_documents({"exam_name": exam["id"]})
             exam["questions_in_db"] = count
         
         return {
