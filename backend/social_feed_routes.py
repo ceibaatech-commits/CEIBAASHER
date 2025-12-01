@@ -194,6 +194,11 @@ async def create_post(
         if not user:
             user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
         
+        # Extract room_code from quiz_details if present and not provided at root
+        room_code = post_data.room_code
+        if not room_code and post_data.quiz_details:
+            room_code = post_data.quiz_details.get("room_code")
+        
         post_doc = {
             "id": str(uuid.uuid4()),
             "user_id": user_id,
@@ -207,7 +212,7 @@ async def create_post(
             "battle_stats": post_data.battle_stats,
             "quiz_details": post_data.quiz_details,
             "mcq_data": post_data.mcq_data,
-            "room_code": post_data.room_code,
+            "room_code": room_code,
             "media_urls": post_data.media_urls,
             "tags": post_data.tags or [],
             "exam_category": post_data.exam_category,
