@@ -72,7 +72,9 @@ async def get_all_exams(
         if category:
             db_filter["category"] = category
         
-        db_exams = await db.exam_metadata.find(db_filter, {"_id": 0}).to_list(None) if db else []
+        db_exams = []
+        if db is not None:
+            db_exams = await db.exam_metadata.find(db_filter, {"_id": 0}).to_list(None)
         
         # Create lookup for DB exams
         db_lookup = {e.get("exam_id"): e for e in db_exams}
