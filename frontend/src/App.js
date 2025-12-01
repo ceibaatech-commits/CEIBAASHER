@@ -101,6 +101,7 @@ function App() {
           {/* Social Routes */}
           <Route path="/social" element={<SocialFeed />} />
           <Route path="/social-feed" element={<SocialFeed />} />
+          <Route path="/victory-lane" element={<VictoryLane />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
