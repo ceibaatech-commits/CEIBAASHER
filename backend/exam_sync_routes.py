@@ -9,7 +9,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
 import uuid
 
-router = APIRouter(prefix="/api/exams", tags=["exams"])
+router = APIRouter(prefix="/api/exam-sync", tags=["exam-sync"])
 
 # Database reference (set from server.py)
 db = None
