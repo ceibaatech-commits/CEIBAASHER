@@ -248,7 +248,7 @@ async def create_post(
             "shares_count": 0,
             "attempt_count": 0 if post_data.post_type == "mcq" else None,
             "correct_attempt_count": 0 if post_data.post_type == "mcq" else None,
-            "trending_score": 0,
+            "trending_score": 100 if post_data.post_type == "quiz_room" else 0,  # Quiz rooms start with higher score
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
