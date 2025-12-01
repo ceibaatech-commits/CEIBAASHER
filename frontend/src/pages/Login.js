@@ -51,7 +51,7 @@ const Login = () => {
   };
 
   const handleGuestMode = () => {
-    navigate('/social-feed', { state: { guestMode: true } });
+    navigate('/victory-lane', { state: { guestMode: true } });
   };
 
   return (
