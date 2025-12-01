@@ -322,15 +322,20 @@ async def get_exam_stats():
     try:
         stats = {
             "total_hardcoded_exams": len(EXAM_DATA),
-            "total_db_metadata": await db.exam_metadata.count_documents({}) if db else 0,
-            "total_sheets": await db.exam_sheets.count_documents({}) if db else 0,
-            "total_questions": await db.questions.count_documents({}) if db else 0,
-            "sheets_with_questions": await db.exam_sheets.count_documents({"question_count": {"$gt": 0}}) if db else 0,
+            "total_db_metadata": 0,
+            "total_sheets": 0,
+            "total_questions": 0,
+            "sheets_with_questions": 0,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
-        # Category breakdown
-        if db:
+        if db is not None:
+            stats["total_db_metadata"] = await db.exam_metadata.count_documents({})
+            stats["total_sheets"] = await db.exam_sheets.count_documents({})
+            stats["total_questions"] = await db.questions.count_documents({})
+            stats["sheets_with_questions"] = await db.exam_sheets.count_documents({"question_count": {"$gt": 0}})
+        
+            # Category breakdown
             category_pipeline = [
                 {"$group": {"_id": "$category", "count": {"$sum": 1}}},
                 {"$sort": {"count": -1}}
