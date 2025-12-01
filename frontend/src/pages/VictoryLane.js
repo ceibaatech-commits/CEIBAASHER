@@ -568,8 +568,16 @@ const VictoryLane = () => {
 
   // Create quiz room
   const handleCreateQuizRoom = async () => {
-    if (quizForm.questions.filter(q => q.question.trim()).length < 5) {
+    const validQuestions = quizForm.questions.filter(q => q.question.trim());
+    
+    // Validation checks
+    if (validQuestions.length < 5) {
       toast.error('Minimum 5 questions required');
+      return;
+    }
+
+    if (validQuestions.length > 50) {
+      toast.error('Maximum 50 questions allowed');
       return;
     }
 
@@ -578,13 +586,18 @@ const VictoryLane = () => {
       return;
     }
 
+    if (quizForm.maxParticipants < 2 || quizForm.maxParticipants > 100) {
+      toast.error('Participants must be between 2 and 100');
+      return;
+    }
+
     try {
       const response = await axios.post(`${BACKEND_URL}/api/battle/create-room`, {
         hostName: user?.name || 'Quiz Host',
         subject: quizForm.category,
-        maxParticipants: 50,
-        timePerQuestion: quizForm.timeLimit * 60 / quizForm.questions.length,
-        questions: quizForm.questions.filter(q => q.question.trim()).map((q, idx) => ({
+        maxParticipants: quizForm.maxParticipants,
+        timePerQuestion: Math.floor((quizForm.timeLimit * 60) / validQuestions.length),
+        questions: validQuestions.map((q, idx) => ({
           id: `q${idx + 1}`,
           question: q.question,
           options: q.options.map((opt, i) => ({ id: String.fromCharCode(97 + i), text: opt })),
@@ -593,36 +606,54 @@ const VictoryLane = () => {
       });
 
       if (response.data.success) {
-        await axios.post(`${BACKEND_URL}/api/social/posts`, {
+        const roomId = response.data.roomId;
+        
+        // Create social post with quiz room data
+        const postResponse = await axios.post(`${BACKEND_URL}/api/social/posts`, {
           post_type: 'quiz_room',
-          content: `Created a new quiz room: ${quizForm.title}`,
+          content: `🎯 Created a new quiz room: ${quizForm.title}`,
           user_id: user.id,
           quiz_data: {
             title: quizForm.title,
             category: quizForm.category,
             difficulty: quizForm.difficulty,
-            questions_count: quizForm.questions.filter(q => q.question.trim()).length,
-            room_code: response.data.roomId,
-            time_limit: quizForm.timeLimit
+            questions_count: validQuestions.length,
+            room_code: roomId,
+            time_limit: quizForm.timeLimit,
+            max_participants: quizForm.maxParticipants,
+            access_control: quizForm.accessControl,
+            host_name: user?.name || 'Quiz Host',
+            host_id: user?.id
           }
         }, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
 
-        setShowQuizModal(false);
-        setQuizForm({
-          title: '',
-          category: '',
-          difficulty: 'Medium',
-          timeLimit: 15,
-          questions: Array(5).fill({ question: '', options: ['', '', '', ''], correctAnswer: 0 })
-        });
-        toast.success(`Quiz room created! PIN: ${response.data.roomId}`);
-        fetchFeed();
+        if (postResponse.data.success) {
+          // Reset form
+          setShowQuizModal(false);
+          setQuizForm({
+            title: '',
+            category: '',
+            difficulty: 'Medium',
+            timeLimit: 15,
+            maxParticipants: 50,
+            accessControl: 'public',
+            questions: Array(5).fill({ question: '', options: ['', '', '', ''], correctAnswer: 0 })
+          });
+          
+          toast.success(`Quiz room created! PIN: ${roomId}`, { duration: 5000 });
+          
+          // Refresh feed to show new post
+          await fetchFeed();
+        } else {
+          toast.error('Quiz room created but failed to post to feed');
+        }
       }
     } catch (error) {
       console.error('Error creating quiz room:', error);
-      toast.error('Failed to create quiz room');
+      const errorMsg = error.response?.data?.detail || error.response?.data?.message || 'Failed to create quiz room';
+      toast.error(errorMsg);
     }
   };
 
