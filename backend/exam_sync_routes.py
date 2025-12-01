@@ -302,7 +302,7 @@ async def get_categories():
             categories.add(exam["category"])
     
     # Also get from database
-    if db:
+    if db is not None:
         db_categories = await db.exam_metadata.distinct("category")
         categories.update([c for c in db_categories if c])
     
