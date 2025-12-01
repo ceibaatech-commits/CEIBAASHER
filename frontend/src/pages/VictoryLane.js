@@ -929,36 +929,36 @@ const VictoryLane = () => {
                       {(post.post_type === 'quiz_room' || post.quiz_details) && post.quiz_details && (
                         <div 
                           className="border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 transition mt-3"
-                          style={{ borderColor: `${getGradientColor(post.quiz_data.category)}40` }}
+                          style={{ borderColor: `${getGradientColor(post.quiz_details.category)}40` }}
                         >
                           <div 
                             className="h-28 flex items-center justify-center"
-                            style={{ background: `linear-gradient(135deg, ${getGradientColor(post.quiz_data.category)} 0%, ${getGradientColor(post.quiz_data.category)}cc 100%)` }}
+                            style={{ background: `linear-gradient(135deg, ${getGradientColor(post.quiz_details.category)} 0%, ${getGradientColor(post.quiz_details.category)}cc 100%)` }}
                           >
                             <Trophy className="w-12 h-12 text-white opacity-80" />
                           </div>
                           <div className="p-4 bg-white">
                             <h3 className="font-bold text-lg text-gray-900 mb-1">
-                              {post.quiz_data.title || 'Quiz Room'}
+                              {post.quiz_details.title || 'Quiz Room'}
                             </h3>
-                            <p className="text-sm text-gray-600 mb-3">{post.quiz_data.category}</p>
+                            <p className="text-sm text-gray-600 mb-3">{post.quiz_details.category}</p>
                             <div className="flex items-center gap-4 text-sm text-gray-600 mb-3 flex-wrap">
                               <div className="flex items-center gap-1">
                                 <Play className="w-4 h-4" />
-                                <span>{post.quiz_data.questions_count || post.quiz_data.question_count || 5} questions</span>
+                                <span>{post.quiz_details.questions_count || post.quiz_details.question_count || 5} questions</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Users className="w-4 h-4" />
-                                <span>{post.quiz_data.participants || 0}/{post.quiz_data.max_participants || 50} players</span>
+                                <span>{post.quiz_details.participants || 0}/{post.quiz_details.max_participants || 50} players</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Clock className="w-4 h-4" />
-                                <span>{post.quiz_data.time_limit || 15} min</span>
+                                <span>{post.quiz_details.time_limit || 15} min</span>
                               </div>
                             </div>
                             
                             {/* Access Control Badge */}
-                            {post.quiz_data.access_control === 'followers' && (
+                            {post.quiz_details.access_control === 'followers' && (
                               <div className="mb-3 flex items-center gap-2 text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full w-fit">
                                 <Users className="w-3.5 h-3.5" />
                                 <span className="font-medium">Followers Only</span>
@@ -966,12 +966,12 @@ const VictoryLane = () => {
                             )}
                             
                             <div className="flex items-center justify-between gap-3">
-                              <span className={`text-xs px-3 py-1 rounded-full font-medium ${getDifficultyColor(post.quiz_data.difficulty || 'Medium')}`}>
-                                {post.quiz_data.difficulty || 'Medium'}
+                              <span className={`text-xs px-3 py-1 rounded-full font-medium ${getDifficultyColor(post.quiz_details.difficulty || 'Medium')}`}>
+                                {post.quiz_details.difficulty || 'Medium'}
                               </span>
                               {(() => {
-                                const isFollowersOnly = post.quiz_data.access_control === 'followers';
-                                const isHostFollowed = followingList.has(post.quiz_data.host_id || post.user_id);
+                                const isFollowersOnly = post.quiz_details.access_control === 'followers';
+                                const isHostFollowed = followingList.has(post.quiz_details.host_id || post.user_id);
                                 const isOwnRoom = user && post.user_id === user.id;
                                 const canJoin = !isFollowersOnly || isHostFollowed || isOwnRoom;
                                 
@@ -986,7 +986,7 @@ const VictoryLane = () => {
                                 
                                 return (
                                   <button 
-                                    onClick={() => handleJoinRoom(post.quiz_data.room_code)}
+                                    onClick={() => handleJoinRoom(post.quiz_details.room_code)}
                                     className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition"
                                   >
                                     Join Room
