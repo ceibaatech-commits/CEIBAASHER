@@ -689,7 +689,7 @@ const VictoryLane = () => {
             <h3 className="text-xl font-bold mb-2">Join the Victory Lane!</h3>
             <p className="text-white/80 mb-4">Share your wins, create quiz rooms, and compete with others</p>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/login', { state: { from: '/victory-lane' } })}
               className="px-6 py-2 bg-white text-purple-600 rounded-full font-semibold hover:bg-gray-100 transition"
             >
               Login to Participate
