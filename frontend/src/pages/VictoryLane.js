@@ -1253,7 +1253,7 @@ const VictoryLane = () => {
                 {/* Questions */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Questions ({quizForm.questions.filter(q => q.question.trim()).length}/5 minimum)
+                    Questions ({quizForm.questions.filter(q => q.question.trim()).length}/{quizForm.questions.length} - Min: 5, Max: 50)
                   </label>
                   <div className="space-y-4">
                     {quizForm.questions.map((q, idx) => (
