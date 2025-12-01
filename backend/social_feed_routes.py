@@ -83,13 +83,19 @@ async def filter_expired_quiz_posts(posts: list) -> list:
             filtered.append(post)
             continue
         
+        # Check room_code in both root level and quiz_details
         room_code = post.get("room_code")
+        if not room_code and post.get("quiz_details"):
+            room_code = post.get("quiz_details", {}).get("room_code")
+        
         if not room_code:
+            # If no room code found, skip this post
             continue
         
         try:
-            room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+            room = await db.quiz_rooms.find_one({"room_code": str(room_code).upper()})
             if not room:
+                # Room doesn't exist in quiz_rooms collection, skip
                 continue
             
             created_at = room.get("created_at")
