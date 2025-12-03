@@ -67,12 +67,13 @@ const Home = () => {
 
   // Category filter
   const categories = [
-    { id: 'all', label: 'All Exams', icon: '📚' },
-    { id: 'engineering', label: 'Engineering', icon: '⚙️' },
-    { id: 'medical', label: 'Medical', icon: '🏥' },
-    { id: 'defence', label: 'Defence', icon: '🎖️' },
-    { id: 'government', label: 'Government', icon: '🏛️' },
-    { id: 'banking', label: 'Banking', icon: '🏦' },
+    { id: 'all', label: 'All Exams', icon: '📚', color: 'from-slate-600 to-slate-800' },
+    { id: 'engineering', label: 'Engineering', icon: '⚙️', color: 'from-blue-600 to-cyan-600' },
+    { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600' },
+    { id: 'defence', label: 'Defence', icon: '🎖️', color: 'from-green-700 to-emerald-700' },
+    { id: 'government', label: 'Government', icon: '🏛️', color: 'from-amber-600 to-orange-600' },
+    { id: 'banking', label: 'Banking', icon: '🏦', color: 'from-rose-600 to-red-600' },
+    { id: 'admission', label: 'Admission Tests', icon: '🎓', color: 'from-violet-600 to-purple-600' },
   ];
 
   // Filter exams based on category and search
@@ -86,6 +87,7 @@ const Home = () => {
         defence: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'],
         government: ['UPSC', 'SSC_CGL', 'SSC_CHSL', 'RRB_NTPC'],
         banking: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'],
+        admission: ['CUET', 'CAT', 'CLAT', 'IPM'],
       };
       const examIds = categoryMap[activeCategory] || [];
       filtered = filtered.filter(exam => examIds.includes(exam.id));
@@ -101,6 +103,16 @@ const Home = () => {
     return filtered;
   };
 
+  // Handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Scroll to exams section
+      const examsSection = document.getElementById('exams-section');
+      examsSection?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
@@ -112,8 +124,11 @@ const Home = () => {
     );
   }
 
+  const filteredExams = getFilteredExams();
+  const activeCateg = categories.find(c => c.id === activeCategory);
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pb-20 md:pb-0">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 pb-20 md:pb-0">
       {/* SEO Component for Home Page */}
       <SEO 
         title="Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for JEE, NEET, UPSC, SSC & 38+ Competitive Exams"
@@ -128,50 +143,59 @@ const Home = () => {
         onLogout={handleLogout}
       />
 
-      {/* Mobile Hero Section with Search */}
-      <div className="md:hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white px-4 py-6">
-        <h1 className="text-2xl font-bold mb-2">Ace Your Exams! 🚀</h1>
-        <p className="text-white/80 text-sm mb-4">Practice with 50,000+ questions</p>
-        
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search exams..."
-            className="w-full pl-12 pr-4 py-3 bg-white rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-lg"
-          />
+      {/* Mobile Hero Section - Fresh Design */}
+      <div className="md:hidden bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white px-4 py-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-xl font-bold">Welcome to Ceibaa</h1>
+            <p className="text-slate-300 text-sm">Master your competitive exams</p>
+          </div>
+          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
+            <Trophy className="w-6 h-6 text-white" />
+          </div>
         </div>
         
+        {/* Search Bar */}
+        <form onSubmit={handleSearch}>
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search exams, topics..."
+              className="w-full pl-12 pr-4 py-3.5 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+            />
+          </div>
+        </form>
+        
         {/* Quick Stats */}
-        <div className="flex justify-between mt-4 bg-white/10 backdrop-blur-sm rounded-xl p-3">
-          <div className="text-center">
-            <p className="text-xl font-bold">38+</p>
-            <p className="text-xs text-white/70">Exams</p>
+        <div className="flex justify-between mt-4 bg-slate-700/30 backdrop-blur-sm rounded-xl p-4 border border-slate-600/50">
+          <div className="text-center flex-1">
+            <p className="text-2xl font-bold text-cyan-400">38+</p>
+            <p className="text-xs text-slate-400">Exams</p>
           </div>
-          <div className="text-center border-x border-white/20 px-4">
-            <p className="text-xl font-bold">50K+</p>
-            <p className="text-xs text-white/70">Questions</p>
+          <div className="text-center flex-1 border-x border-slate-600/50">
+            <p className="text-2xl font-bold text-emerald-400">50K+</p>
+            <p className="text-xs text-slate-400">Questions</p>
           </div>
-          <div className="text-center">
-            <p className="text-xl font-bold">Live</p>
-            <p className="text-xs text-white/70">Battles</p>
+          <div className="text-center flex-1">
+            <p className="text-2xl font-bold text-amber-400">Live</p>
+            <p className="text-xs text-slate-400">Battles</p>
           </div>
         </div>
       </div>
 
       {/* Category Filter - Horizontal Scroll */}
-      <div className="md:hidden bg-white sticky top-16 z-30 shadow-sm">
-        <div className="flex overflow-x-auto py-3 px-2 gap-2 scrollbar-hide">
+      <div className="md:hidden bg-white sticky top-16 z-30 shadow-md border-b border-gray-200">
+        <div className="flex overflow-x-auto py-3 px-3 gap-2 scrollbar-hide">
           {categories.map(cat => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-indigo-600 text-white shadow-md'
+                  ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -181,6 +205,60 @@ const Home = () => {
           ))}
         </div>
       </div>
+
+      {/* Mobile: Show Selected Category Exams */}
+      {activeCategory !== 'all' && (
+        <div className="md:hidden px-4 py-4 bg-white border-b">
+          <div className={`bg-gradient-to-r ${activeCateg?.color} rounded-xl p-4 text-white`}>
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">{activeCateg?.icon}</span>
+              <div>
+                <h2 className="font-bold text-lg">{activeCateg?.label}</h2>
+                <p className="text-white/80 text-sm">{filteredExams.length} exams available</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Exam Cards for Selected Category */}
+          <div className="mt-4 space-y-3">
+            {filteredExams.map((exam) => (
+              <div
+                key={exam.id}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm active:scale-98 transition-transform cursor-pointer"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-md`}>
+                    {exam.icon.startsWith('http') ? (
+                      <img src={exam.icon} alt={exam.name} className="w-8 h-8 object-contain" />
+                    ) : (
+                      <span className="text-2xl">{exam.icon}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900">{exam.name}</h3>
+                    <p className="text-sm text-gray-500">{exam.full_name}</p>
+                    <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <FileText className="w-3 h-3" />
+                        {exam.total_questions} Qs
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {exam.duration}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </div>
+              </div>
+            ))}
+            {filteredExams.length === 0 && (
+              <p className="text-center text-gray-500 py-8">No exams found in this category</p>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* Desktop Banner Carousel */}
       <div className="hidden md:block">
