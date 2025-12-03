@@ -3269,3 +3269,34 @@ agent_communication:
       - ✅ Quiz completion and score submission works
       
       **Status**: ALL VICTORY LANE ISSUES FIXED
+  - agent: "main"
+    message: |
+      🔧 VICTORY LANE ADDITIONAL BUGS - ALL FIXED ✅
+      
+      **Issue 4 - Quiz Answer Validation (FIXED)**:
+      - **Root cause**: Case mismatch in answer comparison
+        - Frontend optionKeyToLetter() returns uppercase ('A', 'B', 'C', 'D')
+        - Backend stores lowercase ('a', 'b', 'c', 'd')
+        - Comparison `'A' === 'a'` always returned false
+      - **Fix**: Added case-insensitive comparison using `.toLowerCase()`
+      - Files changed: `QuizRoom.js` - handleNextQuestion() and button className conditions
+      
+      **Issue 5 - Missing Back/Exit Button (FIXED)**:
+      - Added "Exit Quiz" button at top of quiz interface
+      - Shows confirmation dialog before exiting
+      - Returns user to Victory Lane on exit
+      - Files changed: `QuizRoom.js` - added back button JSX
+      
+      **Issue 6 - Login/Signup Buttons for Logged-In Users (FIXED)**:
+      - **Root cause**: `<Header />` was called without passing auth props
+      - Header component defaults to `isLoggedIn = false` when no props provided
+      - **Fix**: Pass `isLoggedIn`, `user`, and `onLogout` props from VictoryLane
+      - Files changed: `VictoryLane.js` - updated Header component usage
+      
+      **Test Results**:
+      - ✅ Quiz answer validation works (green for correct, red for wrong)
+      - ✅ "Exit Quiz" button visible and functional
+      - ✅ Header shows user avatar + dropdown instead of Login/Signup for logged-in users
+      - ✅ All three issues verified fixed via screenshots
+      
+      **Status**: ALL ADDITIONAL BUGS FIXED
