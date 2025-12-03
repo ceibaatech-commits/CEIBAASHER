@@ -222,7 +222,7 @@ const QuizRoom = () => {
     }
 
     if (!questions.length) {
-      navigate('/social-feed');
+      navigate('/victory-lane');
       return;
     }
 
