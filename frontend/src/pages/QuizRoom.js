@@ -156,7 +156,8 @@ const QuizRoom = () => {
 
     const currentQuestion = questions[currentQuestionIndex];
     const selectedLetter = optionKeyToLetter(selectedAnswer);
-    const isCorrect = selectedLetter === currentQuestion.correct_answer;
+    // Compare case-insensitively since backend uses lowercase ('a') and frontend uses uppercase ('A')
+    const isCorrect = selectedLetter?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase();
     const points = getQuestionPoints(currentQuestion);
 
     const answerEntry = {
