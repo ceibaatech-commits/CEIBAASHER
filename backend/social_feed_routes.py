@@ -923,7 +923,7 @@ async def submit_quiz_results(
     result_data: QuizResultSubmit,
     authorization: Optional[str] = Header(None)
 ):
-    """Submit quiz results"""
+    """Submit quiz results - handles both quiz_rooms and battle_rooms"""
     try:
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
@@ -931,14 +931,21 @@ async def submit_quiz_results(
         user_id = decode_jwt_token(authorization)
         user = await db.users.find_one({"id": user_id}, {"_id": 0})
         
+        # Check both quiz_rooms and battle_rooms collections
         room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+        room_collection = "quiz_rooms"
+        
+        if not room:
+            room = await db.battle_rooms.find_one({"roomId": room_code})
+            room_collection = "battle_rooms"
+        
         if not room:
             raise HTTPException(status_code=404, detail="Quiz room not found")
         
         result = {
             "id": str(uuid.uuid4()),
-            "room_code": room_code.upper(),
-            "room_id": room.get("id"),
+            "room_code": room_code.upper() if room_collection == "quiz_rooms" else room_code,
+            "room_id": room.get("id") or room.get("roomId"),
             "user_id": user_id,
             "user_name": user.get("name", "User") if user else "User",
             "score": result_data.score,
@@ -950,7 +957,12 @@ async def submit_quiz_results(
         }
         
         await db.quiz_results.insert_one(result.copy())
-        await db.quiz_rooms.update_one({"room_code": room_code.upper()}, {"$inc": {"plays_count": 1}})
+        
+        # Update play count in the appropriate collection
+        if room_collection == "quiz_rooms":
+            await db.quiz_rooms.update_one({"room_code": room_code.upper()}, {"$inc": {"plays_count": 1}})
+        else:
+            await db.battle_rooms.update_one({"roomId": room_code}, {"$inc": {"plays_count": 1}})
         
         return {"success": True, "message": "Results submitted", "result": result}
     except HTTPException:
