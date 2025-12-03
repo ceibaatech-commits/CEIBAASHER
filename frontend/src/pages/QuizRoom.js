@@ -37,7 +37,7 @@ const QuizRoom = () => {
     if (!roomData || !user) return;
     if (roomData.privacy === 'private' && roomData.host_id && roomData.host_id !== user.id) {
       alert('This is a private quiz. Only the host can attempt it.');
-      navigate('/social-feed');
+      navigate('/victory-lane');
     }
   }, [roomData, user, navigate]);
 
