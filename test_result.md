@@ -3300,3 +3300,27 @@ agent_communication:
       - ✅ All three issues verified fixed via screenshots
       
       **Status**: ALL ADDITIONAL BUGS FIXED
+  - agent: "main"
+    message: |
+      🔧 PROFILE NAVIGATION ISSUES - ALL FIXED ✅
+      
+      **Issue: Profile dropdown showing both "View Profile" and "Dashboard" (FIXED)**:
+      - Removed "View Profile" option from dropdown
+      - Dropdown now only shows: Dashboard, Logout
+      - Applied to both desktop dropdown and mobile menu
+      - Files changed: `Header.js` - removed View Profile buttons from both desktop and mobile menus
+      
+      **Issue: PublicProfile back button going to /social-feed (FIXED)**:
+      - Changed back button navigation from `/social-feed` to `/victory-lane`
+      - Files changed: `PublicProfile.js` - updated "Back to Feed" button
+      
+      **Dashboard Back Button**:
+      - Uses `navigate(-1)` which goes back to previous page in history
+      - This is correct behavior - goes back to wherever user came from
+      
+      **Test Results**:
+      - ✅ Profile dropdown only shows "Dashboard" and "Logout"
+      - ✅ Clicking Dashboard navigates to /dashboard correctly
+      - ✅ User sees their profile page with posts, liked, quiz rooms tabs
+      
+      **Status**: ALL PROFILE NAVIGATION ISSUES FIXED
