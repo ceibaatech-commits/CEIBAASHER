@@ -342,7 +342,7 @@ const QuizRoom = () => {
                 {shareLoading ? 'Sharing...' : 'Share my score'}
               </button>
               <button
-                onClick={() => navigate('/social-feed')}
+                onClick={() => navigate('/victory-lane')}
                 className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
               >
                 Back to Feed
