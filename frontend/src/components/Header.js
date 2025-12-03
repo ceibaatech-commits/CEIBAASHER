@@ -139,17 +139,6 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                         <button
                           onClick={() => {
                             setShowProfileDropdown(false);
-                            navigate(`/profile/${user.id || user.user_id}`);
-                          }}
-                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
-                        >
-                          <User className="w-4 h-4 text-cyan-600" />
-                          <span className="font-medium text-sm">View Profile</span>
-                        </button>
-                        
-                        <button
-                          onClick={() => {
-                            setShowProfileDropdown(false);
                             navigate('/dashboard');
                           }}
                           className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
