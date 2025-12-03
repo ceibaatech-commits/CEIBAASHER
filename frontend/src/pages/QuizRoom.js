@@ -288,7 +288,7 @@ const QuizRoom = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">No questions found</h2>
           <p className="text-gray-600 mb-6">This quiz room does not have any questions configured.</p>
           <button
-            onClick={() => navigate('/social-feed')}
+            onClick={() => navigate('/victory-lane')}
             className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
             Back to Feed
