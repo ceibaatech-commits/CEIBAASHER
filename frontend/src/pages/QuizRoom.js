@@ -77,7 +77,7 @@ const QuizRoom = () => {
         } else {
           alert('Failed to load quiz');
         }
-        navigate('/social-feed');
+        navigate('/victory-lane');
       } finally {
         setLoadingQuiz(false);
       }
