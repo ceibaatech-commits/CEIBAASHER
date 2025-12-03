@@ -468,10 +468,10 @@ const QuizRoom = () => {
                 disabled={selectedAnswer !== null}
                 className={`p-6 rounded-xl border-2 text-left transition-all ${
                   selectedAnswer === option
-                    ? optionKeyToLetter(option) === currentQuestion.correct_answer
+                    ? optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
                       ? 'bg-green-50 border-green-500'
                       : 'bg-red-50 border-red-500'
-                    : selectedAnswer && optionKeyToLetter(option) === currentQuestion.correct_answer
+                    : selectedAnswer && optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
                     ? 'bg-green-50 border-green-500'
                     : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50'
                 } ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
@@ -480,10 +480,10 @@ const QuizRoom = () => {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
                       selectedAnswer === option
-                        ? optionKeyToLetter(option) === currentQuestion.correct_answer
+                        ? optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
                           ? 'bg-green-500 text-white'
                           : 'bg-red-500 text-white'
-                        : selectedAnswer && optionKeyToLetter(option) === currentQuestion.correct_answer
+                        : selectedAnswer && optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
                         ? 'bg-green-500 text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}
