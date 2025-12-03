@@ -1507,6 +1507,55 @@ const Home = () => {
         </div>
       </main>
 
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50">
+        <div className="flex justify-around items-center py-2">
+          <button
+            onClick={() => navigate('/')}
+            className="flex flex-col items-center py-2 px-4 text-indigo-600"
+          >
+            <HomeIcon className="w-6 h-6" />
+            <span className="text-xs mt-1 font-medium">Home</span>
+          </button>
+          <button
+            onClick={() => navigate('/chapter-tests')}
+            className="flex flex-col items-center py-2 px-4 text-gray-500"
+          >
+            <Zap className="w-6 h-6" />
+            <span className="text-xs mt-1 font-medium">Practice</span>
+          </button>
+          <button
+            onClick={() => navigate('/victory-lane')}
+            className="flex flex-col items-center py-2 px-4 text-gray-500"
+          >
+            <Trophy className="w-6 h-6" />
+            <span className="text-xs mt-1 font-medium">Victory</span>
+          </button>
+          <button
+            onClick={() => navigate('/leaderboard')}
+            className="flex flex-col items-center py-2 px-4 text-gray-500"
+          >
+            <TrendingUp className="w-6 h-6" />
+            <span className="text-xs mt-1 font-medium">Ranks</span>
+          </button>
+          <button
+            onClick={() => navigate(isLoggedIn ? '/dashboard' : '/login')}
+            className="flex flex-col items-center py-2 px-4 text-gray-500"
+          >
+            <Users className="w-6 h-6" />
+            <span className="text-xs mt-1 font-medium">{isLoggedIn ? 'Profile' : 'Login'}</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Floating Action Button - Mobile */}
+      <button
+        onClick={() => navigate('/join-room')}
+        className="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center z-50 hover:scale-110 transition-transform"
+      >
+        <Plus className="w-7 h-7 text-white" />
+      </button>
+
       <Footer />
     </div>
   );
