@@ -871,12 +871,40 @@ async def get_quiz_room(room_code: str, authorization: Optional[str] = Header(No
             battle_room = await db.battle_rooms.find_one({"roomId": room_code})
             if battle_room:
                 source = "battle_rooms"
+                
+                # Transform battle_room questions to quiz_room format
+                transformed_questions = []
+                for q in battle_room.get("questions", []):
+                    # Handle both formats - battle room uses options array, quiz room uses option_a, option_b, etc.
+                    options = q.get("options", [])
+                    transformed_q = {
+                        "id": q.get("id"),
+                        "question_text": q.get("question") or q.get("question_text", ""),
+                        "correct_answer": q.get("correctAnswer") or q.get("correct_answer", "a"),
+                        "time_limit": q.get("time_limit", 30)
+                    }
+                    
+                    # Map options array to option_a, option_b, etc.
+                    option_letters = ['a', 'b', 'c', 'd']
+                    for i, opt in enumerate(options[:4]):
+                        if isinstance(opt, dict):
+                            transformed_q[f"option_{option_letters[i]}"] = opt.get("text", "")
+                        else:
+                            transformed_q[f"option_{option_letters[i]}"] = str(opt)
+                    
+                    # Ensure all option fields exist
+                    for letter in option_letters:
+                        if f"option_{letter}" not in transformed_q:
+                            transformed_q[f"option_{letter}"] = ""
+                    
+                    transformed_questions.append(transformed_q)
+                
                 # Transform battle_room format to quiz_room format
                 room = {
                     "room_code": battle_room.get("roomId"),
                     "title": battle_room.get("config", {}).get("subject", "Quiz"),
                     "category": battle_room.get("config", {}).get("category", "General"),
-                    "questions": battle_room.get("questions", []),
+                    "questions": transformed_questions,
                     "host_id": battle_room.get("host", {}).get("userId"),
                     "host_name": battle_room.get("host", {}).get("username"),
                     "created_at": battle_room.get("createdAt"),
