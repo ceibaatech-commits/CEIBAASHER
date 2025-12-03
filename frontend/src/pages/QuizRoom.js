@@ -254,8 +254,8 @@ const QuizRoom = () => {
         }
       });
 
-      // After successful share, redirect back to social feed as requested
-      navigate('/social-feed');
+      // After successful share, redirect back to victory lane as requested
+      navigate('/victory-lane');
     } catch (error) {
       console.error('Error sharing score:', error);
       setShareError(error.response?.data?.detail || 'Failed to share score. Please try again.');
