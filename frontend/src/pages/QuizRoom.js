@@ -429,6 +429,23 @@ const QuizRoom = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-4">
+          <button
+            onClick={() => {
+              if (window.confirm('Are you sure you want to exit? Your progress will be lost.')) {
+                navigate('/victory-lane');
+              }
+            }}
+            className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span className="font-medium">Exit Quiz</span>
+          </button>
+        </div>
+
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
