@@ -200,14 +200,24 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           <div className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto">
             {/* Search Bar - Prominent Position */}
             <div className="p-4 bg-gray-50 border-b border-gray-200">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search exams, topics..."
-                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                />
-              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const query = e.target.search.value;
+                if (query.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(query)}`);
+                  setMobileMenuOpen(false);
+                }
+              }}>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="search"
+                    placeholder="Search exams, topics..."
+                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  />
+                </div>
+              </form>
             </div>
 
             {/* Mobile User Profile Section */}
