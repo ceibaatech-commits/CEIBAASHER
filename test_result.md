@@ -3201,3 +3201,32 @@ agent_communication:
       - Socket.IO logs show successful connection and room_joined events
       
       **Status**: BUG NOT REPRODUCIBLE - ROUTING CLEANUP COMPLETE
+  - agent: "main"
+    message: |
+      🔧 "ROOM NOT FOUND" BUG - ROOT CAUSE FOUND AND FIXED ✅
+      
+      **Root Cause**: Orphaned quiz room posts existed in the social_posts collection where the corresponding battle room had been deleted or never created. The filter_expired_quiz_posts function was working correctly, but old posts were still in the database.
+      
+      **Fixes Applied**:
+      
+      1. **Database Cleanup**: Deleted orphaned quiz post with room_code 466618 that had no corresponding battle room.
+      
+      2. **Frontend Validation (VictoryLane.js handleJoinRoom)**:
+         - Added room validation before navigation
+         - Calls POST /api/battle/validate to check if room exists
+         - Shows toast error if room not found or expired
+         - Auto-refreshes feed to remove invalid posts from UI
+      
+      3. **Routing Fixes (continued from earlier)**:
+         - BattleLobby.js: Error redirect changed to /victory-lane
+         - QuizRoom.js: All redirects changed to /victory-lane
+         - Signup.js: New user redirect changed to /victory-lane
+      
+      **Test Results**:
+      - ✅ Room 466618 orphan post deleted from database
+      - ✅ API feed no longer returns posts with non-existent rooms
+      - ✅ Join Room button successfully joins room 957422
+      - ✅ Battle Lobby shows correct player list (4 players)
+      - ✅ Frontend now validates room before navigation
+      
+      **Status**: BUG FIXED - ROOM NOT FOUND ISSUE RESOLVED
