@@ -195,35 +195,47 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Improved Design */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-300">
+          <div className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto">
+            {/* Search Bar - Prominent Position */}
+            <div className="p-4 bg-gray-50 border-b border-gray-200">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search exams, topics..."
+                  className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
             {/* Mobile User Profile Section */}
             {isLoggedIn && user && (
-              <div className="px-4 py-3 mb-3 bg-gradient-to-r from-cyan-50 to-purple-50 rounded-lg">
+              <div className="px-4 py-4 bg-gradient-to-r from-cyan-50 to-purple-50 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
                   {user.profile_picture || user.avatar ? (
                     <img
                       src={user.profile_picture || user.avatar}
                       alt={user.name}
-                      className="w-12 h-12 rounded-full border-2 border-cyan-400 object-cover"
+                      className="w-14 h-14 rounded-full border-3 border-cyan-400 object-cover shadow-md"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-2 border-cyan-400">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-3 border-cyan-400 shadow-md">
                       {user.name?.[0]?.toUpperCase() || 'U'}
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-semibold text-sm text-gray-800">{user.name}</p>
-                    <p className="text-xs text-gray-600">{user.email}</p>
-                    <div className="flex items-center space-x-3 mt-1 text-xs">
+                    <p className="font-bold text-base text-gray-900">{user.name}</p>
+                    <p className="text-sm text-gray-600">{user.email}</p>
+                    <div className="flex items-center space-x-4 mt-1">
                       <div className="flex items-center space-x-1">
-                        <Trophy className="w-3 h-3 text-yellow-500" />
-                        <span className="text-gray-700">{user.rating || 1200}</span>
+                        <Trophy className="w-4 h-4 text-yellow-500" />
+                        <span className="text-sm font-medium text-gray-700">{user.rating || 1200}</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <Flame className="w-3 h-3 text-orange-500" />
-                        <span className="text-gray-700">{user.streak || 0}</span>
+                        <Flame className="w-4 h-4 text-orange-500" />
+                        <span className="text-sm font-medium text-gray-700">{user.streak || 0} day streak</span>
                       </div>
                     </div>
                   </div>
@@ -231,65 +243,89 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               </div>
             )}
 
-            <nav className="flex flex-col space-y-3">
-              <button onClick={() => { navigate('/'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
-                Home
+            {/* Navigation Links */}
+            <nav className="py-2">
+              <button 
+                onClick={() => { navigate('/'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              >
+                <Home className="w-5 h-5" />
+                <span className="font-semibold text-base">Home</span>
               </button>
-              <button onClick={() => { navigate('/victory-lane'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
-                Victory Lane
+              
+              <button 
+                onClick={() => { navigate('/victory-lane'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              >
+                <Trophy className="w-5 h-5" />
+                <span className="font-semibold text-base">Victory Lane</span>
               </button>
-              <button onClick={() => { navigate('/chapter-tests'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
-                Skill Drills
+              
+              <button 
+                onClick={() => { navigate('/chapter-tests'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              >
+                <Zap className="w-5 h-5" />
+                <span className="font-semibold text-base">Skill Drills</span>
               </button>
-              <button onClick={() => { navigate('/books'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
-                Books
+              
+              <button 
+                onClick={() => { navigate('/books'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              >
+                <BookOpen className="w-5 h-5" />
+                <span className="font-semibold text-base">Books</span>
               </button>
-              {/* Join Battle Room - visible for everyone */}
-              <button onClick={() => { navigate('/join-room'); setMobileMenuOpen(false); }} className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2">
-                Join Battle Room
+              
+              <button 
+                onClick={() => { navigate('/join-room'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              >
+                <Users className="w-5 h-5" />
+                <span className="font-semibold text-base">Join Battle Room</span>
               </button>
 
-              {/* Mobile Search */}
-              <div className="py-2">
-                <NavbarSearch />
-              </div>
+              {/* Divider */}
+              <div className="border-t border-gray-200 my-2 mx-4"></div>
 
-              {/* Guest Auth Buttons (Mobile) */}
+              {/* Guest Auth Buttons */}
               {!isLoggedIn && (
-                <>
-                  <div className="border-t border-gray-300 my-2"></div>
+                <div className="px-4 py-3 space-y-3">
                   <button 
                     onClick={() => { navigate('/login'); setMobileMenuOpen(false); }} 
-                    className="w-full border-2 border-cyan-500 text-cyan-600 py-3 rounded-lg font-bold hover:bg-cyan-50 transition-all"
+                    className="w-full flex items-center justify-center space-x-2 border-2 border-cyan-500 text-cyan-600 py-3 rounded-xl font-bold hover:bg-cyan-50 transition-all"
                   >
-                    Login
+                    <User className="w-5 h-5" />
+                    <span>Login</span>
                   </button>
                   <button 
                     onClick={() => { navigate('/signup'); setMobileMenuOpen(false); }} 
-                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-3 rounded-lg font-bold hover:from-cyan-600 hover:to-purple-700 transition-all"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-3 rounded-xl font-bold hover:from-cyan-600 hover:to-purple-700 transition-all shadow-lg"
                   >
-                    Sign Up
+                    Sign Up Free
                   </button>
-                </>
+                </div>
               )}
 
-              {/* Mobile-only user actions */}
+              {/* Logged-in User Actions */}
               {isLoggedIn && user && (
                 <>
-                  <div className="border-t border-gray-300 my-2"></div>
                   <button 
                     onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }} 
-                    className="text-left text-gray-700 hover:text-cyan-600 transition-colors font-semibold py-2 flex items-center space-x-2"
+                    className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
                   >
-                    <LayoutDashboard className="w-4 h-4" />
-                    <span>Dashboard</span>
+                    <LayoutDashboard className="w-5 h-5" />
+                    <span className="font-semibold text-base">Dashboard</span>
                   </button>
+                  
+                  <div className="border-t border-gray-200 my-2 mx-4"></div>
+                  
                   <button 
                     onClick={() => { onLogout(); navigate('/'); setMobileMenuOpen(false); }} 
-                    className="text-left text-red-600 hover:text-red-700 transition-colors font-semibold py-2 flex items-center space-x-2"
+                    className="w-full flex items-center space-x-4 px-5 py-4 text-red-600 hover:bg-red-50 transition-all"
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <LogOut className="w-5 h-5" />
+                    <span className="font-semibold text-base">Logout</span>
                   </button>
                 </>
               )}
