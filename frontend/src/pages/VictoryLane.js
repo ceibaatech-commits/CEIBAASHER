@@ -726,7 +726,27 @@ const VictoryLane = () => {
   };
 
   // Join quiz room
-  const handleJoinRoom = (roomCode) => {
+  const handleJoinRoom = async (roomCode) => {
+    if (!roomCode) {
+      toast.error('Invalid room code');
+      return;
+    }
+    
+    // Validate room exists before navigating
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/battle/validate`, { roomId: roomCode });
+      if (!response.data.valid) {
+        toast.error(response.data.error || 'Room not found or expired');
+        // Refresh feed to remove invalid posts
+        fetchFeed();
+        return;
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.detail || 'Failed to validate room';
+      toast.error(errorMsg);
+      return;
+    }
+    
     navigate(`/battle-lobby/${roomCode}`, { 
       state: { playerName: user?.name || 'Player', isHost: false }
     });
