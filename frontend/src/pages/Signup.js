@@ -76,7 +76,7 @@ const Signup = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('auth_token', response.data.token);
       setUserData(response.data.user);
-      navigate('/social-feed', { replace: true });
+      navigate('/victory-lane', { replace: true });
       
     } catch (err) {
       setLoading(false);
