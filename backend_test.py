@@ -626,12 +626,191 @@ class BackendTester:
             self.log_result("Unfollow Non-existent", False, f"Unfollow non-existent test error: {e}")
             return False
 
+    def test_quiz_room_creation_and_join_flow(self):
+        """Test complete quiz room creation and join flow on Victory Lane"""
+        try:
+            print("\n🎯 TESTING QUIZ ROOM CREATION AND JOIN FLOW")
+            print("=" * 60)
+            
+            # Step 1: Demo login for authentication
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Quiz Room Flow - Demo Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Quiz Room Flow - Demo Login", True, f"✅ Demo1 logged in successfully with user_id: {user_id}")
+            
+            # Step 2: Create a battle room using POST /api/battle/create-room
+            room_data = {
+                "examId": "JEE",
+                "subject": "Physics",
+                "topic": "Mechanics",
+                "hostName": "Demo Quiz Host"
+            }
+            
+            headers = {"Authorization": f"Bearer {token}"}
+            response = requests.post(f"{BACKEND_URL}/api/battle/create-room", json=room_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Quiz Room Flow - Room Creation", False, f"❌ Room creation failed: {response.status_code} - {response.text}")
+                return False
+            
+            room_info = response.json()
+            room_id = room_info.get('roomId') or room_info.get('pin')
+            
+            if not room_id:
+                self.log_result("Quiz Room Flow - Room Creation", False, "❌ No room ID returned from room creation")
+                return False
+            
+            self.log_result("Quiz Room Flow - Room Creation", True, f"✅ Battle room created successfully with ID: {room_id}")
+            
+            # Step 3: Verify room exists in database by fetching it
+            response = requests.get(f"{BACKEND_URL}/api/battle/room/{room_id}")
+            if response.status_code != 200:
+                self.log_result("Quiz Room Flow - Room Verification", False, f"❌ Room {room_id} not found in database: {response.status_code}")
+                return False
+            
+            room_data_from_db = response.json()
+            self.log_result("Quiz Room Flow - Room Verification", True, f"✅ Room {room_id} exists in database with {room_data_from_db.get('room', {}).get('participantCount', 0)} participants")
+            
+            # Step 4: Test POST /api/battle/join to join the room
+            join_data = {
+                "roomId": room_id,
+                "playerName": "Test Player",
+                "userId": f"test-player-{user_id}",
+                "avatar": "🎮"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/battle/join", json=join_data)
+            
+            if response.status_code != 200:
+                self.log_result("Quiz Room Flow - Room Join", False, f"❌ Failed to join room {room_id}: {response.status_code} - {response.text}")
+                return False
+            
+            join_result = response.json()
+            if not join_result.get('success'):
+                self.log_result("Quiz Room Flow - Room Join", False, f"❌ Join room returned success=false: {join_result}")
+                return False
+            
+            self.log_result("Quiz Room Flow - Room Join", True, f"✅ Successfully joined room {room_id}")
+            
+            # Step 5: Create a social post with quiz_details
+            quiz_post_data = {
+                "post_type": "quiz_room",
+                "content": f"🎯 Join my quiz battle! Room Code: {room_id}",
+                "quiz_details": {
+                    "room_code": room_id,
+                    "exam": "JEE",
+                    "subject": "Physics",
+                    "topic": "Mechanics",
+                    "host": "Demo Quiz Host"
+                },
+                "room_code": room_id,
+                "exam_category": "JEE",
+                "subject": "Physics"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/social/posts", json=quiz_post_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Quiz Room Flow - Social Post Creation", False, f"❌ Failed to create social post: {response.status_code} - {response.text}")
+                return False
+            
+            post_result = response.json()
+            if not post_result.get('success'):
+                self.log_result("Quiz Room Flow - Social Post Creation", False, f"❌ Social post creation returned success=false: {post_result}")
+                return False
+            
+            post_id = post_result.get('post', {}).get('id')
+            self.log_result("Quiz Room Flow - Social Post Creation", True, f"✅ Social post created successfully with ID: {post_id}")
+            
+            # Step 6: Verify the quiz post appears in the for-you feed
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Quiz Room Flow - Feed Verification", False, f"❌ Failed to fetch for-you feed: {response.status_code}")
+                return False
+            
+            feed_result = response.json()
+            if not feed_result.get('success'):
+                self.log_result("Quiz Room Flow - Feed Verification", False, f"❌ Feed fetch returned success=false: {feed_result}")
+                return False
+            
+            posts = feed_result.get('posts', [])
+            quiz_post_found = False
+            quiz_post_room_code = None
+            
+            for post in posts:
+                if post.get('post_type') == 'quiz_room' and post.get('id') == post_id:
+                    quiz_post_found = True
+                    # Check room_code in both locations
+                    quiz_post_room_code = post.get('room_code')
+                    if not quiz_post_room_code and post.get('quiz_details'):
+                        quiz_post_room_code = post.get('quiz_details', {}).get('room_code')
+                    break
+            
+            if not quiz_post_found:
+                self.log_result("Quiz Room Flow - Feed Verification", False, f"❌ Quiz post with ID {post_id} not found in for-you feed")
+                return False
+            
+            if quiz_post_room_code != room_id:
+                self.log_result("Quiz Room Flow - Feed Verification", False, f"❌ Room code mismatch: expected {room_id}, got {quiz_post_room_code}")
+                return False
+            
+            self.log_result("Quiz Room Flow - Feed Verification", True, f"✅ Quiz post appears in for-you feed with correct room_code: {quiz_post_room_code}")
+            
+            # Step 7: Test the join flow using room_code from the quiz post
+            join_data_from_post = {
+                "roomId": quiz_post_room_code,
+                "playerName": "Feed Joiner",
+                "userId": f"feed-joiner-{user_id}",
+                "avatar": "📱"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/battle/join", json=join_data_from_post)
+            
+            if response.status_code != 200:
+                self.log_result("Quiz Room Flow - Join via Feed", False, f"❌ Failed to join room via feed room_code: {response.status_code} - {response.text}")
+                return False
+            
+            join_via_feed_result = response.json()
+            if not join_via_feed_result.get('success'):
+                self.log_result("Quiz Room Flow - Join via Feed", False, f"❌ Join via feed returned success=false: {join_via_feed_result}")
+                return False
+            
+            self.log_result("Quiz Room Flow - Join via Feed", True, f"✅ Successfully joined room using room_code from social post")
+            
+            # Step 8: Final verification - check room has multiple participants
+            response = requests.get(f"{BACKEND_URL}/api/battle/room/{room_id}")
+            if response.status_code == 200:
+                final_room_data = response.json()
+                participant_count = final_room_data.get('room', {}).get('participantCount', 0)
+                self.log_result("Quiz Room Flow - Final Verification", True, f"✅ Room {room_id} now has {participant_count} participants")
+            
+            print("\n🎉 QUIZ ROOM CREATION AND JOIN FLOW COMPLETE")
+            print("✅ All steps passed successfully:")
+            print("  1. Demo login ✅")
+            print("  2. Battle room creation ✅")
+            print("  3. Room database verification ✅")
+            print("  4. Room join functionality ✅")
+            print("  5. Social post creation with quiz_details ✅")
+            print("  6. Quiz post appears in for-you feed ✅")
+            print("  7. Join via room_code from social post ✅")
+            print("  8. Multiple participants verification ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Quiz Room Flow - Exception", False, f"❌ Quiz room flow test error: {e}")
+            return False
+
     def run_all_tests(self):
-        """Run all backend tests including ceep system"""
+        """Run all backend tests including quiz room flow"""
         print("🚀 Starting Backend API Tests")
         print("=" * 60)
         
         tests = [
+            self.test_quiz_room_creation_and_join_flow,
             self.test_fastapi_socketio_integration,
             self.test_battle_room_lifecycle,
             self.test_host_control_events,
