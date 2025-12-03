@@ -853,22 +853,56 @@ async def get_quiz_rooms(
 
 @router.get("/quiz-rooms/{room_code}")
 async def get_quiz_room(room_code: str, authorization: Optional[str] = Header(None)):
-    """Get quiz room details with validation"""
+    """Get quiz room details with validation - checks both quiz_rooms and battle_rooms"""
     try:
         # Validate room code format (alphanumeric, 6 characters)
         if not room_code or len(room_code) != 6 or not room_code.isalnum():
             raise HTTPException(status_code=400, detail="Invalid room code format")
         
+        room = None
+        source = None
+        
+        # First check quiz_rooms collection
         room = await db.quiz_rooms.find_one({"room_code": room_code.upper()})
+        if room:
+            source = "quiz_rooms"
+        else:
+            # Also check battle_rooms collection (for Victory Lane created rooms)
+            battle_room = await db.battle_rooms.find_one({"roomId": room_code})
+            if battle_room:
+                source = "battle_rooms"
+                # Transform battle_room format to quiz_room format
+                room = {
+                    "room_code": battle_room.get("roomId"),
+                    "title": battle_room.get("config", {}).get("subject", "Quiz"),
+                    "category": battle_room.get("config", {}).get("category", "General"),
+                    "questions": battle_room.get("questions", []),
+                    "host_id": battle_room.get("host", {}).get("userId"),
+                    "host_name": battle_room.get("host", {}).get("username"),
+                    "created_at": battle_room.get("createdAt"),
+                    "privacy": battle_room.get("config", {}).get("privacy", "public"),
+                    "time_limit": battle_room.get("config", {}).get("time_per_question", 30),
+                    "max_participants": battle_room.get("config", {}).get("max_participants", 50),
+                    "status": battle_room.get("status", "waiting")
+                }
+        
         if not room:
             raise HTTPException(status_code=404, detail="Quiz room not found")
         
-        # Check TTL
+        # Check TTL (24 hours expiry)
         created_at = room.get("created_at")
         if created_at:
-            if isinstance(created_at, str):
-                created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-            if (datetime.now(timezone.utc) - created_at) > timedelta(hours=24):
+            if isinstance(created_at, (int, float)):
+                # Unix timestamp from battle_rooms
+                created_dt = datetime.fromtimestamp(created_at, tz=timezone.utc)
+            elif isinstance(created_at, str):
+                created_dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+            elif isinstance(created_at, datetime):
+                created_dt = created_at if created_at.tzinfo else created_at.replace(tzinfo=timezone.utc)
+            else:
+                created_dt = None
+            
+            if created_dt and (datetime.now(timezone.utc) - created_dt) > timedelta(hours=24):
                 raise HTTPException(status_code=410, detail="Quiz expired")
         
         # Privacy check
@@ -877,7 +911,7 @@ async def get_quiz_room(room_code: str, authorization: Optional[str] = Header(No
             raise HTTPException(status_code=403, detail="Private quiz")
         
         room.pop("_id", None)
-        return {"success": True, "room": room}
+        return {"success": True, "room": room, "source": source}
     except HTTPException:
         raise
     except Exception as e:
