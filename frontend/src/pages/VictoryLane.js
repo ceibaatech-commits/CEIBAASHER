@@ -799,7 +799,7 @@ const VictoryLane = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isLoggedIn={!!user} user={user} />
+      <Header isLoggedIn={!!user} user={user} onLogout={logout} />
       
       {/* Twitter-like Sticky Header */}
       <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-40">
