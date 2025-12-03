@@ -734,9 +734,11 @@ const VictoryLane = () => {
     
     // Validate room exists before navigating
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/battle/validate`, { roomId: roomCode });
-      if (!response.data.valid) {
-        toast.error(response.data.error || 'Room not found or expired');
+      const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (!response.data.success) {
+        toast.error('Room not found or expired');
         // Refresh feed to remove invalid posts
         fetchFeed();
         return;
@@ -744,12 +746,13 @@ const VictoryLane = () => {
     } catch (error) {
       const errorMsg = error.response?.data?.detail || 'Failed to validate room';
       toast.error(errorMsg);
+      // Refresh feed to remove invalid posts
+      fetchFeed();
       return;
     }
     
-    navigate(`/battle-lobby/${roomCode}`, { 
-      state: { playerName: user?.name || 'Player', isHost: false }
-    });
+    // Navigate to quiz room for direct quiz attempt
+    navigate(`/quiz-room/${roomCode}`);
   };
 
   // Follow Button Component
