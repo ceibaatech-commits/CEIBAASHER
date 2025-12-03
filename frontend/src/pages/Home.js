@@ -65,6 +65,42 @@ const Home = () => {
     setIsLoggedIn(false);
   };
 
+  // Category filter
+  const categories = [
+    { id: 'all', label: 'All Exams', icon: '📚' },
+    { id: 'engineering', label: 'Engineering', icon: '⚙️' },
+    { id: 'medical', label: 'Medical', icon: '🏥' },
+    { id: 'defence', label: 'Defence', icon: '🎖️' },
+    { id: 'government', label: 'Government', icon: '🏛️' },
+    { id: 'banking', label: 'Banking', icon: '🏦' },
+  ];
+
+  // Filter exams based on category and search
+  const getFilteredExams = () => {
+    let filtered = exams;
+    
+    if (activeCategory !== 'all') {
+      const categoryMap = {
+        engineering: ['JEE_MAIN', 'JEE_ADVANCED', 'GATE'],
+        medical: ['NEET'],
+        defence: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'],
+        government: ['UPSC', 'SSC_CGL', 'SSC_CHSL', 'RRB_NTPC'],
+        banking: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'],
+      };
+      const examIds = categoryMap[activeCategory] || [];
+      filtered = filtered.filter(exam => examIds.includes(exam.id));
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(exam => 
+        exam.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        exam.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
@@ -77,7 +113,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pb-20 md:pb-0">
       {/* SEO Component for Home Page */}
       <SEO 
         title="Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for JEE, NEET, UPSC, SSC & 38+ Competitive Exams"
@@ -91,12 +127,68 @@ const Home = () => {
         onLogin={handleLogin}
         onLogout={handleLogout}
       />
+
+      {/* Mobile Hero Section with Search */}
+      <div className="md:hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 text-white px-4 py-6">
+        <h1 className="text-2xl font-bold mb-2">Ace Your Exams! 🚀</h1>
+        <p className="text-white/80 text-sm mb-4">Practice with 50,000+ questions</p>
+        
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search exams..."
+            className="w-full pl-12 pr-4 py-3 bg-white rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-lg"
+          />
+        </div>
+        
+        {/* Quick Stats */}
+        <div className="flex justify-between mt-4 bg-white/10 backdrop-blur-sm rounded-xl p-3">
+          <div className="text-center">
+            <p className="text-xl font-bold">38+</p>
+            <p className="text-xs text-white/70">Exams</p>
+          </div>
+          <div className="text-center border-x border-white/20 px-4">
+            <p className="text-xl font-bold">50K+</p>
+            <p className="text-xs text-white/70">Questions</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xl font-bold">Live</p>
+            <p className="text-xs text-white/70">Battles</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Category Filter - Horizontal Scroll */}
+      <div className="md:hidden bg-white sticky top-16 z-30 shadow-sm">
+        <div className="flex overflow-x-auto py-3 px-2 gap-2 scrollbar-hide">
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeCategory === cat.id
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
       
-      {/* Banner Carousel - Sliding Banners for Featured Exams */}
-      <HomeBannerCarousel />
+      {/* Desktop Banner Carousel */}
+      <div className="hidden md:block">
+        <HomeBannerCarousel />
+      </div>
       
-      {/* Quick Access Buttons - Below Banner */}
-      <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-8">
+      {/* Quick Access Buttons - Desktop Only */}
+      <div className="hidden md:block bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center gap-4 flex-wrap">
             <button
@@ -125,7 +217,7 @@ const Home = () => {
       </div>
 
       {/* Features Banner */}
-      <div className="bg-white border-b shadow-sm">
+      <div className="bg-white border-b shadow-sm hidden md:block">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
