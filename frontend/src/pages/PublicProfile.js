@@ -134,7 +134,7 @@ const PublicProfile = () => {
           <h1 className="text-4xl font-bold text-gray-800 mb-4">User Not Found</h1>
           <p className="text-gray-600 mb-6">The profile @{username} doesn't exist.</p>
           <button
-            onClick={() => navigate('/social-feed')}
+            onClick={() => navigate('/victory-lane')}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
           >
             Back to Feed
