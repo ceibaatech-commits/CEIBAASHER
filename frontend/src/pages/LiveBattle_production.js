@@ -7,7 +7,7 @@ import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 
 // Production-grade Socket.IO configuration
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://battleroom-fix.preview.emergentagent.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://joinquiz-debug.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
