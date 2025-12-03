@@ -151,7 +151,7 @@ const BattleLobby = () => {
       }
       
       alert(msg);
-      navigate('/social-feed');
+      navigate('/victory-lane');
     });
 
     newSocket.on('error', (data) => {
