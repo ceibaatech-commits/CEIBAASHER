@@ -142,6 +142,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </div>
+      </NotificationProvider>
     </AuthProvider>
   );
 }
