@@ -58,16 +58,17 @@ import ChapterTestChapters from "@/pages/ChapterTestChapters";
 function App() {
   return (
     <AuthProvider>
-      <div className="App">
-        <BrowserRouter>
-          <ScrollRestoration />
-          <Routes>
-            <Route path="/" element={<Home />} />
-          <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
-          <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
-          <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
-          
-          {/* Dedicated Exam Pages */}
+      <NotificationProvider>
+        <div className="App">
+          <BrowserRouter>
+            <ScrollRestoration />
+            <Routes>
+              <Route path="/" element={<Home />} />
+            <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
+            <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
+            <Route path="/solo-practice/:examName/:subjectName" element={<SoloPractice />} />
+            
+            {/* Dedicated Exam Pages */}
           <Route path="/exams/rrb-ntpc" element={<RRB_NTPC />} />
           <Route path="/exams/afcat" element={<AFCAT />} />
           
