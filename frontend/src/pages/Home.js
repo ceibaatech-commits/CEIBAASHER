@@ -81,16 +81,19 @@ const Home = () => {
     let filtered = exams;
     
     if (activeCategory !== 'all') {
+      // Map filter categories to both exam IDs and category names
       const categoryMap = {
-        engineering: ['JEE_MAIN', 'JEE_ADVANCED', 'GATE'],
-        medical: ['NEET'],
-        defence: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'],
-        government: ['UPSC', 'SSC_CGL', 'SSC_CHSL', 'RRB_NTPC'],
-        banking: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'],
-        admission: ['CUET', 'CAT', 'CLAT', 'IPM'],
+        engineering: { ids: ['JEE', 'JEE_MAIN', 'JEE_ADVANCED', 'GATE'], categories: ['Engineering', 'Admission Tests'] },
+        medical: { ids: ['NEET'], categories: ['Medical Entrance', 'Medical'] },
+        defence: { ids: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'], categories: ['Defence', 'Defence Examinations'] },
+        government: { ids: ['UPSC', 'SSC_CGL', 'SSC_CHSL', 'RRB_NTPC'], categories: ['UPSC Examinations', 'SSC Examinations', 'Government'] },
+        banking: { ids: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'], categories: ['Banking Examinations', 'Banking'] },
+        admission: { ids: ['CUET', 'CAT', 'CLAT', 'IPM', 'JEE', 'NEET', 'GATE'], categories: ['Admission Tests'] },
       };
-      const examIds = categoryMap[activeCategory] || [];
-      filtered = filtered.filter(exam => examIds.includes(exam.id));
+      const mapping = categoryMap[activeCategory] || { ids: [], categories: [] };
+      filtered = filtered.filter(exam => 
+        mapping.ids.includes(exam.id) || mapping.categories.includes(exam.category)
+      );
     }
     
     if (searchQuery) {
