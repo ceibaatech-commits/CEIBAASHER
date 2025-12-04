@@ -27,6 +27,12 @@ const VictoryLane = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
   
+  // Comments state
+  const [expandedComments, setExpandedComments] = useState(new Set());
+  const [postComments, setPostComments] = useState({});
+  const [newComment, setNewComment] = useState({});
+  const [loadingComments, setLoadingComments] = useState({});
+  
   // Dynamic user data
   const [usersData, setUsersData] = useState({});
   const [followingList, setFollowingList] = useState(new Set());
