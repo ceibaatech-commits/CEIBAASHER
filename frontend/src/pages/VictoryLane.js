@@ -547,8 +547,18 @@ const VictoryLane = () => {
   // Submit a new comment
   const submitComment = async (postId) => {
     const commentText = newComment[postId]?.trim();
-    if (!commentText || !isAuthenticated() || !user) {
-      if (!isAuthenticated()) toast.error('Please login to comment');
+    if (!commentText) {
+      toast.error('Please enter a comment');
+      return;
+    }
+    if (!isAuthenticated() || !user) {
+      toast.error('Please login to comment');
+      return;
+    }
+
+    const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+    if (!token) {
+      toast.error('Session expired. Please login again.');
       return;
     }
 
@@ -556,13 +566,13 @@ const VictoryLane = () => {
       const response = await axios.post(
         `${BACKEND_URL}/api/social/posts/${postId}/comment`,
         { content: commentText },
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
-        // Add comment to local state
-        const newCommentData = {
-          id: response.data.comment?.id || Date.now().toString(),
+        // Add comment to local state using data from response
+        const newCommentData = response.data.comment || {
+          id: Date.now().toString(),
           post_id: postId,
           user_id: user.id,
           username: user.username,
@@ -586,7 +596,8 @@ const VictoryLane = () => {
       }
     } catch (error) {
       console.error('Error posting comment:', error);
-      toast.error(error.response?.data?.detail || 'Failed to post comment');
+      const errorMsg = error.response?.data?.detail || 'Failed to post comment';
+      toast.error(errorMsg);
     }
   };
 
