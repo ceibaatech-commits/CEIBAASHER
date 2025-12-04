@@ -173,16 +173,16 @@ const ExamSyllabus = () => {
           
           {/* Desktop always shows, mobile toggles */}
           <div className={`${showWeightage ? 'block' : 'hidden'} md:block px-2 pb-2 md:px-6 md:pb-6`}>
-            <p className="text-gray-600 text-xs md:text-base mb-3 md:mb-6">{examData.description}</p>
+            <p className="text-gray-500 text-[10px] md:text-base mb-2 md:mb-6 line-clamp-2">{examData.description}</p>
             
-            {/* Subject Filter Pills - Compact on Mobile */}
-            <div className="flex flex-wrap gap-1.5 md:gap-3">
+            {/* Subject Filter Pills - Ultra Compact on Mobile */}
+            <div className="flex flex-wrap gap-1 md:gap-3">
               <button
                 onClick={() => setSelectedSubject('all')}
-                className={`px-2.5 py-1 md:px-4 md:py-2 rounded-full md:rounded-lg text-xs md:text-sm font-semibold transition-all ${
+                className={`px-2 py-0.5 md:px-4 md:py-2 rounded-full text-[10px] md:text-sm font-medium transition-all ${
                   selectedSubject === 'all'
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-600'
                 }`}
               >
                 All ({allTopics.length})
@@ -193,10 +193,10 @@ const ExamSyllabus = () => {
                   <button
                     key={subject}
                     onClick={() => setSelectedSubject(subject)}
-                    className={`px-2.5 py-1 md:px-4 md:py-2 rounded-full md:rounded-lg text-xs md:text-sm font-semibold transition-all ${
+                    className={`px-2 py-0.5 md:px-4 md:py-2 rounded-full text-[10px] md:text-sm font-medium transition-all ${
                       selectedSubject === subject
-                        ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-600'
                     }`}
                   >
                     {subject} ({count})
@@ -207,17 +207,17 @@ const ExamSyllabus = () => {
           </div>
         </div>
 
-        {/* Topics List - Mobile: Compact Collapsible Cards, Desktop: Grid */}
-        <div className="md:hidden space-y-2">
+        {/* Topics List - Mobile: Ultra Compact Collapsible Cards (~50px collapsed) */}
+        <div className="md:hidden space-y-1">
           {filteredTopics.map((topicData, index) => (
             <div
               key={index}
-              className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100"
+              className="bg-white rounded overflow-hidden border border-gray-100"
             >
-              {/* Topic Header - Always Visible */}
+              {/* Topic Header - Collapsed: ~50px height */}
               <button
                 onClick={() => toggleTopic(index)}
-                className={`w-full bg-gradient-to-r ${examData.color} px-3 py-2.5 flex items-center justify-between`}
+                className={`w-full bg-gradient-to-r ${examData.color} px-2 py-2 flex items-center justify-between`}
               >
                 <div className="flex-1 text-left">
                   <h3 className="text-white font-semibold text-sm truncate pr-2">{topicData.topic}</h3>
