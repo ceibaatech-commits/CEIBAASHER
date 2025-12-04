@@ -217,56 +217,54 @@ const ExamSyllabus = () => {
               {/* Topic Header - Collapsed: ~50px height */}
               <button
                 onClick={() => toggleTopic(index)}
-                className={`w-full bg-gradient-to-r ${examData.color} px-2 py-2 flex items-center justify-between`}
+                className={`w-full bg-gradient-to-r ${examData.color} px-2 py-1.5 flex items-center justify-between`}
               >
-                <div className="flex-1 text-left">
-                  <h3 className="text-white font-semibold text-sm truncate pr-2">{topicData.topic}</h3>
-                  <span className="text-white/80 text-xs bg-white/20 px-2 py-0.5 rounded-full inline-block mt-0.5">
-                    {topicData.subject}
-                  </span>
+                <div className="flex-1 text-left min-w-0">
+                  <h3 className="text-white font-medium text-xs truncate">{topicData.topic}</h3>
+                  <span className="text-white/70 text-[10px]">{topicData.subject}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-white text-xs font-medium">Questions: <span className="font-bold">{topicData.questions}</span></span>
+                <div className="flex items-center space-x-1.5 flex-shrink-0">
+                  <span className="text-white text-[10px]">{topicData.questions}Qs</span>
                   {expandedTopics[index] ? (
-                    <ChevronUp className="w-4 h-4 text-white/80" />
+                    <ChevronUp className="w-3 h-3 text-white/70" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-white/80" />
+                    <ChevronDown className="w-3 h-3 text-white/70" />
                   )}
                 </div>
               </button>
 
-              {/* Expanded Content */}
+              {/* Expanded Content - Compact */}
               {expandedTopics[index] && (
-                <div className="px-3 py-2.5 bg-gray-50">
+                <div className="px-2 py-1.5 bg-gray-50">
                   {/* Subtopics */}
                   {topicData.subtopics && topicData.subtopics.length > 0 && (
-                    <div className="mb-2.5">
-                      <div className="flex flex-wrap gap-1">
-                        {topicData.subtopics.slice(0, 4).map((subtopic, idx) => (
+                    <div className="mb-1.5">
+                      <div className="flex flex-wrap gap-0.5">
+                        {topicData.subtopics.slice(0, 3).map((subtopic, idx) => (
                           <span
                             key={idx}
-                            className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full"
+                            className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded"
                           >
                             {subtopic}
                           </span>
                         ))}
-                        {topicData.subtopics.length > 4 && (
-                          <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
-                            +{topicData.subtopics.length - 4}
+                        {topicData.subtopics.length > 3 && (
+                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+                            +{topicData.subtopics.length - 3}
                           </span>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {/* Action Buttons - Horizontal Compact */}
-                  <div className="flex gap-2">
+                  {/* Action Buttons - Horizontal Ultra Compact */}
+                  <div className="flex gap-1">
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/topic-quiz/${examId}/${topicData.subject}/${topicData.topic}`);
                       }}
-                      className="flex-1 bg-blue-600 text-white py-2 px-2 rounded-md text-xs font-semibold flex items-center justify-center space-x-1"
+                      className="flex-1 bg-blue-600 text-white py-1.5 px-1 rounded text-[10px] font-medium flex items-center justify-center space-x-0.5"
                     >
                       <span>📚</span>
                       <span>Solo</span>
@@ -276,7 +274,7 @@ const ExamSyllabus = () => {
                         e.stopPropagation();
                         navigate(`/create-room/${examId}/${topicData.subject}/${topicData.topic}`);
                       }}
-                      className="flex-1 bg-purple-600 text-white py-2 px-2 rounded-md text-xs font-semibold flex items-center justify-center space-x-1"
+                      className="flex-1 bg-purple-600 text-white py-1.5 px-1 rounded text-[10px] font-medium flex items-center justify-center space-x-0.5"
                     >
                       <span>🎯</span>
                       <span>Room</span>
