@@ -554,9 +554,9 @@ const VictoryLane = () => {
 
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/api/social/posts/${postId}/comments`,
+        `${BACKEND_URL}/api/social/posts/${postId}/comment`,
         { content: commentText },
-        { headers: { Authorization: `Bearer ${user.id}` } }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
 
       if (response.data.success) {
@@ -586,7 +586,7 @@ const VictoryLane = () => {
       }
     } catch (error) {
       console.error('Error posting comment:', error);
-      toast.error('Failed to post comment');
+      toast.error(error.response?.data?.detail || 'Failed to post comment');
     }
   };
 
