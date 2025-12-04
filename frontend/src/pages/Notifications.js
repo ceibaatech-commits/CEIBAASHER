@@ -283,17 +283,15 @@ const Notifications = () => {
               >
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
-                  <img
-                    src={notification.actor_avatar || 'https://ui-avatars.com/api/?name=User&background=random'}
-                    alt={notification.actor_name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
-                  />
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                    {(notification.from_user_name || notification.actor_name || 'U').charAt(0).toUpperCase()}
+                  </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-2">
-                        {getNotificationIcon(notification.type)}
+                        {getNotificationIcon(notification)}
                         <div>
                           <p className="text-gray-900 font-medium">
                             {notification.content}
