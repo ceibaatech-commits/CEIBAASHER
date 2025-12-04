@@ -204,8 +204,8 @@ const Footer = () => {
               © 2025 Ceibaa. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
+              <button onClick={() => navigate('/privacy')} className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</button>
+              <button onClick={() => navigate('/terms')} className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</button>
               <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Refund Policy</a>
             </div>
           </div>
