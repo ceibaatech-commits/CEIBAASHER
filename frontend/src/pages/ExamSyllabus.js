@@ -83,46 +83,44 @@ const ExamSyllabus = () => {
         onLogout={handleLogout}
       />
       
-      {/* Exam Banner - Compact on Mobile */}
+      {/* Exam Banner - Ultra Compact on Mobile (~110px total) */}
       <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 md:py-8">
-          {/* Back Button */}
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 md:py-8">
+          {/* Back Button - Inline on Mobile */}
           <button
             onClick={() => navigate('/victory-lane')}
-            className="flex items-center text-white/90 hover:text-white mb-2 md:mb-4 transition-colors text-sm md:text-base"
+            className="flex items-center text-white/90 hover:text-white mb-1 md:mb-4 transition-colors text-xs md:text-base"
           >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
-            Back to Victory Lane
+            <ArrowLeft className="w-3 h-3 md:w-5 md:h-5 mr-1" />
+            <span className="md:inline">Back</span>
           </button>
           
-          {/* Mobile: Compact Header */}
-          <div className="flex items-center space-x-3 md:space-x-6">
+          {/* Mobile: Ultra Compact Header */}
+          <div className="flex items-center space-x-2 md:space-x-6">
             <div className="flex-shrink-0">
               {examData.icon.startsWith('http') ? (
-                <img src={examData.icon} alt={examData.name} className="w-12 h-12 md:w-24 md:h-24 object-contain" />
+                <img src={examData.icon} alt={examData.name} className="w-10 h-10 md:w-24 md:h-24 object-contain" />
               ) : (
-                <div className="text-4xl md:text-7xl">{examData.icon}</div>
+                <div className="text-3xl md:text-7xl">{examData.icon}</div>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg md:text-4xl font-black mb-0.5 md:mb-2 text-white truncate">{examData.name}</h1>
-              <p className="text-xs md:text-xl text-white/90 font-medium mb-2 md:mb-4 line-clamp-1">{examData.full_name}</p>
+              <h1 className="text-base md:text-4xl font-bold mb-0 md:mb-2 text-white truncate leading-tight">{examData.name}</h1>
+              <p className="text-[10px] md:text-xl text-white/80 font-medium line-clamp-1 leading-tight">{examData.full_name}</p>
               
-              {/* Stats Row - Compact on Mobile */}
-              <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-                <div className="bg-white/20 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg flex items-center space-x-1 md:space-x-2">
-                  <FileText className="w-3 h-3 md:w-5 md:h-5" />
-                  <span className="font-semibold text-white text-xs md:text-base">{examData.total_questions}</span>
-                  <span className="text-white/80 text-xs hidden md:inline">Questions</span>
+              {/* Stats Row - Hidden on mobile, shown in Quick Stats Bar below */}
+              <div className="hidden md:flex items-center gap-4 mt-4 flex-wrap">
+                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center space-x-2">
+                  <FileText className="w-5 h-5" />
+                  <span className="font-semibold text-white">{examData.total_questions} Questions</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg flex items-center space-x-1 md:space-x-2">
-                  <Clock className="w-3 h-3 md:w-5 md:h-5" />
-                  <span className="font-semibold text-white text-xs md:text-base">{examData.duration}</span>
+                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center space-x-2">
+                  <Clock className="w-5 h-5" />
+                  <span className="font-semibold text-white">{examData.duration}</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg flex items-center space-x-1 md:space-x-2">
-                  <BookOpen className="w-3 h-3 md:w-5 md:h-5" />
-                  <span className="font-semibold text-white text-xs md:text-base">{subjects.length}</span>
-                  <span className="text-white/80 text-xs hidden md:inline">Subjects</span>
+                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg flex items-center space-x-2">
+                  <BookOpen className="w-5 h-5" />
+                  <span className="font-semibold text-white">{subjects.length} Subjects</span>
                 </div>
               </div>
             </div>
@@ -130,13 +128,13 @@ const ExamSyllabus = () => {
         </div>
       </div>
 
-      {/* Quick Stats Bar - Mobile Only */}
-      <div className="md:hidden bg-gradient-to-r from-slate-700 to-slate-800 px-3 py-2">
+      {/* Quick Stats Bar - Mobile Only (Compact) */}
+      <div className="md:hidden bg-slate-800 px-2 py-1.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3 text-white">
-            <div className="flex items-center space-x-1">
-              <FileText className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-xs font-medium">{examData.total_questions}+ Qs</span>
+          <div className="flex items-center space-x-2 text-white">
+            <div className="flex items-center space-x-0.5">
+              <FileText className="w-3 h-3 text-blue-400" />
+              <span className="text-[10px] font-medium">{examData.total_questions}Qs</span>
             </div>
             <div className="w-px h-3 bg-white/30"></div>
             <div className="flex items-center space-x-1">
