@@ -206,8 +206,62 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Mobile: Search Results */}
+      {searchQuery.trim() && (
+        <div className="md:hidden px-4 py-4 bg-white border-b">
+          <div className="bg-gradient-to-r from-slate-700 to-slate-900 rounded-xl p-4 text-white mb-4">
+            <div className="flex items-center gap-3">
+              <Search className="w-8 h-8" />
+              <div>
+                <h2 className="font-bold text-lg">Search Results</h2>
+                <p className="text-white/80 text-sm">Found {filteredExams.length} exams for "{searchQuery}"</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Search Result Cards */}
+          <div className="space-y-3">
+            {filteredExams.map((exam) => (
+              <div
+                key={exam.id}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm active:scale-98 transition-transform cursor-pointer"
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-md`}>
+                    {exam.icon?.startsWith('http') ? (
+                      <img src={exam.icon} alt={exam.name} className="w-8 h-8 object-contain" />
+                    ) : (
+                      <span className="text-2xl">{exam.icon}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900">{exam.name}</h3>
+                    <p className="text-sm text-gray-500">{exam.full_name}</p>
+                    <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                      <span className="flex items-center gap-1">
+                        <FileText className="w-3 h-3" />
+                        {exam.total_questions} Qs
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {exam.duration}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                </div>
+              </div>
+            ))}
+            {filteredExams.length === 0 && (
+              <p className="text-center text-gray-500 py-8">No exams found matching "{searchQuery}"</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Mobile: Show Selected Category Exams */}
-      {activeCategory !== 'all' && (
+      {!searchQuery.trim() && activeCategory !== 'all' && (
         <div className="md:hidden px-4 py-4 bg-white border-b">
           <div className={`bg-gradient-to-r ${activeCateg?.color} rounded-xl p-4 text-white`}>
             <div className="flex items-center gap-3">
