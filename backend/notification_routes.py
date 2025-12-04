@@ -149,7 +149,14 @@ async def get_unread_count(
         if not authorization:
             return {"success": True, "count": 0}
         
-        user_id = authorization.replace("Bearer ", "")
+        # Decode JWT token to get user_id
+        token = authorization.replace("Bearer ", "")
+        try:
+            import jwt
+            payload = jwt.decode(token, options={"verify_signature": False})
+            user_id = payload.get("sub")
+        except:
+            user_id = token
         
         count = await db.notifications.count_documents({
             "user_id": user_id,
