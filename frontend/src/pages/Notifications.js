@@ -195,7 +195,7 @@ const Notifications = () => {
               <Bell className="w-16 h-16 mx-auto text-gray-300 mb-4" />
               <p className="text-xl text-gray-600 font-semibold">No notifications yet</p>
               <p className="text-gray-500 mt-2">
-                When you get notifications, they'll show up here
+                When you get notifications, they will show up here
               </p>
             </div>
           ) : (
