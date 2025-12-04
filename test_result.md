@@ -386,6 +386,53 @@ Compare with the design requirements:
 Take multiple screenshots showing different states (collapsed and expanded topics)."
   - agent: "testing"
     message: |
+      🎯 NDA EXAM SYLLABUS MOBILE UI COMPREHENSIVE TEST COMPLETE (40% success rate - 2/5 design requirements met)
+      
+      **Test Specification Met**: Mobile UI testing of NDA Exam Syllabus page at /exam/NDA with mobile viewport (390x844) per review request
+      
+      **✅ WORKING MOBILE FEATURES**:
+      1. **Collapsible Weightage Analysis**: ✅ WORKING - "Show Details"/"Hide Details" button functional, smooth expand/collapse animation
+      2. **Topic Card Expand/Collapse**: ✅ WORKING - Chevron buttons expand cards to show sub-topics and action buttons
+      3. **Horizontal Action Buttons**: ✅ WORKING - Solo Practice, Room, Battle buttons display horizontally when topic expanded
+      4. **Exam Icon Size**: ✅ APPROPRIATE - 48x48px icon (w-12 h-12 class) suitable for mobile
+      5. **Responsive Layout**: ✅ WORKING - Content adapts to 390px mobile viewport
+      
+      **❌ CRITICAL MOBILE UI ISSUES IDENTIFIED**:
+      
+      **1. HEADER HEIGHT ISSUE (CRITICAL)**:
+      - Current: 246px | Target: ~110px | Status: ❌ 123% TOO TALL
+      - Header takes excessive vertical space on mobile viewport
+      - Stats pills are oversized for mobile display
+      
+      **2. FILTER PILLS SIZE ISSUE (HIGH PRIORITY)**:
+      - Current: 14px font, 180px height (buttons 1&2) | Target: text-xs (12px), compact pills
+      - Filter buttons are oversized for mobile - should be small pills with text-xs class
+      - Button 3 shows correct 44px height but others are 180px (4x too tall)
+      
+      **3. ACTION BUTTONS SIZE ISSUE (MEDIUM PRIORITY)**:
+      - Solo Practice button: 180px height (should be ~32px with py-1.5)
+      - Room & Battle buttons: 44px height (acceptable but could be more compact)
+      - All buttons need py-1.5 padding for compact mobile design
+      
+      **DESIGN REQUIREMENTS COMPLIANCE**:
+      ❌ Header height: 246px (Target: ~110px) - FAILS by 123%
+      ❌ Filter pills: 14px font, 180px height (Target: text-xs, compact) - FAILS  
+      ❌ Action buttons: 180px/44px heights (Target: py-1.5 compact) - FAILS
+      ✅ Collapsible sections: Working correctly
+      ✅ Responsive layout: Adapts to 390px viewport
+      
+      **SCREENSHOTS CAPTURED**: 
+      - nda_mobile_initial.png (header view)
+      - nda_mobile_weightage_expanded.png (weightage section expanded)
+      - nda_mobile_topic_expanded.png (topic card with action buttons)
+      - nda_mobile_header_final.png (header focus)
+      - nda_mobile_topics_final.png (topic cards view)
+      
+      **TECHNICAL VERIFICATION**: Mobile viewport set correctly (390x844), all interactive elements functional, responsive layout working, but sizing does not meet compact mobile design requirements.
+      
+      **CONCLUSION**: Mobile UI functionality is working but design requirements for compact sizing are NOT MET. Header and filter pills need significant size reduction for optimal mobile experience.
+  - agent: "testing"
+    message: |
       🎯 NDA EXAM SYLLABUS MOBILE UI COMPREHENSIVE TEST COMPLETE (60% success rate - 3/5 design requirements met)
       
       **Test Specification Met**: Mobile UI testing of NDA Exam Syllabus page at /exam/NDA with mobile viewport (390x844) per review request
