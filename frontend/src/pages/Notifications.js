@@ -1,115 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import { useNotifications } from '../context/NotificationContext';
 import { Bell, Heart, MessageCircle, Users, Trophy, Flame, Check, Trash2 } from 'lucide-react';
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Notifications = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { 
+    notifications, 
+    unreadCount, 
+    loading, 
+    fetchNotifications, 
+    markAsRead, 
+    markAllAsRead, 
+    deleteNotification 
+  } = useNotifications();
   const [activeFilter, setActiveFilter] = useState('all');
-  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate('/login');
     } else if (user) {
-      fetchNotifications();
+      fetchNotifications(activeFilter);
     }
-  }, [user, authLoading, activeFilter]);
-
-  const fetchNotifications = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const params = {};
-      
-      if (activeFilter !== 'all') {
-        params.notification_type = activeFilter;
-      }
-
-      const response = await axios.get(
-        `${BACKEND_URL}/api/notifications`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params
-        }
-      );
-
-      if (response.data.success) {
-        setNotifications(response.data.notifications || []);
-        setUnreadCount(response.data.unread_count || 0);
-      }
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const markAsRead = async (notificationId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `${BACKEND_URL}/api/notifications/${notificationId}/read`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      // Update local state
-      setNotifications(prev =>
-        prev.map(notif =>
-          notif.id === notificationId ? { ...notif, is_read: true } : notif
-        )
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(
-        `${BACKEND_URL}/api/notifications/mark-all-read`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      // Update local state
-      setNotifications(prev =>
-        prev.map(notif => ({ ...notif, is_read: true }))
-      );
-      setUnreadCount(0);
-    } catch (error) {
-      console.error('Error marking all as read:', error);
-    }
-  };
-
-  const deleteNotification = async (notificationId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(
-        `${BACKEND_URL}/api/notifications/${notificationId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      // Remove from local state
-      setNotifications(prev => prev.filter(notif => notif.id !== notificationId));
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-    }
-  };
+  }, [user, authLoading, activeFilter, fetchNotifications]);
 
   const handleNotificationClick = async (notification) => {
     // Mark as read first
@@ -187,8 +102,20 @@ const Notifications = () => {
     { id: 'follow', label: 'Follows', icon: Users },
     { id: 'like', label: 'Likes', icon: Heart },
     { id: 'comment', label: 'Comments', icon: MessageCircle },
-    { id: 'quiz_created', label: 'Quizzes', icon: Trophy }
+    { id: 'challenge', label: 'Challenges', icon: Trophy }
   ];
+
+  const handleDeleteNotification = async (e, notificationId) => {
+    e.stopPropagation();
+    if (window.confirm('Delete this notification?')) {
+      await deleteNotification(notificationId);
+    }
+  };
+
+  const handleMarkAsRead = async (e, notificationId) => {
+    e.stopPropagation();
+    await markAsRead(notificationId);
+  };
 
   if (loading || authLoading) {
     return (
