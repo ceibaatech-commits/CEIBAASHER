@@ -512,6 +512,84 @@ const VictoryLane = () => {
     // API call would go here for persistence
   };
 
+  // Toggle comments section
+  const toggleComments = async (postId) => {
+    const isExpanded = expandedComments.has(postId);
+    
+    if (isExpanded) {
+      // Collapse comments
+      setExpandedComments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+    } else {
+      // Expand and fetch comments
+      setExpandedComments(prev => new Set([...prev, postId]));
+      
+      if (!postComments[postId]) {
+        setLoadingComments(prev => ({ ...prev, [postId]: true }));
+        try {
+          const response = await axios.get(`${BACKEND_URL}/api/social/posts/${postId}/comments`);
+          if (response.data.success) {
+            setPostComments(prev => ({ ...prev, [postId]: response.data.comments || [] }));
+          }
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+          setPostComments(prev => ({ ...prev, [postId]: [] }));
+        } finally {
+          setLoadingComments(prev => ({ ...prev, [postId]: false }));
+        }
+      }
+    }
+  };
+
+  // Submit a new comment
+  const submitComment = async (postId) => {
+    const commentText = newComment[postId]?.trim();
+    if (!commentText || !isAuthenticated() || !user) {
+      if (!isAuthenticated()) toast.error('Please login to comment');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/social/posts/${postId}/comments`,
+        { content: commentText },
+        { headers: { Authorization: `Bearer ${user.id}` } }
+      );
+
+      if (response.data.success) {
+        // Add comment to local state
+        const newCommentData = {
+          id: response.data.comment?.id || Date.now().toString(),
+          post_id: postId,
+          user_id: user.id,
+          username: user.username,
+          content: commentText,
+          created_at: new Date().toISOString()
+        };
+        
+        setPostComments(prev => ({
+          ...prev,
+          [postId]: [newCommentData, ...(prev[postId] || [])]
+        }));
+        
+        // Update post comment count
+        setPosts(posts.map(p => 
+          p.id === postId ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p
+        ));
+        
+        // Clear input
+        setNewComment(prev => ({ ...prev, [postId]: '' }));
+        toast.success('Comment posted!');
+      }
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      toast.error('Failed to post comment');
+    }
+  };
+
   // Open profile modal
   const openProfile = async (userId) => {
     if (!userId) return;
