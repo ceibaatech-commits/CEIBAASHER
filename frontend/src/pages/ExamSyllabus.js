@@ -284,7 +284,7 @@ const ExamSyllabus = () => {
                         e.stopPropagation();
                         navigate(`/live-battle-1v1/${examId}/${topicData.subject}/${topicData.topic}`);
                       }}
-                      className="flex-1 bg-orange-600 text-white py-2 px-2 rounded-md text-xs font-semibold flex items-center justify-center space-x-1"
+                      className="flex-1 bg-orange-600 text-white py-1.5 px-1 rounded text-[10px] font-medium flex items-center justify-center space-x-0.5"
                     >
                       <span>⚔️</span>
                       <span>Battle</span>
