@@ -4,7 +4,7 @@ import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle, Loader2 } 
 import io from 'socket.io-client';
 
 // Connect to Socket.IO on main backend - Battle endpoint
-const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://joinquiz-debug.preview.emergentagent.com';
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://study-exam-makeover.preview.emergentagent.com';
 const SOCKET_PATH = '/api/battlews/socket.io'; // Battle Socket.IO path
 
 const BattleLobby = () => {
