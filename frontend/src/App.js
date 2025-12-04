@@ -97,9 +97,9 @@ function App() {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings/privacy" element={<PrivacySettings />} />
           
-          {/* Social Routes */}
-          <Route path="/social" element={<SocialFeed />} />
-          <Route path="/social-feed" element={<SocialFeed />} />
+          {/* Social Routes - Redirect old routes to VictoryLane */}
+          <Route path="/social" element={<VictoryLane />} />
+          <Route path="/social-feed" element={<VictoryLane />} />
           <Route path="/victory-lane" element={<VictoryLane />} />
           
           {/* Admin Routes */}
