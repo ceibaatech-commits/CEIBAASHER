@@ -111,35 +111,45 @@ const Notifications = () => {
     }
   };
 
-  const handleNotificationClick = (notification) => {
-    // Mark as read
+  const handleNotificationClick = async (notification) => {
+    // Mark as read first
     if (!notification.is_read) {
-      markAsRead(notification.id);
+      await markAsRead(notification.id);
     }
 
+    // Get notification type (support both field names for backwards compatibility)
+    const notifType = notification.notification_type || notification.type;
+    const postId = notification.post_id || notification.reference_id;
+    const fromUserId = notification.from_user_id || notification.actor_id;
+
     // Navigate based on notification type
-    if (notification.type === 'follow' || notification.type === 'follow_request' || notification.type === 'follow_approved') {
-      // Navigate to actor's profile
-      if (notification.actor_id) {
-        navigate(`/profile/${notification.actor_id}`);
+    if (notifType === 'follow' || notifType === 'follow_request' || notifType === 'follow_approved') {
+      // Navigate to the user who followed/requested
+      if (fromUserId) {
+        navigate(`/profile/${fromUserId}`);
       }
-    } else if (notification.type === 'like' || notification.type === 'comment') {
-      // Navigate to post
-      if (notification.reference_id) {
-        navigate(`/post/${notification.reference_id}`);
+    } else if (notifType === 'like' || notifType === 'comment') {
+      // Navigate to Victory Lane with the post highlighted
+      if (postId) {
+        navigate(`/victory-lane?post=${postId}`);
+      } else {
+        navigate('/victory-lane');
       }
-    } else if (notification.type === 'quiz_created' || notification.type === 'score_beaten') {
+    } else if (notifType === 'quiz_created' || notifType === 'score_beaten' || notifType === 'challenge') {
       // Navigate to quiz room
-      if (notification.reference_id) {
-        navigate(`/quiz-room/${notification.reference_id}`);
+      if (postId) {
+        navigate(`/victory-lane?post=${postId}`);
       }
-    } else if (notification.type === 'daily_streak') {
-      // Navigate to quiz selection
+    } else if (notifType === 'daily_streak') {
       navigate('/');
+    } else {
+      // Default: go to Victory Lane
+      navigate('/victory-lane');
     }
   };
 
-  const getNotificationIcon = (type) => {
+  const getNotificationIcon = (notification) => {
+    const type = notification.notification_type || notification.type;
     switch (type) {
       case 'follow':
       case 'follow_request':
@@ -151,6 +161,7 @@ const Notifications = () => {
         return <MessageCircle className="w-5 h-5 text-green-500" />;
       case 'quiz_created':
       case 'score_beaten':
+      case 'challenge':
         return <Trophy className="w-5 h-5 text-yellow-500" />;
       case 'daily_streak':
         return <Flame className="w-5 h-5 text-orange-500" />;
