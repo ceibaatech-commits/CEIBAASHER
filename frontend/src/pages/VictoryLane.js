@@ -1133,9 +1133,14 @@ const VictoryLane = () => {
 
                       {/* Interaction Buttons */}
                       <div className="flex items-center justify-between mt-4 max-w-md">
-                        <button className="flex items-center gap-2 text-gray-500 hover:text-blue-500 transition group">
+                        <button 
+                          onClick={() => toggleComments(post.id)}
+                          className={`flex items-center gap-2 transition group ${
+                            expandedComments.has(post.id) ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'
+                          }`}
+                        >
                           <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
-                            <MessageCircle className="w-5 h-5" />
+                            <MessageCircle className={`w-5 h-5 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
                           </div>
                           <span className="text-sm font-medium">{post.comments_count || 0}</span>
                         </button>
@@ -1168,6 +1173,75 @@ const VictoryLane = () => {
                           <Bookmark className={`w-5 h-5 transition-all ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
                         </button>
                       </div>
+
+                      {/* Comments Section */}
+                      {expandedComments.has(post.id) && (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                          {/* Add Comment Input */}
+                          {isAuthenticated() && user && (
+                            <div className="flex gap-2 mb-4">
+                              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                                {user.username?.charAt(0).toUpperCase() || 'U'}
+                              </div>
+                              <div className="flex-1 flex gap-2">
+                                <input
+                                  type="text"
+                                  value={newComment[post.id] || ''}
+                                  onChange={(e) => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
+                                  onKeyPress={(e) => e.key === 'Enter' && submitComment(post.id)}
+                                  placeholder="Write a comment..."
+                                  className="flex-1 px-3 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-blue-400"
+                                />
+                                <button
+                                  onClick={() => submitComment(post.id)}
+                                  disabled={!newComment[post.id]?.trim()}
+                                  className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  Post
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Comments List */}
+                          {loadingComments[post.id] ? (
+                            <div className="flex items-center justify-center py-4">
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
+                            </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {(postComments[post.id] || []).length === 0 ? (
+                                <p className="text-center text-gray-400 text-sm py-2">No comments yet. Be the first!</p>
+                              ) : (
+                                (postComments[post.id] || []).map((comment) => (
+                                  <div key={comment.id} className="flex gap-2">
+                                    <div 
+                                      onClick={() => openProfile(comment.user_id)}
+                                      className="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 cursor-pointer"
+                                    >
+                                      {(comment.username || 'U').charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className="bg-gray-50 rounded-2xl px-3 py-2">
+                                        <span 
+                                          onClick={() => openProfile(comment.user_id)}
+                                          className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
+                                        >
+                                          {comment.username || 'User'}
+                                        </span>
+                                        <p className="text-gray-700 text-sm">{comment.content}</p>
+                                      </div>
+                                      <span className="text-xs text-gray-400 ml-3">
+                                        {formatTimestamp(comment.created_at)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
