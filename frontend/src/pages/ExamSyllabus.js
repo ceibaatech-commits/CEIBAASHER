@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Clock, FileText, Trophy } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, FileText, Trophy, ChevronDown, ChevronUp, Users } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -11,10 +11,13 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const ExamSyllabus = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
   const [examData, setExamData] = useState(null);
   const [allTopics, setAllTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubject, setSelectedSubject] = useState('all');
+  const [expandedTopics, setExpandedTopics] = useState({});
+  const [showWeightage, setShowWeightage] = useState(false);
 
   useEffect(() => {
     fetchExamData();
@@ -38,7 +41,7 @@ const ExamSyllabus = () => {
     }
   };
 
-  if (loading || !examData) {  const handleLogin = () => {
+  const handleLogin = () => {
     navigate('/login');
   };
 
@@ -47,12 +50,19 @@ const ExamSyllabus = () => {
     navigate('/');
   };
 
+  const toggleTopic = (index) => {
+    setExpandedTopics(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
 
+  if (loading || !examData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading syllabus...</p>
+          <div className="animate-spin rounded-full h-12 w-12 md:h-16 md:w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-sm md:text-base">Loading syllabus...</p>
         </div>
       </div>
     );
@@ -62,16 +72,7 @@ const ExamSyllabus = () => {
     ? allTopics 
     : allTopics.filter(t => t.subject === selectedSubject);
 
-  const subjects = Object.keys(examData.subjects || {});  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-
+  const subjects = Object.keys(examData.subjects || {});
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -82,46 +83,46 @@ const ExamSyllabus = () => {
         onLogout={handleLogout}
       />
       
-      {/* Exam Banner */}
-      <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`} style={{minHeight: '200px'}}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Exam Banner - Compact on Mobile */}
+      <div className={`bg-gradient-to-r ${examData.color} text-white shadow-lg`}>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 md:py-8">
+          {/* Back Button */}
           <button
-            onClick={() => navigate('/')}
-            className="flex items-center text-white/90 hover:text-white mb-4 transition-colors"
+            onClick={() => navigate('/victory-lane')}
+            className="flex items-center text-white/90 hover:text-white mb-2 md:mb-4 transition-colors text-sm md:text-base"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back to Home
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
+            Back to Victory Lane
           </button>
           
-          <div className="flex items-start space-x-6">
+          {/* Mobile: Compact Header */}
+          <div className="flex items-center space-x-3 md:space-x-6">
             <div className="flex-shrink-0">
               {examData.icon.startsWith('http') ? (
-                <img src={examData.icon} alt={examData.name} className="w-24 h-24 object-contain" />
+                <img src={examData.icon} alt={examData.name} className="w-12 h-12 md:w-24 md:h-24 object-contain" />
               ) : (
-                <div className="text-7xl">{examData.icon}</div>
+                <div className="text-4xl md:text-7xl">{examData.icon}</div>
               )}
             </div>
-            <div className="flex-1">
-              <h1 className="text-4xl font-black mb-2 text-white">{examData.name}</h1>
-              <p className="text-xl text-white font-semibold mb-4">{examData.full_name}</p>
-              <div className="flex flex-wrap gap-4">
-                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <FileText className="w-5 h-5" />
-                    <span className="font-semibold text-white">{examData.total_questions} Questions</span>
-                  </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg md:text-4xl font-black mb-0.5 md:mb-2 text-white truncate">{examData.name}</h1>
+              <p className="text-xs md:text-xl text-white/90 font-medium mb-2 md:mb-4 line-clamp-1">{examData.full_name}</p>
+              
+              {/* Stats Row - Compact on Mobile */}
+              <div className="flex items-center gap-2 md:gap-4 flex-wrap">
+                <div className="bg-white/20 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg flex items-center space-x-1 md:space-x-2">
+                  <FileText className="w-3 h-3 md:w-5 md:h-5" />
+                  <span className="font-semibold text-white text-xs md:text-base">{examData.total_questions}</span>
+                  <span className="text-white/80 text-xs hidden md:inline">Questions</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-5 h-5" />
-                    <span className="font-semibold text-white">{examData.duration}</span>
-                  </div>
+                <div className="bg-white/20 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg flex items-center space-x-1 md:space-x-2">
+                  <Clock className="w-3 h-3 md:w-5 md:h-5" />
+                  <span className="font-semibold text-white text-xs md:text-base">{examData.duration}</span>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <BookOpen className="w-5 h-5" />
-                    <span className="font-semibold text-white">{subjects.length} Subjects</span>
-                  </div>
+                <div className="bg-white/20 backdrop-blur-sm px-2 py-1 md:px-4 md:py-2 rounded-md md:rounded-lg flex items-center space-x-1 md:space-x-2">
+                  <BookOpen className="w-3 h-3 md:w-5 md:h-5" />
+                  <span className="font-semibold text-white text-xs md:text-base">{subjects.length}</span>
+                  <span className="text-white/80 text-xs hidden md:inline">Subjects</span>
                 </div>
               </div>
             </div>
@@ -129,51 +130,178 @@ const ExamSyllabus = () => {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Complete Syllabus</h2>
-          <p className="text-gray-600 mb-6">{examData.description}</p>
+      {/* Quick Stats Bar - Mobile Only */}
+      <div className="md:hidden bg-gradient-to-r from-slate-700 to-slate-800 px-3 py-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3 text-white">
+            <div className="flex items-center space-x-1">
+              <FileText className="w-3.5 h-3.5 text-blue-400" />
+              <span className="text-xs font-medium">{examData.total_questions}+ Qs</span>
+            </div>
+            <div className="w-px h-3 bg-white/30"></div>
+            <div className="flex items-center space-x-1">
+              <Users className="w-3.5 h-3.5 text-green-400" />
+              <span className="text-xs font-medium">5K+ Users</span>
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate(`/topic-quiz/${examId}/${subjects[0] || 'all'}/random`)}
+            className="bg-white text-slate-800 px-3 py-1.5 rounded-md text-xs font-bold flex items-center space-x-1 shadow-sm"
+          >
+            <span>▶</span>
+            <span>Start</span>
+          </button>
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-12">
+        {/* Topic Weightage Analysis - Collapsible on Mobile */}
+        <div className="bg-white rounded-lg md:rounded-xl shadow-sm md:shadow-md mb-4 md:mb-8 overflow-hidden">
+          <button 
+            onClick={() => setShowWeightage(!showWeightage)}
+            className="w-full px-3 py-2.5 md:px-6 md:py-4 flex items-center justify-between md:cursor-default"
+          >
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-100 rounded-md flex items-center justify-center">
+                <Trophy className="w-3.5 h-3.5 md:w-5 md:h-5 text-blue-600" />
+              </div>
+              <h2 className="text-sm md:text-2xl font-bold text-gray-900">Topic-Wise Weightage Analysis</h2>
+            </div>
+            <div className="md:hidden flex items-center space-x-2">
+              <span className="text-xs text-blue-600 font-medium">Show Details</span>
+              {showWeightage ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
+            </div>
+          </button>
           
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setSelectedSubject('all')}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                selectedSubject === 'all'
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              All Topics ({allTopics.length})
-            </button>
-            {subjects.map((subject) => {
-              const count = allTopics.filter(t => t.subject === subject).length;  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-
-              return (
-                <button
-                  key={subject}
-                  onClick={() => setSelectedSubject(subject)}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-all ${
-                    selectedSubject === subject
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {subject} ({count})
-                </button>
-              );
-            })}
+          {/* Desktop always shows, mobile toggles */}
+          <div className={`${showWeightage ? 'block' : 'hidden'} md:block px-3 pb-3 md:px-6 md:pb-6`}>
+            <p className="text-gray-600 text-xs md:text-base mb-3 md:mb-6">{examData.description}</p>
+            
+            {/* Subject Filter Pills - Compact on Mobile */}
+            <div className="flex flex-wrap gap-1.5 md:gap-3">
+              <button
+                onClick={() => setSelectedSubject('all')}
+                className={`px-2.5 py-1 md:px-4 md:py-2 rounded-full md:rounded-lg text-xs md:text-sm font-semibold transition-all ${
+                  selectedSubject === 'all'
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                All ({allTopics.length})
+              </button>
+              {subjects.map((subject) => {
+                const count = allTopics.filter(t => t.subject === subject).length;
+                return (
+                  <button
+                    key={subject}
+                    onClick={() => setSelectedSubject(subject)}
+                    className={`px-2.5 py-1 md:px-4 md:py-2 rounded-full md:rounded-lg text-xs md:text-sm font-semibold transition-all ${
+                      selectedSubject === subject
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {subject} ({count})
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Topics List - Mobile: Compact Collapsible Cards, Desktop: Grid */}
+        <div className="md:hidden space-y-2">
+          {filteredTopics.map((topicData, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100"
+            >
+              {/* Topic Header - Always Visible */}
+              <button
+                onClick={() => toggleTopic(index)}
+                className={`w-full bg-gradient-to-r ${examData.color} px-3 py-2.5 flex items-center justify-between`}
+              >
+                <div className="flex-1 text-left">
+                  <h3 className="text-white font-semibold text-sm truncate pr-2">{topicData.topic}</h3>
+                  <span className="text-white/80 text-xs bg-white/20 px-2 py-0.5 rounded-full inline-block mt-0.5">
+                    {topicData.subject}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-white text-xs font-medium">Questions: <span className="font-bold">{topicData.questions}</span></span>
+                  {expandedTopics[index] ? (
+                    <ChevronUp className="w-4 h-4 text-white/80" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-white/80" />
+                  )}
+                </div>
+              </button>
+
+              {/* Expanded Content */}
+              {expandedTopics[index] && (
+                <div className="px-3 py-2.5 bg-gray-50">
+                  {/* Subtopics */}
+                  {topicData.subtopics && topicData.subtopics.length > 0 && (
+                    <div className="mb-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {topicData.subtopics.slice(0, 4).map((subtopic, idx) => (
+                          <span
+                            key={idx}
+                            className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full"
+                          >
+                            {subtopic}
+                          </span>
+                        ))}
+                        {topicData.subtopics.length > 4 && (
+                          <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                            +{topicData.subtopics.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons - Horizontal Compact */}
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/topic-quiz/${examId}/${topicData.subject}/${topicData.topic}`);
+                      }}
+                      className="flex-1 bg-blue-600 text-white py-2 px-2 rounded-md text-xs font-semibold flex items-center justify-center space-x-1"
+                    >
+                      <span>📚</span>
+                      <span>Solo</span>
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/create-room/${examId}/${topicData.subject}/${topicData.topic}`);
+                      }}
+                      className="flex-1 bg-purple-600 text-white py-2 px-2 rounded-md text-xs font-semibold flex items-center justify-center space-x-1"
+                    >
+                      <span>🎯</span>
+                      <span>Room</span>
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/live-battle-1v1/${examId}/${topicData.subject}/${topicData.topic}`);
+                      }}
+                      className="flex-1 bg-orange-600 text-white py-2 px-2 rounded-md text-xs font-semibold flex items-center justify-center space-x-1"
+                    >
+                      <span>⚔️</span>
+                      <span>Battle</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Grid View - Unchanged */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTopics.map((topicData, index) => (
             <div
               key={index}
@@ -256,8 +384,8 @@ const ExamSyllabus = () => {
         </div>
 
         {filteredTopics.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No topics available for this filter.</p>
+          <div className="text-center py-8 md:py-12">
+            <p className="text-gray-600 text-sm md:text-lg">No topics available for this filter.</p>
           </div>
         )}
       </main>
