@@ -68,12 +68,11 @@ const Home = () => {
   // Category filter
   const categories = [
     { id: 'all', label: 'All Exams', icon: '📚', color: 'from-slate-600 to-slate-800' },
-    { id: 'engineering', label: 'Engineering', icon: '⚙️', color: 'from-blue-600 to-cyan-600' },
+    { id: 'admission', label: 'Admission Tests', icon: '🎓', color: 'from-violet-600 to-purple-600' },
     { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600' },
     { id: 'defence', label: 'Defence', icon: '🎖️', color: 'from-green-700 to-emerald-700' },
     { id: 'government', label: 'Government', icon: '🏛️', color: 'from-amber-600 to-orange-600' },
     { id: 'banking', label: 'Banking', icon: '🏦', color: 'from-rose-600 to-red-600' },
-    { id: 'admission', label: 'Admission Tests', icon: '🎓', color: 'from-violet-600 to-purple-600' },
   ];
 
   // Filter exams based on category and search
