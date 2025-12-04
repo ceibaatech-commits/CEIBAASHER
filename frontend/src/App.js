@@ -11,7 +11,6 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
-import SocialFeed from "@/pages/SocialFeed";
 import VictoryLane from "@/pages/VictoryLane";
 import Books from "@/pages/Books";
 import BookDetails from "@/pages/BookDetails";
