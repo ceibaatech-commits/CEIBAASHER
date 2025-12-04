@@ -233,10 +233,7 @@ const Notifications = () => {
                       <div className="flex items-center gap-2">
                         {!notification.is_read && (
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              markAsRead(notification.id);
-                            }}
+                            onClick={(e) => handleMarkAsRead(e, notification.id)}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             title="Mark as read"
                           >
@@ -244,12 +241,7 @@ const Notifications = () => {
                           </button>
                         )}
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (window.confirm('Delete this notification?')) {
-                              deleteNotification(notification.id);
-                            }
-                          }}
+                          onClick={(e) => handleDeleteNotification(e, notification.id)}
                           className="p-2 hover:bg-red-100 rounded-full transition-colors"
                           title="Delete"
                         >
