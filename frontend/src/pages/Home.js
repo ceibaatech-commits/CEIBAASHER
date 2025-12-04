@@ -82,12 +82,11 @@ const Home = () => {
     if (activeCategory !== 'all') {
       // Map filter categories to both exam IDs and category names
       const categoryMap = {
-        engineering: { ids: ['JEE', 'JEE_MAIN', 'JEE_ADVANCED', 'GATE'], categories: ['Engineering', 'Admission Tests'] },
+        admission: { ids: ['CUET', 'CAT', 'CLAT', 'IPM', 'JEE', 'NEET', 'GATE', 'UGC_NET'], categories: ['Admission Tests'] },
         medical: { ids: ['NEET'], categories: ['Medical Entrance', 'Medical'] },
         defence: { ids: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'], categories: ['Defence', 'Defence Examinations'] },
         government: { ids: ['UPSC', 'SSC_CGL', 'SSC_CHSL', 'RRB_NTPC'], categories: ['UPSC Examinations', 'SSC Examinations', 'Government'] },
         banking: { ids: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'], categories: ['Banking Examinations', 'Banking'] },
-        admission: { ids: ['CUET', 'CAT', 'CLAT', 'IPM', 'JEE', 'NEET', 'GATE'], categories: ['Admission Tests'] },
       };
       const mapping = categoryMap[activeCategory] || { ids: [], categories: [] };
       filtered = filtered.filter(exam => 
