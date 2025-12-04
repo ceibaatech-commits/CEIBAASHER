@@ -136,15 +136,15 @@ const ExamSyllabus = () => {
               <FileText className="w-3 h-3 text-blue-400" />
               <span className="text-[10px] font-medium">{examData.total_questions}Qs</span>
             </div>
-            <div className="w-px h-3 bg-white/30"></div>
-            <div className="flex items-center space-x-1">
-              <Users className="w-3.5 h-3.5 text-green-400" />
-              <span className="text-xs font-medium">5K+ Users</span>
+            <div className="w-px h-2.5 bg-white/30"></div>
+            <div className="flex items-center space-x-0.5">
+              <Users className="w-3 h-3 text-green-400" />
+              <span className="text-[10px] font-medium">5K+</span>
             </div>
           </div>
           <button 
             onClick={() => navigate(`/topic-quiz/${examId}/${subjects[0] || 'all'}/random`)}
-            className="bg-white text-slate-800 px-3 py-1.5 rounded-md text-xs font-bold flex items-center space-x-1 shadow-sm"
+            className="bg-white text-slate-800 px-2 py-1 rounded text-[10px] font-bold flex items-center space-x-0.5 shadow-sm"
           >
             <span>▶</span>
             <span>Start</span>
@@ -152,27 +152,27 @@ const ExamSyllabus = () => {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 md:py-12">
+      <main className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 md:py-12">
         {/* Topic Weightage Analysis - Collapsible on Mobile */}
-        <div className="bg-white rounded-lg md:rounded-xl shadow-sm md:shadow-md mb-4 md:mb-8 overflow-hidden">
+        <div className="bg-white rounded-lg md:rounded-xl shadow-sm md:shadow-md mb-2 md:mb-8 overflow-hidden">
           <button 
             onClick={() => setShowWeightage(!showWeightage)}
-            className="w-full px-3 py-2.5 md:px-6 md:py-4 flex items-center justify-between md:cursor-default"
+            className="w-full px-2 py-2 md:px-6 md:py-4 flex items-center justify-between md:cursor-default"
           >
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 md:w-8 md:h-8 bg-blue-100 rounded-md flex items-center justify-center">
-                <Trophy className="w-3.5 h-3.5 md:w-5 md:h-5 text-blue-600" />
+            <div className="flex items-center space-x-1.5">
+              <div className="w-5 h-5 md:w-8 md:h-8 bg-blue-100 rounded flex items-center justify-center">
+                <Trophy className="w-3 h-3 md:w-5 md:h-5 text-blue-600" />
               </div>
-              <h2 className="text-sm md:text-2xl font-bold text-gray-900">Topic-Wise Weightage Analysis</h2>
+              <h2 className="text-xs md:text-2xl font-bold text-gray-900">Topic-Wise Weightage</h2>
             </div>
-            <div className="md:hidden flex items-center space-x-2">
-              <span className="text-xs text-blue-600 font-medium">Show Details</span>
-              {showWeightage ? <ChevronUp className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
+            <div className="md:hidden flex items-center space-x-1">
+              <span className="text-[10px] text-blue-600 font-medium">{showWeightage ? 'Hide' : 'Show'}</span>
+              {showWeightage ? <ChevronUp className="w-3 h-3 text-gray-500" /> : <ChevronDown className="w-3 h-3 text-gray-500" />}
             </div>
           </button>
           
           {/* Desktop always shows, mobile toggles */}
-          <div className={`${showWeightage ? 'block' : 'hidden'} md:block px-3 pb-3 md:px-6 md:pb-6`}>
+          <div className={`${showWeightage ? 'block' : 'hidden'} md:block px-2 pb-2 md:px-6 md:pb-6`}>
             <p className="text-gray-600 text-xs md:text-base mb-3 md:mb-6">{examData.description}</p>
             
             {/* Subject Filter Pills - Compact on Mobile */}
