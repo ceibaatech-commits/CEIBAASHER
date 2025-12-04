@@ -198,57 +198,39 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
         {/* Mobile Menu - Improved Design */}
         {mobileMenuOpen && (
           <div className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto">
-            {/* Search Bar - Prominent Position */}
-            <div className="p-4 bg-gray-50 border-b border-gray-200">
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const query = e.target.search.value;
-                if (query.trim()) {
-                  navigate(`/search?q=${encodeURIComponent(query)}`);
-                  setMobileMenuOpen(false);
-                }
-              }}>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    name="search"
-                    placeholder="Search exams, topics..."
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                  />
-                </div>
-              </form>
-            </div>
-
-            {/* Mobile User Profile Section */}
+            {/* Mobile User Profile Section - Clickable to Dashboard */}
             {isLoggedIn && user && (
-              <div className="px-4 py-4 bg-gradient-to-r from-cyan-50 to-purple-50 border-b border-gray-200">
-                <div className="flex items-center space-x-3">
+              <div 
+                onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
+                className="px-4 py-5 bg-gradient-to-r from-slate-50 to-gray-100 border-b border-gray-200 cursor-pointer active:bg-gray-200"
+              >
+                <div className="flex items-center space-x-4">
                   {user.profile_picture || user.avatar ? (
                     <img
                       src={user.profile_picture || user.avatar}
                       alt={user.name}
-                      className="w-14 h-14 rounded-full border-3 border-cyan-400 object-cover shadow-md"
+                      className="w-16 h-16 rounded-2xl border-2 border-white object-cover shadow-lg"
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl border-3 border-cyan-400 shadow-md">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
                       {user.name?.[0]?.toUpperCase() || 'U'}
                     </div>
                   )}
                   <div className="flex-1">
-                    <p className="font-bold text-base text-gray-900">{user.name}</p>
-                    <p className="text-sm text-gray-600">{user.email}</p>
-                    <div className="flex items-center space-x-4 mt-1">
-                      <div className="flex items-center space-x-1">
-                        <Trophy className="w-4 h-4 text-yellow-500" />
-                        <span className="text-sm font-medium text-gray-700">{user.rating || 1200}</span>
+                    <p className="font-bold text-lg text-gray-900">{user.name}</p>
+                    <p className="text-sm text-gray-500">@{user.username || user.email?.split('@')[0]}</p>
+                    <div className="flex items-center space-x-3 mt-2">
+                      <div className="flex items-center space-x-1 bg-yellow-50 px-2 py-1 rounded-lg">
+                        <Trophy className="w-4 h-4 text-yellow-600" />
+                        <span className="text-sm font-semibold text-yellow-700">{user.rating || 1200}</span>
                       </div>
-                      <div className="flex items-center space-x-1">
+                      <div className="flex items-center space-x-1 bg-orange-50 px-2 py-1 rounded-lg">
                         <Flame className="w-4 h-4 text-orange-500" />
-                        <span className="text-sm font-medium text-gray-700">{user.streak || 0} day streak</span>
+                        <span className="text-sm font-semibold text-orange-600">{user.streak || 0}d</span>
                       </div>
                     </div>
                   </div>
+                  <ChevronDown className="w-5 h-5 text-gray-400 rotate-[-90deg]" />
                 </div>
               </div>
             )}
