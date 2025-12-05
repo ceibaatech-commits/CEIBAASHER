@@ -332,7 +332,31 @@ async def start_quiz(request: QuizStartRequest):
                 print(f"⚠️ Error fetching from Google Sheets: {e}")
                 print(traceback.format_exc())
     
-    # Fallback to demo questions if Google Sheets failed or not configured
+    # Try to fetch from questions collection in MongoDB
+    if not questions:
+        try:
+            query_filter = {
+                "exam_id": exam,
+                "subject": subject,
+                "status": "active"
+            }
+            if topic:
+                query_filter["topic"] = topic
+            if sub_topic:
+                query_filter["subtopic"] = sub_topic
+            
+            print(f"🔍 Querying questions collection: {query_filter}")
+            questions_cursor = db.questions.find(query_filter, {"_id": 0})
+            db_questions = await questions_cursor.to_list(length=None)
+            
+            if db_questions:
+                questions = db_questions
+                source = "database"
+                print(f"✅ Loaded {len(questions)} questions from database")
+        except Exception as e:
+            print(f"⚠️ Error fetching from database: {e}")
+    
+    # Fallback to demo questions if database also failed
     if not questions:
         if exam in DEMO_QUESTIONS and subject in DEMO_QUESTIONS[exam]:
             questions = DEMO_QUESTIONS[exam][subject]
