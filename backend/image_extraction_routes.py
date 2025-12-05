@@ -49,7 +49,7 @@ async def extract_questions_from_image(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"image-extraction-{uuid.uuid4()}",
             system_message="You are an expert at extracting structured data from images. You analyze images containing educational questions and extract them in JSON format."
-        ).with_model("anthropic", "claude-3-5-sonnet-20241022")
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
         
         print(f"[Image Extraction] LlmChat initialized with Claude model")
         
