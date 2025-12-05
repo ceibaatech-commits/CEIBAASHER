@@ -1657,13 +1657,6 @@ const Home = () => {
             <span className="text-xs mt-1 font-medium">Victory</span>
           </button>
           <button
-            onClick={() => navigate('/leaderboard')}
-            className="flex flex-col items-center py-2 px-4 text-gray-500"
-          >
-            <TrendingUp className="w-6 h-6" />
-            <span className="text-xs mt-1 font-medium">Ranks</span>
-          </button>
-          <button
             onClick={() => navigate(isLoggedIn ? '/dashboard' : '/login')}
             className="flex flex-col items-center py-2 px-4 text-gray-500"
           >
