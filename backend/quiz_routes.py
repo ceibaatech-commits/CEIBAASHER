@@ -335,17 +335,48 @@ async def start_quiz(request: QuizStartRequest):
     # Try to fetch from questions collection in MongoDB
     if not questions:
         try:
+            # Build a flexible query that handles both old format (syllabus_topic/subject) 
+            # and new format (exam_id/subject/topic)
             query_filter = {
-                "exam_id": exam,
-                "subject": subject,
-                "status": "active"
+                "$or": [
+                    # New format from image extraction (exam_id + subject + topic)
+                    {
+                        "exam_id": exam,
+                        "subject": subject,
+                        **({"topic": topic} if topic else {})
+                    },
+                    # Old format from sheets (exam_name matches + syllabus_topic + subject)
+                    {
+                        "exam_name": {"$regex": f"^{exam}", "$options": "i"},
+                        "syllabus_topic": subject,
+                        **({"subject": topic} if topic else {})
+                    }
+                ]
             }
-            if topic:
-                query_filter["topic"] = topic
-            if sub_topic:
-                query_filter["subtopic"] = sub_topic
             
-            print(f"🔍 Querying questions collection: {query_filter}")
+            # Optionally filter by status if the field exists
+            # (some questions might not have status field)
+            
+            if sub_topic:
+                # Add sub_topic filter to each $or condition
+                query_filter = {
+                    "$or": [
+                        {
+                            "exam_id": exam,
+                            "subject": subject,
+                            **({"topic": topic} if topic else {}),
+                            "subtopic": sub_topic
+                        },
+                        {
+                            "exam_name": {"$regex": f"^{exam}", "$options": "i"},
+                            "syllabus_topic": subject,
+                            **({"subject": topic} if topic else {}),
+                            "sub_topic": sub_topic
+                        }
+                    ]
+                }
+            
+            print(f"🔍 Querying questions collection with flexible filter")
             questions_cursor = db.questions.find(query_filter, {"_id": 0})
             db_questions = await questions_cursor.to_list(length=None)
             
@@ -354,7 +385,9 @@ async def start_quiz(request: QuizStartRequest):
                 source = "database"
                 print(f"✅ Loaded {len(questions)} questions from database")
         except Exception as e:
+            import traceback
             print(f"⚠️ Error fetching from database: {e}")
+            print(traceback.format_exc())
     
     # Fallback to demo questions if database also failed
     if not questions:
