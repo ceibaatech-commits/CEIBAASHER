@@ -1445,8 +1445,65 @@ const ExamSheetManager = () => {
     }
   };
 
+  const handleImageExtraction = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedImage) {
+      alert('Please select an image');
+      return;
+    }
+
+    if (selectedOption === 'exam' && (!examForm.exam_name || !examForm.syllabus_topic)) {
+      alert('Please select Exam Name and Syllabus Topic');
+      return;
+    }
+
+    setExtracting(true);
+    setLoading(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', selectedImage);
+      
+      if (selectedOption === 'exam') {
+        formDataToSend.append('exam_id', examForm.exam_name);
+        formDataToSend.append('exam_name', examMetadata.exams.find(e => e.id === examForm.exam_name)?.name || examForm.exam_name);
+        formDataToSend.append('syllabus_topic', examForm.syllabus_topic);
+        formDataToSend.append('subject', examForm.subject || examForm.syllabus_topic);
+        if (examForm.sub_topic) {
+          formDataToSend.append('sub_topic', examForm.sub_topic);
+        }
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/extract-questions-from-image`,
+        formDataToSend,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+
+      if (response.data.success) {
+        alert(`✅ Successfully extracted and saved ${response.data.questions_count} questions!`);
+        setShowAddForm(false);
+        setSelectedImage(null);
+        setImagePreview(null);
+        setExamForm({ exam_name: '', syllabus_topic: '', subject: '', sub_topic: '', sheet_link: '' });
+        fetchSheets();
+      }
+    } catch (error) {
+      console.error('Error extracting questions:', error);
+      alert(error.response?.data?.detail || 'Failed to extract questions from image');
+    } finally {
+      setExtracting(false);
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (inputMethod === 'image') {
+      return handleImageExtraction(e);
+    }
     
     const formData = selectedOption === 'exam' ? {
       type: 'exam',
