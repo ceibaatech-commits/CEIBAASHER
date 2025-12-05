@@ -3114,6 +3114,21 @@ backend:
         comment: "Fixed multiple critical bugs: (1) JWT token decoding for profile updates - was using string replacement instead of proper JWT decode, (2) Added username field to posts for profile navigation, (3) Created new endpoints for fetching user posts, quiz rooms, and liked posts, (4) Fixed all follow system endpoints to use proper JWT decoding. Created decode_jwt_token() helper function to avoid code duplication."
 
 frontend:
+  - task: "Profile Picture Display Fix"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/components/UserAvatar.js, /app/frontend/src/pages/VictoryLane.js"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "User reported that profile pictures are not displaying correctly - showing letter avatars instead of actual images"
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE CONFIRMED: Profile pictures not displaying. Backend social feed APIs return stale user_avatar data ('👤') instead of current profile_picture URLs. Frontend UserAvatar component works correctly but receives wrong data. Root cause: Social feed endpoints return static database values without enriching with current user profile data. Demo1 (Sher) has correct profile_picture in user data but posts show letter 'S' avatars. Backend fix needed in social_feed_routes.py to dynamically populate user_avatar from current user.profile_picture data."
+
   - task: "Dashboard and Profile Activity Display"
     implemented: true
     working: "NA"
