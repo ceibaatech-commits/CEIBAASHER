@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import UserAvatar from '../components/UserAvatar';
 import { useSocialSocket } from '../hooks/useSocialSocket';
 import { toast } from 'sonner';
 
