@@ -5,9 +5,8 @@ import json
 from typing import Optional
 from datetime import datetime
 import uuid
-import tempfile
 from motor.motor_asyncio import AsyncIOMotorClient
-from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContentWithMimeType
+from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
 
 router = APIRouter()
 
@@ -32,29 +31,18 @@ async def extract_questions_from_image(
     """
     Extract MCQ questions from an uploaded image using Claude AI Vision
     """
-    temp_file_path = None
     try:
         print(f"[Image Extraction] Starting extraction for exam: {exam_id}, subject: {subject}")
         
         # Read image file
         image_content = await image.read()
         
+        # Convert to base64
+        image_base64 = base64.b64encode(image_content).decode('utf-8')
+        
         # Determine image media type
         media_type = image.content_type or "image/jpeg"
         print(f"[Image Extraction] Image received, type: {media_type}, size: {len(image_content)} bytes")
-        
-        # Save image to temp file for emergentintegrations
-        suffix = ".jpg"
-        if "png" in media_type:
-            suffix = ".png"
-        elif "webp" in media_type:
-            suffix = ".webp"
-        
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
-            temp_file.write(image_content)
-            temp_file_path = temp_file.name
-        
-        print(f"[Image Extraction] Saved temp file: {temp_file_path}")
         
         # Initialize LlmChat with Emergent key and Claude model
         chat = LlmChat(
@@ -65,11 +53,8 @@ async def extract_questions_from_image(
         
         print(f"[Image Extraction] LlmChat initialized with Claude model")
         
-        # Create image file content
-        image_file = FileContentWithMimeType(
-            file_path=temp_file_path,
-            mime_type=media_type
-        )
+        # Create image content with base64
+        image_attachment = ImageContent(image_base64=image_base64)
         
         # Construct prompt for Claude
         prompt = """Extract all Multiple Choice Questions (MCQs) from this image. 
@@ -105,7 +90,7 @@ Extract ALL questions you can see in the image. Be accurate and thorough."""
         # Create user message with image attachment
         user_message = UserMessage(
             text=prompt,
-            file_contents=[image_file]
+            images=[image_attachment]
         )
         
         print(f"[Image Extraction] Sending request to Claude Vision API...")
