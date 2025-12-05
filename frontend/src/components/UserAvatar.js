@@ -26,7 +26,8 @@ const UserAvatar = ({
     sm: 'w-7 h-7 text-xs',
     md: 'w-8 h-8 text-sm',
     lg: 'w-10 h-10 text-base',
-    xl: 'w-12 h-12 text-lg'
+    xl: 'w-12 h-12 text-lg',
+    xxl: 'w-40 h-40 text-5xl'
   };
 
   const sizeClass = sizeClasses[size] || sizeClasses.md;
