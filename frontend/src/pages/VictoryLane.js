@@ -1034,7 +1034,11 @@ const VictoryLane = () => {
               </div>
             ) : (
               posts.map(post => (
-                <div key={post.id} className="bg-white p-4 hover:bg-gray-50 transition">
+                <div 
+                  key={post.id} 
+                  ref={(el) => postRefs.current[post.id] = el}
+                  className="bg-white p-4 hover:bg-gray-50 transition"
+                >
                   <div className="flex gap-3">
                     {/* User Avatar - Clickable */}
                     <div 
