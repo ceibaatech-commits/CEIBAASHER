@@ -342,6 +342,19 @@ async def get_for_you_feed(
         mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
         paginated = mixed_posts[skip:skip + limit]
         
+        # Enrich posts with current user profile pictures
+        unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
+        if unique_user_ids:
+            users = await db.users.find(
+                {"id": {"$in": unique_user_ids}},
+                {"_id": 0, "id": 1, "profile_picture": 1}
+            ).to_list(1000)
+            user_profiles = {u["id"]: u.get("profile_picture") for u in users if u.get("profile_picture")}
+            
+            for post in paginated:
+                if post.get("user_id") in user_profiles:
+                    post["user_avatar"] = user_profiles[post["user_id"]]
+        
         if user_id:
             for post in paginated:
                 liked = await db.post_likes.find_one({"user_id": user_id, "post_id": post["id"]})
