@@ -74,6 +74,7 @@ If there are mathematical formulas, use LaTeX notation within $ symbols. For exa
 Extract ALL questions you can see in the image. Be accurate and thorough."""
 
         # Call Claude API with vision
+        print(f"Using API key: {EMERGENT_LLM_KEY[:20]}...")
         message = anthropic.messages.create(
             model="claude-3-5-sonnet-20241022",
             max_tokens=4096,
