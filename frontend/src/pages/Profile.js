@@ -32,7 +32,6 @@ const Profile = () => {
       fetchProfile();
       fetchUserPosts();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   // Check if current user follows this profile
