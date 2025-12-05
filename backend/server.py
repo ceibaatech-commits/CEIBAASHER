@@ -14,6 +14,7 @@ from quiz_routes import router as quiz_router
 from auth_routes import router as auth_router
 from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
+from image_extraction_routes import router as image_extraction_router
 from battle_routes import router as battle_router
 from social_routes import router as social_router
 # Socket.io proxy now runs separately on port 5002
