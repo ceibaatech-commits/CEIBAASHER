@@ -515,7 +515,7 @@ const QuizRoom = () => {
                   >
                     {optionId}
                   </div>
-                  <span className="font-medium text-gray-900">{optionText}</span>
+                  <span className="font-medium text-gray-900">{renderMathText(optionText)}</span>
                 </div>
               </button>
             )})}
