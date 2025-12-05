@@ -39,12 +39,11 @@ async def extract_questions_from_image(
         # Determine image media type
         media_type = image.content_type or "image/jpeg"
         
-        # Initialize LlmChat with Claude
-        chat = LlmChat(
+        # Initialize Anthropic client with Emergent key
+        client = anthropic.Anthropic(
             api_key=EMERGENT_LLM_KEY,
-            session_id=f"image-extraction-{uuid.uuid4()}",
-            system_message="You are an expert at extracting educational questions from images. Extract questions accurately with all details."
-        ).with_model("anthropic", "claude-3-5-sonnet-20241022")
+            base_url="https://api.anthropic.com"
+        )
         
         # Construct prompt for Claude
         prompt = """Extract all Multiple Choice Questions (MCQs) from this image. 
@@ -75,16 +74,34 @@ Return ONLY a valid JSON array with this exact structure (no markdown, no extra 
 
 If there are mathematical formulas, use LaTeX notation within $ symbols. For example: $x^2$, $\\frac{a}{b}$, $\\sqrt{x}$
 
-Extract ALL questions you can see in the image. Be accurate and thorough.
+Extract ALL questions you can see in the image. Be accurate and thorough."""
 
-IMAGE DATA:
-data:{media_type};base64,{image_base64}"""
-
-        # Create user message with image
-        user_message = UserMessage(text=prompt)
+        # Call Claude with vision
+        message = client.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=4096,
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image",
+                            "source": {
+                                "type": "base64",
+                                "media_type": media_type,
+                                "data": image_base64,
+                            },
+                        },
+                        {
+                            "type": "text",
+                            "text": prompt
+                        }
+                    ],
+                }
+            ],
+        )
         
-        # Send message and get response
-        response_text = await chat.send_message(user_message)
+        response_text = message.content[0].text
         
         # Parse JSON response
         try:
