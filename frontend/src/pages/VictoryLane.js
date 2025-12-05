@@ -1236,12 +1236,13 @@ const VictoryLane = () => {
                               ) : (
                                 (postComments[post.id] || []).map((comment) => (
                                   <div key={comment.id} className="flex gap-2">
-                                    <div 
+                                    <UserAvatar
+                                      profilePicture={comment.user_avatar}
+                                      name={comment.user_name || comment.username}
+                                      size="sm"
+                                      clickable={true}
                                       onClick={() => openProfile(comment.user_id)}
-                                      className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 cursor-pointer"
-                                    >
-                                      {(comment.user_name || comment.username || 'U').charAt(0).toUpperCase()}
-                                    </div>
+                                    />
                                     <div className="flex-1">
                                       <div className="bg-gray-50 rounded-2xl px-3 py-2">
                                         <span 
