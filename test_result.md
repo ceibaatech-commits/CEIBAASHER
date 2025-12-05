@@ -3068,6 +3068,9 @@ agent_communication:
   - agent: "user"
     message: "Add back button to dashboard and profile pages - currently there's no way to navigate back to previous page from https://prep-notify.preview.emergentagent.com/dashboard"
   
+  - agent: "user"
+    message: "Test the new Dynamic User Profile feature: Login as demo1, navigate to Victory Lane, test profile navigation from multiple places (avatar clicks, username clicks), verify profile page features (cover photo, avatar, user info, stats, tabs), test profile tabs (Posts, Followers, Following), test profile-to-profile navigation, and test follow/unfollow functionality."
+
   - agent: "main"
     message: |
       ✅ BACK BUTTON ADDED TO PROFILE PAGES
