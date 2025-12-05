@@ -6,7 +6,7 @@ from typing import Optional
 from datetime import datetime
 import uuid
 from motor.motor_asyncio import AsyncIOMotorClient
-from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContent
 
 router = APIRouter()
 
@@ -53,8 +53,11 @@ async def extract_questions_from_image(
         
         print(f"[Image Extraction] LlmChat initialized with Claude model")
         
-        # Create image content with base64
-        image_attachment = ImageContent(image_base64=image_base64)
+        # Create file content with base64 image
+        image_attachment = FileContent(
+            content_type=media_type,
+            file_content_base64=image_base64
+        )
         
         # Construct prompt for Claude
         prompt = """Extract all Multiple Choice Questions (MCQs) from this image. 
@@ -87,10 +90,10 @@ If there are mathematical formulas, use LaTeX notation within $ symbols. For exa
 
 Extract ALL questions you can see in the image. Be accurate and thorough."""
 
-        # Create user message with image attachment
+        # Create user message with file content
         user_message = UserMessage(
             text=prompt,
-            images=[image_attachment]
+            file_contents=[image_attachment]
         )
         
         print(f"[Image Extraction] Sending request to Claude Vision API...")
