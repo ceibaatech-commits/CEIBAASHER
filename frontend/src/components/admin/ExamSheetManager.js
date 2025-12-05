@@ -24,6 +24,11 @@ const ExamSheetManager = () => {
     sheet_link: ''
   });
 
+  const [inputMethod, setInputMethod] = useState('sheet');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [extracting, setExtracting] = useState(false);
+
   // Dynamic exam metadata from backend (auto-sync!)
   const [examMetadata, setExamMetadata] = useState({
     loaded: false,
