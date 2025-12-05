@@ -218,12 +218,19 @@ async def create_notification(
 @router.get("/{username}")
 async def get_user_profile(username: str, current_user_id: Optional[str] = None):
     """
-    Get user profile by username
+    Get user profile by username or user ID
     Returns full profile if public or if viewer is following (for private accounts)
     """
     try:
-        # Get target user
-        user = await get_user_by_username(username)
+        # Get target user - try by username first, then by ID if that fails
+        try:
+            user = await get_user_by_username(username)
+        except:
+            # If username lookup fails, try looking up by ID (for UUID-based URLs)
+            user = await db.users.find_one({"id": username}, {"_id": 0})
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
+        
         user.pop("_id", None)
         
         # Get follow counts
