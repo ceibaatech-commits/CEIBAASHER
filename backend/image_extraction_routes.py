@@ -151,10 +151,6 @@ Extract ALL questions you can see in the image. Be accurate and thorough."""
         else:
             inserted_count = 0
         
-        # Clean up temp file
-        if temp_file_path and os.path.exists(temp_file_path):
-            os.unlink(temp_file_path)
-        
         print(f"[Image Extraction] Successfully extracted and saved {inserted_count} questions")
         
         return {
@@ -165,10 +161,6 @@ Extract ALL questions you can see in the image. Be accurate and thorough."""
         }
         
     except Exception as e:
-        # Clean up temp file on error
-        if temp_file_path and os.path.exists(temp_file_path):
-            os.unlink(temp_file_path)
-        
         print(f"[Image Extraction] Error: {str(e)}")
         import traceback
         traceback.print_exc()
