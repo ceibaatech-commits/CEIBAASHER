@@ -1233,9 +1233,9 @@ const VictoryLane = () => {
                                   <div key={comment.id} className="flex gap-2">
                                     <div 
                                       onClick={() => openProfile(comment.user_id)}
-                                      className="w-7 h-7 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 cursor-pointer"
+                                      className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 cursor-pointer"
                                     >
-                                      {(comment.username || 'U').charAt(0).toUpperCase()}
+                                      {(comment.user_name || comment.username || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex-1">
                                       <div className="bg-gray-50 rounded-2xl px-3 py-2">
@@ -1243,7 +1243,7 @@ const VictoryLane = () => {
                                           onClick={() => openProfile(comment.user_id)}
                                           className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
                                         >
-                                          {comment.username || 'User'}
+                                          {comment.user_name || comment.username || 'User'}
                                         </span>
                                         <p className="text-gray-700 text-sm">{comment.content}</p>
                                       </div>
