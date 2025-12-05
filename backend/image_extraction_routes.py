@@ -53,9 +53,9 @@ async def extract_questions_from_image(
         
         print(f"[Image Extraction] LlmChat initialized with Claude model")
         
-        # Create file content with base64 image
+        # Create file content with base64 image - use "image" as content_type for images
         image_attachment = FileContent(
-            content_type=media_type,
+            content_type="image",
             file_content_base64=image_base64
         )
         
