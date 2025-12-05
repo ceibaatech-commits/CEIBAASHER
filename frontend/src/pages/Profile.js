@@ -332,9 +332,11 @@ const Profile = () => {
                   posts.map(post => (
                     <div key={post.id} className="border border-gray-200 rounded-xl p-4 hover:border-purple-300 transition">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
-                          {profile.name?.charAt(0).toUpperCase() || 'U'}
-                        </div>
+                        <UserAvatar
+                          profilePicture={profile.profile_picture}
+                          name={profile.name}
+                          size="lg"
+                        />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-bold text-gray-900">{profile.name}</span>
