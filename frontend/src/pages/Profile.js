@@ -220,8 +220,12 @@ const Profile = () => {
           <div className="px-6 pb-6">
             {/* Avatar & Follow Button */}
             <div className="-mt-20 mb-4 flex justify-between items-end">
-              <div className="w-40 h-40 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-5xl font-bold border-4 border-white shadow-lg">
-                {profile.name?.charAt(0).toUpperCase() || 'U'}
+              <div className="border-4 border-white shadow-lg rounded-full">
+                <UserAvatar
+                  profilePicture={profile.profile_picture}
+                  name={profile.name}
+                  size="xxl"
+                />
               </div>
               {!isOwnProfile && currentUser && (
                 <button
