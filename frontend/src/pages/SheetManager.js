@@ -584,26 +584,80 @@ const SheetManager = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Google Sheet URL</label>
-                <div className="flex space-x-2">
-                  <input
-                    type="url"
-                    value={formData.sheet_url}
-                    onChange={(e) => setFormData({ ...formData, sheet_url: e.target.value })}
-                    placeholder="https://docs.google.com/spreadsheets/d/..."
-                    className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={testSheetAccess}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
-                  >
-                    Test Access
-                  </button>
-                </div>
+              {/* Input Method Selection */}
+              <div className="flex gap-4 mb-4">
+                <button
+                  type="button"
+                  onClick={() => {setInputMethod('sheet'); setSelectedImage(null); setImagePreview(null);}}
+                  className={`flex-1 py-3 rounded-lg font-semibold transition ${inputMethod === 'sheet' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                >
+                  Google Sheet URL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {setInputMethod('image'); setFormData({...formData, sheet_url: ''});}}
+                  className={`flex-1 py-3 rounded-lg font-semibold transition ${inputMethod === 'image' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+                >
+                  Extract from Image
+                </button>
               </div>
+
+              {inputMethod === 'sheet' ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Google Sheet URL</label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="url"
+                      value={formData.sheet_url}
+                      onChange={(e) => setFormData({ ...formData, sheet_url: e.target.value })}
+                      placeholder="https://docs.google.com/spreadsheets/d/..."
+                      className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:outline-none"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={testSheetAccess}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
+                    >
+                      Test Access
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Upload Question Image</label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setSelectedImage(file);
+                          const reader = new FileReader();
+                          reader.onloadend = () => setImagePreview(reader.result);
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <label htmlFor="image-upload" className="cursor-pointer">
+                      {imagePreview ? (
+                        <img src={imagePreview} alt="Preview" className="max-h-64 mx-auto mb-4" />
+                      ) : (
+                        <div className="text-gray-500">
+                          <p className="text-lg font-semibold mb-2">Click to upload image</p>
+                          <p className="text-sm">PNG, JPG, JPEG supported</p>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                  {selectedImage && (
+                    <p className="text-sm text-gray-600 mt-2">Selected: {selectedImage.name}</p>
+                  )}
+                </div>
+              )}
 
               {testResult && (
                 <div className={`p-4 rounded-lg ${testResult.success ? 'bg-green-100 border-2 border-green-500' : 'bg-red-100 border-2 border-red-500'}`}>
