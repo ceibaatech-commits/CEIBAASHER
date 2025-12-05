@@ -233,7 +233,7 @@ const PublicProfile = () => {
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/victory-lane')}
           className="flex items-center gap-2 mb-4 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
