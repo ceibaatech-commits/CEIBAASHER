@@ -1985,11 +1985,13 @@ const ExamSheetManager = () => {
             <div className="flex items-center space-x-3 pt-4">
               <button
                 type="submit"
-                disabled={loading}
-                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                disabled={loading || extracting}
+                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />
-                <span>{loading ? 'Saving...' : 'Save Sheet'}</span>
+                <span>
+                  {extracting ? 'Extracting Questions...' : loading ? 'Saving...' : inputMethod === 'image' ? 'Extract & Save Questions' : 'Save Sheet'}
+                </span>
               </button>
               <button
                 type="button"
