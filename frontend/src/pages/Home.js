@@ -337,13 +337,6 @@ const Home = () => {
               <Users className="w-5 h-5" />
               <span>Join Battle Room</span>
             </button>
-            <button
-              onClick={() => navigate('/leaderboard')}
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center space-x-2"
-            >
-              <Trophy className="w-5 h-5" />
-              <span>Leaderboard</span>
-            </button>
           </div>
         </div>
       </div>
