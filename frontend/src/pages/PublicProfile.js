@@ -302,37 +302,37 @@ const PublicProfile = () => {
                 <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
                 <p className="text-gray-500">@{profile.username}</p>
 
-              {/* Bio */}
-              {profile.bio && (
-                <p className="mt-3 text-gray-700 text-lg">{profile.bio}</p>
-              )}
-
-              {/* Location & Joined Date */}
-              <div className="mt-3 flex flex-wrap gap-4 text-gray-600">
-                {profile.location && (
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    <span>{profile.location}</span>
-                  </div>
+                {/* Bio */}
+                {profile.bio && (
+                  <p className="mt-3 text-gray-700">{profile.bio}</p>
                 )}
-                {profile.joined_at && (
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
-                  </div>
-                )}
-              </div>
 
-              {/* Exam Focus Tags */}
-              {profile.exam_focus && profile.exam_focus.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {profile.exam_focus.map(exam => (
-                    <span
-                      key={exam}
-                      className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
-                    >
-                      🎯 {exam}
-                    </span>
+                {/* Location & Joined Date */}
+                <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
+                  {profile.location && (
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{profile.location}</span>
+                    </div>
+                  )}
+                  {profile.joined_at && (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Exam Focus Tags */}
+                {profile.exam_focus && profile.exam_focus.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {profile.exam_focus.map(exam => (
+                      <span
+                        key={exam}
+                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
+                      >
+                        🎯 {exam}
+                      </span>
                   ))}
                 </div>
               )}
