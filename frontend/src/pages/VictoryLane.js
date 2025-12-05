@@ -1310,7 +1310,13 @@ const VictoryLane = () => {
                 <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-lg">
                   {selectedProfile.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                <FollowButton userId={selectedProfile.id} size="md" />
+                <FollowButton 
+                  userId={selectedProfile.id} 
+                  size="md"
+                  user={user}
+                  followingList={followingList}
+                  toggleFollow={toggleFollow}
+                />
               </div>
               
               {/* Name & Username */}
