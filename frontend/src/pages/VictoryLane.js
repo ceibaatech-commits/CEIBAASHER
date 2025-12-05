@@ -307,6 +307,29 @@ const VictoryLane = () => {
     }
   }, [activeTab, user]);
 
+  // Handle notification navigation - scroll to specific post
+  useEffect(() => {
+    const postId = searchParams.get('post') || searchParams.get('postId');
+    if (postId && posts.length > 0 && postRefs.current[postId]) {
+      // Wait for render to complete, then scroll
+      setTimeout(() => {
+        postRefs.current[postId]?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        // Highlight the post briefly
+        if (postRefs.current[postId]) {
+          postRefs.current[postId].classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          setTimeout(() => {
+            postRefs.current[postId]?.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
+          }, 2000);
+        }
+        // Remove the query parameter after scrolling
+        setSearchParams({});
+      }, 500);
+    }
+  }, [posts, searchParams, setSearchParams]);
+
   const fetchFeed = async () => {
     setLoading(true);
     try {
