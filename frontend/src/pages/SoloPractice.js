@@ -549,7 +549,10 @@ const SoloPractice = () => {
           </div>
 
           <div className="space-y-3">
-            {currentQuestion?.options.map((option, index) => (
+            {currentQuestion?.options.map((option, index) => {
+              // Handle both string options and object options {id, text}
+              const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
+              return (
               <button
                 key={index}
                 onClick={() => handleAnswerSelect(index)}
@@ -572,11 +575,11 @@ const SoloPractice = () => {
                     {String.fromCharCode(65 + index)}
                   </div>
                   <span className="flex-1 font-medium text-gray-900">
-                    <MathText text={option} />
+                    <MathText text={optionText} />
                   </span>
                 </div>
               </button>
-            ))}
+            )})}
           </div>
         </div>
       </div>
