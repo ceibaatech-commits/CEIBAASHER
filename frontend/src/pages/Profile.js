@@ -39,7 +39,6 @@ const Profile = () => {
     if (currentUser && userId && userId !== currentUser.id) {
       checkFollowStatus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, userId]);
 
   const fetchProfile = async () => {
