@@ -1,20 +1,21 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-import anthropic
 import base64
 import os
 import json
 from typing import Optional
 from datetime import datetime
 import uuid
+import tempfile
 from motor.motor_asyncio import AsyncIOMotorClient
+from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContentWithMimeType
 
 router = APIRouter()
 
 # MongoDB setup
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.getenv("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+mongo_client = AsyncIOMotorClient(MONGO_URL)
+db = mongo_client[DB_NAME]
 
 # Emergent LLM Key from environment
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "sk-emergent-1F12f948757325bDaE")
@@ -31,18 +32,43 @@ async def extract_questions_from_image(
     """
     Extract MCQ questions from an uploaded image using Claude AI Vision
     """
+    temp_file_path = None
     try:
+        print(f"[Image Extraction] Starting extraction for exam: {exam_id}, subject: {subject}")
+        
         # Read image file
         image_content = await image.read()
-        image_base64 = base64.b64encode(image_content).decode('utf-8')
         
         # Determine image media type
         media_type = image.content_type or "image/jpeg"
+        print(f"[Image Extraction] Image received, type: {media_type}, size: {len(image_content)} bytes")
         
-        # Initialize Anthropic client with Emergent key
-        client = anthropic.Anthropic(
+        # Save image to temp file for emergentintegrations
+        suffix = ".jpg"
+        if "png" in media_type:
+            suffix = ".png"
+        elif "webp" in media_type:
+            suffix = ".webp"
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+            temp_file.write(image_content)
+            temp_file_path = temp_file.name
+        
+        print(f"[Image Extraction] Saved temp file: {temp_file_path}")
+        
+        # Initialize LlmChat with Emergent key and Claude model
+        chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
-            base_url="https://api.anthropic.com"
+            session_id=f"image-extraction-{uuid.uuid4()}",
+            system_message="You are an expert at extracting structured data from images. You analyze images containing educational questions and extract them in JSON format."
+        ).with_model("anthropic", "claude-3-5-sonnet-20241022")
+        
+        print(f"[Image Extraction] LlmChat initialized with Claude model")
+        
+        # Create image file content
+        image_file = FileContentWithMimeType(
+            file_path=temp_file_path,
+            mime_type=media_type
         )
         
         # Construct prompt for Claude
@@ -76,32 +102,18 @@ If there are mathematical formulas, use LaTeX notation within $ symbols. For exa
 
 Extract ALL questions you can see in the image. Be accurate and thorough."""
 
-        # Call Claude with vision
-        message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=4096,
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "image",
-                            "source": {
-                                "type": "base64",
-                                "media_type": media_type,
-                                "data": image_base64,
-                            },
-                        },
-                        {
-                            "type": "text",
-                            "text": prompt
-                        }
-                    ],
-                }
-            ],
+        # Create user message with image attachment
+        user_message = UserMessage(
+            text=prompt,
+            file_contents=[image_file]
         )
         
-        response_text = message.content[0].text
+        print(f"[Image Extraction] Sending request to Claude Vision API...")
+        
+        # Send message and get response
+        response_text = await chat.send_message(user_message)
+        
+        print(f"[Image Extraction] Response received, length: {len(response_text)} chars")
         
         # Parse JSON response
         try:
