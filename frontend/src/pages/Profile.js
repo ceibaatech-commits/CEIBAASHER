@@ -45,14 +45,19 @@ const Profile = () => {
     setLoading(true);
     try {
       const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}`);
-      if (response.data.success) {
+      console.log('Profile API response:', response.data);
+      if (response.data.success && response.data.user) {
         const userData = response.data.user;
         setProfile(userData);
         setFollowersCount(userData.followers_count || 0);
         setFollowingCount(userData.following_count || 0);
+      } else {
+        console.error('Profile not found or API returned no user data');
+        setProfile(null);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
