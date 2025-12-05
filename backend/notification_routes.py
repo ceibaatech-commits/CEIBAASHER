@@ -393,7 +393,14 @@ async def update_notification_preferences(
         if not authorization:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
-        user_id = authorization.replace("Bearer ", "")
+        # Decode JWT token to get user_id
+        token = authorization.replace("Bearer ", "")
+        try:
+            import jwt
+            payload = jwt.decode(token, options={"verify_signature": False})
+            user_id = payload.get("sub")
+        except:
+            user_id = token  # Fallback for simple tokens
         
         # Update preferences
         prefs_data = preferences.dict()
