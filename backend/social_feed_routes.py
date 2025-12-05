@@ -389,7 +389,22 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
                 return datetime.min.replace(tzinfo=timezone.utc)
         
         posts.sort(key=parse_date, reverse=True)
-        return {"success": True, "posts": posts[skip:skip + limit], "count": len(posts)}
+        paginated = posts[skip:skip + limit]
+        
+        # Enrich posts with current user profile pictures
+        unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
+        if unique_user_ids:
+            users = await db.users.find(
+                {"id": {"$in": unique_user_ids}},
+                {"_id": 0, "id": 1, "profile_picture": 1}
+            ).to_list(1000)
+            user_profiles = {u["id"]: u.get("profile_picture") for u in users if u.get("profile_picture")}
+            
+            for post in paginated:
+                if post.get("user_id") in user_profiles:
+                    post["user_avatar"] = user_profiles[post["user_id"]]
+        
+        return {"success": True, "posts": paginated, "count": len(posts)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching trending: {str(e)}")
 
