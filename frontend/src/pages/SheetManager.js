@@ -735,9 +735,10 @@ const SheetManager = () => {
               <div className="flex items-center space-x-4">
                 <button
                   type="submit"
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold"
+                  disabled={extracting}
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add Mapping
+                  {extracting ? 'Extracting Questions...' : inputMethod === 'image' ? 'Extract & Save Questions' : 'Add Mapping'}
                 </button>
                 <button
                   type="button"
