@@ -1,75 +1,88 @@
 <analysis>**original_problem_statement**:
-The user's initial goal was to fix bugs and add features to an exam preparation platform, focusing on the Victory Lane social feed. Over the session, the scope expanded significantly to include fixing a cascade of bugs related to quiz creation and participation, followed by a major overhaul of the mobile UI/UX for the Home page, Header, and mobile menu based on detailed user feedback.
+The user's initial goal was to fix bugs and add features to an exam preparation platform. The session began with a request to redesign the All Exams page () for a more compact mobile UI. The scope then expanded to include:
+1.  **Home Page Category Filter**: Adding the Admission Tests category to the home page filter and removing the Engineering category.
+2.  **Code Cleanup**: Deleting the deprecated  page.
+3.  **Static Pages**: Creating Terms of Service and Privacy Policy pages.
+4.  **Core Feature Implementation**: Fixing non-functional comments and notifications on the Victory Lane social feed.
+5.  **Current Request**: Fixing notification navigation (tapping a notification should lead to the relevant post) and ensuring the notification badge count is dynamic and accurate.
 
 PRODUCT REQUIREMENTS:
-1.  **Quiz Flow Bugs**: Fix numerous issues preventing users from creating, joining, and correctly participating in quizzes from Victory Lane. This included room not found errors, incorrect redirects, broken answer validation, and missing UI elements like an exit button.
-2.  **Authentication UI Bugs**: Ensure that for logged-in users, the UI correctly reflects their authenticated state (e.g., showing a profile avatar instead of Login/Signup buttons).
-3.  **Navigation Cleanup**: Correct all incorrect redirects and links, particularly removing all references to the deprecated  URL and ensuring profile navigation works as expected.
-4.  **Mobile UI/UX Overhaul**:
-    *   Redesign the mobile  menu for better usability, incorporating a solid background, icons, and a more user-friendly profile section.
-    *   Completely redesign the  page to be mobile-first, replacing a disliked color scheme, implementing a functional search, and adding responsive elements like category filter chips and a floating action button.
-    *   **Current Request**: Redesign the All Exams page for mobile to be more compact and user-friendly, addressing oversized cards, poor hierarchy, and wasted space.
+1.  **Mobile UI Overhaul**: Redesign the  page to be more compact and user-friendly on mobile, addressing oversized cards and poor spacing.
+2.  **Category Management**: The home page category filter must show Admission Tests and exclude Engineering.
+3.  **Code Health**: Remove obsolete components like .
+4.  **Comment Functionality**: Users must be able to post and view comments on posts in Victory Lane.
+5.  **Notification System**:
+    *   Notifications must be generated for actions like comments, likes, and follows.
+    *   The notification badge count on the header's bell icon must reflect the actual number of unread notifications.
+    *   The badge count must update in real-time as notifications are read or received.
+    *   Tapping a notification (e.g., for a liked post) must navigate the user directly to that specific post.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack exam preparation platform with a React frontend and FastAPI backend. It features a Victory Lane social feed for creating and joining quizzes. The  page and  mobile menu have been completely redesigned for a modern, mobile-first experience with functional search and filtering. The quiz functionality has been extensively debugged, with fixes for answer validation, navigation, and data format mismatches between two different backend quiz systems ( and ).
+The application is a full-stack exam preparation platform. The mobile UI for the  page has been made more compact. The  category filter has been fixed to correctly display Admission Tests. The deprecated  page has been deleted, and new static pages for Terms/Privacy have been created and linked in the footer.
+
+The comment and notification systems, which were previously broken, have been significantly reworked. Comment posting is now functional. The backend notification logic was fixed by correcting a JWT decoding issue, so notifications are now being successfully created and retrieved from the database. A  has been introduced in the frontend to manage notification state globally, though the implementation is still in progress to fix navigation and badge count issues.
 
 **Last working item**:
--   **Last item agent was working**: The agent was about to start redesigning the UI of the All Exams page for mobile devices. The user provided detailed feedback and screenshots, complaining that the current design has oversized elements, poor spacing, and bad information hierarchy, making it difficult to use on a small screen.
--   **Status**: NOT STARTED
+-   **Last item agent was working**: Fixing two critical notification issues: 1) Tapping a notification does not navigate the user to the corresponding post. 2) The notification badge count is static and does not update when notifications are read. The agent was implementing a  to manage the notification state across the application and had just finished refactoring several components to use this new context. It identified and was about to fix a linting error in .
+-   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: screenshot tool (to verify UI changes on a mobile viewport).
+-   **Which testing method agent to use?**: Frontend testing agent. This is a complex user flow involving state management (Context API), navigation, and real-time updates that requires end-to-end verification.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Redesign All Exams Page for Mobile (P0)**
-    -   **Description**: The user is unhappy with the UI/UX of the All Exams page on mobile. They provided screenshots and specific feedback, requesting a more compact layout. Key complaints include: oversized category cards, poor information hierarchy, inconsistent spacing, large buttons, and redundant expandable sections.
+-   **Issue 1: Fix Notification Navigation and Badge Count (P0)**
+    -   **Description**: The notification system has two major flaws: clicking a notification doesn't redirect to the relevant content (e.g., the liked post), and the unread count badge on the bell icon is not dynamic.
+    -   **Attempted fixes**:
+        1.  Corrected data mapping in  to use correct field names from the backend (, ).
+        2.  Created a  to manage notification state globally.
+        3.  Wrapped the main  in a .
+        4.  Refactored  and  to consume the new context.
     -   **Next debug checklist**:
-        1.  Identify the correct file for the All Exams page (likely ).
-        2.  View the file to understand its current structure.
-        3.  Implement the user's suggested CSS changes (or a similar approach) to create a more compact, mobile-friendly layout. Focus on using compact filter chips, condensing stats, optimizing button sizes, and making sections collapsible.
-        4.  Use the screenshot tool with a mobile viewport to verify the new design and show the user.
-    -   **Why fix this issue and what will be achieved with the fix?**: This will improve the mobile user experience of a key page, making it easier for users to browse and find exams.
-    -   **Status**: NOT STARTED
+        1.  Fix the linting error ('no-unstable-nested-components') in .
+        2.  In , ensure the  function correctly marks the notification as read via an API call and updates the state using the .
+        3.  Implement the navigation logic within  using  to redirect to .
+        4.  Modify  to check for a  in the URL query parameters on load, and if present, scroll the view to that specific post.
+        5.  Verify that the  component correctly consumes the  from the context and updates dynamically.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical user experience feature. Fixing it will make the notification system functional and engaging.
+    -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
+-   **Issue 2: Unreliable Testing Tools (P1)**
+    -   **Description**: Throughout the session, the  consistently failed with network issues, returning blank images. The  agent also appeared to test against a cached version of the UI, providing outdated feedback.
+    -   **Why fix this issue and what will be achieved with the fix?**: Reliable testing tools are crucial for verifying UI changes and preventing regressions. Resolving this will speed up development and increase confidence in releases.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: N/A (Infrastructure issue)
 
 **In progress Task List**:
--   None.
+-   None apart from the issue listed above.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **(P1) Refactor VictoryLane.js**: The file is over 1300 lines and handles too many responsibilities. It should be broken into smaller components (, , ).
-    -   **(P2) Add Admission Tests Category**: The user requested adding Admission Tests to the category filter on the Home page.
+    -   **(P1) Refactor VictoryLane.js**: The file is over 1300 lines and handles too many responsibilities. It was partially started but paused due to complexity. It should be broken into smaller components (, , ).
 -   **Future Tasks**:
-    -   **(P3) Create Static Pages**: Add static pages for Terms of Service and Privacy Policy with links in the footer.
-    -   **(P4) Remove Deprecated **: The file  is obsolete and should be deleted to reduce code debt.
-    -   **(P5) Refactor **: The redesigned file is now very large (over 800 lines) and could be broken down into sub-components (e.g., , , ).
+    -   **(P2) Refactor Home.js**: The redesigned file is over 800 lines and could be broken down into sub-components (e.g., , , ).
 
 **Completed work in this session**
--   **Critical Bug Fixes**:
-    -   Resolved the Room not found bug by cleaning up orphaned database posts and adding frontend validation.
-    -   Fixed incorrect case-sensitive answer validation in .
-    -   Added a missing Exit Quiz button to the quiz interface.
-    -   Corrected an authentication UI bug where Login/Signup buttons were shown to logged-in users due to missing props.
--   **Quiz Flow Rework**:
-    -   Modified the Join Room flow to navigate users directly to the solo quiz interface () instead of the multiplayer waiting lobby ().
-    -   Updated the backend to serve quiz data from two different collections ( and ) and transform data on the fly to ensure frontend compatibility.
--   **Mobile UI/UX Overhaul**:
-    -   Completely redesigned the mobile  page with a new theme, responsive layout, working search bar, and category filters.
-    -   Completely redesigned the  mobile menu with a better layout, icons, and a more user-friendly profile section.
--   **Navigation & Routing Fixes**:
-    -   Removed all remaining hardcoded links to the deprecated  page, replacing them with .
-    -   Fixed the profile dropdown menu in the header to only show Dashboard and Logout, as requested.
+-   **Mobile UI Redesign**: Made the  page more compact for mobile, though full verification was blocked by tool issues.
+-   **Home Page Filter Fix**:
+    -   Corrected the category filter logic in  to properly handle exams under Admission Tests.
+    -   Removed the Engineering category and updated the display order as requested by the user.
+-   **Code Cleanup**:
+    -   Deleted the deprecated  file and removed all its references from .
+-   **Static Page Creation**:
+    -   Created  and .
+    -   Added routes in  and links in  for the new pages.
+-   **Comment Functionality**:
+    -   Implemented a functional comment section in , including UI and API integration.
+    -   Debugged and fixed an issue where comments were not posting due to an incorrect API endpoint URL.
+-   **Notification System Backend Fix**:
+    -   Diagnosed and fixed a critical bug in  where the API was failing to retrieve notifications because it was not decoding the JWT to get the .
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Deprecated  component**
-    -   **Debug checklist**: The file  is no longer in use and should be deleted.
-    -   **Why to solve this issue and what will be achieved with this?**: To reduce code clutter and potential confusion for future development.
-    -   **Should Test frontend/backend/both after fix**: Frontend (quick regression check).
-    -   **Is recurring issue?**: N
--   **Issue 2: Refactor **
+-   **Issue 1: Refactor **
     -   **Debug checklist**: Break down the large component into smaller, manageable child components for modals, posts, and feed logic.
     -   **Why to solve this issue and what will be achieved with this?**: To improve code maintainability, readability, and performance.
     -   **Should Test frontend/backend/both after fix**: Frontend.
@@ -82,69 +95,61 @@ The application is a full-stack exam preparation platform with a React frontend 
 
 
 **Key Technical Concepts**
--   **Component Prop Drilling**: Fixed a bug where the Header did not reflect the auth state because props (, ) were not passed down from the parent ().
--   **Backend Data Transformation**: Implemented a data transformation layer in  to adapt data from the  schema to the format expected by the  component, ensuring compatibility without a major frontend refactor.
--   **Mobile-First Responsive Design**: Heavily utilized Tailwind CSS responsive prefixes (, ) and utility classes to build adaptive UIs for the Home page and Header.
--   **Client-Side State for UI**: Used React's  hook in  to manage  and  for dynamically filtering and rendering exam cards.
+-   **React Context API**: Introduced  to manage and synchronize notification state (unread count) across the  and  page components, enabling real-time updates.
+-   **Backend Authentication Fix**: Resolved a critical authentication bug in the Python backend by correctly decoding the JWT in API routes to extract the , instead of using the raw token string.
+-   **API Endpoint Debugging**: Systematically debugged frontend and backend issues by checking API responses, server logs (), and direct database queries to isolate problems.
+-   **Responsive Mobile Design**: Applied aggressive Tailwind CSS classes (, ) to create a compact mobile UI based on user feedback, while preserving the desktop layout using responsive prefixes ().
 
 **key DB schema**
--   **social_posts**: Stores posts for the Victory Lane feed, including  and a .
--   **battle_rooms**: The primary collection for new quizzes. Stores ,  (with a specific array/object structure), , etc.
--   **quiz_rooms**: A legacy collection for solo quizzes with a different question schema. The backend now reads from both this and .
+-   **notifications**: Confirmed to be storing notification documents with fields like , , , , and .
+-   **posts**: Contains user-generated content for Victory Lane.
+-   **comments**: Stores comments related to posts.
 
 **changes in tech stack**
 -   None.
 
 **All files of reference**
--   **Updated**: , , , , , .
--   **Important for Next Task**:  is the likely file to modify for the All Exams page redesign.
+-   **Created**: , , , and several component files under .
+-   **Updated**: , , , , , , , , .
+-   **Deleted**: , .
 
 **Areas that need refactoring**:
--   : Still critically large (>1300 lines) and complex.
--   : The redesigned file is now over 800 lines and could be broken down into smaller components.
+-   : Still critically large. The initial refactoring was paused and should be resumed.
+-   : Remains a large component that would benefit from being broken down.
 
 **key api endpoints**
--   : **Modified** to fetch data from both  and  collections and transform the data structure.
--   : The main feed endpoint, which was debugged to ensure it correctly filters out posts for expired rooms.
--   : Creates quizzes for Victory Lane.
+-   : Used by the frontend to post a new comment. The agent fixed the frontend to call this (singular) instead of  (plural).
+-   : **Fixed**. The backend logic was corrected to properly decode the JWT and return notifications for the authenticated user.
+-   : **Fixed**. Same JWT decoding issue was resolved.
+-   : **Fixed**. Same JWT decoding issue was resolved.
 
 **Critical Info for New Agent**
--   The user is highly focused on mobile UI/UX. Prioritize mobile-first design and use the screenshot tool with mobile viewports to demonstrate progress.
--   The immediate task is to redesign the All Exams page for mobile () based on the user's specific feedback about making it more compact.
--   Be aware of the two co-existing quiz systems ( and ) and their different data schemas. The backend has been adapted, but this context is important for any related work.
+-   **Testing Tools Unreliable**: The  and  agent have been unreliable in this session, showing network errors or cached content. Be prepared to verify UI changes using alternative methods (e.g., custom scripts, careful code review) if the tools continue to fail.
+-   **Notification Context**: A new  is now the source of truth for notification state in the frontend. Any work on notifications should leverage this context ( hook).
+-   **Authentication is Key**: Many features (comments, notifications) require a valid authentication token. When testing, always ensure you are logged in. The demo login endpoint is .
 
 **documents created in this job**
--    was frequently updated.
+-   None.
 
 **Last 10 User Messages and any pending user messages**
-1.  **User**: Reported more critical bugs: broken answer validation, no exit button in quiz, and login buttons showing for logged-in users. **Status**: Completed.
-2.  **User**: Profile dropdown has wrong link/options, and back button on profile page is broken. **Status**: Completed.
-3.  **User**: Mobile menu still has issues and redirects are wrong. **Status**: Completed.
-4.  **User**: Provided detailed CSS/UI suggestions for redesigning the mobile menu. **Status**: Completed.
-5.  **User**: Mobile search isn't working; provided detailed suggestions for a full mobile home page redesign. **Status**: Completed.
-6.  **User**: Disliked the home page color scheme and reported search still not working. **Status**: Completed.
-7.  **User**: Asked why mobile search is not working. **Status**: Completed.
-8.  **User**: Requested removal of UI elements (search icon, menu items) and improvements to the profile display in the menu. **Status**: Completed.
-9.  **User**: **(PENDING)** Provided extensive feedback and screenshots for redesigning the All Exams page to be more compact on mobile. **Status**: NOT STARTED.
-10. **User**: Additional details on home page redesign and search functionality. **Status**: Completed.
+1.  **User**: Okay, now the comment section is working, but why are notifications not working for comments/follows? **Status**: Completed.
+2.  **User**: **(PENDING/IN PROGRESS)** Requested fixes for two notification issues: 1) Tapping a notification should navigate to the post. 2) The notification badge count should be dynamic and accurate. **Status**: IN PROGRESS.
 
 **Project Health Check:**
--   **Broken**: The mobile UI for the All Exams page is considered broken from a UX perspective by the user.
+-   **Broken**: The notification user flow (navigation and badge count) is currently broken and is the active task.
 -   **Mocked**: None.
 
 **3rd Party Integrations**:
 -   None.
 
 **Testing status**
--   **Testing agent used after significant changes**: NO
+-   **Testing agent used after significant changes**: YES (Used for UI verification but gave potentially cached results).
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
 -   **Known regressions**: None.
 
 **Credentials to test flow:**
--   **Login**: Use username  with password .
+-   **Login**: Use username  with password  via the Demo Login button or .
 
 **What agent forgot to execute**
--   The agent did not add Admission Tests to the category list on the  page, despite the user explicitly requesting it.
--   The agent has not yet deleted the deprecated  file.
--   The agent has not refactored the large  and  components, which is a known technical debt item.</analysis>
+-   The agent correctly identified a linting error in  after refactoring but had not yet fixed it before the session ended.</analysis>
