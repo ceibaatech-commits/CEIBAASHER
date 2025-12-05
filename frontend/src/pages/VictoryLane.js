@@ -352,23 +352,27 @@ const VictoryLane = () => {
   // Handle notification navigation - scroll to specific post
   useEffect(() => {
     const postId = searchParams.get('post') || searchParams.get('postId');
-    if (postId && posts.length > 0 && postRefs.current[postId]) {
+    if (postId && posts.length > 0) {
       // Wait for render to complete, then scroll
       setTimeout(() => {
-        postRefs.current[postId]?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
-        });
-        // Highlight the post briefly
-        if (postRefs.current[postId]) {
-          postRefs.current[postId].classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
+        const postElement = postRefs.current[postId];
+        if (postElement) {
+          postElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          // Highlight the post briefly
+          postElement.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
           setTimeout(() => {
-            postRefs.current[postId]?.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
-          }, 2000);
+            postElement.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
+            // Remove the query parameter after highlight completes
+            setSearchParams({});
+          }, 2500);
+        } else {
+          // If post not found, clear parameter immediately
+          setSearchParams({});
         }
-        // Remove the query parameter after scrolling
-        setSearchParams({});
-      }, 500);
+      }, 300);
     }
   }, [posts, searchParams, setSearchParams]);
 
