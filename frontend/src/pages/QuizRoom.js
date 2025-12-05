@@ -478,17 +478,22 @@ const QuizRoom = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {['option_a', 'option_b', 'option_c', 'option_d'].map((option) => (
+            {(Array.isArray(currentQuestion?.options) ? currentQuestion.options : 
+              ['option_a', 'option_b', 'option_c', 'option_d'].map(opt => ({id: opt.replace('option_', '').toUpperCase(), text: currentQuestion[opt]}))
+            ).map((option, idx) => {
+              const optionId = option.id || option;
+              const optionText = option.text || currentQuestion[option];
+              return (
               <button
-                key={option}
-                onClick={() => handleAnswerSelect(option)}
+                key={optionId}
+                onClick={() => handleAnswerSelect(optionId)}
                 disabled={selectedAnswer !== null}
                 className={`p-6 rounded-xl border-2 text-left transition-all ${
-                  selectedAnswer === option
-                    ? optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
+                  selectedAnswer === optionId
+                    ? optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase()
                       ? 'bg-green-50 border-green-500'
                       : 'bg-red-50 border-red-500'
-                    : selectedAnswer && optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
+                    : selectedAnswer && (optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase())
                     ? 'bg-green-50 border-green-500'
                     : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50'
                 } ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
@@ -496,18 +501,18 @@ const QuizRoom = () => {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                      selectedAnswer === option
-                        ? optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
+                      selectedAnswer === optionId
+                        ? optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase()
                           ? 'bg-green-500 text-white'
                           : 'bg-red-500 text-white'
-                        : selectedAnswer && optionKeyToLetter(option)?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase()
+                        : selectedAnswer && (optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase())
                         ? 'bg-green-500 text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}
                   >
-                    {getOptionLabel(option)}
+                    {optionId}
                   </div>
-                  <span className="font-medium text-gray-900">{currentQuestion[option]}</span>
+                  <span className="font-medium text-gray-900">{optionText}</span>
                 </div>
               </button>
             ))}
