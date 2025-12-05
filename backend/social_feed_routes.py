@@ -647,6 +647,87 @@ async def get_user_profile(user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching user: {str(e)}")
 
+@router.get("/user/{user_id}/posts")
+async def get_user_posts(user_id: str, skip: int = 0, limit: int = 50):
+    """Get all posts from a specific user"""
+    try:
+        posts_cursor = db.social_posts.find(
+            {"user_id": user_id}, 
+            {"_id": 0}
+        ).sort("created_at", -1).skip(skip).limit(limit)
+        
+        posts = await posts_cursor.to_list(length=limit)
+        
+        return {"success": True, "posts": posts}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching user posts: {str(e)}")
+
+@router.get("/user/{user_id}/followers")
+async def get_user_followers(user_id: str):
+    """Get list of users who follow this user"""
+    try:
+        # Get follower IDs from follows collection
+        follows_cursor = db.follows.find(
+            {"following_id": user_id, "status": "approved"},
+            {"_id": 0, "follower_id": 1}
+        )
+        follows = await follows_cursor.to_list(length=1000)
+        follower_ids = [f["follower_id"] for f in follows]
+        
+        # Get user details for all followers
+        if not follower_ids:
+            return {"success": True, "followers": []}
+        
+        users_cursor = db.users.find(
+            {"id": {"$in": follower_ids}},
+            {"_id": 0, "id": 1, "name": 1, "username": 1, "bio": 1, "is_verified": 1, "profile_picture": 1}
+        )
+        followers = await users_cursor.to_list(length=1000)
+        
+        # Add follower counts to each user
+        for follower in followers:
+            follower["followers_count"] = await db.follows.count_documents({
+                "following_id": follower["id"],
+                "status": "approved"
+            })
+        
+        return {"success": True, "followers": followers}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching followers: {str(e)}")
+
+@router.get("/user/{user_id}/following")
+async def get_user_following(user_id: str):
+    """Get list of users this user follows"""
+    try:
+        # Get following IDs from follows collection
+        follows_cursor = db.follows.find(
+            {"follower_id": user_id, "status": "approved"},
+            {"_id": 0, "following_id": 1}
+        )
+        follows = await follows_cursor.to_list(length=1000)
+        following_ids = [f["following_id"] for f in follows]
+        
+        # Get user details for all following
+        if not following_ids:
+            return {"success": True, "following": []}
+        
+        users_cursor = db.users.find(
+            {"id": {"$in": following_ids}},
+            {"_id": 0, "id": 1, "name": 1, "username": 1, "bio": 1, "is_verified": 1, "profile_picture": 1}
+        )
+        following = await users_cursor.to_list(length=1000)
+        
+        # Add follower counts to each user
+        for user in following:
+            user["followers_count"] = await db.follows.count_documents({
+                "following_id": user["id"],
+                "status": "approved"
+            })
+        
+        return {"success": True, "following": following}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching following: {str(e)}")
+
 @router.post("/user/follow/{target_user_id}")
 async def follow_user(target_user_id: str, authorization: Optional[str] = Header(None)):
     """
