@@ -16,8 +16,8 @@ DB_NAME = os.getenv("DB_NAME", "test_database")
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
-# Emergent LLM Key
-EMERGENT_LLM_KEY = "sk-emergent-1F12f948757325bDaE"
+# Emergent LLM Key from environment
+EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "sk-emergent-1F12f948757325bDaE")
 
 @router.post("/extract-questions-from-image")
 async def extract_questions_from_image(
