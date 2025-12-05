@@ -384,9 +384,18 @@ async def start_quiz(request: QuizStartRequest):
         for q in questions
     ]
     
+    # Normalize questions for session storage (ensure correctAnswer key exists)
+    normalized_questions = [
+        {
+            **q,
+            "correctAnswer": q.get("correctAnswer") or q.get("correct_answer", "")
+        }
+        for q in questions
+    ]
+    
     quiz_id = f"quiz_{random.randint(100000, 999999)}"
     quiz_sessions[quiz_id] = {
-        "questions": questions,
+        "questions": normalized_questions,
         "exam": exam,
         "subject": subject,
         "topic": topic,
