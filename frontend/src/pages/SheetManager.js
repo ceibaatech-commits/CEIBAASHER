@@ -472,8 +472,65 @@ const SheetManager = () => {
     }
   };
 
+  const handleImageExtraction = async (e) => {
+    e.preventDefault();
+    
+    if (!selectedImage) {
+      alert('Please select an image');
+      return;
+    }
+
+    if (!formData.exam_id || !formData.subject) {
+      alert('Please select Exam and Subject');
+      return;
+    }
+
+    setExtracting(true);
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', selectedImage);
+      formDataToSend.append('exam_id', formData.exam_id);
+      formDataToSend.append('exam_name', examSyllabusData[formData.exam_id].name);
+      formDataToSend.append('syllabus_topic', formData.subject);
+      formDataToSend.append('subject', formData.topic || formData.subject);
+      if (formData.sub_topic) {
+        formDataToSend.append('sub_topic', formData.sub_topic);
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/extract-questions-from-image`,
+        formDataToSend,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setExtractedQuestions(response.data);
+        alert(`Successfully extracted and saved ${response.data.questions_count} questions!`);
+        setShowAddForm(false);
+        setSelectedImage(null);
+        setImagePreview(null);
+        fetchSheets();
+      }
+    } catch (error) {
+      console.error('Error extracting questions:', error);
+      alert(error.response?.data?.detail || 'Failed to extract questions from image');
+    } finally {
+      setExtracting(false);
+    }
+  };
+
   const handleAdd = async (e) => {
     e.preventDefault();
+
+    // If image method, use image extraction
+    if (inputMethod === 'image') {
+      return handleImageExtraction(e);
+    }
     try {
       const response = await axios.post(`${API_URL}/api/sheets/add`, formData);
       if (response.data.success) {
