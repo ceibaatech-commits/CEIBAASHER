@@ -3,6 +3,8 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { Clock, Trophy, Check, X, Award, Users } from 'lucide-react';
+import { InlineMath, BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
