@@ -671,40 +671,9 @@ const VictoryLane = () => {
   };
 
   // Open profile modal
-  const openProfile = async (userId) => {
+  const openProfile = (userId) => {
     if (!userId) return;
-    
-    // First check if we have cached data
-    let profileData = usersData[userId];
-    
-    // Try to fetch fresh data
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}`);
-      if (response.data.success) {
-        profileData = {
-          id: userId,
-          name: response.data.user?.name || 'User',
-          username: response.data.user?.username || 'user',
-          avatar: response.data.user?.avatar,
-          is_verified: response.data.user?.is_verified || false,
-          followers_count: response.data.user?.followers_count || 0,
-          following_count: response.data.user?.following_count || 0,
-          posts_count: response.data.user?.posts_count || 0,
-          bio: response.data.user?.bio || '',
-          location: response.data.user?.location || '',
-          website: response.data.user?.website || '',
-          joined_at: response.data.user?.joined_at || response.data.user?.created_at
-        };
-        setUsersData(prev => ({ ...prev, [userId]: profileData }));
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-    
-    if (profileData) {
-      setSelectedProfile(profileData);
-      setShowProfileModal(true);
-    }
+    navigate(`/profile/${userId}`);
   };
 
   // Create text post
