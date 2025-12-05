@@ -3052,7 +3052,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Ceep System API Endpoints (Follow/Unfollow System)"
+    - "Dynamic User Profile Feature"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
