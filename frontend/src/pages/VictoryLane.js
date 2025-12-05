@@ -1014,12 +1014,13 @@ const VictoryLane = () => {
                 >
                   <div className="flex gap-3">
                     {/* User Avatar - Clickable */}
-                    <div 
+                    <UserAvatar
+                      profilePicture={post.user_avatar}
+                      name={post.user_name || post.username}
+                      size="lg"
+                      clickable={true}
                       onClick={() => openProfile(post.user_id)}
-                      className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 cursor-pointer hover:ring-4 hover:ring-purple-100 transition-all"
-                    >
-                      {post.user_name?.charAt(0).toUpperCase() || post.username?.charAt(0).toUpperCase() || 'U'}
-                    </div>
+                    />
                     
                     <div className="flex-1 min-w-0">
                       {/* User Info with Follow Button */}
