@@ -156,11 +156,23 @@ Extract ALL questions you can see in the image. Be accurate and thorough."""
         
         print(f"[Image Extraction] Successfully extracted and saved {inserted_count} questions")
         
+        # Return serializable response (prepared_questions are already without _id)
+        response_questions = [
+            {
+                "id": q["id"],
+                "question": q["question"],
+                "options": q["options"],
+                "correct_answer": q["correct_answer"],
+                "explanation": q["explanation"]
+            }
+            for q in prepared_questions
+        ]
+        
         return {
             "success": True,
             "message": f"Successfully extracted and saved {inserted_count} questions",
             "questions_count": inserted_count,
-            "questions": prepared_questions  # Return for preview
+            "questions": response_questions
         }
         
     except Exception as e:
