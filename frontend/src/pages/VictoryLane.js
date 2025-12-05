@@ -17,6 +17,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const VictoryLane = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const postRefs = useRef({});
   
   // State
   const [activeTab, setActiveTab] = useState('for-you');
