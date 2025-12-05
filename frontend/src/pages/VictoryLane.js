@@ -1241,28 +1241,95 @@ const VictoryLane = () => {
                               {(postComments[post.id] || []).length === 0 ? (
                                 <p className="text-center text-gray-400 text-sm py-2">No comments yet. Be the first!</p>
                               ) : (
-                                (postComments[post.id] || []).map((comment) => (
-                                  <div key={comment.id} className="flex gap-2">
-                                    <UserAvatar
-                                      profilePicture={comment.user_avatar}
-                                      name={comment.user_name || comment.username}
-                                      size="sm"
-                                      clickable={true}
-                                      onClick={() => openProfile(comment.user_id)}
-                                    />
-                                    <div className="flex-1">
-                                      <div className="bg-gray-50 rounded-2xl px-3 py-2">
-                                        <span 
-                                          onClick={() => openProfile(comment.user_id)}
-                                          className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
-                                        >
-                                          {comment.user_name || comment.username || 'User'}
-                                        </span>
-                                        <p className="text-gray-700 text-sm">{comment.content}</p>
+                                (postComments[post.id] || []).filter(c => !c.parent_comment_id).map((comment) => (
+                                  <div key={comment.id} className="space-y-2">
+                                    <div className="flex gap-3 items-start">
+                                      <UserAvatar
+                                        profilePicture={comment.user_avatar}
+                                        name={comment.user_name || comment.username}
+                                        size="sm"
+                                        clickable={true}
+                                        onClick={() => openProfile(comment.user_id)}
+                                      />
+                                      <div className="flex-1 min-w-0">
+                                        <div className="bg-gray-50 rounded-2xl px-3 py-2">
+                                          <span 
+                                            onClick={() => openProfile(comment.user_id)}
+                                            className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
+                                          >
+                                            {comment.user_name || comment.username || 'User'}
+                                          </span>
+                                          <p className="text-gray-700 text-sm mt-0.5">{comment.content}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3 mt-1 ml-3">
+                                          <span className="text-xs text-gray-400">
+                                            {formatTimestamp(comment.created_at)}
+                                          </span>
+                                          {isAuthenticated() && (
+                                            <button
+                                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                                              className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                                            >
+                                              Reply
+                                            </button>
+                                          )}
+                                        </div>
+                                        
+                                        {/* Reply Input */}
+                                        {replyingTo === comment.id && (
+                                          <div className="flex gap-2 mt-2 ml-3">
+                                            <UserAvatar
+                                              profilePicture={user?.profile_picture}
+                                              name={user?.name}
+                                              size="xs"
+                                            />
+                                            <div className="flex-1 flex gap-2">
+                                              <input
+                                                type="text"
+                                                value={replyContent[comment.id] || ''}
+                                                onChange={(e) => setReplyContent(prev => ({ ...prev, [comment.id]: e.target.value }))}
+                                                onKeyPress={(e) => e.key === 'Enter' && submitComment(post.id, comment.id)}
+                                                placeholder={`Reply to ${comment.user_name || comment.username}...`}
+                                                className="flex-1 text-sm border border-gray-200 rounded-full px-4 py-1.5 focus:outline-none focus:border-blue-400"
+                                              />
+                                              <button
+                                                onClick={() => submitComment(post.id, comment.id)}
+                                                disabled={!replyContent[comment.id]?.trim()}
+                                                className="p-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                              >
+                                                <Send className="w-3.5 h-3.5" />
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {/* Nested Replies */}
+                                        {(postComments[post.id] || []).filter(r => r.parent_comment_id === comment.id).map((reply) => (
+                                          <div key={reply.id} className="flex gap-2 mt-3 ml-8 items-start">
+                                            <UserAvatar
+                                              profilePicture={reply.user_avatar}
+                                              name={reply.user_name || reply.username}
+                                              size="xs"
+                                              clickable={true}
+                                              onClick={() => openProfile(reply.user_id)}
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                              <div className="bg-gray-100 rounded-2xl px-3 py-2">
+                                                <span 
+                                                  onClick={() => openProfile(reply.user_id)}
+                                                  className="font-semibold text-gray-900 text-xs cursor-pointer hover:underline"
+                                                >
+                                                  {reply.user_name || reply.username || 'User'}
+                                                </span>
+                                                <p className="text-gray-700 text-xs mt-0.5">{reply.content}</p>
+                                              </div>
+                                              <span className="text-xs text-gray-400 ml-3 mt-1 inline-block">
+                                                {formatTimestamp(reply.created_at)}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        ))}
                                       </div>
-                                      <span className="text-xs text-gray-400 ml-3">
-                                        {formatTimestamp(comment.created_at)}
-                                      </span>
                                     </div>
                                   </div>
                                 ))
