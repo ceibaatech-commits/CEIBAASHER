@@ -1,89 +1,278 @@
 <analysis>**original_problem_statement**:
-The user's initial goal was to fix bugs and add features to an exam preparation platform. The session began with a request to redesign the All Exams page () for a more compact mobile UI. The scope then expanded to include:
-1.  **Home Page Category Filter**: Adding the Admission Tests category to the home page filter and removing the Engineering category.
-2.  **Code Cleanup**: Deleting the deprecated  page.
-3.  **Static Pages**: Creating Terms of Service and Privacy Policy pages.
-4.  **Core Feature Implementation**: Fixing non-functional comments and notifications on the Victory Lane social feed.
-5.  **Current Request**: Fixing notification navigation (tapping a notification should lead to the relevant post) and ensuring the notification badge count is dynamic and accurate.
+The user's initial goal was to fix bugs and add features to an exam preparation platform. This session's work included:
+1.  **Core Feature Implementation**: Fixing non-functional comments and notifications on the Victory Lane social feed.
+2.  **Dynamic Profiles**: Implementing clickable, dynamic user profiles showing posts, followers, and following lists.
+3.  **Bug Fixes**: Systematically addressing user-reported bugs related to profile loading, inconsistent user data, incorrect comment/avatar displays, and broken UI layouts.
+4.  **Content Generation**: Adding functionality to programmatically generate and store MCQs for various exams (JEE, NDA).
+5.  **Current Request**: Add a feature to the admin panel to extract questions from uploaded images using Claude AI and store them in the database.
 
 PRODUCT REQUIREMENTS:
-1.  **Mobile UI Overhaul**: Redesign the  page to be more compact and user-friendly on mobile, addressing oversized cards and poor spacing.
-2.  **Category Management**: The home page category filter must show Admission Tests and exclude Engineering.
-3.  **Code Health**: Remove obsolete components like .
-4.  **Comment Functionality**: Users must be able to post and view comments on posts in Victory Lane.
-5.  **Notification System**:
-    *   Notifications must be generated for actions like comments, likes, and follows.
-    *   The notification badge count on the header's bell icon must reflect the actual number of unread notifications.
-    *   The badge count must update in real-time as notifications are read or received.
-    *   Tapping a notification (e.g., for a liked post) must navigate the user directly to that specific post.
+1.  **Notification System**: The notification system must be fully functional, including navigating to content on click and maintaining an accurate unread badge count.
+2.  **Dynamic User Profiles**: Clicking a user's avatar or name should navigate to their profile page, which displays their posts and real follower/following lists. Profile routing must work with both usernames and UUIDs.
+3.  **Data Consistency**: Usernames, avatars, and other data must be displayed consistently across all parts of the application (posts, comments, profiles). Avatars should prioritize uploaded profile pictures over generated letter fallbacks.
+4.  **Comment Replies**: Users must be able to reply to comments, with replies displayed in a nested/threaded view.
+5.  **Math Rendering**: The application must support and correctly render LaTeX/KaTeX for mathematical equations in quiz questions.
+6.  **AI-Powered Content Creation**: An admin must be able to upload an image containing questions, and the system should use an AI model (Claude) to extract the questions, options, answer, and explanation, then save them to the database under the correct exam category.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack exam preparation platform. The mobile UI for the  page has been made more compact. The  category filter has been fixed to correctly display Admission Tests. The deprecated  page has been deleted, and new static pages for Terms/Privacy have been created and linked in the footer.
+The application is a full-stack exam preparation platform with a social feed. The notification and comment systems are now fully functional, including replies and correct user data display. Dynamic user profiles have been implemented, and numerous related bugs (routing, data fetching, layout) have been resolved. The quiz engine now correctly fetches questions from a centralized MongoDB collection and can render complex mathematical equations using KaTeX.
 
-The comment and notification systems, which were previously broken, have been significantly reworked. Comment posting is now functional. The backend notification logic was fixed by correcting a JWT decoding issue, so notifications are now being successfully created and retrieved from the database. A  has been introduced in the frontend to manage notification state globally, though the implementation is still in progress to fix navigation and badge count issues.
+A new feature for AI-powered question extraction has been added to the admin panel. The UI allows an admin to select an exam category and upload an image. The backend is wired up to send this image to the Claude AI Vision API using the Emergent LLM Key and save the extracted questions.
 
 **Last working item**:
--   **Last item agent was working**: Fixing two critical notification issues: 1) Tapping a notification does not navigate the user to the corresponding post. 2) The notification badge count is static and does not update when notifications are read. The agent was implementing a  to manage the notification state across the application and had just finished refactoring several components to use this new context. It identified and was about to fix a linting error in .
+-   **Last item agent was working**: Debugging the new Extract from Image feature. After the user uploads an image, the extraction process appears to stall and does nothing. The agent had just resolved a series of backend issues, including a  and an incorrect library usage for vision tasks. The last action was to revert the backend code to use the  SDK directly with the correct authentication headers for the Emergent LLM Key, but the feature remains non-functional.
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: Frontend testing agent. This is a complex user flow involving state management (Context API), navigation, and real-time updates that requires end-to-end verification.
+-   **Which testing method agent to use?**: Manual testing by curl / python -c. The agent needs to test the  endpoint directly to inspect backend logs and the API response.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Fix Notification Navigation and Badge Count (P0)**
-    -   **Description**: The notification system has two major flaws: clicking a notification doesn't redirect to the relevant content (e.g., the liked post), and the unread count badge on the bell icon is not dynamic.
+-   **Issue 1: Claude AI Image Extraction Not Working (P0)**
+    -   **Description**: The Extract from Image feature in the admin panel does not extract questions after an image is uploaded. The user reports it is doing nothing.
     -   **Attempted fixes**:
-        1.  Corrected data mapping in  to use correct field names from the backend (, ).
-        2.  Created a  to manage notification state globally.
-        3.  Wrapped the main  in a .
-        4.  Refactored  and  to consume the new context.
+        1.  Initial implementation with the  SDK caused a 401 auth error.
+        2.  Switched to the  library, which led to a .
+        3.  Installed the library, but it was unsuitable for vision tasks.
+        4.  Reverted to using the  SDK with the correct  header for the Emergent LLM Key. The feature still does not work.
     -   **Next debug checklist**:
-        1.  Fix the linting error ('no-unstable-nested-components') in .
-        2.  In , ensure the  function correctly marks the notification as read via an API call and updates the state using the .
-        3.  Implement the navigation logic within  using  to redirect to .
-        4.  Modify  to check for a  in the URL query parameters on load, and if present, scroll the view to that specific post.
-        5.  Verify that the  component correctly consumes the  from the context and updates dynamically.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical user experience feature. Fixing it will make the notification system functional and engaging.
+        1.  Check backend logs (==> /var/log/supervisor/backend.err.log <==
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/backend/server.py", line 17, in <module>
+    from image_extraction_routes import router as image_extraction_router
+  File "/app/backend/image_extraction_routes.py", line 2, in <module>
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+ModuleNotFoundError: No module named 'emergentintegrations'
+INFO:     Stopping reloader process [2289]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [2800] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 76, in subprocess_started
+    target(sockets=sockets)
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
+    config.load()
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 24, in import_from_string
+    raise exc from None
+  File "/root/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/backend/server.py", line 17, in <module>
+    from image_extraction_routes import router as image_extraction_router
+  File "/app/backend/image_extraction_routes.py", line 2, in <module>
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+ModuleNotFoundError: No module named 'emergentintegrations'
+INFO:     Stopping reloader process [2800]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [2886] using WatchFiles
+INFO:     Started server process [2888]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'image_extraction_routes.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2888]
+INFO:     Started server process [2940]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'image_extraction_routes.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2940]
+INFO:     Started server process [2973]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [2973]
+INFO:     Stopping reloader process [2886]
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [2985] using WatchFiles
+INFO:     Started server process [2987]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/app/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [35] using WatchFiles
+
+==> /var/log/supervisor/backend.out.log <==
+INFO:     10.64.130.218:49690 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:55040 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:55040 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:55040 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:60152 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:60152 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:47188 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:47188 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:60152 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:40994 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:40994 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:40994 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:56016 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:49810 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:56016 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+Error in image extraction: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_011CVpLuA8C5X2npVau2ygvH'}
+INFO:     10.64.130.203:49810 - "POST /api/extract-questions-from-image HTTP/1.1" 500 Internal Server Error
+INFO:     10.64.130.218:56016 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:40766 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.137.19:50388 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:43404 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:44004 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:44014 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.137.19:51200 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:55148 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:37596 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:50400 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:50416 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:46720 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:60712 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+[INIT] FastAPI running on port 8001
+[INIT] REST endpoints: /api/*
+[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
+[INIT] Battle rooms will persist to MongoDB
+[STARTUP] Loading rooms created after 1764888107.62965...
+[STARTUP] Found 1 rooms in database
+[STARTUP] Loaded room 831001
+[STARTUP] Successfully loaded 1 active rooms
+INFO:     10.64.130.203:40390 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:60800 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+[INIT] FastAPI running on port 8001
+[INIT] REST endpoints: /api/*
+[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
+[INIT] Battle rooms will persist to MongoDB
+[STARTUP] Loading rooms created after 1764888118.187395...
+[STARTUP] Found 1 rooms in database
+[STARTUP] Loaded room 831001
+[STARTUP] Successfully loaded 1 active rooms
+INFO:     10.64.130.202:40192 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+[INIT] FastAPI running on port 8001
+[INIT] REST endpoints: /api/*
+[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
+[INIT] Battle rooms will persist to MongoDB
+[STARTUP] Loading rooms created after 1764888441.761973...
+[STARTUP] Found 1 rooms in database
+[STARTUP] Loaded room 831001
+[STARTUP] Successfully loaded 1 active rooms
+INFO:     10.64.130.218:48246 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.137.19:42216 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.139.121:47168 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+[INIT] FastAPI running on port 8001
+[INIT] REST endpoints: /api/*
+[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
+[INIT] Battle rooms will persist to MongoDB
+[STARTUP] Loading rooms created after 1764888459.013635...
+[STARTUP] Found 1 rooms in database
+[STARTUP] Loaded room 831001
+[STARTUP] Successfully loaded 1 active rooms
+INFO:     10.64.137.19:34020 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+[INIT] FastAPI running on port 8001
+[INIT] REST endpoints: /api/*
+[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
+[INIT] Battle rooms will persist to MongoDB
+[STARTUP] Loading rooms created after 1764888477.594925...
+[STARTUP] Found 1 rooms in database
+[STARTUP] Loaded room 831001
+[STARTUP] Successfully loaded 1 active rooms
+INFO:     10.64.130.203:49986 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:40182 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+[INIT] FastAPI running on port 8001
+[INIT] REST endpoints: /api/*
+[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
+[INIT] Battle rooms will persist to MongoDB
+[STARTUP] Loading rooms created after 1764888486.271826...
+[STARTUP] Found 1 rooms in database
+[STARTUP] Loaded room 831001
+[STARTUP] Successfully loaded 1 active rooms
+INFO:     10.64.130.203:44718 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:46638 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:57752 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:33268 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:59790 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:38280 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.203:56200 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.137.19:53968 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:38324 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.140.149:38574 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:55770 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.202:40852 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
+INFO:     10.64.130.218:56642 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK) for errors when the  endpoint is called.
+        2.  In , add extensive logging before and after the Anthropic API call to trace the execution flow and inspect the response or error.
+        3.  Manually test the  endpoint using  to isolate the backend logic.
+        4.  Verify the payload structure sent to the Claude API () is correct for multimodal inputs.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a key new feature requested by the user. Fixing it will enable a powerful content creation workflow for admins.
     -   **Status**: IN PROGRESS
     -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend
--   **Issue 2: Unreliable Testing Tools (P1)**
-    -   **Description**: Throughout the session, the  consistently failed with network issues, returning blank images. The  agent also appeared to test against a cached version of the UI, providing outdated feedback.
-    -   **Why fix this issue and what will be achieved with the fix?**: Reliable testing tools are crucial for verifying UI changes and preventing regressions. Resolving this will speed up development and increase confidence in releases.
-    -   **Status**: NOT STARTED
-    -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: N/A (Infrastructure issue)
+    -   **Should Test frontend/backend/both after fix?**: Both
 
 **In progress Task List**:
 -   None apart from the issue listed above.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **(P1) Refactor VictoryLane.js**: The file is over 1300 lines and handles too many responsibilities. It was partially started but paused due to complexity. It should be broken into smaller components (, , ).
+    -   **(P1) Refactor VictoryLane.js**: The file is over 1300 lines. It needs to be broken into smaller, manageable components.
 -   **Future Tasks**:
-    -   **(P2) Refactor Home.js**: The redesigned file is over 800 lines and could be broken down into sub-components (e.g., , , ).
+    -   **(P2) Refactor Home.js**: The file is over 800 lines and should be refactored into smaller components.
+    -   **(P2) Refactor ExamSheetManager.js**: This admin component is now over 2000 lines and should be broken down.
 
 **Completed work in this session**
--   **Mobile UI Redesign**: Made the  page more compact for mobile, though full verification was blocked by tool issues.
--   **Home Page Filter Fix**:
-    -   Corrected the category filter logic in  to properly handle exams under Admission Tests.
-    -   Removed the Engineering category and updated the display order as requested by the user.
--   **Code Cleanup**:
-    -   Deleted the deprecated  file and removed all its references from .
--   **Static Page Creation**:
-    -   Created  and .
-    -   Added routes in  and links in  for the new pages.
--   **Comment Functionality**:
-    -   Implemented a functional comment section in , including UI and API integration.
-    -   Debugged and fixed an issue where comments were not posting due to an incorrect API endpoint URL.
--   **Notification System Backend Fix**:
-    -   Diagnosed and fixed a critical bug in  where the API was failing to retrieve notifications because it was not decoding the JWT to get the .
+-   **Notification System**: Fixed notification navigation, dynamic badge count, and JWT decoding on all backend notification endpoints.
+-   **Dynamic User Profiles**: Implemented a unified profile page that handles both UUID and username routing and correctly displays follower/following lists. Fixed all related layout and navigation bugs.
+-   **Comment System**: Fixed a bug causing comments to display a generic User. Implemented a nested reply system and improved the comment section layout.
+-   **Avatar Display**: Created a reusable  component and updated the backend to ensure real profile pictures are displayed instead of letter fallbacks across the app.
+-   **MCQ Generation & Display**:
+    -   Successfully generated and stored 50+ MCQs for JEE and NDA exams in the database.
+    -   Fixed the quiz engine to correctly fetch and display these questions.
+    -   Added KaTeX/LaTeX support to render mathematical equations in quizzes.
+-   **UI Cleanup**: Removed all Leaderboard buttons from the UI and fixed a broken back button on the Dashboard.
+-   **Admin Feature (In Progress)**: Added the UI and backend routes for the Extract from Image feature using Claude AI.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Refactor **
-    -   **Debug checklist**: Break down the large component into smaller, manageable child components for modals, posts, and feed logic.
+-   **Issue 1: Refactor , , and **
+    -   **Debug checklist**: Break down these large monolithic components into smaller, reusable child components.
     -   **Why to solve this issue and what will be achieved with this?**: To improve code maintainability, readability, and performance.
     -   **Should Test frontend/backend/both after fix**: Frontend.
     -   **Is recurring issue?**: N
@@ -95,61 +284,82 @@ The comment and notification systems, which were previously broken, have been si
 
 
 **Key Technical Concepts**
--   **React Context API**: Introduced  to manage and synchronize notification state (unread count) across the  and  page components, enabling real-time updates.
--   **Backend Authentication Fix**: Resolved a critical authentication bug in the Python backend by correctly decoding the JWT in API routes to extract the , instead of using the raw token string.
--   **API Endpoint Debugging**: Systematically debugged frontend and backend issues by checking API responses, server logs (), and direct database queries to isolate problems.
--   **Responsive Mobile Design**: Applied aggressive Tailwind CSS classes (, ) to create a compact mobile UI based on user feedback, while preserving the desktop layout using responsive prefixes ().
+-   **AI Vision Integration**: Using the Anthropic Claude 3 Sonnet model to perform OCR and structured data extraction from images.
+-   **Emergent LLM Key**: Authenticating with the Anthropic API using the provided universal key via a custom  header.
+-   **Math Rendering**: Integrating  on the frontend to render LaTeX-formatted mathematical equations.
+-   **Component Consolidation**: Resolving a critical routing bug by merging  and  into a single, robust component that handles all profile-viewing logic.
+-   **Backend Data Enrichment**: Modifying backend feed endpoints to dynamically look up and embed fresh user data (like ) into post objects before sending them to the client.
 
 **key DB schema**
--   **notifications**: Confirmed to be storing notification documents with fields like , , , , and .
--   **posts**: Contains user-generated content for Victory Lane.
--   **comments**: Stores comments related to posts.
+-   **questions**: Stores all MCQs. Docs include , , , ,  (array of objects), , and .
+-   **users**: Contains user profiles, including .
 
 **changes in tech stack**
--   None.
+-   **Frontend**: Added  for math rendering.
+-   **Backend**: Added  Python library for AI integration.
 
 **All files of reference**
--   **Created**: , , , and several component files under .
--   **Updated**: , , , , , , , , .
--   **Deleted**: , .
+-   **Created**:
+    -   
+    -   
+    -   
+-   **Updated**:
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
 
 **Areas that need refactoring**:
--   : Still critically large. The initial refactoring was paused and should be resumed.
--   : Remains a large component that would benefit from being broken down.
+-   : Still critically large and complex.
+-   : Now over 2000 lines and needs to be broken down.
+-   : Remains a large component that would benefit from refactoring.
 
 **key api endpoints**
--   : Used by the frontend to post a new comment. The agent fixed the frontend to call this (singular) instead of  (plural).
--   : **Fixed**. The backend logic was corrected to properly decode the JWT and return notifications for the authenticated user.
--   : **Fixed**. Same JWT decoding issue was resolved.
--   : **Fixed**. Same JWT decoding issue was resolved.
+-   : **NEW & IN-PROGRESS**. Endpoint for the new AI image extraction feature.
+-   : **MODIFIED**. Now serves questions from the MongoDB  collection.
+-   : **MODIFIED**. Now handles both usernames and UUIDs for fetching user profiles.
 
 **Critical Info for New Agent**
--   **Testing Tools Unreliable**: The  and  agent have been unreliable in this session, showing network errors or cached content. Be prepared to verify UI changes using alternative methods (e.g., custom scripts, careful code review) if the tools continue to fail.
--   **Notification Context**: A new  is now the source of truth for notification state in the frontend. Any work on notifications should leverage this context ( hook).
--   **Authentication is Key**: Many features (comments, notifications) require a valid authentication token. When testing, always ensure you are logged in. The demo login endpoint is .
+-   **Image Extraction is the Priority**: Your primary task is to fix the Extract from Image feature. The user has reported it's doing nothing. Focus your debugging on  and the corresponding frontend logic in . Check the backend logs for errors from the Anthropic API call.
+-   **AI Authentication**: The Anthropic API is accessed using the Emergent LLM Key, which must be passed in the  header. The implementation in  reflects this. Do not attempt to use the  library for this vision task.
+-   **Component File Paths**: Be aware that there are multiple components with similar names. The correct admin panel is , and the correct profile page is .
+-   **Database for Questions**: All quiz questions are now stored in the  collection in MongoDB. Any new question-related features should interact with this collection.
 
 **documents created in this job**
 -   None.
 
 **Last 10 User Messages and any pending user messages**
-1.  **User**: Okay, now the comment section is working, but why are notifications not working for comments/follows? **Status**: Completed.
-2.  **User**: **(PENDING/IN PROGRESS)** Requested fixes for two notification issues: 1) Tapping a notification should navigate to the post. 2) The notification badge count should be dynamic and accurate. **Status**: IN PROGRESS.
+1.  **User**: Asked for an image upload option to be added to the Add New Question Sheet form for AI extraction. **Status**: In Progress.
+2.  **User**: Reported the new image extraction UI was not visible. **Status**: Completed.
+3.  **User**: Reported a 401 authentication error during image extraction. **Status**: Completed.
+4.  **User**: **(PENDING/IN PROGRESS)** Reported that the image extraction is doing nothing after the previous fix. **Status**: IN PROGRESS.
+5.  **User**: Reported a bug with comment layout and requested reply functionality. **Status**: Completed.
+6.  **User**: Reported avatar layout and back button issues on the profile page. **Status**: Completed.
+7.  **User**: Reported the back button on the dashboard was not working. **Status**: Completed.
+8.  **User**: Requested removal of the leaderboard button. **Status**: Completed.
+9.  **User**: Asked for a list of JEE subtopics. **Status**: Completed.
+10. **User**: Asked if MCQs could be generated and stored for the listed subtopics. **Status**: Completed.
 
 **Project Health Check:**
--   **Broken**: The notification user flow (navigation and badge count) is currently broken and is the active task.
+-   **Broken**: The new Extract from Image feature is non-functional and is the highest priority task.
 -   **Mocked**: None.
 
 **3rd Party Integrations**:
--   None.
+-   **Anthropic Claude 3 Sonnet**: Used for question extraction from images. Uses the **Emergent LLM Key**.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (Used for UI verification but gave potentially cached results).
+-   **Testing agent used after significant changes**: YES
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
 -   **Known regressions**: None.
 
 **Credentials to test flow:**
--   **Login**: Use username  with password  via the Demo Login button or .
+-   **Login**: Use username  with password  via the Demo Login button or the API endpoint .
 
 **What agent forgot to execute**
--   The agent correctly identified a linting error in  after refactoring but had not yet fixed it before the session ended.</analysis>
+-   The agent initially modified the wrong component ( instead of ), causing a slight delay.
+-   The agent incorrectly attempted to use the  library for a vision task before realizing its limitation and reverting to the  SDK.</analysis>

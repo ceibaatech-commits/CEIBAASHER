@@ -7,7 +7,7 @@ import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 
 // Production-grade Socket.IO configuration
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://prep-notify.preview.emergentagent.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://testextractor.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
