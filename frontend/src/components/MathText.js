@@ -12,8 +12,22 @@ import { InlineMath, BlockMath } from 'react-katex';
 const MathText = ({ text, className = "" }) => {
   if (!text) return null;
 
-  // Convert to string if not already
-  const textStr = String(text);
+  // Handle object inputs (like {id: "A", text: "..."})
+  let textStr;
+  if (typeof text === 'object' && text !== null) {
+    // If it has a text property, use that
+    if (text.text !== undefined) {
+      textStr = String(text.text);
+    } else if (text.value !== undefined) {
+      textStr = String(text.value);
+    } else {
+      // Try to extract meaningful content, fallback to JSON
+      textStr = text.content || text.label || JSON.stringify(text);
+    }
+  } else {
+    // Convert to string if not already
+    textStr = String(text);
+  }
 
   // Split text by LaTeX delimiters (both inline $ and display $$)
   // Pattern: matches $$...$$ (display) or $...$ (inline)
