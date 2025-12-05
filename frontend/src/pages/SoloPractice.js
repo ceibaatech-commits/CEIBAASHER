@@ -254,7 +254,10 @@ const SoloPractice = () => {
                 </div>
 
                 <div className="space-y-2 mb-3">
-                  {result.options.map((option, optIndex) => (
+                  {result.options.map((option, optIndex) => {
+                    // Handle both string options and object options {id, text}
+                    const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
+                    return (
                     <div
                       key={optIndex}
                       className={`p-3 rounded-lg border-2 ${
@@ -267,7 +270,7 @@ const SoloPractice = () => {
                     >
                       <div className="flex items-center space-x-2">
                         <span className="font-medium">{String.fromCharCode(65 + optIndex)}.</span>
-                        <span>{option}</span>
+                        <span><MathText text={optionText} /></span>
                         {optIndex === result.correctAnswer && (
                           <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
                         )}
@@ -276,7 +279,7 @@ const SoloPractice = () => {
                         )}
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
 
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
