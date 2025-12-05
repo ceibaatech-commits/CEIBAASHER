@@ -518,7 +518,7 @@ const PublicProfile = () => {
                       <Trophy className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                       <p className="text-gray-600 text-lg">No quiz rooms yet</p>
                       <p className="text-gray-500 text-sm mt-2">
-                        {profile.name} hasn't created any quiz rooms yet
+                        {profile.name} hasn&apos;t created any quiz rooms yet
                       </p>
                     </div>
                   )
