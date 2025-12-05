@@ -255,17 +255,8 @@ const PublicProfile = () => {
 
           {/* Profile Info Section */}
           <div className="relative px-6 pb-6">
-            {/* Profile Picture */}
-            <div className="absolute -top-16 left-6">
-              <img
-                src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
-                alt={profile.name}
-                className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover"
-              />
-            </div>
-
-            {/* Follow Button - only show for other users */}
-            <div className="pt-20 flex justify-end">
+            {/* Follow/Edit Button - positioned at top right */}
+            <div className="pt-4 flex justify-end">
               {user && user.id !== profile.id ? (
                 <FollowButton
                   targetUserId={profile.id}
@@ -278,7 +269,7 @@ const PublicProfile = () => {
                   onClick={() => navigate('/dashboard')}
                   className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg"
                 >
-                  Go to Dashboard
+                  Edit Profile
                 </button>
               ) : (
                 <button
@@ -290,10 +281,26 @@ const PublicProfile = () => {
               )}
             </div>
 
-            {/* User Info */}
-            <div className="mt-4">
-              <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-              <p className="text-gray-500 text-lg">@{profile.username}</p>
+            {/* Avatar and User Info - Horizontal Layout */}
+            <div className="flex items-start gap-4 mt-4">
+              {/* Profile Picture */}
+              <div className="relative flex-shrink-0">
+                <img
+                  src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
+                  alt={profile.name}
+                  className="w-24 h-24 rounded-full border-4 border-white shadow-xl object-cover"
+                />
+                {profile.is_verified && (
+                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="text-white text-xs">🤖</span>
+                  </div>
+                )}
+              </div>
+
+              {/* User Info */}
+              <div className="flex-1 min-w-0 mt-2">
+                <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
+                <p className="text-gray-500">@{profile.username}</p>
 
               {/* Bio */}
               {profile.bio && (
