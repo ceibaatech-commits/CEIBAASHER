@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import UserAvatar from '../components/UserAvatar';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
