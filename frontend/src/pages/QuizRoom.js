@@ -484,8 +484,11 @@ const QuizRoom = () => {
             {(Array.isArray(currentQuestion?.options) ? currentQuestion.options : 
               ['option_a', 'option_b', 'option_c', 'option_d'].map(opt => ({id: opt.replace('option_', '').toUpperCase(), text: currentQuestion[opt]}))
             ).map((option, idx) => {
-              const optionId = option.id || option;
-              const optionText = option.text || currentQuestion[option];
+              // Handle both object format {id: "A", text: "..."} and string format
+              const optionId = typeof option === 'object' ? (option.id || String.fromCharCode(65 + idx)) : option;
+              const optionText = typeof option === 'object' 
+                ? (option.text || option.value || String(option)) 
+                : (currentQuestion[option] || option);
               return (
               <button
                 key={optionId}
