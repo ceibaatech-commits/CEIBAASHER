@@ -22,14 +22,6 @@ const ExamActions = ({ examId, examName }) => {
         <Users className="w-4 h-4" />
         Join Community
       </button>
-      
-      <button
-        onClick={() => navigate('/leaderboard')}
-        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-600 text-white rounded-lg font-medium hover:shadow-lg transition-all"
-      >
-        <Trophy className="w-4 h-4" />
-        Leaderboard
-      </button>
     </div>
   );
 };
