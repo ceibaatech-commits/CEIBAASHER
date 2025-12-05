@@ -1840,32 +1840,89 @@ const ExamSheetManager = () => {
               </>
             )}
 
-            {/* Google Sheet Link (Common for both) */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Google Sheet Public Link *
-              </label>
-              <div className="relative">
-                <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="url"
-                  required
-                  value={selectedOption === 'exam' ? examForm.sheet_link : classForm.sheet_link}
-                  onChange={(e) => {
-                    if (selectedOption === 'exam') {
-                      setExamForm({ ...examForm, sheet_link: e.target.value });
-                    } else {
-                      setClassForm({ ...classForm, sheet_link: e.target.value });
-                    }
-                  }}
-                  placeholder="https://docs.google.com/spreadsheets/d/..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Make sure the Google Sheet is publicly accessible (Anyone with the link can view)
-              </p>
+            {/* Input Method Selection */}
+            <div className="flex gap-3 mb-4">
+              <button
+                type="button"
+                onClick={() => {setInputMethod('sheet'); setSelectedImage(null); setImagePreview(null);}}
+                className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition ${inputMethod === 'sheet' ? 'bg-blue-600 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              >
+                📊 Google Sheet
+              </button>
+              <button
+                type="button"
+                onClick={() => setInputMethod('image')}
+                className={`flex-1 py-2.5 px-4 rounded-lg font-semibold transition ${inputMethod === 'image' ? 'bg-purple-600 text-white shadow' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+              >
+                🖼️ Extract from Image
+              </button>
             </div>
+
+            {inputMethod === 'sheet' ? (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Google Sheet Public Link *
+                </label>
+                <div className="relative">
+                  <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="url"
+                    required={inputMethod === 'sheet'}
+                    value={selectedOption === 'exam' ? examForm.sheet_link : classForm.sheet_link}
+                    onChange={(e) => {
+                      if (selectedOption === 'exam') {
+                        setExamForm({ ...examForm, sheet_link: e.target.value });
+                      } else {
+                        setClassForm({ ...classForm, sheet_link: e.target.value });
+                      }
+                    }}
+                    placeholder="https://docs.google.com/spreadsheets/d/..."
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Make sure the Google Sheet is publicly accessible (Anyone with the link can view)
+                </p>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Upload Question Image *
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        setSelectedImage(file);
+                        const reader = new FileReader();
+                        reader.onloadend = () => setImagePreview(reader.result);
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="hidden"
+                    id="question-image-upload"
+                  />
+                  <label htmlFor="question-image-upload" className="cursor-pointer">
+                    {imagePreview ? (
+                      <div>
+                        <img src={imagePreview} alt="Preview" className="max-h-80 mx-auto rounded-lg shadow mb-3" />
+                        <p className="text-sm text-gray-600">{selectedImage?.name}</p>
+                      </div>
+                    ) : (
+                      <div className="text-gray-500">
+                        <Upload className="w-12 h-12 mx-auto mb-3 text-purple-500" />
+                        <p className="text-lg font-semibold mb-1">Click to upload question image</p>
+                        <p className="text-sm">PNG, JPG, JPEG supported (Max 10MB)</p>
+                        <p className="text-xs text-gray-400 mt-2">AI will extract questions, options, answers & explanations</p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
+            )}
 
             {/* Form Actions */}
             <div className="flex items-center space-x-3 pt-4">
