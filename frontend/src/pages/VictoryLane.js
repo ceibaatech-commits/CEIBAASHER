@@ -1065,7 +1065,12 @@ const VictoryLane = () => {
                           <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
                         </div>
                         {user && post.user_id !== user.id && (
-                          <FollowButton userId={post.user_id} />
+                          <FollowButton 
+                            userId={post.user_id} 
+                            user={user}
+                            followingList={followingList}
+                            toggleFollow={toggleFollow}
+                          />
                         )}
                       </div>
 
