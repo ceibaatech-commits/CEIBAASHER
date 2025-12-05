@@ -24,7 +24,7 @@ const Notifications = () => {
     } else if (user) {
       fetchNotifications(activeFilter);
     }
-  }, [user, authLoading, activeFilter, fetchNotifications]);
+  }, [user, authLoading, activeFilter, fetchNotifications, navigate]);
 
   const handleNotificationClick = async (notification) => {
     // Mark as read first
