@@ -410,9 +410,11 @@ const Profile = () => {
                       onClick={() => navigate(`/profile/${follower.id || follower.user_id}`)}
                       className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition cursor-pointer"
                     >
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0">
-                        {(follower.name || 'U').charAt(0).toUpperCase()}
-                      </div>
+                      <UserAvatar
+                        profilePicture={follower.profile_picture}
+                        name={follower.name}
+                        size="xl"
+                      />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="font-bold text-gray-900 truncate">{follower.name || 'User'}</p>
