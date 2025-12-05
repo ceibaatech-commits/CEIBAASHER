@@ -345,7 +345,6 @@ const VictoryLane = () => {
       fetchMyFollowing();
       fetchMyStats();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, user]);
 
   // Handle notification navigation - scroll to specific post
