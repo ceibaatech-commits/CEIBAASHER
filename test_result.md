@@ -3161,10 +3161,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Dynamic User Profile Feature"
-  stuck_tasks: []
+    - "Profile Picture Display Fix"
+  stuck_tasks:
+    - "Profile Picture Display Fix"
   test_all: false
-  test_priority: "high_first"
+  test_priority: "stuck_first"
 
 agent_communication:
   - agent: "main"
