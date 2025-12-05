@@ -14,6 +14,48 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Follow Button Component - Moved outside to fix React linting
+const FollowButton = ({ userId, size = 'sm', user, followingList, toggleFollow }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const isFollowing = followingList.has(userId);
+  const isMe = user?.id === userId;
+  
+  if (isMe) return null;
+  
+  if (isFollowing) {
+    return (
+      <button
+        onClick={(e) => { e.stopPropagation(); toggleFollow(userId); }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`px-4 ${size === 'sm' ? 'py-1.5 text-sm' : 'py-2 text-base'} rounded-full font-semibold transition-all border-2 ${
+          isHovered 
+            ? 'border-red-300 bg-red-50 text-red-600' 
+            : 'border-gray-300 bg-white text-gray-700'
+        }`}
+      >
+        {isHovered ? (
+          <span className="flex items-center gap-1">
+            <UserMinus className="w-4 h-4" />
+            Unfollow
+          </span>
+        ) : (
+          'Following'
+        )}
+      </button>
+    );
+  }
+  
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); toggleFollow(userId); }}
+      className={`px-4 ${size === 'sm' ? 'py-1.5 text-sm' : 'py-2 text-base'} bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition-all`}
+    >
+      Follow
+    </button>
+  );
+};
+
 const VictoryLane = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
