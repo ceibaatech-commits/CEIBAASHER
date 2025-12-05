@@ -11,6 +11,11 @@ const SheetManager = () => {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [testResult, setTestResult] = useState(null);
+  const [inputMethod, setInputMethod] = useState('sheet'); // 'sheet' or 'image'
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [extracting, setExtracting] = useState(false);
+  const [extractedQuestions, setExtractedQuestions] = useState(null);
   
   const [formData, setFormData] = useState({
     exam_id: 'JEE',
