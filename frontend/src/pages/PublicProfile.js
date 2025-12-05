@@ -333,24 +333,25 @@ const PublicProfile = () => {
                       >
                         🎯 {exam}
                       </span>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
 
-              {/* Badges */}
-              {profile.badges && profile.badges.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {profile.badges.map(badge => (
-                    <span
-                      key={badge}
-                      className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold"
-                    >
-                      <Award className="w-4 h-4" />
-                      {badge}
-                    </span>
-                  ))}
-                </div>
-              )}
+                {/* Badges */}
+                {profile.badges && profile.badges.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {profile.badges.map(badge => (
+                      <span
+                        key={badge}
+                        className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold"
+                      >
+                        <Award className="w-4 h-4" />
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Stats Row */}
