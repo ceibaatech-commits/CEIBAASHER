@@ -375,10 +375,10 @@ async def start_quiz(request: QuizStartRequest):
     # Note: This is acceptable for battle mode where speed matters
     questions_for_client = [
         {
-            "id": q["id"],
-            "question": q["question"],
-            "options": q["options"],
-            "correctAnswer": q["correctAnswer"],
+            "id": q.get("id", ""),
+            "question": q.get("question", ""),
+            "options": q.get("options", {}),
+            "correctAnswer": q.get("correctAnswer") or q.get("correct_answer", ""),
             "explanation": q.get("explanation", "")
         }
         for q in questions
