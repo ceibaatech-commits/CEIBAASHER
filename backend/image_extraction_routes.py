@@ -51,7 +51,7 @@ async def extract_questions_from_image(
             system_message="You are an expert at extracting structured data from images. You analyze images containing educational questions and extract them in JSON format."
         ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        print(f"[Image Extraction] LlmChat initialized with Claude model")
+        print("[Image Extraction] LlmChat initialized with Claude model")
         
         # Create file content with base64 image - use "image" as content_type for images
         image_attachment = FileContent(
@@ -96,7 +96,7 @@ Extract ALL questions you can see in the image. Be accurate and thorough."""
             file_contents=[image_attachment]
         )
         
-        print(f"[Image Extraction] Sending request to Claude Vision API...")
+        print("[Image Extraction] Sending request to Claude Vision API...")
         
         # Send message and get response
         response_text = await chat.send_message(user_message)
