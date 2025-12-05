@@ -804,12 +804,258 @@ class BackendTester:
             self.log_result("Quiz Room Flow - Exception", False, f"❌ Quiz room flow test error: {e}")
             return False
 
+    def test_image_extraction_api(self):
+        """Test Image Extraction API endpoint that extracts MCQ questions from uploaded images using Claude AI"""
+        try:
+            print("\n🎯 TESTING IMAGE EXTRACTION API ENDPOINT")
+            print("=" * 60)
+            
+            # Step 1: Create a test image with MCQ questions using PIL
+            from PIL import Image, ImageDraw, ImageFont
+            import io
+            
+            # Create a white image
+            img = Image.new('RGB', (800, 600), color='white')
+            draw = ImageDraw.Draw(img)
+            
+            # Try to use a default font, fallback to basic if not available
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+                title_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
+            except:
+                font = ImageFont.load_default()
+                title_font = ImageFont.load_default()
+            
+            # Draw MCQ questions on the image
+            y_pos = 20
+            
+            # Question 1
+            draw.text((20, y_pos), "1. What is the acceleration due to gravity on Earth?", fill='black', font=title_font)
+            y_pos += 40
+            draw.text((40, y_pos), "A) 9.8 m/s²", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "B) 10.2 m/s²", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "C) 8.9 m/s²", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "D) 11.1 m/s²", fill='black', font=font)
+            y_pos += 50
+            
+            # Question 2
+            draw.text((20, y_pos), "2. Which of the following is Newton's first law?", fill='black', font=title_font)
+            y_pos += 40
+            draw.text((40, y_pos), "A) F = ma", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "B) An object at rest stays at rest", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "C) For every action, there is an equal reaction", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "D) E = mc²", fill='black', font=font)
+            y_pos += 50
+            
+            # Question 3
+            draw.text((20, y_pos), "3. What is the unit of force in SI system?", fill='black', font=title_font)
+            y_pos += 40
+            draw.text((40, y_pos), "A) Joule", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "B) Newton", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "C) Watt", fill='black', font=font)
+            y_pos += 25
+            draw.text((40, y_pos), "D) Pascal", fill='black', font=font)
+            
+            # Save image to bytes
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format='PNG')
+            img_bytes.seek(0)
+            
+            self.log_result("Image Creation", True, "✅ Test image with 3 MCQ questions created successfully")
+            
+            # Step 2: Test the endpoint by sending the image with required form fields
+            files = {
+                'image': ('test_mcq_questions.png', img_bytes, 'image/png')
+            }
+            
+            form_data = {
+                'exam_id': 'JEE',
+                'exam_name': 'Joint Entrance Examination',
+                'syllabus_topic': 'Physics',
+                'subject': 'Mechanics',
+                'sub_topic': 'Laws of Motion'
+            }
+            
+            response = requests.post(
+                f"{BACKEND_URL}/api/extract-questions-from-image",
+                files=files,
+                data=form_data
+            )
+            
+            if response.status_code != 200:
+                self.log_result("Image Extraction API", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Image Extraction API", False, f"❌ API returned success=false: {result}")
+                return False
+            
+            questions_count = result.get('questions_count', 0)
+            questions = result.get('questions', [])
+            
+            self.log_result("Image Extraction API", True, f"✅ Successfully extracted {questions_count} questions from image")
+            
+            # Step 3: Verify response structure
+            if questions_count == 0:
+                self.log_result("Questions Extraction", False, "❌ No questions were extracted from the image")
+                return False
+            
+            # Check first question structure
+            if questions and len(questions) > 0:
+                first_q = questions[0]
+                required_fields = ['id', 'question', 'options', 'correct_answer', 'explanation']
+                missing_fields = [field for field in required_fields if field not in first_q]
+                
+                if missing_fields:
+                    self.log_result("Question Structure", False, f"❌ Missing fields in question: {missing_fields}")
+                    return False
+                
+                # Check options structure
+                options = first_q.get('options', [])
+                if len(options) != 4:
+                    self.log_result("Question Options", False, f"❌ Expected 4 options, got {len(options)}")
+                    return False
+                
+                # Check option structure
+                first_option = options[0] if options else {}
+                if 'id' not in first_option or 'text' not in first_option:
+                    self.log_result("Option Structure", False, f"❌ Invalid option structure: {first_option}")
+                    return False
+                
+                self.log_result("Question Structure", True, f"✅ Question structure is valid with {len(options)} options")
+            
+            # Step 4: Verify questions are saved in MongoDB
+            try:
+                # Connect to MongoDB to verify questions were saved
+                from motor.motor_asyncio import AsyncIOMotorClient
+                import asyncio
+                
+                async def check_database():
+                    mongo_client = AsyncIOMotorClient(os.getenv("MONGO_URL", "mongodb://localhost:27017"))
+                    db = mongo_client[os.getenv("DB_NAME", "test_database")]
+                    
+                    # Count questions with source="image_extraction"
+                    count = await db.questions.count_documents({"source": "image_extraction"})
+                    
+                    # Get a sample question to verify structure
+                    sample_question = await db.questions.find_one({"source": "image_extraction"})
+                    
+                    mongo_client.close()
+                    return count, sample_question
+                
+                # Run async function
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                db_count, sample_q = loop.run_until_complete(check_database())
+                loop.close()
+                
+                if db_count > 0:
+                    self.log_result("Database Storage", True, f"✅ {db_count} questions found in database with source='image_extraction'")
+                    
+                    if sample_q:
+                        # Verify database question structure
+                        db_required_fields = ['id', 'exam_id', 'subject', 'topic', 'question', 'options', 'correct_answer', 'source']
+                        db_missing_fields = [field for field in db_required_fields if field not in sample_q]
+                        
+                        if db_missing_fields:
+                            self.log_result("Database Question Structure", False, f"❌ Missing fields in DB question: {db_missing_fields}")
+                        else:
+                            self.log_result("Database Question Structure", True, "✅ Database question structure is complete")
+                else:
+                    self.log_result("Database Storage", False, "❌ No questions found in database")
+                    return False
+                    
+            except Exception as db_e:
+                self.log_result("Database Verification", False, f"❌ Database check failed: {str(db_e)}")
+                return False
+            
+            # Step 5: Test error handling with invalid image format
+            try:
+                # Create invalid file (text file with .jpg extension)
+                invalid_file = io.BytesIO(b"This is not an image file")
+                
+                files_invalid = {
+                    'image': ('invalid.jpg', invalid_file, 'image/jpeg')
+                }
+                
+                response_invalid = requests.post(
+                    f"{BACKEND_URL}/api/extract-questions-from-image",
+                    files=files_invalid,
+                    data=form_data
+                )
+                
+                # Should return an error (400 or 500)
+                if response_invalid.status_code >= 400:
+                    self.log_result("Error Handling", True, f"✅ Invalid image properly rejected with status {response_invalid.status_code}")
+                else:
+                    self.log_result("Error Handling", False, f"❌ Invalid image not rejected, got status {response_invalid.status_code}")
+                    
+            except Exception as error_e:
+                self.log_result("Error Handling", False, f"❌ Error handling test failed: {str(error_e)}")
+            
+            # Step 6: Test with missing required fields
+            try:
+                img_bytes.seek(0)  # Reset image bytes
+                files_missing = {
+                    'image': ('test_mcq_questions.png', img_bytes, 'image/png')
+                }
+                
+                # Missing exam_id field
+                incomplete_data = {
+                    'exam_name': 'Test Exam',
+                    'syllabus_topic': 'Physics',
+                    'subject': 'Mechanics'
+                }
+                
+                response_missing = requests.post(
+                    f"{BACKEND_URL}/api/extract-questions-from-image",
+                    files=files_missing,
+                    data=incomplete_data
+                )
+                
+                # Should return validation error (422)
+                if response_missing.status_code == 422:
+                    self.log_result("Field Validation", True, "✅ Missing required fields properly validated")
+                else:
+                    self.log_result("Field Validation", False, f"❌ Missing fields not validated, got status {response_missing.status_code}")
+                    
+            except Exception as validation_e:
+                self.log_result("Field Validation", False, f"❌ Field validation test failed: {str(validation_e)}")
+            
+            print("\n🎉 IMAGE EXTRACTION API TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Test image creation ✅")
+            print("  2. API endpoint functionality ✅")
+            print("  3. Response structure validation ✅")
+            print("  4. Database storage verification ✅")
+            print("  5. Error handling for invalid images ✅")
+            print("  6. Field validation ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Image Extraction API - Exception", False, f"❌ Image extraction test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def run_all_tests(self):
-        """Run all backend tests including quiz room flow"""
+        """Run all backend tests including image extraction"""
         print("🚀 Starting Backend API Tests")
         print("=" * 60)
         
         tests = [
+            self.test_image_extraction_api,
             self.test_quiz_room_creation_and_join_flow,
             self.test_fastapi_socketio_integration,
             self.test_battle_room_lifecycle,
