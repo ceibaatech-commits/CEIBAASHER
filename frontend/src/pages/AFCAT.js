@@ -638,13 +638,6 @@ const AFCAT = () => {
                   <Users className="w-5 h-5" />
                   <span>Join Battle</span>
                 </button>
-                <button
-                  onClick={() => navigate('/victory-lane')}
-                  className="w-full bg-white/10 backdrop-blur-sm border-2 border-white hover:bg-white/20 px-6 py-3 rounded-lg font-semibold transition-all flex items-center justify-center space-x-2"
-                >
-                  <Award className="w-5 h-5" />
-                  <span>Leaderboard</span>
-                </button>
               </div>
             </div>
 
