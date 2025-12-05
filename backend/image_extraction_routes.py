@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+import anthropic
 import base64
 import os
 import json
