@@ -486,8 +486,10 @@ const QuizRoom = () => {
             ).map((option, idx) => {
               // Handle both object format {id: "A", text: "..."} and string format
               const optionId = typeof option === 'object' ? (option.id || String.fromCharCode(65 + idx)) : option;
+              // Debug: log the option structure
+              console.log('Option debug:', { option, typeOf: typeof option, hasText: option?.text, optionText: typeof option === 'object' ? (option.text || option.value || 'fallback') : option });
               const optionText = typeof option === 'object' 
-                ? (option.text || option.value || String(option)) 
+                ? (option.text || option.value || JSON.stringify(option)) 
                 : (currentQuestion[option] || option);
               return (
               <button
