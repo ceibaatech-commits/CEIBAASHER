@@ -475,7 +475,7 @@ const QuizRoom = () => {
               {roomData?.category || 'General'}
             </span>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {currentQuestion?.question_text}
+              {renderMathText(currentQuestion?.question_text || currentQuestion?.question)}
             </h2>
             <p className="text-gray-600 text-sm">Select the correct answer</p>
           </div>
