@@ -471,7 +471,7 @@ const PublicProfile = () => {
                       <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                       <p className="text-gray-600 text-lg">No posts yet</p>
                       <p className="text-gray-500 text-sm mt-2">
-                        {profile.name} hasn't shared anything yet
+                        {profile.name} hasn&apos;t shared anything yet
                       </p>
                     </div>
                   )
