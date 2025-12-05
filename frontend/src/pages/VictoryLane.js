@@ -1199,9 +1199,11 @@ const VictoryLane = () => {
                           {/* Add Comment Input */}
                           {isAuthenticated() && user && (
                             <div className="flex gap-2 mb-4">
-                              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                                {user.username?.charAt(0).toUpperCase() || 'U'}
-                              </div>
+                              <UserAvatar
+                                profilePicture={user.profile_picture}
+                                name={user.name || user.username}
+                                size="md"
+                              />
                               <div className="flex-1 flex gap-2">
                                 <input
                                   type="text"
