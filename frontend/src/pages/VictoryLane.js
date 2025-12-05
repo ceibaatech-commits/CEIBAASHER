@@ -944,12 +944,13 @@ const VictoryLane = () => {
         {user ? (
           <div className="bg-white border-b border-gray-200 p-4">
             <div className="flex gap-3">
-              <div 
+              <UserAvatar
+                profilePicture={user.profile_picture}
+                name={user.name}
+                size="lg"
+                clickable={true}
                 onClick={() => openProfile(user.id)}
-                className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 cursor-pointer hover:ring-4 hover:ring-blue-100 transition-all"
-              >
-                {user.name?.charAt(0).toUpperCase() || 'U'}
-              </div>
+              />
               <div className="flex-1">
                 <textarea
                   value={newPostContent}
