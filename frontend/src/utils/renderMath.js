@@ -11,7 +11,30 @@ import { InlineMath, BlockMath } from 'react-katex';
  * @returns {JSX.Element}
  */
 export const renderMathText = (text) => {
+  // Handle null/undefined
   if (!text) return null;
+  
+  // Handle objects (like {id: "A", text: "..."}) - extract the text property
+  if (typeof text === 'object') {
+    // If it's an array of objects, extract text from each
+    if (Array.isArray(text)) {
+      return text.map((item, idx) => 
+        <span key={idx}>{renderMathText(item)}</span>
+      );
+    }
+    // If it's an object with text property, use that
+    if (text.text) {
+      text = text.text;
+    } else {
+      // Convert to string as fallback
+      text = String(text);
+    }
+  }
+  
+  // Ensure text is a string
+  if (typeof text !== 'string') {
+    text = String(text);
+  }
   
   const parts = [];
   let lastIndex = 0;
