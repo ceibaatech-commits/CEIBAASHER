@@ -617,8 +617,8 @@ const VictoryLane = () => {
   };
 
   // Submit a new comment
-  const submitComment = async (postId) => {
-    const commentText = newComment[postId]?.trim();
+  const submitComment = async (postId, parentCommentId = null) => {
+    const commentText = parentCommentId ? replyContent[parentCommentId]?.trim() : newComment[postId]?.trim();
     if (!commentText) {
       toast.error('Please enter a comment');
       return;
@@ -637,18 +637,20 @@ const VictoryLane = () => {
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/social/posts/${postId}/comment`,
-        { content: commentText },
+        { content: commentText, parent_comment_id: parentCommentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
-        // Add comment to local state using data from response
         const newCommentData = response.data.comment || {
           id: Date.now().toString(),
           post_id: postId,
           user_id: user.id,
           username: user.username,
+          user_name: user.name,
+          user_avatar: user.profile_picture,
           content: commentText,
+          parent_comment_id: parentCommentId,
           created_at: new Date().toISOString()
         };
         
@@ -657,13 +659,16 @@ const VictoryLane = () => {
           [postId]: [newCommentData, ...(prev[postId] || [])]
         }));
         
-        // Update post comment count
         setPosts(posts.map(p => 
           p.id === postId ? { ...p, comments_count: (p.comments_count || 0) + 1 } : p
         ));
         
-        // Clear input
-        setNewComment(prev => ({ ...prev, [postId]: '' }));
+        if (parentCommentId) {
+          setReplyContent(prev => ({ ...prev, [parentCommentId]: '' }));
+          setReplyingTo(null);
+        } else {
+          setNewComment(prev => ({ ...prev, [postId]: '' }));
+        }
         toast.success('Comment posted!');
       }
     } catch (error) {
