@@ -72,6 +72,8 @@ const VictoryLane = () => {
   
   // Comments state
   const [expandedComments, setExpandedComments] = useState(new Set());
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyContent, setReplyContent] = useState({});
   const [postComments, setPostComments] = useState({});
   const [newComment, setNewComment] = useState({});
   const [loadingComments, setLoadingComments] = useState({});
