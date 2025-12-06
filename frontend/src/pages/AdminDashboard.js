@@ -49,11 +49,11 @@ const AdminDashboard = () => {
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, color: 'blue' },
     { id: 'users', label: 'User Management', icon: Users, color: 'green' },
     { id: 'sheets', label: 'Exam Sheet Manager', icon: BookOpen, color: 'indigo' },
+    { id: 'exams', label: 'Exam & Categories', icon: Layers, color: 'purple' },
     { id: 'content', label: 'Content Moderation', icon: FileText, color: 'purple' },
     { id: 'revenue', label: 'Revenue & Finance', icon: DollarSign, color: 'yellow' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, color: 'pink' },
     { id: 'battles', label: 'Live Battles', icon: Zap, color: 'red' },
-    { id: 'exams', label: 'Exam Categories', icon: BookOpen, color: 'indigo' },
     { id: 'support', label: 'Support Tickets', icon: MessageSquare, color: 'teal' },
     { id: 'settings', label: 'System Settings', icon: Settings, color: 'gray' },
   ];
