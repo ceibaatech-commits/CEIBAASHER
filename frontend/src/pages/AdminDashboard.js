@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, FileText, DollarSign, Settings, 
   LogOut, Menu, X, TrendingUp, Activity, Shield, Bell,
   BookOpen, MessageSquare, BarChart3, Globe, Award,
-  AlertCircle, CheckCircle, Clock, Zap, Target
+  AlertCircle, CheckCircle, Clock, Zap, Target, Layers
 } from 'lucide-react';
 
 // Import dashboard sections (we'll create these)
@@ -14,6 +14,7 @@ import ContentModeration from '../components/admin/ContentModeration';
 import RevenueManagement from '../components/admin/RevenueManagement';
 import SystemSettings from '../components/admin/SystemSettings';
 import ExamSheetManager from '../components/admin/ExamSheetManager';
+import ExamCategoryManager from '../components/admin/ExamCategoryManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
