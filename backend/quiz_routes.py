@@ -84,32 +84,23 @@ async def get_subjects(exam_id: str):
 async def get_all_topics(exam_id: str):
     """
     Get all topics across all subjects - DATABASE DRIVEN
-    Builds flat list from MongoDB exam_sheets collection
+    Builds flat list from MongoDB exam_sheets collection AND questions collection
     """
     from exam_structure_routes import db
     
     try:
         # Get structure from database
-        pipeline = [
-            {
-                "$match": {
-                    "type": "exam",
-                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
-                    "questions_imported": True
-                }
-            }
-        ]
-        
         sheets = await db.exam_sheets.find({
             "type": "exam",
             "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
             # NOTE: Not filtering by questions_imported - show all sheets
         }).to_list(length=1000)
         
+        # Build grouped topic list from database
+        # Group by syllabus_topic + subject to show sub-topics together
+        topics_dict = {}
+        
         if sheets:
-            # Build grouped topic list from database
-            # Group by syllabus_topic + subject to show sub-topics together
-            topics_dict = {}
             for sheet in sheets:
                 syllabus_topic = sheet.get("syllabus_topic")
                 subject = sheet.get("subject")
@@ -131,12 +122,61 @@ async def get_all_topics(exam_id: str):
                 if sub_topic and sub_topic not in topics_dict[key]["sub_topics"]:
                     topics_dict[key]["sub_topics"].append(sub_topic)
                 
-                # Sum up questions
+                # Sum up questions from exam_sheets
                 topics_dict[key]["questions"] += questions
+        
+        # Also count questions from the questions collection (for image extraction and other sources)
+        # This ensures questions added via image extraction are counted
+        questions_pipeline = [
+            {
+                "$match": {
+                    "$or": [
+                        {"exam_id": {"$regex": f"^{exam_id}", "$options": "i"}},
+                        {"exam_name": {"$regex": f"^{exam_id}", "$options": "i"}}
+                    ]
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "subject": "$subject",
+                        "topic": "$topic",
+                        "syllabus_topic": "$syllabus_topic"
+                    },
+                    "count": {"$sum": 1}
+                }
+            }
+        ]
+        
+        question_counts = await db.questions.aggregate(questions_pipeline).to_list(1000)
+        
+        # Add/update topics from questions collection
+        for qc in question_counts:
+            # Determine the key - handle both old format (syllabus_topic/subject) and new format (subject/topic)
+            group_id = qc["_id"]
+            syllabus_topic = group_id.get("syllabus_topic") or group_id.get("subject")
+            subject = group_id.get("subject") if group_id.get("syllabus_topic") else group_id.get("topic")
             
-            # Convert dict to list
-            topics = list(topics_dict.values())
-            
+            if syllabus_topic and subject:
+                key = f"{syllabus_topic}||{subject}"
+                
+                if key not in topics_dict:
+                    topics_dict[key] = {
+                        "syllabus_topic": syllabus_topic,
+                        "subject": subject,
+                        "sub_topics": [],
+                        "questions": qc["count"]
+                    }
+                else:
+                    # Update count if questions collection has more than exam_sheets reported
+                    # This handles image extraction questions
+                    if qc["count"] > topics_dict[key]["questions"]:
+                        topics_dict[key]["questions"] = qc["count"]
+        
+        # Convert dict to list
+        topics = list(topics_dict.values())
+        
+        if topics:
             from fastapi.responses import JSONResponse
             return JSONResponse(
                 content={"success": True, "exam": exam_id, "topics": topics},
