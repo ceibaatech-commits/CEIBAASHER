@@ -127,6 +127,7 @@ async def get_all_topics(exam_id: str):
         
         # Also count questions from the questions collection (for image extraction and other sources)
         # This ensures questions added via image extraction are counted
+        # We need to normalize both old format (syllabus_topic/subject) and new format (subject/topic)
         questions_pipeline = [
             {
                 "$match": {
@@ -137,11 +138,31 @@ async def get_all_topics(exam_id: str):
                 }
             },
             {
+                "$project": {
+                    # Normalize the grouping fields
+                    # For display: syllabus_topic is the broad category (Physics, Chemistry)
+                    # For display: subject is the specific topic (Mechanics, Organic Chemistry)
+                    "normalized_syllabus_topic": {
+                        "$cond": {
+                            "if": {"$ne": [{"$ifNull": ["$syllabus_topic", None]}, None]},
+                            "then": "$syllabus_topic",
+                            "else": "$subject"
+                        }
+                    },
+                    "normalized_subject": {
+                        "$cond": {
+                            "if": {"$ne": [{"$ifNull": ["$syllabus_topic", None]}, None]},
+                            "then": "$subject",
+                            "else": "$topic"
+                        }
+                    }
+                }
+            },
+            {
                 "$group": {
                     "_id": {
-                        "subject": "$subject",
-                        "topic": "$topic",
-                        "syllabus_topic": "$syllabus_topic"
+                        "syllabus_topic": "$normalized_syllabus_topic",
+                        "subject": "$normalized_subject"
                     },
                     "count": {"$sum": 1}
                 }
@@ -152,10 +173,9 @@ async def get_all_topics(exam_id: str):
         
         # Add/update topics from questions collection
         for qc in question_counts:
-            # Determine the key - handle both old format (syllabus_topic/subject) and new format (subject/topic)
             group_id = qc["_id"]
-            syllabus_topic = group_id.get("syllabus_topic") or group_id.get("subject")
-            subject = group_id.get("subject") if group_id.get("syllabus_topic") else group_id.get("topic")
+            syllabus_topic = group_id.get("syllabus_topic")
+            subject = group_id.get("subject")
             
             if syllabus_topic and subject:
                 key = f"{syllabus_topic}||{subject}"
@@ -168,10 +188,9 @@ async def get_all_topics(exam_id: str):
                         "questions": qc["count"]
                     }
                 else:
-                    # Update count if questions collection has more than exam_sheets reported
-                    # This handles image extraction questions
-                    if qc["count"] > topics_dict[key]["questions"]:
-                        topics_dict[key]["questions"] = qc["count"]
+                    # Use the questions collection count as it's more accurate
+                    # (exam_sheets might have stale or zero counts)
+                    topics_dict[key]["questions"] = qc["count"]
         
         # Convert dict to list
         topics = list(topics_dict.values())
