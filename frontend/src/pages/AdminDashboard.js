@@ -66,6 +66,8 @@ const AdminDashboard = () => {
         return <UserManagement />;
       case 'sheets':
         return <ExamSheetManager />;
+      case 'exams':
+        return <ExamCategoryManager />;
       case 'content':
         return <ContentModeration />;
       case 'revenue':
