@@ -507,7 +507,9 @@ const SoloPractice = () => {
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => {
-                if (window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
+                // Only show confirmation if user has answered at least one question
+                const hasProgress = selectedAnswer !== null || currentQuestionIndex > 0;
+                if (!hasProgress || window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
                   if (isClassBased && classBasedData) {
                     navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`);
                   } else {
