@@ -83,6 +83,7 @@ const VictoryLane = () => {
   const [followingList, setFollowingList] = useState(new Set());
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
+  const [sharedPosts, setSharedPosts] = useState(new Set());
   const [myFollowingCount, setMyFollowingCount] = useState(0);
   const [myFollowersCount, setMyFollowersCount] = useState(0);
   
