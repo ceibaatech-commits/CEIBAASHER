@@ -1259,9 +1259,14 @@ const VictoryLane = () => {
                           <span className="text-sm font-medium">{post.likes_count || 0}</span>
                         </button>
 
-                        <button className="flex items-center gap-2 text-gray-500 hover:text-green-500 transition group">
+                        <button 
+                          onClick={() => toggleShare(post.id)}
+                          className={`flex items-center gap-2 transition group ${
+                            sharedPosts.has(post.id) ? 'text-green-500' : 'text-gray-500 hover:text-green-500'
+                          }`}
+                        >
                           <div className="p-2 rounded-full group-hover:bg-green-50 transition">
-                            <Repeat2 className="w-5 h-5" />
+                            <Repeat2 className={`w-5 h-5 transition-all ${sharedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
                           </div>
                           <span className="text-sm font-medium">{post.shares_count || 0}</span>
                         </button>
