@@ -1273,6 +1273,16 @@ const VictoryLane = () => {
                         <MathText text={post.content} />
                       </div>
 
+                      {/* Question Post Indicator */}
+                      {post.post_type === 'question' && (
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 mb-3 flex items-center gap-2">
+                          <HelpCircle className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                          <span className="text-sm text-blue-800 font-medium">
+                            Comprehensive Question - Answered in comments
+                          </span>
+                        </div>
+                      )}
+
                       {/* Quiz Room Card */}
                       {(post.post_type === 'quiz_room' || post.quiz_details) && post.quiz_details && (
                         <div 
