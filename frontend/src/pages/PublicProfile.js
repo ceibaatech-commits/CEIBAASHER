@@ -78,7 +78,7 @@ const PublicProfile = () => {
     
     setLoadingContent(true);
     try {
-      if (tab === 'posts' || tab === 'retweets') {
+      if (tab === 'posts' || tab === 'reposts') {
         const response = await axios.get(
           `${BACKEND_URL}/api/profile/${username}/posts`,
           {
