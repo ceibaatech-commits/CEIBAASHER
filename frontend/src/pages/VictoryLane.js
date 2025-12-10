@@ -1361,43 +1361,46 @@ const VictoryLane = () => {
                                           </div>
                                         )}
 
-                                        {/* Nested Replies */}
-                                        {(postComments[post.id] || []).filter(r => r.parent_comment_id === comment.id).map((reply) => (
-                                          <div key={reply.id} className="flex gap-2 mt-3 ml-8 items-start">
-                                            <UserAvatar
-                                              profilePicture={reply.user_avatar}
-                                              name={reply.user_name || reply.username}
-                                              size="xs"
-                                              clickable={true}
-                                              onClick={() => openProfile(reply.user_id)}
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                              <div className="bg-gray-100 rounded-2xl px-3 py-2">
-                                                <div className="flex items-center gap-1.5">
-                                                  <span 
-                                                    onClick={() => openProfile(reply.user_id)}
-                                                    className="font-semibold text-gray-900 text-xs cursor-pointer hover:underline"
-                                                  >
-                                                    {reply.user_name || reply.username || 'User'}
-                                                  </span>
-                                                  {reply.isTeacher && (
-                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
-                                                      Teacher
+                                          {/* Nested Replies */}
+                                          {(postComments[post.id] || []).filter(r => r.parent_comment_id === comment.id).map((reply) => (
+                                            <div key={reply.id} className="flex gap-2 mt-3 ml-8 items-start">
+                                              <UserAvatar
+                                                profilePicture={reply.user_avatar}
+                                                name={reply.user_name || reply.username}
+                                                size="xs"
+                                                clickable={true}
+                                                onClick={() => openProfile(reply.user_id)}
+                                              />
+                                              <div className="flex-1 min-w-0">
+                                                <div className="bg-gray-100 rounded-2xl px-3 py-2">
+                                                  <div className="flex items-center gap-2">
+                                                    <span 
+                                                      onClick={() => openProfile(reply.user_id)}
+                                                      className="font-semibold text-gray-900 text-xs cursor-pointer hover:underline"
+                                                    >
+                                                      {reply.user_name || reply.username || 'User'}
                                                     </span>
-                                                  )}
+                                                    {reply.isTeacher && (
+                                                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
+                                                        Teacher
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  <p className="text-gray-700 text-xs mt-0.5">{reply.content}</p>
                                                 </div>
-                                                <p className="text-gray-700 text-xs mt-0.5">{reply.content}</p>
+                                                <span className="text-xs text-gray-400 ml-3 mt-1 inline-block">
+                                                  {formatTimestamp(reply.created_at)}
+                                                </span>
                                               </div>
-                                              <span className="text-xs text-gray-400 ml-3 mt-1 inline-block">
-                                                {formatTimestamp(reply.created_at)}
-                                              </span>
                                             </div>
-                                          </div>
-                                        ))}
+                                          ))}
+                                        </div>
                                       </div>
-                                    </div>
+                                    )}
                                   </div>
-                                ))
+                                  );
+                                })
+                              )
                               )}
                             </div>
                           )}
