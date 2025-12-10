@@ -621,6 +621,8 @@ async def add_comment(
             "username": user.get("username") if user else user.get("name", "User"),
             "user_avatar": user.get("profile_picture") or user.get("avatar", "👤") if user else "👤",
             "isTeacher": user.get("isTeacher", False) if user else False,
+            "isOfficial": user.get("isOfficial", False) if user else False,
+            "isInstitute": user.get("isInstitute", False) if user else False,
             "content": comment_data.content,
             "parent_comment_id": comment_data.parent_comment_id,
             "likes_count": 0,
