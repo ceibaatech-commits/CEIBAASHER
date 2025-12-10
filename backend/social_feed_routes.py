@@ -613,13 +613,10 @@ async def like_post(post_id: str, request: Request, authorization: Optional[str]
         raise HTTPException(status_code=500, detail=f"Error liking post: {str(e)}")
 
 @router.delete("/posts/{post_id}/like")
-async def unlike_post(post_id: str, authorization: Optional[str] = Header(None)):
+async def unlike_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Unlike a post"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        user_id = decode_jwt_token(authorization)
+        user_id = await get_user_id_from_request(authorization, request)
         result = await db.post_likes.delete_one({"user_id": user_id, "post_id": post_id})
         
         if result.deleted_count == 0:
