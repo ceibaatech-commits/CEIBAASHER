@@ -178,7 +178,7 @@ const JoinRoom = () => {
             <button
               onClick={handleJoinRoom}
               disabled={loading || pin.length !== 6 || !playerName.trim()}
-              className="w-full bg-gradient-to-r from-blue-300 to-indigo-300 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-cyan-300 via-blue-300 to-purple-300 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
