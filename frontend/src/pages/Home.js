@@ -272,6 +272,37 @@ const Home = () => {
         </div>
       )}
 
+      {/* Mobile: CBSE Classes Section (Show only for "All Exams") */}
+      {!searchQuery.trim() && activeCategory === 'all' && (
+        <div className="md:hidden px-4 py-4 bg-white border-b">
+          <div className="mb-4">
+            <h2 className="font-bold text-lg text-gray-900 mb-3">CBSE Classes</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {cbseClasses.map((cbseClass) => (
+                <div
+                  key={cbseClass.id}
+                  onClick={() => navigate(`/cbse/${cbseClass.id}`)}
+                  className="bg-white border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-blue-400 transition-all active:scale-95"
+                >
+                  <div 
+                    className={`bg-gradient-to-br ${cbseClass.color} rounded-lg flex items-center justify-center shadow-md mb-2`}
+                    style={{ width: '100%', height: '3rem' }}
+                  >
+                    <span style={{ fontSize: '1.5rem' }}>{cbseClass.icon}</span>
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-center" style={{ fontSize: '0.875rem' }}>
+                    {cbseClass.name}
+                  </h3>
+                  <p className="text-gray-500 text-center mt-1" style={{ fontSize: '0.625rem' }}>
+                    {cbseClass.subjects}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile: Show Selected Category Exams */}
       {!searchQuery.trim() && activeCategory !== 'all' && (
         <div className="md:hidden px-4 py-4 bg-white border-b">
