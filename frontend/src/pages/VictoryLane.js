@@ -1400,7 +1400,6 @@ const VictoryLane = () => {
                                   </div>
                                   );
                                 })
-                              )
                               )}
                             </div>
                           )}
