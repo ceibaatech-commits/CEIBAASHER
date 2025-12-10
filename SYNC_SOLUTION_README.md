@@ -112,12 +112,12 @@ python3 generate_frontend_mappings.py > /tmp/mappings.js
 
 ### Test API Endpoint
 ```bash
-curl https://profilefix-3.preview.emergentagent.com/api/exam-metadata | jq
+curl https://socialeq-hub.preview.emergentagent.com/api/exam-metadata | jq
 ```
 
 ### Test Specific Exam
 ```bash
-curl https://profilefix-3.preview.emergentagent.com/api/exam-metadata/CAPF | jq
+curl https://socialeq-hub.preview.emergentagent.com/api/exam-metadata/CAPF | jq
 ```
 
 ### Validate Sync
