@@ -425,15 +425,19 @@ const ModernExamSyllabus = () => {
                   <div className="grid grid-cols-2 gap-2">
                     <button 
                       onClick={() => navigate(`/create-room/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'battle-button' : 'bg-gradient-to-r from-purple-600 to-pink-600'} text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
+                      className={`${examData?.game_mode ? 'battle-button' : 'bg-purple-600'} text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-1`}
+                      style={{ minHeight: '40px' }}
                     >
-                      {examData?.game_mode ? '👥 Team Challenge' : '🎯 Room'}
+                      <span className="text-base">{examData?.game_mode ? '👥' : '🎯'}</span>
+                      <span>{examData?.game_mode ? 'Team' : 'Room'}</span>
                     </button>
                     <button 
                       onClick={() => navigate(`/live-battle-1v1/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-gradient-to-r from-orange-600 to-red-600'} text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
+                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-orange-600'} text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-1`}
+                      style={{ minHeight: '40px' }}
                     >
-                      {examData?.game_mode ? '⚔️ 1v1 Duel' : '⚔️ Battle'}
+                      <span className="text-base">⚔️</span>
+                      <span>{examData?.game_mode ? '1v1' : 'Battle'}</span>
                     </button>
                   </div>
                 </div>
