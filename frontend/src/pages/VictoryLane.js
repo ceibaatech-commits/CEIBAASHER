@@ -1511,7 +1511,9 @@ const VictoryLane = () => {
                                               </span>
                                             )}
                                           </div>
-                                          <p className="text-gray-700 text-sm mt-0.5">{comment.content}</p>
+                                          <div className="text-gray-700 text-sm mt-0.5">
+                                            <MathText text={comment.content} />
+                                          </div>
                                         </div>
                                         <div className="flex items-center gap-3 mt-1 ml-3">
                                           <span className="text-xs text-gray-400">
