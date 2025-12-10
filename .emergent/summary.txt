@@ -1,280 +1,78 @@
 <analysis>**original_problem_statement**:
-The user's initial goal was to fix bugs and add features to an exam preparation platform. This session's work included:
-1.  **Core Feature Implementation**: Fixing non-functional comments and notifications on the Victory Lane social feed.
-2.  **Dynamic Profiles**: Implementing clickable, dynamic user profiles showing posts, followers, and following lists.
-3.  **Bug Fixes**: Systematically addressing user-reported bugs related to profile loading, inconsistent user data, incorrect comment/avatar displays, and broken UI layouts.
-4.  **Content Generation**: Adding functionality to programmatically generate and store MCQs for various exams (JEE, NDA).
-5.  **Current Request**: Add a feature to the admin panel to extract questions from uploaded images using Claude AI and store them in the database.
+The user's primary goal was to introduce a comprehensive CRUD (Create, Read, Update, Delete) system into the admin panel for managing Exams, Categories, and Chapters. This was a direct follow-up to a session where the agent fixed a critical AI-powered image extraction feature and resolved several UI bugs in the quiz interface.
+
+Throughout the implementation of the CRUD feature, the user reported a cascade of related issues:
+1.  Newly created exams (like UPPCS) were not navigable from the home page, leading to broken links () and empty pages.
+2.  Newly created categories and chapters were not appearing on the frontend exam syllabus pages.
+3.  The quiz UI was displaying  instead of option text for questions added via the new systems.
+4.  The quiz flow was broken: quizzes would not complete, results were not shown, and the Back to Exam Topics button was not functioning intuitively.
+5.  Questions added via the AI image extraction feature were not appearing under the correct exam sections.
 
 PRODUCT REQUIREMENTS:
-1.  **Notification System**: The notification system must be fully functional, including navigating to content on click and maintaining an accurate unread badge count.
-2.  **Dynamic User Profiles**: Clicking a user's avatar or name should navigate to their profile page, which displays their posts and real follower/following lists. Profile routing must work with both usernames and UUIDs.
-3.  **Data Consistency**: Usernames, avatars, and other data must be displayed consistently across all parts of the application (posts, comments, profiles). Avatars should prioritize uploaded profile pictures over generated letter fallbacks.
-4.  **Comment Replies**: Users must be able to reply to comments, with replies displayed in a nested/threaded view.
-5.  **Math Rendering**: The application must support and correctly render LaTeX/KaTeX for mathematical equations in quiz questions.
-6.  **AI-Powered Content Creation**: An admin must be able to upload an image containing questions, and the system should use an AI model (Claude) to extract the questions, options, answer, and explanation, then save them to the database under the correct exam category.
+1.  **Admin CRUD Operations**: An admin must have a dedicated UI to create, read, update, and delete Exams, Categories, and Chapters.
+2.  **Real-Time Frontend Sync**: All changes made in the admin CRUD panel must be immediately reflected on the public-facing frontend without needing a server restart. This includes the home page exam list and the individual exam syllabus pages.
+3.  **Data Unification**: The frontend must seamlessly display content from both the new CRUD system (stored in , ,  collections) and the pre-existing data sources (the  and  collections).
+4.  **Functional Quizzes**: The quiz engine must work for all content, regardless of its source (old data, AI extraction, or new CRUD system). This includes correct option rendering, quiz completion, result display, and navigation.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack exam preparation platform with a social feed. The notification and comment systems are now fully functional, including replies and correct user data display. Dynamic user profiles have been implemented, and numerous related bugs (routing, data fetching, layout) have been resolved. The quiz engine now correctly fetches questions from a centralized MongoDB collection and can render complex mathematical equations using KaTeX.
-
-A new feature for AI-powered question extraction has been added to the admin panel. The UI allows an admin to select an exam category and upload an image. The backend is wired up to send this image to the Claude AI Vision API using the Emergent LLM Key and save the extracted questions.
+The application is a full-stack exam preparation platform. It now features a functional admin panel with a complete CRUD management system for Exams, Categories, and Chapters. The backend has been significantly refactored to unify data from multiple, disparate schemas (, , , , ) and present it cohesively to the frontend. The main user-facing exam pages now correctly display a merged view of all content, and the quiz UI has been fixed to render all question formats correctly.
 
 **Last working item**:
--   **Last item agent was working**: Debugging the new Extract from Image feature. After the user uploads an image, the extraction process appears to stall and does nothing. The agent had just resolved a series of backend issues, including a  and an incorrect library usage for vision tasks. The last action was to revert the backend code to use the  SDK directly with the correct authentication headers for the Emergent LLM Key, but the feature remains non-functional.
--   **Status**: IN PROGRESS
--   **Agent Testing Done**: N
--   **Which testing method agent to use?**: Manual testing by curl / python -c. The agent needs to test the  endpoint directly to inspect backend logs and the API response.
+-   **Last item agent was working**: Debugging why clicking on an exam created via the new admin CRUD system (UPPCS) resulted in a broken, infinitely loading page. The agent identified and fixed a series of issues across three different backend API endpoints that were not correctly handling the new data structure.
+-   **Status**: USER VERIFICATION PENDING
+-   **Agent Testing Done**: Y
+-   **Which testing method agent to use?**: Screenshot tool. The next agent should navigate to the home page, click on the UPPCS exam, and verify that it correctly loads the exam syllabus page () showing its categories and chapters.
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Claude AI Image Extraction Not Working (P0)**
-    -   **Description**: The Extract from Image feature in the admin panel does not extract questions after an image is uploaded. The user reports it is doing nothing.
-    -   **Attempted fixes**:
-        1.  Initial implementation with the  SDK caused a 401 auth error.
-        2.  Switched to the  library, which led to a .
-        3.  Installed the library, but it was unsuitable for vision tasks.
-        4.  Reverted to using the  SDK with the correct  header for the Emergent LLM Key. The feature still does not work.
-    -   **Next debug checklist**:
-        1.  Check backend logs (==> /var/log/supervisor/backend.err.log <==
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/backend/server.py", line 17, in <module>
-    from image_extraction_routes import router as image_extraction_router
-  File "/app/backend/image_extraction_routes.py", line 2, in <module>
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-ModuleNotFoundError: No module named 'emergentintegrations'
-INFO:     Stopping reloader process [2289]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [2800] using WatchFiles
-Process SpawnProcess-1:
-Traceback (most recent call last):
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
-    self.run()
-  File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
-    self._target(*self._args, **self._kwargs)
-  File "/root/.venv/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 76, in subprocess_started
-    target(sockets=sockets)
-  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 61, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-  File "/root/.venv/lib/python3.11/site-packages/uvicorn/server.py", line 68, in serve
-    config.load()
-  File "/root/.venv/lib/python3.11/site-packages/uvicorn/config.py", line 467, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/root/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 24, in import_from_string
-    raise exc from None
-  File "/root/.venv/lib/python3.11/site-packages/uvicorn/importer.py", line 21, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/app/backend/server.py", line 17, in <module>
-    from image_extraction_routes import router as image_extraction_router
-  File "/app/backend/image_extraction_routes.py", line 2, in <module>
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-ModuleNotFoundError: No module named 'emergentintegrations'
-INFO:     Stopping reloader process [2800]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [2886] using WatchFiles
-INFO:     Started server process [2888]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'image_extraction_routes.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [2888]
-INFO:     Started server process [2940]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'image_extraction_routes.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [2940]
-INFO:     Started server process [2973]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [2973]
-INFO:     Stopping reloader process [2886]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [2985] using WatchFiles
-INFO:     Started server process [2987]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [35] using WatchFiles
-
-==> /var/log/supervisor/backend.out.log <==
-INFO:     10.64.130.218:49690 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:55040 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:55040 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:55040 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:60152 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:60152 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:47188 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:47188 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:60152 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:40994 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:40994 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:40994 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:56016 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:49810 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:56016 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-Error in image extraction: Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'invalid x-api-key'}, 'request_id': 'req_011CVpLuA8C5X2npVau2ygvH'}
-INFO:     10.64.130.203:49810 - "POST /api/extract-questions-from-image HTTP/1.1" 500 Internal Server Error
-INFO:     10.64.130.218:56016 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:40766 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.137.19:50388 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:43404 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:44004 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:44014 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.137.19:51200 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:55148 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:37596 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:50400 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:50416 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:46720 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:60712 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-[INIT] FastAPI running on port 8001
-[INIT] REST endpoints: /api/*
-[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
-[INIT] Battle rooms will persist to MongoDB
-[STARTUP] Loading rooms created after 1764888107.62965...
-[STARTUP] Found 1 rooms in database
-[STARTUP] Loaded room 831001
-[STARTUP] Successfully loaded 1 active rooms
-INFO:     10.64.130.203:40390 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:60800 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-[INIT] FastAPI running on port 8001
-[INIT] REST endpoints: /api/*
-[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
-[INIT] Battle rooms will persist to MongoDB
-[STARTUP] Loading rooms created after 1764888118.187395...
-[STARTUP] Found 1 rooms in database
-[STARTUP] Loaded room 831001
-[STARTUP] Successfully loaded 1 active rooms
-INFO:     10.64.130.202:40192 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-[INIT] FastAPI running on port 8001
-[INIT] REST endpoints: /api/*
-[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
-[INIT] Battle rooms will persist to MongoDB
-[STARTUP] Loading rooms created after 1764888441.761973...
-[STARTUP] Found 1 rooms in database
-[STARTUP] Loaded room 831001
-[STARTUP] Successfully loaded 1 active rooms
-INFO:     10.64.130.218:48246 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.137.19:42216 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.139.121:47168 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-[INIT] FastAPI running on port 8001
-[INIT] REST endpoints: /api/*
-[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
-[INIT] Battle rooms will persist to MongoDB
-[STARTUP] Loading rooms created after 1764888459.013635...
-[STARTUP] Found 1 rooms in database
-[STARTUP] Loaded room 831001
-[STARTUP] Successfully loaded 1 active rooms
-INFO:     10.64.137.19:34020 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-[INIT] FastAPI running on port 8001
-[INIT] REST endpoints: /api/*
-[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
-[INIT] Battle rooms will persist to MongoDB
-[STARTUP] Loading rooms created after 1764888477.594925...
-[STARTUP] Found 1 rooms in database
-[STARTUP] Loaded room 831001
-[STARTUP] Successfully loaded 1 active rooms
-INFO:     10.64.130.203:49986 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:40182 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-[INIT] FastAPI running on port 8001
-[INIT] REST endpoints: /api/*
-[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io
-[INIT] Battle rooms will persist to MongoDB
-[STARTUP] Loading rooms created after 1764888486.271826...
-[STARTUP] Found 1 rooms in database
-[STARTUP] Loaded room 831001
-[STARTUP] Successfully loaded 1 active rooms
-INFO:     10.64.130.203:44718 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:46638 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:57752 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:33268 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:59790 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:38280 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.203:56200 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.137.19:53968 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:38324 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.140.149:38574 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:55770 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.202:40852 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK
-INFO:     10.64.130.218:56642 - "GET /api/notifications/unread-count HTTP/1.1" 200 OK) for errors when the  endpoint is called.
-        2.  In , add extensive logging before and after the Anthropic API call to trace the execution flow and inspect the response or error.
-        3.  Manually test the  endpoint using  to isolate the backend logic.
-        4.  Verify the payload structure sent to the Claude API () is correct for multimodal inputs.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a key new feature requested by the user. Fixing it will enable a powerful content creation workflow for admins.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Both
+-   **Issue 1: UPPCS Exam Page Navigation and Loading (P0)**
+    -   **Description**: Users reported that clicking the UPPCS exam card (created via the new admin CRUD) led to a broken page, either  or a page that was stuck loading.
+    -   **Attempted fixes**: The agent implemented a three-part fix:
+        1.  Modified  to ensure CRUD-created exams have a URL-friendly uid=0(root) gid=0(root) groups=0(root).
+        2.  Updated  to correctly display categories even if they don't have chapters yet.
+        3.  Patched  to fetch exam details from the new  collection, fixing a 404 error.
+    -   **Next debug checklist**: The issue is believed to be resolved. If the user reports further problems, the next agent should check the browser console for new errors and re-verify the responses from the three API endpoints listed above.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the final step to make the new CRUD system fully functional. Fixing it allows administrators to create new exams that are immediately available to end-users.
+    -   **Status**: USER VERIFICATION PENDING
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Frontend
 
 **In progress Task List**:
--   None apart from the issue listed above.
+-   **Task 1: Full integration of the new CRUD system (P0)**
+    -   **Where to resume**: The core backend and frontend work is complete. The task is pending final user verification of the latest fixes.
+    -   **What will be achieved with this?**: This will deliver the user's primary feature request: a fully operational content management system for exams, categories, and chapters.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on something**: User feedback.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **(P1) Refactor VictoryLane.js**: The file is over 1300 lines. It needs to be broken into smaller, manageable components.
+    -   **(P1) Refactor VictoryLane.js**: This social feed component is over 1300 lines and is a prime candidate for being broken into smaller, maintainable components.
 -   **Future Tasks**:
-    -   **(P2) Refactor Home.js**: The file is over 800 lines and should be refactored into smaller components.
-    -   **(P2) Refactor ExamSheetManager.js**: This admin component is now over 2000 lines and should be broken down.
+    -   **(P2) Refactor Home.js**: This page component is over 800 lines.
+    -   **(P2) Refactor ExamSheetManager.js**: This admin component is over 2000 lines.
 
 **Completed work in this session**
--   **Notification System**: Fixed notification navigation, dynamic badge count, and JWT decoding on all backend notification endpoints.
--   **Dynamic User Profiles**: Implemented a unified profile page that handles both UUID and username routing and correctly displays follower/following lists. Fixed all related layout and navigation bugs.
--   **Comment System**: Fixed a bug causing comments to display a generic User. Implemented a nested reply system and improved the comment section layout.
--   **Avatar Display**: Created a reusable  component and updated the backend to ensure real profile pictures are displayed instead of letter fallbacks across the app.
--   **MCQ Generation & Display**:
-    -   Successfully generated and stored 50+ MCQs for JEE and NDA exams in the database.
-    -   Fixed the quiz engine to correctly fetch and display these questions.
-    -   Added KaTeX/LaTeX support to render mathematical equations in quizzes.
--   **UI Cleanup**: Removed all Leaderboard buttons from the UI and fixed a broken back button on the Dashboard.
--   **Admin Feature (In Progress)**: Added the UI and backend routes for the Extract from Image feature using Claude AI.
+-   **CRUD System Implementation**:
+    -   Created backend APIs () and a frontend UI () for full CRUD on Exams, Categories, and Chapters.
+    -   Successfully integrated the new CRUD data with the main frontend by heavily modifying the  and  endpoints.
+-   **Quiz UI and Flow Fixes**:
+    -   Resolved the  bug in quiz options by making rendering logic in , , and  more robust.
+    -   Fixed the quiz completion flow by patching  to handle inconsistent  vs.  keys.
+    -   Improved the UX of the Back to Exam Topics button by making the exit confirmation dialog conditional.
+-   **Data Consistency and AI Feature Fixes**:
+    -   Fixed the Claude AI image extraction feature, which was previously broken due to library and model name issues.
+    -   Resolved an issue where extracted questions were not appearing under the correct exam by improving the backend query logic.
+    -   Fixed incorrect question counts on exam pages by making the API aggregate data from the  collection directly.
+    -   Cleaned the database by deleting 224 old, inconsistently formatted NEET questions at the user's request.
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Refactor , , and **
-    -   **Debug checklist**: Break down these large monolithic components into smaller, reusable child components.
-    -   **Why to solve this issue and what will be achieved with this?**: To improve code maintainability, readability, and performance.
-    -   **Should Test frontend/backend/both after fix**: Frontend.
+-   **Issue 1: Large Component Refactoring**
+    -   **Debug checklist**: The files , , and  are all monolithic and difficult to maintain. They need to be broken down into smaller, reusable child components.
+    -   **Why to solve this issue and what will be achieved with this?**: To improve code maintainability, readability, and developer velocity for future features.
+    -   **Should Test frontend/backend/both after fix**: Frontend
     -   **Is recurring issue?**: N
 
 **Known issue recurrence from previous fork**
@@ -284,29 +82,28 @@ INFO:     10.64.130.218:56642 - "GET /api/notifications/unread-count HTTP/1.1" 2
 
 
 **Key Technical Concepts**
--   **AI Vision Integration**: Using the Anthropic Claude 3 Sonnet model to perform OCR and structured data extraction from images.
--   **Emergent LLM Key**: Authenticating with the Anthropic API using the provided universal key via a custom  header.
--   **Math Rendering**: Integrating  on the frontend to render LaTeX-formatted mathematical equations.
--   **Component Consolidation**: Resolving a critical routing bug by merging  and  into a single, robust component that handles all profile-viewing logic.
--   **Backend Data Enrichment**: Modifying backend feed endpoints to dynamically look up and embed fresh user data (like ) into post objects before sending them to the client.
+-   **Schema Unification via Aggregation**: The core technical challenge was merging data from inconsistent schemas. This was solved using MongoDB aggregation pipelines (, , , ) in  to create a unified data structure on the fly.
+-   **Hierarchical CRUD**: The agent built a system for managing nested data (Exams -> Categories -> Chapters) with both backend APIs and a recursive React component for the UI.
+-   **Defensive Frontend Rendering**: Fixed UI bugs by making components like  and  check the  data before attempting to render it, gracefully handling both strings and objects.
 
 **key DB schema**
--   **questions**: Stores all MCQs. Docs include , , , ,  (array of objects), , and .
--   **users**: Contains user profiles, including .
+-   **exams** (NEW): 
+-   **categories** (NEW): 
+-   **chapters** (NEW): 
+-   **questions**: Contains all quiz questions. The agent successfully handled multiple inconsistent formats within this collection.
 
 **changes in tech stack**
--   **Frontend**: Added  for math rendering.
--   **Backend**: Added  Python library for AI integration.
+-   None.
 
 **All files of reference**
 -   **Created**:
     -   
     -   
-    -   
 -   **Updated**:
+    -    (major overhaul)
     -   
     -   
-    -   
+    -    (major fixes)
     -   
     -   
     -   
@@ -314,42 +111,46 @@ INFO:     10.64.130.218:56642 - "GET /api/notifications/unread-count HTTP/1.1" 2
     -   
 
 **Areas that need refactoring**:
--   : Still critically large and complex.
--   : Now over 2000 lines and needs to be broken down.
--   : Remains a large component that would benefit from refactoring.
+-   
+-   
+-   
 
 **key api endpoints**
--   : **NEW & IN-PROGRESS**. Endpoint for the new AI image extraction feature.
--   : **MODIFIED**. Now serves questions from the MongoDB  collection.
--   : **MODIFIED**. Now handles both usernames and UUIDs for fetching user profiles.
+-   **CRUD Endpoints (NEW)**:
+    -   
+    -   
+    -   
+-   **Data Endpoints (HEAVILY MODIFIED)**:
+    -   : Now merges data from  and the new  collection.
+    -   : Now aggregates data from , , and new CRUD collections.
+    -   : Now fetches details from the  collection for CRUD-based exams.
 
 **Critical Info for New Agent**
--   **Image Extraction is the Priority**: Your primary task is to fix the Extract from Image feature. The user has reported it's doing nothing. Focus your debugging on  and the corresponding frontend logic in . Check the backend logs for errors from the Anthropic API call.
--   **AI Authentication**: The Anthropic API is accessed using the Emergent LLM Key, which must be passed in the  header. The implementation in  reflects this. Do not attempt to use the  library for this vision task.
--   **Component File Paths**: Be aware that there are multiple components with similar names. The correct admin panel is , and the correct profile page is .
--   **Database for Questions**: All quiz questions are now stored in the  collection in MongoDB. Any new question-related features should interact with this collection.
+-   **Data Source Complexity**: The main challenge in this project is the presence of multiple, inconsistent data schemas. The  file is the heart of the solution, containing complex MongoDB aggregations to unify these sources. Any new feature related to exams or topics will likely require modifications there.
+-   **Two Quiz Components**: Be aware of  and . They serve similar purposes but are used in different routes. A UI bug fixed in one may also exist in the other.
+-   **Admin Credentials**: Access the admin panel at  with username  and password .
 
 **documents created in this job**
 -   None.
 
 **Last 10 User Messages and any pending user messages**
-1.  **User**: Asked for an image upload option to be added to the Add New Question Sheet form for AI extraction. **Status**: In Progress.
-2.  **User**: Reported the new image extraction UI was not visible. **Status**: Completed.
-3.  **User**: Reported a 401 authentication error during image extraction. **Status**: Completed.
-4.  **User**: **(PENDING/IN PROGRESS)** Reported that the image extraction is doing nothing after the previous fix. **Status**: IN PROGRESS.
-5.  **User**: Reported a bug with comment layout and requested reply functionality. **Status**: Completed.
-6.  **User**: Reported avatar layout and back button issues on the profile page. **Status**: Completed.
-7.  **User**: Reported the back button on the dashboard was not working. **Status**: Completed.
-8.  **User**: Requested removal of the leaderboard button. **Status**: Completed.
-9.  **User**: Asked for a list of JEE subtopics. **Status**: Completed.
-10. **User**: Asked if MCQs could be generated and stored for the listed subtopics. **Status**: Completed.
+1.  **User**: Add full CRUD for Exams, Chapters, Categories. **Status**: In Progress (pending verification).
+2.  **User**: My new categories aren't showing on the frontend. **Status**: Completed.
+3.  **User**: Clicking UPPCS exam goes to . **Status**: Completed (fix implemented, pending user verification).
+4.  **User**: Add more questions to NEET Organic Chemistry via image upload. **Status**: Completed.
+5.  **User**: The newly added questions aren't showing in the NEET exam. **Status**: Completed.
+6.  **User**: Delete the old NEET questions. **Status**: Completed.
+7.  **User**: The Back to Exam Topics button isn't working right. **Status**: Completed.
+8.  **User**: The quiz isn't finishing and showing results. **Status**: Completed.
+9.  **User**: My extracted questions are not showing in the frontend. **Status**: Completed.
+10. **User**: The quiz options show . **Status**: Completed.
 
 **Project Health Check:**
--   **Broken**: The new Extract from Image feature is non-functional and is the highest priority task.
+-   **Broken**: None. The last known broken item (UPPCS exam page) is believed to be fixed and is pending user verification.
 -   **Mocked**: None.
 
-**3rd Party Integrations**:
--   **Anthropic Claude 3 Sonnet**: Used for question extraction from images. Uses the **Emergent LLM Key**.
+**3rd Party Integrations**
+-   **Anthropic Claude 3.5 Sonnet**: Used for AI-powered question extraction from images. This integration uses the **Emergent LLM Key**.
 
 **Testing status**
 -   **Testing agent used after significant changes**: YES
@@ -358,8 +159,10 @@ INFO:     10.64.130.218:56642 - "GET /api/notifications/unread-count HTTP/1.1" 2
 -   **Known regressions**: None.
 
 **Credentials to test flow:**
--   **Login**: Use username  with password  via the Demo Login button or the API endpoint .
+-   **User Login**:  /  (or use the Demo Login button).
+-   **Admin Login**:  /  (at the  route).
 
 **What agent forgot to execute**
--   The agent initially modified the wrong component ( instead of ), causing a slight delay.
--   The agent incorrectly attempted to use the  library for a vision task before realizing its limitation and reverting to the  SDK.</analysis>
+-   The agent initially missed that two different components ( and ) handled quiz rendering, causing a bug to persist after the first fix.
+-   The agent's initial logic for merging question counts from different data sources was flawed (it used  instead of addition), which required a second pass to fix.
+-   The agent had to iteratively fix three separate API endpoints (, , ) to make a single user-facing feature (viewing a new CRUD-created exam) work, indicating an initial underestimation of the frontend's dependencies.</analysis>
