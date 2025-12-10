@@ -24,7 +24,7 @@ const Login = () => {
   const handleGoogleLogin = () => {
     // Use Emergent-managed Google auth
     // CRITICAL: Use window.location.origin dynamically
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    const redirectUrl = `${window.location.origin}/auth-callback`;
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
