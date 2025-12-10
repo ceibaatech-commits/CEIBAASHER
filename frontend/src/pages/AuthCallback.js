@@ -19,9 +19,12 @@ const AuthCallback = () => {
 
         if (!sessionId) {
           console.error('No session_id found in URL');
-          navigate('/login?error=auth_failed');
+          window.location.replace('/login?error=auth_failed');
           return;
         }
+
+        // Clear the hash immediately to prevent re-processing
+        window.history.replaceState(null, '', window.location.pathname);
 
         // Exchange session_id for user data
         const response = await axios.post(`${BACKEND_URL}/api/auth/emergent/session`, {
@@ -41,17 +44,14 @@ const AuthCallback = () => {
           // Set flag to skip delay in ProtectedRoute
           sessionStorage.setItem('just_authenticated', 'true');
 
-          // Redirect to victory-lane (main app page)
-          navigate('/victory-lane', { 
-            replace: true,
-            state: { user: userData }
-          });
+          // Use window.location.replace for hard redirect (clears React state)
+          window.location.replace('/victory-lane');
         } else {
           throw new Error('Authentication failed');
         }
       } catch (error) {
         console.error('Auth callback error:', error);
-        navigate('/login?error=auth_failed');
+        window.location.replace('/login?error=auth_failed');
       }
     };
 
