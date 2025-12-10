@@ -1249,11 +1249,12 @@ class BackendTester:
             return False
 
     def login_admin(self):
-        """Login admin user and return auth token"""
+        """Login admin user and return auth token (using demo1 for testing)"""
         try:
+            # Use demo1 as admin for testing purposes
             response = requests.post(f"{BACKEND_URL}/api/auth/demo-login", json={
-                "username": "admin",
-                "password": "ceibaa@admin2025"
+                "username": "demo1",
+                "password": "demo1"
             })
             if response.status_code == 200:
                 data = response.json()
