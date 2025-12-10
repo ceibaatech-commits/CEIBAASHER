@@ -54,101 +54,92 @@ const Courses = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <Header isLoggedIn={isAuthenticated()} user={user} />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-6">
-            <GraduationCap className="w-10 h-10 text-white" />
+        <div className="text-center mb-8 md:mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl mb-4 md:mb-6 shadow-xl">
+            <GraduationCap className="w-8 h-8 md:w-10 md:h-10 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Professional Certificate Courses
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4">
+            Professional Courses
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Advance your career with world-class certificate programs from IIM Bangalore
+          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+            Advance your career with premium certificate programs
           </p>
         </div>
 
-        {/* Courses Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Courses Grid - 3 columns on desktop, 2 on mobile */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {courses.map((course) => (
-            <div
+            <a
               key={course.id}
-              className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              href={course.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden cursor-pointer"
             >
-              {/* Card Header with Gradient */}
-              <div className={`bg-gradient-to-r ${course.color} p-6 text-white`}>
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold mb-2">{course.title}</h2>
-                    <p className="text-white/90 font-medium flex items-center gap-2">
-                      <Award className="w-4 h-4" />
-                      {course.institution}
-                    </p>
-                  </div>
-                </div>
+              {/* Gradient Header */}
+              <div className={`bg-gradient-to-br ${course.gradient} p-4 md:p-6 relative overflow-hidden`}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
                 
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full">
-                    <Clock className="w-4 h-4" />
-                    <span>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>{course.level}</span>
-                  </div>
+                <div className="relative">
+                  <div className="text-3xl md:text-4xl mb-2 md:mb-3">{course.icon}</div>
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-1 line-clamp-2">
+                    {course.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/90 font-medium mb-3 md:mb-4">
+                    {course.subtitle}
+                  </p>
                 </div>
               </div>
 
               {/* Card Body */}
-              <div className="p-6">
-                <p className="text-gray-600 mb-6 leading-relaxed">
-                  {course.description}
-                </p>
+              <div className="p-4 md:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                    <BookOpen className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
+                    <span className="text-xs font-medium text-blue-700">{course.institution}</span>
+                  </div>
+                </div>
 
-                {/* Highlights */}
-                <div className="mb-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">Program Highlights:</h3>
-                  <ul className="space-y-2">
-                    {course.highlights.map((highlight, index) => (
-                      <li key={index} className="flex items-start gap-2 text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full mt-2 flex-shrink-0"></div>
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-1 rounded-full">
+                    <Clock className="w-3 h-3 text-gray-600" />
+                    <span className="text-gray-700">{course.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-1 rounded-full">
+                    <TrendingUp className="w-3 h-3 text-gray-600" />
+                    <span className="text-gray-700">{course.level}</span>
+                  </div>
                 </div>
 
                 {/* CTA Button */}
-                <a
-                  href={course.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-full bg-gradient-to-r ${course.color} text-white py-3 px-6 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group`}
-                >
-                  <span>More Info & Apply</span>
-                  <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
+                <div className={`w-full bg-gradient-to-r ${course.gradient} text-white py-2 md:py-2.5 px-4 rounded-lg font-semibold text-xs md:text-sm hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group-hover:scale-105`}>
+                  <span>More Info</span>
+                  <ExternalLink className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
 
         {/* Info Banner */}
-        <div className="mt-12 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-6 md:p-8">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <Award className="w-6 h-6 text-white" />
+        <div className="mt-8 md:mt-12 bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-2xl p-4 md:p-8 shadow-lg">
+          <div className="flex flex-col md:flex-row items-start gap-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl md:rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
+              <Award className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Why Choose IIM Bangalore?
+            <div className="flex-1">
+              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">
+                Premium Learning Partners
               </h3>
-              <p className="text-gray-700 leading-relaxed">
-                IIM Bangalore is one of India's premier management institutions, consistently ranked among the top business schools globally. 
-                These professional certificate programs are designed for working professionals seeking to advance their careers with world-class education.
+              <p className="text-sm md:text-base text-gray-700 leading-relaxed">
+                IIM Bangalore and NPTEL are India's premier educational institutions offering world-class programs. 
+                These certificate courses are designed for professionals seeking career advancement with recognized credentials.
               </p>
             </div>
           </div>
