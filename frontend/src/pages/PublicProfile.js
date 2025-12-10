@@ -78,7 +78,7 @@ const PublicProfile = () => {
     
     setLoadingContent(true);
     try {
-      if (tab === 'posts') {
+      if (tab === 'posts' || tab === 'retweets') {
         const response = await axios.get(
           `${BACKEND_URL}/api/profile/${username}/posts`,
           {
@@ -118,6 +118,26 @@ const PublicProfile = () => {
       navigate('/dashboard');
     }
   }, [profile, user]);
+
+  // Filter posts based on active tab
+  const getFilteredPosts = () => {
+    if (activeTab === 'posts') {
+      // Show only original posts (not retweets)
+      return posts.filter(post => !post.is_retweet);
+    } else if (activeTab === 'retweets') {
+      // Show only retweets
+      return posts.filter(post => post.is_retweet === true);
+    }
+    return [];
+  };
+
+  const handleProfileClick = (clickedUsername) => {
+    if (clickedUsername === username) {
+      // Already on this profile
+      return;
+    }
+    navigate(`/profile/${clickedUsername}`);
+  };
 
   if (loading) {
     return (
@@ -226,6 +246,8 @@ const PublicProfile = () => {
       </div>
     );
   }
+
+  const filteredPosts = getFilteredPosts();
 
   // Full public profile
   return (
@@ -439,6 +461,19 @@ const PublicProfile = () => {
                 Quiz Rooms
               </div>
             </button>
+            <button
+              onClick={() => setActiveTab('retweets')}
+              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+                activeTab === 'retweets'
+                  ? 'border-b-2 border-purple-600 text-purple-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Repeat2 className="w-5 h-5" />
+                Retweets
+              </div>
+            </button>
           </div>
 
           {/* Tab Content */}
@@ -450,37 +485,88 @@ const PublicProfile = () => {
               </div>
             ) : (
               <>
-                {activeTab === 'posts' && (
-                  posts.length > 0 ? (
+                {(activeTab === 'posts' || activeTab === 'retweets') && (
+                  filteredPosts.length > 0 ? (
                     <div className="space-y-4">
-                      {posts
+                      {filteredPosts
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <p className="text-sm text-gray-500">
-                                {new Date(post.created_at).toLocaleString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
-                              {post.post_type && (
-                                <span className="inline-block mt-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
-                                  {post.post_type === 'quiz_room' ? 'Quiz Room' : post.post_type}
-                                </span>
-                              )}
+                          {/* Retweet Indicator */}
+                          {post.is_retweet === true && (
+                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                              <Repeat2 className="w-4 h-4" />
+                              <span>{profile.name} retweeted</span>
                             </div>
-                          </div>
+                          )}
+                          
+                          {/* Original Author Info (for retweets) */}
+                          {post.is_retweet && post.original_username && (
+                            <div className="mb-3 flex items-start gap-3">
+                              <img
+                                src={`https://ui-avatars.com/api/?name=${post.original_user_name || post.original_username}&background=random&size=40`}
+                                alt={post.original_user_name}
+                                className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80"
+                                onClick={() => handleProfileClick(post.original_username)}
+                              />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span 
+                                    className="font-semibold text-gray-900 hover:underline cursor-pointer"
+                                    onClick={() => handleProfileClick(post.original_username)}
+                                  >
+                                    {post.original_user_name || post.original_username}
+                                  </span>
+                                  <span 
+                                    className="text-gray-500 text-sm hover:underline cursor-pointer"
+                                    onClick={() => handleProfileClick(post.original_username)}
+                                  >
+                                    @{post.original_username}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {new Date(post.original_created_at || post.created_at).toLocaleString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Post Content */}
+                          {!post.is_retweet && (
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(post.created_at).toLocaleString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                                {post.post_type && (
+                                  <span className="inline-block mt-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                                    {post.post_type === 'quiz_room' ? 'Quiz Room' : post.post_type}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          
                           <p className="text-gray-800">{post.content}</p>
+                          
                           {post.room_code && (
                             <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                               <p className="text-sm text-green-700 font-semibold">Room Code: {post.room_code}</p>
                             </div>
                           )}
+                          
                           <div className="mt-3 flex gap-4 text-sm text-gray-600">
                             <span className="flex items-center gap-1">
                               <Heart className="w-4 h-4" /> {post.likes_count || 0}
@@ -497,11 +583,23 @@ const PublicProfile = () => {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                      <p className="text-gray-600 text-lg">No posts yet</p>
-                      <p className="text-gray-500 text-sm mt-2">
-                        {profile.name} hasn&apos;t shared anything yet
-                      </p>
+                      {activeTab === 'posts' ? (
+                        <>
+                          <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                          <p className="text-gray-600 text-lg">No posts yet</p>
+                          <p className="text-gray-500 text-sm mt-2">
+                            {profile.name} hasn&apos;t shared anything yet
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <Repeat2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                          <p className="text-gray-600 text-lg">No retweets yet</p>
+                          <p className="text-gray-500 text-sm mt-2">
+                            {profile.name} hasn&apos;t retweeted anything yet
+                          </p>
+                        </>
+                      )}
                     </div>
                   )
                 )}
