@@ -262,11 +262,11 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               </button>
               
               <button 
-                onClick={() => { navigate('/books'); setMobileMenuOpen(false); }} 
+                onClick={() => { navigate('/courses'); setMobileMenuOpen(false); }} 
                 className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
               >
-                <BookOpen className="w-5 h-5" />
-                <span className="font-semibold text-base">Books</span>
+                <GraduationCap className="w-5 h-5" />
+                <span className="font-semibold text-base">Courses</span>
               </button>
               
               <button 
