@@ -667,11 +667,10 @@ async def share_post(post_id: str, authorization: Optional[str] = Header(None)):
     """Share a post - creates a retweet post on user's profile"""
     try:
         # Get current user from token
-        user_id = None
-        if authorization:
-            token = authorization.replace("Bearer ", "")
-            payload = decode_token(token)
-            user_id = payload.get("user_id")
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        user_id = decode_jwt_token(authorization)
         
         if not user_id:
             raise HTTPException(status_code=401, detail="Authentication required")
