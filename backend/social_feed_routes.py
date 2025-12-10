@@ -251,14 +251,14 @@ class StudyGroupCreate(BaseModel):
 @router.post("/posts")
 async def create_post(
     post_data: PostCreateRequest,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Create a new post"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
+        # Get user_id using new hybrid authentication (session or JWT)
+        user_id = await get_user_id_from_request(authorization, request)
         
-        user_id = decode_jwt_token(authorization)
         user = await db.users.find_one({"id": user_id}, {"_id": 0})
         if not user:
             user = await db.users.find_one({"user_id": user_id}, {"_id": 0})
