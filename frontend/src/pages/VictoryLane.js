@@ -1263,33 +1263,62 @@ const VictoryLane = () => {
                               {(postComments[post.id] || []).length === 0 ? (
                                 <p className="text-center text-gray-400 text-sm py-2">No answers yet. Be the first!</p>
                               ) : (
-                                (postComments[post.id] || []).filter(c => !c.parent_comment_id).map((comment) => (
+                                (postComments[post.id] || []).filter(c => !c.parent_comment_id).map((comment) => {
+                                  const isRevealed = revealedAnswers.has(comment.id);
+                                  
+                                  return (
                                   <div key={comment.id} className="space-y-2">
-                                    <div className="flex gap-3 items-start">
-                                      <UserAvatar
-                                        profilePicture={comment.user_avatar}
-                                        name={comment.user_name || comment.username}
-                                        size="sm"
-                                        clickable={true}
-                                        onClick={() => openProfile(comment.user_id)}
-                                      />
-                                      <div className="flex-1 min-w-0">
-                                        <div className="bg-gray-50 rounded-2xl px-3 py-2">
-                                          <div className="flex items-center gap-1.5">
-                                            <span 
-                                              onClick={() => openProfile(comment.user_id)}
-                                              className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
-                                            >
-                                              {comment.user_name || comment.username || 'User'}
-                                            </span>
-                                            {comment.isTeacher && (
-                                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
-                                                Teacher
-                                              </span>
-                                            )}
+                                    {!isRevealed ? (
+                                      // Spoiler-protected view
+                                      <div className="relative">
+                                        <div className="bg-gray-50 rounded-2xl px-3 py-2 blur-sm select-none pointer-events-none">
+                                          <div className="flex items-center gap-2">
+                                            <div className="w-8 h-8 rounded-full bg-gray-300"></div>
+                                            <div className="flex-1">
+                                              <div className="h-3 bg-gray-300 rounded w-24 mb-1"></div>
+                                              <div className="h-3 bg-gray-300 rounded w-full"></div>
+                                            </div>
                                           </div>
-                                          <p className="text-gray-700 text-sm mt-0.5">{comment.content}</p>
                                         </div>
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                          <button
+                                            onClick={() => revealAnswer(comment.id)}
+                                            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all group"
+                                          >
+                                            <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                                              <Eye className="w-6 h-6 text-white" />
+                                            </div>
+                                            <span className="text-sm font-medium text-gray-700">Tap to reveal answer</span>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      // Revealed view
+                                      <div className="flex gap-3 items-start animate-fade-in">
+                                        <UserAvatar
+                                          profilePicture={comment.user_avatar}
+                                          name={comment.user_name || comment.username}
+                                          size="sm"
+                                          clickable={true}
+                                          onClick={() => openProfile(comment.user_id)}
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                          <div className="bg-gray-50 rounded-2xl px-3 py-2">
+                                            <div className="flex items-center gap-2 mb-1">
+                                              <span 
+                                                onClick={() => openProfile(comment.user_id)}
+                                                className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
+                                              >
+                                                {comment.user_name || comment.username || 'User'}
+                                              </span>
+                                              {comment.isTeacher && (
+                                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
+                                                  Teacher
+                                                </span>
+                                              )}
+                                            </div>
+                                            <p className="text-gray-700 text-sm mt-0.5">{comment.content}</p>
+                                          </div>
                                         <div className="flex items-center gap-3 mt-1 ml-3">
                                           <span className="text-xs text-gray-400">
                                             {formatTimestamp(comment.created_at)}
