@@ -462,16 +462,16 @@ const PublicProfile = () => {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('retweets')}
+              onClick={() => setActiveTab('reposts')}
               className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'retweets'
+                activeTab === 'reposts'
                   ? 'border-b-2 border-purple-600 text-purple-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <div className="flex items-center justify-center gap-2">
                 <Repeat2 className="w-5 h-5" />
-                Retweets
+                Reposts
               </div>
             </button>
           </div>
