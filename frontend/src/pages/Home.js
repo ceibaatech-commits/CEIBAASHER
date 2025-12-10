@@ -644,7 +644,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -684,7 +684,7 @@ const Home = () => {
                 onClick={() => navigate(`/exam/${exam.id}`)}
                 className="group relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-200 via-blue-200 to-indigo-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
                 <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-purple-300">
                   <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
@@ -748,7 +748,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-indigo-200 via-blue-200 to-cyan-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -788,7 +788,7 @@ const Home = () => {
                 onClick={() => navigate(`/exam/${exam.id}`)}
                 className="group relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-200 via-blue-200 to-cyan-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
                 <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-indigo-300">
                   <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
@@ -851,7 +851,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-amber-200 via-orange-200 to-red-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -891,7 +891,7 @@ const Home = () => {
                 onClick={() => navigate(`/exam/${exam.id}`)}
                 className="group relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-200 via-orange-200 to-red-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-600 to-red-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
                 <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-amber-300">
                   <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
@@ -954,7 +954,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-red-200 via-rose-200 to-pink-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-red-600 via-rose-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -994,7 +994,7 @@ const Home = () => {
                 onClick={() => navigate(`/exam/${exam.id}`)}
                 className="group relative"
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-red-200 via-rose-200 to-pink-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-red-600 via-rose-600 to-pink-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
                 <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-red-300">
                   <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
@@ -1058,7 +1058,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-emerald-200 via-teal-200 to-cyan-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -1100,7 +1100,7 @@ const Home = () => {
                 className="group relative"
               >
                 {/* Animated Background Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-200 via-teal-200 to-cyan-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
                 
                 {/* Card Content */}
                 <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-emerald-300">
@@ -1168,7 +1168,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-purple-200 via-pink-200 to-rose-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -1413,7 +1413,7 @@ const Home = () => {
           >
             <div className="flex items-center gap-4 mb-3">
               <motion.div 
-                className="w-16 h-16 bg-gradient-to-br from-gray-200 via-slate-200 to-zinc-200 rounded-2xl flex items-center justify-center shadow-xl"
+                className="w-16 h-16 bg-gradient-to-br from-gray-600 via-slate-600 to-zinc-600 rounded-2xl flex items-center justify-center shadow-xl"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
@@ -1453,7 +1453,7 @@ const Home = () => {
               className="group relative"
               data-testid={`exam-card-${exam.id}`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-slate-200 to-zinc-200 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-600 via-slate-600 to-zinc-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
               
               <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-gray-300 min-h-[420px] flex flex-col">
                 <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden flex-shrink-0`}>
