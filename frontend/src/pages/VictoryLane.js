@@ -1173,7 +1173,7 @@ const VictoryLane = () => {
                           <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
                             <MessageCircle className={`w-5 h-5 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
                           </div>
-                          <span className="text-sm font-medium">{post.comments_count || 0}</span>
+                          <span className="text-sm font-medium">{post.comments_count || 0} Answers</span>
                         </button>
 
                         <button className="flex items-center gap-2 text-gray-500 hover:text-green-500 transition group">
