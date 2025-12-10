@@ -244,6 +244,8 @@ const QuizRoom = () => {
       `\n\n#QuizResult #Ceibaa`;
 
     try {
+      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+      
       await axios.post(`${BACKEND_URL}/api/social/posts`, {
         user_id: user.id,
         user_name: user.name || user.username || 'User',
@@ -255,6 +257,10 @@ const QuizRoom = () => {
           category: roomData?.category,
           score: finalScore,
           total_questions: questions.length
+        }
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
       });
 
