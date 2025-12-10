@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExternalLink, GraduationCap, Clock, Award, TrendingUp } from 'lucide-react';
+import { ExternalLink, GraduationCap, Clock, Award, TrendingUp, Users, BookOpen } from 'lucide-react';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,35 +9,47 @@ const Courses = () => {
   const courses = [
     {
       id: 1,
-      title: "IIM Professional Certificate in Hospital Management",
+      title: "Hospital Management",
+      subtitle: "IIM Professional Certificate",
       institution: "IIM Bangalore",
       duration: "6 Months",
       level: "Professional",
-      description: "Master the art of healthcare management with IIM Bangalore's comprehensive program. Learn strategic planning, operations management, and healthcare policy.",
-      highlights: [
-        "Live interactive sessions",
-        "Case studies from leading hospitals",
-        "Industry-recognized certification",
-        "Network with healthcare leaders"
-      ],
       link: "https://iimbx.iimb.ac.in/hospital-management-program/",
-      color: "from-blue-500 to-cyan-500"
+      gradient: "from-cyan-400 via-blue-500 to-indigo-600",
+      icon: "🏥"
     },
     {
       id: 2,
-      title: "Professional Certificate in Artificial Intelligence for Managers",
+      title: "AI for Managers",
+      subtitle: "Professional Certificate",
       institution: "IIM Bangalore",
       duration: "4 Months",
       level: "Professional",
-      description: "Transform your leadership with AI expertise. Learn to leverage artificial intelligence for business strategy and decision-making.",
-      highlights: [
-        "AI strategy and implementation",
-        "Real-world business applications",
-        "Executive-focused curriculum",
-        "Hands-on projects"
-      ],
       link: "https://iimbx.iimb.ac.in/ai-for-managers/",
-      color: "from-purple-500 to-pink-500"
+      gradient: "from-fuchsia-400 via-purple-500 to-pink-600",
+      icon: "🤖"
+    },
+    {
+      id: 3,
+      title: "User Interface Design",
+      subtitle: "NPTEL Online Course",
+      institution: "NPTEL",
+      duration: "12 Weeks",
+      level: "Intermediate",
+      link: "https://onlinecourses.nptel.ac.in/noc26_ar15/preview",
+      gradient: "from-emerald-400 via-teal-500 to-cyan-600",
+      icon: "🎨"
+    },
+    {
+      id: 4,
+      title: "Unit Operations of Particulate Matter",
+      subtitle: "NPTEL Online Course",
+      institution: "NPTEL",
+      duration: "12 Weeks",
+      level: "Advanced",
+      link: "https://onlinecourses.nptel.ac.in/noc26_ch44/preview",
+      gradient: "from-orange-400 via-red-500 to-rose-600",
+      icon: "⚗️"
     }
   ];
 
