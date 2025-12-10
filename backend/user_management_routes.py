@@ -156,8 +156,10 @@ async def update_institute_status(user_id: str, status_update: InstituteStatusUp
 async def update_professor_status(user_id: str, status_update: ProfessorStatusUpdate):
     """
     Update professor status for a user (Professors)
+    Also updates all their posts and comments
     """
     try:
+        # Update user
         result = await db.users.update_one(
             {"id": user_id},
             {
@@ -171,11 +173,25 @@ async def update_professor_status(user_id: str, status_update: ProfessorStatusUp
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Update all posts by this user
+        posts_result = await db.social_posts.update_many(
+            {"user_id": user_id},
+            {"$set": {"isProfessor": status_update.isProfessor}}
+        )
+        
+        # Update all comments by this user
+        comments_result = await db.comments.update_many(
+            {"user_id": user_id},
+            {"$set": {"isProfessor": status_update.isProfessor}}
+        )
+        
         return {
             "success": True,
             "message": f"Professor status updated to {status_update.isProfessor}",
             "user_id": user_id,
-            "isProfessor": status_update.isProfessor
+            "isProfessor": status_update.isProfessor,
+            "posts_updated": posts_result.modified_count,
+            "comments_updated": comments_result.modified_count
         }
         
     except HTTPException:
