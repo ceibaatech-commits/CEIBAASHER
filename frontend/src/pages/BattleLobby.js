@@ -206,7 +206,7 @@ const BattleLobby = () => {
       <div className="max-w-4xl mx-auto px-4">
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="bg-gradient-to-r from-fuchsia-300 via-purple-300 to-pink-300 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="bg-gradient-to-r from-fuchsia-500 via-purple-500 to-pink-500 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Users className="w-10 h-10" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Battle Lobby</h1>
