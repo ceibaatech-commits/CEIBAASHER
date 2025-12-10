@@ -242,6 +242,14 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
         posts_count = await db.social_posts.count_documents({"user_id": user["id"]})
         user["posts_count"] = posts_count
         
+        # Add badge information
+        user["badges"] = {
+            "isTeacher": user.get("isTeacher", False),
+            "isProfessor": user.get("isProfessor", False),
+            "isOfficial": user.get("isOfficial", False),
+            "isInstitute": user.get("isInstitute", False)
+        }
+        
         # Determine profile visibility based on privacy settings and follow relationship
         is_private = user.get("is_private", False)
         follow_status = None
