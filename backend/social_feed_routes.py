@@ -571,11 +571,28 @@ async def unlike_post(post_id: str, authorization: Optional[str] = Header(None))
 
 @router.get("/posts/{post_id}/comments")
 async def get_comments(post_id: str):
-    """Get comments for a post"""
+    """Get comments for a post with updated user isTeacher status"""
     try:
         comments = await db.comments.find(
             {"post_id": post_id, "parent_comment_id": None}, {"_id": 0}
         ).sort("created_at", -1).to_list(None)
+        
+        # Enrich comments with current isTeacher status from users collection
+        unique_user_ids = list(set(comment.get("user_id") for comment in comments if comment.get("user_id")))
+        if unique_user_ids:
+            users = await db.users.find(
+                {"id": {"$in": unique_user_ids}},
+                {"_id": 0, "id": 1, "isTeacher": 1, "username": 1}
+            ).to_list(1000)
+            user_data = {u["id"]: u for u in users}
+            
+            for comment in comments:
+                if comment.get("user_id") in user_data:
+                    comment["isTeacher"] = user_data[comment["user_id"]].get("isTeacher", False)
+                    # Ensure username is present
+                    if not comment.get("username") and user_data[comment["user_id"]].get("username"):
+                        comment["username"] = user_data[comment["user_id"]]["username"]
+        
         return {"success": True, "comments": comments}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching comments: {str(e)}")
