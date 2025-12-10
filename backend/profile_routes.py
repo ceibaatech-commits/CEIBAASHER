@@ -901,20 +901,40 @@ async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = No
         quiz_room_posts = await db.social_posts.find({
             "user_id": user_id,
             "post_type": "quiz_room"
-        }).sort("created_at", -1).to_list(length=100)
+        }, {"_id": 0}).sort("created_at", -1).to_list(length=100)
         
         # Extract room codes and fetch full room details
         room_codes = [post.get("room_code") for post in quiz_room_posts if post.get("room_code")]
         
         quiz_rooms = []
         for room_code in room_codes:
-            room = await db.quiz_rooms.find_one({"room_code": room_code})
+            # Try to get full room details from quiz_rooms collection
+            room = await db.quiz_rooms.find_one({"room_code": room_code}, {"_id": 0})
+            
             if room:
-                room.pop("_id", None)
+                # Full room data found in quiz_rooms collection
                 # Don't include full questions array in list view
                 room["question_count"] = len(room.get("questions", []))
                 room.pop("questions", None)
                 quiz_rooms.append(room)
+            else:
+                # Fallback: Build room data from the post itself
+                # This handles cases where quiz_rooms collection is empty/missing
+                matching_post = next((p for p in quiz_room_posts if p.get("room_code") == room_code), None)
+                if matching_post:
+                    quiz_room_data = {
+                        "room_code": room_code,
+                        "title": matching_post.get("quiz_details", {}).get("title") or f"Quiz Room {room_code}",
+                        "description": matching_post.get("content", ""),
+                        "category": matching_post.get("quiz_details", {}).get("category", "General"),
+                        "question_count": matching_post.get("quiz_details", {}).get("question_count", 0),
+                        "privacy": "public",  # Default to public
+                        "host_id": user_id,
+                        "host_username": user.get("username"),
+                        "host_name": user.get("name"),
+                        "created_at": matching_post.get("created_at")
+                    }
+                    quiz_rooms.append(quiz_room_data)
         
         return {
             "success": True,
