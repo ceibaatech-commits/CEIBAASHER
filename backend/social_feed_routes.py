@@ -926,17 +926,14 @@ async def get_user_following(user_id: str):
         raise HTTPException(status_code=500, detail=f"Error fetching following: {str(e)}")
 
 @router.post("/user/follow/{target_user_id}")
-async def follow_user(target_user_id: str, authorization: Optional[str] = Header(None)):
+async def follow_user(target_user_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """
     Follow a user with proper privacy checks
     - Public accounts: Instant follow (status: approved)
     - Private accounts: Send follow request (status: pending)
     """
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        follower_id = decode_jwt_token(authorization)
+        follower_id = await get_user_id_from_request(authorization, request)
         
         # Validate users exist
         if follower_id == target_user_id:
