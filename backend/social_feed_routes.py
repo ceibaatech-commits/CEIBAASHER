@@ -363,6 +363,11 @@ async def get_for_you_feed(
                 liked = await db.post_likes.find_one({"user_id": user_id, "post_id": post["id"]})
                 post["liked_by_user"] = liked is not None
         
+        # Ensure is_retweet is explicitly false if not present
+        for post in paginated:
+            if "is_retweet" not in post:
+                post["is_retweet"] = False
+        
         return {"success": True, "posts": paginated, "count": len(paginated)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching feed: {str(e)}")
