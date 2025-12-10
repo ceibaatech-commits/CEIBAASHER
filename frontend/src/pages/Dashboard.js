@@ -17,8 +17,10 @@ const Dashboard = () => {
   const [loadingContent, setLoadingContent] = useState(false);
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (user) {
+      fetchProfile();
+    }
+  }, [user]);
 
   const fetchProfile = async () => {
     if (!user) return;
