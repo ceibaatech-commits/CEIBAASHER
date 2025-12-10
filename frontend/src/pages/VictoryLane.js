@@ -1129,11 +1129,11 @@ const VictoryLane = () => {
                               )}
                             </div>
                           </div>
-                          <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
+                          <span className="text-gray-500 text-sm">· {formatTimestamp(post.is_retweet ? post.original_created_at : post.created_at)}</span>
                         </div>
-                        {user && post.user_id !== user.id && (
+                        {user && (post.is_retweet ? post.original_user_id : post.user_id) !== user.id && (
                           <FollowButton 
-                            userId={post.user_id} 
+                            userId={post.is_retweet ? post.original_user_id : post.user_id} 
                             user={user}
                             followingList={followingList}
                             toggleFollow={toggleFollow}
