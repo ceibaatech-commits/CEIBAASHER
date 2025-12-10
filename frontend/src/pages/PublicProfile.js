@@ -122,8 +122,9 @@ const PublicProfile = () => {
   // Filter posts based on active tab
   const getFilteredPosts = () => {
     if (activeTab === 'posts') {
-      // Show only original posts (not reposts)
-      return posts.filter(post => !post.is_retweet);
+      // Show only original posts (not reposts and not quiz rooms)
+      // Quiz rooms should appear in Quiz Rooms tab, not Posts tab
+      return posts.filter(post => !post.is_retweet && post.post_type !== 'quiz_room');
     } else if (activeTab === 'reposts') {
       // Show only reposts
       return posts.filter(post => post.is_retweet === true);
