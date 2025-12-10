@@ -1041,6 +1041,16 @@ const VictoryLane = () => {
                                   Teacher
                                 </span>
                               )}
+                              {post.isOfficial && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-500 text-white">
+                                  Official
+                                </span>
+                              )}
+                              {post.isInstitute && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white" style={{backgroundColor: '#8B2E2E'}}>
+                                  Institute
+                                </span>
+                              )}
                               {post.is_verified && (
                                 <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
                               )}
