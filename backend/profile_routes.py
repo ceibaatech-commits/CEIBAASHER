@@ -526,15 +526,13 @@ async def follow_user(
 @router.delete("/unfollow/{target_user_id}")
 async def unfollow_user(
     target_user_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Unfollow a user or cancel follow request"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT to get user_id
-        follower_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        follower_id = await get_user_id_from_request(authorization, request)
         
         # Delete follow relationship
         result = await db.follows.delete_one({
