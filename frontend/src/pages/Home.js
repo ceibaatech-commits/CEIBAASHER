@@ -225,31 +225,35 @@ const Home = () => {
               <div
                 key={exam.id}
                 onClick={() => navigate(`/exam/${exam.id}`)}
-                className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm active:scale-98 transition-transform cursor-pointer"
+                style={{ padding: '0.75rem' }}
+                className="bg-white border border-gray-200 rounded-xl shadow-sm active:scale-98 transition-transform cursor-pointer"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-md`}>
+                <div className="flex items-center gap-3">
+                  <div 
+                    className={`bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-md`}
+                    style={{ width: '2.5rem', height: '2.5rem', minWidth: '2.5rem' }}
+                  >
                     {exam.icon?.startsWith('http') ? (
-                      <img src={exam.icon} alt={exam.name} className="w-8 h-8 object-contain" />
+                      <img src={exam.icon} alt={exam.name} style={{ width: '1.5rem', height: '1.5rem' }} className="object-contain" />
                     ) : (
-                      <span className="text-2xl">{exam.icon}</span>
+                      <span style={{ fontSize: '1.25rem' }}>{exam.icon}</span>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-900">{exam.name}</h3>
-                    <p className="text-sm text-gray-500">{exam.full_name}</p>
-                    <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-900" style={{ fontSize: '0.875rem' }}>{exam.name}</h3>
+                    <p className="text-gray-500 truncate" style={{ fontSize: '0.75rem' }}>{exam.full_name}</p>
+                    <div className="flex items-center gap-3 mt-1 text-gray-500" style={{ fontSize: '0.625rem' }}>
                       <span className="flex items-center gap-1">
-                        <FileText className="w-3 h-3" />
+                        <FileText style={{ width: '0.75rem', height: '0.75rem' }} />
                         {exam.total_questions} Qs
                       </span>
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
+                        <Clock style={{ width: '0.75rem', height: '0.75rem' }} />
                         {exam.duration}
                       </span>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight style={{ width: '1rem', height: '1rem' }} className="text-gray-400 flex-shrink-0" />
                 </div>
               </div>
             ))}
