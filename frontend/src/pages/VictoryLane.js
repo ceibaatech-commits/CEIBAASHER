@@ -592,6 +592,41 @@ const VictoryLane = () => {
     // API call would go here for persistence
   };
 
+  // Delete post handler
+  const handleDeleteClick = (post) => {
+    setPostToDelete(post);
+    setShowDeleteModal(true);
+    setOpenMenuId(null); // Close the menu
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!postToDelete || !user) return;
+    
+    setDeletingPost(true);
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+      
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postToDelete.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Remove post from state
+      setPosts(prev => prev.filter(post => post.id !== postToDelete.id));
+      
+      toast.success('Post deleted successfully');
+      setShowDeleteModal(false);
+      setPostToDelete(null);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      toast.error(error.response?.data?.detail || 'Failed to delete post');
+    } finally {
+      setDeletingPost(false);
+    }
+  };
+
+
   // Toggle share/repost
   const toggleShare = async (postId) => {
     if (!user) {
