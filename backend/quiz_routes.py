@@ -84,16 +84,38 @@ async def get_subjects(exam_id: str):
 async def get_all_topics(exam_id: str):
     """
     Get all topics across all subjects - DATABASE DRIVEN
-    Builds flat list from MongoDB exam_sheets collection AND questions collection
+    Builds flat list from MongoDB exam_sheets collection, questions collection, AND chapters collection
     """
     from exam_structure_routes import db
     
     try:
-        # Get structure from database
+        topics_dict = {}
+        
+        # FIRST: Check the new chapters collection (from admin CRUD)
+        chapters = await db.chapters.find({
+            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
+            "is_active": True
+        }, {"_id": 0}).to_list(length=1000)
+        
+        for chapter in chapters:
+            category_name = chapter.get("category_name")  # e.g., "Physics"
+            chapter_name = chapter.get("name")  # e.g., "Mechanics"
+            sub_topics = chapter.get("sub_topics", [])
+            
+            if category_name and chapter_name:
+                key = f"{category_name}||{chapter_name}"
+                if key not in topics_dict:
+                    topics_dict[key] = {
+                        "syllabus_topic": category_name,
+                        "subject": chapter_name,
+                        "sub_topics": sub_topics,
+                        "questions": 0
+                    }
+        
+        # SECOND: Get structure from exam_sheets collection (legacy)
         sheets = await db.exam_sheets.find({
             "type": "exam",
             "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
-            # NOTE: Not filtering by questions_imported - show all sheets
         }).to_list(length=1000)
         
         # Build grouped topic list from database
