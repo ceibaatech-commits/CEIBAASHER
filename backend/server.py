@@ -37,6 +37,7 @@ from exam_structure_routes import router as exam_structure_router
 import exam_structure_routes
 from exam_metadata_routes import router as exam_metadata_router
 from x_auth_routes import router as x_auth_router
+from emergent_auth_routes import router as emergent_auth_router
 from search_routes import router as search_router
 from exam_sync_routes import router as exam_sync_router
 from exam_management_routes import router as exam_management_router
