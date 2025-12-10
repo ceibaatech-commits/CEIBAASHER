@@ -67,17 +67,73 @@ async def get_exams():
 async def get_exam(exam_id: str):
     """
     Get complete exam details with syllabus - DATABASE DRIVEN
-    Now fetches from MongoDB exam_sheets collection, not hardcoded exam_data.py
+    Now fetches from:
+    1. CRUD collections (exams, categories, chapters)
+    2. MongoDB exam_sheets collection
+    3. Hardcoded exam_data.py (fallback)
     """
-    # Import the database-driven function
     from exam_structure_routes import get_exam_structure_from_db, db
     
-    # Try to get from database first
+    # First, check CRUD exams collection
+    crud_exam = await db.exams.find_one({
+        "name": {"$regex": f"^{exam_id}$", "$options": "i"},
+        "is_active": True
+    })
+    
+    if crud_exam:
+        # Build syllabus structure from CRUD categories and chapters
+        categories = await db.categories.find({
+            "exam_id": crud_exam.get("id"),
+            "is_active": True
+        }, {"_id": 0}).to_list(100)
+        
+        chapters = await db.chapters.find({
+            "exam_id": crud_exam.get("id"),
+            "is_active": True
+        }, {"_id": 0}).to_list(1000)
+        
+        # Build syllabus_topics structure
+        syllabus_topics = {}
+        for cat in categories:
+            cat_name = cat.get("name")
+            syllabus_topics[cat_name] = {
+                "topics": []
+            }
+        
+        for chapter in chapters:
+            cat_name = chapter.get("category_name")
+            if cat_name in syllabus_topics:
+                syllabus_topics[cat_name]["topics"].append({
+                    "name": chapter.get("name"),
+                    "sub_topics": chapter.get("sub_topics", [])
+                })
+        
+        # Add empty topics for categories without chapters
+        for cat_name, cat_data in syllabus_topics.items():
+            if not cat_data["topics"]:
+                cat_data["topics"].append({
+                    "name": "General",
+                    "sub_topics": []
+                })
+        
+        exam = {
+            "name": crud_exam.get("name"),
+            "full_name": crud_exam.get("name"),
+            "description": crud_exam.get("description", f"Prepare for {exam_id} with comprehensive practice questions"),
+            "icon": crud_exam.get("icon", "📚"),
+            "color": f"from-{crud_exam.get('color', 'blue')}-500 to-{crud_exam.get('color', 'blue')}-600",
+            "category": "Competitive Exams",
+            "duration": crud_exam.get("duration", 180),
+            "total_marks": crud_exam.get("total_marks", 100),
+            "syllabus_topics": syllabus_topics
+        }
+        return {"success": True, "exam": exam}
+    
+    # Try to get from exam_sheets database
     structure = await get_exam_structure_from_db(exam_id)
     
     if structure:
         # Database has data - use it!
-        # First try to get metadata from hardcoded exam_data for display purposes
         hardcoded_exam = get_exam_details(exam_id)
         
         exam = {
@@ -87,7 +143,7 @@ async def get_exam(exam_id: str):
             "icon": hardcoded_exam.get("icon", "") if hardcoded_exam else "",
             "color": hardcoded_exam.get("color", "from-blue-500 to-cyan-500") if hardcoded_exam else "from-blue-500 to-cyan-500",
             "category": hardcoded_exam.get("category", "Competitive Exams") if hardcoded_exam else "Competitive Exams",
-            "syllabus_topics": structure.get("syllabus_topics", {})  # Database-driven structure
+            "syllabus_topics": structure.get("syllabus_topics", {})
         }
         return {"success": True, "exam": exam}
     else:
