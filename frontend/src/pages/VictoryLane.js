@@ -1768,6 +1768,18 @@ const VictoryLane = () => {
       )}
 
       <Footer />
+      
+      {/* Delete Post Confirmation Modal */}
+      <DeletePostModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setPostToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        postType={postToDelete?.post_type}
+        loading={deletingPost}
+      />
     </div>
   );
 };
