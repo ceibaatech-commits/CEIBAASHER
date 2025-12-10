@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2 } from 'lucide-react';
+import EditProfileModal from '../components/EditProfileModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
