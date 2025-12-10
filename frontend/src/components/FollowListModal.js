@@ -21,17 +21,20 @@ const FollowListModal = ({ isOpen, onClose, userId, type }) => {
     setLoading(true);
     try {
       const endpoint = type === 'followers' 
-        ? `/api/profile/followers/${userId}`
-        : `/api/profile/following/${userId}`;
+        ? `/api/social/user/${userId}/followers`
+        : `/api/social/user/${userId}/following`;
       
       const response = await axios.get(`${BACKEND_URL}${endpoint}`);
       
       if (response.data.success) {
-        setUsers(response.data[type] || []);
-        setTotal(response.data.total || 0);
+        const userList = response.data[type] || [];
+        setUsers(userList);
+        setTotal(userList.length);
       }
     } catch (error) {
       console.error(`Error fetching ${type}:`, error);
+      setUsers([]);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
