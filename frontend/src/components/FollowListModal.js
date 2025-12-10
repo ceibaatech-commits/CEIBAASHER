@@ -85,7 +85,7 @@ const FollowListModal = ({ isOpen, onClose, userId, type }) => {
             <div className="divide-y divide-gray-100">
               {users.map((user) => (
                 <div
-                  key={user.user_id}
+                  key={user.id}
                   onClick={() => handleUserClick(user.username)}
                   className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
                 >
