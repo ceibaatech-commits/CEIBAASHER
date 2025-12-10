@@ -397,6 +397,20 @@ const UserManagement = () => {
                         </span>
                       )}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => toggleTeacherStatus(user.id, user.isTeacher)}
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                          user.isTeacher
+                            ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                        title={user.isTeacher ? 'Click to remove teacher status' : 'Click to make teacher'}
+                      >
+                        <Award className="w-3 h-3 mr-1" />
+                        {user.isTeacher ? 'Teacher' : 'Student'}
+                      </button>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button
