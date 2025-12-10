@@ -412,6 +412,11 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
                 if post.get("user_id") in user_profiles:
                     post["user_avatar"] = user_profiles[post["user_id"]]
         
+        # Ensure is_retweet is explicitly false if not present
+        for post in paginated:
+            if "is_retweet" not in post:
+                post["is_retweet"] = False
+        
         return {"success": True, "posts": paginated, "count": len(posts)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching trending: {str(e)}")
