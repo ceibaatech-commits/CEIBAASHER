@@ -21,8 +21,19 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const handleGoogleLogin = () => {
+    // Use Emergent-managed Google auth
+    // CRITICAL: Use window.location.origin dynamically
+    const redirectUrl = `${window.location.origin}/dashboard`;
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
   const handleSocialLogin = (provider) => {
-    window.location.href = `${BACKEND_URL}/api/auth/${provider}`;
+    if (provider === 'google') {
+      handleGoogleLogin();
+    } else {
+      window.location.href = `${BACKEND_URL}/api/auth/${provider}`;
+    }
   };
 
   const handleDemoLogin = async (e) => {
