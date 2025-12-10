@@ -219,6 +219,7 @@ async def create_post(
             "user_avatar": user.get("profile_picture") or user.get("avatar", "👤") if user else "👤",
             "user_verified": user.get("verified", False) if user else False,
             "user_location": user.get("location") if user else None,
+            "isTeacher": user.get("isTeacher", False) if user else False,
             "post_type": post_data.post_type,
             "content": post_data.content,
             "battle_stats": post_data.battle_stats,
