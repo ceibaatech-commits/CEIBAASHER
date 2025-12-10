@@ -11,6 +11,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
 import DeletePostModal from '../components/DeletePostModal';
+import QuestionPostModal from '../components/QuestionPostModal';
+import MathText from '../components/MathText';
 import { useSocialSocket } from '../hooks/useSocialSocket';
 import { toast } from 'sonner';
 
