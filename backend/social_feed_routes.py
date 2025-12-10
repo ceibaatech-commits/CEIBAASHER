@@ -909,8 +909,9 @@ async def follow_user(target_user_id: str, authorization: Optional[str] = Header
             raise HTTPException(status_code=404, detail="Follower user not found")
         
         # Determine follow status based on privacy settings
+        # Auto-approve all follows (privacy is optional but follows are instant)
         is_private = target_user.get("is_private", False)
-        follow_status = "pending" if is_private else "approved"
+        follow_status = "approved"  # Always approved for instant follow
         
         # Create follow relationship (ONLY in follows collection)
         await db.follows.insert_one({
