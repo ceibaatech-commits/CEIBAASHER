@@ -1006,13 +1006,10 @@ async def follow_user(target_user_id: str, request: Request, authorization: Opti
         raise HTTPException(status_code=500, detail=f"Error following user: {str(e)}")
 
 @router.delete("/user/follow/{target_user_id}")
-async def unfollow_user(target_user_id: str, authorization: Optional[str] = Header(None)):
+async def unfollow_user(target_user_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Unfollow a user or cancel follow request"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        follower_id = decode_jwt_token(authorization)
+        follower_id = await get_user_id_from_request(authorization, request)
         
         # Delete from follows collection (single source of truth)
         result = await db.follows.delete_one({
