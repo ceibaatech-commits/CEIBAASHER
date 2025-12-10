@@ -4,7 +4,7 @@ import {
   Search, Filter, Download, UserPlus, MoreVertical, 
   CheckCircle, XCircle, Edit, Trash2, Eye, Mail,
   Calendar, Clock, TrendingUp, Users as UsersIcon,
-  Shield, Ban, RefreshCw
+  Shield, Ban, RefreshCw, Award
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
