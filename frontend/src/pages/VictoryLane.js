@@ -1039,6 +1039,11 @@ const VictoryLane = () => {
                           >
                             {post.user_name || post.username || 'Anonymous'}
                           </span>
+                          {post.isTeacher && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
+                              Teacher
+                            </span>
+                          )}
                           {post.is_verified && (
                             <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
                           )}
