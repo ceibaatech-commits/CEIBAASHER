@@ -111,36 +111,36 @@ const ModernExamSyllabus = () => {
       </div>
 
       {/* Compact Hero - Mobile Optimized */}
-      <div className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-4 sm:py-6">
+      <div className="bg-gradient-to-br from-blue-600 to-teal-600 text-white" style={{ padding: '0.75rem 0' }}>
         <div className="max-w-7xl mx-auto px-4">
-          {/* Icon + Title Section - Full Width */}
-          <div className="flex items-start gap-3 mb-4">
+          {/* Icon + Title Section - Compact */}
+          <div className="flex items-start gap-2 mb-2">
             {examData.icon.startsWith('http') ? (
-              <img src={examData.icon} alt={examData.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain flex-shrink-0" />
+              <img src={examData.icon} alt={examData.name} style={{ width: '2rem', height: '2rem' }} className="object-contain flex-shrink-0" />
             ) : (
-              <div className="text-4xl sm:text-5xl flex-shrink-0">{examData.icon}</div>
+              <div style={{ fontSize: '2rem', lineHeight: '2rem' }} className="flex-shrink-0">{examData.icon}</div>
             )}
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight mb-2">
-                {examData.name} 2026 - Test Series, MCQ & Free Practice Quizzes
+              <h1 style={{ fontSize: '1rem', lineHeight: '1.25rem' }} className="font-bold mb-1">
+                {examData.name} 2026 - Test Series & MCQs
               </h1>
-              <p className="text-white/90 text-sm sm:text-base font-medium">
-                {examData.full_name} Preparation Platform
+              <p className="text-white/90" style={{ fontSize: '0.75rem' }}>
+                {examData.full_name}
               </p>
             </div>
           </div>
 
-          {/* Stats Cards - Full Width Below Title */}
-          <div className="grid grid-cols-3 gap-3 mt-4">
+          {/* Stats Cards - Compact */}
+          <div className="grid grid-cols-3 gap-2 mt-2">
             {[
-              { icon: FileText, label: 'Questions', value: examData.total_questions },
-              { icon: Clock, label: 'Duration', value: examData.duration },
+              { icon: FileText, label: 'Qs', value: examData.total_questions },
+              { icon: Clock, label: 'Time', value: examData.duration },
               { icon: BookOpen, label: 'Subjects', value: subjects.length }
             ].map((stat, idx) => (
-              <div key={idx} className="bg-white/10 backdrop-blur-sm p-3 rounded-xl text-center">
-                <stat.icon className="w-5 h-5 mx-auto mb-2" />
-                <p className="text-xl font-bold">{stat.value}</p>
-                <p className="text-xs opacity-80 mt-1">{stat.label}</p>
+              <div key={idx} className="bg-white/10 backdrop-blur-sm rounded-lg text-center" style={{ padding: '0.5rem' }}>
+                <stat.icon style={{ width: '1rem', height: '1rem' }} className="mx-auto mb-1" />
+                <p style={{ fontSize: '1rem' }} className="font-bold">{stat.value}</p>
+                <p className="opacity-80" style={{ fontSize: '0.625rem', marginTop: '0.125rem' }}>{stat.label}</p>
               </div>
             ))}
           </div>
