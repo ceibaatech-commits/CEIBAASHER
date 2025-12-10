@@ -129,6 +129,28 @@ const UserManagement = () => {
     }
   };
 
+  // Toggle professor status
+  const toggleProfessorStatus = async (userId, currentStatus) => {
+    try {
+      const response = await axios.put(
+        `${BACKEND_URL}/api/admin/users/${userId}/professor-status`,
+        { isProfessor: !currentStatus }
+      );
+
+      if (response.data.success) {
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isProfessor: !currentStatus }
+            : user
+        ));
+        alert(`Professor status updated successfully!`);
+      }
+    } catch (error) {
+      console.error('Error updating professor status:', error);
+      alert('Failed to update professor status');
+    }
+  };
+
   // Filter and sort users
   const getFilteredAndSortedUsers = () => {
     let filtered = [...users];
