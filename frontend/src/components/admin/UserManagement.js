@@ -62,6 +62,29 @@ const UserManagement = () => {
     }
   };
 
+  // Toggle teacher status
+  const toggleTeacherStatus = async (userId, currentStatus) => {
+    try {
+      const response = await axios.put(
+        `${BACKEND_URL}/api/admin/users/${userId}/teacher-status`,
+        { isTeacher: !currentStatus }
+      );
+
+      if (response.data.success) {
+        // Update local state
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isTeacher: !currentStatus }
+            : user
+        ));
+        alert(`Teacher status updated successfully!`);
+      }
+    } catch (error) {
+      console.error('Error updating teacher status:', error);
+      alert('Failed to update teacher status');
+    }
+  };
+
   // Filter and sort users
   const getFilteredAndSortedUsers = () => {
     let filtered = [...users];
