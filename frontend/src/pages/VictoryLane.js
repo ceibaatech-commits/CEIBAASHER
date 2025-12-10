@@ -823,6 +823,30 @@ const VictoryLane = () => {
     }
   };
 
+  // Create question post
+  const handleCreateQuestion = async (questionText) => {
+    if (!questionText.trim() || !user) return;
+    
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
+        post_type: 'question',
+        content: questionText,
+        user_id: user.id
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      if (response.data.success) {
+        toast.success('Question posted!');
+        fetchFeed();
+      }
+    } catch (error) {
+      console.error('Error creating question:', error);
+      toast.error('Failed to create question');
+      throw error;
+    }
+  };
+
   // Create quiz room
   const handleCreateQuizRoom = async () => {
     const validQuestions = quizForm.questions.filter(q => q.question.trim());
