@@ -342,7 +342,7 @@ const UserManagement = () => {
             <tbody className="divide-y divide-gray-200">
               {currentUsers.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
                     <UsersIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                     <p>No users found</p>
                   </td>
