@@ -5,7 +5,8 @@ import axios from 'axios';
 import { 
   Heart, MessageCircle, Share2, Repeat2, Bookmark, MoreHorizontal, Users, 
   Clock, Trophy, Play, Send, X, Plus, AlertCircle, CheckCircle2,
-  Sparkles, TrendingUp, UserPlus, Wifi, WifiOff, UserMinus, MapPin, Calendar, Link2, Trash2
+  Sparkles, TrendingUp, UserPlus, Wifi, WifiOff, UserMinus, MapPin, Calendar, Link2, Trash2,
+  HelpCircle
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
