@@ -1842,6 +1842,14 @@ const VictoryLane = () => {
         postType={postToDelete?.post_type}
         loading={deletingPost}
       />
+
+      {/* Question Post Modal */}
+      <QuestionPostModal
+        isOpen={showQuestionModal}
+        onClose={() => setShowQuestionModal(false)}
+        onSubmit={handleCreateQuestion}
+        user={user}
+      />
     </div>
   );
 };
