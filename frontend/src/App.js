@@ -132,6 +132,9 @@ function App() {
           <Route path="/books" element={<Books />} />
           <Route path="/books/:bookId" element={<BookDetails />} />
           
+          {/* Courses Route */}
+          <Route path="/courses" element={<Courses />} />
+          
           {/* PIN-based Room Quiz Routes (Multiple players) */}
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />
           <Route path="/join-room" element={<JoinRoom />} />
