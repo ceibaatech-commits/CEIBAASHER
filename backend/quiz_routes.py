@@ -44,9 +44,10 @@ async def get_exams():
         # Convert DB exams to the expected format
         for exam in db_exams:
             # Check if this exam already exists in hardcoded list
-            existing = next((e for e in hardcoded_exams if e.get("name", "").upper() == exam.get("name", "").upper()), None)
+            existing = next((e for e in hardcoded_exams if e.get("id", "").upper() == exam.get("name", "").upper() or e.get("name", "").upper() == exam.get("name", "").upper()), None)
             if not existing:
                 hardcoded_exams.append({
+                    "id": exam.get("name"),  # Use name as ID for URL routing
                     "name": exam.get("name"),
                     "full_name": exam.get("name"),
                     "description": exam.get("description", ""),
@@ -54,7 +55,8 @@ async def get_exams():
                     "color": f"from-{exam.get('color', 'blue')}-500 to-{exam.get('color', 'blue')}-600",
                     "category": "Competitive Exams",
                     "duration": exam.get("duration", 180),
-                    "total_marks": exam.get("total_marks", 100)
+                    "total_marks": exam.get("total_marks", 100),
+                    "total_questions": 0
                 })
     except Exception as e:
         print(f"Error fetching CRUD exams: {e}")
