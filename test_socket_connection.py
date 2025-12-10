@@ -13,7 +13,7 @@ with open('/app/frontend/.env', 'r') as f:
             BACKEND_URL = line.split('=')[1].strip()
             break
     else:
-        BACKEND_URL = "https://profile-followers.preview.emergentagent.com"
+        BACKEND_URL = "https://profilefix-3.preview.emergentagent.com"
 
 print(f"🌐 Backend URL: {BACKEND_URL}")
 
