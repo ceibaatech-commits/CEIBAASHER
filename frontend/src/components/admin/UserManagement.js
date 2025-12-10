@@ -143,12 +143,18 @@ const UserManagement = () => {
       );
 
       if (response.data.success) {
+        // Update local state with mutual exclusivity
+        // If turning Professor ON, turn Teacher OFF
         setUsers(users.map(user => 
           user.id === userId 
-            ? { ...user, isProfessor: !currentStatus }
+            ? { 
+                ...user, 
+                isProfessor: !currentStatus,
+                isTeacher: !currentStatus ? false : user.isTeacher
+              }
             : user
         ));
-        alert(`Professor status updated successfully!`);
+        alert(`Professor status updated successfully!${!currentStatus ? ' Teacher status disabled (mutual exclusivity).' : ''}`);
       }
     } catch (error) {
       console.error('Error updating professor status:', error);
