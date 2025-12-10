@@ -20,6 +20,12 @@ def init_db(database):
 class TeacherStatusUpdate(BaseModel):
     isTeacher: bool
 
+class OfficialStatusUpdate(BaseModel):
+    isOfficial: bool
+
+class InstituteStatusUpdate(BaseModel):
+    isInstitute: bool
+
 # ==================== TEACHER STATUS MANAGEMENT ====================
 
 @router.put("/admin/users/{user_id}/teacher-status")
