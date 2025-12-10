@@ -51,7 +51,7 @@ const Dashboard = () => {
     
     setLoadingContent(true);
     try {
-      if (tab === 'posts' || tab === 'retweets') {
+      if (tab === 'posts' || tab === 'reposts') {
         const response = await axios.get(
           `${BACKEND_URL}/api/profile/${user.username}/posts`,
           {
@@ -88,10 +88,10 @@ const Dashboard = () => {
   // Filter posts based on active tab
   const getFilteredPosts = () => {
     if (activeTab === 'posts') {
-      // Show only original posts (not retweets)
+      // Show only original posts (not reposts)
       return posts.filter(post => !post.is_retweet);
-    } else if (activeTab === 'retweets') {
-      // Show only retweets
+    } else if (activeTab === 'reposts') {
+      // Show only reposts
       return posts.filter(post => post.is_retweet === true);
     }
     return [];
@@ -326,16 +326,16 @@ const Dashboard = () => {
               </div>
             </button>
             <button
-              onClick={() => setActiveTab('retweets')}
+              onClick={() => setActiveTab('reposts')}
               className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'retweets'
+                activeTab === 'reposts'
                   ? 'border-b-2 border-purple-600 text-purple-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               <div className="flex items-center justify-center gap-2">
                 <Repeat2 className="w-5 h-5" />
-                Retweets
+                Reposts
               </div>
             </button>
           </div>
@@ -349,22 +349,22 @@ const Dashboard = () => {
               </div>
             ) : (
               <>
-                {(activeTab === 'posts' || activeTab === 'retweets') && (
+                {(activeTab === 'posts' || activeTab === 'reposts') && (
                   filteredPosts.length > 0 ? (
                     <div className="space-y-4">
                       {filteredPosts
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          {/* Retweet Indicator */}
+                          {/* Repost Indicator */}
                           {post.is_retweet === true && (
                             <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                               <Repeat2 className="w-4 h-4" />
-                              <span>You retweeted</span>
+                              <span>You reposted</span>
                             </div>
                           )}
                           
-                          {/* Original Author Info (for retweets) */}
+                          {/* Original Author Info (for reposts) */}
                           {post.is_retweet && post.original_username && (
                             <div className="mb-3 flex items-start gap-3">
                               <img
@@ -458,9 +458,9 @@ const Dashboard = () => {
                       ) : (
                         <>
                           <Repeat2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                          <p className="text-gray-600 text-lg">No retweets yet</p>
+                          <p className="text-gray-600 text-lg">No reposts yet</p>
                           <p className="text-gray-500 text-sm mt-2">
-                            Retweet posts from Victory Lane to share them here
+                            Repost posts from Victory Lane to share them here
                           </p>
                         </>
                       )}
