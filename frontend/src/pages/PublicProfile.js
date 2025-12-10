@@ -166,10 +166,15 @@ const PublicProfile = () => {
     );
   }
 
+  const logout = () => {
+    navigate('/login');
+  };
+
   // Private account with no access
   if (profile.is_private && !canView) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+        <Header isLoggedIn={!!user} user={user} onLogout={logout} />
         <div className="max-w-2xl mx-auto py-12 px-4">
           {/* Back Button */}
           <button
