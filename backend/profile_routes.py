@@ -238,8 +238,11 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
         user["followers_count"] = followers_count
         user["following_count"] = following_count
         
-        # Get posts count
-        posts_count = await db.social_posts.count_documents({"user_id": user["id"]})
+        # Get posts count (excluding reposts to match frontend Posts tab filter)
+        posts_count = await db.social_posts.count_documents({
+            "user_id": user["id"],
+            "is_retweet": {"$ne": True}
+        })
         user["posts_count"] = posts_count
         
         # Add badge information
