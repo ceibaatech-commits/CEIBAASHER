@@ -1173,13 +1173,48 @@ const VictoryLane = () => {
                           </div>
                           <span className="text-gray-500 text-sm">· {formatTimestamp(post.is_retweet ? post.original_created_at : post.created_at)}</span>
                         </div>
-                        {user && (post.is_retweet ? post.original_user_id : post.user_id) !== user.id && (
-                          <FollowButton 
-                            userId={post.is_retweet ? post.original_user_id : post.user_id} 
-                            user={user}
-                            followingList={followingList}
-                            toggleFollow={toggleFollow}
-                          />
+                        
+                        {/* Action buttons - Follow or Delete */}
+                        {user && (
+                          <>
+                            {post.user_id !== user.id ? (
+                              <FollowButton 
+                                userId={post.user_id} 
+                                user={user}
+                                followingList={followingList}
+                                toggleFollow={toggleFollow}
+                              />
+                            ) : (
+                              /* Three-dot menu for own posts */
+                              <div className="relative">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenMenuId(openMenuId === post.id ? null : post.id);
+                                  }}
+                                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                  <MoreHorizontal className="w-5 h-5" />
+                                </button>
+                                
+                                {/* Dropdown menu */}
+                                {openMenuId === post.id && (
+                                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteClick(post);
+                                      }}
+                                      className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                      Delete Post
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
 
