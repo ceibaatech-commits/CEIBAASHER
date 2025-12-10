@@ -16,6 +16,7 @@ import VictoryLane from "@/pages/VictoryLane";
 import Profile from "@/pages/Profile";
 import Books from "@/pages/Books";
 import BookDetails from "@/pages/BookDetails";
+import Courses from "@/pages/Courses";
 import AboutUs from "@/pages/AboutUs";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
