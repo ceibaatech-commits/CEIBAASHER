@@ -338,17 +338,46 @@ const PublicProfile = () => {
                 )}
 
                 {/* Badges */}
-                {profile.badges && profile.badges.length > 0 && (
+                {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute ||
+                  profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) && (
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {profile.badges.map(badge => (
-                      <span
-                        key={badge}
-                        className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold"
+                    {(profile.badges?.isTeacher || profile.isTeacher) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        title="Teacher Badge - Educator verified by administration"
                       >
-                        <Award className="w-4 h-4" />
-                        {badge}
+                        <Trophy className="w-4 h-4 mr-1.5" />
+                        Teacher
                       </span>
-                    ))}
+                    )}
+                    {(profile.badges?.isProfessor || profile.isProfessor) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        title="Professor Badge - Academic professor verified by administration"
+                      >
+                        <Trophy className="w-4 h-4 mr-1.5" />
+                        Professor
+                      </span>
+                    )}
+                    {(profile.badges?.isOfficial || profile.isOfficial) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        title="Official Badge - Verified organization or official entity"
+                      >
+                        <Award className="w-4 h-4 mr-1.5 fill-white" />
+                        Official
+                      </span>
+                    )}
+                    {(profile.badges?.isInstitute || profile.isInstitute) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
+                        title="Institute Badge - Verified educational institution"
+                      >
+                        <Trophy className="w-4 h-4 mr-1.5" />
+                        Institute
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
