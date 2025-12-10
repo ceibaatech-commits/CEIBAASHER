@@ -85,6 +85,50 @@ const UserManagement = () => {
     }
   };
 
+  // Toggle official status
+  const toggleOfficialStatus = async (userId, currentStatus) => {
+    try {
+      const response = await axios.put(
+        `${BACKEND_URL}/api/admin/users/${userId}/official-status`,
+        { isOfficial: !currentStatus }
+      );
+
+      if (response.data.success) {
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isOfficial: !currentStatus }
+            : user
+        ));
+        alert(`Official status updated successfully!`);
+      }
+    } catch (error) {
+      console.error('Error updating official status:', error);
+      alert('Failed to update official status');
+    }
+  };
+
+  // Toggle institute status
+  const toggleInstituteStatus = async (userId, currentStatus) => {
+    try {
+      const response = await axios.put(
+        `${BACKEND_URL}/api/admin/users/${userId}/institute-status`,
+        { isInstitute: !currentStatus }
+      );
+
+      if (response.data.success) {
+        setUsers(users.map(user => 
+          user.id === userId 
+            ? { ...user, isInstitute: !currentStatus }
+            : user
+        ));
+        alert(`Institute status updated successfully!`);
+      }
+    } catch (error) {
+      console.error('Error updating institute status:', error);
+      alert('Failed to update institute status');
+    }
+  };
+
   // Filter and sort users
   const getFilteredAndSortedUsers = () => {
     let filtered = [...users];
