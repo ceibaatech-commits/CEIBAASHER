@@ -108,7 +108,7 @@ const JoinRoom = () => {
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="bg-gradient-to-r from-blue-300 to-indigo-300 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-10 h-10" />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Join Battle</h1>
