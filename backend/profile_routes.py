@@ -557,14 +557,13 @@ async def unfollow_user(
 @router.post("/follow-request/{request_id}/approve")
 async def approve_follow_request(
     request_id: str,
+    req: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Approve a follow request (for private accounts)"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, req)
         
         # Get follow request
         follow_request = await db.follows.find_one({
