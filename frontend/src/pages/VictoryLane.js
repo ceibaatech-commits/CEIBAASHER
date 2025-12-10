@@ -1258,12 +1258,19 @@ const VictoryLane = () => {
                                       />
                                       <div className="flex-1 min-w-0">
                                         <div className="bg-gray-50 rounded-2xl px-3 py-2">
-                                          <span 
-                                            onClick={() => openProfile(comment.user_id)}
-                                            className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
-                                          >
-                                            {comment.user_name || comment.username || 'User'}
-                                          </span>
+                                          <div className="flex items-center gap-1.5">
+                                            <span 
+                                              onClick={() => openProfile(comment.user_id)}
+                                              className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
+                                            >
+                                              {comment.user_name || comment.username || 'User'}
+                                            </span>
+                                            {comment.isTeacher && (
+                                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
+                                                Teacher
+                                              </span>
+                                            )}
+                                          </div>
                                           <p className="text-gray-700 text-sm mt-0.5">{comment.content}</p>
                                         </div>
                                         <div className="flex items-center gap-3 mt-1 ml-3">
