@@ -281,14 +281,20 @@ const Dashboard = () => {
                 <p className="text-gray-600 text-sm">Posts</p>
               </div>
               <button
-                onClick={() => navigate('/dashboard/followers')}
+                onClick={() => {
+                  setFollowModalType('followers');
+                  setShowFollowModal(true);
+                }}
                 className="text-center hover:bg-gray-50 px-4 rounded-lg transition-colors"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
                 <p className="text-gray-600 text-sm">Followers</p>
               </button>
               <button
-                onClick={() => navigate('/dashboard/following')}
+                onClick={() => {
+                  setFollowModalType('following');
+                  setShowFollowModal(true);
+                }}
                 className="text-center hover:bg-gray-50 px-4 rounded-lg transition-colors"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
