@@ -31,9 +31,35 @@ quiz_sessions = {}
 
 @router.get("/exams")
 async def get_exams():
-    """Get all available exams"""
-    exams = get_all_exams()
-    return {"success": True, "exams": exams}
+    """Get all available exams - combines hardcoded + database CRUD exams"""
+    from exam_structure_routes import db
+    
+    # Get hardcoded exams
+    hardcoded_exams = get_all_exams()
+    
+    # Get CRUD-created exams from database
+    try:
+        db_exams = await db.exams.find({"is_active": True}, {"_id": 0}).to_list(100)
+        
+        # Convert DB exams to the expected format
+        for exam in db_exams:
+            # Check if this exam already exists in hardcoded list
+            existing = next((e for e in hardcoded_exams if e.get("name", "").upper() == exam.get("name", "").upper()), None)
+            if not existing:
+                hardcoded_exams.append({
+                    "name": exam.get("name"),
+                    "full_name": exam.get("name"),
+                    "description": exam.get("description", ""),
+                    "icon": exam.get("icon", "📚"),
+                    "color": f"from-{exam.get('color', 'blue')}-500 to-{exam.get('color', 'blue')}-600",
+                    "category": "Competitive Exams",
+                    "duration": exam.get("duration", 180),
+                    "total_marks": exam.get("total_marks", 100)
+                })
+    except Exception as e:
+        print(f"Error fetching CRUD exams: {e}")
+    
+    return {"success": True, "exams": hardcoded_exams}
 
 @router.get("/exam/{exam_id}")
 async def get_exam(exam_id: str):
