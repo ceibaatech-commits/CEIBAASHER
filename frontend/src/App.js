@@ -60,6 +60,7 @@ function App() {
   // Check for session_id in URL hash synchronously during render
   // This must happen before routing logic runs
   const hasSessionId = window.location.hash?.includes('session_id=');
+  const isAuthCallback = window.location.pathname?.includes('/auth');
   
   return (
     <AuthProvider>
