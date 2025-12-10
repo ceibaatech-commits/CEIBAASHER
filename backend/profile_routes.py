@@ -904,23 +904,10 @@ async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = No
         user = await get_user_by_username(username)
         user_id = user["id"]
         
-        # Check if can view (privacy check)
-        is_private = user.get("is_private", False)
+        # Privacy check - quiz rooms are publicly visible
+        # (Privacy setting is optional but doesn't restrict quiz room visibility)
+        # This ensures consistency between timeline and profile views
         can_view = True
-        
-        if is_private and current_user_id != user_id:
-            # Check if following
-            if current_user_id:
-                relationship = await check_follow_relationship(current_user_id, user_id)
-                can_view = relationship and relationship.get("status") == "approved"
-            else:
-                can_view = False
-        
-        if not can_view:
-            return {
-                "success": False,
-                "message": "This account is private"
-            }
         
         # Fetch user's quiz rooms
         # First get all quiz room posts by this user
