@@ -136,9 +136,15 @@ const Dashboard = () => {
   }
 
   const filteredPosts = getFilteredPosts();
+  
+  const logout = () => {
+    // Implement logout logic if needed
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+      <Header isLoggedIn={!!user} user={user} onLogout={logout} />
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Back Button */}
         <button
