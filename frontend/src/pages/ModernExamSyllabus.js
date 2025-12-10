@@ -317,24 +317,24 @@ const ModernExamSyllabus = () => {
           </div>
         )}
 
-        {/* Subject Filter */}
-        <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button onClick={() => setSelectedSubject('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                selectedSubject === 'all' ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        {/* Subject Filter - Compact */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button onClick={() => setSelectedSubject('all')}
+            style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}
+            className={`rounded-full font-semibold transition-all ${
+              selectedSubject === 'all' ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}>
+            All ({allTopics.length})
+          </button>
+          {subjects.map(subject => (
+            <button key={subject} onClick={() => setSelectedSubject(subject)}
+              style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}
+              className={`rounded-full font-semibold transition-all ${
+                selectedSubject === subject ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}>
-              All ({allTopics.length})
+              {subject} ({allTopics.filter(t => t.syllabus_topic === subject).length})
             </button>
-            {subjects.map(subject => (
-              <button key={subject} onClick={() => setSelectedSubject(subject)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  selectedSubject === subject ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}>
-                {subject} ({allTopics.filter(t => t.syllabus_topic === subject).length})
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
 
         {/* Topics Grid */}
