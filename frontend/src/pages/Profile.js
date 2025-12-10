@@ -438,6 +438,118 @@ const Profile = () => {
               </div>
             )}
 
+            {/* Badges Tab */}
+            {activeTab === 'badges' && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Badges & Achievements</h2>
+                
+                {/* Check if user has any badges */}
+                {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute || 
+                  profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    {/* Teacher Badge */}
+                    {(profile.badges?.isTeacher || profile.isTeacher) && (
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="bg-blue-600 p-3 rounded-xl shadow-md">
+                            <Trophy className="w-8 h-8 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-blue-900 mb-1">Teacher</h3>
+                            <p className="text-sm text-blue-700 mb-2">Verified Educator</p>
+                            <p className="text-xs text-blue-600 leading-relaxed">
+                              This badge indicates that this user is a verified teacher or educator, recognized by the platform administration for their educational contributions and expertise.
+                            </p>
+                            <div className="mt-3 flex items-center gap-2 text-xs text-blue-600">
+                              <Calendar className="w-3 h-3" />
+                              <span>Verified by Admin</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Professor Badge */}
+                    {(profile.badges?.isProfessor || profile.isProfessor) && (
+                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-2 border-indigo-200 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="bg-indigo-700 p-3 rounded-xl shadow-md">
+                            <Trophy className="w-8 h-8 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-indigo-900 mb-1">Professor</h3>
+                            <p className="text-sm text-indigo-700 mb-2">Academic Expert</p>
+                            <p className="text-xs text-indigo-600 leading-relaxed">
+                              This prestigious badge is awarded to verified academic professors who contribute their deep subject matter expertise and scholarly insights to the learning community.
+                            </p>
+                            <div className="mt-3 flex items-center gap-2 text-xs text-indigo-600">
+                              <Calendar className="w-3 h-3" />
+                              <span>Verified by Admin</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Official Badge */}
+                    {(profile.badges?.isOfficial || profile.isOfficial) && (
+                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-300 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="bg-gray-700 p-3 rounded-xl shadow-md">
+                            <CheckCircle2 className="w-8 h-8 text-white fill-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-900 mb-1">Official</h3>
+                            <p className="text-sm text-gray-700 mb-2">Verified Organization</p>
+                            <p className="text-xs text-gray-600 leading-relaxed">
+                              This badge designates verified official organizations, government entities, or NGOs that have been authenticated by platform administrators.
+                            </p>
+                            <div className="mt-3 flex items-center gap-2 text-xs text-gray-600">
+                              <Calendar className="w-3 h-3" />
+                              <span>Verified by Admin</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Institute Badge */}
+                    {(profile.badges?.isInstitute || profile.isInstitute) && (
+                      <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 rounded-xl shadow-md" style={{backgroundColor: '#8B2E2E'}}>
+                            <Trophy className="w-8 h-8 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold mb-1" style={{color: '#8B2E2E'}}>Institute</h3>
+                            <p className="text-sm mb-2" style={{color: '#6B1E1E'}}>Educational Institution</p>
+                            <p className="text-xs leading-relaxed" style={{color: '#8B2E2E'}}>
+                              This badge is reserved for verified educational institutions, colleges, and universities that maintain an official presence on the platform.
+                            </p>
+                            <div className="mt-3 flex items-center gap-2 text-xs" style={{color: '#8B2E2E'}}>
+                              <Calendar className="w-3 h-3" />
+                              <span>Verified by Admin</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-16">
+                    <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Trophy className="w-12 h-12 text-gray-400" />
+                    </div>
+                    <p className="text-gray-600 text-lg font-medium mb-2">No badges yet</p>
+                    <p className="text-gray-500 text-sm max-w-md mx-auto">
+                      Badges are awarded by administrators to recognize verified educators, institutions, and organizations.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Followers Tab */}
             {activeTab === 'followers' && (
               <div className="space-y-3">
