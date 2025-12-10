@@ -755,8 +755,11 @@ async def get_user_profile(user_id: str):
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Get posts count
-        user["posts_count"] = await db.social_posts.count_documents({"user_id": user_id})
+        # Get posts count (excluding reposts to match frontend Posts tab filter)
+        user["posts_count"] = await db.social_posts.count_documents({
+            "user_id": user_id,
+            "is_retweet": {"$ne": True}
+        })
         
         # Count followers (only approved follows from follows collection - single source of truth)
         user["followers_count"] = await db.follows.count_documents({
