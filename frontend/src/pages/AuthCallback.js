@@ -83,10 +83,11 @@ const AuthCallback = () => {
   }, []); // Empty dependency array - run only once
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Completing authentication...</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">
+      <div className="text-center p-8 bg-white rounded-2xl shadow-xl">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600 mx-auto"></div>
+        <p className="mt-6 text-xl font-semibold text-gray-800">Completing authentication...</p>
+        <p className="mt-2 text-sm text-gray-500">Please wait while we sign you in</p>
       </div>
     </div>
   );
