@@ -79,6 +79,12 @@ const VictoryLane = () => {
   const [newComment, setNewComment] = useState({});
   const [loadingComments, setLoadingComments] = useState({});
   
+  // Delete post state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
+  const [deletingPost, setDeletingPost] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  
   // Dynamic user data
   const [usersData, setUsersData] = useState({});
   const [followingList, setFollowingList] = useState(new Set());
