@@ -52,7 +52,37 @@ def init_db(database):
 
 # ==================== HELPER FUNCTIONS ====================
 
+async def get_user_from_session(session_token: str) -> Optional[str]:
+    """Get user_id from session token (Emergent auth)"""
+    try:
+        # Find session in database
+        session_doc = await db.user_sessions.find_one(
+            {"session_token": session_token},
+            {"_id": 0}
+        )
+        
+        if not session_doc:
+            return None
+        
+        # Check expiry
+        expires_at = session_doc["expires_at"]
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        
+        if expires_at < datetime.now(timezone.utc):
+            # Clean up expired session
+            await db.user_sessions.delete_one({"session_token": session_token})
+            return None
+        
+        return session_doc["user_id"]
+    except Exception as e:
+        print(f"Error validating session: {e}")
+        return None
+
 def decode_jwt_token(authorization: str) -> str:
+    """Decode JWT token (old auth system)"""
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid authorization header")
     token = authorization.replace("Bearer ", "")
@@ -65,7 +95,34 @@ def decode_jwt_token(authorization: str) -> str:
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
+async def get_user_id_from_request(authorization: Optional[str], request: any = None) -> str:
+    """
+    Get user_id from either session cookie (Emergent auth) or Authorization header (old JWT)
+    Supports both authentication methods for backward compatibility
+    """
+    # Try session cookie first (Emergent auth)
+    if request and hasattr(request, 'cookies'):
+        session_token = request.cookies.get("session_token")
+        if session_token:
+            user_id = await get_user_from_session(session_token)
+            if user_id:
+                return user_id
+    
+    # Try Authorization header with session token
+    if authorization:
+        if authorization.startswith("Bearer "):
+            token = authorization.replace("Bearer ", "")
+            # Try as session token first
+            user_id = await get_user_from_session(token)
+            if user_id:
+                return user_id
+            # Fall back to JWT
+            return decode_jwt_token(authorization)
+    
+    raise HTTPException(status_code=401, detail="Not authenticated")
+
 def get_optional_user_id(authorization: Optional[str]) -> Optional[str]:
+    """Legacy function for optional JWT auth"""
     if not authorization:
         return None
     try:
