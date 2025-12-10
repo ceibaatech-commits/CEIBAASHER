@@ -1313,8 +1313,8 @@ const VictoryLane = () => {
                                           </div>
                                         )}
 
-                                          {/* Nested Replies */}
-                                          {(postComments[post.id] || []).filter(r => r.parent_comment_id === comment.id).map((reply) => (
+                                        {/* Nested Replies */}
+                                        {(postComments[post.id] || []).filter(r => r.parent_comment_id === comment.id).map((reply) => (
                                             <div key={reply.id} className="flex gap-2 mt-3 ml-8 items-start">
                                               <UserAvatar
                                                 profilePicture={reply.user_avatar}
