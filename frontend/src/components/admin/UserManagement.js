@@ -65,7 +65,6 @@ const UserManagement = () => {
   // Toggle teacher status
   const toggleTeacherStatus = async (userId, currentStatus) => {
     try {
-      console.log('Toggling teacher status for user:', userId);
       const response = await axios.put(
         `${BACKEND_URL}/api/admin/users/${userId}/teacher-status`,
         { isTeacher: !currentStatus }
@@ -82,7 +81,6 @@ const UserManagement = () => {
       }
     } catch (error) {
       console.error('Error updating teacher status:', error);
-      console.error('User ID:', userId);
       alert('Failed to update teacher status');
     }
   };
