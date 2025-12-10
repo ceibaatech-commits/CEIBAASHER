@@ -1350,6 +1350,7 @@ const VictoryLane = () => {
                                     </div>
                                   </div>
                                 ))
+                              )}
                             </div>
                           )}
                         </div>
