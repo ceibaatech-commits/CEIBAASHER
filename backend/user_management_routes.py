@@ -260,3 +260,69 @@ async def update_professor_status(user_id: str, status_update: ProfessorStatusUp
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating professor status: {str(e)}")
+
+
+@router.post("/admin/fix-badge-data-integrity")
+async def fix_badge_data_integrity():
+    """
+    Fix data integrity issues where posts/comments are missing badge fields
+    or have mismatched badge values compared to their user
+    """
+    try:
+        fixed_users = []
+        
+        # Get all users with badges
+        users_with_badges = await db.users.find(
+            {
+                "$or": [
+                    {"isTeacher": True},
+                    {"isProfessor": True},
+                    {"isOfficial": True},
+                    {"isInstitute": True}
+                ]
+            },
+            {"_id": 0, "id": 1, "name": 1, "isTeacher": 1, "isProfessor": 1, "isOfficial": 1, "isInstitute": 1}
+        ).to_list(1000)
+        
+        for user in users_with_badges:
+            user_id = user["id"]
+            user_name = user.get("name", user_id)
+            
+            # Build the update for this user's posts/comments
+            update_fields = {
+                "isTeacher": user.get("isTeacher", False),
+                "isProfessor": user.get("isProfessor", False),
+                "isOfficial": user.get("isOfficial", False),
+                "isInstitute": user.get("isInstitute", False)
+            }
+            
+            # Update posts that either:
+            # 1. Don't have the badge fields at all (missing)
+            # 2. Have incorrect values
+            posts_result = await db.social_posts.update_many(
+                {"user_id": user_id},
+                {"$set": update_fields}
+            )
+            
+            comments_result = await db.comments.update_many(
+                {"user_id": user_id},
+                {"$set": update_fields}
+            )
+            
+            if posts_result.modified_count > 0 or comments_result.modified_count > 0:
+                fixed_users.append({
+                    "user_id": user_id,
+                    "user_name": user_name,
+                    "posts_fixed": posts_result.modified_count,
+                    "comments_fixed": comments_result.modified_count
+                })
+        
+        return {
+            "success": True,
+            "message": "Badge data integrity check complete",
+            "users_fixed": len(fixed_users),
+            "details": fixed_users
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fixing badge data integrity: {str(e)}")
