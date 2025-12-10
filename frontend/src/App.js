@@ -67,8 +67,8 @@ function App() {
         <div className="App">
           <BrowserRouter>
             <ScrollRestoration />
-            {hasSessionId || isAuthCallback ? (
-              // If session_id detected or on auth route, render only AuthCallback
+            {hasSessionId ? (
+              // If session_id detected, render only AuthCallback
               <AuthCallback />
             ) : (
               <Routes>
