@@ -416,10 +416,11 @@ const ModernExamSyllabus = () => {
                 <div className="space-y-2">
                   <button 
                     onClick={() => navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.75rem' }}
-                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} text-white rounded-lg font-semibold hover:shadow-lg transition-all`}
+                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-blue-600'} text-white py-2 px-4 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2`}
+                    style={{ minHeight: '40px' }}
                   >
-                    {examData?.game_mode ? '🎯 Quick Play' : '📚 Solo Practice'}
+                    <span className="text-base">{examData?.game_mode ? '🎯' : '📚'}</span>
+                    <span>{examData?.game_mode ? 'Quick Play' : 'Solo Practice'}</span>
                   </button>
                   <div className="grid grid-cols-2 gap-2">
                     <button 
