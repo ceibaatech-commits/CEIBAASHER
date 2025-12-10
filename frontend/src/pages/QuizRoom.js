@@ -158,15 +158,16 @@ const QuizRoom = () => {
     if (!questions.length) return;
 
     const currentQuestion = questions[currentQuestionIndex];
-    const selectedLetter = optionKeyToLetter(selectedAnswer);
-    // Compare case-insensitively since backend uses lowercase ('a') and frontend uses uppercase ('A')
-    const isCorrect = selectedLetter?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase();
+    // selectedAnswer is already in the correct format (e.g., 'A', 'B', 'C', 'D')
+    // Compare directly with correct_answer (case-insensitive)
+    const isCorrect = selectedAnswer?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || 
+                      selectedAnswer?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase();
     const points = getQuestionPoints(currentQuestion);
 
     const answerEntry = {
       question_id: currentQuestionIndex,
-      selected_answer: selectedLetter,
-      correct_answer: currentQuestion.correct_answer,
+      selected_answer: selectedAnswer,
+      correct_answer: currentQuestion.correct_answer || currentQuestion.correctAnswer,
       is_correct: isCorrect,
       time_taken: (currentQuestion.time_limit || 30) - timeLeft
     };
