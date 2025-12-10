@@ -696,7 +696,7 @@ async def share_post(post_id: str, authorization: Optional[str] = Header(None)):
         
         # Create retweet post
         retweet_post = {
-            "id": str(uuid4()),
+            "id": str(uuid.uuid4()),
             "user_id": user_id,
             "user_name": user.get("name", ""),
             "username": user.get("username", ""),
