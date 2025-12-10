@@ -96,31 +96,76 @@ class FollowResponse(BaseModel):
 
 # ==================== HELPER FUNCTIONS ====================
 
+async def get_user_from_session(session_token: str) -> Optional[str]:
+    """Get user_id from session token (Emergent auth)"""
+    try:
+        # Find session in database
+        session_doc = await db.user_sessions.find_one(
+            {"session_token": session_token},
+            {"_id": 0}
+        )
+        
+        if not session_doc:
+            return None
+        
+        # Check expiry
+        expires_at = session_doc["expires_at"]
+        if isinstance(expires_at, str):
+            expires_at = datetime.fromisoformat(expires_at)
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        
+        if expires_at < datetime.now(timezone.utc):
+            # Clean up expired session
+            await db.user_sessions.delete_one({"session_token": session_token})
+            return None
+        
+        return session_doc["user_id"]
+    except Exception as e:
+        print(f"Error validating session: {e}")
+        return None
+
 def decode_jwt_token(authorization: str) -> str:
-    """Decode JWT token and extract user_id"""
-    print(f"[DEBUG] Received authorization header: {authorization[:50] if authorization else 'None'}...")
-    
+    """Decode JWT token and extract user_id (old auth)"""
     if not authorization or not authorization.startswith("Bearer "):
-        print(f"[DEBUG] Invalid authorization header format")
         raise HTTPException(status_code=401, detail="Invalid authorization header")
     
     token = authorization.replace("Bearer ", "")
-    print(f"[DEBUG] Token after removing Bearer: {token[:50] if len(token) > 50 else token}...")
-    print(f"[DEBUG] Token length: {len(token)}")
-    print(f"[DEBUG] Token parts: {len(token.split('.'))}")
     
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")
         if not user_id:
-            print(f"[DEBUG] No user ID in token payload")
             raise HTTPException(status_code=401, detail="Invalid token - no user ID found")
-        print(f"[DEBUG] Successfully decoded token for user: {user_id}")
         return user_id
     except JWTError as e:
-        print(f"[DEBUG] JWT decode error: {str(e)}")
-        print(f"[DEBUG] JWT_SECRET being used: {JWT_SECRET[:20]}...")
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+
+async def get_user_id_from_request(authorization: Optional[str], request: Request = None) -> str:
+    """
+    Get user_id from either session cookie (Emergent auth) or Authorization header (old JWT)
+    Supports both authentication methods for backward compatibility
+    """
+    # Try session cookie first (Emergent auth)
+    if request and hasattr(request, 'cookies'):
+        session_token = request.cookies.get("session_token")
+        if session_token:
+            user_id = await get_user_from_session(session_token)
+            if user_id:
+                return user_id
+    
+    # Try Authorization header with session token or JWT
+    if authorization:
+        if authorization.startswith("Bearer "):
+            token = authorization.replace("Bearer ", "")
+            # Try as session token first
+            user_id = await get_user_from_session(token)
+            if user_id:
+                return user_id
+            # Fall back to JWT
+            return decode_jwt_token(authorization)
+    
+    raise HTTPException(status_code=401, detail="Not authenticated")
 
 async def get_user_by_id(user_id: str):
     """Get user from database by ID"""
