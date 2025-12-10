@@ -78,6 +78,16 @@ const VictoryLane = () => {
   const [newComment, setNewComment] = useState({});
   const [loadingComments, setLoadingComments] = useState({});
   
+  // Revealed answers state (persisted in localStorage)
+  const [revealedAnswers, setRevealedAnswers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('revealedAnswers');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+  
   // Dynamic user data
   const [usersData, setUsersData] = useState({});
   const [followingList, setFollowingList] = useState(new Set());
