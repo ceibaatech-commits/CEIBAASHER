@@ -664,18 +664,83 @@ async def add_comment(
 
 @router.post("/posts/{post_id}/share")
 async def share_post(post_id: str, authorization: Optional[str] = Header(None)):
-    """Share a post"""
+    """Share a post - creates a retweet post on user's profile"""
     try:
-        result = await db.social_posts.update_one({"id": post_id}, {"$inc": {"shares_count": 1, "trending_score": 3}})
-        if result.matched_count == 0:
+        # Get current user from token
+        user_id = None
+        if authorization:
+            token = authorization.replace("Bearer ", "")
+            payload = decode_token(token)
+            user_id = payload.get("user_id")
+        
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        # Get the original post
+        original_post = await db.social_posts.find_one({"id": post_id}, {"_id": 0})
+        if not original_post:
             raise HTTPException(status_code=404, detail="Post not found")
         
+        # Check if user already retweeted this post
+        existing_retweet = await db.social_posts.find_one({
+            "user_id": user_id,
+            "is_retweet": True,
+            "original_post_id": post_id
+        })
+        if existing_retweet:
+            return {"success": False, "message": "You already shared this post"}
+        
+        # Get user info
+        user = await db.users.find_one({"id": user_id}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Create retweet post
+        retweet_post = {
+            "id": str(uuid4()),
+            "user_id": user_id,
+            "user_name": user.get("name", ""),
+            "username": user.get("username", ""),
+            "user_avatar": user.get("profile_picture"),
+            "is_verified": user.get("is_verified", False),
+            "content": original_post.get("content", ""),
+            "created_at": datetime.now(timezone.utc),
+            "likes_count": 0,
+            "comments_count": 0,
+            "shares_count": 0,
+            "trending_score": 0,
+            "liked_by": [],
+            "bookmarked_by": [],
+            "is_retweet": True,
+            "original_post_id": post_id,
+            "original_user_id": original_post.get("user_id"),
+            "original_user_name": original_post.get("user_name"),
+            "original_username": original_post.get("username"),
+            "original_user_avatar": original_post.get("user_avatar"),
+            "original_created_at": original_post.get("created_at")
+        }
+        
+        # Copy badges from user
+        if user.get("isTeacher"):
+            retweet_post["isTeacher"] = True
+        if user.get("isProfessor"):
+            retweet_post["isProfessor"] = True
+        
+        # Insert retweet post
+        await db.social_posts.insert_one(retweet_post)
+        
+        # Increment share count on original post
+        await db.social_posts.update_one(
+            {"id": post_id}, 
+            {"$inc": {"shares_count": 1, "trending_score": 3}}
+        )
+        
         # Get updated shares count and broadcast
-        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "shares_count": 1})
-        shares_count = post.get("shares_count", 1) if post else 1
+        updated_post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "shares_count": 1})
+        shares_count = updated_post.get("shares_count", 1) if updated_post else 1
         asyncio.create_task(social_socketio.broadcast_post_shared(post_id, shares_count))
         
-        return {"success": True, "message": "Post shared"}
+        return {"success": True, "message": "Post shared", "retweet_id": retweet_post["id"]}
     except HTTPException:
         raise
     except Exception as e:
