@@ -985,9 +985,12 @@ async def get_user_liked_posts(username: str, current_user_id: Optional[str] = N
         # Fetch the actual posts
         posts = await db.social_posts.find({"id": {"$in": post_ids}}).to_list(length=100)
         
-        # Remove MongoDB _id field
+        # Remove MongoDB _id field and ensure is_retweet is explicitly set
         for post in posts:
             post.pop("_id", None)
+            # Ensure is_retweet is explicitly false if not present
+            if "is_retweet" not in post:
+                post["is_retweet"] = False
         
         return {
             "success": True,
