@@ -478,6 +478,9 @@ async def get_following_feed(
                 "post_id": post["id"]
             })
             post["liked_by_user"] = liked is not None
+            # Ensure is_retweet is explicitly false if not present
+            if "is_retweet" not in post:
+                post["is_retweet"] = False
         
         return {"success": True, "posts": paginated, "count": len(paginated)}
     except HTTPException:
