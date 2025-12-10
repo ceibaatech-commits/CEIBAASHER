@@ -142,6 +142,7 @@ async def get_all_topics(exam_id: str):
                 "is_active": True
             }, {"_id": 0}).to_list(1000)
             
+            # First, add chapters
             for chapter in chapters:
                 category_name = chapter.get("category_name")  # e.g., "Physics"
                 chapter_name = chapter.get("name")  # e.g., "Mechanics"
@@ -154,6 +155,21 @@ async def get_all_topics(exam_id: str):
                             "syllabus_topic": category_name,
                             "subject": chapter_name,
                             "sub_topics": sub_topics,
+                            "questions": 0
+                        }
+            
+            # Also add categories without chapters (as placeholder topics)
+            # This allows categories to show up even before chapters are created
+            category_ids_with_chapters = set(ch.get("category_id") for ch in chapters)
+            for cat in categories:
+                if cat.get("id") not in category_ids_with_chapters:
+                    # This category has no chapters, show it as a placeholder
+                    key = f"{cat.get('name')}||General"
+                    if key not in topics_dict:
+                        topics_dict[key] = {
+                            "syllabus_topic": cat.get("name"),
+                            "subject": "General",
+                            "sub_topics": [],
                             "questions": 0
                         }
         
