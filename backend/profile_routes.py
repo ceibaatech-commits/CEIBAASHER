@@ -848,6 +848,7 @@ async def get_follow_requests(
 @router.get("/follow-status/{target_user_id}")
 async def get_follow_status(
     target_user_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Check follow status between current user and target user"""
@@ -859,7 +860,15 @@ async def get_follow_status(
                 "status": None
             }
         
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        try:
+            user_id = await get_user_id_from_request(authorization, request)
+        except HTTPException:
+            return {
+                "success": True,
+                "following": False,
+                "status": None
+            }
         
         # Check relationship
         relationship = await check_follow_relationship(user_id, target_user_id)
