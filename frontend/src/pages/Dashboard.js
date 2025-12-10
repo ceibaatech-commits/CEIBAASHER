@@ -325,8 +325,11 @@ const Dashboard = () => {
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                          {/* Debug: Show is_retweet value */}
+                          {console.log(`Post ${post.id.substring(0,8)}: is_retweet=${post.is_retweet}`)}
+                          
                           {/* Retweet Indicator */}
-                          {post.is_retweet && (
+                          {post.is_retweet === true && (
                             <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                               <Repeat2 className="w-4 h-4" />
                               <span>You retweeted</span>
