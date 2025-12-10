@@ -726,17 +726,11 @@ async def add_comment(
         raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
 
 @router.post("/posts/{post_id}/share")
-async def share_post(post_id: str, authorization: Optional[str] = Header(None)):
+async def share_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Share a post - creates a retweet post on user's profile"""
     try:
-        # Get current user from token
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Authentication required")
-        
-        user_id = decode_jwt_token(authorization)
-        
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Authentication required")
+        # Get current user using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, request)
         
         # Get the original post
         original_post = await db.social_posts.find_one({"id": post_id}, {"_id": 0})
