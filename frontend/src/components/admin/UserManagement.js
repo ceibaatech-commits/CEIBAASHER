@@ -445,37 +445,37 @@ const UserManagement = () => {
                       <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => toggleTeacherStatus(user.id, user.isTeacher)}
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold transition-all ${
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                             user.isTeacher
                               ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                           }`}
-                          title={user.isTeacher ? 'Remove teacher' : 'Make teacher'}
+                          title={user.isTeacher ? 'Remove teacher badge' : 'Add teacher badge'}
                         >
-                          <Award className="w-3 h-3 mr-1" />
-                          {user.isTeacher ? 'Teacher' : 'Student'}
+                          {user.isTeacher ? '✓ Teacher' : 'Teacher'}
                         </button>
                         <button
                           onClick={() => toggleOfficialStatus(user.id, user.isOfficial)}
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold transition-all ${
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                             user.isOfficial
                               ? 'bg-gray-500 text-white hover:bg-gray-600'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                           }`}
-                          title={user.isOfficial ? 'Remove official' : 'Make official'}
+                          title={user.isOfficial ? 'Remove official badge' : 'Add official badge'}
                         >
-                          {user.isOfficial ? 'Official' : 'User'}
+                          {user.isOfficial ? '✓ Official' : 'Official'}
                         </button>
                         <button
                           onClick={() => toggleInstituteStatus(user.id, user.isInstitute)}
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold transition-all ${
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                             user.isInstitute
-                              ? 'bg-red-900 text-white hover:bg-red-950'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'text-white hover:opacity-90'
+                              : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                           }`}
-                          title={user.isInstitute ? 'Remove institute' : 'Make institute'}
+                          style={user.isInstitute ? {backgroundColor: '#8B2E2E'} : {}}
+                          title={user.isInstitute ? 'Remove institute badge' : 'Add institute badge'}
                         >
-                          {user.isInstitute ? 'Institute' : 'User'}
+                          {user.isInstitute ? '✓ Institute' : 'Institute'}
                         </button>
                       </div>
                     </td>
