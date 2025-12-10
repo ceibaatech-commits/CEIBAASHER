@@ -412,7 +412,8 @@ const ModernExamSyllabus = () => {
                 <div className="space-y-2">
                   <button 
                     onClick={() => navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
+                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.75rem' }}
+                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} text-white rounded-lg font-semibold hover:shadow-lg transition-all`}
                   >
                     {examData?.game_mode ? '🎯 Quick Play' : '📚 Solo Practice'}
                   </button>
