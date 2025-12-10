@@ -151,3 +151,34 @@ async def update_institute_status(user_id: str, status_update: InstituteStatusUp
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error updating institute status: {str(e)}")
+
+@router.put("/admin/users/{user_id}/professor-status")
+async def update_professor_status(user_id: str, status_update: ProfessorStatusUpdate):
+    """
+    Update professor status for a user (Professors)
+    """
+    try:
+        result = await db.users.update_one(
+            {"id": user_id},
+            {
+                "$set": {
+                    "isProfessor": status_update.isProfessor,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "success": True,
+            "message": f"Professor status updated to {status_update.isProfessor}",
+            "user_id": user_id,
+            "isProfessor": status_update.isProfessor
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating professor status: {str(e)}")
