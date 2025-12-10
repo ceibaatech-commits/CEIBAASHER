@@ -41,8 +41,8 @@ const AuthCallback = () => {
           // Set flag to skip delay in ProtectedRoute
           sessionStorage.setItem('just_authenticated', 'true');
 
-          // Redirect to dashboard
-          navigate('/dashboard', { 
+          // Redirect to victory-lane (main app page)
+          navigate('/victory-lane', { 
             replace: true,
             state: { user: userData }
           });
