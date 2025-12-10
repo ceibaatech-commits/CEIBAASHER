@@ -86,3 +86,65 @@ async def get_teacher_status(user_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching teacher status: {str(e)}")
+
+@router.put("/admin/users/{user_id}/official-status")
+async def update_official_status(user_id: str, status_update: OfficialStatusUpdate):
+    """
+    Update official status for a user (NGOs, Government offices)
+    """
+    try:
+        result = await db.users.update_one(
+            {"id": user_id},
+            {
+                "$set": {
+                    "isOfficial": status_update.isOfficial,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "success": True,
+            "message": f"Official status updated to {status_update.isOfficial}",
+            "user_id": user_id,
+            "isOfficial": status_update.isOfficial
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating official status: {str(e)}")
+
+@router.put("/admin/users/{user_id}/institute-status")
+async def update_institute_status(user_id: str, status_update: InstituteStatusUpdate):
+    """
+    Update institute status for a user (Educational institutions, Organizations)
+    """
+    try:
+        result = await db.users.update_one(
+            {"id": user_id},
+            {
+                "$set": {
+                    "isInstitute": status_update.isInstitute,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "success": True,
+            "message": f"Institute status updated to {status_update.isInstitute}",
+            "user_id": user_id,
+            "isInstitute": status_update.isInstitute
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating institute status: {str(e)}")
