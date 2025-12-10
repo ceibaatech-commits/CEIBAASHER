@@ -321,10 +321,18 @@ const Dashboard = () => {
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                          {/* Retweet Indicator */}
+                          {post.is_retweet && (
+                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                              <Repeat2 className="w-4 h-4" />
+                              <span>You retweeted</span>
+                            </div>
+                          )}
+                          
                           <div className="flex items-start justify-between mb-2">
                             <div>
                               <p className="text-sm text-gray-500">
-                                {new Date(post.created_at).toLocaleString('en-US', {
+                                {new Date(post.is_retweet ? post.original_created_at : post.created_at).toLocaleString('en-US', {
                                   month: 'short',
                                   day: 'numeric',
                                   year: 'numeric',
@@ -332,7 +340,12 @@ const Dashboard = () => {
                                   minute: '2-digit'
                                 })}
                               </p>
-                              {post.post_type && (
+                              {post.is_retweet && (
+                                <p className="text-xs text-gray-600 mt-1">
+                                  Originally by <span className="font-semibold">{post.original_user_name || post.original_username}</span>
+                                </p>
+                              )}
+                              {post.post_type && !post.is_retweet && (
                                 <span className="inline-block mt-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
                                   {post.post_type === 'quiz_room' ? 'Quiz Room' : post.post_type}
                                 </span>
