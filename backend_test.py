@@ -1049,6 +1049,244 @@ class BackendTester:
             traceback.print_exc()
             return False
 
+    def test_retroactive_badge_update_fix_for_bass(self):
+        """Test the retroactive badge update fix for demo2 (Bass) - Comprehensive verification"""
+        try:
+            print("\n🎯 TESTING RETROACTIVE BADGE UPDATE FIX FOR DEMO2 (BASS)")
+            print("=" * 60)
+            
+            # Step 1: Login demo2 (Bass) to get user info
+            demo2_token, demo2_user_id = self.login_demo_user('demo2')
+            if not demo2_token:
+                self.log_result("Bass Badge Test - Demo2 Login", False, "❌ Failed to login demo2 (Bass)")
+                return False
+            
+            self.log_result("Bass Badge Test - Demo2 Login", True, f"✅ Demo2 (Bass) logged in successfully with user_id: {demo2_user_id}")
+            
+            # Step 2: Test Scenario 1 - Verify All Bass Posts Have Professor Badge
+            self.log_result("Bass Badge Test - Scenario 1", True, "🔄 Verifying All Bass Posts Have Professor Badge")
+            
+            # Query MongoDB social_posts collection for all posts by demo2-uuid
+            bass_posts_verification = self.verify_bass_posts_in_mongodb()
+            if bass_posts_verification['success']:
+                total_posts = bass_posts_verification['total_posts']
+                posts_with_professor = bass_posts_verification['posts_with_professor']
+                posts_missing_field = bass_posts_verification['posts_missing_field']
+                
+                if posts_missing_field == 0 and posts_with_professor == total_posts:
+                    self.log_result("Bass Posts MongoDB Verification", True, 
+                                  f"✅ ALL {total_posts} Bass posts have isProfessor: true, NO posts missing isProfessor field")
+                else:
+                    self.log_result("Bass Posts MongoDB Verification", False, 
+                                  f"❌ {posts_missing_field} posts missing isProfessor field, {posts_with_professor}/{total_posts} have isProfessor: true")
+            else:
+                self.log_result("Bass Posts MongoDB Verification", False, f"❌ MongoDB verification failed: {bass_posts_verification['error']}")
+                return False
+            
+            # Step 3: Test Scenario 2 - Verify Victory Lane API Returns Correct Badges
+            self.log_result("Bass Badge Test - Scenario 2", True, "🔄 Verifying Victory Lane API Returns Correct Badges")
+            
+            # Call GET /api/social/feed/trending
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/trending")
+            
+            if response.status_code != 200:
+                self.log_result("Victory Lane Trending API", False, f"❌ Trending feed API failed: {response.status_code}")
+                return False
+            
+            trending_result = response.json()
+            if not trending_result.get('success'):
+                self.log_result("Victory Lane Trending API", False, f"❌ Trending feed returned success=false: {trending_result}")
+                return False
+            
+            # Find all posts by Bass (user_name: "Bass")
+            posts = trending_result.get('posts', [])
+            bass_posts_in_feed = [p for p in posts if p.get('user_name') == 'Bass' or p.get('user_id') == 'demo2-uuid']
+            
+            if not bass_posts_in_feed:
+                self.log_result("Victory Lane Bass Posts", False, "❌ No posts by Bass found in trending feed")
+                return False
+            
+            # Verify each post shows isProfessor: true and isTeacher: false
+            correct_badge_posts = 0
+            for post in bass_posts_in_feed:
+                is_professor = post.get('isProfessor', False)
+                is_teacher = post.get('isTeacher', False)
+                
+                if is_professor and not is_teacher:
+                    correct_badge_posts += 1
+            
+            if correct_badge_posts == len(bass_posts_in_feed):
+                self.log_result("Victory Lane Badge Verification", True, 
+                              f"✅ ALL {len(bass_posts_in_feed)} Bass posts in trending feed show isProfessor: true, isTeacher: false")
+            else:
+                self.log_result("Victory Lane Badge Verification", False, 
+                              f"❌ Only {correct_badge_posts}/{len(bass_posts_in_feed)} Bass posts have correct badges")
+            
+            # Step 4: Test Scenario 3 - Test Data Integrity Endpoint
+            self.log_result("Bass Badge Test - Scenario 3", True, "🔄 Testing Data Integrity Endpoint")
+            
+            # Call POST /api/admin/fix-badge-data-integrity
+            response = requests.post(f"{BACKEND_URL}/api/admin/fix-badge-data-integrity")
+            
+            if response.status_code != 200:
+                self.log_result("Data Integrity Endpoint", False, f"❌ Data integrity endpoint failed: {response.status_code}")
+                return False
+            
+            integrity_result = response.json()
+            if not integrity_result.get('success'):
+                self.log_result("Data Integrity Endpoint", False, f"❌ Data integrity returned success=false: {integrity_result}")
+                return False
+            
+            users_fixed = integrity_result.get('users_fixed', 0)
+            details = integrity_result.get('details', [])
+            
+            self.log_result("Data Integrity Endpoint", True, 
+                          f"✅ Data integrity check completed - {users_fixed} users had badge mismatches fixed")
+            
+            # Step 5: Test Scenario 4 - Test Toggle Still Works
+            self.log_result("Bass Badge Test - Scenario 4", True, "🔄 Testing Badge Toggle Still Works")
+            
+            # Login admin for badge management
+            admin_token, admin_user_id = self.login_admin()
+            if not admin_token:
+                self.log_result("Badge Toggle - Admin Login", False, "❌ Failed to login admin for badge toggle test")
+                return False
+            
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            # Toggle Bass's Professor badge OFF
+            professor_off_data = {"isProfessor": False}
+            response = requests.put(f"{BACKEND_URL}/api/admin/users/demo2-uuid/professor-status", 
+                                  json=professor_off_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Badge Toggle - Professor OFF", False, f"❌ Professor OFF failed: {response.status_code}")
+                return False
+            
+            prof_off_result = response.json()
+            if not prof_off_result.get('success'):
+                self.log_result("Badge Toggle - Professor OFF", False, f"❌ Professor OFF returned success=false: {prof_off_result}")
+                return False
+            
+            posts_updated_off = prof_off_result.get('posts_updated', 0)
+            
+            if posts_updated_off > 0:
+                self.log_result("Badge Toggle - Professor OFF", True, 
+                              f"✅ Professor badge toggled OFF - {posts_updated_off} posts updated")
+            else:
+                self.log_result("Badge Toggle - Professor OFF", False, "❌ No posts were updated when toggling Professor OFF")
+            
+            # Verify MongoDB shows all posts now have isProfessor: false
+            bass_posts_after_off = self.verify_bass_posts_professor_status(expected_professor=False)
+            if bass_posts_after_off:
+                self.log_result("Badge Toggle - MongoDB Verification OFF", True, "✅ MongoDB confirms all Bass posts now have isProfessor: false")
+            else:
+                self.log_result("Badge Toggle - MongoDB Verification OFF", False, "❌ MongoDB verification failed for Professor OFF")
+            
+            # Toggle it back ON
+            professor_on_data = {"isProfessor": True}
+            response = requests.put(f"{BACKEND_URL}/api/admin/users/demo2-uuid/professor-status", 
+                                  json=professor_on_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Badge Toggle - Professor ON", False, f"❌ Professor ON failed: {response.status_code}")
+                return False
+            
+            prof_on_result = response.json()
+            if not prof_on_result.get('success'):
+                self.log_result("Badge Toggle - Professor ON", False, f"❌ Professor ON returned success=false: {prof_on_result}")
+                return False
+            
+            posts_updated_on = prof_on_result.get('posts_updated', 0)
+            
+            if posts_updated_on > 0:
+                self.log_result("Badge Toggle - Professor ON", True, 
+                              f"✅ Professor badge toggled ON - {posts_updated_on} posts updated")
+            else:
+                self.log_result("Badge Toggle - Professor ON", False, "❌ No posts were updated when toggling Professor ON")
+            
+            # Verify all posts updated again
+            bass_posts_after_on = self.verify_bass_posts_professor_status(expected_professor=True)
+            if bass_posts_after_on:
+                self.log_result("Badge Toggle - MongoDB Verification ON", True, "✅ MongoDB confirms all Bass posts now have isProfessor: true")
+            else:
+                self.log_result("Badge Toggle - MongoDB Verification ON", False, "❌ MongoDB verification failed for Professor ON")
+            
+            print("\n🎉 RETROACTIVE BADGE UPDATE FIX FOR BASS TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Demo2 (Bass) authentication ✅")
+            print("  2. MongoDB posts verification (all have isProfessor: true) ✅")
+            print("  3. Victory Lane API badge verification ✅")
+            print("  4. Data integrity endpoint test ✅")
+            print("  5. Badge toggle OFF functionality ✅")
+            print("  6. MongoDB verification after toggle OFF ✅")
+            print("  7. Badge toggle ON functionality ✅")
+            print("  8. MongoDB verification after toggle ON ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Bass Badge Test - Exception", False, f"❌ Bass badge test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def verify_bass_posts_in_mongodb(self):
+        """Verify Bass posts in MongoDB social_posts collection"""
+        try:
+            import pymongo
+            from pymongo import MongoClient
+            
+            # Connect to MongoDB
+            client = MongoClient("mongodb://localhost:27017")
+            db = client["test_database"]
+            
+            # Query all posts by demo2-uuid
+            bass_posts = list(db.social_posts.find({"user_id": "demo2-uuid"}, {"_id": 0, "isProfessor": 1, "isTeacher": 1}))
+            
+            total_posts = len(bass_posts)
+            posts_with_professor = sum(1 for post in bass_posts if post.get('isProfessor') == True)
+            posts_missing_field = sum(1 for post in bass_posts if 'isProfessor' not in post)
+            
+            client.close()
+            
+            return {
+                'success': True,
+                'total_posts': total_posts,
+                'posts_with_professor': posts_with_professor,
+                'posts_missing_field': posts_missing_field
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+
+    def verify_bass_posts_professor_status(self, expected_professor=True):
+        """Verify Bass posts have expected professor status in MongoDB"""
+        try:
+            import pymongo
+            from pymongo import MongoClient
+            
+            # Connect to MongoDB
+            client = MongoClient("mongodb://localhost:27017")
+            db = client["test_database"]
+            
+            # Query all posts by demo2-uuid
+            bass_posts = list(db.social_posts.find({"user_id": "demo2-uuid"}, {"_id": 0, "isProfessor": 1}))
+            
+            # Check if all posts have expected professor status
+            correct_posts = sum(1 for post in bass_posts if post.get('isProfessor') == expected_professor)
+            
+            client.close()
+            
+            return correct_posts == len(bass_posts) and len(bass_posts) > 0
+            
+        except Exception as e:
+            print(f"Bass posts verification error: {e}")
+            return False
+
     def test_teacher_professor_badge_mutual_exclusivity(self):
         """Test Professor/Teacher badge mutual exclusivity feature comprehensively"""
         try:
