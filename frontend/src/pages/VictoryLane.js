@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { 
-  Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Users, 
+  Heart, MessageCircle, Share2, Repeat2, Bookmark, MoreHorizontal, Users, 
   Clock, Trophy, Play, Send, X, Plus, AlertCircle, CheckCircle2,
   Sparkles, TrendingUp, UserPlus, Wifi, WifiOff, UserMinus, MapPin, Calendar, Link2
 } from 'lucide-react';
