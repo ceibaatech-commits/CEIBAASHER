@@ -559,13 +559,10 @@ async def get_leaderboard_feed(skip: int = 0, limit: int = 10):
 # ==================== ENGAGEMENT ENDPOINTS ====================
 
 @router.post("/posts/{post_id}/like")
-async def like_post(post_id: str, authorization: Optional[str] = Header(None)):
+async def like_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Like a post"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        user_id = decode_jwt_token(authorization)
+        user_id = await get_user_id_from_request(authorization, request)
         
         existing = await db.post_likes.find_one({"user_id": user_id, "post_id": post_id})
         if existing:
