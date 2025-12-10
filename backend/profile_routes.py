@@ -782,14 +782,13 @@ async def get_following(
 
 @router.get("/follow-requests")
 async def get_follow_requests(
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Get pending follow requests for current user"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, request)
         
         # Get pending requests
         requests_cursor = db.follows.find({
