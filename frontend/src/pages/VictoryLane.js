@@ -626,6 +626,15 @@ const VictoryLane = () => {
     }
   };
 
+  // Reveal answer
+  const revealAnswer = (answerId) => {
+    const newRevealed = new Set(revealedAnswers);
+    newRevealed.add(answerId);
+    setRevealedAnswers(newRevealed);
+    // Save to localStorage
+    localStorage.setItem('revealedAnswers', JSON.stringify([...newRevealed]));
+  };
+
   // Submit a new comment
   const submitComment = async (postId, parentCommentId = null) => {
     const commentText = parentCommentId ? replyContent[parentCommentId]?.trim() : newComment[postId]?.trim();
