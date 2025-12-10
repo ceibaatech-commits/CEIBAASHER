@@ -1093,16 +1093,16 @@ const VictoryLane = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           {/* Avatar and Name Container - Vertically Centered */}
-                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openProfile(post.user_id)}>
+                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openProfile(post.is_retweet ? post.original_user_id : post.user_id)}>
                             <UserAvatar
-                              profilePicture={post.user_avatar}
-                              name={post.user_name || post.username}
+                              profilePicture={post.is_retweet ? post.original_user_avatar : post.user_avatar}
+                              name={post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username)}
                               size="lg"
                               clickable={false}
                             />
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-bold text-gray-900 hover:underline">
-                                {post.user_name || post.username || 'Anonymous'}
+                                {post.is_retweet ? (post.original_user_name || post.original_username || 'Anonymous') : (post.user_name || post.username || 'Anonymous')}
                               </span>
                               {post.isTeacher && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
