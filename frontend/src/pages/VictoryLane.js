@@ -585,7 +585,7 @@ const VictoryLane = () => {
     // API call would go here for persistence
   };
 
-  // Toggle share/retweet
+  // Toggle share/repost
   const toggleShare = async (postId) => {
     if (!user) {
       toast.error('Please login to share posts');
