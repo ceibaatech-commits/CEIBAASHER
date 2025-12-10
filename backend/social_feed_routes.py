@@ -125,7 +125,7 @@ async def filter_expired_quiz_posts(posts: list) -> list:
 # ==================== MODELS ====================
 
 class PostCreateRequest(BaseModel):
-    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq"]
+    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq", "question"]
     mcq_data: Optional[dict] = None
     content: str
     battle_stats: Optional[dict] = None
