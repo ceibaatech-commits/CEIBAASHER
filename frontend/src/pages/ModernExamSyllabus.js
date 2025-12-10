@@ -322,7 +322,9 @@ const ModernExamSyllabus = () => {
           <button onClick={() => setSelectedSubject('all')}
             style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}
             className={`rounded-full font-semibold transition-all ${
-              selectedSubject === 'all' ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              selectedSubject === 'all' 
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
             }`}>
             All ({allTopics.length})
           </button>
@@ -330,7 +332,9 @@ const ModernExamSyllabus = () => {
             <button key={subject} onClick={() => setSelectedSubject(subject)}
               style={{ padding: '0.375rem 0.75rem', fontSize: '0.75rem' }}
               className={`rounded-full font-semibold transition-all ${
-                selectedSubject === subject ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                selectedSubject === subject 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
               }`}>
               {subject} ({allTopics.filter(t => t.syllabus_topic === subject).length})
             </button>
