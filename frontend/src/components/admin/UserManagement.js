@@ -401,7 +401,11 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={() => toggleTeacherStatus(user.id, user.isTeacher)}
+                        onClick={() => {
+                          console.log('Full user object:', user);
+                          console.log('User ID:', user.id);
+                          toggleTeacherStatus(user.id, user.isTeacher);
+                        }}
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                           user.isTeacher
                             ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
