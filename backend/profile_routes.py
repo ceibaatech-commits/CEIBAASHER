@@ -609,14 +609,13 @@ async def approve_follow_request(
 @router.delete("/follow-request/{request_id}/decline")
 async def decline_follow_request(
     request_id: str,
+    req: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Decline a follow request"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, req)
         
         # Delete follow request
         result = await db.follows.delete_one({
