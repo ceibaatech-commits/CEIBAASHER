@@ -110,43 +110,56 @@ async def get_subjects(exam_id: str):
 async def get_all_topics(exam_id: str):
     """
     Get all topics across all subjects - DATABASE DRIVEN
-    Builds flat list from MongoDB exam_sheets collection, questions collection, AND chapters collection
+    Builds flat list from:
+    1. CRUD chapters collection (admin-created)
+    2. MongoDB exam_sheets collection (legacy)
+    3. Questions collection (image extraction, etc.)
     """
     from exam_structure_routes import db
     
     try:
         topics_dict = {}
         
-        # FIRST: Check the new chapters collection (from admin CRUD)
-        chapters = await db.chapters.find({
-            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
+        # ========== STEP 1: Get CRUD-created chapters ==========
+        # First, find the exam in the exams collection
+        crud_exam = await db.exams.find_one({
+            "name": {"$regex": f"^{exam_id}", "$options": "i"},
             "is_active": True
-        }, {"_id": 0}).to_list(length=1000)
+        })
         
-        for chapter in chapters:
-            category_name = chapter.get("category_name")  # e.g., "Physics"
-            chapter_name = chapter.get("name")  # e.g., "Mechanics"
-            sub_topics = chapter.get("sub_topics", [])
+        if crud_exam:
+            # Get all categories for this exam
+            categories = await db.categories.find({
+                "exam_id": crud_exam.get("id"),
+                "is_active": True
+            }, {"_id": 0}).to_list(100)
             
-            if category_name and chapter_name:
-                key = f"{category_name}||{chapter_name}"
-                if key not in topics_dict:
-                    topics_dict[key] = {
-                        "syllabus_topic": category_name,
-                        "subject": chapter_name,
-                        "sub_topics": sub_topics,
-                        "questions": 0
-                    }
+            # Get all chapters for this exam
+            chapters = await db.chapters.find({
+                "exam_id": crud_exam.get("id"),
+                "is_active": True
+            }, {"_id": 0}).to_list(1000)
+            
+            for chapter in chapters:
+                category_name = chapter.get("category_name")  # e.g., "Physics"
+                chapter_name = chapter.get("name")  # e.g., "Mechanics"
+                sub_topics = chapter.get("sub_topics", [])
+                
+                if category_name and chapter_name:
+                    key = f"{category_name}||{chapter_name}"
+                    if key not in topics_dict:
+                        topics_dict[key] = {
+                            "syllabus_topic": category_name,
+                            "subject": chapter_name,
+                            "sub_topics": sub_topics,
+                            "questions": 0
+                        }
         
-        # SECOND: Get structure from exam_sheets collection (legacy)
+        # ========== STEP 2: Get legacy exam_sheets structure ==========
         sheets = await db.exam_sheets.find({
             "type": "exam",
             "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
         }).to_list(length=1000)
-        
-        # Build grouped topic list from database
-        # Group by syllabus_topic + subject to show sub-topics together
-        topics_dict = {}
         
         if sheets:
             for sheet in sheets:
@@ -155,23 +168,23 @@ async def get_all_topics(exam_id: str):
                 sub_topic = sheet.get("sub_topic")
                 questions = sheet.get("question_count", 0)
                 
-                # Create unique key for grouping
-                key = f"{syllabus_topic}||{subject}"
-                
-                if key not in topics_dict:
-                    topics_dict[key] = {
-                        "syllabus_topic": syllabus_topic,
-                        "subject": subject,
-                        "sub_topics": [],
-                        "questions": 0
-                    }
-                
-                # Add sub-topic if not already present
-                if sub_topic and sub_topic not in topics_dict[key]["sub_topics"]:
-                    topics_dict[key]["sub_topics"].append(sub_topic)
-                
-                # Sum up questions from exam_sheets
-                topics_dict[key]["questions"] += questions
+                if syllabus_topic and subject:
+                    key = f"{syllabus_topic}||{subject}"
+                    
+                    if key not in topics_dict:
+                        topics_dict[key] = {
+                            "syllabus_topic": syllabus_topic,
+                            "subject": subject,
+                            "sub_topics": [],
+                            "questions": 0
+                        }
+                    
+                    # Add sub-topic if not already present
+                    if sub_topic and sub_topic not in topics_dict[key]["sub_topics"]:
+                        topics_dict[key]["sub_topics"].append(sub_topic)
+                    
+                    # Sum up questions from exam_sheets
+                    topics_dict[key]["questions"] += questions
         
         # Also count questions from the questions collection (for image extraction and other sources)
         # This ensures questions added via image extraction are counted
