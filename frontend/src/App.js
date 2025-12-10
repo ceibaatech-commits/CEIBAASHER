@@ -57,13 +57,21 @@ import ChapterTestStreamSubjects from "@/pages/ChapterTestStreamSubjects";
 import ChapterTestChapters from "@/pages/ChapterTestChapters";
 
 function App() {
+  // Check for session_id in URL hash synchronously during render
+  // This must happen before routing logic runs
+  const hasSessionId = window.location.hash?.includes('session_id=');
+  
   return (
     <AuthProvider>
       <NotificationProvider>
         <div className="App">
           <BrowserRouter>
             <ScrollRestoration />
-            <Routes>
+            {hasSessionId ? (
+              // If session_id detected, render only AuthCallback
+              <AuthCallback />
+            ) : (
+              <Routes>
               <Route path="/" element={<Home />} />
             <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
             <Route path="/topic-quiz/:examId/:subjectName/:topicName" element={<SoloPractice />} />
