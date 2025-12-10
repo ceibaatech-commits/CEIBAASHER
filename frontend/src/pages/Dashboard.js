@@ -59,7 +59,11 @@ const Dashboard = () => {
           }
         );
         if (response.data.success) {
-          setPosts(response.data.posts || []);
+          const fetchedPosts = response.data.posts || [];
+          console.log('Dashboard posts fetched:', fetchedPosts.length);
+          console.log('Retweets found:', fetchedPosts.filter(p => p.is_retweet).length);
+          console.log('First post is_retweet:', fetchedPosts[0]?.is_retweet);
+          setPosts(fetchedPosts);
         }
       } else if (tab === 'quizzes') {
         const response = await axios.get(
