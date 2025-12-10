@@ -868,9 +868,12 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
         # Fetch user's posts from social_posts collection
         posts = await db.social_posts.find({"user_id": user_id}).sort("created_at", -1).to_list(length=100)
         
-        # Remove MongoDB _id field from each post
+        # Remove MongoDB _id field from each post and ensure is_retweet is explicitly set
         for post in posts:
             post.pop("_id", None)
+            # Ensure is_retweet is explicitly false if not present
+            if "is_retweet" not in post:
+                post["is_retweet"] = False
         
         return {
             "success": True,
