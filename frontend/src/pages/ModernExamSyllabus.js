@@ -111,7 +111,7 @@ const ModernExamSyllabus = () => {
       </div>
 
       {/* Compact Hero - Mobile Optimized */}
-      <div className="bg-gradient-to-br from-blue-600 to-teal-600 text-white py-4 sm:py-6">
+      <div className="bg-gradient-to-br from-blue-200 to-teal-200 text-white py-4 sm:py-6">
         <div className="max-w-7xl mx-auto px-4">
           {/* Icon + Title Section - Full Width */}
           <div className="flex items-start gap-3 mb-4">
@@ -322,14 +322,14 @@ const ModernExamSyllabus = () => {
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setSelectedSubject('all')}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                selectedSubject === 'all' ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                selectedSubject === 'all' ? 'bg-gradient-to-r from-blue-200 to-teal-200 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}>
               All ({allTopics.length})
             </button>
             {subjects.map(subject => (
               <button key={subject} onClick={() => setSelectedSubject(subject)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
-                  selectedSubject === subject ? 'bg-gradient-to-r from-blue-600 to-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  selectedSubject === subject ? 'bg-gradient-to-r from-blue-200 to-teal-200 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}>
                 {subject} ({allTopics.filter(t => t.syllabus_topic === subject).length})
               </button>
@@ -412,20 +412,20 @@ const ModernExamSyllabus = () => {
                 <div className="space-y-2">
                   <button 
                     onClick={() => navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
+                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-200 to-emerald-200' : 'bg-gradient-to-r from-blue-600 to-blue-700'} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
                   >
                     {examData?.game_mode ? '🎯 Quick Play' : '📚 Solo Practice'}
                   </button>
                   <div className="grid grid-cols-2 gap-2">
                     <button 
                       onClick={() => navigate(`/create-room/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'battle-button' : 'bg-gradient-to-r from-purple-600 to-pink-600'} text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
+                      className={`${examData?.game_mode ? 'battle-button' : 'bg-gradient-to-r from-purple-200 to-pink-200'} text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
                     >
                       {examData?.game_mode ? '👥 Team Challenge' : '🎯 Room'}
                     </button>
                     <button 
                       onClick={() => navigate(`/live-battle-1v1/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-gradient-to-r from-orange-600 to-red-600'} text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
+                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-red-200 to-rose-200' : 'bg-gradient-to-r from-orange-200 to-red-200'} text-white py-2 px-2 rounded-lg text-xs font-semibold hover:shadow-lg transition-all`}
                     >
                       {examData?.game_mode ? '⚔️ 1v1 Duel' : '⚔️ Battle'}
                     </button>
@@ -445,19 +445,19 @@ const ModernExamSyllabus = () => {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+          <div className="bg-gradient-to-br from-blue-200 to-indigo-200 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
             <Target className="w-10 h-10 mb-3" />
             <h3 className="text-xl font-bold mb-2">Sub-Topic Wise Focus</h3>
             <p className="text-white/90 text-sm">Master every topic by breaking it into smaller, focused segments</p>
           </div>
 
-          <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+          <div className="bg-gradient-to-br from-orange-200 to-red-200 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
             <Zap className="w-10 h-10 mb-3" />
             <h3 className="text-xl font-bold mb-2">Real-Time Battles</h3>
             <p className="text-white/90 text-sm">Compete with live opponents and learn faster through competition</p>
           </div>
 
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
+          <div className="bg-gradient-to-br from-green-200 to-emerald-200 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
             <BarChart className="w-10 h-10 mb-3" />
             <h3 className="text-xl font-bold mb-2">Detailed Analytics</h3>
             <p className="text-white/90 text-sm">Track your progress in every sub-topic with detailed insights</p>
@@ -467,7 +467,7 @@ const ModernExamSyllabus = () => {
 
       {/* Success Stories & CTA */}
       <div className="relative overflow-hidden rounded-3xl mb-12">
-        <div className="bg-gradient-to-r from-emerald-500 via-green-600 to-teal-700 p-8 md:p-12">
+        <div className="bg-gradient-to-r from-emerald-200 via-green-200 to-teal-200 p-8 md:p-12">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -519,7 +519,7 @@ const ModernExamSyllabus = () => {
               </p>
               
               <div className="flex items-center justify-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-xl">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full flex items-center justify-center text-xl">
                   👨‍🎓
                 </div>
                 <div className="text-left">
@@ -572,7 +572,7 @@ const ModernExamSyllabus = () => {
             </div>
           </div>
         </div>
-        <div className="h-2 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-600"></div>
+        <div className="h-2 bg-gradient-to-r from-emerald-200 via-green-200 to-teal-200"></div>
       </div>
 
       <Footer />
