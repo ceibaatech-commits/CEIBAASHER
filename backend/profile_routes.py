@@ -424,15 +424,13 @@ async def update_user_profile(
 @router.put("/privacy")
 async def update_privacy_settings(
     is_private: bool,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Toggle account privacy (public/private)"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT to get user_id
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, request)
         
         # Update privacy setting
         await db.users.update_one(
