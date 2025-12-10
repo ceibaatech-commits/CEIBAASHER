@@ -16,6 +16,7 @@ const Dashboard = () => {
   const [posts, setPosts] = useState([]);
   const [quizRooms, setQuizRooms] = useState([]);
   const [loadingContent, setLoadingContent] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     if (user) {
