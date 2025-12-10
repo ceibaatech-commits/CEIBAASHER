@@ -140,7 +140,7 @@ const Dashboard = () => {
             {/* Edit Profile Button - positioned at top right */}
             <div className="pt-4 flex justify-end">
               <button
-                onClick={() => navigate('/settings')}
+                onClick={() => setShowEditModal(true)}
                 className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg"
               >
                 Edit Profile
