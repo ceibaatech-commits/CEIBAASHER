@@ -140,24 +140,14 @@ const Login = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                onClick={() => handleSocialLogin('google')}
-                className="w-full"
-              >
-                <img src="/google-icon.svg" alt="Google" className="w-5 h-5 mr-2" />
-                Google
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleSocialLogin('facebook')}
-                className="w-full"
-              >
-                <img src="/facebook-icon.svg" alt="Facebook" className="w-5 h-5 mr-2" />
-                Facebook
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              onClick={() => handleGoogleLogin()}
+              className="w-full"
+            >
+              <img src="/google-icon.svg" alt="Google" className="w-5 h-5 mr-2" />
+              Continue with Google
+            </Button>
 
             <Button
               variant="ghost"
