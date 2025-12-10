@@ -585,6 +585,63 @@ const VictoryLane = () => {
     // API call would go here for persistence
   };
 
+  // Toggle share/retweet
+  const toggleShare = async (postId) => {
+    if (!user) {
+      toast.error('Please login to share posts');
+      return;
+    }
+
+    const isShared = sharedPosts.has(postId);
+    
+    // For share, we only allow adding (not un-sharing)
+    if (isShared) {
+      toast.info('You already shared this post');
+      return;
+    }
+
+    // Optimistic update
+    setSharedPosts(prev => {
+      const newSet = new Set(prev);
+      newSet.add(postId);
+      return newSet;
+    });
+    
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return { 
+          ...post, 
+          shares_count: (post.shares_count || 0) + 1
+        };
+      }
+      return post;
+    }));
+
+    try {
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      toast.success('Post shared successfully!');
+    } catch (error) {
+      // Revert on error
+      setSharedPosts(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return { 
+            ...post, 
+            shares_count: Math.max((post.shares_count || 1) - 1, 0)
+          };
+        }
+        return post;
+      }));
+      toast.error('Failed to share post');
+    }
+  };
+
   // Toggle comments section
   const toggleComments = async (postId) => {
     const isExpanded = expandedComments.has(postId);
