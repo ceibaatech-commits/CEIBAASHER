@@ -1269,7 +1269,9 @@ const VictoryLane = () => {
                       </div>
 
                       {/* Post Content */}
-                      <p className="text-gray-900 mt-1 mb-3 whitespace-pre-wrap">{post.content}</p>
+                      <div className="text-gray-900 mt-1 mb-3 whitespace-pre-wrap">
+                        <MathText text={post.content} />
+                      </div>
 
                       {/* Quiz Room Card */}
                       {(post.post_type === 'quiz_room' || post.quiz_details) && post.quiz_details && (
