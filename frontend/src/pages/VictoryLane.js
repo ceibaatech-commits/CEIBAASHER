@@ -1244,7 +1244,7 @@ const VictoryLane = () => {
                           ) : (
                             <div className="space-y-3">
                               {(postComments[post.id] || []).length === 0 ? (
-                                <p className="text-center text-gray-400 text-sm py-2">No comments yet. Be the first!</p>
+                                <p className="text-center text-gray-400 text-sm py-2">No answers yet. Be the first!</p>
                               ) : (
                                 (postComments[post.id] || []).filter(c => !c.parent_comment_id).map((comment) => (
                                   <div key={comment.id} className="space-y-2">
