@@ -2,40 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { Settings, Edit, Users, FileText, Heart, Trophy, Calendar, MapPin, Award, ArrowLeft, MessageCircle, Repeat2 } from 'lucide-react';
-import EditProfileModal from '../components/EditProfileModal';
-import FollowListModal from '../components/FollowListModal';
-import ProfilePictureUpload from '../components/ProfilePictureUpload';
-import CoverPhotoUpload from '../components/CoverPhotoUpload';
+import { Settings, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Dashboard = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('posts');
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showFollowModal, setShowFollowModal] = useState(false);
-  const [followModalType, setFollowModalType] = useState('followers');
   const [posts, setPosts] = useState([]);
   const [quizRooms, setQuizRooms] = useState([]);
-  const [likedPosts, setLikedPosts] = useState([]);
   const [loadingContent, setLoadingContent] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-    } else if (user) {
-      fetchProfile();
-    }
-  }, [user, authLoading]);
+    fetchProfile();
+  }, []);
 
   const fetchProfile = async () => {
+    if (!user) return;
+    
+    setLoading(true);
     try {
       const response = await axios.get(
-        `${BACKEND_URL}/api/profile/id/${user.id}`,
+        `${BACKEND_URL}/api/profile/${user.username}`,
         {
           params: { current_user_id: user.id }
         }
@@ -58,7 +49,7 @@ const Dashboard = () => {
     try {
       if (tab === 'posts') {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/${profile.username}/posts`,
+          `${BACKEND_URL}/api/profile/${user.username}/posts`,
           {
             params: { current_user_id: user.id }
           }
@@ -68,23 +59,13 @@ const Dashboard = () => {
         }
       } else if (tab === 'quizzes') {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/${profile.username}/quiz-rooms`,
+          `${BACKEND_URL}/api/profile/${user.username}/quiz-rooms`,
           {
             params: { current_user_id: user.id }
           }
         );
         if (response.data.success) {
           setQuizRooms(response.data.quiz_rooms || []);
-        }
-      } else if (tab === 'liked') {
-        const response = await axios.get(
-          `${BACKEND_URL}/api/profile/${profile.username}/liked-posts`,
-          {
-            params: { current_user_id: user.id }
-          }
-        );
-        if (response.data.success) {
-          setLikedPosts(response.data.posts || []);
         }
       }
     } catch (error) {
@@ -100,17 +81,7 @@ const Dashboard = () => {
     }
   }, [activeTab, profile]);
 
-  const handleFollowersClick = () => {
-    setFollowModalType('followers');
-    setShowFollowModal(true);
-  };
-
-  const handleFollowingClick = () => {
-    setFollowModalType('following');
-    setShowFollowModal(true);
-  };
-
-  if (loading || authLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
@@ -122,12 +93,13 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-600">Failed to load profile</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Profile Not Found</h1>
+          <p className="text-gray-600 mb-6">Unable to load your profile.</p>
           <button
-            onClick={fetchProfile}
-            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+            onClick={() => navigate('/home')}
+            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
           >
-            Retry
+            Back to Home
           </button>
         </div>
       </div>
@@ -137,113 +109,132 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <div className="max-w-4xl mx-auto py-8 px-4">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate('/victory-lane')}
-          className="flex items-center gap-2 mb-4 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
-
         {/* Cover Photo & Profile Picture */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Cover Photo with Upload */}
-          <div className="relative">
-            <CoverPhotoUpload
-              currentCover={profile.cover_photo}
-              onUploadComplete={(newUrl) => {
-                setProfile(prev => ({ ...prev, cover_photo: newUrl }));
-              }}
-            />
-            
-            {/* Settings Button */}
-            <button
-              onClick={() => navigate('/settings/privacy')}
-              className="absolute top-4 right-4 p-3 bg-white bg-opacity-90 rounded-full hover:bg-opacity-100 transition-all shadow-lg z-10"
-            >
-              <Settings className="w-5 h-5 text-gray-700" />
-            </button>
+          {/* Cover Photo */}
+          <div className="relative h-48 bg-gradient-to-r from-purple-600 to-pink-600">
+            {profile.cover_photo && (
+              <img
+                src={profile.cover_photo}
+                alt="Cover"
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
 
           {/* Profile Info Section */}
           <div className="relative px-6 pb-6">
-            {/* Profile Picture with Quick Upload */}
-            <div className="absolute -top-16 left-6">
-              <ProfilePictureUpload
-                currentPicture={profile.profile_picture}
-                onUploadComplete={(newUrl) => {
-                  setProfile(prev => ({ ...prev, profile_picture: newUrl }));
-                }}
-                size="large"
-              />
-            </div>
-
-            {/* Edit Profile Button */}
-            <div className="pt-20 flex justify-end">
+            {/* Settings Button - positioned at top right */}
+            <div className="pt-4 flex justify-end">
               <button
-                onClick={() => setShowEditModal(true)}
-                className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition-all"
+                onClick={() => navigate('/settings')}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                title="Settings"
               >
-                <Edit className="w-4 h-4" />
-                Edit Profile
+                <Settings className="w-6 h-6 text-gray-600" />
               </button>
             </div>
 
-            {/* User Info */}
-            <div className="mt-4">
-              <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-              <p className="text-gray-500 text-lg">@{profile.username}</p>
-
-              {/* Bio */}
-              {profile.bio && (
-                <p className="mt-3 text-gray-700 text-lg">{profile.bio}</p>
-              )}
-
-              {/* Location & Exam Focus */}
-              <div className="mt-3 flex flex-wrap gap-4 text-gray-600">
-                {profile.location && (
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    <span>{profile.location}</span>
-                  </div>
-                )}
-                {profile.joined_at && (
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+            {/* Avatar and User Info - Horizontal Layout */}
+            <div className="flex items-start gap-4 mt-4">
+              {/* Profile Picture */}
+              <div className="relative flex-shrink-0">
+                <img
+                  src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
+                  alt={profile.name}
+                  className="w-24 h-24 rounded-full border-4 border-white shadow-xl object-cover"
+                />
+                {profile.is_verified && (
+                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="text-white text-xs">🤖</span>
                   </div>
                 )}
               </div>
 
-              {/* Exam Focus Tags */}
-              {profile.exam_focus && profile.exam_focus.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {profile.exam_focus.map(exam => (
-                    <span
-                      key={exam}
-                      className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
-                    >
-                      🎯 {exam}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {/* User Info */}
+              <div className="flex-1 min-w-0 mt-2">
+                <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
+                <p className="text-gray-500">@{profile.username}</p>
 
-              {/* Badges */}
-              {profile.badges && profile.badges.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {profile.badges.map(badge => (
-                    <span
-                      key={badge}
-                      className="flex items-center gap-1 px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold"
-                    >
-                      <Award className="w-4 h-4" />
-                      {badge}
-                    </span>
-                  ))}
+                {/* Bio */}
+                {profile.bio && (
+                  <p className="mt-3 text-gray-700">{profile.bio}</p>
+                )}
+
+                {/* Location & Joined Date */}
+                <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
+                  {profile.location && (
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{profile.location}</span>
+                    </div>
+                  )}
+                  {profile.joined_at && (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Exam Focus Tags */}
+                {profile.exam_focus && profile.exam_focus.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {profile.exam_focus.map(exam => (
+                      <span
+                        key={exam}
+                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
+                      >
+                        🎯 {exam}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Badges - FIXED: Now matches PublicProfile badge rendering logic */}
+                {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute ||
+                  profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {(profile.badges?.isTeacher || profile.isTeacher) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        title="Teacher Badge - Educator verified by administration"
+                      >
+                        <Trophy className="w-4 h-4 mr-1.5" />
+                        Teacher
+                      </span>
+                    )}
+                    {(profile.badges?.isProfessor || profile.isProfessor) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        title="Professor Badge - Academic professor verified by administration"
+                      >
+                        <Trophy className="w-4 h-4 mr-1.5" />
+                        Professor
+                      </span>
+                    )}
+                    {(profile.badges?.isOfficial || profile.isOfficial) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        title="Official Badge - Verified organization or official entity"
+                      >
+                        <Award className="w-4 h-4 mr-1.5 fill-white" />
+                        Official
+                      </span>
+                    )}
+                    {(profile.badges?.isInstitute || profile.isInstitute) && (
+                      <span 
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
+                        title="Institute Badge - Verified educational institution"
+                      >
+                        <Trophy className="w-4 h-4 mr-1.5" />
+                        Institute
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Stats Row */}
@@ -253,33 +244,20 @@ const Dashboard = () => {
                 <p className="text-gray-600 text-sm">Posts</p>
               </div>
               <button
-                onClick={handleFollowersClick}
+                onClick={() => navigate('/dashboard/followers')}
                 className="text-center hover:bg-gray-50 px-4 rounded-lg transition-colors"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
                 <p className="text-gray-600 text-sm">Followers</p>
               </button>
               <button
-                onClick={handleFollowingClick}
+                onClick={() => navigate('/dashboard/following')}
                 className="text-center hover:bg-gray-50 px-4 rounded-lg transition-colors"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
                 <p className="text-gray-600 text-sm">Following</p>
               </button>
-              {profile.streak_days > 0 && (
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-orange-600">🔥 {profile.streak_days}</p>
-                  <p className="text-gray-600 text-sm">Day Streak</p>
-                </div>
-              )}
             </div>
-
-            {/* Privacy Indicator */}
-            {profile.is_private && (
-              <div className="mt-4 flex items-center gap-2 text-gray-600 bg-gray-100 px-4 py-2 rounded-lg">
-                <span className="text-sm">🔒 Private Account</span>
-              </div>
-            )}
           </div>
         </div>
 
@@ -298,19 +276,6 @@ const Dashboard = () => {
               <div className="flex items-center justify-center gap-2">
                 <FileText className="w-5 h-5" />
                 Posts
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('liked')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
-                activeTab === 'liked'
-                  ? 'border-b-2 border-purple-600 text-purple-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2">
-                <Heart className="w-5 h-5" />
-                Liked
               </div>
             </button>
             <button
@@ -375,9 +340,7 @@ const Dashboard = () => {
                             <span className="flex items-center gap-1">
                               <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
                             </span>
-                            <span className="flex items-center gap-1">
-                              <Repeat2 className="w-4 h-4" /> {post.shares_count || 0}
-                            </span>
+                            {/* FIXED: Hide retweet button on own posts */}
                           </div>
                         </div>
                       ))}
@@ -386,51 +349,9 @@ const Dashboard = () => {
                     <div className="text-center py-12">
                       <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                       <p className="text-gray-600 text-lg">No posts yet</p>
-                      <p className="text-gray-500 text-sm mt-2">Share your quiz results and achievements!</p>
-                    </div>
-                  )
-                )}
-                {activeTab === 'liked' && (
-                  likedPosts.length > 0 ? (
-                    <div className="space-y-4">
-                      {likedPosts
-                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                        .map(post => (
-                        <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white text-sm font-bold">
-                              {post.user_name?.[0] || 'U'}
-                            </div>
-                            <div>
-                              <p className="font-semibold text-gray-800">{post.user_name}</p>
-                              <p className="text-xs text-gray-500">
-                                {new Date(post.created_at).toLocaleString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                          <p className="text-gray-800">{post.content}</p>
-                          <div className="mt-3 flex gap-4 text-sm text-gray-600">
-                            <span className="flex items-center gap-1">
-                              <Heart className="w-4 h-4" /> {post.likes_count || 0}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Heart className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                      <p className="text-gray-600 text-lg">No liked posts yet</p>
-                      <p className="text-gray-500 text-sm mt-2">Start exploring and like posts from others!</p>
+                      <p className="text-gray-500 text-sm mt-2">
+                        Share your first thought on Victory Lane
+                      </p>
                     </div>
                   )
                 )}
@@ -475,7 +396,9 @@ const Dashboard = () => {
                     <div className="text-center py-12">
                       <Trophy className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                       <p className="text-gray-600 text-lg">No quiz rooms yet</p>
-                      <p className="text-gray-500 text-sm mt-2">Create or join quiz rooms to get started!</p>
+                      <p className="text-gray-500 text-sm mt-2">
+                        Create your first quiz room to share with others
+                      </p>
                     </div>
                   )
                 )}
@@ -484,24 +407,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Modals */}
-      <EditProfileModal
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        currentProfile={profile}
-        onProfileUpdated={(updatedProfile) => {
-          setProfile(updatedProfile);
-          fetchProfile();
-        }}
-      />
-
-      <FollowListModal
-        isOpen={showFollowModal}
-        onClose={() => setShowFollowModal(false)}
-        userId={profile.user_id}
-        type={followModalType}
-      />
     </div>
   );
 };
