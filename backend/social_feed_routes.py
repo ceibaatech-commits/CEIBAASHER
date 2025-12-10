@@ -673,14 +673,13 @@ async def get_comments(post_id: str):
 async def add_comment(
     post_id: str,
     comment_data: CommentRequest,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Add a comment"""
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using new hybrid authentication
+        user_id = await get_user_id_from_request(authorization, request)
         user = await db.users.find_one({"id": user_id}, {"_id": 0})
         
         comment_doc = {
