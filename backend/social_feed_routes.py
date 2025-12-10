@@ -706,6 +706,14 @@ async def get_user_profile(user_id: str):
             "status": "approved"
         })
         
+        # Add badge information in structured format
+        user["badges"] = {
+            "isTeacher": user.get("isTeacher", False),
+            "isProfessor": user.get("isProfessor", False),
+            "isOfficial": user.get("isOfficial", False),
+            "isInstitute": user.get("isInstitute", False)
+        }
+        
         return {"success": True, "user": user}
     except HTTPException:
         raise
