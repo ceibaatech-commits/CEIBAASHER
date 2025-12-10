@@ -1367,6 +1367,11 @@ const VictoryLane = () => {
                                                       Teacher
                                                     </span>
                                                   )}
+                                                  {reply.isProfessor && (
+                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                                                      Professor
+                                                    </span>
+                                                  )}
                                                   {reply.isOfficial && (
                                                     <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 text-white">
                                                       Official
