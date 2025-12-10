@@ -1319,19 +1319,19 @@ const VictoryLane = () => {
                                             </div>
                                             <p className="text-gray-700 text-sm mt-0.5">{comment.content}</p>
                                           </div>
-                                        <div className="flex items-center gap-3 mt-1 ml-3">
-                                          <span className="text-xs text-gray-400">
-                                            {formatTimestamp(comment.created_at)}
-                                          </span>
-                                          {isAuthenticated() && (
-                                            <button
-                                              onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                                              className="text-xs font-semibold text-blue-600 hover:text-blue-700"
-                                            >
-                                              Reply
-                                            </button>
-                                          )}
-                                        </div>
+                                          <div className="flex items-center gap-3 mt-1 ml-3">
+                                            <span className="text-xs text-gray-400">
+                                              {formatTimestamp(comment.created_at)}
+                                            </span>
+                                            {isAuthenticated() && (
+                                              <button
+                                                onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
+                                                className="text-xs font-semibold text-blue-600 hover:text-blue-700"
+                                              >
+                                                Reply
+                                              </button>
+                                            )}
+                                          </div>
                                         
                                         {/* Reply Input */}
                                         {replyingTo === comment.id && (
