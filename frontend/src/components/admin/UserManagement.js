@@ -477,6 +477,17 @@ const UserManagement = () => {
                           {user.isTeacher ? '✓ Teacher' : 'Teacher'}
                         </button>
                         <button
+                          onClick={() => toggleProfessorStatus(user.id, user.isProfessor)}
+                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                            user.isProfessor
+                              ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                              : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
+                          }`}
+                          title={user.isProfessor ? 'Remove professor badge' : 'Add professor badge'}
+                        >
+                          {user.isProfessor ? '✓ Professor' : 'Professor'}
+                        </button>
+                        <button
                           onClick={() => toggleOfficialStatus(user.id, user.isOfficial)}
                           className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
                             user.isOfficial
