@@ -13,7 +13,7 @@ db.social_posts.createIndex({ "user_id": 1, "created_at": -1 })
 db.users.createIndex({ "username": 1 }, { unique: true })
 db.users.createIndex({ "id": 1 }, { unique: true })
 """
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone
