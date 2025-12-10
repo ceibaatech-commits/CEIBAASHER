@@ -72,6 +72,7 @@ const VictoryLane = () => {
   const [loading, setLoading] = useState(true);
   const [newPostContent, setNewPostContent] = useState('');
   const [showQuizModal, setShowQuizModal] = useState(false);
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
   
   // Comments state
   const [expandedComments, setExpandedComments] = useState(new Set());
