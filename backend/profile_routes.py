@@ -370,16 +370,13 @@ async def get_user_profile_by_id(user_id: str, current_user_id: Optional[str] = 
 @router.put("/update")
 async def update_user_profile(
     profile_data: ProfileUpdate,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """Update user profile"""
     try:
-        # Extract user_id from token
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT to get user_id
-        user_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, request)
         
         # Get current user
         user = await get_user_by_id(user_id)
