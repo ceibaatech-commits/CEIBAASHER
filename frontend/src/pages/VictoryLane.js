@@ -1107,13 +1107,22 @@ const VictoryLane = () => {
                   rows={2}
                 />
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                  <button
-                    onClick={() => setShowQuizModal(true)}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full text-sm font-medium hover:from-purple-200 hover:to-blue-200 transition flex items-center gap-2"
-                  >
-                    <Play className="w-4 h-4" />
-                    Create Quiz Room
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowQuizModal(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full text-sm font-medium hover:from-purple-200 hover:to-blue-200 transition flex items-center gap-2"
+                    >
+                      <Play className="w-4 h-4" />
+                      Quiz Room
+                    </button>
+                    <button
+                      onClick={() => setShowQuestionModal(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 rounded-full text-sm font-medium hover:from-blue-200 hover:to-indigo-200 transition flex items-center gap-2"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      Question
+                    </button>
+                  </div>
                   <button
                     onClick={handleCreatePost}
                     disabled={!newPostContent.trim()}
