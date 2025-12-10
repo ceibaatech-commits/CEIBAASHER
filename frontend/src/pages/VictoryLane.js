@@ -256,6 +256,19 @@ const VictoryLane = () => {
     'General Science'
   ];
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (openMenuId && !event.target.closest('.relative')) {
+        setOpenMenuId(null);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [openMenuId]);
+
+
   // Real-time socket handlers
   const handleNewPost = useCallback((newPostData) => {
     if (activeTab === 'for-you' || activeTab === 'trending') {
