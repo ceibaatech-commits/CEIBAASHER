@@ -485,22 +485,22 @@ const PublicProfile = () => {
               </div>
             ) : (
               <>
-                {(activeTab === 'posts' || activeTab === 'retweets') && (
+                {(activeTab === 'posts' || activeTab === 'reposts') && (
                   filteredPosts.length > 0 ? (
                     <div className="space-y-4">
                       {filteredPosts
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                          {/* Retweet Indicator */}
+                          {/* Repost Indicator */}
                           {post.is_retweet === true && (
                             <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                               <Repeat2 className="w-4 h-4" />
-                              <span>{profile.name} retweeted</span>
+                              <span>{profile.name} reposted</span>
                             </div>
                           )}
                           
-                          {/* Original Author Info (for retweets) */}
+                          {/* Original Author Info (for reposts) */}
                           {post.is_retweet && post.original_username && (
                             <div className="mb-3 flex items-start gap-3">
                               <img
