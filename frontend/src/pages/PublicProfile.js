@@ -122,10 +122,10 @@ const PublicProfile = () => {
   // Filter posts based on active tab
   const getFilteredPosts = () => {
     if (activeTab === 'posts') {
-      // Show only original posts (not retweets)
+      // Show only original posts (not reposts)
       return posts.filter(post => !post.is_retweet);
-    } else if (activeTab === 'retweets') {
-      // Show only retweets
+    } else if (activeTab === 'reposts') {
+      // Show only reposts
       return posts.filter(post => post.is_retweet === true);
     }
     return [];
