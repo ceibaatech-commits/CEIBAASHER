@@ -154,6 +154,7 @@ async def update_official_status(user_id: str, status_update: OfficialStatusUpda
 async def update_institute_status(user_id: str, status_update: InstituteStatusUpdate):
     """
     Update institute status for a user (Educational institutions, Organizations)
+    Also updates all their posts and comments
     """
     try:
         result = await db.users.update_one(
@@ -169,11 +170,25 @@ async def update_institute_status(user_id: str, status_update: InstituteStatusUp
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Update all posts by this user
+        posts_result = await db.social_posts.update_many(
+            {"user_id": user_id},
+            {"$set": {"isInstitute": status_update.isInstitute}}
+        )
+        
+        # Update all comments by this user
+        comments_result = await db.comments.update_many(
+            {"user_id": user_id},
+            {"$set": {"isInstitute": status_update.isInstitute}}
+        )
+        
         return {
             "success": True,
             "message": f"Institute status updated to {status_update.isInstitute}",
             "user_id": user_id,
-            "isInstitute": status_update.isInstitute
+            "isInstitute": status_update.isInstitute,
+            "posts_updated": posts_result.modified_count,
+            "comments_updated": comments_result.modified_count
         }
         
     except HTTPException:
