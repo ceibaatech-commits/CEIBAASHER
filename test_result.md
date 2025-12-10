@@ -4584,3 +4584,15 @@ Please test and report if the retweet button is now working correctly."
       4. **Component Verification**: Ensure Repeat2 icon and retweet text components are properly imported
       
       **CONCLUSION**: CRITICAL BUG CONFIRMED - Backend has correct retweet data but Dashboard is NOT displaying retweet indicators. This is a frontend rendering/state management issue that needs immediate investigation and fix.
+
+  - task: "Quiz Room Profile Display Bug"
+    implemented: true
+    working: false
+    file: "backend/profile_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL BUG CONFIRMED: Quiz rooms appear in Victory Lane (37 posts found) but NOT in profile Quiz Rooms tab (0 rooms returned). Root cause: Backend /api/profile/{username}/quiz-rooms endpoint queries social_posts for room_codes but then looks for room details in empty quiz_rooms collection. API returns empty array despite quiz room posts existing in social_posts. Backend implementation needs fix to properly retrieve quiz room data for profile display."
