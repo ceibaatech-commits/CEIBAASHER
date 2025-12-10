@@ -943,7 +943,7 @@ async def follow_user(target_user_id: str, authorization: Optional[str] = Header
         
         return {
             "success": True, 
-            "message": "Follow request sent" if is_private else "Now following",
+            "message": "Now following",  # Always instant follow
             "status": follow_status
         }
     except HTTPException:
