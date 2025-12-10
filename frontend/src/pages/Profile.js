@@ -346,7 +346,7 @@ const Profile = () => {
         {/* Tabs */}
         <div className="bg-white rounded-t-2xl shadow-xl">
           <div className="flex border-b border-gray-200">
-            {['posts', 'followers', 'following'].map((tab) => (
+            {['posts', 'badges', 'followers', 'following'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
