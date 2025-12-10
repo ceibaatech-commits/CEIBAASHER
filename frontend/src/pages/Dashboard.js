@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2 } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModal';
+import FollowListModal from '../components/FollowListModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const [quizRooms, setQuizRooms] = useState([]);
   const [loadingContent, setLoadingContent] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showFollowModal, setShowFollowModal] = useState(false);
+  const [followModalType, setFollowModalType] = useState('followers');
 
   useEffect(() => {
     if (user) {
