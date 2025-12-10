@@ -36,32 +36,41 @@ async def update_teacher_status(user_id: str, status_update: TeacherStatusUpdate
     """
     Update teacher status for a user
     Also updates all their posts and comments
+    Enforces mutual exclusivity with Professor role
     """
     try:
+        # Build update dict - if setting Teacher to True, set Professor to False
+        user_update = {
+            "isTeacher": status_update.isTeacher,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        if status_update.isTeacher:
+            user_update["isProfessor"] = False
+        
         # Update user's teacher status
         result = await db.users.update_one(
             {"id": user_id},
-            {
-                "$set": {
-                    "isTeacher": status_update.isTeacher,
-                    "updated_at": datetime.now(timezone.utc).isoformat()
-                }
-            }
+            {"$set": user_update}
         )
         
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Build post/comment update dict
+        post_update = {"isTeacher": status_update.isTeacher}
+        if status_update.isTeacher:
+            post_update["isProfessor"] = False
+        
         # Update all posts by this user
         posts_result = await db.social_posts.update_many(
             {"user_id": user_id},
-            {"$set": {"isTeacher": status_update.isTeacher}}
+            {"$set": post_update}
         )
         
         # Update all comments by this user
         comments_result = await db.comments.update_many(
             {"user_id": user_id},
-            {"$set": {"isTeacher": status_update.isTeacher}}
+            {"$set": post_update}
         )
         
         return {
