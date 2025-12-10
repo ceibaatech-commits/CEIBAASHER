@@ -63,6 +63,7 @@ notification_routes.init_db(db)
 books_routes.init_db(db)
 exam_structure_routes.init_db(db)
 exam_sync_routes.init_db(db)
+user_management_routes.init_db(db)
 
 # Initialize social auto-post utilities
 import social_auto_post
