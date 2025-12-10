@@ -260,7 +260,7 @@ const BattleLobby = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg">
+                      <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg">
                         {displayName.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
