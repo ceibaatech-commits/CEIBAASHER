@@ -1077,6 +1077,16 @@ const VictoryLane = () => {
                   ref={(el) => postRefs.current[post.id] = el}
                   className="bg-white p-4 hover:bg-gray-50 transition"
                 >
+                  {/* Retweet Header */}
+                  {post.is_retweet && (
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2 ml-11">
+                      <Repeat2 className="w-4 h-4" />
+                      <span>
+                        <span className="font-semibold text-gray-700">{post.user_name || post.username}</span> retweeted
+                      </span>
+                    </div>
+                  )}
+                  
                   <div className="flex gap-3">
                     <div className="flex-1 min-w-0">
                       {/* User Info with Avatar and Follow Button */}
