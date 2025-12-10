@@ -452,6 +452,7 @@ async def update_privacy_settings(
 @router.post("/follow")
 async def follow_user(
     follow_request: FollowRequest,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
@@ -460,11 +461,8 @@ async def follow_user(
     - Private accounts: Send follow request
     """
     try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT to get user_id
-        follower_id = decode_jwt_token(authorization)
+        # Get user_id using hybrid authentication
+        follower_id = await get_user_id_from_request(authorization, request)
         following_id = follow_request.target_user_id
         
         # Can't follow yourself
