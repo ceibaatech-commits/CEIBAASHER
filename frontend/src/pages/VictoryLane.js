@@ -1345,7 +1345,7 @@ const VictoryLane = () => {
                                             />
                                             <div className="flex-1 min-w-0">
                                               <div className="bg-gray-100 rounded-2xl px-3 py-2">
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2 flex-wrap">
                                                   <span 
                                                     onClick={() => openProfile(reply.user_id)}
                                                     className="font-semibold text-gray-900 text-xs cursor-pointer hover:underline"
@@ -1355,6 +1355,16 @@ const VictoryLane = () => {
                                                   {reply.isTeacher && (
                                                     <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
                                                       Teacher
+                                                    </span>
+                                                  )}
+                                                  {reply.isOfficial && (
+                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 text-white">
+                                                      Official
+                                                    </span>
+                                                  )}
+                                                  {reply.isInstitute && (
+                                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium text-white" style={{backgroundColor: '#8B2E2E'}}>
+                                                      Institute
                                                     </span>
                                                   )}
                                                 </div>
