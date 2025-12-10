@@ -153,6 +153,7 @@ fastapi_app.include_router(books_router)
 fastapi_app.include_router(exam_structure_router)
 fastapi_app.include_router(exam_metadata_router)
 fastapi_app.include_router(x_auth_router, prefix="/api")
+fastapi_app.include_router(emergent_auth_router, prefix="/api")
 fastapi_app.include_router(exam_sync_router)  # Exam sync/management routes
 fastapi_app.include_router(exam_management_router, prefix="/api/admin/manage")  # Exam CRUD management
 fastapi_app.include_router(user_management_router, prefix="/api")  # User management (teacher status)
