@@ -425,8 +425,11 @@ async def get_user_details(user_id: str):
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        # Get additional stats
-        posts_count = await db.social_posts.count_documents({"user_id": user_id})
+        # Get additional stats (excluding reposts to match frontend Posts tab filter)
+        posts_count = await db.social_posts.count_documents({
+            "user_id": user_id,
+            "is_retweet": {"$ne": True}
+        })
         battles_count = await db.battles.count_documents({"participants": user_id}) if hasattr(db, 'battles') else 0
         
         # Get user's ceeps (following)
