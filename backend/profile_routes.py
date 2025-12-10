@@ -860,23 +860,10 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
         user = await get_user_by_username(username)
         user_id = user["id"]
         
-        # Check if can view (privacy check)
-        is_private = user.get("is_private", False)
+        # Privacy check - posts are publicly visible
+        # (Privacy setting is optional but doesn't restrict post visibility)
+        # This ensures consistency between timeline and profile views
         can_view = True
-        
-        if is_private and current_user_id != user_id:
-            # Check if following
-            if current_user_id:
-                relationship = await check_follow_relationship(current_user_id, user_id)
-                can_view = relationship and relationship.get("status") == "approved"
-            else:
-                can_view = False
-        
-        if not can_view:
-            return {
-                "success": False,
-                "message": "This account is private"
-            }
         
         # Fetch user's posts from social_posts collection
         posts = await db.social_posts.find({"user_id": user_id}).sort("created_at", -1).to_list(length=100)
