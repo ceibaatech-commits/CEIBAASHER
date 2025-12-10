@@ -29,17 +29,17 @@ print('User ID: ' + userId);
 
 ```bash
 # Test auth endpoint
-curl -X GET "https://your-app.com/api/auth/me" \
+curl -X GET "http://localhost:3000/api/auth/me" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 
 # Test protected endpoints
-curl -X GET "https://your-app.com/api/habits" \
+curl -X GET "http://localhost:3000/api/social/feed/for-you" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN"
 
-curl -X POST "https://your-app.com/api/habits" \
+curl -X POST "http://localhost:3000/api/social/posts" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_SESSION_TOKEN" \
-  -d '{"name": "Test Habit", "color": "#3B82F6"}'
+  -d '{"post_type": "general", "content": "Test post"}'
 ```
 
 ## Step 3: Browser Testing
@@ -49,13 +49,13 @@ curl -X POST "https://your-app.com/api/habits" \
 await page.context.add_cookies([{
     "name": "session_token",
     "value": "YOUR_SESSION_TOKEN",
-    "domain": "your-app.com",
+    "domain": "localhost",
     "path": "/",
     "httpOnly": true,
     "secure": true,
     "sameSite": "None"
 }]);
-await page.goto("https://your-app.com");
+await page.goto("http://localhost:3000");
 ```
 
 ## Quick Debug
@@ -87,12 +87,12 @@ db.user_sessions.deleteMany({session_token: /test_session/});
 
 ## Success Indicators
 
-✅ /api/auth/me returns user data  
-✅ Dashboard loads without redirect  
+✅ /api/auth/me returns user data
+✅ Dashboard loads without redirect
 ✅ CRUD operations work
 
 ## Failure Indicators
 
-❌ "User not found" errors  
-❌ 401 Unauthorized responses  
+❌ "User not found" errors
+❌ 401 Unauthorized responses
 ❌ Redirect to login page
