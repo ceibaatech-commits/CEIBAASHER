@@ -1203,7 +1203,7 @@ const VictoryLane = () => {
 
                         <button className="flex items-center gap-2 text-gray-500 hover:text-green-500 transition group">
                           <div className="p-2 rounded-full group-hover:bg-green-50 transition">
-                            <Share2 className="w-5 h-5" />
+                            <Repeat2 className="w-5 h-5" />
                           </div>
                           <span className="text-sm font-medium">{post.shares_count || 0}</span>
                         </button>
