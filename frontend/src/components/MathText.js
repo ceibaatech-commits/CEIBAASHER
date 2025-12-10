@@ -1,128 +1,61 @@
 import React from 'react';
+import { InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
-import { InlineMath, BlockMath } from 'react-katex';
 
-/**
- * Component to render text with inline LaTeX formulas
- * Detects LaTeX between $ signs and renders them properly
- * Also preserves Unicode characters for chemical notation (σ, π, ₀, ₁, etc.)
- * Example: "The value of $x^2$ is..." will render x² properly
- * Example: "σ-π bond in R-CH(OH)-CH₃" will display correctly
- */
+// Helper component to render text with math equations
 const MathText = ({ text, className = "" }) => {
   if (!text) return null;
-
-  // Handle object inputs (like {id: "A", text: "..."})
-  let textStr;
-  if (typeof text === 'object' && text !== null) {
-    // If it has a text property, use that
-    if (text.text !== undefined) {
-      textStr = String(text.text);
-    } else if (text.value !== undefined) {
-      textStr = String(text.value);
-    } else {
-      // Try to extract meaningful content, fallback to JSON
-      textStr = text.content || text.label || JSON.stringify(text);
-    }
-  } else {
-    // Convert to string if not already
-    textStr = String(text);
-  }
-
-  // Split text by LaTeX delimiters (both inline $ and display $$)
-  // Pattern: matches $$...$$ (display) or $...$ (inline)
+  
+  // Split text by $ signs to find math expressions
   const parts = [];
   let lastIndex = 0;
-  
-  // Regex to find LaTeX expressions
-  // Matches: $$...$$  or $...$
-  const latexRegex = /\$\$([\s\S]+?)\$\$|\$(.+?)\$/g;
-  
+  const regex = /\$([^$]+)\$/g;
   let match;
-  while ((match = latexRegex.exec(textStr)) !== null) {
-    // Add text before LaTeX
+  
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before math
     if (match.index > lastIndex) {
-      parts.push({
-        type: 'text',
-        content: textStr.substring(lastIndex, match.index)
+      parts.push({ 
+        type: 'text', 
+        content: text.substring(lastIndex, match.index),
+        key: `text-${lastIndex}`
       });
     }
-    
-    // Add LaTeX (display or inline)
-    if (match[1]) {
-      // Display math ($$...$$)
-      parts.push({
-        type: 'display',
-        content: match[1]
-      });
-    } else if (match[2]) {
-      // Inline math ($...$)
-      parts.push({
-        type: 'inline',
-        content: match[2]
-      });
-    }
-    
+    // Add math
+    parts.push({ 
+      type: 'math', 
+      content: match[1],
+      key: `math-${match.index}`
+    });
     lastIndex = match.index + match[0].length;
   }
   
   // Add remaining text
-  if (lastIndex < textStr.length) {
-    parts.push({
-      type: 'text',
-      content: textStr.substring(lastIndex)
+  if (lastIndex < text.length) {
+    parts.push({ 
+      type: 'text', 
+      content: text.substring(lastIndex),
+      key: `text-${lastIndex}`
     });
   }
   
-  // If no LaTeX found, return plain text with proper encoding
+  // If no math found, return plain text
   if (parts.length === 0) {
-    return (
-      <span 
-        className={className}
-        style={{ 
-          unicodeBidi: 'plaintext',
-          whiteSpace: 'pre-wrap'
-        }}
-      >
-        {textStr}
-      </span>
-    );
+    return <span className={className}>{text}</span>;
   }
   
-  // Render parts
   return (
     <span className={className}>
-      {parts.map((part, index) => {
-        if (part.type === 'text') {
-          return (
-            <span 
-              key={index}
-              style={{ 
-                unicodeBidi: 'plaintext',
-                whiteSpace: 'pre-wrap'
-              }}
-            >
-              {part.content}
-            </span>
-          );
-        } else if (part.type === 'inline') {
+      {parts.map((part) => {
+        if (part.type === 'math') {
           try {
-            return <InlineMath key={index} math={part.content} />;
-          } catch (error) {
-            console.error('LaTeX rendering error:', error);
-            // Fallback to plain text if LaTeX fails
-            return <span key={index} className="text-red-600">${part.content}$</span>;
-          }
-        } else if (part.type === 'display') {
-          try {
-            return <div key={index}><BlockMath math={part.content} /></div>;
-          } catch (error) {
-            console.error('LaTeX rendering error:', error);
-            // Fallback to plain text if LaTeX fails
-            return <div key={index} className="text-red-600">$${part.content}$$</div>;
+            return <InlineMath key={part.key} math={part.content} />;
+          } catch (err) {
+            // If LaTeX is invalid, show original text
+            return <span key={part.key} className="text-red-500 bg-red-50 px-1 rounded" title="Invalid math syntax">${part.content}$</span>;
           }
         }
-        return null;
+        return <span key={part.key}>{part.content}</span>;
       })}
     </span>
   );
