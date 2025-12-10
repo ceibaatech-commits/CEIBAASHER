@@ -594,9 +594,9 @@ const PublicProfile = () => {
                       ) : (
                         <>
                           <Repeat2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                          <p className="text-gray-600 text-lg">No retweets yet</p>
+                          <p className="text-gray-600 text-lg">No reposts yet</p>
                           <p className="text-gray-500 text-sm mt-2">
-                            {profile.name} hasn&apos;t retweeted anything yet
+                            {profile.name} hasn&apos;t reposted anything yet
                           </p>
                         </>
                       )}
