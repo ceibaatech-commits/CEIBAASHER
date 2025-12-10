@@ -539,6 +539,16 @@ const Dashboard = () => {
           setShowEditModal(false);
         }}
       />
+
+      {/* Follow List Modal */}
+      {profile && (
+        <FollowListModal
+          isOpen={showFollowModal}
+          onClose={() => setShowFollowModal(false)}
+          userId={profile.id}
+          type={followModalType}
+        />
+      )}
     </div>
   );
 };
