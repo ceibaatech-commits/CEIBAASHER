@@ -75,6 +75,14 @@ const Home = () => {
     { id: 'banking', label: 'Banking', icon: '🏦', color: 'from-rose-600 to-red-600' },
   ];
 
+  // CBSE Classes
+  const cbseClasses = [
+    { id: 'class-9', name: 'Class 9', icon: '📖', color: 'from-blue-500 to-cyan-500', subjects: 'Science, Maths, SST' },
+    { id: 'class-10', name: 'Class 10', icon: '📘', color: 'from-purple-500 to-pink-500', subjects: 'Science, Maths, SST' },
+    { id: 'class-11', name: 'Class 11', icon: '📙', color: 'from-green-500 to-emerald-500', subjects: 'PCM, PCB, Commerce' },
+    { id: 'class-12', name: 'Class 12', icon: '📕', color: 'from-orange-500 to-red-500', subjects: 'PCM, PCB, Commerce' },
+  ];
+
   // Filter exams based on category and search
   const getFilteredExams = () => {
     let filtered = exams;
