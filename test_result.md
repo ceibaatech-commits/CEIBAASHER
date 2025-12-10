@@ -3311,11 +3311,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Profile Picture Display Fix"
+    - "Profile Badge Display System"
   stuck_tasks:
     - "Profile Picture Display Fix"
   test_all: false
-  test_priority: "stuck_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
