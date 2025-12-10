@@ -1189,13 +1189,6 @@ const VictoryLane = () => {
                           <span className="text-sm font-medium">{post.comments_count || 0} Answers</span>
                         </button>
 
-                        <button className="flex items-center gap-2 text-gray-500 hover:text-green-500 transition group">
-                          <div className="p-2 rounded-full group-hover:bg-green-50 transition">
-                            <Share2 className="w-5 h-5" />
-                          </div>
-                          <span className="text-sm font-medium">{post.shares_count || 0}</span>
-                        </button>
-
                         <button
                           onClick={() => toggleLike(post.id)}
                           className={`flex items-center gap-2 transition group ${
@@ -1206,6 +1199,13 @@ const VictoryLane = () => {
                             <Heart className={`w-5 h-5 transition-all ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
                           </div>
                           <span className="text-sm font-medium">{post.likes_count || 0}</span>
+                        </button>
+
+                        <button className="flex items-center gap-2 text-gray-500 hover:text-green-500 transition group">
+                          <div className="p-2 rounded-full group-hover:bg-green-50 transition">
+                            <Share2 className="w-5 h-5" />
+                          </div>
+                          <span className="text-sm font-medium">{post.shares_count || 0}</span>
                         </button>
 
                         <button
