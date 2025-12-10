@@ -26,6 +26,9 @@ class OfficialStatusUpdate(BaseModel):
 class InstituteStatusUpdate(BaseModel):
     isInstitute: bool
 
+class ProfessorStatusUpdate(BaseModel):
+    isProfessor: bool
+
 # ==================== TEACHER STATUS MANAGEMENT ====================
 
 @router.put("/admin/users/{user_id}/teacher-status")
