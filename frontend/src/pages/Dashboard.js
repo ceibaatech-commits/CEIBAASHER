@@ -419,6 +419,17 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        currentProfile={profile}
+        onProfileUpdated={(updatedProfile) => {
+          setProfile(updatedProfile);
+          setShowEditModal(false);
+        }}
+      />
     </div>
   );
 };
