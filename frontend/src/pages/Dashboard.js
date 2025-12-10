@@ -133,14 +133,13 @@ const Dashboard = () => {
 
           {/* Profile Info Section */}
           <div className="relative px-6 pb-6">
-            {/* Settings Button - positioned at top right */}
+            {/* Edit Profile Button - positioned at top right */}
             <div className="pt-4 flex justify-end">
               <button
                 onClick={() => navigate('/settings')}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                title="Settings"
+                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg"
               >
-                <Settings className="w-6 h-6 text-gray-600" />
+                Edit Profile
               </button>
             </div>
 
