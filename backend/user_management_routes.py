@@ -35,7 +35,7 @@ class ProfessorStatusUpdate(BaseModel):
 async def update_teacher_status(user_id: str, status_update: TeacherStatusUpdate):
     """
     Update teacher status for a user
-    Admin endpoint to toggle isTeacher flag
+    Also updates all their posts and comments
     """
     try:
         # Update user's teacher status
@@ -52,11 +52,25 @@ async def update_teacher_status(user_id: str, status_update: TeacherStatusUpdate
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Update all posts by this user
+        posts_result = await db.social_posts.update_many(
+            {"user_id": user_id},
+            {"$set": {"isTeacher": status_update.isTeacher}}
+        )
+        
+        # Update all comments by this user
+        comments_result = await db.comments.update_many(
+            {"user_id": user_id},
+            {"$set": {"isTeacher": status_update.isTeacher}}
+        )
+        
         return {
             "success": True,
             "message": f"Teacher status updated to {status_update.isTeacher}",
             "user_id": user_id,
-            "isTeacher": status_update.isTeacher
+            "isTeacher": status_update.isTeacher,
+            "posts_updated": posts_result.modified_count,
+            "comments_updated": comments_result.modified_count
         }
         
     except HTTPException:
