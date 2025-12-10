@@ -196,16 +196,27 @@ async def update_institute_status(user_id: str, status_update: InstituteStatusUp
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="User not found")
         
+        # Get user's current badge state to ensure all fields are set
+        user_data = await db.users.find_one({"id": user_id}, {"_id": 0})
+        
+        # Build complete post/comment update dict with ALL badge fields
+        post_update = {
+            "isTeacher": user_data.get("isTeacher", False),
+            "isProfessor": user_data.get("isProfessor", False),
+            "isOfficial": user_data.get("isOfficial", False),
+            "isInstitute": user_data.get("isInstitute", False)
+        }
+        
         # Update all posts by this user
         posts_result = await db.social_posts.update_many(
             {"user_id": user_id},
-            {"$set": {"isInstitute": status_update.isInstitute}}
+            {"$set": post_update}
         )
         
         # Update all comments by this user
         comments_result = await db.comments.update_many(
             {"user_id": user_id},
-            {"$set": {"isInstitute": status_update.isInstitute}}
+            {"$set": post_update}
         )
         
         return {
