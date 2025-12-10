@@ -1020,34 +1020,32 @@ const VictoryLane = () => {
                   className="bg-white p-4 hover:bg-gray-50 transition"
                 >
                   <div className="flex gap-3">
-                    {/* User Avatar - Clickable */}
-                    <UserAvatar
-                      profilePicture={post.user_avatar}
-                      name={post.user_name || post.username}
-                      size="lg"
-                      clickable={true}
-                      onClick={() => openProfile(post.user_id)}
-                    />
-                    
                     <div className="flex-1 min-w-0">
-                      {/* User Info with Follow Button */}
+                      {/* User Info with Avatar and Follow Button */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span 
-                            onClick={() => openProfile(post.user_id)}
-                            className="font-bold text-gray-900 hover:underline cursor-pointer"
-                          >
-                            {post.user_name || post.username || 'Anonymous'}
-                          </span>
-                          {post.isTeacher && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
-                              Teacher
-                            </span>
-                          )}
-                          {post.is_verified && (
-                            <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
-                          )}
-                          <span className="text-gray-500 text-sm">@{post.username || 'user'}</span>
+                        <div className="flex items-center gap-3">
+                          {/* Avatar and Name Container - Vertically Centered */}
+                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openProfile(post.user_id)}>
+                            <UserAvatar
+                              profilePicture={post.user_avatar}
+                              name={post.user_name || post.username}
+                              size="lg"
+                              clickable={false}
+                            />
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="font-bold text-gray-900 hover:underline">
+                                {post.user_name || post.username || 'Anonymous'}
+                              </span>
+                              {post.isTeacher && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-600">
+                                  Teacher
+                                </span>
+                              )}
+                              {post.is_verified && (
+                                <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
+                              )}
+                            </div>
+                          </div>
                           <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
                         </div>
                         {user && post.user_id !== user.id && (
