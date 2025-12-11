@@ -197,21 +197,21 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Category Filter - Horizontal Scroll */}
+      {/* Category Filter - Grid Layout (3 per row) */}
       <div className="md:hidden bg-white sticky top-16 z-30 shadow-md border-b border-gray-200">
-        <div className="flex overflow-x-auto py-3 px-3 gap-2 scrollbar-hide">
+        <div className="grid grid-cols-3 gap-2 py-3 px-3">
           {categories.map(cat => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              className={`flex flex-col items-center justify-center gap-1 py-3 rounded-xl text-xs font-semibold transition-all ${
                 activeCategory === cat.id
                   ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <span>{cat.icon}</span>
-              <span>{cat.label}</span>
+              <span className="text-2xl">{cat.icon}</span>
+              <span className="text-center leading-tight">{cat.label}</span>
             </button>
           ))}
         </div>
