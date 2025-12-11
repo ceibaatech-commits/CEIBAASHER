@@ -277,35 +277,32 @@ const Home = () => {
 
       {/* Mobile: Skill Drill Classes Section (Show only for "All Exams") */}
       {!searchQuery.trim() && activeCategory === 'all' && (
-        <div className="md:hidden py-4 bg-white border-b">
-          <div className="px-4 mb-3">
+        <div className="md:hidden py-4 px-4 bg-white border-b">
+          <div className="mb-3">
             <h2 className="font-bold text-lg text-gray-900">📚 Skill Drill - CBSE Classes</h2>
             <p className="text-gray-500 text-xs mt-1">Chapter-wise practice for all subjects</p>
           </div>
-          <div className="overflow-x-auto px-4 scrollbar-hide">
-            <div className="flex gap-3" style={{ minWidth: 'max-content' }}>
-              {skillDrillClasses.map((skillClass) => (
-                <div
-                  key={skillClass.id}
-                  onClick={() => navigate(`/chapter-tests/${skillClass.id}`)}
-                  className="bg-white border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-blue-400 transition-all active:scale-95 flex-shrink-0"
-                  style={{ width: '7rem' }}
+          <div className="grid grid-cols-3 gap-3">
+            {skillDrillClasses.map((skillClass) => (
+              <div
+                key={skillClass.id}
+                onClick={() => navigate(`/chapter-tests/${skillClass.id}`)}
+                className="bg-white border-2 border-gray-200 rounded-xl p-2 cursor-pointer hover:border-blue-400 transition-all active:scale-95"
+              >
+                <div 
+                  className={`bg-gradient-to-br ${skillClass.color} rounded-lg flex items-center justify-center shadow-md mb-2`}
+                  style={{ width: '100%', height: '3.5rem' }}
                 >
-                  <div 
-                    className={`bg-gradient-to-br ${skillClass.color} rounded-lg flex items-center justify-center shadow-md mb-2`}
-                    style={{ width: '100%', height: '4rem' }}
-                  >
-                    <span style={{ fontSize: '2rem' }}>{skillClass.icon}</span>
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-center" style={{ fontSize: '0.875rem' }}>
-                    {skillClass.name}
-                  </h3>
-                  <p className="text-gray-500 text-center mt-1 line-clamp-2" style={{ fontSize: '0.625rem' }}>
-                    {skillClass.subjects}
-                  </p>
+                  <span style={{ fontSize: '1.75rem' }}>{skillClass.icon}</span>
                 </div>
-              ))}
-            </div>
+                <h3 className="font-bold text-gray-900 text-center" style={{ fontSize: '0.75rem' }}>
+                  {skillClass.name}
+                </h3>
+                <p className="text-gray-500 text-center mt-1" style={{ fontSize: '0.5rem', lineHeight: '0.75rem' }}>
+                  {skillClass.subjects}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       )}
