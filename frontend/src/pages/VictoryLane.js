@@ -413,33 +413,6 @@ const VictoryLane = () => {
   // Extract all unique tags from posts
   const allTags = [...new Set(posts.flatMap(post => post.tags || []))].filter(Boolean).slice(0, 20);
 
-  // Handle notification navigation - scroll to specific post
-  useEffect(() => {
-    const postId = searchParams.get('post') || searchParams.get('postId');
-    if (postId && posts.length > 0) {
-      // Wait for render to complete, then scroll
-      setTimeout(() => {
-        const postElement = postRefs.current[postId];
-        if (postElement) {
-          postElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
-          });
-          // Highlight the post briefly
-          postElement.classList.add('ring-4', 'ring-blue-400', 'ring-opacity-50');
-          setTimeout(() => {
-            postElement.classList.remove('ring-4', 'ring-blue-400', 'ring-opacity-50');
-            // Remove the query parameter after highlight completes
-            setSearchParams({});
-          }, 2500);
-        } else {
-          // If post not found, clear parameter immediately
-          setSearchParams({});
-        }
-      }, 300);
-    }
-  }, [posts, searchParams, setSearchParams]);
-
   const fetchFeed = useCallback(async (pageNum = 0, append = false) => {
     if (append) {
       setLoadingMore(true);
