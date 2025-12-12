@@ -75,6 +75,11 @@ const VictoryLane = () => {
   const [showQuizModal, setShowQuizModal] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  
   // Comments state
   const [expandedComments, setExpandedComments] = useState(new Set());
   const [replyingTo, setReplyingTo] = useState(null);
