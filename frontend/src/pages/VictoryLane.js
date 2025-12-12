@@ -354,6 +354,40 @@ const VictoryLane = () => {
     loadInitialFeed();
   }, [activeTab, user, fetchFeed]);
 
+  // Load more posts
+  const loadMorePosts = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      setPage(prevPage => {
+        const nextPage = prevPage + 1;
+        fetchFeed(nextPage, true);
+        return nextPage;
+      });
+    }
+  }, [hasMore, loadingMore, fetchFeed]);
+  
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loadingMore, loading, loadMorePosts]);
+
   // Filter posts based on search query and selected tag
   const filteredPosts = posts.filter(post => {
     // Tag filter
