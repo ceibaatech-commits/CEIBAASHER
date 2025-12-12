@@ -1205,61 +1205,15 @@ const VictoryLane = () => {
 
       {/* Main Content */}
       <div className="max-w-2xl mx-auto">
-        {/* Create Post Section */}
-        {user ? (
-          <div className="bg-white border-b border-gray-200 p-4">
-            <div className="flex gap-3">
-              <UserAvatar
-                profilePicture={user.profile_picture}
-                name={user.name}
-                size="lg"
-                clickable={true}
-                onClick={() => openProfile(user.id)}
-              />
-              <div className="flex-1">
-                <textarea
-                  value={newPostContent}
-                  onChange={(e) => setNewPostContent(e.target.value)}
-                  placeholder="Share your study wins, tips, or create a quiz room..."
-                  className="w-full text-lg border-none outline-none resize-none min-h-[60px] placeholder-gray-400"
-                  rows={2}
-                />
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setShowQuizModal(true)}
-                      className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full text-sm font-medium hover:from-purple-200 hover:to-blue-200 transition flex items-center gap-2"
-                    >
-                      <Play className="w-4 h-4" />
-                      Quiz Room
-                    </button>
-                    <button
-                      onClick={() => setShowQuestionModal(true)}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 rounded-full text-sm font-medium hover:from-blue-200 hover:to-indigo-200 transition flex items-center gap-2"
-                    >
-                      <HelpCircle className="w-4 h-4" />
-                      Question
-                    </button>
-                  </div>
-                  <button
-                    onClick={handleCreatePost}
-                    disabled={!newPostContent.trim()}
-                    className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Post
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 text-center">
-            <Trophy className="w-12 h-12 mx-auto mb-3 opacity-80" />
-            <h3 className="text-xl font-bold mb-2">Join the Victory Lane!</h3>
-            <p className="text-white/80 mb-4">Share your wins, create quiz rooms, and compete with others</p>
+        {/* Guest CTA Banner (compact version) */}
+        {!user && (
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white mx-4 mt-4 mb-3 rounded-2xl p-6 text-center shadow-lg">
+            <Trophy className="w-10 h-10 mx-auto mb-2 opacity-90" />
+            <h2 className="text-xl font-bold mb-1">Join the Victory Lane!</h2>
+            <p className="mb-3 text-sm text-blue-50">Share your wins, create quiz rooms, and compete with others</p>
             <button
-              onClick={() => navigate('/login', { state: { from: '/victory-lane' } })}
-              className="px-6 py-2 bg-white text-purple-600 rounded-full font-semibold hover:bg-gray-100 transition"
+              onClick={() => navigate('/login')}
+              className="px-5 py-2 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition text-sm shadow-md"
             >
               Login to Participate
             </button>
