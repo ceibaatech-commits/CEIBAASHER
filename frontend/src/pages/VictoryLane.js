@@ -2,20 +2,19 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { 
-  Heart, MessageCircle, Share2, Repeat2, Bookmark, MoreHorizontal, Users, 
-  Clock, Trophy, Play, Send, X, Plus, AlertCircle, CheckCircle2,
-  Sparkles, TrendingUp, UserPlus, Wifi, WifiOff, UserMinus, MapPin, Calendar, Link2, Trash2,
-  HelpCircle, Search, Filter, Tag
-} from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import UserAvatar from '../components/UserAvatar';
 import DeletePostModal from '../components/DeletePostModal';
 import QuestionPostModal from '../components/QuestionPostModal';
-import MathText from '../components/MathText';
 import { useSocialSocket } from '../hooks/useSocialSocket';
 import { toast } from 'sonner';
+import { 
+  PostCard, 
+  VictoryLaneHeader, 
+  CreatePostFAB, 
+  CommentsSection 
+} from '../components/VictoryLane';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
