@@ -42,16 +42,48 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
         <title>Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for JEE, NEET, UPSC, SSC & 38+ Competitive Exams</title>
+        <script>
+            // Block badge injection before emergent script loads
+            (function() {
+                const originalAppendChild = Element.prototype.appendChild;
+                const originalInsertBefore = Element.prototype.insertBefore;
+                
+                Element.prototype.appendChild = function(node) {
+                    if (node && node.id === 'emergent-badge') {
+                        return node;
+                    }
+                    if (node && node.href && node.href.includes('emergent-badge')) {
+                        return node;
+                    }
+                    return originalAppendChild.call(this, node);
+                };
+                
+                Element.prototype.insertBefore = function(node, reference) {
+                    if (node && node.id === 'emergent-badge') {
+                        return node;
+                    }
+                    if (node && node.href && node.href.includes('emergent-badge')) {
+                        return node;
+                    }
+                    return originalInsertBefore.call(this, node, reference);
+                };
+            })();
+        </script>
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         <style>
-            /* Hide Emergent badge */
+            /* Hide Emergent badge as backup */
             #emergent-badge,
+            a[id="emergent-badge"],
             a[href*="emergent-badge"],
-            a[href*="app.emergent.sh"] {
+            a[href*="app.emergent.sh"][href*="utm_source"] {
                 display: none !important;
                 visibility: hidden !important;
                 opacity: 0 !important;
                 pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                position: absolute !important;
+                left: -9999px !important;
             }
         </style>
         <!--
