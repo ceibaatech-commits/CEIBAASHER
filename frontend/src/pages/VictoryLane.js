@@ -410,9 +410,6 @@ const VictoryLane = () => {
     return true;
   });
 
-  // Extract all unique tags from posts
-  const allTags = [...new Set(posts.flatMap(post => post.tags || []))].filter(Boolean).slice(0, 20);
-
   const fetchFeed = useCallback(async (pageNum = 0, append = false) => {
     if (append) {
       setLoadingMore(true);
