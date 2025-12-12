@@ -154,7 +154,15 @@ const ChapterTestChapters = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate(`/chapter-tests/class-${selectedClass}`)}
+                onClick={() => {
+                  // For Class 11/12 with streams, go back to stream subjects page
+                  if (stream && (selectedClass === '11' || selectedClass === '12')) {
+                    navigate(`/chapter-tests/class-${selectedClass}/${stream}`);
+                  } else {
+                    // For Class 6-10, go back to general subjects page
+                    navigate(`/chapter-tests/class-${selectedClass}`);
+                  }
+                }}
                 className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg hover:bg-white/20"
               >
                 <ArrowLeft className="w-4 h-4" />
