@@ -1995,11 +1995,12 @@ class BackendTester:
             return True  # Don't fail the test for comments verification issues
 
     def run_all_tests(self):
-        """Run all backend tests including retroactive badge update fix for Bass"""
+        """Run all backend tests including Ceibaa quiz platform bug fixes"""
         print("🚀 Starting Backend API Tests")
         print("=" * 60)
         
         tests = [
+            self.test_ceibaa_quiz_platform_bug_fixes,
             self.test_retroactive_badge_update_fix_for_bass,
             self.test_teacher_professor_badge_mutual_exclusivity,
             self.test_image_extraction_api,
