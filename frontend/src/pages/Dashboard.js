@@ -35,14 +35,31 @@ const Dashboard = () => {
       return;
     }
     
-    // If user doesn't have a username, create profile object from user data
+    // If user doesn't have a username, we need to update the user object and database
     if (!user.username) {
-      console.warn('[Dashboard] User has no username, creating profile from user data');
+      console.warn('[Dashboard] User has no username, generating one');
+      const generatedUsername = user.email?.split('@')[0] || `user${user.id?.slice(0, 8)}`;
+      
+      // Try to update the username in the backend
+      try {
+        await axios.patch(
+          `${BACKEND_URL}/api/users/${user.id}`,
+          { username: generatedUsername },
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+        );
+        
+        // Update user object with the new username
+        user.username = generatedUsername;
+      } catch (error) {
+        console.error('[Dashboard] Failed to update username:', error);
+      }
+      
+      // Create profile and continue
       setProfile({
         id: user.id,
         name: user.name || 'User',
         email: user.email,
-        username: user.email?.split('@')[0] || `user${user.id?.slice(0, 8)}`,
+        username: generatedUsername,
         profile_picture: user.profile_picture || user.avatar,
         bio: user.bio || '',
         location: user.location || '',
@@ -52,6 +69,9 @@ const Dashboard = () => {
         score: user.score || 0
       });
       setLoading(false);
+      
+      // Now fetch the posts using the generated username
+      fetchUserContent('posts');
       return;
     }
     
