@@ -426,7 +426,7 @@ const VictoryLane = () => {
     }
   }, [posts, searchParams, setSearchParams]);
 
-  const fetchFeed = async (pageNum = page, append = false) => {
+  const fetchFeed = useCallback(async (pageNum = page, append = false) => {
     if (append) {
       setLoadingMore(true);
     } else {
@@ -491,7 +491,7 @@ const VictoryLane = () => {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
+  }, [activeTab, user, page, likedPosts, bookmarkedPosts]);
   
   // Load more posts
   const loadMorePosts = useCallback(() => {
