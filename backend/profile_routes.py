@@ -1045,3 +1045,53 @@ async def get_user_liked_posts(username: str, current_user_id: Optional[str] = N
         print(f"Error fetching liked posts: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching liked posts: {str(e)}")
 
+
+
+@router.post("/admin/fix-posts-retweet-field")
+async def fix_posts_retweet_field():
+    """
+    One-time database fix: Set is_retweet to False for all posts where it's not set or is null
+    This fixes the profile page display issue where posts don't appear
+    """
+    try:
+        # Fix posts where is_retweet doesn't exist
+        result1 = await db.social_posts.update_many(
+            {"is_retweet": {"$exists": False}},
+            {"$set": {"is_retweet": False}}
+        )
+        
+        # Fix posts where is_retweet is null
+        result2 = await db.social_posts.update_many(
+            {"is_retweet": None},
+            {"$set": {"is_retweet": False}}
+        )
+        
+        # Count posts that are marked as reposts but don't have original_user_id
+        # (These are false reposts - posts incorrectly marked as reposts)
+        false_reposts = await db.social_posts.count_documents({
+            "is_retweet": True,
+            "original_user_id": {"$exists": False}
+        })
+        
+        # Fix false reposts
+        result3 = await db.social_posts.update_many(
+            {
+                "is_retweet": True,
+                "original_user_id": {"$exists": False}
+            },
+            {"$set": {"is_retweet": False}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Database fix completed",
+            "fixed_missing_field": result1.modified_count,
+            "fixed_null_values": result2.modified_count,
+            "fixed_false_reposts": result3.modified_count,
+            "total_fixed": result1.modified_count + result2.modified_count + result3.modified_count
+        }
+        
+    except Exception as e:
+        print(f"Error fixing posts retweet field: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fixing database: {str(e)}")
+
