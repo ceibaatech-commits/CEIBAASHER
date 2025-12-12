@@ -500,7 +500,7 @@ const VictoryLane = () => {
       setPage(nextPage);
       fetchFeed(nextPage, true);
     }
-  }, [page, hasMore, loadingMore]);
+  }, [page, hasMore, loadingMore, fetchFeed]);
 
   // Follow/Unfollow user
   const toggleFollow = async (targetUserId) => {
