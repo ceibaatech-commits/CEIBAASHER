@@ -29,8 +29,28 @@ const Dashboard = () => {
   }, [user]);
 
   const fetchProfile = async () => {
-    if (!user || !user.username) {
-      console.error('[Dashboard] User or username is missing:', user);
+    if (!user) {
+      console.error('[Dashboard] User is missing');
+      setLoading(false);
+      return;
+    }
+    
+    // If user doesn't have a username, create profile object from user data
+    if (!user.username) {
+      console.warn('[Dashboard] User has no username, creating profile from user data');
+      setProfile({
+        id: user.id,
+        name: user.name || 'User',
+        email: user.email,
+        username: user.email?.split('@')[0] || `user${user.id?.slice(0, 8)}`,
+        profile_picture: user.profile_picture || user.avatar,
+        bio: user.bio || '',
+        location: user.location || '',
+        posts_count: 0,
+        followers_count: 0,
+        following_count: 0,
+        score: user.score || 0
+      });
       setLoading(false);
       return;
     }
