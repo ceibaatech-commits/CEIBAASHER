@@ -503,6 +503,8 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
             "has_more": has_more,
             "total": total_posts
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching trending: {str(e)}")
 
