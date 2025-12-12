@@ -1109,7 +1109,7 @@ const VictoryLane = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           {/* Avatar and Name Container - Vertically Centered */}
-                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openProfile(post.is_retweet ? post.original_user_id : post.user_id)}>
+                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openProfile(post.is_retweet ? post.original_username : post.username)}>
                             <UserAvatar
                               profilePicture={post.is_retweet ? post.original_user_avatar : post.user_avatar}
                               name={post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username)}
