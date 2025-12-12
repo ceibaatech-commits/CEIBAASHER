@@ -1151,12 +1151,19 @@ const VictoryLane = () => {
                         {user && (
                           <>
                             {post.user_id !== user.id ? (
-                              <FollowButton 
-                                userId={post.user_id} 
-                                user={user}
-                                followingList={followingList}
-                                toggleFollow={toggleFollow}
-                              />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFollow(post.user_id);
+                                }}
+                                className={`ml-3 px-3 py-1 rounded-full text-xs font-semibold transition ${
+                                  followingList.has(post.user_id)
+                                    ? 'border border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 hover:border-red-300'
+                                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                                }`}
+                              >
+                                {followingList.has(post.user_id) ? 'Following' : 'Follow'}
+                              </button>
                             ) : (
                               /* Three-dot menu for own posts */
                               <div className="relative">
