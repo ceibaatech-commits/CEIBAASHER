@@ -288,7 +288,13 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
             "user_id": user["id"],
             "is_retweet": {"$ne": True}
         })
-        user["posts_count"] = posts_count
+        
+        # Add comments count to posts count (comments are user activity too)
+        comments_count = await db.comments.count_documents({
+            "user_id": user["id"]
+        })
+        
+        user["posts_count"] = posts_count + comments_count
         
         # Add badge information
         user["badges"] = {
@@ -896,7 +902,7 @@ async def get_follow_status(
 
 @router.get("/{username}/posts")
 async def get_user_posts(username: str, current_user_id: Optional[str] = None):
-    """Get all posts by a specific user"""
+    """Get all posts by a specific user, including their comments on other posts"""
     try:
         # Get user by username
         user = await get_user_by_username(username)
@@ -916,6 +922,51 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
             # Ensure is_retweet is explicitly false if not present
             if "is_retweet" not in post:
                 post["is_retweet"] = False
+        
+        # Fetch user's comments
+        comments = await db.comments.find({"user_id": user_id}).sort("created_at", -1).to_list(length=100)
+        
+        # For each comment, fetch the original post and create a comment-post object
+        for comment in comments:
+            comment.pop("_id", None)
+            
+            # Fetch the original post that was commented on
+            original_post = await db.social_posts.find_one({"id": comment.get("post_id")}, {"_id": 0})
+            
+            if original_post:
+                # Create a comment-post hybrid object to display in the feed
+                comment_post = {
+                    "id": f"comment_{comment.get('id')}",  # Unique ID for the comment-post
+                    "comment_id": comment.get("id"),
+                    "user_id": user_id,
+                    "user_name": user.get("name", "User"),
+                    "username": user.get("username"),
+                    "user_avatar": user.get("profile_picture"),
+                    "is_comment": True,  # Flag to identify this as a comment
+                    "comment_content": comment.get("content"),
+                    "created_at": comment.get("created_at"),
+                    "is_retweet": False,
+                    "likes_count": comment.get("likes_count", 0),
+                    "comments_count": 0,  # Comments don't have nested comments in display
+                    "shares_count": 0,
+                    # Original post preview
+                    "original_post": {
+                        "id": original_post.get("id"),
+                        "user_id": original_post.get("user_id"),
+                        "user_name": original_post.get("user_name"),
+                        "username": original_post.get("username"),
+                        "user_avatar": original_post.get("user_avatar"),
+                        "content": original_post.get("content"),
+                        "post_type": original_post.get("post_type"),
+                        "created_at": original_post.get("created_at"),
+                        "quiz_details": original_post.get("quiz_details"),
+                        "room_code": original_post.get("room_code")
+                    }
+                }
+                posts.append(comment_post)
+        
+        # Sort all posts (including comment-posts) by created_at
+        posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
         
         return {
             "success": True,
