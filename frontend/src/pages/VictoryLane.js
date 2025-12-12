@@ -513,17 +513,6 @@ const VictoryLane = () => {
       setLoadingMore(false);
     }
   }, [activeTab, user]);
-  
-  // Load more posts
-  const loadMorePosts = useCallback(() => {
-    if (!loadingMore && hasMore) {
-      setPage(prevPage => {
-        const nextPage = prevPage + 1;
-        fetchFeed(nextPage, true);
-        return nextPage;
-      });
-    }
-  }, [hasMore, loadingMore, fetchFeed]);
 
   // Follow/Unfollow user
   const toggleFollow = async (targetUserId) => {
