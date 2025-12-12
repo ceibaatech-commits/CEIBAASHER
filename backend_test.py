@@ -1662,7 +1662,7 @@ class BackendTester:
             posts = posts_data.get('posts', [])
             
             # Check for comment objects with original_post field
-            comment_objects = [p for p in posts if 'original_post' in p and p.get('post_type') == 'comment']
+            comment_objects = [p for p in posts if 'original_post' in p and p.get('is_comment') == True]
             
             if comment_objects:
                 self.log_result("Profile Posts API Test - Comment Objects", True, 
