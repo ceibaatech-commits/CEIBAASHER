@@ -568,7 +568,9 @@ const PublicProfile = () => {
                             </div>
                           )}
                           
-                          <p className="text-gray-800">{post.content}</p>
+                          <div className="text-gray-800">
+                            <MathText text={post.content} />
+                          </div>
                           
                           {post.room_code && (
                             <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
