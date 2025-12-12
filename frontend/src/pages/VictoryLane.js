@@ -339,9 +339,12 @@ const VictoryLane = () => {
     }
   };
 
-  // Fetch feed
+  // Fetch feed - Reset on tab change
   useEffect(() => {
-    fetchFeed();
+    setPosts([]);
+    setPage(0);
+    setHasMore(true);
+    fetchFeed(0);
     if (user) {
       fetchMyFollowing();
       fetchMyStats();
