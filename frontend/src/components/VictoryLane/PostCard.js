@@ -190,7 +190,7 @@ const PostCard = ({
       )}
 
       {/* Quiz Room Card */}
-      {(post.post_type === 'quiz_room' || post.quiz_details) && post.quiz_details && (
+      {post.post_type === 'quiz_room' && post.quiz_details && (
         <div 
           className="border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 transition mt-3"
           style={{ borderColor: `${getGradientColor(post.quiz_details.category)}40` }}
