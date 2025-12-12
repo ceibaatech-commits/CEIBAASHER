@@ -1510,51 +1510,45 @@ const VictoryLane = () => {
                         </div>
                       )}
 
-                      {/* Interaction Buttons */}
-                      <div className="flex items-center justify-between mt-4 max-w-md">
+                      {/* Interaction Buttons - Compact Mobile-First Design */}
+                      <div className="flex items-center gap-1 mt-3 -mx-2">
                         <button 
                           onClick={() => toggleComments(post.id)}
-                          className={`flex items-center gap-2 transition group ${
-                            expandedComments.has(post.id) ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition ${
+                            expandedComments.has(post.id) ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
                           }`}
                         >
-                          <div className="p-2 rounded-full group-hover:bg-blue-50 transition">
-                            <MessageCircle className={`w-5 h-5 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
-                          </div>
-                          <span className="text-sm font-medium">{post.comments_count || 0} Answers</span>
+                          <MessageCircle className={`w-4 h-4 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
+                          <span className="text-xs font-medium">{post.comments_count || 0}</span>
                         </button>
 
                         <button
                           onClick={() => toggleLike(post.id)}
-                          className={`flex items-center gap-2 transition group ${
-                            likedPosts.has(post.id) ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition ${
+                            likedPosts.has(post.id) ? 'text-red-500 bg-red-50' : 'text-gray-600 hover:text-red-500 hover:bg-red-50'
                           }`}
                         >
-                          <div className="p-2 rounded-full group-hover:bg-red-50 transition">
-                            <Heart className={`w-5 h-5 transition-all ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
-                          </div>
-                          <span className="text-sm font-medium">{post.likes_count || 0}</span>
+                          <Heart className={`w-4 h-4 transition-all ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                          <span className="text-xs font-medium">{post.likes_count || 0}</span>
                         </button>
 
                         <button 
                           onClick={() => toggleShare(post.id)}
-                          className={`flex items-center gap-2 transition group ${
-                            sharedPosts.has(post.id) ? 'text-green-500' : 'text-gray-500 hover:text-green-500'
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition ${
+                            sharedPosts.has(post.id) ? 'text-green-600 bg-green-50' : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
                           }`}
                         >
-                          <div className="p-2 rounded-full group-hover:bg-green-50 transition">
-                            <Repeat2 className={`w-5 h-5 transition-all ${sharedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
-                          </div>
-                          <span className="text-sm font-medium">{post.shares_count || 0}</span>
+                          <Repeat2 className={`w-4 h-4 transition-all ${sharedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                          <span className="text-xs font-medium">{post.shares_count || 0}</span>
                         </button>
 
                         <button
                           onClick={() => toggleBookmark(post.id)}
-                          className={`p-2 rounded-full transition ${
-                            bookmarkedPosts.has(post.id) ? 'text-blue-500 bg-blue-50' : 'text-gray-500 hover:bg-gray-100'
+                          className={`p-1.5 rounded-full transition ml-auto ${
+                            bookmarkedPosts.has(post.id) ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
                           }`}
                         >
-                          <Bookmark className={`w-5 h-5 transition-all ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                          <Bookmark className={`w-4 h-4 transition-all ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
                         </button>
                       </div>
 
