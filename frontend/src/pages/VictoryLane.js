@@ -2026,12 +2026,7 @@ const VictoryLane = () => {
               {/* General Post Button */}
               <button
                 onClick={() => {
-                  // Create a simple text post prompt
-                  const content = prompt('Share your study wins, tips, or thoughts:');
-                  if (content && content.trim()) {
-                    setNewPostContent(content);
-                    handleCreatePost();
-                  }
+                  setShowQuickPostModal(true);
                   setShowCreateMenu(false);
                 }}
                 className="flex items-center gap-3 bg-white hover:bg-blue-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
@@ -2041,6 +2036,56 @@ const VictoryLane = () => {
                 </div>
                 <span className="font-semibold text-sm pr-2">Create Post</span>
               </button>
+            </div>
+          )}
+
+          {/* Quick Post Modal */}
+          {showQuickPostModal && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+              <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-200">
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                  <h3 className="text-lg font-bold text-gray-900">Create Post</h3>
+                  <button
+                    onClick={() => {
+                      setShowQuickPostModal(false);
+                      setNewPostContent('');
+                    }}
+                    className="p-2 hover:bg-gray-100 rounded-full transition"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+                <div className="p-4">
+                  <div className="flex gap-3">
+                    <UserAvatar
+                      profilePicture={user.profile_picture}
+                      name={user.name}
+                      size="md"
+                    />
+                    <textarea
+                      value={newPostContent}
+                      onChange={(e) => setNewPostContent(e.target.value)}
+                      placeholder="Share your study wins, tips, or thoughts..."
+                      className="flex-1 border-none outline-none resize-none min-h-[120px] text-base placeholder-gray-400 focus:ring-0"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+                <div className="p-4 border-t border-gray-100 flex justify-end">
+                  <button
+                    onClick={() => {
+                      handleCreatePost();
+                      setShowQuickPostModal(false);
+                    }}
+                    disabled={!newPostContent.trim()}
+                    className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Post
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
             </div>
           )}
 
