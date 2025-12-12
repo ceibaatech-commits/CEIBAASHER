@@ -359,7 +359,15 @@ const ChapterTestChapters = () => {
             <p className="text-xl text-gray-600">No chapters available yet</p>
             <p className="text-gray-500 mt-2">Chapters will be added soon for {formattedSubject}!</p>
             <button
-              onClick={() => navigate(`/chapter-tests/class-${selectedClass}`)}
+              onClick={() => {
+                // For Class 11/12 with streams, go back to stream subjects page
+                if (stream && (selectedClass === '11' || selectedClass === '12')) {
+                  navigate(`/chapter-tests/class-${selectedClass}/${stream}`);
+                } else {
+                  // For Class 6-10, go back to general subjects page
+                  navigate(`/chapter-tests/class-${selectedClass}`);
+                }
+              }}
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Go Back to Subjects
