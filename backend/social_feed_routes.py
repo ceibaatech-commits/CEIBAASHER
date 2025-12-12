@@ -366,9 +366,18 @@ async def get_for_you_feed(
 ):
     """Get personalized feed with pagination"""
     try:
+        # Validate parameters
+        if skip < 0:
+            raise HTTPException(status_code=400, detail="skip parameter must be non-negative")
+        if limit < 0:
+            raise HTTPException(status_code=400, detail="limit parameter must be non-negative")
+        if limit > 100:
+            limit = 100  # Cap at 100 for performance
+        
         user_id = get_optional_user_id(authorization)
         mixed_posts = []
         
+        # Fetch ALL posts first, then paginate after combining and deduplicating
         if user_id:
             ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
             following_ids = [c["ceep_user_id"] for c in ceeps]
@@ -376,11 +385,11 @@ async def get_for_you_feed(
             if following_ids:
                 following_posts = await db.social_posts.find(
                     {"user_id": {"$in": following_ids}}, {"_id": 0}
-                ).sort("created_at", -1).skip(skip // 2).limit(limit // 2).to_list(limit // 2)
+                ).sort("created_at", -1).to_list(None)
                 mixed_posts.extend(following_posts)
         
-        # Get trending posts with skip/limit
-        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).skip(skip).limit(limit * 2).to_list(limit * 2)
+        # Get trending posts (without pagination first)
+        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).to_list(None)
         
         # Get recent quiz rooms (last 24 hours) to ensure they appear
         recent_quiz_rooms = await db.social_posts.find(
@@ -396,11 +405,14 @@ async def get_for_you_feed(
         
         # Filter expired quiz rooms
         mixed_posts = await filter_expired_quiz_posts(mixed_posts)
-        mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
-        paginated = mixed_posts[skip:skip + limit]
         
-        # Check if there are more posts
-        has_more = len(mixed_posts) > skip + limit
+        # Sort by created_at
+        mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        
+        # NOW apply pagination after combining and deduplicating
+        total_posts = len(mixed_posts)
+        paginated = mixed_posts[skip:skip + limit]
+        has_more = (skip + limit) < total_posts
         
         # Enrich posts with current user profile pictures
         unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
@@ -430,8 +442,10 @@ async def get_for_you_feed(
             "posts": paginated, 
             "count": len(paginated),
             "has_more": has_more,
-            "total": len(mixed_posts)
+            "total": total_posts
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching feed: {str(e)}")
 
