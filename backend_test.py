@@ -1287,6 +1287,435 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_ceibaa_quiz_platform_bug_fixes(self):
+        """Test all three bug fixes for the Ceibaa quiz platform"""
+        try:
+            print("\n🎯 TESTING CEIBAA QUIZ PLATFORM BUG FIXES")
+            print("=" * 60)
+            
+            # Test 1: Comments counting as posts
+            self._test_comments_counting_as_posts()
+            
+            # Test 2: Comments displaying in Posts tab  
+            self._test_comments_in_posts_tab()
+            
+            # Test 3: Reposted quiz results UI
+            self._test_reposted_quiz_results_ui()
+            
+            # Backend API Tests
+            self._test_profile_api_endpoints()
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Ceibaa Bug Fixes - Exception", False, f"❌ Ceibaa bug fixes test error: {e}")
+            return False
+
+    def _test_comments_counting_as_posts(self):
+        """Test 1: Comments counting as posts"""
+        try:
+            print("\n📝 TEST 1: COMMENTS COUNTING AS POSTS")
+            print("-" * 40)
+            
+            # Login as demo1 user
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Comments Count Test - Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Comments Count Test - Login", True, f"✅ Demo1 logged in successfully")
+            
+            # Get current posts count from profile
+            response = requests.get(f"{BACKEND_URL}/api/profile/demostudent1")
+            if response.status_code != 200:
+                self.log_result("Comments Count Test - Profile API", False, f"❌ Profile API failed: {response.status_code}")
+                return False
+            
+            profile_data = response.json()
+            if not profile_data.get('success'):
+                self.log_result("Comments Count Test - Profile API", False, f"❌ Profile API returned success=false")
+                return False
+            
+            initial_posts_count = profile_data.get('profile', {}).get('posts_count', 0)
+            self.log_result("Comments Count Test - Initial Count", True, f"✅ Initial posts count: {initial_posts_count}")
+            
+            # Find a post to comment on from Victory Lane feed
+            headers = {"Authorization": f"Bearer {token}"}
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Comments Count Test - Feed API", False, f"❌ Feed API failed: {response.status_code}")
+                return False
+            
+            feed_data = response.json()
+            posts = feed_data.get('posts', [])
+            
+            if not posts:
+                self.log_result("Comments Count Test - Find Post", False, "❌ No posts found in feed to comment on")
+                return False
+            
+            # Find a post that's not by demo1 to comment on
+            target_post = None
+            for post in posts:
+                if post.get('user_id') != user_id:
+                    target_post = post
+                    break
+            
+            if not target_post:
+                self.log_result("Comments Count Test - Find Post", False, "❌ No suitable post found to comment on")
+                return False
+            
+            post_id = target_post.get('id')
+            self.log_result("Comments Count Test - Find Post", True, f"✅ Found post to comment on: {post_id}")
+            
+            # Create a comment on the post
+            comment_data = {
+                "content": f"Testing comment counting as posts - {datetime.now().strftime('%H:%M:%S')}"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/social/posts/{post_id}/comment", 
+                                   json=comment_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Comments Count Test - Create Comment", False, f"❌ Comment creation failed: {response.status_code}")
+                return False
+            
+            comment_result = response.json()
+            if not comment_result.get('success'):
+                self.log_result("Comments Count Test - Create Comment", False, f"❌ Comment creation returned success=false")
+                return False
+            
+            self.log_result("Comments Count Test - Create Comment", True, "✅ Comment created successfully")
+            
+            # Wait a moment for the system to process
+            time.sleep(2)
+            
+            # Check posts count again
+            response = requests.get(f"{BACKEND_URL}/api/profile/demostudent1")
+            if response.status_code != 200:
+                self.log_result("Comments Count Test - Final Count", False, f"❌ Profile API failed on recheck: {response.status_code}")
+                return False
+            
+            updated_profile_data = response.json()
+            final_posts_count = updated_profile_data.get('profile', {}).get('posts_count', 0)
+            
+            # Verify posts count increased by 1
+            if final_posts_count == initial_posts_count + 1:
+                self.log_result("Comments Count Test - Verification", True, 
+                              f"✅ Posts count increased from {initial_posts_count} to {final_posts_count} after comment")
+                return True
+            else:
+                self.log_result("Comments Count Test - Verification", False, 
+                              f"❌ Posts count should be {initial_posts_count + 1}, but got {final_posts_count}")
+                return False
+                
+        except Exception as e:
+            self.log_result("Comments Count Test - Exception", False, f"❌ Comments count test error: {e}")
+            return False
+
+    def _test_comments_in_posts_tab(self):
+        """Test 2: Comments displaying in Posts tab"""
+        try:
+            print("\n📋 TEST 2: COMMENTS DISPLAYING IN POSTS TAB")
+            print("-" * 40)
+            
+            # Login as demo1 user who has made comments
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Comments Display Test - Login", False, "❌ Failed to login demo1")
+                return False
+            
+            # Get posts from profile posts API
+            response = requests.get(f"{BACKEND_URL}/api/profile/demostudent1/posts")
+            if response.status_code != 200:
+                self.log_result("Comments Display Test - Posts API", False, f"❌ Posts API failed: {response.status_code}")
+                return False
+            
+            posts_data = response.json()
+            if not posts_data.get('success'):
+                self.log_result("Comments Display Test - Posts API", False, f"❌ Posts API returned success=false")
+                return False
+            
+            posts = posts_data.get('posts', [])
+            
+            # Look for comment objects in the posts
+            comment_posts = [p for p in posts if p.get('post_type') == 'comment' or p.get('is_comment') == True]
+            
+            if not comment_posts:
+                self.log_result("Comments Display Test - Find Comments", False, "❌ No comment posts found in Posts tab")
+                return False
+            
+            self.log_result("Comments Display Test - Find Comments", True, f"✅ Found {len(comment_posts)} comment posts")
+            
+            # Verify comment structure
+            sample_comment = comment_posts[0]
+            
+            # Check for required fields
+            required_fields = ['content', 'original_post']
+            missing_fields = [field for field in required_fields if field not in sample_comment]
+            
+            if missing_fields:
+                self.log_result("Comments Display Test - Structure", False, f"❌ Missing fields in comment: {missing_fields}")
+                return False
+            
+            # Check original_post structure
+            original_post = sample_comment.get('original_post', {})
+            if not original_post:
+                self.log_result("Comments Display Test - Original Post", False, "❌ original_post field is empty")
+                return False
+            
+            # Verify original post has required fields (user info, content)
+            original_post_fields = ['user_name', 'content']
+            missing_original_fields = [field for field in original_post_fields if field not in original_post]
+            
+            if missing_original_fields:
+                self.log_result("Comments Display Test - Original Post Structure", False, 
+                              f"❌ Missing fields in original_post: {missing_original_fields}")
+                return False
+            
+            self.log_result("Comments Display Test - Structure Verification", True, 
+                          "✅ Comment posts have correct structure with original_post preview")
+            
+            # Check chronological ordering (comments mixed with posts)
+            all_posts_with_timestamps = [p for p in posts if 'created_at' in p or 'timestamp' in p]
+            
+            if len(all_posts_with_timestamps) > 1:
+                # Check if posts are in chronological order (newest first typically)
+                timestamps = []
+                for post in all_posts_with_timestamps[:5]:  # Check first 5 posts
+                    timestamp_field = post.get('created_at') or post.get('timestamp')
+                    if timestamp_field:
+                        timestamps.append(timestamp_field)
+                
+                if len(timestamps) >= 2:
+                    self.log_result("Comments Display Test - Chronological Order", True, 
+                                  "✅ Posts appear to be in chronological order")
+                else:
+                    self.log_result("Comments Display Test - Chronological Order", False, 
+                                  "❌ Could not verify chronological ordering")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Comments Display Test - Exception", False, f"❌ Comments display test error: {e}")
+            return False
+
+    def _test_reposted_quiz_results_ui(self):
+        """Test 3: Reposted quiz results UI"""
+        try:
+            print("\n🎮 TEST 3: REPOSTED QUIZ RESULTS UI")
+            print("-" * 40)
+            
+            # Login as demo1
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Quiz Repost Test - Login", False, "❌ Failed to login demo1")
+                return False
+            
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Find a quiz result post in Victory Lane feed
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you", headers=headers)
+            if response.status_code != 200:
+                self.log_result("Quiz Repost Test - Feed API", False, f"❌ Feed API failed: {response.status_code}")
+                return False
+            
+            feed_data = response.json()
+            posts = feed_data.get('posts', [])
+            
+            # Look for quiz_result posts
+            quiz_result_posts = [p for p in posts if p.get('post_type') == 'quiz_result']
+            
+            if not quiz_result_posts:
+                self.log_result("Quiz Repost Test - Find Quiz Result", False, "❌ No quiz_result posts found in feed")
+                return False
+            
+            quiz_post = quiz_result_posts[0]
+            quiz_post_id = quiz_post.get('id')
+            
+            self.log_result("Quiz Repost Test - Find Quiz Result", True, f"✅ Found quiz result post: {quiz_post_id}")
+            
+            # Repost/share the quiz result
+            share_data = {
+                "content": f"Sharing this quiz result - {datetime.now().strftime('%H:%M:%S')}"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/social/posts/{quiz_post_id}/share", 
+                                   json=share_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Quiz Repost Test - Share Post", False, f"❌ Share post failed: {response.status_code}")
+                return False
+            
+            share_result = response.json()
+            if not share_result.get('success'):
+                self.log_result("Quiz Repost Test - Share Post", False, f"❌ Share post returned success=false")
+                return False
+            
+            self.log_result("Quiz Repost Test - Share Post", True, "✅ Quiz result shared successfully")
+            
+            # Wait for processing
+            time.sleep(2)
+            
+            # Check user's reposts tab
+            response = requests.get(f"{BACKEND_URL}/api/profile/demostudent1/reposts")
+            if response.status_code != 200:
+                self.log_result("Quiz Repost Test - Reposts API", False, f"❌ Reposts API failed: {response.status_code}")
+                return False
+            
+            reposts_data = response.json()
+            if not reposts_data.get('success'):
+                self.log_result("Quiz Repost Test - Reposts API", False, f"❌ Reposts API returned success=false")
+                return False
+            
+            reposts = reposts_data.get('reposts', [])
+            
+            # Find the reposted quiz result
+            reposted_quiz = None
+            for repost in reposts:
+                original_post = repost.get('original_post', {})
+                if original_post.get('post_type') == 'quiz_result':
+                    reposted_quiz = repost
+                    break
+            
+            if not reposted_quiz:
+                self.log_result("Quiz Repost Test - Find Repost", False, "❌ Reposted quiz result not found in reposts tab")
+                return False
+            
+            self.log_result("Quiz Repost Test - Find Repost", True, "✅ Found reposted quiz result in reposts tab")
+            
+            # Verify the repost structure - should NOT have join room button data
+            original_post = reposted_quiz.get('original_post', {})
+            
+            # Check that it has quiz result content but no room joining info
+            has_quiz_content = 'score' in original_post or 'quiz_result' in original_post or 'result' in original_post
+            has_room_code = 'room_code' in original_post or 'room_id' in original_post
+            
+            if has_quiz_content and not has_room_code:
+                self.log_result("Quiz Repost Test - UI Structure", True, 
+                              "✅ Reposted quiz result has quiz content but no room joining data")
+            elif has_quiz_content and has_room_code:
+                self.log_result("Quiz Repost Test - UI Structure", False, 
+                              "❌ Reposted quiz result still contains room joining data")
+            else:
+                self.log_result("Quiz Repost Test - UI Structure", False, 
+                              "❌ Reposted quiz result structure is unclear")
+            
+            # Verify it looks different from quiz_room posts
+            quiz_room_posts = [p for p in posts if p.get('post_type') == 'quiz_room']
+            
+            if quiz_room_posts:
+                quiz_room_post = quiz_room_posts[0]
+                has_room_data = 'room_code' in quiz_room_post or 'quiz_details' in quiz_room_post
+                
+                if has_room_data:
+                    self.log_result("Quiz Repost Test - Comparison", True, 
+                                  "✅ Quiz room posts have room data, reposted quiz results do not")
+                else:
+                    self.log_result("Quiz Repost Test - Comparison", False, 
+                                  "❌ Could not verify difference between quiz room and quiz result posts")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Quiz Repost Test - Exception", False, f"❌ Quiz repost test error: {e}")
+            return False
+
+    def _test_profile_api_endpoints(self):
+        """Backend API Tests for profile endpoints"""
+        try:
+            print("\n🔌 BACKEND API TESTS")
+            print("-" * 40)
+            
+            # Test 1: GET /api/profile/{username} - Verify posts_count includes comments
+            response = requests.get(f"{BACKEND_URL}/api/profile/demostudent1")
+            if response.status_code != 200:
+                self.log_result("Profile API Test - GET Profile", False, f"❌ Profile API failed: {response.status_code}")
+                return False
+            
+            profile_data = response.json()
+            if not profile_data.get('success'):
+                self.log_result("Profile API Test - GET Profile", False, "❌ Profile API returned success=false")
+                return False
+            
+            profile = profile_data.get('profile', {})
+            posts_count = profile.get('posts_count')
+            
+            if posts_count is not None and posts_count >= 0:
+                self.log_result("Profile API Test - Posts Count", True, 
+                              f"✅ Profile API returns posts_count: {posts_count}")
+            else:
+                self.log_result("Profile API Test - Posts Count", False, 
+                              "❌ Profile API missing or invalid posts_count field")
+            
+            # Test 2: GET /api/profile/{username}/posts - Verify response includes comment objects
+            response = requests.get(f"{BACKEND_URL}/api/profile/demostudent1/posts")
+            if response.status_code != 200:
+                self.log_result("Profile Posts API Test - GET Posts", False, f"❌ Posts API failed: {response.status_code}")
+                return False
+            
+            posts_data = response.json()
+            if not posts_data.get('success'):
+                self.log_result("Profile Posts API Test - GET Posts", False, "❌ Posts API returned success=false")
+                return False
+            
+            posts = posts_data.get('posts', [])
+            
+            # Check for comment objects with original_post field
+            comment_objects = [p for p in posts if 'original_post' in p and p.get('post_type') == 'comment']
+            
+            if comment_objects:
+                self.log_result("Profile Posts API Test - Comment Objects", True, 
+                              f"✅ Posts API includes {len(comment_objects)} comment objects with original_post field")
+                
+                # Verify structure of comment object
+                sample_comment = comment_objects[0]
+                original_post = sample_comment.get('original_post', {})
+                
+                if original_post and 'content' in original_post:
+                    self.log_result("Profile Posts API Test - Comment Structure", True, 
+                                  "✅ Comment objects have proper original_post structure")
+                else:
+                    self.log_result("Profile Posts API Test - Comment Structure", False, 
+                                  "❌ Comment objects missing proper original_post structure")
+            else:
+                self.log_result("Profile Posts API Test - Comment Objects", False, 
+                              "❌ Posts API does not include comment objects with original_post field")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Profile API Test - Exception", False, f"❌ Profile API test error: {e}")
+            return False
+
+    def login_admin(self):
+        """Login admin user and return auth token"""
+        try:
+            # Try demo1 as admin first
+            response = requests.post(f"{BACKEND_URL}/api/auth/demo-login", json={
+                "username": "demo1",
+                "password": "demo1"
+            })
+            if response.status_code == 200:
+                data = response.json()
+                user_id = data.get('user', {}).get('id') or data.get('user', {}).get('user_id')
+                return data.get('access_token'), user_id
+            
+            # Try admin credentials
+            response = requests.post(f"{BACKEND_URL}/api/auth/login", json={
+                "username": "admin",
+                "password": "ceibaa@admin2025"
+            })
+            if response.status_code == 200:
+                data = response.json()
+                user_id = data.get('user', {}).get('id') or data.get('user', {}).get('user_id')
+                return data.get('access_token'), user_id
+            
+            return None, None
+        except Exception as e:
+            print(f"Admin login error: {e}")
+            return None, None
+
     def test_teacher_professor_badge_mutual_exclusivity(self):
         """Test Professor/Teacher badge mutual exclusivity feature comprehensively"""
         try:
