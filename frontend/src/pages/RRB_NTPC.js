@@ -289,14 +289,15 @@ const RRB_NTPC = () => {
                     <div className="flex items-start">
                       <Calendar className="w-6 h-6 text-orange-600 mr-3 flex-shrink-0 mt-1" />
                       <div>
-                        <h3 className="font-bold text-lg text-gray-900 mb-2">RRB NTPC 2026 Notification Expected</h3>
+                        <h3 className="font-bold text-lg text-gray-900 mb-2">RRB NTPC 2025-26 Latest Updates</h3>
                         <p className="text-gray-700 mb-3">
-                          The official notification for RRB NTPC 2026 is expected to be released soon. Approximately 5,800+ vacancies are anticipated across various non-technical posts.
+                          The Railway Recruitment Board is expected to announce RRB NTPC 2025-26 recruitment soon. Stay updated with official notifications for approximately 10,000+ vacancies across various non-technical popular category posts.
                         </p>
                         <p className="text-sm text-gray-600">
-                          <strong>Expected Application Start:</strong> March 2026<br />
-                          <strong>Expected Last Date:</strong> April 2026<br />
-                          <strong>Expected Exam Date:</strong> June-July 2026
+                          <strong>Expected Notification:</strong> January-February 2026<br />
+                          <strong>Expected Application Period:</strong> February-March 2026<br />
+                          <strong>Expected Exam Date:</strong> May-June 2026<br />
+                          <strong>Selection Stages:</strong> CBT-1, CBT-2, Typing Test, Document Verification
                         </p>
                       </div>
                     </div>

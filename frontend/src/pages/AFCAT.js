@@ -306,14 +306,15 @@ const AFCAT = () => {
                     <div className="flex items-start">
                       <Calendar className="w-6 h-6 text-orange-600 mr-3 flex-shrink-0 mt-1" />
                       <div>
-                        <h3 className="font-bold text-lg text-gray-900 mb-2">AFCAT 1/2026 Notification</h3>
+                        <h3 className="font-bold text-lg text-gray-900 mb-2">🚨 AFCAT 01/2026 - Registration Extended!</h3>
                         <p className="text-gray-700 mb-3">
-                          The official notification for AFCAT 1/2026 is expected to be released in December 2025. The exam is typically conducted twice a year.
+                          <strong>IMPORTANT UPDATE:</strong> The AFCAT 01/2026 registration window has been extended and will now remain open until <strong>19 December 2025</strong>. Don't miss this opportunity to apply for the Indian Air Force!
                         </p>
                         <p className="text-sm text-gray-600">
-                          <strong>Expected Application Period:</strong> December 2025 - January 2026<br />
-                          <strong>Expected Exam Date:</strong> February-March 2026<br />
-                          <strong>AFSB Interviews:</strong> April-July 2026
+                          <strong>Registration Deadline:</strong> 19 December 2025 (Extended)<br />
+                          <strong>Expected Exam Date:</strong> February 2026<br />
+                          <strong>AFSB Interviews:</strong> April-July 2026<br />
+                          <strong>Result Declaration:</strong> March 2026
                         </p>
                       </div>
                     </div>
