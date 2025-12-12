@@ -966,7 +966,14 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
                 posts.append(comment_post)
         
         # Sort all posts (including comment-posts) by created_at
-        posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        # Handle both datetime objects and strings
+        def get_sort_key(post):
+            created_at = post.get("created_at", "")
+            if isinstance(created_at, datetime):
+                return created_at.isoformat()
+            return str(created_at)
+        
+        posts.sort(key=get_sort_key, reverse=True)
         
         return {
             "success": True,
