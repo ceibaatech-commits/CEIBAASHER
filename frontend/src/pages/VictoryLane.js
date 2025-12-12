@@ -81,6 +81,7 @@ const VictoryLane = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [showQuickPostModal, setShowQuickPostModal] = useState(false);
   
   // Comments state
   const [expandedComments, setExpandedComments] = useState(new Set());
