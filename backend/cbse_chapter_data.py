@@ -560,20 +560,175 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 14, "chapter_name": "Waves", "total_questions": 55, "difficulty": "Hard", "duration": 40, "unit": "Oscillations and Waves"}
         ],
         "Mathematics": [
-            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
-            for i in range(1, 16)
+            {"chapter_number": 1, "chapter_name": "Sets", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Relations and Functions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Trigonometric Functions", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "Principle of Mathematical Induction", "total_questions": 50, "difficulty": "Hard", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Complex Numbers and Quadratic Equations", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Linear Inequalities", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Permutations and Combinations", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Binomial Theorem", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Sequences and Series", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "Straight Lines", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Conic Sections", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 12, "chapter_name": "Introduction to Three Dimensional Geometry", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Limits and Derivatives", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 14, "chapter_name": "Mathematical Reasoning", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 15, "chapter_name": "Statistics", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 16, "chapter_name": "Probability", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
         "Chemistry": [
-            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
-            for i in range(1, 15)
+            {"chapter_number": 1, "chapter_name": "Some Basic Concepts of Chemistry", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Structure of Atom", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Classification of Elements and Periodicity in Properties", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Chemical Bonding and Molecular Structure", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "States of Matter", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Thermodynamics", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 7, "chapter_name": "Equilibrium", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Redox Reactions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Hydrogen", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "The s-Block Elements", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "The p-Block Elements", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Organic Chemistry - Some Basic Principles and Techniques", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 13, "chapter_name": "Hydrocarbons", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 14, "chapter_name": "Environmental Chemistry", "total_questions": 45, "difficulty": "Easy", "duration": 30}
         ],
         "Biology": [
-            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
-            for i in range(1, 22)
+            {"chapter_number": 1, "chapter_name": "The Living World", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Biological Classification", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Plant Kingdom", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Animal Kingdom", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Morphology of Flowering Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Anatomy of Flowering Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Structural Organisation in Animals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Cell: The Unit of Life", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Biomolecules", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Cell Cycle and Cell Division", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Transport in Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Mineral Nutrition", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Photosynthesis in Higher Plants", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 14, "chapter_name": "Respiration in Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 15, "chapter_name": "Plant Growth and Development", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 16, "chapter_name": "Digestion and Absorption", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 17, "chapter_name": "Breathing and Exchange of Gases", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 18, "chapter_name": "Body Fluids and Circulation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 19, "chapter_name": "Excretory Products and their Elimination", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 20, "chapter_name": "Locomotion and Movement", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 21, "chapter_name": "Neural Control and Coordination", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 22, "chapter_name": "Chemical Coordination and Integration", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "English": [
-            {"chapter_number": i, "chapter_name": f"Chapter {i}", "total_questions": 50, "difficulty": "Medium", "duration": 35}
-            for i in range(1, 8)
+            {"chapter_number": 1, "chapter_name": "The Portrait of a Lady", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "A Photograph", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 3, "chapter_name": "We're Not Afraid to Die", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Discovering Tut", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "The Ailing Planet", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "The Browning Version", "total_questions": 40, "difficulty": "Medium", "duration": 25},
+            {"chapter_number": 7, "chapter_name": "The Adventure", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Silk Road", "total_questions": 45, "difficulty": "Medium", "duration": 30}
+        ],
+        "Accountancy": [
+            {"chapter_number": 1, "chapter_name": "Introduction to Accounting", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Theory Base of Accounting", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Recording of Transactions I", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "Recording of Transactions II", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "Bank Reconciliation Statement", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Trial Balance and Rectification of Errors", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 7, "chapter_name": "Depreciation, Provisions and Reserves", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Bill of Exchange", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Financial Statements I", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "Financial Statements II", "total_questions": 60, "difficulty": "Hard", "duration": 45}
+        ],
+        "Business Studies": [
+            {"chapter_number": 1, "chapter_name": "Nature and Purpose of Business", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Forms of Business Organisation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Private, Public and Global Enterprises", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Business Services", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Emerging Modes of Business", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Social Responsibilities of Business and Business Ethics", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Formation of a Company", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Sources of Business Finance", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Small Business", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Internal Trade", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "International Business", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Economics": [
+            {"chapter_number": 1, "chapter_name": "Introduction to Microeconomics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Theory of Consumer Behaviour", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Production and Costs", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "The Theory of the Firm under Perfect Competition", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "Market Equilibrium", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Non-competitive Markets", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Introduction to Macroeconomics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "National Income Accounting", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Money and Banking", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Income Determination", "total_questions": 60, "difficulty": "Hard", "duration": 45}
+        ],
+        "History": [
+            {"chapter_number": 1, "chapter_name": "From the Beginning of Time", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Writing and City Life", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "An Empire Across Three Continents", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "The Central Islamic Lands", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Nomadic Empires", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "The Three Orders", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "Changing Cultural Traditions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Confrontation of Cultures", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Paths to Modernisation", "total_questions": 50, "difficulty": "Hard", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Displacing Indigenous Peoples", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Industrialisation and Social Change", "total_questions": 55, "difficulty": "Hard", "duration": 40}
+        ],
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "Geography as a Discipline", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 2, "chapter_name": "The Origin and Evolution of the Earth", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Interior of the Earth", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Distribution of Oceans and Continents", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Minerals and Rocks", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Geomorphic Processes", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Landforms and their Evolution", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Composition and Structure of Atmosphere", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Solar Radiation, Heat Balance and Temperature", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Atmospheric Circulation and Weather Systems", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Water in the Atmosphere", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "World Climate and Climate Change", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 13, "chapter_name": "Water (Oceans)", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Movements of Ocean Water", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 15, "chapter_name": "Life on the Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 16, "chapter_name": "Biodiversity and Conservation", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Political Science": [
+            {"chapter_number": 1, "chapter_name": "Constitution: Why and How?", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Rights in the Indian Constitution", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Election and Representation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Executive", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Legislature", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Judiciary", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Federalism", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Local Governments", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Constitution as a Living Document", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "The Philosophy of the Constitution", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Sociology": [
+            {"chapter_number": 1, "chapter_name": "Sociology and Society", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Terms, Concepts and their Use in Sociology", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Understanding Social Institutions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Culture and Socialisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Doing Sociology: Research Methods", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Social Structure, Stratification and Social Processes in Society", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Social Change and Social Order in Rural and Urban Society", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Environment and Society", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Introducing Western Sociologists", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Indian Sociologists", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Psychology": [
+            {"chapter_number": 1, "chapter_name": "What is Psychology?", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Methods of Enquiry in Psychology", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "The Bases of Human Behaviour", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Human Development", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Sensory, Attentional and Perceptual Processes", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Learning", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Human Memory", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Thinking", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Motivation and Emotion", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ]
     },
     "12": {
