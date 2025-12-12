@@ -1455,13 +1455,13 @@ const VictoryLane = () => {
                                         name={comment.user_name || comment.username}
                                         size="sm"
                                         clickable={true}
-                                        onClick={() => openProfile(comment.user_id)}
+                                        onClick={() => openProfile(comment.username)}
                                       />
                                       <div className="flex-1 min-w-0">
                                         <div className="bg-gray-50 rounded-2xl px-3 py-2">
                                           <div className="flex items-center gap-2 mb-1 flex-wrap">
                                             <span 
-                                              onClick={() => openProfile(comment.user_id)}
+                                              onClick={() => openProfile(comment.username)}
                                               className="font-semibold text-gray-900 text-sm cursor-pointer hover:underline"
                                             >
                                               {comment.user_name || comment.username || 'User'}
