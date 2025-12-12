@@ -100,6 +100,7 @@ function App() {
           <Route path="/auth-callback" element={<AuthCallback />} />
           <Route path="/old-dashboard" element={<UserDashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="/profile/:username" element={<PublicProfile />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings/privacy" element={<PrivacySettings />} />
