@@ -702,7 +702,14 @@ const ExamSheetManager = () => {
   useEffect(() => {
     // Update chapters based on class and subject
     if (classForm.class_name && classForm.subject) {
-      // Define comprehensive chapter data for each class and subject
+      // Fetch chapters dynamically from backend for Class 11 and 12
+      const classNumber = classForm.class_name.replace('Class ', '');
+      if (classNumber === '11' || classNumber === '12') {
+        fetchChaptersFromBackend(classNumber, classForm.subject);
+        return;
+      }
+      
+      // Define comprehensive chapter data for each class and subject (Class 6-10 only)
       const classWiseChapters = {
         'Class 6': {
           'Mathematics': [
