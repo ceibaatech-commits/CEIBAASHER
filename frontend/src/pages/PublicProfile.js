@@ -6,6 +6,7 @@ import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, Mess
 import FollowButton from '../components/FollowButton';
 import FollowListModal from '../components/FollowListModal';
 import Header from '../components/Header';
+import MathText from '../components/MathText';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
