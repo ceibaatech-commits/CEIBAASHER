@@ -339,6 +339,80 @@ const VictoryLane = () => {
     }
   };
 
+  const fetchFeed = useCallback(async (pageNum = 0, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+    
+    try {
+      const limit = 20;
+      const skip = pageNum * limit;
+      
+      let endpoint = `${BACKEND_URL}/api/social/feed/for-you?skip=${skip}&limit=${limit}`;
+      if (activeTab === 'trending') endpoint = `${BACKEND_URL}/api/social/feed/trending?skip=${skip}&limit=${limit}`;
+      if (activeTab === 'following' && user) endpoint = `${BACKEND_URL}/api/social/feed/following?user_id=${user.id}&skip=${skip}&limit=${limit}`;
+      
+      const response = await axios.get(endpoint);
+      if (response.data.success) {
+        const postsData = response.data.posts || [];
+        const hasMoreData = response.data.has_more || false;
+        
+        setHasMore(hasMoreData);
+        
+        if (append) {
+          setPosts(prev => [...prev, ...postsData]);
+        } else {
+          setPosts(postsData);
+        }
+        
+        // Build users data from posts
+        const users = {};
+        postsData.forEach(post => {
+          if (post.user_id) {
+            users[post.user_id] = {
+              id: post.user_id,
+              name: post.user_name || post.username || 'Anonymous',
+              username: post.username || 'user',
+              avatar: post.user_avatar,
+              is_verified: post.is_verified || false,
+              followers_count: post.user_followers_count || 0,
+              following_count: post.user_following_count || 0,
+              posts_count: post.user_posts_count || 0,
+              bio: post.user_bio || '',
+              location: post.user_location || '',
+              joined_at: post.user_joined_at
+            };
+          }
+        });
+        setUsersData(prev => ({ ...prev, ...users }));
+        
+        // Initialize liked/bookmarked states from fresh data
+        setLikedPosts(prev => {
+          const liked = append ? new Set(prev) : new Set();
+          postsData.forEach(post => {
+            if (post.liked_by?.includes(user?.id) || post.user_liked) liked.add(post.id);
+          });
+          return liked;
+        });
+        
+        setBookmarkedPosts(prev => {
+          const bookmarked = append ? new Set(prev) : new Set();
+          postsData.forEach(post => {
+            if (post.bookmarked_by?.includes(user?.id) || post.user_bookmarked) bookmarked.add(post.id);
+          });
+          return bookmarked;
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }, [activeTab, user]);
+
   // Fetch feed - Reset on tab change
   useEffect(() => {
     const loadInitialFeed = async () => {
