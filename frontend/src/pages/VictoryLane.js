@@ -2086,8 +2086,6 @@ const VictoryLane = () => {
               </div>
             </div>
           )}
-            </div>
-          )}
 
           {/* Main FAB Button */}
           <button
