@@ -943,7 +943,8 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
                     "username": user.get("username"),
                     "user_avatar": user.get("profile_picture"),
                     "is_comment": True,  # Flag to identify this as a comment
-                    "comment_content": comment.get("content"),
+                    "content": comment.get("content"),  # Comment content
+                    "comment_content": comment.get("content"),  # Backward compatibility
                     "created_at": comment.get("created_at"),
                     "is_retweet": False,
                     "likes_count": comment.get("likes_count", 0),
