@@ -1113,7 +1113,15 @@ const VictoryLane = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           {/* Avatar and Name Container - Vertically Centered */}
-                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openProfile(post.is_retweet ? post.original_username : post.username)}>
+                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
+                            const username = post.is_retweet ? post.original_username : post.username;
+                            if (username && username !== 'undefined') {
+                              openProfile(username);
+                            } else {
+                              console.warn('[VictoryLane] User has no username:', post);
+                              toast.error('User profile not available');
+                            }
+                          }}>
                             <UserAvatar
                               profilePicture={post.is_retweet ? post.original_user_avatar : post.user_avatar}
                               name={post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username)}
