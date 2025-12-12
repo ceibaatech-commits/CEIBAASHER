@@ -1104,6 +1104,47 @@ async def get_user_liked_posts(username: str, current_user_id: Optional[str] = N
         raise HTTPException(status_code=500, detail=f"Error fetching liked posts: {str(e)}")
 
 
+@router.get("/{username}/reposts")
+async def get_user_reposts(username: str, current_user_id: Optional[str] = None):
+    """Get all reposts/shares by a specific user"""
+    try:
+        # Get user by username
+        user = await db.users.find_one({"username": username}, {"_id": 0})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user_id = user.get("id")
+        
+        # Privacy check - reposts are publicly visible
+        
+        # Fetch user's reposts from social_posts collection
+        reposts = await db.social_posts.find({
+            "user_id": user_id,
+            "is_retweet": True
+        }).sort("created_at", -1).to_list(length=100)
+        
+        # Process reposts and get original post data
+        for repost in reposts:
+            repost.pop("_id", None)
+            
+            # Get original post data if available
+            original_post_id = repost.get("original_post_id")
+            if original_post_id:
+                original_post = await db.social_posts.find_one({"id": original_post_id}, {"_id": 0})
+                if original_post:
+                    repost["original_post"] = original_post
+        
+        return {
+            "success": True,
+            "reposts": reposts
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error fetching user reposts: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching user reposts: {str(e)}")
+
 
 @router.post("/admin/fix-posts-retweet-field")
 async def fix_posts_retweet_field():
