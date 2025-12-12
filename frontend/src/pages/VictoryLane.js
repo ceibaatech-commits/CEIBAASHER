@@ -367,12 +367,12 @@ const VictoryLane = () => {
     setPosts([]);
     setPage(0);
     setHasMore(true);
-    fetchFeed(0);
+    fetchFeed(0, false);
     if (user) {
       fetchMyFollowing();
       fetchMyStats();
     }
-  }, [activeTab, user, fetchFeed]);
+  }, [activeTab, user]);
 
   // Filter posts based on search query and selected tag
   const filteredPosts = posts.filter(post => {
@@ -426,7 +426,7 @@ const VictoryLane = () => {
     }
   }, [posts, searchParams, setSearchParams]);
 
-  const fetchFeed = useCallback(async (pageNum = page, append = false) => {
+  const fetchFeed = useCallback(async (pageNum = 0, append = false) => {
     if (append) {
       setLoadingMore(true);
     } else {
@@ -475,15 +475,22 @@ const VictoryLane = () => {
         });
         setUsersData(prev => ({ ...prev, ...users }));
         
-        // Initialize liked/bookmarked states
-        const liked = new Set(likedPosts);
-        const bookmarked = new Set(bookmarkedPosts);
-        postsData.forEach(post => {
-          if (post.liked_by?.includes(user?.id) || post.user_liked) liked.add(post.id);
-          if (post.bookmarked_by?.includes(user?.id) || post.user_bookmarked) bookmarked.add(post.id);
+        // Initialize liked/bookmarked states from fresh data
+        setLikedPosts(prev => {
+          const liked = append ? new Set(prev) : new Set();
+          postsData.forEach(post => {
+            if (post.liked_by?.includes(user?.id) || post.user_liked) liked.add(post.id);
+          });
+          return liked;
         });
-        setLikedPosts(liked);
-        setBookmarkedPosts(bookmarked);
+        
+        setBookmarkedPosts(prev => {
+          const bookmarked = append ? new Set(prev) : new Set();
+          postsData.forEach(post => {
+            if (post.bookmarked_by?.includes(user?.id) || post.user_bookmarked) bookmarked.add(post.id);
+          });
+          return bookmarked;
+        });
       }
     } catch (error) {
       console.error('Error fetching feed:', error);
@@ -491,16 +498,18 @@ const VictoryLane = () => {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [activeTab, user, page, likedPosts, bookmarkedPosts]);
+  }, [activeTab, user]);
   
   // Load more posts
   const loadMorePosts = useCallback(() => {
     if (!loadingMore && hasMore) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchFeed(nextPage, true);
+      setPage(prevPage => {
+        const nextPage = prevPage + 1;
+        fetchFeed(nextPage, true);
+        return nextPage;
+      });
     }
-  }, [page, hasMore, loadingMore, fetchFeed]);
+  }, [hasMore, loadingMore, fetchFeed]);
 
   // Follow/Unfollow user
   const toggleFollow = async (targetUserId) => {
