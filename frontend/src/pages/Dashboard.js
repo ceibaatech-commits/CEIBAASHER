@@ -29,7 +29,11 @@ const Dashboard = () => {
   }, [user]);
 
   const fetchProfile = async () => {
-    if (!user) return;
+    if (!user || !user.username) {
+      console.error('[Dashboard] User or username is missing:', user);
+      setLoading(false);
+      return;
+    }
     
     setLoading(true);
     try {
@@ -45,6 +49,8 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      // Set profile to null to show error state
+      setProfile(null);
     } finally {
       setLoading(false);
     }
