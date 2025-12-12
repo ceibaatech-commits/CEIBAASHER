@@ -309,29 +309,6 @@ const VictoryLane = () => {
       joinFeed(activeTab.replace('-', '_'));
     }
   }, [activeTab, isConnected, joinFeed]);
-  
-  // Infinite scroll observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
-          loadMorePosts();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
-
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
-    };
-  }, [hasMore, loadingMore, loading, loadMorePosts]);
 
   // Fetch my following list
   const fetchMyFollowing = async () => {
