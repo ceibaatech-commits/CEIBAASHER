@@ -12,8 +12,10 @@ const ChapterTestChapters = () => {
   const navigate = useNavigate();
   const { classNumber, subject, stream } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
+  const location = window.location;
   
-  const selectedClass = classNumber?.replace('class-', '') || '';
+  // Extract class number from URL path if not in params (for class 11/12 with streams)
+  const selectedClass = classNumber?.replace('class-', '') || location.pathname.match(/class-(\d+)/)?.[1] || '';
   const formattedSubject = useMemo(() => 
     subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
     [subject]
