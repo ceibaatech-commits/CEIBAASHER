@@ -4110,6 +4110,53 @@ agent_communication:
       (1) ✅ Each question contains required fields: id, question, options, correct_answer, explanation
       (2) ✅ Options array has exactly 4 items with proper {id: "A/B/C/D", text: "..."} structure
       (3) ✅ Question structure matches expected format for frontend consumption
+
+  - agent: "testing"
+    message: |
+      🎯 NCERT CHAPTER TESTS FUNCTIONALITY COMPREHENSIVE TEST COMPLETE (100% success rate - All test scenarios passed)
+      
+      **Test Specification Met**: Comprehensive testing of NCERT chapter tests functionality for Class 11 and 12 per review request
+      
+      **✅ ALL CRITICAL SUCCESS CRITERIA MET PER REVIEW REQUEST**:
+      
+      **TEST SCENARIO 1 - Class 11 Science Stream**:
+      (1) ✅ Navigate to /chapter-tests/class-11/science - API returns 5 subjects: Physics, Chemistry, Biology, Mathematics, English
+      (2) ✅ Chemistry chapters test - Found 14 Chemistry chapters with proper NCERT names (Some Basic Concepts of Chemistry, Structure of Atom, etc.)
+      (3) ✅ No placeholder names like "Chapter 1", "Chapter 2" - all proper NCERT chapter titles
+      
+      **TEST SCENARIO 2 - Class 11 Commerce Stream**:
+      (1) ✅ Navigate to /chapter-tests/class-11/commerce - Subjects include Accountancy, Business Studies, Economics, Mathematics, English
+      (2) ✅ Business Studies chapters test - Found 11 Business Studies chapters with proper NCERT names
+      
+      **TEST SCENARIO 3 - Class 11 Humanities Stream**:
+      (1) ✅ Navigate to /chapter-tests/class-11/humanities - Subjects include History, Geography, Political Science, Sociology, Psychology, English
+      (2) ✅ Geography chapters test - Found 16 Geography chapters with proper NCERT names
+      
+      **TEST SCENARIO 4 - Class 12 Science Stream**:
+      (1) ✅ Navigate to /chapter-tests/class-12/science - Mathematics chapters test successful
+      (2) ✅ Found 13 Mathematics chapters with proper NCERT names (Relations and Functions, Inverse Trigonometric Functions, etc.)
+      
+      **TEST SCENARIO 5 - Class 12 Commerce Stream**:
+      (1) ✅ Navigate to /chapter-tests/class-12/commerce - Economics chapters test successful
+      (2) ✅ Found 9 Economics chapters with proper NCERT names
+      
+      **TEST SCENARIO 6 - Class 12 Humanities Stream**:
+      (1) ✅ Navigate to /chapter-tests/class-12/humanities - History chapters test successful
+      (2) ✅ Found 15 History chapters with proper NCERT names (Bricks, Beads and Bones, etc.)
+      
+      **API TESTS - ALL WORKING ✅**:
+      (1) ✅ GET /api/chapter-tests/subjects/class-11 - Returns 13 subjects successfully
+      (2) ✅ GET /api/chapter-tests/subjects/class-12 - Returns 13 subjects successfully
+      (3) ✅ GET /api/chapter-tests/chapters?class_param=11&subject=physics - Returns 14 chapters
+      (4) ✅ GET /api/chapter-tests/chapters?class_param=12&subject=history - Returns 15 chapters with proper NCERT names
+      
+      **TECHNICAL VERIFICATION**: 
+      - Backend chapter_test_routes.py working correctly with proper URL parameter handling
+      - cbse_chapter_data.py contains comprehensive NCERT chapter data for all classes and streams
+      - All subjects and chapters return proper NCERT names, not placeholders
+      - API responses include proper chapter metadata (difficulty, duration, question counts)
+      
+      **CONCLUSION**: NCERT chapter tests functionality is FULLY OPERATIONAL and meets ALL review request requirements with 100% success rate. All streams, subjects, and chapters working correctly with proper NCERT naming.
       
       **TEST SCENARIO 3 - Database Storage Verification**:
       (1) ✅ All 3 questions saved to MongoDB questions collection with source='image_extraction'
