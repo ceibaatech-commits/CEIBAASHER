@@ -788,9 +788,10 @@ const VictoryLane = () => {
   };
 
   // Open profile modal
-  const openProfile = (userId) => {
-    if (!userId) return;
-    navigate(`/profile/${userId}`);
+  const openProfile = (usernameOrId) => {
+    if (!usernameOrId) return;
+    // Navigate to profile using username (not userId)
+    navigate(`/profile/${usernameOrId}`);
   };
 
   // Create text post
