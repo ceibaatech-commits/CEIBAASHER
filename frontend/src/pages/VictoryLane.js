@@ -364,16 +364,18 @@ const VictoryLane = () => {
 
   // Fetch feed - Reset on tab change
   useEffect(() => {
-    setPosts([]);
-    setPage(0);
-    setHasMore(true);
-    fetchFeed(0, false);
-    if (user) {
-      fetchMyFollowing();
-      fetchMyStats();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, user]);
+    const loadInitialFeed = async () => {
+      setPosts([]);
+      setPage(0);
+      setHasMore(true);
+      await fetchFeed(0, false);
+      if (user) {
+        fetchMyFollowing();
+        fetchMyStats();
+      }
+    };
+    loadInitialFeed();
+  }, [activeTab, user, fetchFeed]);
 
   // Filter posts based on search query and selected tag
   const filteredPosts = posts.filter(post => {
