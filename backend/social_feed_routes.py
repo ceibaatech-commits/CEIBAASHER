@@ -460,7 +460,9 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
                 return datetime.min.replace(tzinfo=timezone.utc)
         
         posts.sort(key=parse_date, reverse=True)
+        total_posts = len(posts)
         paginated = posts[skip:skip + limit]
+        has_more = (skip + limit) < total_posts
         
         # Enrich posts with current user profile pictures
         unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
@@ -480,7 +482,13 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
             if "is_retweet" not in post:
                 post["is_retweet"] = False
         
-        return {"success": True, "posts": paginated, "count": len(posts)}
+        return {
+            "success": True, 
+            "posts": paginated, 
+            "count": len(paginated),
+            "has_more": has_more,
+            "total": total_posts
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching trending: {str(e)}")
 
