@@ -10,8 +10,10 @@ const ChapterTestStreams = () => {
   const navigate = useNavigate();
   const { classNumber } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
+  const location = window.location;
   
-  const selectedClass = classNumber?.replace('class-', '');
+  // Extract class number from URL path since route is hardcoded
+  const selectedClass = classNumber?.replace('class-', '') || location.pathname.match(/class-(\d+)/)?.[1];
 
   const streams = [
     {
