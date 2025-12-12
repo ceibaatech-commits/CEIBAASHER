@@ -4015,6 +4015,7 @@ metadata:
 test_plan:
   current_focus:
     - "Profile Picture Display Fix"
+    - "Profile and Social Feed Bug Fixes"
   stuck_tasks:
     - "Profile Picture Display Fix"
   test_all: false
