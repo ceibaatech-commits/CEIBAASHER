@@ -484,6 +484,9 @@ const VictoryLane = () => {
     }
   }, [activeTab, user]);
 
+  // Extract all unique tags from posts
+  const allTags = [...new Set(posts.flatMap(post => post.tags || []))].filter(Boolean).slice(0, 20);
+
   // Handle notification navigation - scroll to specific post
   useEffect(() => {
     const postId = searchParams.get('post') || searchParams.get('postId');
