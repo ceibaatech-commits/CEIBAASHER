@@ -1897,6 +1897,38 @@ const ExamSheetManager = () => {
                           <option value="Hindi Kritika">Hindi Kritika</option>
                           <option value="Hindi Sparsh">Hindi Sparsh</option>
                         </>
+                      ) : classForm.class_name === 'Class 11' ? (
+                        <>
+                          <option value="Physics">Physics</option>
+                          <option value="Chemistry">Chemistry</option>
+                          <option value="Biology">Biology</option>
+                          <option value="Mathematics">Mathematics</option>
+                          <option value="English">English</option>
+                          <option value="Accountancy">Accountancy</option>
+                          <option value="Business Studies">Business Studies</option>
+                          <option value="Economics">Economics</option>
+                          <option value="History">History</option>
+                          <option value="Geography">Geography</option>
+                          <option value="Political Science">Political Science</option>
+                          <option value="Sociology">Sociology</option>
+                          <option value="Psychology">Psychology</option>
+                        </>
+                      ) : classForm.class_name === 'Class 12' ? (
+                        <>
+                          <option value="Physics">Physics</option>
+                          <option value="Chemistry">Chemistry</option>
+                          <option value="Biology">Biology</option>
+                          <option value="Mathematics">Mathematics</option>
+                          <option value="English">English</option>
+                          <option value="Accountancy">Accountancy</option>
+                          <option value="Business Studies">Business Studies</option>
+                          <option value="Economics">Economics</option>
+                          <option value="History">History</option>
+                          <option value="Geography">Geography</option>
+                          <option value="Political Science">Political Science</option>
+                          <option value="Sociology">Sociology</option>
+                          <option value="Psychology">Psychology</option>
+                        </>
                       ) : (
                         <>
                           <option value="Social Science">Social Science</option>
