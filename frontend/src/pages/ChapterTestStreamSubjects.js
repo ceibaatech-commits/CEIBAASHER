@@ -10,8 +10,10 @@ const ChapterTestStreamSubjects = () => {
   const navigate = useNavigate();
   const { classNumber, stream } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
+  const location = window.location;
   
-  const selectedClass = classNumber?.replace('class-', '');
+  // Extract class number from URL path if not in params
+  const selectedClass = classNumber?.replace('class-', '') || location.pathname.match(/class-(\d+)/)?.[1];
   const formattedStream = stream?.charAt(0).toUpperCase() + stream?.slice(1);
 
   // Subject mapping for each stream
