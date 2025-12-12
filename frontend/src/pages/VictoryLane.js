@@ -1262,13 +1262,17 @@ const VictoryLane = () => {
         ) : (
           /* Feed Posts */
           <div className="divide-y divide-gray-200">
-            {posts.length === 0 ? (
+            {filteredPosts.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <Trophy className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                <p>No posts yet. Be the first to share!</p>
+                {searchQuery || selectedTag ? (
+                  <p>No posts match your search or filter. Try different keywords!</p>
+                ) : (
+                  <p>No posts yet. Be the first to share!</p>
+                )}
               </div>
             ) : (
-              posts.map(post => (
+              filteredPosts.map(post => (
                 <div 
                   key={post.id} 
                   ref={(el) => postRefs.current[post.id] = el}
