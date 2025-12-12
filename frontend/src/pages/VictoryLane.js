@@ -789,8 +789,12 @@ const VictoryLane = () => {
 
   // Open profile modal
   const openProfile = (usernameOrId) => {
-    if (!usernameOrId) return;
+    if (!usernameOrId) {
+      console.warn('[VictoryLane] openProfile called with empty username:', usernameOrId);
+      return;
+    }
     // Navigate to profile using username (not userId)
+    console.log('[VictoryLane] Navigating to profile:', usernameOrId);
     navigate(`/profile/${usernameOrId}`);
   };
 
