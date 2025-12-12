@@ -406,8 +406,21 @@ async def get_for_you_feed(
         # Filter expired quiz rooms
         mixed_posts = await filter_expired_quiz_posts(mixed_posts)
         
-        # Sort by created_at
-        mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        # Sort by created_at with proper date parsing
+        def parse_date(post):
+            try:
+                date_str = post.get('created_at', '')
+                if date_str:
+                    if '+' in date_str or date_str.endswith('Z'):
+                        dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    else:
+                        dt = datetime.fromisoformat(date_str).replace(tzinfo=timezone.utc)
+                    return dt
+                return datetime.min.replace(tzinfo=timezone.utc)
+            except Exception:
+                return datetime.min.replace(tzinfo=timezone.utc)
+        
+        mixed_posts.sort(key=parse_date, reverse=True)
         
         # NOW apply pagination after combining and deduplicating
         total_posts = len(mixed_posts)
