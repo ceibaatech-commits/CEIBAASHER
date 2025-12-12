@@ -364,7 +364,7 @@ async def get_for_you_feed(
     limit: int = 20,
     authorization: Optional[str] = Header(None)
 ):
-    """Get personalized feed"""
+    """Get personalized feed with pagination"""
     try:
         user_id = get_optional_user_id(authorization)
         mixed_posts = []
@@ -376,11 +376,11 @@ async def get_for_you_feed(
             if following_ids:
                 following_posts = await db.social_posts.find(
                     {"user_id": {"$in": following_ids}}, {"_id": 0}
-                ).sort("created_at", -1).limit(limit // 2).to_list(limit // 2)
+                ).sort("created_at", -1).skip(skip // 2).limit(limit // 2).to_list(limit // 2)
                 mixed_posts.extend(following_posts)
         
-        # Get trending posts
-        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).limit(limit * 2).to_list(limit * 2)
+        # Get trending posts with skip/limit
+        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).skip(skip).limit(limit * 2).to_list(limit * 2)
         
         # Get recent quiz rooms (last 24 hours) to ensure they appear
         recent_quiz_rooms = await db.social_posts.find(
@@ -398,6 +398,9 @@ async def get_for_you_feed(
         mixed_posts = await filter_expired_quiz_posts(mixed_posts)
         mixed_posts.sort(key=lambda x: x.get("created_at", ""), reverse=True)
         paginated = mixed_posts[skip:skip + limit]
+        
+        # Check if there are more posts
+        has_more = len(mixed_posts) > skip + limit
         
         # Enrich posts with current user profile pictures
         unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
@@ -422,7 +425,13 @@ async def get_for_you_feed(
             if "is_retweet" not in post:
                 post["is_retweet"] = False
         
-        return {"success": True, "posts": paginated, "count": len(paginated)}
+        return {
+            "success": True, 
+            "posts": paginated, 
+            "count": len(paginated),
+            "has_more": has_more,
+            "total": len(mixed_posts)
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching feed: {str(e)}")
 
@@ -481,10 +490,10 @@ async def get_following_feed(
     limit: int = 10,
     authorization: Optional[str] = Header(None)
 ):
-    """Get feed from followed users (approved follows only)"""
+    """Get feed from followed users (approved follows only) with pagination"""
     try:
         if not authorization:
-            return {"success": True, "posts": [], "count": 0}
+            return {"success": True, "posts": [], "count": 0, "has_more": False}
         
         user_id = decode_jwt_token(authorization)
         
@@ -498,7 +507,7 @@ async def get_following_feed(
         following_ids = [f["following_id"] for f in follows if f.get("following_id")]
         
         if not following_ids:
-            return {"success": True, "posts": [], "count": 0}
+            return {"success": True, "posts": [], "count": 0, "has_more": False}
         
         # Get posts from followed users
         posts = await db.social_posts.find(
@@ -509,8 +518,10 @@ async def get_following_feed(
         # Filter expired quiz room posts
         posts = await filter_expired_quiz_posts(posts)
         
+        total_posts = len(posts)
         # Apply pagination
         paginated = posts[skip:skip + limit]
+        has_more = (skip + limit) < total_posts
         
         # Enrich posts with current user profile pictures
         unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
@@ -536,7 +547,13 @@ async def get_following_feed(
             if "is_retweet" not in post:
                 post["is_retweet"] = False
         
-        return {"success": True, "posts": paginated, "count": len(paginated)}
+        return {
+            "success": True, 
+            "posts": paginated, 
+            "count": len(paginated),
+            "has_more": has_more,
+            "total": total_posts
+        }
     except HTTPException:
         raise
     except Exception as e:
