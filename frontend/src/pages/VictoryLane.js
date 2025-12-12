@@ -1382,6 +1382,57 @@ const VictoryLane = () => {
                         <MathText text={post.content} />
                       </div>
 
+                      {/* Tags */}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {post.tags.slice(0, 5).map((tag, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                setSelectedTag(selectedTag === tag ? null : tag);
+                                setShowFilters(true);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-100 transition"
+                            >
+                              <Tag className="w-3 h-3" />
+                              {tag}
+                            </button>
+                          ))}
+                          {post.tags.length > 5 && (
+                            <span className="text-xs text-gray-500 py-1">+{post.tags.length - 5} more</span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Category/Subject Tags */}
+                      {(post.exam_category || post.subject) && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {post.exam_category && (
+                            <button
+                              onClick={() => {
+                                setSearchQuery(post.exam_category);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="inline-flex items-center px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium hover:bg-purple-100 transition"
+                            >
+                              📚 {post.exam_category}
+                            </button>
+                          )}
+                          {post.subject && post.subject !== post.exam_category && (
+                            <button
+                              onClick={() => {
+                                setSearchQuery(post.subject);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="inline-flex items-center px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium hover:bg-green-100 transition"
+                            >
+                              📖 {post.subject}
+                            </button>
+                          )}
+                        </div>
+                      )}
+
                       {/* Question Post Indicator */}
                       {post.post_type === 'question' && (
                         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-3 mb-3 flex items-center gap-2">
