@@ -420,11 +420,59 @@ const Dashboard = () => {
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
                         <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                          {/* Comment Indicator */}
+                          {post.is_comment && (
+                            <div className="flex items-center gap-2 text-sm text-blue-600 mb-3">
+                              <MessageCircle className="w-4 h-4" />
+                              <span className="font-medium">You commented</span>
+                            </div>
+                          )}
+                          
                           {/* Repost Indicator */}
                           {post.is_retweet === true && (
                             <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
                               <Repeat2 className="w-4 h-4" />
                               <span>You reposted</span>
+                            </div>
+                          )}
+                          
+                          {/* Comment Content */}
+                          {post.is_comment && (
+                            <div className="mb-3">
+                              <p className="text-sm text-gray-500 mb-1">
+                                {new Date(post.created_at).toLocaleString('en-US', {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                              <div className="text-gray-900 font-medium mb-3">
+                                <MathText text={post.comment_content} />
+                              </div>
+                              
+                              {/* Original Post Preview */}
+                              {post.original_post && (
+                                <div className="ml-4 pl-4 border-l-2 border-blue-300 bg-blue-50 p-3 rounded-r-lg">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <img
+                                      src={post.original_post.user_avatar || `https://ui-avatars.com/api/?name=${post.original_post.user_name}&background=random&size=32`}
+                                      alt={post.original_post.user_name}
+                                      className="w-6 h-6 rounded-full"
+                                    />
+                                    <span className="text-sm font-semibold text-gray-700">
+                                      {post.original_post.user_name}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      @{post.original_post.username}
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-gray-700 line-clamp-3">
+                                    <MathText text={post.original_post.content} />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           )}
                           
@@ -465,8 +513,8 @@ const Dashboard = () => {
                             </div>
                           )}
                           
-                          {/* Post Content */}
-                          {!post.is_retweet && (
+                          {/* Post Content (for regular posts and reposts) */}
+                          {!post.is_retweet && !post.is_comment && (
                             <div className="flex items-start justify-between mb-2">
                               <div>
                                 <p className="text-sm text-gray-500">
@@ -487,7 +535,11 @@ const Dashboard = () => {
                             </div>
                           )}
                           
-                          <p className="text-gray-800">{post.content}</p>
+                          {!post.is_comment && (
+                            <div className="text-gray-800">
+                              <MathText text={post.content} />
+                            </div>
+                          )}
                           
                           {post.room_code && (
                             <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
