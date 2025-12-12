@@ -131,7 +131,7 @@ const Dashboard = () => {
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Profile Not Found</h1>
           <p className="text-gray-600 mb-6">Unable to load your profile.</p>
           <button
-            onClick={() => navigate('/home')}
+            onClick={() => navigate('/')}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
           >
             Back to Home
