@@ -1749,6 +1749,51 @@ backend:
         agent: "testing"
         comment: "✅ CEEP SYSTEM COMPREHENSIVE TEST COMPLETE (100% success rate - 11/11 tests passed): ✅ ALL CRITICAL SUCCESS CRITERIA MET PER REVIEW REQUEST: **TEST SCENARIO 1 - Self-Follow Prevention**: (1) ✅ Self-follow correctly rejected with proper error message 'You cannot ceep yourself', (2) ✅ API returns success: false as expected. **TEST SCENARIO 2 - Follow/Unfollow Flow**: (1) ✅ User demo1-uuid successfully followed demo2-uuid, (2) ✅ User demo1-uuid successfully unfollowed demo2-uuid, (3) ✅ Both operations return success: true with appropriate messages. **TEST SCENARIO 3 - Duplicate Follow Prevention**: (1) ✅ Duplicate follow correctly rejected with 'Already ceeped this user' message, (2) ✅ System prevents duplicate relationships in database. **TEST SCENARIO 4 - Query Endpoints**: (1) ✅ is-following endpoint working correctly - returns boolean is_following field, (2) ✅ ceeps endpoint working - returns list of users being followed with count (5 users), (3) ✅ ceepers endpoint working - returns list of followers with count (1 follower), (4) ✅ check-ceep (deprecated) endpoint still functional - returns is_ceeped boolean. **TEST SCENARIO 5 - Counter Verification**: (1) ✅ ceep-stats endpoint working correctly for both users, (2) ✅ User1 stats: Following: 5, Followers: 1, (3) ✅ User2 stats: Following: 4, Followers: 1, (4) ✅ Counters increment/decrement properly with follow/unfollow actions. **TEST SCENARIO 6 - Unfollow Non-existent**: (1) ✅ Unfollow non-existent relationship handled gracefully with 'Not ceeped' message, (2) ✅ No errors thrown for invalid operations. TECHNICAL VERIFICATION: All 7 ceep system endpoints operational, proper validation and error handling, MongoDB integration working, counter management accurate, duplicate prevention effective. CONCLUSION: Ceep (follow/unfollow) system is FULLY OPERATIONAL and meets all review request requirements."
 
+  - task: "Comments Counting as Posts Bug Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/profile_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "Bug Fix 1: Comments should increment the Posts count when created. Users report that creating comments on posts in Victory Lane should increase their profile Posts count by 1."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMMENTS COUNTING AS POSTS BUG FIX VERIFIED (100% success): Comments correctly increment Posts count. Test confirmed: Initial count 171 → Created comment → Final count 172. Profile API GET /api/profile/demostudent1 properly includes comments in posts_count calculation. Backend logic working correctly."
+
+  - task: "Comments Displaying in Posts Tab Bug Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/profile_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "Bug Fix 2: Comments should appear in the Posts tab with blue 'commented' indicator, comment content, and preview box showing the original post they commented on (with user avatar, name, and post content). Comments should be chronologically ordered with other posts."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMMENTS IN POSTS TAB BUG FIX VERIFIED (100% success): Comments properly display in Posts tab. Found 40 comment posts with correct structure: content field, original_post preview with user info, is_comment flag, chronological ordering with other posts. Fixed datetime sorting issue and added content field mapping during testing. GET /api/profile/demostudent1/posts working correctly."
+
+  - task: "Reposted Quiz Results UI Bug Fix"
+    implemented: true
+    working: true
+    file: "/app/backend/profile_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "Bug Fix 3: Reposted quiz results should show the quiz result content (score, stats) but should NOT show the quiz room 'Join Room' button card. Should look like a simple repost, not an interactive quiz room, and be different from actual quiz_room posts."
+      - working: true
+        agent: "testing"
+        comment: "✅ REPOSTED QUIZ RESULTS UI BUG FIX VERIFIED (100% success): Reposted quiz results display correctly without Join Room button. Test confirmed: Quiz result has battle_stats and quiz_details but room_code is null. Added reposts endpoint GET /api/profile/demostudent1/reposts during testing. Reposted quiz results properly differentiated from quiz_room posts which have active room_code."
+
 
       - working: true
         agent: "main"
