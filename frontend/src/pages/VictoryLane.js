@@ -1979,6 +1979,81 @@ const VictoryLane = () => {
         onSubmit={handleCreateQuestion}
         user={user}
       />
+
+      {/* Floating Action Button (FAB) - Only for logged-in users */}
+      {user && (
+        <>
+          {/* Backdrop when menu is open */}
+          {showCreateMenu && (
+            <div
+              className="fixed inset-0 bg-black/20 z-40 transition-opacity"
+              onClick={() => setShowCreateMenu(false)}
+            />
+          )}
+
+          {/* Quick Action Menu */}
+          {showCreateMenu && (
+            <div className="fixed bottom-24 right-4 sm:right-8 z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200">
+              {/* Quiz Room Button */}
+              <button
+                onClick={() => {
+                  setShowQuizModal(true);
+                  setShowCreateMenu(false);
+                }}
+                className="flex items-center gap-3 bg-white hover:bg-purple-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+              >
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
+                  <Trophy className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-sm pr-2">Create Quiz Room</span>
+              </button>
+
+              {/* Question Button */}
+              <button
+                onClick={() => {
+                  setShowQuestionModal(true);
+                  setShowCreateMenu(false);
+                }}
+                className="flex items-center gap-3 bg-white hover:bg-green-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+              >
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-full">
+                  <HelpCircle className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-sm pr-2">Ask Question</span>
+              </button>
+
+              {/* General Post Button */}
+              <button
+                onClick={() => {
+                  // Create a simple text post prompt
+                  const content = prompt('Share your study wins, tips, or thoughts:');
+                  if (content && content.trim()) {
+                    setNewPostContent(content);
+                    handleCreatePost();
+                  }
+                  setShowCreateMenu(false);
+                }}
+                className="flex items-center gap-3 bg-white hover:bg-blue-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+              >
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+                  <MessageCircle className="w-5 h-5 text-white" />
+                </div>
+                <span className="font-semibold text-sm pr-2">Create Post</span>
+              </button>
+            </div>
+          )}
+
+          {/* Main FAB Button */}
+          <button
+            onClick={() => setShowCreateMenu(!showCreateMenu)}
+            className={`fixed bottom-6 right-4 sm:right-8 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center ${
+              showCreateMenu ? 'rotate-45' : 'rotate-0'
+            }`}
+          >
+            <Plus className="w-7 h-7" />
+          </button>
+        </>
+      )}
     </div>
   );
 };
