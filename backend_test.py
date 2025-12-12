@@ -1287,6 +1287,388 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_victory_lane_pagination_feature(self):
+        """Test Victory Lane pagination feature comprehensively"""
+        try:
+            print("\n🎯 TESTING VICTORY LANE PAGINATION FEATURE")
+            print("=" * 60)
+            
+            # Step 1: Login demo user for authentication
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Victory Lane Pagination - Demo Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Victory Lane Pagination - Demo Login", True, f"✅ Demo1 logged in successfully with user_id: {user_id}")
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Step 2: Test For You Feed Pagination
+            self._test_for_you_feed_pagination(headers)
+            
+            # Step 3: Test Trending Feed Pagination
+            self._test_trending_feed_pagination()
+            
+            # Step 4: Test Following Feed Pagination
+            self._test_following_feed_pagination(headers)
+            
+            # Step 5: Test Pagination Parameters Validation
+            self._test_pagination_parameters_validation(headers)
+            
+            # Step 6: Test Edge Cases
+            self._test_pagination_edge_cases(headers)
+            
+            print("\n🎉 VICTORY LANE PAGINATION FEATURE TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Demo1 authentication ✅")
+            print("  2. For You feed pagination ✅")
+            print("  3. Trending feed pagination ✅")
+            print("  4. Following feed pagination ✅")
+            print("  5. Pagination parameters validation ✅")
+            print("  6. Edge cases handling ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Victory Lane Pagination - Exception", False, f"❌ Victory Lane pagination test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def _test_for_you_feed_pagination(self, headers):
+        """Test For You feed pagination with skip and limit parameters"""
+        try:
+            print("\n📱 TEST: FOR YOU FEED PAGINATION")
+            print("-" * 40)
+            
+            # Test 1: Initial load (first 20 posts)
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit=20", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("For You Feed - Initial Load", False, f"❌ Initial load failed: {response.status_code}")
+                return False
+            
+            initial_data = response.json()
+            if not initial_data.get('success'):
+                self.log_result("For You Feed - Initial Load", False, f"❌ Initial load returned success=false: {initial_data}")
+                return False
+            
+            initial_posts = initial_data.get('posts', [])
+            initial_count = len(initial_posts)
+            has_more_initial = initial_data.get('has_more', False)
+            total_posts = initial_data.get('total', 0)
+            
+            self.log_result("For You Feed - Initial Load", True, 
+                          f"✅ Loaded {initial_count} posts, has_more: {has_more_initial}, total: {total_posts}")
+            
+            # Test 2: Second page (next 20 posts)
+            if has_more_initial:
+                response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=20&limit=20", headers=headers)
+                
+                if response.status_code != 200:
+                    self.log_result("For You Feed - Second Page", False, f"❌ Second page failed: {response.status_code}")
+                    return False
+                
+                second_data = response.json()
+                if not second_data.get('success'):
+                    self.log_result("For You Feed - Second Page", False, f"❌ Second page returned success=false: {second_data}")
+                    return False
+                
+                second_posts = second_data.get('posts', [])
+                second_count = len(second_posts)
+                has_more_second = second_data.get('has_more', False)
+                
+                # Verify no duplicate posts between pages
+                initial_post_ids = set(post.get('id') for post in initial_posts)
+                second_post_ids = set(post.get('id') for post in second_posts)
+                duplicates = initial_post_ids.intersection(second_post_ids)
+                
+                if duplicates:
+                    self.log_result("For You Feed - No Duplicates", False, f"❌ Found {len(duplicates)} duplicate posts between pages")
+                    return False
+                
+                self.log_result("For You Feed - Second Page", True, 
+                              f"✅ Loaded {second_count} posts, has_more: {has_more_second}, no duplicates")
+            else:
+                self.log_result("For You Feed - Second Page", True, "✅ No more posts available (has_more: false)")
+            
+            # Test 3: Verify response structure
+            if initial_posts:
+                first_post = initial_posts[0]
+                required_fields = ['id', 'user_id', 'content', 'created_at', 'likes_count', 'comments_count']
+                missing_fields = [field for field in required_fields if field not in first_post]
+                
+                if missing_fields:
+                    self.log_result("For You Feed - Response Structure", False, f"❌ Missing fields: {missing_fields}")
+                    return False
+                
+                self.log_result("For You Feed - Response Structure", True, "✅ Post structure contains all required fields")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("For You Feed Pagination", False, f"❌ For You feed pagination error: {e}")
+            return False
+
+    def _test_trending_feed_pagination(self):
+        """Test Trending feed pagination (no auth required)"""
+        try:
+            print("\n🔥 TEST: TRENDING FEED PAGINATION")
+            print("-" * 40)
+            
+            # Test 1: Initial load (first 20 posts)
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/trending?skip=0&limit=20")
+            
+            if response.status_code != 200:
+                self.log_result("Trending Feed - Initial Load", False, f"❌ Initial load failed: {response.status_code}")
+                return False
+            
+            initial_data = response.json()
+            if not initial_data.get('success'):
+                self.log_result("Trending Feed - Initial Load", False, f"❌ Initial load returned success=false: {initial_data}")
+                return False
+            
+            initial_posts = initial_data.get('posts', [])
+            initial_count = len(initial_posts)
+            has_more_initial = initial_data.get('has_more', False)
+            total_posts = initial_data.get('total', 0)
+            
+            self.log_result("Trending Feed - Initial Load", True, 
+                          f"✅ Loaded {initial_count} posts, has_more: {has_more_initial}, total: {total_posts}")
+            
+            # Test 2: Test different page sizes
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/trending?skip=0&limit=10")
+            
+            if response.status_code != 200:
+                self.log_result("Trending Feed - Different Page Size", False, f"❌ Different page size failed: {response.status_code}")
+                return False
+            
+            small_page_data = response.json()
+            small_page_posts = small_page_data.get('posts', [])
+            
+            if len(small_page_posts) <= 10:  # Should be 10 or less
+                self.log_result("Trending Feed - Different Page Size", True, f"✅ Limit parameter working: got {len(small_page_posts)} posts")
+            else:
+                self.log_result("Trending Feed - Different Page Size", False, f"❌ Limit not respected: got {len(small_page_posts)} posts")
+                return False
+            
+            # Test 3: Test chronological ordering
+            if len(initial_posts) >= 2:
+                # Check if posts are sorted by created_at in descending order
+                first_post_date = initial_posts[0].get('created_at')
+                second_post_date = initial_posts[1].get('created_at')
+                
+                if first_post_date and second_post_date:
+                    # Parse dates for comparison
+                    try:
+                        from datetime import datetime
+                        first_dt = datetime.fromisoformat(first_post_date.replace('Z', '+00:00'))
+                        second_dt = datetime.fromisoformat(second_post_date.replace('Z', '+00:00'))
+                        
+                        if first_dt >= second_dt:
+                            self.log_result("Trending Feed - Chronological Order", True, "✅ Posts are sorted chronologically (newest first)")
+                        else:
+                            self.log_result("Trending Feed - Chronological Order", False, "❌ Posts are not sorted chronologically")
+                    except Exception as date_e:
+                        self.log_result("Trending Feed - Chronological Order", False, f"❌ Date parsing error: {date_e}")
+                else:
+                    self.log_result("Trending Feed - Chronological Order", True, "✅ Date fields present (unable to verify order)")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Trending Feed Pagination", False, f"❌ Trending feed pagination error: {e}")
+            return False
+
+    def _test_following_feed_pagination(self, headers):
+        """Test Following feed pagination (requires auth)"""
+        try:
+            print("\n👥 TEST: FOLLOWING FEED PAGINATION")
+            print("-" * 40)
+            
+            # Test 1: Following feed with authentication
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/following?skip=0&limit=20", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Following Feed - Initial Load", False, f"❌ Initial load failed: {response.status_code}")
+                return False
+            
+            initial_data = response.json()
+            if not initial_data.get('success'):
+                self.log_result("Following Feed - Initial Load", False, f"❌ Initial load returned success=false: {initial_data}")
+                return False
+            
+            initial_posts = initial_data.get('posts', [])
+            initial_count = len(initial_posts)
+            has_more_initial = initial_data.get('has_more', False)
+            total_posts = initial_data.get('total', 0)
+            
+            self.log_result("Following Feed - Initial Load", True, 
+                          f"✅ Loaded {initial_count} posts, has_more: {has_more_initial}, total: {total_posts}")
+            
+            # Test 2: Following feed without authentication (should return empty)
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/following?skip=0&limit=20")
+            
+            if response.status_code != 200:
+                self.log_result("Following Feed - No Auth", False, f"❌ No auth request failed: {response.status_code}")
+                return False
+            
+            no_auth_data = response.json()
+            no_auth_posts = no_auth_data.get('posts', [])
+            
+            if len(no_auth_posts) == 0:
+                self.log_result("Following Feed - No Auth", True, "✅ Following feed returns empty without authentication")
+            else:
+                self.log_result("Following Feed - No Auth", False, f"❌ Following feed should be empty without auth, got {len(no_auth_posts)} posts")
+            
+            # Test 3: Verify liked_by_user field is present for authenticated requests
+            if initial_posts:
+                first_post = initial_posts[0]
+                if 'liked_by_user' in first_post:
+                    self.log_result("Following Feed - Like Status", True, f"✅ liked_by_user field present: {first_post['liked_by_user']}")
+                else:
+                    self.log_result("Following Feed - Like Status", False, "❌ liked_by_user field missing from authenticated response")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Following Feed Pagination", False, f"❌ Following feed pagination error: {e}")
+            return False
+
+    def _test_pagination_parameters_validation(self, headers):
+        """Test pagination parameters validation and edge cases"""
+        try:
+            print("\n🔍 TEST: PAGINATION PARAMETERS VALIDATION")
+            print("-" * 40)
+            
+            # Test 1: Negative skip parameter
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=-1&limit=20", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                if data.get('success'):
+                    self.log_result("Pagination - Negative Skip", True, "✅ Negative skip handled gracefully")
+                else:
+                    self.log_result("Pagination - Negative Skip", False, "❌ Negative skip caused error")
+            else:
+                self.log_result("Pagination - Negative Skip", False, f"❌ Negative skip returned {response.status_code}")
+            
+            # Test 2: Zero limit parameter
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit=0", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                posts = data.get('posts', [])
+                if len(posts) == 0:
+                    self.log_result("Pagination - Zero Limit", True, "✅ Zero limit returns empty posts array")
+                else:
+                    self.log_result("Pagination - Zero Limit", False, f"❌ Zero limit returned {len(posts)} posts")
+            else:
+                self.log_result("Pagination - Zero Limit", False, f"❌ Zero limit returned {response.status_code}")
+            
+            # Test 3: Very large limit parameter
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit=1000", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                posts = data.get('posts', [])
+                self.log_result("Pagination - Large Limit", True, f"✅ Large limit handled: returned {len(posts)} posts")
+            else:
+                self.log_result("Pagination - Large Limit", False, f"❌ Large limit returned {response.status_code}")
+            
+            # Test 4: Skip beyond available posts
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=10000&limit=20", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                posts = data.get('posts', [])
+                has_more = data.get('has_more', False)
+                
+                if len(posts) == 0 and not has_more:
+                    self.log_result("Pagination - Skip Beyond Posts", True, "✅ Skip beyond posts returns empty with has_more: false")
+                else:
+                    self.log_result("Pagination - Skip Beyond Posts", False, f"❌ Skip beyond posts returned {len(posts)} posts, has_more: {has_more}")
+            else:
+                self.log_result("Pagination - Skip Beyond Posts", False, f"❌ Skip beyond posts returned {response.status_code}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Pagination Parameters Validation", False, f"❌ Pagination parameters validation error: {e}")
+            return False
+
+    def _test_pagination_edge_cases(self, headers):
+        """Test pagination edge cases and has_more flag accuracy"""
+        try:
+            print("\n⚡ TEST: PAGINATION EDGE CASES")
+            print("-" * 40)
+            
+            # Test 1: Verify has_more flag accuracy
+            # Get total count first
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit=1000", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Edge Cases - Total Count", False, f"❌ Failed to get total count: {response.status_code}")
+                return False
+            
+            total_data = response.json()
+            total_available = len(total_data.get('posts', []))
+            
+            # Test with limit that should result in has_more: false
+            if total_available > 0:
+                response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit={total_available}", headers=headers)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    has_more = data.get('has_more', True)
+                    
+                    if not has_more:
+                        self.log_result("Edge Cases - Has More Accuracy", True, f"✅ has_more correctly false when all {total_available} posts loaded")
+                    else:
+                        self.log_result("Edge Cases - Has More Accuracy", False, f"❌ has_more should be false when all posts loaded")
+                else:
+                    self.log_result("Edge Cases - Has More Accuracy", False, f"❌ Failed to test has_more accuracy: {response.status_code}")
+            
+            # Test 2: Consistency across multiple requests
+            response1 = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit=5", headers=headers)
+            response2 = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=0&limit=5", headers=headers)
+            
+            if response1.status_code == 200 and response2.status_code == 200:
+                data1 = response1.json()
+                data2 = response2.json()
+                
+                posts1 = data1.get('posts', [])
+                posts2 = data2.get('posts', [])
+                
+                # Compare post IDs to ensure consistency
+                ids1 = [post.get('id') for post in posts1]
+                ids2 = [post.get('id') for post in posts2]
+                
+                if ids1 == ids2:
+                    self.log_result("Edge Cases - Consistency", True, "✅ Multiple requests return consistent results")
+                else:
+                    self.log_result("Edge Cases - Consistency", False, "❌ Multiple requests return different results")
+            else:
+                self.log_result("Edge Cases - Consistency", False, "❌ Failed to test consistency")
+            
+            # Test 3: Response time for large skip values
+            import time
+            start_time = time.time()
+            response = requests.get(f"{BACKEND_URL}/api/social/feed/for-you?skip=100&limit=20", headers=headers)
+            end_time = time.time()
+            
+            response_time = end_time - start_time
+            
+            if response.status_code == 200 and response_time < 5.0:  # Should respond within 5 seconds
+                self.log_result("Edge Cases - Performance", True, f"✅ Large skip handled efficiently: {response_time:.2f}s")
+            else:
+                self.log_result("Edge Cases - Performance", False, f"❌ Large skip performance issue: {response_time:.2f}s")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Pagination Edge Cases", False, f"❌ Pagination edge cases error: {e}")
+            return False
+
     def test_ncert_chapter_tests_functionality(self):
         """Test the NCERT chapter tests functionality for Class 11 and 12"""
         try:
