@@ -2773,6 +2773,7 @@ class BackendTester:
         print("=" * 60)
         
         tests = [
+            self.test_victory_lane_pagination_feature,
             self.test_ncert_chapter_tests_functionality,
             self.test_ceibaa_quiz_platform_bug_fixes,
             self.test_retroactive_badge_update_fix_for_bass,
