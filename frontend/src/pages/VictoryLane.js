@@ -380,6 +380,31 @@ const VictoryLane = () => {
     }
   }, [activeTab, user]);
 
+  // Filter posts based on search query and selected tag
+  const filteredPosts = posts.filter(post => {
+    // Tag filter
+    if (selectedTag && (!post.tags || !post.tags.includes(selectedTag))) {
+      return false;
+    }
+    
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const contentMatch = post.content?.toLowerCase().includes(query);
+      const userMatch = (post.user_name || post.username || '').toLowerCase().includes(query);
+      const categoryMatch = post.exam_category?.toLowerCase().includes(query);
+      const subjectMatch = post.subject?.toLowerCase().includes(query);
+      const tagsMatch = post.tags?.some(tag => tag.toLowerCase().includes(query));
+      
+      return contentMatch || userMatch || categoryMatch || subjectMatch || tagsMatch;
+    }
+    
+    return true;
+  });
+
+  // Extract all unique tags from posts
+  const allTags = [...new Set(posts.flatMap(post => post.tags || []))].filter(Boolean).slice(0, 20);
+
   // Handle notification navigation - scroll to specific post
   useEffect(() => {
     const postId = searchParams.get('post') || searchParams.get('postId');
