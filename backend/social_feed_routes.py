@@ -514,6 +514,14 @@ async def get_following_feed(
 ):
     """Get feed from followed users (approved follows only) with pagination"""
     try:
+        # Validate parameters
+        if skip < 0:
+            raise HTTPException(status_code=400, detail="skip parameter must be non-negative")
+        if limit < 0:
+            raise HTTPException(status_code=400, detail="limit parameter must be non-negative")
+        if limit > 100:
+            limit = 100  # Cap at 100 for performance
+            
         if not authorization:
             return {"success": True, "posts": [], "count": 0, "has_more": False}
         
