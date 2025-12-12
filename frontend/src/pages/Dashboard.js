@@ -6,6 +6,7 @@ import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCir
 import EditProfileModal from '../components/EditProfileModal';
 import FollowListModal from '../components/FollowListModal';
 import Header from '../components/Header';
+import MathText from '../components/MathText';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
