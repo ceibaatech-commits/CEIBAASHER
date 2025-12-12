@@ -79,6 +79,7 @@ const VictoryLane = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
   
   // Comments state
   const [expandedComments, setExpandedComments] = useState(new Set());
