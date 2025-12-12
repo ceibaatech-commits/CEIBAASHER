@@ -180,46 +180,27 @@
                     }, 1000);
                 });
                 
-                // Remove Emergent badge
+                // Remove Emergent badge - aggressive approach
                 function removeEmergentBadge() {
                     const badge = document.getElementById('emergent-badge');
-                    if (badge) {
-                        badge.remove();
+                    if (badge && badge.parentNode) {
+                        badge.parentNode.removeChild(badge);
                     }
                     
-                    // Also remove any links to emergent badge
-                    const emergentLinks = document.querySelectorAll('a[href*="emergent-badge"], a[href*="app.emergent.sh"]');
+                    // Also remove any links to emergent
+                    const emergentLinks = document.querySelectorAll('a[href*="emergent"]');
                     emergentLinks.forEach(link => {
-                        if (link.textContent.includes('Emergent') || link.textContent.includes('Made with')) {
-                            link.remove();
+                        const text = link.textContent || '';
+                        if (text.includes('Emergent') || text.includes('Made with')) {
+                            if (link.parentNode) {
+                                link.parentNode.removeChild(link);
+                            }
                         }
                     });
                 }
                 
-                // Run multiple times to catch dynamically injected badge
-                window.addEventListener('DOMContentLoaded', removeEmergentBadge);
-                window.addEventListener('load', removeEmergentBadge);
-                setTimeout(removeEmergentBadge, 500);
-                setTimeout(removeEmergentBadge, 1000);
-                setTimeout(removeEmergentBadge, 2000);
-                
-                // Use MutationObserver to remove badge if it's added dynamically
-                if (typeof MutationObserver !== 'undefined') {
-                    const observer = new MutationObserver(function(mutations) {
-                        mutations.forEach(function(mutation) {
-                            if (mutation.addedNodes.length) {
-                                removeEmergentBadge();
-                            }
-                        });
-                    });
-                    
-                    setTimeout(function() {
-                        observer.observe(document.body, {
-                            childList: true,
-                            subtree: true
-                        });
-                    }, 100);
-                }
+                // Continuously check and remove badge every 100ms
+                setInterval(removeEmergentBadge, 100);
             </script>
         </div>
         <!--
