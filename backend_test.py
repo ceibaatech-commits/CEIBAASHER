@@ -1592,8 +1592,10 @@ class BackendTester:
             original_post = reposted_quiz.get('original_post', {})
             
             # Check that it has quiz result content but no room joining info
-            has_quiz_content = 'score' in original_post or 'quiz_result' in original_post or 'result' in original_post
-            has_room_code = 'room_code' in original_post or 'room_id' in original_post
+            has_quiz_content = ('battle_stats' in original_post or 'quiz_details' in original_post or 
+                              original_post.get('post_type') == 'quiz_result')
+            has_room_code = (original_post.get('room_code') is not None or 
+                           original_post.get('room_id') is not None)
             
             if has_quiz_content and not has_room_code:
                 self.log_result("Quiz Repost Test - UI Structure", True, 
