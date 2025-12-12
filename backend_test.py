@@ -2369,11 +2369,12 @@ class BackendTester:
             return True  # Don't fail the test for comments verification issues
 
     def run_all_tests(self):
-        """Run all backend tests including Ceibaa quiz platform bug fixes"""
+        """Run all backend tests including NCERT chapter tests functionality"""
         print("🚀 Starting Backend API Tests")
         print("=" * 60)
         
         tests = [
+            self.test_ncert_chapter_tests_functionality,
             self.test_ceibaa_quiz_platform_bug_fixes,
             self.test_retroactive_badge_update_fix_for_bass,
             self.test_teacher_professor_badge_mutual_exclusivity,
