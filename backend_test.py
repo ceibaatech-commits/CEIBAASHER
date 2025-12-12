@@ -39,6 +39,23 @@ class BackendTester:
             print(f"Login error for {username}: {e}")
             return None, None
 
+    def login_admin(self):
+        """Login admin user and return auth token"""
+        try:
+            # Try demo1 as admin first
+            response = requests.post(f"{BACKEND_URL}/api/auth/demo-login", json={
+                "username": "demo1",
+                "password": "demo1"
+            })
+            if response.status_code == 200:
+                data = response.json()
+                user_id = data.get('user', {}).get('id') or data.get('user', {}).get('user_id')
+                return data.get('access_token'), user_id
+            return None, None
+        except Exception as e:
+            print(f"Admin login error: {e}")
+            return None, None
+
     def test_fastapi_socketio_integration(self):
         """Test FastAPI + Socket.IO integration - app entrypoint with battle Socket.IO mounted at /api/battlews"""
         try:
