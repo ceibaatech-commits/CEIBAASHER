@@ -403,17 +403,33 @@ const VictoryLane = () => {
     }
   }, [posts, searchParams, setSearchParams]);
 
-  const fetchFeed = async () => {
-    setLoading(true);
+  const fetchFeed = async (pageNum = page, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+    
     try {
-      let endpoint = `${BACKEND_URL}/api/social/feed/for-you`;
-      if (activeTab === 'trending') endpoint = `${BACKEND_URL}/api/social/feed/trending`;
-      if (activeTab === 'following' && user) endpoint = `${BACKEND_URL}/api/social/feed/following?user_id=${user.id}`;
+      const limit = 20;
+      const skip = pageNum * limit;
+      
+      let endpoint = `${BACKEND_URL}/api/social/feed/for-you?skip=${skip}&limit=${limit}`;
+      if (activeTab === 'trending') endpoint = `${BACKEND_URL}/api/social/feed/trending?skip=${skip}&limit=${limit}`;
+      if (activeTab === 'following' && user) endpoint = `${BACKEND_URL}/api/social/feed/following?user_id=${user.id}&skip=${skip}&limit=${limit}`;
       
       const response = await axios.get(endpoint);
       if (response.data.success) {
         const postsData = response.data.posts || [];
-        setPosts(postsData);
+        const hasMoreData = response.data.has_more || false;
+        
+        setHasMore(hasMoreData);
+        
+        if (append) {
+          setPosts(prev => [...prev, ...postsData]);
+        } else {
+          setPosts(postsData);
+        }
         
         // Build users data from posts
         const users = {};
@@ -437,8 +453,8 @@ const VictoryLane = () => {
         setUsersData(prev => ({ ...prev, ...users }));
         
         // Initialize liked/bookmarked states
-        const liked = new Set();
-        const bookmarked = new Set();
+        const liked = new Set(likedPosts);
+        const bookmarked = new Set(bookmarkedPosts);
         postsData.forEach(post => {
           if (post.liked_by?.includes(user?.id) || post.user_liked) liked.add(post.id);
           if (post.bookmarked_by?.includes(user?.id) || post.user_bookmarked) bookmarked.add(post.id);
@@ -450,8 +466,18 @@ const VictoryLane = () => {
       console.error('Error fetching feed:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
+  
+  // Load more posts
+  const loadMorePosts = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchFeed(nextPage, true);
+    }
+  }, [page, hasMore, loadingMore]);
 
   // Follow/Unfollow user
   const toggleFollow = async (targetUserId) => {
