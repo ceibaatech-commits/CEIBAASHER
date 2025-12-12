@@ -1287,6 +1287,374 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_ncert_chapter_tests_functionality(self):
+        """Test the NCERT chapter tests functionality for Class 11 and 12"""
+        try:
+            print("\n🎯 TESTING NCERT CHAPTER TESTS FUNCTIONALITY")
+            print("=" * 60)
+            
+            # Test Class 11 Science Stream
+            self._test_class_11_science_stream()
+            
+            # Test Class 11 Commerce Stream
+            self._test_class_11_commerce_stream()
+            
+            # Test Class 11 Humanities Stream
+            self._test_class_11_humanities_stream()
+            
+            # Test Class 12 Science Stream
+            self._test_class_12_science_stream()
+            
+            # Test Class 12 Commerce Stream
+            self._test_class_12_commerce_stream()
+            
+            # Test Class 12 Humanities Stream
+            self._test_class_12_humanities_stream()
+            
+            # Test API endpoints
+            self._test_chapter_tests_api_endpoints()
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("NCERT Chapter Tests - Exception", False, f"❌ NCERT chapter tests error: {e}")
+            return False
+
+    def _test_class_11_science_stream(self):
+        """Test Class 11 Science Stream subjects and chapters"""
+        try:
+            print("\n📚 TEST: CLASS 11 SCIENCE STREAM")
+            print("-" * 40)
+            
+            # Test subjects endpoint for Class 11
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/subjects/class-11")
+            
+            if response.status_code != 200:
+                self.log_result("Class 11 Subjects API", False, f"❌ Subjects API failed: {response.status_code}")
+                return False
+            
+            subjects_result = response.json()
+            if not subjects_result.get('success'):
+                self.log_result("Class 11 Subjects API", False, f"❌ Subjects API returned success=false: {subjects_result}")
+                return False
+            
+            subjects = subjects_result.get('subjects', [])
+            expected_science_subjects = ['Physics', 'Chemistry', 'Biology', 'Mathematics', 'English']
+            
+            # Check if all expected subjects are present
+            found_subjects = []
+            for subject in subjects:
+                if subject in expected_science_subjects:
+                    found_subjects.append(subject)
+            
+            if len(found_subjects) >= 4:  # At least 4 out of 5 subjects should be present
+                self.log_result("Class 11 Science Subjects", True, f"✅ Found {len(found_subjects)} science subjects: {found_subjects}")
+            else:
+                self.log_result("Class 11 Science Subjects", False, f"❌ Only found {len(found_subjects)} science subjects: {found_subjects}")
+                return False
+            
+            # Test Chemistry chapters (should have 14 chapters)
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=11&subject=chemistry")
+            
+            if response.status_code != 200:
+                self.log_result("Class 11 Chemistry Chapters", False, f"❌ Chemistry chapters API failed: {response.status_code}")
+                return False
+            
+            chemistry_result = response.json()
+            if not chemistry_result.get('success'):
+                self.log_result("Class 11 Chemistry Chapters", False, f"❌ Chemistry chapters API returned success=false: {chemistry_result}")
+                return False
+            
+            chemistry_chapters = chemistry_result.get('chapters', [])
+            
+            if len(chemistry_chapters) == 14:
+                # Check for proper NCERT names (not placeholders)
+                sample_chapter = chemistry_chapters[0] if chemistry_chapters else {}
+                chapter_name = sample_chapter.get('chapter_name', '')
+                
+                if 'Chapter 1' not in chapter_name and 'Some Basic Concepts of Chemistry' in chapter_name:
+                    self.log_result("Class 11 Chemistry Chapters", True, f"✅ Found 14 Chemistry chapters with proper NCERT names")
+                else:
+                    self.log_result("Class 11 Chemistry Chapters", False, f"❌ Chemistry chapters have placeholder names: {chapter_name}")
+            else:
+                self.log_result("Class 11 Chemistry Chapters", False, f"❌ Expected 14 Chemistry chapters, got {len(chemistry_chapters)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class 11 Science Stream", False, f"❌ Class 11 Science test error: {e}")
+            return False
+
+    def _test_class_11_commerce_stream(self):
+        """Test Class 11 Commerce Stream subjects and chapters"""
+        try:
+            print("\n💼 TEST: CLASS 11 COMMERCE STREAM")
+            print("-" * 40)
+            
+            # Test Business Studies chapters (should have 11 chapters)
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=11&subject=business-studies")
+            
+            if response.status_code != 200:
+                self.log_result("Class 11 Business Studies Chapters", False, f"❌ Business Studies chapters API failed: {response.status_code}")
+                return False
+            
+            business_result = response.json()
+            if not business_result.get('success'):
+                self.log_result("Class 11 Business Studies Chapters", False, f"❌ Business Studies chapters API returned success=false: {business_result}")
+                return False
+            
+            business_chapters = business_result.get('chapters', [])
+            
+            if len(business_chapters) == 11:
+                # Check for proper NCERT names
+                sample_chapter = business_chapters[0] if business_chapters else {}
+                chapter_name = sample_chapter.get('chapter_name', '')
+                
+                if 'Chapter 1' not in chapter_name and ('Nature and Purpose of Business' in chapter_name or 'Business' in chapter_name):
+                    self.log_result("Class 11 Business Studies Chapters", True, f"✅ Found 11 Business Studies chapters with proper NCERT names")
+                else:
+                    self.log_result("Class 11 Business Studies Chapters", False, f"❌ Business Studies chapters have placeholder names: {chapter_name}")
+            else:
+                self.log_result("Class 11 Business Studies Chapters", False, f"❌ Expected 11 Business Studies chapters, got {len(business_chapters)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class 11 Commerce Stream", False, f"❌ Class 11 Commerce test error: {e}")
+            return False
+
+    def _test_class_11_humanities_stream(self):
+        """Test Class 11 Humanities Stream subjects and chapters"""
+        try:
+            print("\n🏛️ TEST: CLASS 11 HUMANITIES STREAM")
+            print("-" * 40)
+            
+            # Test Geography chapters (should have 16 chapters)
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=11&subject=geography")
+            
+            if response.status_code != 200:
+                self.log_result("Class 11 Geography Chapters", False, f"❌ Geography chapters API failed: {response.status_code}")
+                return False
+            
+            geography_result = response.json()
+            if not geography_result.get('success'):
+                self.log_result("Class 11 Geography Chapters", False, f"❌ Geography chapters API returned success=false: {geography_result}")
+                return False
+            
+            geography_chapters = geography_result.get('chapters', [])
+            
+            if len(geography_chapters) == 16:
+                # Check for proper NCERT names
+                sample_chapter = geography_chapters[0] if geography_chapters else {}
+                chapter_name = sample_chapter.get('chapter_name', '')
+                
+                if 'Chapter 1' not in chapter_name and ('Geography as a Discipline' in chapter_name or 'Geography' in chapter_name):
+                    self.log_result("Class 11 Geography Chapters", True, f"✅ Found 16 Geography chapters with proper NCERT names")
+                else:
+                    self.log_result("Class 11 Geography Chapters", False, f"❌ Geography chapters have placeholder names: {chapter_name}")
+            else:
+                self.log_result("Class 11 Geography Chapters", False, f"❌ Expected 16 Geography chapters, got {len(geography_chapters)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class 11 Humanities Stream", False, f"❌ Class 11 Humanities test error: {e}")
+            return False
+
+    def _test_class_12_science_stream(self):
+        """Test Class 12 Science Stream subjects and chapters"""
+        try:
+            print("\n🔬 TEST: CLASS 12 SCIENCE STREAM")
+            print("-" * 40)
+            
+            # Test Mathematics chapters (should have 13 chapters)
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=12&subject=mathematics")
+            
+            if response.status_code != 200:
+                self.log_result("Class 12 Mathematics Chapters", False, f"❌ Mathematics chapters API failed: {response.status_code}")
+                return False
+            
+            math_result = response.json()
+            if not math_result.get('success'):
+                self.log_result("Class 12 Mathematics Chapters", False, f"❌ Mathematics chapters API returned success=false: {math_result}")
+                return False
+            
+            math_chapters = math_result.get('chapters', [])
+            
+            if len(math_chapters) == 13:
+                # Check for proper NCERT names (Relations and Functions, Inverse Trigonometric Functions, etc.)
+                sample_chapter = math_chapters[0] if math_chapters else {}
+                chapter_name = sample_chapter.get('chapter_name', '')
+                
+                if 'Chapter 1' not in chapter_name and ('Relations and Functions' in chapter_name or 'Relations' in chapter_name):
+                    self.log_result("Class 12 Mathematics Chapters", True, f"✅ Found 13 Mathematics chapters with proper NCERT names")
+                else:
+                    self.log_result("Class 12 Mathematics Chapters", False, f"❌ Mathematics chapters have placeholder names: {chapter_name}")
+            else:
+                self.log_result("Class 12 Mathematics Chapters", False, f"❌ Expected 13 Mathematics chapters, got {len(math_chapters)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class 12 Science Stream", False, f"❌ Class 12 Science test error: {e}")
+            return False
+
+    def _test_class_12_commerce_stream(self):
+        """Test Class 12 Commerce Stream subjects and chapters"""
+        try:
+            print("\n💰 TEST: CLASS 12 COMMERCE STREAM")
+            print("-" * 40)
+            
+            # Test Economics chapters (should have 9 chapters)
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=12&subject=economics")
+            
+            if response.status_code != 200:
+                self.log_result("Class 12 Economics Chapters", False, f"❌ Economics chapters API failed: {response.status_code}")
+                return False
+            
+            economics_result = response.json()
+            if not economics_result.get('success'):
+                self.log_result("Class 12 Economics Chapters", False, f"❌ Economics chapters API returned success=false: {economics_result}")
+                return False
+            
+            economics_chapters = economics_result.get('chapters', [])
+            
+            if len(economics_chapters) == 9:
+                # Check for proper NCERT names
+                sample_chapter = economics_chapters[0] if economics_chapters else {}
+                chapter_name = sample_chapter.get('chapter_name', '')
+                
+                if 'Chapter 1' not in chapter_name and ('Introduction to Macroeconomics' in chapter_name or 'Macroeconomics' in chapter_name):
+                    self.log_result("Class 12 Economics Chapters", True, f"✅ Found 9 Economics chapters with proper NCERT names")
+                else:
+                    self.log_result("Class 12 Economics Chapters", False, f"❌ Economics chapters have placeholder names: {chapter_name}")
+            else:
+                self.log_result("Class 12 Economics Chapters", False, f"❌ Expected 9 Economics chapters, got {len(economics_chapters)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class 12 Commerce Stream", False, f"❌ Class 12 Commerce test error: {e}")
+            return False
+
+    def _test_class_12_humanities_stream(self):
+        """Test Class 12 Humanities Stream subjects and chapters"""
+        try:
+            print("\n📜 TEST: CLASS 12 HUMANITIES STREAM")
+            print("-" * 40)
+            
+            # Test History chapters (should have 15 chapters)
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=12&subject=history")
+            
+            if response.status_code != 200:
+                self.log_result("Class 12 History Chapters", False, f"❌ History chapters API failed: {response.status_code}")
+                return False
+            
+            history_result = response.json()
+            if not history_result.get('success'):
+                self.log_result("Class 12 History Chapters", False, f"❌ History chapters API returned success=false: {history_result}")
+                return False
+            
+            history_chapters = history_result.get('chapters', [])
+            
+            if len(history_chapters) == 15:
+                # Check for proper NCERT names (Bricks, Beads and Bones, etc.)
+                sample_chapter = history_chapters[0] if history_chapters else {}
+                chapter_name = sample_chapter.get('chapter_name', '')
+                
+                if 'Chapter 1' not in chapter_name and ('Bricks, Beads and Bones' in chapter_name or 'Bricks' in chapter_name):
+                    self.log_result("Class 12 History Chapters", True, f"✅ Found 15 History chapters with proper NCERT names")
+                else:
+                    self.log_result("Class 12 History Chapters", False, f"❌ History chapters have placeholder names: {chapter_name}")
+            else:
+                self.log_result("Class 12 History Chapters", False, f"❌ Expected 15 History chapters, got {len(history_chapters)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class 12 Humanities Stream", False, f"❌ Class 12 Humanities test error: {e}")
+            return False
+
+    def _test_chapter_tests_api_endpoints(self):
+        """Test all chapter tests API endpoints"""
+        try:
+            print("\n🔗 TEST: CHAPTER TESTS API ENDPOINTS")
+            print("-" * 40)
+            
+            # Test GET /api/chapter-tests/subjects/class-11
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/subjects/class-11")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success') and 'subjects' in result:
+                    subjects_count = len(result.get('subjects', []))
+                    self.log_result("GET /api/chapter-tests/subjects/class-11", True, f"✅ API working - returned {subjects_count} subjects")
+                else:
+                    self.log_result("GET /api/chapter-tests/subjects/class-11", False, f"❌ Invalid response structure: {result}")
+            else:
+                self.log_result("GET /api/chapter-tests/subjects/class-11", False, f"❌ API failed with status {response.status_code}")
+            
+            # Test GET /api/chapter-tests/subjects/class-12
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/subjects/class-12")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success') and 'subjects' in result:
+                    subjects_count = len(result.get('subjects', []))
+                    self.log_result("GET /api/chapter-tests/subjects/class-12", True, f"✅ API working - returned {subjects_count} subjects")
+                else:
+                    self.log_result("GET /api/chapter-tests/subjects/class-12", False, f"❌ Invalid response structure: {result}")
+            else:
+                self.log_result("GET /api/chapter-tests/subjects/class-12", False, f"❌ API failed with status {response.status_code}")
+            
+            # Test GET /api/chapter-tests/chapters?class_param=11&subject=physics
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=11&subject=physics")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success') and 'chapters' in result:
+                    chapters_count = len(result.get('chapters', []))
+                    self.log_result("GET /api/chapter-tests/chapters (Class 11 Physics)", True, f"✅ API working - returned {chapters_count} chapters")
+                else:
+                    self.log_result("GET /api/chapter-tests/chapters (Class 11 Physics)", False, f"❌ Invalid response structure: {result}")
+            else:
+                self.log_result("GET /api/chapter-tests/chapters (Class 11 Physics)", False, f"❌ API failed with status {response.status_code}")
+            
+            # Test GET /api/chapter-tests/chapters?class_param=12&subject=history
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/chapters?class_param=12&subject=history")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success') and 'chapters' in result:
+                    chapters_count = len(result.get('chapters', []))
+                    # Verify proper NCERT names, not placeholders
+                    chapters = result.get('chapters', [])
+                    has_proper_names = True
+                    placeholder_count = 0
+                    
+                    for chapter in chapters[:3]:  # Check first 3 chapters
+                        chapter_name = chapter.get('chapter_name', '')
+                        if 'Chapter 1' in chapter_name or 'Chapter 2' in chapter_name or 'Chapter 3' in chapter_name:
+                            placeholder_count += 1
+                    
+                    if placeholder_count > 0:
+                        has_proper_names = False
+                    
+                    if has_proper_names:
+                        self.log_result("GET /api/chapter-tests/chapters (Class 12 History)", True, f"✅ API working - returned {chapters_count} chapters with proper NCERT names")
+                    else:
+                        self.log_result("GET /api/chapter-tests/chapters (Class 12 History)", False, f"❌ API returned {chapters_count} chapters but with placeholder names")
+                else:
+                    self.log_result("GET /api/chapter-tests/chapters (Class 12 History)", False, f"❌ Invalid response structure: {result}")
+            else:
+                self.log_result("GET /api/chapter-tests/chapters (Class 12 History)", False, f"❌ API failed with status {response.status_code}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Chapter Tests API Endpoints", False, f"❌ API endpoints test error: {e}")
+            return False
+
     def test_ceibaa_quiz_platform_bug_fixes(self):
         """Test all three bug fixes for the Ceibaa quiz platform"""
         try:
