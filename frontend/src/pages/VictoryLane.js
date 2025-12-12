@@ -372,7 +372,7 @@ const VictoryLane = () => {
       fetchMyFollowing();
       fetchMyStats();
     }
-  }, [activeTab, user]);
+  }, [activeTab, user, fetchFeed]);
 
   // Filter posts based on search query and selected tag
   const filteredPosts = posts.filter(post => {
