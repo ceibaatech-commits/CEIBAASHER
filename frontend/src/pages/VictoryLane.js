@@ -1244,7 +1244,7 @@ const VictoryLane = () => {
                 <div 
                   key={post.id} 
                   ref={(el) => postRefs.current[post.id] = el}
-                  className="bg-white p-4 hover:bg-gray-50 transition"
+                  className="bg-white p-3 sm:p-4 border-b border-gray-100 hover:bg-gray-50 transition"
                 >
                   {/* Repost Header */}
                   {post.is_retweet && (
