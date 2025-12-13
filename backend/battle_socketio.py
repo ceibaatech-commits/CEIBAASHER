@@ -781,6 +781,24 @@ async def send_gift(sid, data):
 
 
 @sio.event
+async def heartbeat(sid, data=None):
+    """Handle heartbeat/keep-alive signal from client.
+    
+    This prevents timeout disconnections during quiz play.
+    Frontend sends this every 10 seconds to keep connection alive.
+    """
+    try:
+        # Update activity timestamp
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        
+        # Optional: Send acknowledgment back
+        await sio.emit('heartbeat_ack', {'timestamp': datetime.now(timezone.utc).timestamp()}, room=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] heartbeat: {str(e)}")
+
+
+@sio.event
 async def leave_room(sid, data):
     """Leave a room"""
     room_id = data.get('roomId') or data.get('pin')
