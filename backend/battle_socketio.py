@@ -13,18 +13,21 @@ import random
 import string
 
 # Create Socket.IO server with async mode
-# PRODUCTION SETTINGS: Increased ping intervals for connection stability
+# PRODUCTION SETTINGS: Optimized for mid-quiz connection stability
 sio = socketio.AsyncServer(
     async_mode='asgi',
     cors_allowed_origins='*',
     logger=True,
     engineio_logger=True,
-    # CRITICAL: Increase ping intervals to prevent premature disconnections
-    ping_interval=25,  # Send ping every 25 seconds (default: 5s)
-    ping_timeout=60,   # Wait 60 seconds for pong response (default: 20s)
+    # CRITICAL: More frequent checks with longer timeout window
+    ping_interval=15,   # Send ping every 15 seconds (faster health checks)
+    ping_timeout=120,   # Wait 120 seconds for pong response (2 minutes buffer)
     max_http_buffer_size=10000000,  # 10MB for large data
     allow_upgrades=True
 )
+
+# Activity tracking to prevent timeout on active players
+user_activity = {}  # {sid: last_activity_timestamp}
 
 # Database will be injected
 db = None
@@ -44,6 +47,9 @@ async def connect(sid, environ):
     """Handle client connection with enhanced logging"""
     try:
         print(f"[CONNECT] ✅ Client connected: {sid}")
+        # Track activity immediately
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        
         # Log connection details for debugging
         user_agent = environ.get('HTTP_USER_AGENT', 'Unknown')
         remote_addr = environ.get('REMOTE_ADDR', 'Unknown')
@@ -66,6 +72,9 @@ async def disconnect(sid):
     or room closure is handled automatically.
     """
     print(f"[DISCONNECT] ⚠️ Client disconnecting: {sid}")
+    
+    # Cleanup activity tracking
+    user_activity.pop(sid, None)
 
     # Cleanup matchmaking (1v1 battles)
     matchmaking_manager.cleanup_player(sid)
@@ -87,6 +96,9 @@ async def authenticate(sid, data):
     """Authenticate user and store data on session"""
     user_data = data.get('userData', {})
     print(f"[AUTH] User authenticated: {user_data.get('username')} ({sid})")
+    
+    # Track activity
+    user_activity[sid] = datetime.now(timezone.utc).timestamp()
 
     # Store user data in session (Socket.IO will manage this)
     await sio.save_session(sid, {'userData': user_data})
