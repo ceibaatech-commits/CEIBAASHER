@@ -210,6 +210,9 @@ async def join_room(sid, data):
                 }, room=sid)
                 return
 
+        # Track activity
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        
         # Store user data in session
         await sio.save_session(sid, {'userData': user_data})
 
