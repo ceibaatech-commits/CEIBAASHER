@@ -78,6 +78,32 @@ const LiveBattleMode = () => {
     };
   }, []);
 
+  // HEARTBEAT: Keep connection alive during 1v1 battle (prevents timeout)
+  useEffect(() => {
+    if (!socket) return;
+    
+    console.log('💓 Starting heartbeat mechanism for 1v1 battle (every 10 seconds)');
+    
+    // Send heartbeat every 10 seconds to prevent timeout
+    const heartbeatInterval = setInterval(() => {
+      if (socket && socket.connected) {
+        socket.emit('heartbeat', { timestamp: Date.now() });
+        console.log('💓 Heartbeat sent');
+      }
+    }, 10000); // 10 seconds
+    
+    // Listen for heartbeat acknowledgment
+    socket.on('heartbeat_ack', (data) => {
+      console.log('💓 Heartbeat acknowledged by server');
+    });
+    
+    return () => {
+      clearInterval(heartbeatInterval);
+      socket.off('heartbeat_ack');
+      console.log('💓 Heartbeat mechanism stopped');
+    };
+  }, [socket]);
+
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
