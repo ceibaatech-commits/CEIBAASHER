@@ -329,6 +329,9 @@ async def set_room_questions(sid, data):
 async def submit_answer(sid, data):
     """Submit an answer"""
     try:
+        # Track activity - CRITICAL for preventing timeout
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        
         room_id = data.get('roomId')
         question_id = data.get('questionId')
         answer_id = data.get('answerId')
@@ -365,6 +368,9 @@ async def submit_answer(sid, data):
         await sio.emit('leaderboard_update', {
             'leaderboard': leaderboard
         }, room=room_id)
+        
+        # Save room state in background (non-blocking)
+        asyncio.create_task(room_manager.save_room_to_db(room))
 
         print(f"[ANSWER] User {sid} answered Q{question_id}: {'Correct' if is_correct else 'Wrong'}")
 
@@ -615,6 +621,9 @@ async def skip_question(sid, data):
 async def send_message(sid, data):
     """Send chat message"""
     try:
+        # Track activity
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        
         room_id = data.get('roomId') or data.get('pin')
         message = data.get('message')
 
@@ -643,6 +652,9 @@ async def send_message(sid, data):
 async def send_reaction(sid, data):
     """Send reaction/emoji"""
     try:
+        # Track activity
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        
         room_id = data.get('roomId') or data.get('pin')
         # Frontend sends { roomId, emoji, sender }; keep both keys for robustness
         reaction = data.get('reaction') or data.get('emoji')
