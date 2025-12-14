@@ -210,15 +210,15 @@ const Home = () => {
           {categories.map(cat => (
             <button
               key={cat.id}
-              onClick={() => setActiveCategory(cat.id)}
-              className={`flex flex-col items-center justify-center gap-1 py-3 rounded-xl text-xs font-semibold transition-all ${
+              onClick={() => setActiveCategory(activeCategory === cat.id ? '' : cat.id)}
+              className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl text-[10px] font-semibold transition-all ${
                 activeCategory === cat.id
                   ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <span className="text-2xl">{cat.icon}</span>
-              <span className="text-center leading-tight">{cat.label}</span>
+              <span className="text-xl">{cat.icon}</span>
+              <span className="text-center leading-tight px-1">{cat.label}</span>
             </button>
           ))}
         </div>
