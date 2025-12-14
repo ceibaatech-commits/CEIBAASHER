@@ -1,10 +1,12 @@
 import React from 'react';
-import { ExternalLink, GraduationCap, Clock, Award, TrendingUp, Users, BookOpen } from 'lucide-react';
+import { ExternalLink, GraduationCap, Clock, Award, TrendingUp, Users, BookOpen, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
 const Courses = () => {
   const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const courses = [
     {
