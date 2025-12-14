@@ -17,6 +17,7 @@ from sheets_routes import router as sheets_router
 from image_extraction_routes import router as image_extraction_router
 from battle_routes import router as battle_router
 from battle_async_routes import router as battle_async_router
+import battle_async_routes
 from social_routes import router as social_router
 # Socket.io proxy now runs separately on port 5002
 # from socket_proxy import socket_app  # Not needed anymore
@@ -66,6 +67,7 @@ books_routes.init_db(db)
 exam_structure_routes.init_db(db)
 exam_sync_routes.init_db(db)
 user_management_routes.init_db(db)
+battle_async_routes.init_db(db)
 
 # Initialize social auto-post utilities
 import social_auto_post
