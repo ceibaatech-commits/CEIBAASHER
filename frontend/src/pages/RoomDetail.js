@@ -14,7 +14,7 @@ const RoomDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('ceibaa_user');
     if (!userStr) {
       alert('Please login to view room details');
       navigate('/login');
@@ -25,7 +25,7 @@ const RoomDetail = () => {
 
   const fetchRoomDetail = async () => {
     try {
-      const userStr = localStorage.getItem('user');
+      const userStr = localStorage.getItem('ceibaa_user');
       if (!userStr) return;
       const user = JSON.parse(userStr);
 
