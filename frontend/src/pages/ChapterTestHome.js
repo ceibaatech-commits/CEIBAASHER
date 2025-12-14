@@ -142,7 +142,7 @@ const ChapterTestHome = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {classes.map((item) => (
             <button
               key={item.class}
@@ -154,18 +154,18 @@ const ChapterTestHome = () => {
                   navigate(`/chapter-tests/class-${item.class}`);
                 }
               }}
-              className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent overflow-hidden"
+              className="group relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent overflow-hidden min-h-[140px] sm:min-h-[160px]"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
               
-              <div className="relative z-10">
-                <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                <div className="text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 transform group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
-                <h3 className="text-3xl font-black text-gray-900 group-hover:text-white transition-colors duration-300">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-white transition-colors duration-300">
                   Class {item.class}
                 </h3>
-                <p className="text-gray-600 group-hover:text-white/90 transition-colors duration-300 mt-2">
+                <p className="text-xs sm:text-sm md:text-base text-gray-600 group-hover:text-white/90 transition-colors duration-300 mt-1 sm:mt-2">
                   CBSE Curriculum
                 </p>
               </div>
