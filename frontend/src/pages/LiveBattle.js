@@ -495,17 +495,58 @@ const LiveBattle = () => {
         console.log(`✅ Auto-advanced to question ${nextIndex + 1}`);
       } else {
         console.log('🏁 Last question completed');
-        // Show completion message and navigate after delay
+        // Submit all answers via REST API
         setTimeout(async () => {
-          // Post battle results to social feed
-          const posted = await postBattleResults();
-          
-          const successMessage = posted 
-            ? `Quiz Complete!\n\nYour Final Score: ${myScore} points\n\n✅ Your results have been shared on the Social Feed! 📱\n\nThank you for playing!`
-            : `Quiz Complete!\n\nYour Final Score: ${myScore} points\n\nThank you for playing!`;
-          
-          alert(successMessage);
-          navigate('/');
+          try {
+            console.log('📤 HYBRID: Submitting all answers via REST API');
+            const totalTime = Math.floor((Date.now() - quizStartTime) / 1000);
+            
+            const submitResponse = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/submit`, {
+              player_id: playerName.toLowerCase().replace(/\s+/g, '_'),
+              player_name: playerName,
+              answers: submittedAnswers,
+              total_score: myScore,
+              total_time: totalTime,
+              completed_at: new Date().toISOString()
+            });
+            
+            if (submitResponse.data.success) {
+              console.log('✅ HYBRID: Answers submitted successfully');
+              console.log('🏆 Rank:', submitResponse.data.rank);
+              
+              // Update leaderboard with server response
+              const transformedLeaderboard = submitResponse.data.leaderboard.map(p => ({
+                name: p.player_name,
+                score: p.total_score,
+                streak: 0
+              }));
+              setLeaderboard(transformedLeaderboard);
+              
+              // Post battle results to social feed
+              const posted = await postBattleResults();
+              
+              const successMessage = posted 
+                ? `Quiz Complete!\n\nYour Final Score: ${myScore} points\nYour Rank: #${submitResponse.data.rank}\n\n✅ Your results have been shared on the Social Feed! 📱\n\nThank you for playing!`
+                : `Quiz Complete!\n\nYour Final Score: ${myScore} points\nYour Rank: #${submitResponse.data.rank}\n\nThank you for playing!`;
+              
+              alert(successMessage);
+              navigate('/');
+            }
+          } catch (error) {
+            console.error('❌ HYBRID: Failed to submit answers:', error);
+            
+            let errorMessage = 'Failed to submit answers. ';
+            if (error.response && error.response.data.detail) {
+              errorMessage += error.response.data.detail;
+            } else {
+              errorMessage += 'Please check your connection.';
+            }
+            
+            alert(errorMessage);
+            // Still show local score
+            alert(`Quiz Complete!\n\nYour Local Score: ${myScore} points\n\n(Submission failed, but you played well!)`);
+            navigate('/');
+          }
         }, 2000);
       }
     }, 2000);
