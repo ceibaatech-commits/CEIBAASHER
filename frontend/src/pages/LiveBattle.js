@@ -43,14 +43,71 @@ const LiveBattle = () => {
   const [followingStatus, setFollowingStatus] = useState({}); // Track who we're following
   const chatEndRef = useRef(null);
 
-  // Fetch room details and questions when auto-joining
+  // HYBRID: Fetch room details via REST API when joining
   useEffect(() => {
-    if (autoJoin && !questions && pin) {
-      // Joiners will receive questions via Socket.io 'room_joined' event
-      // No need to fetch separately
-      setLoading(true);
-    }
-  }, [autoJoin, questions, pin]);
+    const joinViaREST = async () => {
+      if (autoJoin && !questions && pin && playerName) {
+        setLoading(true);
+        try {
+          console.log('🔄 HYBRID: Joining room via REST API (reliable method)');
+          const response = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/join`, {
+            player_id: playerName.toLowerCase().replace(/\s+/g, '_'),
+            player_name: playerName,
+            avatar: '👤'
+          });
+          
+          if (response.data.success) {
+            console.log('✅ REST JOIN SUCCESS:', response.data);
+            const roomData = response.data.room;
+            const questionsData = roomData.questions;
+            
+            // Set questions from REST API
+            setAllQuestions(questionsData);
+            setCurrentQuestion(questionsData[0]);
+            setTotalQuestions(questionsData.length);
+            
+            // Set participants
+            setParticipants([{ username: playerName, avatar: '👤' }]);
+            
+            // Set leaderboard from existing submissions
+            if (response.data.leaderboard && response.data.leaderboard.length > 0) {
+              const transformedLeaderboard = response.data.leaderboard.map(p => ({
+                name: p.player_name,
+                score: p.total_score,
+                streak: 0
+              }));
+              setLeaderboard(transformedLeaderboard);
+            }
+            
+            // Set chat messages
+            if (response.data.messages && response.data.messages.length > 0) {
+              setChatMessages(response.data.messages.map(m => ({
+                playerName: m.player_name,
+                message: m.message,
+                timestamp: m.timestamp
+              })));
+            }
+            
+            setLoading(false);
+            console.log('✅ HYBRID: Room joined successfully via REST, questions downloaded');
+          }
+        } catch (error) {
+          console.error('❌ REST JOIN ERROR:', error);
+          setLoading(false);
+          
+          let errorMessage = 'Failed to join room. Please try again.';
+          if (error.response) {
+            errorMessage = error.response.data.detail || errorMessage;
+          }
+          
+          alert(errorMessage);
+          navigate('/join-room');
+        }
+      }
+    };
+    
+    joinViaREST();
+  }, [autoJoin, questions, pin, playerName]);
 
   useEffect(() => {
     if (!playerName || !pin) {
