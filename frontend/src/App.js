@@ -64,7 +64,7 @@ function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <div className="App">
+        <div className="App" style={{ paddingTop: '64px' }}>
           <BrowserRouter>
             <ScrollRestoration />
             <Routes>
