@@ -535,14 +535,18 @@ const LiveBattle = () => {
               setLeaderboard(transformedLeaderboard);
               
               // Post battle results to social feed
-              const posted = await postBattleResults();
+              await postBattleResults();
               
-              const successMessage = posted 
-                ? `Quiz Complete!\n\nYour Final Score: ${myScore} points\nYour Rank: #${submitResponse.data.rank}\n\n✅ Your results have been shared on the Social Feed! 📱\n\nThank you for playing!`
-                : `Quiz Complete!\n\nYour Final Score: ${myScore} points\nYour Rank: #${submitResponse.data.rank}\n\nThank you for playing!`;
-              
-              alert(successMessage);
-              navigate('/');
+              // Navigate to results page instead of home
+              navigate(`/quiz-results/${pin}`, {
+                state: {
+                  playerName,
+                  finalScore: myScore,
+                  totalTime: totalTime,
+                  rank: submitResponse.data.rank,
+                  totalQuestions: allQuestions.length
+                }
+              });
             }
           } catch (error) {
             console.error('❌ HYBRID: Failed to submit answers:', error);
@@ -554,10 +558,17 @@ const LiveBattle = () => {
               errorMessage += 'Please check your connection.';
             }
             
-            alert(errorMessage);
-            // Still show local score
-            alert(`Quiz Complete!\n\nYour Local Score: ${myScore} points\n\n(Submission failed, but you played well!)`);
-            navigate('/');
+            // Navigate to results even if submission failed (show local score)
+            navigate(`/quiz-results/${pin}`, {
+              state: {
+                playerName,
+                finalScore: myScore,
+                totalTime: totalTime,
+                rank: 0, // Unknown rank
+                totalQuestions: allQuestions.length,
+                submissionFailed: true
+              }
+            });
           }
         }, 2000);
       }
