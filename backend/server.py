@@ -192,4 +192,5 @@ print("[INIT] FastAPI running on port 8001")
 print("[INIT] REST endpoints: /api/*")
 print("[INIT] Battle Socket.IO endpoint: /api/battlews/socket.io")
 print("[INIT] Battle rooms will persist to MongoDB")
+print("[INIT] Board API endpoints added: /api/battle/async/user/{user_id}/rooms, /api/battle/async/rooms/{pin}/submission/{user_id}")
 
