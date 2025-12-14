@@ -19,6 +19,14 @@ const JoinRoom = () => {
     // Clear previous errors
     setError('');
     
+    // Check authentication
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      alert('Please login to join a room');
+      navigate('/login');
+      return;
+    }
+    
     // Validation
     if (!pin.trim() || !playerName.trim()) {
       setError('Please enter both PIN and your name');
