@@ -313,8 +313,75 @@ const LiveBattle = () => {
       });
     });
 
-    return () => newSocket.close();
+    return () => {
+      if (newSocket) newSocket.close();
+    };
   }, []);
+  
+  // HYBRID: REST Polling for leaderboard (fallback if Socket.IO unavailable)
+  useEffect(() => {
+    if (!pin || !allQuestions || allQuestions.length === 0) return;
+    
+    let lastMessageTimestamp = null;
+    
+    const pollUpdates = async () => {
+      try {
+        // Poll leaderboard
+        const leaderboardResponse = await axios.get(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/leaderboard`);
+        if (leaderboardResponse.data.success && leaderboardResponse.data.leaderboard.length > 0) {
+          const transformedLeaderboard = leaderboardResponse.data.leaderboard.map(p => ({
+            name: p.player_name,
+            score: p.total_score,
+            streak: 0
+          }));
+          setLeaderboard(transformedLeaderboard);
+          const me = transformedLeaderboard.find(p => p.name === playerName);
+          if (me) setMyScore(me.score);
+        }
+        
+        // Poll chat messages
+        const messagesUrl = lastMessageTimestamp 
+          ? `${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/messages?since=${lastMessageTimestamp}`
+          : `${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/messages`;
+        
+        const messagesResponse = await axios.get(messagesUrl);
+        if (messagesResponse.data.success && messagesResponse.data.messages.length > 0) {
+          const newMessages = messagesResponse.data.messages.map(m => ({
+            playerName: m.player_name,
+            message: m.message,
+            timestamp: m.timestamp
+          }));
+          
+          if (lastMessageTimestamp) {
+            // Append new messages
+            setChatMessages(prev => [...prev, ...newMessages]);
+          } else {
+            // Initial load
+            setChatMessages(newMessages);
+          }
+          
+          // Update last timestamp
+          const latestMessage = messagesResponse.data.messages[messagesResponse.data.messages.length - 1];
+          lastMessageTimestamp = latestMessage.timestamp;
+        }
+      } catch (error) {
+        console.log('⚠️ HYBRID: Polling update failed (will retry):', error.message);
+      }
+    };
+    
+    // Poll every 5 seconds
+    const pollingInterval = setInterval(pollUpdates, 5000);
+    
+    // Initial poll
+    pollUpdates();
+    
+    console.log('🔄 HYBRID: Started REST polling (5s interval) for leaderboard & chat');
+    
+    return () => {
+      clearInterval(pollingInterval);
+      console.log('🛑 HYBRID: Stopped REST polling');
+    };
+  }, [pin, allQuestions, playerName]);
 
   // HEARTBEAT: Keep connection alive during quiz play (prevents timeout)
   useEffect(() => {
