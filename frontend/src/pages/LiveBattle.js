@@ -93,7 +93,9 @@ const LiveBattle = () => {
             
             setLoading(false);
             setQuizStartTime(Date.now()); // Track quiz start time
+            setQuizStarted(true); // AUTO-START: Quiz begins immediately
             console.log('✅ HYBRID: Room joined successfully via REST, questions downloaded');
+            console.log('🚀 AUTO-START: Quiz started immediately - no waiting required!');
           }
         } catch (error) {
           console.error('❌ REST JOIN ERROR:', error);
