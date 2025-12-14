@@ -115,40 +115,20 @@ const LiveBattle = () => {
       return;
     }
 
-    console.log('📡 Creating Socket.io connection to battle server:', BATTLE_SERVER_URL);
-    console.log('🔧 CODE VERSION: 2025-01-18-v2 (WebSocket-first with enhanced logging)');
-    console.log('⚙️ Transport order: websocket → polling (WebSocket prioritized)');
-    console.log('⏱️ Timeout: 20s connection, 45s join timeout');
+    console.log('📡 HYBRID: Creating Socket.io connection for real-time updates (optional)');
+    console.log('🔧 CODE VERSION: 2025-12-14-HYBRID (REST primary, Socket.IO enhancement)');
+    console.log('✅ Quiz works via REST even if Socket.IO fails');
     
     const newSocket = io(BATTLE_SERVER_URL, {
-      path: '/api/battlews/socket.io',  // Battle Socket.IO mounted at /api/battlews
-      transports: ['websocket', 'polling'],  // CRITICAL: WebSocket first for faster connection
+      path: '/api/battlews/socket.io',
+      transports: ['websocket', 'polling'],
       reconnection: true,
-      timeout: 20000, // 20 second connection timeout (increased for reliability)
-      reconnectionAttempts: 10,  // More retry attempts
-      reconnectionDelay: 2000,    // Longer delay between retries
-      reconnectionDelayMax: 5000
+      timeout: 10000,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 3000
     });
     setSocket(newSocket);
-    
-    // Set a timeout for the entire join process
-    // Use a flag to track if we successfully joined to avoid race conditions
-    // IMPORTANT: Hosts already "own" the room via HTTP flow, so we treat them
-    // as joined to avoid bogus timeouts while they are actively playing.
-    let hasJoined = !!isHost;
-    const joinTimeout = setTimeout(() => {
-      if (!hasJoined) {
-        console.error('❌ Join timeout: No room_joined response after 45 seconds');
-        console.error('⚠️ This indicates a connection issue between client and battle server, not a cache bug.');
-        setLoading(false);
-        alert(
-          'Connection timeout while joining the room.\n\n' +
-          'We could not establish a stable connection to the quiz server.\n\n' +
-          'Please check your internet connection and try joining again.'
-        );
-        navigate('/join-room');
-      }
-    }, 45000); // 45 second timeout (increased to account for slow connections)
     
     // IMPORTANT: Set up event listeners BEFORE connecting/emitting to avoid race conditions
     
