@@ -621,14 +621,24 @@ const LiveBattle = () => {
   };
 
   const quitQuiz = () => {
-    if (window.confirm('Are you sure you want to quit? Your progress will be lost.')) {
-      // Leave the room
+    const confirmMessage = isHost 
+      ? 'Are you sure you want to leave? The room will continue for other players (24 hours). You can rejoin from your Board.'
+      : 'Are you sure you want to quit? Your progress will be lost.';
+    
+    if (window.confirm(confirmMessage)) {
+      // Simply disconnect from Socket.IO (room persists on server)
       if (socket) {
         socket.emit('leave_room', { roomId: pin });
         socket.disconnect();
       }
-      // Navigate to home page
-      navigate('/');
+      
+      // Navigate to Board if logged in, otherwise home
+      const user = localStorage.getItem('user');
+      if (user) {
+        navigate('/profile/board');
+      } else {
+        navigate('/');
+      }
     }
   };
 
