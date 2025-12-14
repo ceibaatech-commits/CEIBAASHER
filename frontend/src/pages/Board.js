@@ -15,7 +15,7 @@ const Board = () => {
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0, created: 0 });
 
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('ceibaa_user');
     if (!userStr) {
       alert('Please login to view your Board');
       navigate('/login');
@@ -30,7 +30,7 @@ const Board = () => {
 
   const fetchRooms = async () => {
     try {
-      const userStr = localStorage.getItem('user');
+      const userStr = localStorage.getItem('ceibaa_user');
       if (!userStr) return;
       const user = JSON.parse(userStr);
       
@@ -56,7 +56,7 @@ const Board = () => {
 
   const filterRooms = () => {
     let filtered = rooms;
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('ceibaa_user');
     const user = userStr ? JSON.parse(userStr) : null;
     const now = new Date();
 
@@ -93,7 +93,7 @@ const Board = () => {
   };
 
   const rejoinRoom = (pin) => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('ceibaa_user'));
     navigate(`/live-battle/${pin}`, {
       state: {
         autoJoin: true,
