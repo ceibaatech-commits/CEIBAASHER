@@ -203,7 +203,7 @@ async def join_async_room(pin: str, request: JoinRoomRequest, db=Depends(get_dat
                 "subject": room.get("subject", ""),
                 "questions": room["questions"],
                 "time_per_question": room.get("time_per_question", 30),
-                "max_participants": room.get("max_participants", 50),
+                "max_participants": room.get("max_participants", 150),
                 "participant_count": room.get("participant_count", 0),
                 "created_at": room["created_at"],
                 "expires_at": room["expires_at"]
