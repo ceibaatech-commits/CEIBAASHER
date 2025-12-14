@@ -563,8 +563,115 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Main Content - Exam Cards */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Choose Your Course Section - Mobile Only */}
+      <section className="md:hidden max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-black text-gray-900 mb-3">
+            Choose Your Course 🎯
+          </h2>
+          <p className="text-base text-gray-600 px-4">
+            Select a category to explore exams and start your preparation
+          </p>
+        </div>
+
+        {/* Course Category Cards */}
+        <div className="grid grid-cols-1 gap-4">
+          {/* Competitive Exams Card */}
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/courses')}
+            className="relative bg-gradient-to-br from-emerald-500 via-teal-500 to-teal-600 rounded-2xl p-6 shadow-xl cursor-pointer overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span className="text-4xl">🏦</span>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-2xl font-black text-white mb-1">Competitive Exams</h3>
+                  <p className="text-white/90 text-sm font-semibold">Banking • SSC • UPSC • RRB</p>
+                </div>
+              </div>
+              <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* CBSE Classes Card */}
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/chapter-tests')}
+            className="relative bg-gradient-to-br from-blue-500 via-indigo-500 to-indigo-600 rounded-2xl p-6 shadow-xl cursor-pointer overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span className="text-4xl">📚</span>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-2xl font-black text-white mb-1">CBSE Classes</h3>
+                  <p className="text-white/90 text-sm font-semibold">Class 6 to 12 • All Subjects</p>
+                </div>
+              </div>
+              <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* Entrance Exams Card */}
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/courses')}
+            className="relative bg-gradient-to-br from-purple-500 via-fuchsia-500 to-pink-600 rounded-2xl p-6 shadow-xl cursor-pointer overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span className="text-4xl">🎓</span>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-2xl font-black text-white mb-1">Entrance Exams</h3>
+                  <p className="text-white/90 text-sm font-semibold">JEE • NEET • CUET • CAT</p>
+                </div>
+              </div>
+              <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+
+          {/* Defence Exams Card */}
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/courses')}
+            className="relative bg-gradient-to-br from-green-600 via-emerald-600 to-emerald-700 rounded-2xl p-6 shadow-xl cursor-pointer overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+            
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <span className="text-4xl">🎖️</span>
+                </div>
+                <div className="text-left">
+                  <h3 className="text-2xl font-black text-white mb-1">Defence Exams</h3>
+                  <p className="text-white/90 text-sm font-semibold">NDA • CDS • AFCAT • Agniveer</p>
+                </div>
+              </div>
+              <ChevronRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Main Content - Exam Cards - Hidden on Mobile */}
+      <main className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Choose Your Competitive Exam
