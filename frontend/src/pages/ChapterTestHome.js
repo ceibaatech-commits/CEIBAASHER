@@ -65,22 +65,22 @@ const ChapterTestHome = () => {
             Select your class to get started on your learning journey!
           </p>
           
-          {/* Floating badges */}
-          <div className="flex justify-center gap-4 mt-8 flex-wrap">
-            <span className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-bold text-blue-600 shadow-lg border border-blue-200">
-              🎯 Chapter-wise Practice
+          {/* Floating badges - Mobile Friendly */}
+          <div className="flex justify-center gap-2 sm:gap-4 mt-6 sm:mt-8 flex-wrap px-4">
+            <span className="bg-white/80 backdrop-blur-sm px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-blue-600 shadow-lg border border-blue-200">
+              🎯 Chapter-wise
             </span>
-            <span className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-bold text-purple-600 shadow-lg border border-purple-200">
-              📚 NCERT Aligned
+            <span className="bg-white/80 backdrop-blur-sm px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-purple-600 shadow-lg border border-purple-200">
+              📚 NCERT
             </span>
-            <span className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full text-sm font-bold text-pink-600 shadow-lg border border-pink-200">
-              ⚡ Instant Feedback
+            <span className="bg-white/80 backdrop-blur-sm px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-pink-600 shadow-lg border border-pink-200">
+              ⚡ Instant
             </span>
           </div>
         </div>
 
-        {/* Stats Section - Enhanced */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        {/* Stats Section - Mobile Optimized */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
             <div className="flex items-center space-x-4">
               <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
