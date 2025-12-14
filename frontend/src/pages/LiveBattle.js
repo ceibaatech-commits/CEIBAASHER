@@ -803,6 +803,24 @@ const LiveBattle = () => {
         {/* Quiz Content - Only show when not loading */}
         {!loading && (
           <>
+        {/* Auto-Start Success Banner */}
+        {quizStarted && (
+          <div className="mb-4 bg-green-50 border-l-4 border-green-500 p-3 rounded-r-lg">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-green-500 animate-pulse" viewBox="0 0 20 20" fill="currentColor">
+                  <circle cx="10" cy="10" r="8" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-green-700 font-semibold">
+                  🚀 Quiz is LIVE! Start answering now - no waiting required!
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Back/Quit Button */}
         <div className="mb-4">
           <button
