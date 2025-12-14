@@ -60,6 +60,15 @@ const Courses = () => {
       <Header isLoggedIn={isAuthenticated()} user={user} />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6 md:mb-8 group transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+          <span className="font-semibold">Back</span>
+        </button>
+
         {/* Header Section */}
         <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl mb-4 md:mb-6 shadow-xl">
