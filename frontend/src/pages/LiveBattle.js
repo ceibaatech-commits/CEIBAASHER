@@ -112,6 +112,13 @@ const LiveBattle = () => {
     joinViaREST();
   }, [autoJoin, questions, pin, playerName]);
 
+  // Set quiz start time when questions are available
+  useEffect(() => {
+    if (questions && questions.length > 0 && !quizStartTime) {
+      setQuizStartTime(Date.now());
+    }
+  }, [questions]);
+
   useEffect(() => {
     if (!playerName || !pin) {
       navigate('/');
