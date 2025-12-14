@@ -14,14 +14,21 @@ Room Lifecycle:
 - Host can manually delete anytime
 - One attempt per player
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 import random
-from database import get_database
 
 router = APIRouter(prefix="/api/battle/async", tags=["Async Battle Rooms"])
+
+# Global database instance (injected at startup)
+db = None
+
+def init_db(database):
+    """Initialize database connection"""
+    global db
+    db = database
 
 # Room expires after 24 hours
 ROOM_EXPIRY_HOURS = 24
