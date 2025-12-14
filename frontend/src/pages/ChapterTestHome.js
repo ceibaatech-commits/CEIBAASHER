@@ -213,21 +213,21 @@ const ChapterTestHome = () => {
         </div>
 
         {/* Why Ceibaa is Best for India Section - Kahoot-Inspired */}
-        <div className="mt-16 relative">
-          <div className="bg-white rounded-3xl p-12 shadow-2xl relative overflow-hidden border-4 border-gray-100">
+        <div className="mt-12 sm:mt-16 relative">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden border-2 sm:border-4 border-gray-100">
             {/* Subtle background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-50"></div>
             
             <div className="relative z-10">
-              <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-600 px-6 py-3 rounded-full mb-6 shadow-lg animate-pulse">
-                  <span className="text-2xl">🇮🇳</span>
-                  <span className="text-white font-black text-sm tracking-wider">MADE FOR INDIA</span>
+              <div className="text-center mb-8 sm:mb-12">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-600 px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-4 sm:mb-6 shadow-lg animate-pulse">
+                  <span className="text-xl sm:text-2xl">🇮🇳</span>
+                  <span className="text-white font-black text-xs sm:text-sm tracking-wider">MADE FOR INDIA</span>
                 </div>
-                <h2 className="text-5xl md:text-6xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black mb-3 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 px-2">
                   Why Ceibaa is Perfect for Indian Students
                 </h2>
-                <p className="text-xl text-gray-700 max-w-3xl mx-auto font-bold">
+                <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-3xl mx-auto font-bold px-4">
                   India's first gamified learning platform designed specifically for CBSE curriculum 🎯
                 </p>
               </div>
