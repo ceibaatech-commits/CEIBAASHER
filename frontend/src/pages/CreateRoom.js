@@ -73,9 +73,13 @@ const CreateRoom = () => {
       if (quizResponse.data.success) {
         const questions = quizResponse.data.questions;
         
+        // Get user ID from localStorage
+        const userStr = localStorage.getItem('ceibaa_user');
+        const user = JSON.parse(userStr);
+        
         // Create room using NEW REST API with questions
         const createRoomResponse = await axios.post(`${BATTLE_URL}/api/battle/async/rooms/create`, {
-          host_id: hostName.toLowerCase().replace(/\s+/g, '_'),
+          host_id: user.id, // Use actual user ID from localStorage
           host_name: hostName,
           exam_category: isClassBased ? `${classBasedData.class_name}-${classBasedData.subject}` : examId,
           subject: isClassBased ? classBasedData.subject : subject,
