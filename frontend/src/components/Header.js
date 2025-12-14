@@ -251,6 +251,8 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
           <div 
             className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 top-16"
             onClick={() => setMobileMenuOpen(false)}
+            onTouchMove={(e) => e.preventDefault()}
+            style={{ touchAction: 'none' }}
           />
         )}
 
