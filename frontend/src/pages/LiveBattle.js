@@ -470,15 +470,16 @@ const LiveBattle = () => {
       });
     }
     
-    // Send to server
-    socket.emit('submit_answer', {
-      roomId: pin,
-      questionId: currentQuestion.id,
-      answerId: index,
-      timeSpent: 30 - timeLeft,
-      isCorrect,
+    // HYBRID: Track answer locally (will submit all at end)
+    const answerData = {
+      question_id: currentQuestion.id || `q${currentQuestionIndex}`,
+      selected_answer: index,
+      is_correct: isCorrect,
+      time_spent: 30 - timeLeft,
       points: pointsEarned
-    });
+    };
+    setSubmittedAnswers(prev => [...prev, answerData]);
+    console.log('📝 HYBRID: Answer tracked locally (will submit at end)');
     
     // Auto-advance to next question after 2 seconds
     setTimeout(() => {
