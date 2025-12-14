@@ -263,6 +263,7 @@ async def submit_answers(pin: str, request: SubmitAnswersRequest, db=Depends(get
     """
     Submit quiz answers (one-time only per player)
     Calculates score and updates leaderboard
+    HYBRID: Also broadcasts via Socket.IO if available
     """
     try:
         # Get room
@@ -305,10 +306,30 @@ async def submit_answers(pin: str, request: SubmitAnswersRequest, db=Depends(get
             {"_id": 0}
         ).sort("total_score", -1).to_list(100)
         
+        # Add ranks
+        for i, s in enumerate(submissions):
+            s["rank"] = i + 1
+        
         # Calculate rank
         rank = next((i + 1 for i, s in enumerate(submissions) if s["player_id"] == request.player_id), 0)
         
         print(f"[ASYNC ROOM] Player {request.player_name} submitted answers for room {pin} - Score: {request.total_score}")
+        
+        # HYBRID: Broadcast leaderboard update via Socket.IO (if connected)
+        try:
+            from battle_socketio import sio
+            await sio.emit('leaderboard_updated', {
+                "leaderboard": submissions,
+                "latest_submission": {
+                    "player_name": request.player_name,
+                    "score": request.total_score,
+                    "rank": rank
+                }
+            }, room=pin)
+            print(f"[HYBRID] Broadcasted leaderboard update via Socket.IO for room {pin}")
+        except Exception as e:
+            # Socket.IO not available or failed - that's OK, REST polling will handle it
+            print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
         
         return {
             "success": True,
