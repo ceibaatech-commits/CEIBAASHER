@@ -34,11 +34,8 @@ const CreateRoom = () => {
     try {
       // First, get questions for the quiz
       let quizRequestData;
-        
-        // Get questions for this topic
-        let quizRequestData;
-        
-        if (isClassBased && classBasedData) {
+      
+      if (isClassBased && classBasedData) {
           // Class-based quiz request
           quizRequestData = {
             isClassBased: true,
