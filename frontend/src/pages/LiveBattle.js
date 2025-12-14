@@ -91,6 +91,7 @@ const LiveBattle = () => {
             }
             
             setLoading(false);
+            setQuizStartTime(Date.now()); // Track quiz start time
             console.log('✅ HYBRID: Room joined successfully via REST, questions downloaded');
           }
         } catch (error) {
