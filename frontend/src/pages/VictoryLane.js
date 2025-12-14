@@ -986,7 +986,7 @@ const VictoryLane = () => {
             category: '',
             difficulty: 'Medium',
             timeLimit: 15,
-            maxParticipants: 50,
+            maxParticipants: 150,
             accessControl: 'public',
             questions: Array(5).fill({ question: '', options: ['', '', '', ''], correctAnswer: 0 })
           });
@@ -1894,7 +1894,7 @@ const VictoryLane = () => {
                   !quizForm.title.trim() || 
                   !quizForm.category ||
                   quizForm.maxParticipants < 2 ||
-                  quizForm.maxParticipants > 100
+                  quizForm.maxParticipants > 150
                 }
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
