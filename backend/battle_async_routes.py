@@ -121,7 +121,7 @@ async def create_async_room(request: CreateRoomRequest):
             existing = await db.async_battle_rooms.find_one({"pin": pin})
         
         # Create room document
-        room = {
+        room_doc = {
             "pin": pin,
             "host_id": request.host_id,
             "host_name": request.host_name,
@@ -137,14 +137,17 @@ async def create_async_room(request: CreateRoomRequest):
             "submission_count": 0
         }
         
-        await db.async_battle_rooms.insert_one(room)
+        await db.async_battle_rooms.insert_one(room_doc)
         
         print(f"[ASYNC ROOM] Created room {pin} by {request.host_name}")
+        
+        # Return room without _id
+        room_response = {k: v for k, v in room_doc.items() if k != "_id"}
         
         return {
             "success": True,
             "pin": pin,
-            "room": room,
+            "room": room_response,
             "message": "Room created successfully"
         }
         
