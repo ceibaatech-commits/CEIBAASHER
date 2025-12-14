@@ -1371,7 +1371,7 @@ const VictoryLane = () => {
                               </div>
                               <div className="flex items-center gap-1">
                                 <Users className="w-4 h-4" />
-                                <span>{post.quiz_details.participants || 0}/{post.quiz_details.max_participants || 50} players</span>
+                                <span>{post.quiz_details.participants || 0}/{post.quiz_details.max_participants || 150} players</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <Clock className="w-4 h-4" />
