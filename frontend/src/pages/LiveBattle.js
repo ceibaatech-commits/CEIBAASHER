@@ -115,10 +115,12 @@ const LiveBattle = () => {
     joinViaREST();
   }, [autoJoin, questions, pin, playerName]);
 
-  // Set quiz start time when questions are available
+  // AUTO-START: Set quiz start time and begin immediately when questions are available
   useEffect(() => {
     if (questions && questions.length > 0 && !quizStartTime) {
       setQuizStartTime(Date.now());
+      setQuizStarted(true);
+      console.log('🚀 AUTO-START: Quiz started for host immediately!');
     }
   }, [questions]);
 
