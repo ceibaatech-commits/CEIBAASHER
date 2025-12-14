@@ -31,6 +31,7 @@ const LiveBattle = () => {
   const [participants, setParticipants] = useState([]);
   const [showAllQuestions, setShowAllQuestions] = useState(isHost); // Host can see all questions
   const [loading, setLoading] = useState(autoJoin && !questions); // Loading state for fetching questions
+  const [quizStarted, setQuizStarted] = useState(false); // Track if quiz has auto-started
   
   // Social Features State
   const [chatMessages, setChatMessages] = useState([]);
