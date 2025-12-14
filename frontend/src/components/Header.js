@@ -25,15 +25,31 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProfileDropdown]);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll when mobile menu is open (stronger approach for mobile)
   React.useEffect(() => {
     if (mobileMenuOpen) {
+      // Lock body scroll
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      // Prevent touch move on mobile
+      document.body.style.touchAction = 'none';
     } else {
-      document.body.style.overflow = 'unset';
+      // Restore scroll
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.touchAction = '';
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      // Cleanup
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.touchAction = '';
     };
   }, [mobileMenuOpen]);
 
