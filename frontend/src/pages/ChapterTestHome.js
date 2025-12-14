@@ -316,28 +316,28 @@ const ChapterTestHome = () => {
               </div>
 
               {/* CTA Section */}
-              <div className="mt-16 text-center">
-                <div className="bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 rounded-3xl p-12 shadow-2xl relative overflow-hidden">
+              <div className="mt-12 sm:mt-16 text-center">
+                <div className="bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
                   <div className="absolute inset-0 bg-black/10"></div>
                   {/* Decorative floating elements */}
-                  <div className="absolute top-8 left-12 text-7xl opacity-20 animate-bounce">🚀</div>
-                  <div className="absolute bottom-8 right-12 text-7xl opacity-20 animate-bounce" style={{animationDelay: '0.5s'}}>⭐</div>
+                  <div className="absolute top-4 left-4 sm:top-8 sm:left-12 text-4xl sm:text-5xl md:text-7xl opacity-20 animate-bounce">🚀</div>
+                  <div className="absolute bottom-4 right-4 sm:bottom-8 sm:right-12 text-4xl sm:text-5xl md:text-7xl opacity-20 animate-bounce" style={{animationDelay: '0.5s'}}>⭐</div>
                   
                   <div className="relative z-10">
-                    <h3 className="text-4xl md:text-5xl font-black text-white mb-4">
+                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4 px-2">
                       Join 50,000+ Students Across India!
                     </h3>
-                    <p className="text-xl text-white/95 mb-8 max-w-2xl mx-auto font-semibold">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 mb-6 sm:mb-8 max-w-2xl mx-auto font-semibold px-4">
                       Start your journey to exam success with India's most engaging and effective learning platform
                     </p>
                     <button 
                       onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-                      className="bg-white text-purple-600 px-12 py-5 rounded-2xl font-black text-xl hover:scale-110 transform transition-all shadow-2xl hover:shadow-white/50 inline-flex items-center gap-3"
+                      className="bg-white text-purple-600 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg md:text-xl hover:scale-110 transform transition-all shadow-2xl hover:shadow-white/50 inline-flex items-center gap-2 sm:gap-3"
                     >
-                      <span>Start Learning Now - It's Free!</span>
-                      <span className="text-2xl">🎉</span>
+                      <span className="text-sm sm:text-base md:text-xl">Start Learning Now - It's Free!</span>
+                      <span className="text-xl sm:text-2xl">🎉</span>
                     </button>
-                    <p className="text-white/80 mt-4 text-sm">No credit card required • Start in 30 seconds</p>
+                    <p className="text-white/80 mt-3 sm:mt-4 text-xs sm:text-sm">No credit card required • Start in 30 seconds</p>
                   </div>
                 </div>
               </div>
