@@ -66,7 +66,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 shadow-lg border-b border-gray-200" style={{ background: '#ffffff', color: '#1f2937', height: '64px' }}>
+      <header className="fixed top-0 left-0 right-0 z-50 shadow-lg border-b border-gray-200" style={{ background: '#ffffff', color: '#1f2937', height: '64px' }}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-full">
           <div className="flex items-center h-full gap-6 lg:gap-8 relative">
           {/* Logo & Brand */}
