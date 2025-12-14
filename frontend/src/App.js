@@ -38,6 +38,9 @@ import BattleLobby from "@/pages/BattleLobby";
 import LiveBattle from "@/pages/LiveBattle";
 import BattleResults from "@/pages/BattleResults";
 import QuizRoom from "@/pages/QuizRoom";
+import QuizResults from "@/pages/QuizResults";
+import Board from "@/pages/Board";
+import RoomDetail from "@/pages/RoomDetail";
 
 // 1v1 Live Battle with video (Original matchmaking)
 import LiveBattleMode from "@/pages/LiveBattleMode";
