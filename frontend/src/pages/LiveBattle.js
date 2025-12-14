@@ -1197,7 +1197,7 @@ const LiveBattle = () => {
               {/* Participants Count */}
               <div className="mt-3 text-center">
                 <p className="text-sm text-gray-600">
-                  👥 <span className="font-bold text-green-700">{participants.length || 1}</span> / 50 players
+                  👥 <span className="font-bold text-green-700">{participants.length || 1}</span> / 150 players
                 </p>
               </div>
             </div>
