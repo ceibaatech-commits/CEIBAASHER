@@ -725,16 +725,27 @@ const LiveBattle = () => {
     }
   };
 
-  // Social Feature Functions
-  const sendMessage = (e) => {
+  // HYBRID: Send chat message via REST API
+  const sendMessage = async (e) => {
     e.preventDefault();
-    if (chatInput.trim() && socket) {
-      socket.emit('send_message', { 
-        roomId: pin, 
-        message: chatInput,
-        sender: playerName
-      });
-      setChatInput('');
+    if (chatInput.trim()) {
+      try {
+        const response = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/messages`, {
+          player_id: playerName.toLowerCase().replace(/\s+/g, '_'),
+          player_name: playerName,
+          message: chatInput,
+          avatar: '👤'
+        });
+        
+        if (response.data.success) {
+          console.log('✅ HYBRID: Message sent via REST');
+          // Message will appear via polling or Socket.IO broadcast
+          setChatInput('');
+        }
+      } catch (error) {
+        console.error('❌ Failed to send message:', error);
+        alert('Failed to send message. Please try again.');
+      }
     }
   };
 
