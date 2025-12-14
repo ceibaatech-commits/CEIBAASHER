@@ -55,7 +55,7 @@ const ChapterTestHome = () => {
               <div className="absolute inset-0 rounded-full border-2 border-purple-300 opacity-30 scale-125"></div>
             </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-3 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-2 sm:mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-2">
             CBSE Chapter Tests
           </h1>
           <p className="text-base sm:text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto font-semibold px-4">
