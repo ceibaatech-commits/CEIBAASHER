@@ -133,11 +133,11 @@ const ChapterTestHome = () => {
         </div>
 
         {/* Class Selection Grid */}
-        <div className="mb-8">
-          <h2 className="text-4xl font-black text-gray-900 mb-3 text-center">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-2 sm:mb-3 text-center px-2">
             Select Your Class
           </h2>
-          <p className="text-center text-gray-600 text-lg mb-8">
+          <p className="text-center text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 px-2">
             Choose your class to start practicing 👇
           </p>
         </div>
