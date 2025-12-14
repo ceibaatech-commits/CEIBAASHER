@@ -32,15 +32,8 @@ const CreateRoom = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post(`${BATTLE_URL}/api/battle/create-room`, {
-        hostName,
-        examId: isClassBased ? `${classBasedData.class_name}-${classBasedData.subject}` : examId,
-        subject: isClassBased ? classBasedData.subject : subject,
-        topic: isClassBased ? classBasedData.chapter : topic
-      });
-
-      if (response.data.success) {
-        const { pin } = response.data;
+      // First, get questions for the quiz
+      let quizRequestData;
         
         // Get questions for this topic
         let quizRequestData;
