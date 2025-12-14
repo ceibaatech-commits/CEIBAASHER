@@ -176,38 +176,38 @@ const ChapterTestHome = () => {
         </div>
 
         {/* Features Section */}
-        <div className="mt-16 bg-white rounded-2xl p-8 shadow-lg border border-gray-200">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+        <div className="mt-12 sm:mt-16 bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
             Why Choose Chapter Tests?
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             <div className="text-center">
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🎯</span>
+              <div className="bg-blue-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-2xl sm:text-3xl">🎯</span>
               </div>
-              <h4 className="font-bold text-gray-900 mb-2">Focused Practice</h4>
-              <p className="text-gray-600 text-sm">Chapter-wise tests for targeted learning</p>
+              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Focused Practice</h4>
+              <p className="text-gray-600 text-xs sm:text-sm">Chapter-wise tests for targeted learning</p>
             </div>
             <div className="text-center">
-              <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">📊</span>
+              <div className="bg-purple-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-2xl sm:text-3xl">📊</span>
               </div>
-              <h4 className="font-bold text-gray-900 mb-2">Track Progress</h4>
-              <p className="text-gray-600 text-sm">Monitor your performance over time</p>
+              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Track Progress</h4>
+              <p className="text-gray-600 text-xs sm:text-sm">Monitor your performance over time</p>
             </div>
             <div className="text-center">
-              <div className="bg-pink-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">💡</span>
+              <div className="bg-pink-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-2xl sm:text-3xl">💡</span>
               </div>
-              <h4 className="font-bold text-gray-900 mb-2">NCERT Aligned</h4>
-              <p className="text-gray-600 text-sm">Based on latest NCERT curriculum</p>
+              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">NCERT Aligned</h4>
+              <p className="text-gray-600 text-xs sm:text-sm">Based on latest NCERT curriculum</p>
             </div>
             <div className="text-center">
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">⚡</span>
+              <div className="bg-orange-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <span className="text-2xl sm:text-3xl">⚡</span>
               </div>
-              <h4 className="font-bold text-gray-900 mb-2">Instant Results</h4>
-              <p className="text-gray-600 text-sm">Get immediate feedback and scores</p>
+              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Instant Results</h4>
+              <p className="text-gray-600 text-xs sm:text-sm">Get immediate feedback and scores</p>
             </div>
           </div>
         </div>
