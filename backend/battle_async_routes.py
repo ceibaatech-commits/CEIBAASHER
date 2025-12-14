@@ -307,8 +307,8 @@ async def submit_answers(pin: str, request: SubmitAnswersRequest):
         if await has_player_submitted(db, pin, request.player_id):
             raise HTTPException(status_code=409, detail="You have already submitted answers")
         
-        # Create submission
-        submission = {
+        # Create submission document
+        submission_doc = {
             "pin": pin,
             "player_id": request.player_id,
             "player_name": request.player_name,
@@ -319,7 +319,10 @@ async def submit_answers(pin: str, request: SubmitAnswersRequest):
             "submitted_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await db.async_battle_submissions.insert_one(submission)
+        await db.async_battle_submissions.insert_one(submission_doc)
+        
+        # Create response without _id
+        submission = {k: v for k, v in submission_doc.items() if k != "_id"}
         
         # Increment submission count
         await db.async_battle_rooms.update_one(
