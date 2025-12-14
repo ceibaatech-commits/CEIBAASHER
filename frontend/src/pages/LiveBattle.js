@@ -129,90 +129,12 @@ const LiveBattle = () => {
       reconnectionDelayMax: 3000
     });
     setSocket(newSocket);
-    
-    // IMPORTANT: Set up event listeners BEFORE connecting/emitting to avoid race conditions
-    
-    // Listen for join errors
-    newSocket.on('join_error', (data) => {
-      console.error('❌ Join error:', data);
-      console.log('❌ Clearing join timeout - join error received');
-      hasJoined = true;
-      clearTimeout(joinTimeout);
-      setLoading(false);
-      
-      let errorMessage = data.error || 'Failed to join room';
-      
-      // Handle specific error codes
-      if (data.code === 'ROOM_NOT_FOUND') {
-        errorMessage = `Room ${pin} not found. Please check the PIN.`;
-      } else if (data.code === 'ROOM_EXPIRED') {
-        errorMessage = 'This room has expired (24 hours elapsed). Please create a new room.';
-      } else if (data.code === 'BATTLE_COMPLETED') {
-        errorMessage = 'This battle has already completed. You cannot join.';
-      } else if (data.code === 'ROOM_FULL') {
-        errorMessage = 'This room is full. Cannot join.';
-      }
-      
-      alert(errorMessage);
-      navigate('/join-room'); // Redirect back to join page
-    });
 
-    // Listen for room_joined event (receives questions for joiners)
-    newSocket.on('room_joined', (data) => {
-      console.log('✅✅✅ ROOM_JOINED EVENT RECEIVED!', data);
-      console.log('🎉 Clearing join timeout - room joined successfully');
-      console.log('📊 Event received at:', new Date().toISOString());
-      console.log('📦 Data structure:', JSON.stringify(data, null, 2));
-      hasJoined = true;
-      clearTimeout(joinTimeout);
-      
-      // Get host info from backend
-      const actualIsHost = data.isHost || false;
-      const hostInfo = data.hostInfo || {};
-      
-      console.log('🔍 Host Info:', {
-        'frontend_isHost': isHost,
-        'backend_isHost': actualIsHost,
-        'hostUsername': hostInfo.username,
-        'myUsername': playerName
-      });
-      
-      // Update participants list with proper host indication
-      if (data.room && data.room.participants) {
-        setParticipants(data.room.participants);
-      }
-      
-      // If this is a joiner and questions are provided, set them
-      if (!actualIsHost && data.questions && data.questions.length > 0) {
-        console.log(`📝 Received ${data.questions.length} questions from host`);
-        setAllQuestions(data.questions);
-        setCurrentQuestion(data.questions[0]);
-        setTotalQuestions(data.questions.length);
-        setLoading(false);
-      } else if (!actualIsHost) {
-        // Joiner but no questions yet - host hasn't set them
-        console.log('⏳ Waiting for host to set questions...');
-        setLoading(false); // Stop loading, show waiting state
-        // Set a timeout to show error if no questions after 10 seconds
-        setTimeout(() => {
-          if ((!allQuestions || allQuestions.length === 0) && !currentQuestion) {
-            console.warn('⚠️ No questions received after 10 seconds');
-          }
-        }, 10000);
-      } else {
-        // This user is the host
-        console.log('👑 You are the host of this room');
-        setLoading(false);
-      }
-    });
-
-    // Connection successful handler - NOW AFTER event listeners are set up
+    // HYBRID: Socket.IO is now OPTIONAL for real-time updates only
     newSocket.on('connect', () => {
-      console.log('🔌 Socket connected! ID:', newSocket.id);
-      console.log('🔍 Connect Debug - isHost:', isHost, 'questions:', questions ? questions.length : 'undefined', 'pin:', pin);
+      console.log('✅ HYBRID: Socket.IO connected for real-time updates');
       
-      // Join room AFTER connection is established
-      console.log('📤 Emitting join_room event...');
+      // Join Socket.IO room for real-time broadcasts (optional)
       newSocket.emit('join_room', {
         roomId: pin,
         userData: {
@@ -221,19 +143,11 @@ const LiveBattle = () => {
           avatar: isHost ? '👑' : '👤'
         }
       });
-      console.log('✅ join_room event emitted');
-      
-      // If host has questions, send them after joining
-      if (isHost && questions && questions.length > 0) {
-        console.log(`📤 HOST: Will send ${questions.length} questions after joining`);
-        setTimeout(() => {
-          newSocket.emit('set_room_questions', {
-            roomId: pin,
-            questions: questions
-          });
-          console.log('✅ set_room_questions event emitted');
-        }, 1000); // Wait for join to complete
-      }
+    });
+    
+    newSocket.on('connect_error', (error) => {
+      console.warn('⚠️ HYBRID: Socket.IO connection failed (quiz will work via REST polling):', error);
+      // Don't block quiz - REST polling will handle updates
     });
 
     // Listen for questions being set (in case joiner joins before host sets them)
