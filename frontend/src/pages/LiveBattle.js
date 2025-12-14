@@ -773,8 +773,13 @@ const LiveBattle = () => {
     e.preventDefault();
     if (chatInput.trim()) {
       try {
+        // Get user ID from localStorage
+        const userStr = localStorage.getItem('ceibaa_user');
+        const user = userStr ? JSON.parse(userStr) : null;
+        const userId = user ? user.id : playerName.toLowerCase().replace(/\s+/g, '_');
+        
         const response = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/messages`, {
-          player_id: playerName.toLowerCase().replace(/\s+/g, '_'),
+          player_id: userId, // Use actual user ID
           player_name: playerName,
           message: chatInput,
           avatar: '👤'
