@@ -36,7 +36,7 @@ class Participant:
 @dataclass
 class RoomConfig:
     """Configuration for a battle room."""
-    max_participants: int = 50
+    max_participants: int = 150
     time_per_question: int = 30
     category: str = ""
     subject: str = ""
@@ -395,7 +395,7 @@ class BattleRoomManager:
 
         cfg = data.get("config", {}) or {}
         config = RoomConfig(
-            max_participants=int(cfg.get("maxParticipants", 50)),
+            max_participants=int(cfg.get("maxParticipants", 150)),
             time_per_question=int(cfg.get("timePerQuestion", 30)),
             category=str(cfg.get("category", "")) or "",
             subject=str(cfg.get("subject", "")) or "",
@@ -455,7 +455,7 @@ class BattleRoomManager:
             room_config = None
             if config:
                 room_config = RoomConfig(
-                    max_participants=int(config.get("maxParticipants", 50)),
+                    max_participants=int(config.get("maxParticipants", 150)),
                     time_per_question=int(config.get("timePerQuestion", 30)),
                     category=str(config.get("category", "")) or "",
                     subject=str(config.get("subject", "")) or "",
