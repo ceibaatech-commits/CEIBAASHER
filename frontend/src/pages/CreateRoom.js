@@ -25,6 +25,14 @@ const CreateRoom = () => {
   const [copied, setCopied] = useState(false);
 
   const handleCreateRoom = async () => {
+    // Check authentication
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      alert('Please login to create a room');
+      navigate('/login');
+      return;
+    }
+
     if (!hostName.trim()) {
       alert('Please enter your name');
       return;
