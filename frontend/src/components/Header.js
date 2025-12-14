@@ -178,9 +178,9 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               </>
             ) : null}
 
-            {/* Auth Buttons for Guests */}
+            {/* Auth Buttons for Guests - Hidden on mobile, visible on desktop */}
             {!isLoggedIn && (
-              <div className="flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-3">
                 <button
                   onClick={() => navigate('/login')}
                   className="px-5 py-2 border-2 border-cyan-500 text-cyan-600 font-semibold rounded-lg hover:bg-cyan-50 transition-all"
