@@ -240,6 +240,7 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                         <span className="text-sm font-semibold text-orange-600">{user.streak || 0}d</span>
                       </div>
                     </div>
+                    <p className="text-xs text-purple-600 mt-1 font-medium">Tap to view My Board →</p>
                   </div>
                   <ChevronDown className="w-5 h-5 text-gray-400 rotate-[-90deg]" />
                 </div>
