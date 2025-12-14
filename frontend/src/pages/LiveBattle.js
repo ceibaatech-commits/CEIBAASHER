@@ -633,7 +633,7 @@ const LiveBattle = () => {
       }
       
       // Navigate to Board if logged in, otherwise home
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem('ceibaa_user');
       if (user) {
         navigate('/profile/board');
       } else {
