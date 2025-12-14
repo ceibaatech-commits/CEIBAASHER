@@ -36,7 +36,7 @@ class CreateRoomRequest(BaseModel):
     subject: Optional[str] = ""
     questions: List[Dict[str, Any]]
     time_per_question: int = 30
-    max_participants: int = 50
+    max_participants: int = 150
 
 
 class JoinRoomRequest(BaseModel):
@@ -171,7 +171,7 @@ async def join_async_room(pin: str, request: JoinRoomRequest, db=Depends(get_dat
             raise HTTPException(status_code=409, detail="You have already submitted answers for this room")
         
         # Check room capacity
-        if room.get("participant_count", 0) >= room.get("max_participants", 50):
+        if room.get("participant_count", 0) >= room.get("max_participants", 150):
             raise HTTPException(status_code=403, detail="Room is full")
         
         # Increment participant count
@@ -471,7 +471,7 @@ async def get_room_info(pin: str, db=Depends(get_database)):
                 "exam_category": room.get("exam_category", ""),
                 "subject": room.get("subject", ""),
                 "time_per_question": room.get("time_per_question", 30),
-                "max_participants": room.get("max_participants", 50),
+                "max_participants": room.get("max_participants", 150),
                 "participant_count": room.get("participant_count", 0),
                 "submission_count": room.get("submission_count", 0),
                 "question_count": len(room.get("questions", [])),
