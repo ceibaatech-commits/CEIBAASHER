@@ -548,3 +548,83 @@ async def get_room_info(pin: str):
     except Exception as e:
         print(f"[ERROR] get_room_info: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/user/{user_id}/rooms")
+async def get_user_rooms(user_id: str):
+    """
+    Get all rooms a user has participated in or created
+    For Board page
+    """
+    try:
+        # Find all rooms where user is host
+        created_rooms = await db.async_battle_rooms.find(
+            {"host_id": user_id},
+            {"_id": 0}
+        ).to_list(1000)
+        
+        # Find all rooms where user has submitted
+        submissions = await db.async_battle_submissions.find(
+            {"player_id": user_id},
+            {"_id": 0, "pin": 1}
+        ).to_list(1000)
+        
+        participated_pins = [s["pin"] for s in submissions]
+        
+        # Get all participated rooms
+        participated_rooms = await db.async_battle_rooms.find(
+            {"pin": {"$in": participated_pins}},
+            {"_id": 0}
+        ).to_list(1000)
+        
+        # Combine and deduplicate
+        all_rooms = {r["pin"]: r for r in (created_rooms + participated_rooms)}
+        rooms_list = list(all_rooms.values())
+        
+        # Sort by creation date (newest first)
+        rooms_list.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        
+        return {
+            "success": True,
+            "rooms": rooms_list
+        }
+        
+    except Exception as e:
+        print(f"[ERROR] get_user_rooms: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/rooms/{pin}/submission/{user_id}")
+async def get_user_submission(pin: str, user_id: str):
+    """
+    Get a specific user's submission for a room
+    For Room Detail page
+    """
+    try:
+        submission = await db.async_battle_submissions.find_one(
+            {"pin": pin, "player_id": user_id},
+            {"_id": 0}
+        )
+        
+        if not submission:
+            raise HTTPException(status_code=404, detail="Submission not found")
+        
+        # Get rank from leaderboard
+        leaderboard = await db.async_battle_submissions.find(
+            {"pin": pin},
+            {"_id": 0}
+        ).sort("total_score", -1).to_list(1000)
+        
+        rank = next((i + 1 for i, s in enumerate(leaderboard) if s["player_id"] == user_id), 0)
+        submission["rank"] = rank
+        
+        return {
+            "success": True,
+            "submission": submission
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] get_user_submission: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
