@@ -20,6 +20,13 @@ const Board = () => {
   });
 
   useEffect(() => {
+    // Check authentication
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      alert('Please login to view your Board');
+      navigate('/login');
+      return;
+    }
     fetchRooms();
   }, []);
 

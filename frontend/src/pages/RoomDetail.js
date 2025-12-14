@@ -14,6 +14,13 @@ const RoomDetail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check authentication
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      alert('Please login to view room details');
+      navigate('/login');
+      return;
+    }
     fetchRoomDetail();
   }, [pin]);
 
