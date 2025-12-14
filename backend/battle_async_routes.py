@@ -180,6 +180,9 @@ async def join_async_room(pin: str, request: JoinRoomRequest, db=Depends(get_dat
             {"$inc": {"participant_count": 1}}
         )
         
+        # Get updated room
+        room = await get_room_from_db(db, pin)
+        
         # Get leaderboard
         submissions = await db.async_battle_submissions.find(
             {"pin": pin},
@@ -193,6 +196,20 @@ async def join_async_room(pin: str, request: JoinRoomRequest, db=Depends(get_dat
         ).sort("timestamp", 1).to_list(500)
         
         print(f"[ASYNC ROOM] Player {request.player_name} joined room {pin}")
+        
+        # HYBRID: Broadcast player joined via Socket.IO (if connected)
+        try:
+            from battle_socketio import sio
+            await sio.emit('player_joined', {
+                "player_name": request.player_name,
+                "player_id": request.player_id,
+                "avatar": request.avatar,
+                "participant_count": room.get("participant_count", 0)
+            }, room=pin)
+            print(f"[HYBRID] Broadcasted player joined via Socket.IO for room {pin}")
+        except Exception as e:
+            # Socket.IO not available or failed - that's OK
+            print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
         
         return {
             "success": True,
