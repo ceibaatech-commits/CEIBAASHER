@@ -518,8 +518,13 @@ const LiveBattle = () => {
             console.log('📤 HYBRID: Submitting all answers via REST API');
             const totalTime = Math.floor((Date.now() - quizStartTime) / 1000);
             
+            // Get user ID from localStorage
+            const userStr = localStorage.getItem('ceibaa_user');
+            const user = userStr ? JSON.parse(userStr) : null;
+            const userId = user ? user.id : playerName.toLowerCase().replace(/\s+/g, '_');
+            
             const submitResponse = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/submit`, {
-              player_id: playerName.toLowerCase().replace(/\s+/g, '_'),
+              player_id: userId, // Use actual user ID
               player_name: playerName,
               answers: submittedAnswers,
               total_score: myScore,
