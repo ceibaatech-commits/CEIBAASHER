@@ -47,12 +47,13 @@ const JoinRoom = () => {
       console.log('[JOIN] Room response:', response.data);
       
       if (response.data.success) {
-        console.log('[JOIN] Room found, navigating to battle lobby');
-        // Navigate to lobby first - proper join flow
-        navigate(`/battle-lobby/${pin}`, { 
+        console.log('[JOIN] Room found, navigating directly to quiz (AUTO-START)');
+        // AUTO-START: Skip lobby, go directly to quiz with REST API
+        navigate(`/battle/${pin}`, { 
           state: { 
             isHost: false, 
-            playerName: playerName
+            playerName: playerName,
+            autoJoin: true // Triggers REST API join with auto-start
           } 
         });
       } else {
