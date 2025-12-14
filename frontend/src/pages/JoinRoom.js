@@ -38,7 +38,8 @@ const JoinRoom = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await axios.get(`${BATTLE_URL}/api/battle/room/${pin}`, {
+      // Check if room exists using NEW REST API
+      const response = await axios.get(`${BATTLE_URL}/api/battle/async/rooms/${pin}`, {
         signal: controller.signal,
         timeout: 10000 // 10 seconds
       });
@@ -47,7 +48,7 @@ const JoinRoom = () => {
       console.log('[JOIN] Room response:', response.data);
       
       if (response.data.success) {
-        console.log('[JOIN] Room found, navigating directly to quiz (AUTO-START)');
+        console.log('[JOIN] Room found via NEW REST API, navigating directly to quiz (AUTO-START)');
         // AUTO-START: Skip lobby, go directly to quiz with REST API
         navigate(`/live-battle/${pin}`, { 
           state: { 
