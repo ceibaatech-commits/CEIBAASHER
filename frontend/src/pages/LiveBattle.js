@@ -41,6 +41,8 @@ const LiveBattle = () => {
   const [selectedGiftRecipient, setSelectedGiftRecipient] = useState(null);
   const [giftNotification, setGiftNotification] = useState(null);
   const [followingStatus, setFollowingStatus] = useState({}); // Track who we're following
+  const [submittedAnswers, setSubmittedAnswers] = useState([]); // Track all answers for final submission
+  const [quizStartTime, setQuizStartTime] = useState(null);
   const chatEndRef = useRef(null);
 
   // HYBRID: Fetch room details via REST API when joining
