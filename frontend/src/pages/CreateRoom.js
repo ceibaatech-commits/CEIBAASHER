@@ -26,7 +26,7 @@ const CreateRoom = () => {
 
   const handleCreateRoom = async () => {
     // Check authentication
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('ceibaa_user');
     if (!userStr) {
       alert('Please login to create a room');
       navigate('/login');
