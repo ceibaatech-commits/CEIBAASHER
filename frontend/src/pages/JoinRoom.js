@@ -49,7 +49,7 @@ const JoinRoom = () => {
       if (response.data.success) {
         console.log('[JOIN] Room found, navigating directly to quiz (AUTO-START)');
         // AUTO-START: Skip lobby, go directly to quiz with REST API
-        navigate(`/battle/${pin}`, { 
+        navigate(`/live-battle/${pin}`, { 
           state: { 
             isHost: false, 
             playerName: playerName,
