@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO)
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
 
 # Get frontend URL from environment for CORS
-FRONTEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://live-quiz-hub.preview.emergentagent.com')
+FRONTEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://studyhub-137.preview.emergentagent.com')
 
 # Create Socket.IO server with PRODUCTION settings
 sio = socketio.AsyncServer(
