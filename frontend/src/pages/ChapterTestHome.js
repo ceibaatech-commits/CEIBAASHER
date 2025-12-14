@@ -81,36 +81,36 @@ const ChapterTestHome = () => {
 
         {/* Stats Section - Mobile Optimized */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
-                <BookOpen className="w-10 h-10 text-white" />
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-4 rounded-lg sm:rounded-xl">
+                <BookOpen className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
               </div>
               <div>
-                <p className="text-4xl font-black text-white">500+</p>
-                <p className="text-white/90 font-semibold">Chapter Tests</p>
+                <p className="text-2xl sm:text-4xl font-black text-white">500+</p>
+                <p className="text-white/90 font-semibold text-xs sm:text-base">Chapter Tests</p>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
-                <Award className="w-10 h-10 text-white" />
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-4 rounded-lg sm:rounded-xl">
+                <Award className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
               </div>
               <div>
-                <p className="text-4xl font-black text-white">10,000+</p>
-                <p className="text-white/90 font-semibold">Practice Questions</p>
+                <p className="text-2xl sm:text-4xl font-black text-white">10,000+</p>
+                <p className="text-white/90 font-semibold text-xs sm:text-base">Practice Questions</p>
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-xl">
-                <GraduationCap className="w-10 h-10 text-white" />
+          <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-4 rounded-lg sm:rounded-xl">
+                <GraduationCap className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
               </div>
               <div>
-                <p className="text-4xl font-black text-white">7 Classes</p>
-                <p className="text-white/90 font-semibold">6th to 12th</p>
+                <p className="text-2xl sm:text-4xl font-black text-white">7 Classes</p>
+                <p className="text-white/90 font-semibold text-xs sm:text-base">6th to 12th</p>
               </div>
             </div>
           </div>
