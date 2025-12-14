@@ -54,16 +54,38 @@ const QuizResults = () => {
 
   const shareResults = async () => {
     const text = `🎯 I scored ${finalScore} points and ranked #${rank} in the quiz battle! PIN: ${pin}`;
+    
+    // Try native share first (mobile)
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Quiz Results', text });
+        return;
       } catch (error) {
-        navigator.clipboard.writeText(text);
-        alert('Results copied to clipboard!');
+        console.log('Share failed, will try clipboard');
       }
-    } else {
-      navigator.clipboard.writeText(text);
+    }
+    
+    // Fallback to clipboard
+    try {
+      await navigator.clipboard.writeText(text);
       alert('Results copied to clipboard!');
+    } catch (error) {
+      // Fallback for clipboard permission denied
+      console.error('Clipboard error:', error);
+      // Create temporary textarea for manual copy
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        alert('Results copied to clipboard!');
+      } catch (err) {
+        alert('Please manually copy: ' + text);
+      }
+      document.body.removeChild(textarea);
     }
   };
 
