@@ -20,7 +20,7 @@ const JoinRoom = () => {
     setError('');
     
     // Check authentication
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('ceibaa_user');
     if (!userStr) {
       alert('Please login to join a room');
       navigate('/login');
