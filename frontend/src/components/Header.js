@@ -209,10 +209,10 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
         {/* Mobile Menu - Improved Design */}
         {mobileMenuOpen && (
           <div className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto">
-            {/* Mobile User Profile Section - Clickable to Dashboard */}
+            {/* Mobile User Profile Section - Clickable to My Board */}
             {isLoggedIn && user && (
               <div 
-                onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }}
+                onClick={() => { navigate('/profile/board'); setMobileMenuOpen(false); }}
                 className="px-4 py-5 bg-gradient-to-r from-slate-50 to-gray-100 border-b border-gray-200 cursor-pointer active:bg-gray-200"
               >
                 <div className="flex items-center space-x-4">
