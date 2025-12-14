@@ -190,6 +190,21 @@ async def join_async_room(pin: str, request: JoinRoomRequest):
             {"$inc": {"participant_count": 1}}
         )
         
+        # Track participant (for Board history)
+        participant_doc = {
+            "pin": pin,
+            "player_id": request.player_id,
+            "player_name": request.player_name,
+            "joined_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Upsert to avoid duplicates
+        await db.async_battle_participants.update_one(
+            {"pin": pin, "player_id": request.player_id},
+            {"$set": participant_doc},
+            upsert=True
+        )
+        
         # Get updated room
         room = await get_room_from_db(db, pin)
         
@@ -563,13 +578,13 @@ async def get_user_rooms(user_id: str):
             {"_id": 0}
         ).to_list(1000)
         
-        # Find all rooms where user has submitted
-        submissions = await db.async_battle_submissions.find(
+        # Find all rooms where user has participated (joined)
+        participations = await db.async_battle_participants.find(
             {"player_id": user_id},
             {"_id": 0, "pin": 1}
         ).to_list(1000)
         
-        participated_pins = [s["pin"] for s in submissions]
+        participated_pins = [p["pin"] for p in participations]
         
         # Get all participated rooms
         participated_rooms = await db.async_battle_rooms.find(
