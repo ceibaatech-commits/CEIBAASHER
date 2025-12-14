@@ -223,16 +223,27 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
+              className="mobile-menu-toggle md:hidden p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-700"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
+        {/* Mobile Menu Backdrop */}
+        {mobileMenuOpen && (
+          <div 
+            className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-40 top-16"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Mobile Menu - Improved Design */}
         {mobileMenuOpen && (
-          <div className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto">
+          <div 
+            ref={mobileMenuRef}
+            className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto"
+          >
             {/* Mobile User Profile Section - Clickable to My Board */}
             {isLoggedIn && user && (
               <div 
