@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, Clock, Users, Search, Play, CheckCircle } from 'lucide-react';
+import { Trophy, Clock, Users, Search, Play, CheckCircle, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -125,6 +125,13 @@ const Board = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Home
+          </button>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">My Board</h1>
           <p className="text-gray-600">Track all your quiz battles and performance</p>
         </div>
