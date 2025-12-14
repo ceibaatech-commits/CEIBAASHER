@@ -150,16 +150,31 @@ const LiveBattle = () => {
       // Don't block quiz - REST polling will handle updates
     });
 
-    // Listen for questions being set (in case joiner joins before host sets them)
-    newSocket.on('questions_updated', (data) => {
-      console.log('📥 Questions updated by host:', data);
-      if (!isHost && data.questions && data.questions.length > 0) {
-        console.log(`📝 Received ${data.questions.length} questions after host update`);
-        setAllQuestions(data.questions);
-        setCurrentQuestion(data.questions[0]);
-        setTotalQuestions(data.questions.length);
-        setLoading(false);
-      }
+    // HYBRID: Listen for Socket.IO real-time updates (if available)
+    newSocket.on('leaderboard_updated', (data) => {
+      console.log('📊 HYBRID: Real-time leaderboard update via Socket.IO');
+      const transformedLeaderboard = data.leaderboard.map(p => ({
+        name: p.player_name,
+        score: p.total_score,
+        streak: 0
+      }));
+      setLeaderboard(transformedLeaderboard);
+      const me = transformedLeaderboard.find(p => p.name === playerName);
+      if (me) setMyScore(me.score);
+    });
+    
+    newSocket.on('new_chat_message', (data) => {
+      console.log('💬 HYBRID: Real-time chat message via Socket.IO');
+      setChatMessages(prev => [...prev, {
+        playerName: data.player_name,
+        message: data.message,
+        timestamp: data.timestamp
+      }]);
+    });
+    
+    newSocket.on('player_joined', (data) => {
+      console.log('👥 HYBRID: Player joined notification via Socket.IO');
+      // Update participant count or list if needed
     });
 
     // Listen for participants joining
