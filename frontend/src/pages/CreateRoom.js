@@ -60,16 +60,34 @@ const CreateRoom = () => {
           }
         }
         
-        const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, quizRequestData);
+      const quizResponse = await axios.post(`${BATTLE_URL}/api/quiz/start`, quizRequestData);
 
-        if (quizResponse.data.success) {
-          // Navigate directly to LiveBattle with questions
+      if (quizResponse.data.success) {
+        const questions = quizResponse.data.questions;
+        
+        // Create room using NEW REST API with questions
+        const createRoomResponse = await axios.post(`${BATTLE_URL}/api/battle/async/rooms/create`, {
+          host_id: hostName.toLowerCase().replace(/\s+/g, '_'),
+          host_name: hostName,
+          exam_category: isClassBased ? `${classBasedData.class_name}-${classBasedData.subject}` : examId,
+          subject: isClassBased ? classBasedData.subject : subject,
+          questions: questions,
+          time_per_question: 30,
+          max_participants: 150
+        });
+        
+        if (createRoomResponse.data.success) {
+          const pin = createRoomResponse.data.pin;
+          
+          console.log('✅ Room created with NEW REST API:', pin);
+          
+          // Navigate directly to LiveBattle with questions (AUTO-START)
           navigate(`/live-battle/${pin}`, {
             state: {
               playerName: hostName,
               isHost: true,
-              questions: quizResponse.data.questions,
-              roomInfo: response.data.room,
+              questions: questions,
+              roomInfo: createRoomResponse.data.room,
               examId,
               subject,
               topic,
@@ -77,8 +95,10 @@ const CreateRoom = () => {
             }
           });
         } else {
-          alert('Failed to load questions. Please try again.');
+          alert('Failed to create room. Please try again.');
         }
+      } else {
+        alert('Failed to load questions. Please try again.');
       }
     } catch (error) {
       console.error('Error creating room:', error);
