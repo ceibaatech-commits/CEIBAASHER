@@ -55,10 +55,10 @@ const ChapterTestHome = () => {
               <div className="absolute inset-0 rounded-full border-2 border-purple-300 opacity-30 scale-125"></div>
             </div>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-2 leading-none">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-2 leading-none sm:leading-tight md:leading-normal">
             CBSE Chapter Tests
           </h1>
-          <p className="text-base sm:text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto font-semibold px-4 -mt-4 sm:-mt-6 md:-mt-8">
+          <p className="text-base sm:text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto font-semibold px-4 -mt-4 sm:-mt-2 md:mt-0 lg:mb-4">
             Master every chapter with focused practice tests ✨
           </p>
           <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto mt-2 sm:mt-3 px-4">
