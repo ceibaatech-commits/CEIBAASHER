@@ -42,26 +42,26 @@ const ChapterTestHome = () => {
         onLogout={handleLogout}
       />
       
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        {/* Hero Section - Enhanced */}
-        <div className="text-center mb-12 relative">
-          <div className="flex justify-center mb-6">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 relative z-10">
+        {/* Hero Section - Mobile Optimized */}
+        <div className="text-center mb-8 sm:mb-12 relative">
+          <div className="flex justify-center mb-4 sm:mb-6">
             <div className="relative">
-              <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-6 rounded-full shadow-2xl animate-bounce">
-                <GraduationCap className="w-20 h-20 text-white" />
+              <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-4 sm:p-6 rounded-full shadow-2xl animate-bounce">
+                <GraduationCap className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 text-white" />
               </div>
               {/* Decorative rings around icon */}
-              <div className="absolute inset-0 rounded-full border-4 border-cyan-300 opacity-20 animate-ping"></div>
+              <div className="absolute inset-0 rounded-full border-2 sm:border-4 border-cyan-300 opacity-20 animate-ping"></div>
               <div className="absolute inset-0 rounded-full border-2 border-purple-300 opacity-30 scale-125"></div>
             </div>
           </div>
-          <h1 className="text-6xl font-black text-gray-900 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-3 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-2">
             CBSE Chapter Tests
           </h1>
-          <p className="text-2xl text-gray-700 max-w-3xl mx-auto font-semibold">
+          <p className="text-base sm:text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto font-semibold px-4">
             Master every chapter with focused practice tests ✨
           </p>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mt-3">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto mt-2 sm:mt-3 px-4">
             Select your class to get started on your learning journey!
           </p>
           
