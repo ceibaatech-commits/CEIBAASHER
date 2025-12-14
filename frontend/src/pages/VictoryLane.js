@@ -77,7 +77,7 @@ const VictoryLane = () => {
     category: '',
     difficulty: 'Medium',
     timeLimit: 15,
-    maxParticipants: 50,
+    maxParticipants: 150,
     accessControl: 'public', // 'public' or 'followers'
     questions: Array(5).fill({ question: '', options: ['', '', '', ''], correctAnswer: 0 })
   });
@@ -935,8 +935,8 @@ const VictoryLane = () => {
       return;
     }
 
-    if (quizForm.maxParticipants < 2 || quizForm.maxParticipants > 100) {
-      toast.error('Participants must be between 2 and 100');
+    if (quizForm.maxParticipants < 2 || quizForm.maxParticipants > 150) {
+      toast.error('Participants must be between 2 and 150');
       return;
     }
 
@@ -1776,11 +1776,11 @@ const VictoryLane = () => {
                     <input
                       type="number"
                       min="2"
-                      max="100"
+                      max="150"
                       value={quizForm.maxParticipants}
-                      onChange={(e) => setQuizForm(prev => ({ ...prev, maxParticipants: parseInt(e.target.value) || 50 }))}
+                      onChange={(e) => setQuizForm(prev => ({ ...prev, maxParticipants: parseInt(e.target.value) || 150 }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                      placeholder="Max 100"
+                      placeholder="Max 150"
                     />
                   </div>
                   <div>
