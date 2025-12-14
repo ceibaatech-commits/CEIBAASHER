@@ -105,7 +105,7 @@ async def has_player_submitted(db, pin: str, player_id: str) -> bool:
 # ==================== ROOM MANAGEMENT ====================
 
 @router.post("/rooms/create")
-async def create_async_room(request: CreateRoomRequest, db=Depends(get_database)):
+async def create_async_room(request: CreateRoomRequest):
     """
     Create asynchronous quiz room
     Host creates room with questions, gets PIN to share
@@ -154,7 +154,7 @@ async def create_async_room(request: CreateRoomRequest, db=Depends(get_database)
 
 
 @router.post("/rooms/{pin}/join")
-async def join_async_room(pin: str, request: JoinRoomRequest, db=Depends(get_database)):
+async def join_async_room(pin: str, request: JoinRoomRequest):
     """
     Join room and download quiz data
     Returns: Full quiz questions, room config, existing leaderboard, chat history
@@ -245,7 +245,7 @@ async def join_async_room(pin: str, request: JoinRoomRequest, db=Depends(get_dat
 
 
 @router.delete("/rooms/{pin}")
-async def delete_room(pin: str, host_id: str, db=Depends(get_database)):
+async def delete_room(pin: str, host_id: str):
     """
     Delete room (host only)
     Also deletes all submissions and messages
@@ -283,7 +283,7 @@ async def delete_room(pin: str, host_id: str, db=Depends(get_database)):
 # ==================== QUIZ SUBMISSION ====================
 
 @router.post("/rooms/{pin}/submit")
-async def submit_answers(pin: str, request: SubmitAnswersRequest, db=Depends(get_database)):
+async def submit_answers(pin: str, request: SubmitAnswersRequest):
     """
     Submit quiz answers (one-time only per player)
     Calculates score and updates leaderboard
@@ -373,7 +373,7 @@ async def submit_answers(pin: str, request: SubmitAnswersRequest, db=Depends(get
 # ==================== LEADERBOARD (POLLING) ====================
 
 @router.get("/rooms/{pin}/leaderboard")
-async def get_leaderboard(pin: str, db=Depends(get_database)):
+async def get_leaderboard(pin: str):
     """
     Get live leaderboard
     Frontend polls this every 5 seconds during quiz
@@ -415,7 +415,7 @@ async def get_leaderboard(pin: str, db=Depends(get_database)):
 # ==================== MESSAGES (POLLING) ====================
 
 @router.get("/rooms/{pin}/messages")
-async def get_messages(pin: str, since: Optional[str] = None, db=Depends(get_database)):
+async def get_messages(pin: str, since: Optional[str] = None):
     """
     Get chat messages
     Frontend polls this every 5 seconds
@@ -455,7 +455,7 @@ async def get_messages(pin: str, since: Optional[str] = None, db=Depends(get_dat
 
 
 @router.post("/rooms/{pin}/messages")
-async def send_message(pin: str, request: SendMessageRequest, db=Depends(get_database)):
+async def send_message(pin: str, request: SendMessageRequest):
     """
     Send chat message
     Stored in DB, visible to all current and future participants
@@ -504,7 +504,7 @@ async def send_message(pin: str, request: SendMessageRequest, db=Depends(get_dat
 # ==================== ROOM INFO ====================
 
 @router.get("/rooms/{pin}")
-async def get_room_info(pin: str, db=Depends(get_database)):
+async def get_room_info(pin: str):
     """
     Get room information (without questions)
     Useful for checking if room exists and is active
