@@ -16,6 +16,7 @@ from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
 from image_extraction_routes import router as image_extraction_router
 from battle_routes import router as battle_router
+from battle_async_routes import router as battle_async_router
 from social_routes import router as social_router
 # Socket.io proxy now runs separately on port 5002
 # from socket_proxy import socket_app  # Not needed anymore
@@ -140,6 +141,7 @@ fastapi_app.include_router(auth_router, prefix="/api")
 fastapi_app.include_router(sheets_router, prefix="/api")
 fastapi_app.include_router(image_extraction_router, prefix="/api")
 fastapi_app.include_router(battle_router)
+fastapi_app.include_router(battle_async_router)  # Hybrid REST + Socket.IO battle system
 # fastapi_app.include_router(social_router, prefix="/api")  # Disabled - using social_feed_router instead
 fastapi_app.include_router(contact_router, prefix="/api")
 fastapi_app.include_router(social_feed_router, prefix="/api/social")
