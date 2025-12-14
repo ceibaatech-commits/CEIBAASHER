@@ -435,6 +435,7 @@ async def send_message(pin: str, request: SendMessageRequest, db=Depends(get_dat
     """
     Send chat message
     Stored in DB, visible to all current and future participants
+    HYBRID: Also broadcasts via Socket.IO if available
     """
     try:
         # Get room
@@ -454,6 +455,15 @@ async def send_message(pin: str, request: SendMessageRequest, db=Depends(get_dat
         }
         
         await db.async_battle_messages.insert_one(message)
+        
+        # HYBRID: Broadcast message via Socket.IO (if connected)
+        try:
+            from battle_socketio import sio
+            await sio.emit('new_chat_message', message, room=pin)
+            print(f"[HYBRID] Broadcasted chat message via Socket.IO for room {pin}")
+        except Exception as e:
+            # Socket.IO not available or failed - that's OK, REST polling will handle it
+            print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
         
         return {
             "success": True,
