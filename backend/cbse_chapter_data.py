@@ -70,7 +70,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 16, "chapter_name": "National War Memorial", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 5: Culture and Tradition"}
         ],
         "Hindi": [
-            {"chapter_number": 1, "chapter_name": "Vah Pakshee Jo", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 1, "chapter_name": "Malhar", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "Bachapan", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 3, "chapter_name": "Naadaan Dost", "total_questions": 40, "difficulty": "Medium", "duration": 30},
             {"chapter_number": 4, "chapter_name": "Ch Se Sa See Gappe", "total_questions": 40, "difficulty": "Easy", "duration": 30},

@@ -70,7 +70,6 @@ const Home = () => {
     { id: 'admission', label: 'Admission Tests', icon: '🎓', color: 'from-violet-600 to-purple-600' },
     { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600' },
     { id: 'defence', label: 'Defence', icon: '🎖️', color: 'from-green-700 to-emerald-700' },
-    { id: 'government', label: 'Government', icon: '🏛️', color: 'from-amber-600 to-orange-600' },
     { id: 'banking', label: 'Banking', icon: '🏦', color: 'from-rose-600 to-red-600' },
     { id: 'teaching', label: 'Teaching Examinations', icon: '👨‍🏫', color: 'from-blue-600 to-indigo-600' },
     { id: 'ssc', label: 'SSC Examinations', icon: '📝', color: 'from-cyan-600 to-blue-600' },
