@@ -1899,12 +1899,13 @@ const ExamSheetManager = () => {
                         </>
                       ) : (
                         <>
+                          <option value="Mathematics">Mathematics</option>
+                          <option value="Science">Science</option>
                           <option value="Social Science">Social Science</option>
                           <option value="English">English</option>
                           <option value="Hindi">Hindi</option>
                         </>
                       )}
-                      {classForm.class_name === 'Class 6' && <option value="Poorvi">Poorvi</option>}
                     </select>
                   </div>
 
