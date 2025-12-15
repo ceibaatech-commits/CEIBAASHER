@@ -39,6 +39,19 @@
   height: 320px;
 }
 
+/* Desktop: Larger banner for better proportions */
+@media (min-width: 1024px) {
+  .home-banner-carousel {
+    height: 450px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .home-banner-carousel {
+    height: 500px;
+  }
+}
+
 @media (max-width: 640px) {
   .home-banner-carousel {
     height: 280px;
