@@ -1,263 +1,351 @@
 # CBSE Chapter-wise Test Data
-# Classes 6-12 with all subjects and chapters (Updated 2024-25 Syllabus)
+# Classes 6-12 with all subjects and chapters
 
 CBSE_CHAPTER_DATA = {
     "6": {
-        "Hindi - Malhar": [
-            {"chapter_number": 1, "chapter_name": "Mathru Bhumi (Poem)", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Gol", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Pehli Boond (Poem)", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Haar Ki Jeet", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Rahim ke dohe (Poem)", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "Meri ma", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Jalate Chalo", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Satriya Aur Bihu Nruthya", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "Maiya Me nahi maakna koyo (Poem)", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "Pariksha", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "Chetak ki veeratha", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "Hindh mahasagar me chota-sa hindustan", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "Ped Ki Bhata", "total_questions": 40, "difficulty": "Easy", "duration": 30}
-        ],
-        "Social Science - Exploring Society India and Beyond": [
-            {"chapter_number": 1, "chapter_name": "Locating Places on the Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Oceans and Continents", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Landforms and Life", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Timeline and Sources of History", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "India, That Is Bharat", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "The Beginnings of Indian Civilisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "India's Cultural Roots", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "Unity in Diversity, or 'Many in the One'", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Family and Community", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "Grassroots Democracy — Part 1: Governance", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "Grassroots Democracy — Part 2: Local Government in Rural Areas", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "Grassroots Democracy — Part 3: Local Government in Urban Areas", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "The Value of Work", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 14, "chapter_name": "Economic Activities Around Us", "total_questions": 45, "difficulty": "Easy", "duration": 30}
-        ],
-        "Mathematics - Ganita Prakash": [
-            {"chapter_number": 1, "chapter_name": "Patterns in Mathematics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Lines and Angles", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Number Play Solutions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Data Handling and Presentation", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "Prime Time", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Perimeter and Area", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+        "Mathematics": [
+            {"chapter_number": 1, "chapter_name": "Knowing Our Numbers", "total_questions": 50, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Whole Numbers", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Playing with Numbers", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Basic Geometrical Ideas", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Understanding Elementary Shapes", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "Integers", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "Fractions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Playing with Construction", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Symmetry", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "The Other Side of Zero", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 8, "chapter_name": "Decimals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Data Handling", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Mensuration", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Algebra", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Ratio and Proportion", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "English - Poorvi": [
-            {"chapter_number": 1, "chapter_name": "Fables and Folk Tales", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Friendship", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Nurturing Nature", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Sports and Wellness", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Culture and Tradition", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Components of Food", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Sorting Materials and Groups", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Separation of Substances", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Getting to Know Plants", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Body Movement", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 6, "chapter_name": "The Living Organisms – Characteristics and Habitats", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "Motion and Measurement of Distances", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Light, Shadows and Reflections", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Electricity and Circuits", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Fun with Magnets", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 11, "chapter_name": "Air Around Us", "total_questions": 40, "difficulty": "Easy", "duration": 25}
         ],
-        "Science - Curiosity": [
-            {"chapter_number": 1, "chapter_name": "The Wonderful World of Science", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Diversity in the Living World", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Mindful Eating: A Path to a Healthy Body", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Exploring Magnets", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "Measurement of Length and Motion", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Materials Around Us", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Temperature and its Measurement", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "A Journey through States of Water", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Methods of Separation in Everyday Life", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Living Creatures: Exploring their Characteristics", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "Nature's Treasures", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 12, "chapter_name": "Beyond Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30}
+        "History": [
+            {"chapter_number": 1, "chapter_name": "What, Where, How and When?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "From Hunting – Gathering to Growing Food", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "In the Earliest Cities", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "What Books and Burials Tell Us", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Kingdoms, Kings and an Early Republic", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "New Questions and Ideas", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "From a Kingdom to an Empire", "total_questions": 45, "difficulty": "Hard", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Villages, Towns and Trade", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "New Empires and Kingdoms", "total_questions": 45, "difficulty": "Hard", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Buildings, Paintings and Books", "total_questions": 40, "difficulty": "Medium", "duration": 30}
         ],
-        "Sanskrit - Deepakam": [
-            {"chapter_number": 1, "chapter_name": "वयं वर्णमालां पठामः", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "एषः कः ? एषा का ? एतत् किम् ?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "अहं च त्वं च", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "अहं प्रातः उत्तिष्ठामि", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "शूराः वयं धीराः वयम्", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "सः एव महान् चित्रकारः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "अतिथिदेवो भव", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "बुद्धिः सर्वार्थसाधिका", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "यो जानाति सः पण्डितः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "त्वम् आपणं गच्छ", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "पृथिव्यां त्रीणि रत्नानि", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 12, "chapter_name": "आलस्यं हि मनुष्याणां शरीरस्थो महान् रिपुः", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "सङ्ख्यागणना ननु सरला", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 14, "chapter_name": "माधवस्य प्रियम् अङ्गम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 15, "chapter_name": "वृक्षाः सत्पुरुषाः इव", "total_questions": 40, "difficulty": "Medium", "duration": 30}
+        "Poorvi": [
+            # Unit 1: Fables and Folk Tales
+            {"chapter_number": 1, "chapter_name": "A Bottle of Dew", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 1: Fables and Folk Tales"},
+            {"chapter_number": 2, "chapter_name": "The Raven and the Fox", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 1: Fables and Folk Tales"},
+            {"chapter_number": 3, "chapter_name": "Rama to the Rescue", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 1: Fables and Folk Tales"},
+            
+            # Unit 2: Friendship
+            {"chapter_number": 4, "chapter_name": "The Unlikely Best Friends", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 2: Friendship"},
+            {"chapter_number": 5, "chapter_name": "A Friend's Prayer", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 2: Friendship"},
+            {"chapter_number": 6, "chapter_name": "The Chair", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 2: Friendship"},
+            
+            # Unit 3: Nurturing Nature
+            {"chapter_number": 7, "chapter_name": "Neem Baba", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 3: Nurturing Nature"},
+            {"chapter_number": 8, "chapter_name": "What a Bird Thought", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 3: Nurturing Nature"},
+            {"chapter_number": 9, "chapter_name": "Spices that Heal Us", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 3: Nurturing Nature"},
+            
+            # Unit 4: Sports and Wellness
+            {"chapter_number": 10, "chapter_name": "Change of Heart", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 4: Sports and Wellness"},
+            {"chapter_number": 11, "chapter_name": "The Winner", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 4: Sports and Wellness"},
+            {"chapter_number": 12, "chapter_name": "Yoga—A Way of Life", "total_questions": 45, "difficulty": "Easy", "duration": 35, "unit": "Unit 4: Sports and Wellness"},
+            
+            # Unit 5: Culture and Tradition
+            {"chapter_number": 13, "chapter_name": "Hamara Bharat—Incredible India!", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 5: Culture and Tradition"},
+            {"chapter_number": 14, "chapter_name": "The Kites", "total_questions": 40, "difficulty": "Easy", "duration": 30, "unit": "Unit 5: Culture and Tradition"},
+            {"chapter_number": 15, "chapter_name": "Ila Sachani: Embroidering Dreams with her Feet", "total_questions": 45, "difficulty": "Medium", "duration": 35, "unit": "Unit 5: Culture and Tradition"},
+            {"chapter_number": 16, "chapter_name": "National War Memorial", "total_questions": 40, "difficulty": "Medium", "duration": 30, "unit": "Unit 5: Culture and Tradition"}
+        ],
+        "Hindi": [
+            {"chapter_number": 1, "chapter_name": "Malhar", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Bachapan", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Naadaan Dost", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Ch Se Sa See Gappe", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Akshar Ka Mahatv", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Paar Nazar Ke", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "Saathee Haath Badhaana", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Aise", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Tikat Alabam", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Jhaansee Kee Raanee", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Jo Dekhakar Bhee Nahin Dekha", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "Sansaar Pustak Hai", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Main Sabase Chhotee Hooon", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 14, "chapter_name": "Lokageet", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "Sarv", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 16, "chapter_name": "Van Ke Maarg Mein", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 17, "chapter_name": "Shvaas-shvaas Mein Baans", "total_questions": 40, "difficulty": "Medium", "duration": 30}
         ]
     },
-    "7": {
-        "Hindi - Malhar": [
-            {"chapter_number": 1, "chapter_name": "Maan, Kah Ek Kahani", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Teen Buddhiman", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Phool Aur Kaanta", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Paani Re Paani", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Nahin Hona Bimar", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "Giridhar Kaviray Ki Kundaliya", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Varsha-Bahar", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Birajoo Maharaj Se Sakshatkar", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "Chidiya", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "Meera Ke Pad", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+    "10": {
+        "Mathematics": [
+            {"chapter_number": 1, "chapter_name": "Real Numbers", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 2, "chapter_name": "Polynomials", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Pair Of Linear Equations In Two Variables", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 4, "chapter_name": "Quadratic Equations", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "Arithmetic Progressions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Triangles", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 7, "chapter_name": "Coordinate Geometry", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Introduction To Trigonometry", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 9, "chapter_name": "Some Applications of Trigonometry", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Circles", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 11, "chapter_name": "Areas Related to Circles", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Surface Area and Volume", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 13, "chapter_name": "Statistics", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 14, "chapter_name": "Probability", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "Science - Curiosity": [
-            {"chapter_number": 1, "chapter_name": "The Ever-Evolving World of Science", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Exploring Substances: Acidic, Basic and Neutral", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Electricity: Circuits and their Components", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "The World of Metals and Non-metals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Changes Around Us: Physical and Chemical", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Adolescence: A Stage of Growth and Change", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Heat Transfer in Nature", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "Measurement of Time and Motion", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Life Processes in Animals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 10, "chapter_name": "Life Processes in Plants", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 11, "chapter_name": "Light: Shadows and Reflections", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "Earth, Moon and the Sun", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Chemical Reactions and Equations", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Acids, Bases and Salts", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Metals and Non Metals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Carbon and Its Compounds", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 5, "chapter_name": "Life Processes", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Control And Coordination", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "How do Organisms Reproduce", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Heredity and Evolution", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Light Reflection and Refraction", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "The Human Eye and the Colourful World", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Electricity", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 12, "chapter_name": "Magnetic Effects of Electric Current", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 13, "chapter_name": "Our Environment", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
-        "English - Poorvi": [
-            {"chapter_number": 1, "chapter_name": "Three Questions", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "A Gift of Chappals", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Gopal and the Hilsa Fish", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "The Ashes That Made Trees Bloom", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Quality", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Expert Detectives", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "The Invention of Vita-Wonk", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "A Homage to our Brave Soldiers", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        "Economics": [
+            {"chapter_number": 1, "chapter_name": "Development", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Sectors of the Indian Economy", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Money and Credit", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Globalisation and the Indian Economy", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Consumer Rights", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
-        "Social Science - Exploring Society India and Beyond Part 2": [
-            {"chapter_number": 1, "chapter_name": "Tracing Changes through a Thousand Years", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Kings and Kingdoms", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Delhi: 12th to 15th Century", "total_questions": 55, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "The Mughals (16th to 17th Century)", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 5, "chapter_name": "Tribes, Nomads and Settled Communities", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 6, "chapter_name": "Devotional Paths to the Divine", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "The Making of Regional Cultures", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Eighteenth Century Political Formations", "total_questions": 55, "difficulty": "Hard", "duration": 40}
+        "History": [
+            {"chapter_number": 1, "chapter_name": "The Rise of Nationalism in Europe", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Nationalism in India", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "The Making of the Global World", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "The Age of Industrialisation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Print Culture and the Modern World", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "Social Science - Exploring Society India and Beyond": [
-            {"chapter_number": 1, "chapter_name": "Geographical Diversity of India", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Understanding the Weather", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Climates of India", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "New Beginnings: Cities and States", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "The Rise of Empires", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 6, "chapter_name": "The Age of Reorganisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "The Gupta Era: An Age of", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "How the Land Becomes Sacred", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "From the Rulers to the Ruled: Types of Governments", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 10, "chapter_name": "The Constitution of India — An Introduction", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 11, "chapter_name": "From Barter to Money", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "Understanding Markets", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        "Civics": [
+            {"chapter_number": 1, "chapter_name": "Power-sharing", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Federalism", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Gender, Religion, and Caste", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Political Parties", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Outcomes of Democracy", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
-        "Mathematics - Ganita Prakash 1": [
-            {"chapter_number": 1, "chapter_name": "Large Numbers Around Us", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Arithmetic Expressions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "A Peek Beyond the Point", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "Expressions using Letter-Numbers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Parallel and Intersecting Lines", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Number Play", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "A Tale of Three Intersecting Lines", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Working with Fractions", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "Resources and Development", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Forest and Wildlife Resources", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Water Resources", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Agriculture", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Minerals and Energy Resources", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Manufacturing Industries", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Lifelines of National Economy", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "Mathematics - Ganita Prakash 2": [
-            {"chapter_number": 1, "chapter_name": "Geometric Twins", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Operations with Integers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Finding Common Ground", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Another Peek Beyond the Point", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Connecting the Dots...", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Constructions and Tilings", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Finding the Unknown", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        "English First Flight Prose": [
+            {"chapter_number": 1, "chapter_name": "A Letter to God", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Nelson Mandela: Long Walk to Freedom", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Two Stories about Flying", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "From the Diary of Anne Frank", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "The Hundred Dresses – I", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "The Hundred Dresses – II", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Glimpses of India", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Mijbil the Otter", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Madam Rides the Bus", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "The Sermon at Benares", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "The Proposal", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
-        "Sanskrit": [
-            {"chapter_number": 1, "chapter_name": "वन्देभारतमातरम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "नित्यं पिबाम: सुभाषितरसम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "मित्राय नमः", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "न लभ्यते चेत्आम्लं द्राक्षाफलम", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "सेवा हि परमो धर्म:", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "क्रीडाम वयं श्‍लोकान्त्याक्षरीम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "ईशावास्यम्इदं सर्वम्", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "हितं मनोहारि च दुर्लभं वचः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "अन्‍नाद् भवन्ति भूतानि", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "दशमः कः ?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "द्वीपेषुरम्यः द्वीपोऽण्डमानः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 12, "chapter_name": "वीराङ्गना पन्‍नाधाया", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+        "English First Flight Poems": [
+            {"chapter_number": 1, "chapter_name": "Dust of Snow", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Fire and Ice", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "A Tiger in the zoo", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "How to tell Wild Animals", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "The Ball Poem", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "Amanda", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "The Trees", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Fog", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "The Tale of Custard the Dragon", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "For Anne Gregory", "total_questions": 40, "difficulty": "Easy", "duration": 30}
+        ],
+        "English Footprints Without Feet": [
+            {"chapter_number": 1, "chapter_name": "A Triumph of Surgery", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "The Thief's Story", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "The Midnight Visitor", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "A Question of Trust", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Footprints without Feet", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "The Making of a Scientist", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "The Necklace", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "The Hack Driver", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Bholi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "The Book that Saved the Earth", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "Hindi Kshitij": [
+            {"chapter_number": 1, "chapter_name": "Surdas", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Ram-Lakshman-Parshuram Samvad", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Aatmakathya", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Utsah & Aat Nahi Rahi Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Yeh Danturit Muskaan & Fasal", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Sangatkar", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Netaji Ka Chashma", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Balgobin Bhagat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Lakhnavi Andaaz", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Ek Kahani Yeh Bhi", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Naubatkhane Mein Ibadat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Sanskriti", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Kritika": [
+            {"chapter_number": 1, "chapter_name": "Mata Ka Anchal", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Saana Saana Hath Jodi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Main Kyun Likhta hun", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Sparsh": [
+            {"chapter_number": 1, "chapter_name": "Saakhi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Pad", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Manushyata", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Parvat Pradesh Mein Paavat", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Top", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Kar Chale Hum Fida", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Aatmatran", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Bade Bhai Sahab", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Diary Ka Ek Panna", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Tatara-Vamiro Katha", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Teesri Kasam Ke Shilpkar Shailendra", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Ab Kahan Dusro Ke Dukh Se Dukhi Hone Wale", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Patjhad Mein Tooti Pattiyan", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Karthus", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ]
     },
     "8": {
-        "English - Poorvi": [
-            {"chapter_number": 1, "chapter_name": "The Wit that Won Hearts", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "A Concrete Example", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Wisdom Paves the Way", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Somebody's Mother", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "Verghese Kurien-I Too Had A Dream", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "The Case of the Fifth Word", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "The Magic Brush of Dreams", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "Spectacular Wonders", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "The Cherry Tree", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "Harvest Hymn", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 12, "chapter_name": "Waiting for the Rain", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 13, "chapter_name": "Feathered Friend", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 14, "chapter_name": "Magnifying Glass", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 15, "chapter_name": "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        "Mathematics": [
+            {"chapter_number": 1, "chapter_name": "Rational Numbers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Linear Equations in One Variable", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Understanding Quadrilaterals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Data Handling", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Squares and Square Roots", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Cubes and Cube Roots", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Comparing Quantities", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Algebraic Expressions and Identities", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Mensuration", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Exponents and Powers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Direct and Inverse Proportions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Factorisation", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 13, "chapter_name": "Introduction to Graphs", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "Hindi - Malhar": [
-            {"chapter_number": 1, "chapter_name": "Svadesh", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Do Gauraiya", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Ek Aashirvad", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Haridwar", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "Kabeer Ke Dohe", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Ek Tokari Bhar Mitti", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Mat Baandho", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Nae Mehamaan", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "Aadami Ka Anupat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Tarun Ke Swapn", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Crop Production and Management", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Microorganisms: Friend and Foe", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Coal and Petroleum", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Combustion and Flame", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Conservation of Plants and Animals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Reproduction in Animals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Reaching the Age of Adolescence", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Force and Pressure", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Friction", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Sound", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Chemical Effects of Electric Current", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Some Natural Phenomena", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Light", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
-        "Science - Curiosity": [
-            {"chapter_number": 1, "chapter_name": "Exploring the Investigative World of Science", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "The Invisible Living World: Beyond Our Naked Eye", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Health: The Ultimate Treasure", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Electricity: Magnetic and Heating Effects", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Exploring Forces", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 6, "chapter_name": "Pressure, Winds, Storms and Cyclones", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "Particulate Nature of Matter", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Nature of Matter: Elements, Compounds and Mixtures", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 9, "chapter_name": "The Amazing World of Solutes, Solvents and Solutions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 10, "chapter_name": "Light: Mirrors and Lenses", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 11, "chapter_name": "Keeping Time with the Skies", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "How Nature Works in Harmony", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 13, "chapter_name": "Our Home: Earth, a Unique Life Sustaining Planet", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "Resources", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Land, Soil, Water, Natural Vegetation and Wildlife Resources", "total_questions": 60, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Agriculture", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Industries", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Human Resources", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "Social Science - Exploring Society: India and Beyond": [
-            {"chapter_number": 1, "chapter_name": "Natural Resources and Their Use", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Reshaping India's Political Map", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "The Rise of the Marathas", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "The Colonial Era in India", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 5, "chapter_name": "Universal Franchise and India's Electoral System", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 6, "chapter_name": "The Parliamentary System: Legislature and Executive", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "Factors of Production", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        "History": [
+            {"chapter_number": 1, "chapter_name": "Introduction: How, When and Where", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Trade to Territory", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Ruling The Countryside", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Tribals, Dikus, and the Vision of a Golden Age", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "When People Revolt 1857 and After", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Civilising the Native Educating the Nation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Women Caste and Reform", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "The Making of National Movement: 1870s–1947", "total_questions": 60, "difficulty": "Hard", "duration": 45}
         ],
-        "Mathematics - Ganita Prakash": [
-            {"chapter_number": 1, "chapter_name": "A Square and A Cube", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 2, "chapter_name": "Power Play", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "A Story of Numbers", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Quadrilaterals", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Number Play", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "We Distribute, Yet Things Multiply", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "Proportional Reasoning-1", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        "Civics": [
+            {"chapter_number": 1, "chapter_name": "The Indian Constitution", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Understanding Secularism", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Parliament and The Making of Laws", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Judiciary", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Understanding Marginalisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Confronting Marginalisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Public Facilities", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Law and Social Justice", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
-        "Sanskrit": [
-            {"chapter_number": 1, "chapter_name": "Subhaashitaani", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Bilaasy Vaanee na Dadaapi me Shruta", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Bhagavadjjukam", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Sadaiv Purato Nidhihi Charnam", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "Dharme Dhamanan Paape Paunam", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "Premalasy Premalyaashch Katha", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Jalavaahinee", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "Sansaarasaagarasy Naayakaah", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Saptabhaginyah", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "Ashokavanika", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "Saavitree Baee Phule", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "Kah Rakshati Kah Rakshitah", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 13, "chapter_name": "Himalayah", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 14, "chapter_name": "Aaryabhatah", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+        "Hindi Vasant": [
+            {"chapter_number": 1, "chapter_name": "Laakh Ki Chudiyan", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Bus Ki Yatra", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Diwanon Ki Hasti", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Bhagwan Ke Dakiye", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Kya Nirash Hua Jaye", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Yah Sabse Kathin Samay Nahi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Kabir Ki Saakhiyan", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Surdas Charit", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Jahan Pahiya Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Akbari Lota", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "Surdas Ke Pad", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Paani Ki Kahani", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Baaz Aur Saap", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Durva": [
+            {"chapter_number": 1, "chapter_name": "Gudiya", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Do Gauraiya", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Chiththiyon Mein Europe", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Os", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Natak Mein Natak", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Sagar Yatra", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Uth Kisan O", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Saste Ka Chakkar", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Ek Khiladi Ki Kuch Yadein", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Bus Ki Sair", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "Hindi Ne Jinki Jindagi Badal Di Maria Nezheshi", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Ashadh Ka Pehla Din", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Anyay Ke Khilaf", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Baccho Ke Priya Shri Keshav Shankar Pillai", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "Farsh Par", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 16, "chapter_name": "Budhi Amma Ki Baat", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 17, "chapter_name": "Vah Subah Kabhi To Aayegi", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+        ],
+        "Hindi Bharat Ki Khoj": [
+            {"chapter_number": 1, "chapter_name": "Ahmadnagar Ka Kila", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Talash", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Sindhu Ghati Sabhyata", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Yugon Ka Daur", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 5, "chapter_name": "Nayi Samasyaen", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Antim Daur Ek", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Antim Daur Do", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Tanav", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Do Prishthabhoomian Bhartiya Aur Angrezi", "total_questions": 50, "difficulty": "Hard", "duration": 40}
+        ],
+        "English Honeydew": [
+            {"chapter_number": 1, "chapter_name": "The Best Christmas Present in the World & The Ant and the Cricket", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "The Tsunami & Geography Lesson", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Glimpses of the Past Macavity – The Mystery Cat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Bepin Choudhury's Lapse of Memory & The Last Bargain", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "The Summit Within & The School Boy", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "This is Jody's Fawn & The Duck and the Kangaroo", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "A Visit to Cambridge & When I Set out for Lyonnesse", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "A Short Monsoon Diary & On the Grasshopper and Cricket", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+        ],
+        "English It So Happened": [
+            {"chapter_number": 1, "chapter_name": "How the Camel Got His Hump", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Children at Work", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "The Selfish Giant", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "The Treasure Within", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Princess September", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "The Fight", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Jalebis", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "Ancient Education System of India", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ]
     },
     "9": {
@@ -822,5 +910,31 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 9, "chapter_name": "Developing Psychological Skills", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ]
     }
-
 }
+
+
+def get_chapters_by_class_subject(class_number, subject):
+    """Get all chapters for a specific class and subject"""
+    class_str = str(class_number)
+    if class_str not in CBSE_CHAPTER_DATA:
+        return []
+    if subject not in CBSE_CHAPTER_DATA[class_str]:
+        return []
+    return CBSE_CHAPTER_DATA[class_str][subject]
+
+
+def get_all_subjects_for_class(class_number):
+    """Get all available subjects for a class"""
+    class_str = str(class_number)
+    if class_str not in CBSE_CHAPTER_DATA:
+        return []
+    return list(CBSE_CHAPTER_DATA[class_str].keys())
+
+
+def get_chapter_details(class_number, subject, chapter_number):
+    """Get details of a specific chapter"""
+    chapters = get_chapters_by_class_subject(class_number, subject)
+    for chapter in chapters:
+        if chapter['chapter_number'] == chapter_number:
+            return chapter
+    return None
