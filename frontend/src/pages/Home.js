@@ -280,40 +280,8 @@ const Home = () => {
         </div>
       )}
 
-      {/* Mobile: Skill Drill Classes Section (Show only for "All Exams") */}
-      {!searchQuery.trim() && activeCategory === 'all' && (
-        <div className="md:hidden py-4 px-4 bg-white border-b">
-          <div className="mb-3">
-            <h2 className="font-bold text-lg text-gray-900">📚 Skill Drill - CBSE Classes</h2>
-            <p className="text-gray-500 text-xs mt-1">Chapter-wise practice for all subjects</p>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            {skillDrillClasses.map((skillClass) => (
-              <div
-                key={skillClass.id}
-                onClick={() => navigate(`/chapter-tests/${skillClass.id}`)}
-                className="bg-white border-2 border-gray-200 rounded-xl p-2 cursor-pointer hover:border-blue-400 transition-all active:scale-95"
-              >
-                <div 
-                  className={`bg-gradient-to-br ${skillClass.color} rounded-lg flex items-center justify-center shadow-md mb-2`}
-                  style={{ width: '100%', height: '3.5rem' }}
-                >
-                  <span style={{ fontSize: '1.75rem' }}>{skillClass.icon}</span>
-                </div>
-                <h3 className="font-bold text-gray-900 text-center" style={{ fontSize: '0.75rem' }}>
-                  {skillClass.name}
-                </h3>
-                <p className="text-gray-500 text-center mt-1" style={{ fontSize: '0.5rem', lineHeight: '0.75rem' }}>
-                  {skillClass.subjects}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Mobile: Show Selected Category Exams */}
-      {!searchQuery.trim() && activeCategory !== 'all' && (
+      {/* Mobile: Show Selected Category Exams - Only when a category is selected */}
+      {!searchQuery.trim() && activeCategory && (
         <div className="md:hidden px-4 py-4 bg-white border-b">
           <div className={`bg-gradient-to-r ${activeCateg?.color} rounded-xl p-4 text-white`}>
             <div className="flex items-center gap-3">
