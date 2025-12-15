@@ -68,63 +68,70 @@ const ChapterTestSubjects = () => {
       }
     ];
   } else if (selectedClass === '7') {
-    // Class 7 has all subjects including Geography, History, Civics
     subjects = [
       {
-        name: 'Mathematics',
-        icon: Calculator,
-        color: 'from-blue-500 to-blue-600',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600',
-        description: 'Master mathematical concepts chapter by chapter'
-      },
-      {
-        name: 'Science',
-        icon: Beaker,
-        color: 'from-green-500 to-green-600',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-600',
-        description: 'Physics, Chemistry, and Biology'
-      },
-      {
-        name: 'Geography',
-        icon: Globe,
-        color: 'from-teal-500 to-teal-600',
-        bgColor: 'bg-teal-100',
-        textColor: 'text-teal-600',
-        description: 'Our Environment'
-      },
-      {
-        name: 'History',
-        icon: Globe,
-        color: 'from-orange-500 to-orange-600',
-        bgColor: 'bg-orange-100',
-        textColor: 'text-orange-600',
-        description: 'Tracing Changes Through A Thousand Years'
-      },
-      {
-        name: 'Civics',
-        icon: Globe,
-        color: 'from-red-500 to-red-600',
-        bgColor: 'bg-red-100',
-        textColor: 'text-red-600',
-        description: 'Social and Political Life - II'
-      },
-      {
-        name: 'English Honeycomb',
-        icon: BookOpen,
-        color: 'from-purple-500 to-purple-600',
-        bgColor: 'bg-purple-100',
-        textColor: 'text-purple-600',
-        description: 'NCERT Honeycomb - English Prose'
-      },
-      {
-        name: 'Hindi Vasant',
+        name: 'Hindi - Malhar',
         icon: Languages,
         color: 'from-pink-500 to-pink-600',
         bgColor: 'bg-pink-100',
         textColor: 'text-pink-600',
-        description: 'NCERT Vasant - Hindi Textbook'
+        description: 'NCERT Malhar - Hindi Textbook (10 chapters)'
+      },
+      {
+        name: 'Science - Curiosity',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'NCERT Curiosity - Science (12 chapters)'
+      },
+      {
+        name: 'English - Poorvi',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'NCERT Poorvi - English Textbook (8 chapters)'
+      },
+      {
+        name: 'Social Science - Exploring Society India and Beyond Part 2',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'History - Delhi to Mughal Era (8 chapters)'
+      },
+      {
+        name: 'Social Science - Exploring Society India and Beyond',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Geography, Polity & Economics (12 chapters)'
+      },
+      {
+        name: 'Mathematics - Ganita Prakash 1',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'NCERT Ganita Prakash Part 1 (8 chapters)'
+      },
+      {
+        name: 'Mathematics - Ganita Prakash 2',
+        icon: Calculator,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'NCERT Ganita Prakash Part 2 (7 chapters)'
+      },
+      {
+        name: 'Sanskrit',
+        icon: Languages,
+        color: 'from-amber-500 to-amber-600',
+        bgColor: 'bg-amber-100',
+        textColor: 'text-amber-600',
+        description: 'NCERT Sanskrit - (12 chapters)'
       }
     ];
   } else if (selectedClass === '8') {
