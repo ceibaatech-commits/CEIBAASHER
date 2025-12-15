@@ -19,44 +19,52 @@ const ChapterTestSubjects = () => {
   if (selectedClass === '6') {
     subjects = [
       {
-        name: 'Mathematics',
-        icon: Calculator,
-        color: 'from-blue-500 to-blue-600',
-        bgColor: 'bg-blue-100',
-        textColor: 'text-blue-600',
-        description: 'Master mathematical concepts chapter by chapter'
-      },
-      {
-        name: 'Science',
-        icon: Beaker,
-        color: 'from-green-500 to-green-600',
-        bgColor: 'bg-green-100',
-        textColor: 'text-green-600',
-        description: 'Explore Physics, Chemistry, and Biology'
-      },
-      {
-        name: 'History',
-        icon: Globe,
-        color: 'from-orange-500 to-orange-600',
-        bgColor: 'bg-orange-100',
-        textColor: 'text-orange-600',
-        description: 'Ancient India and Early Civilizations'
-      },
-      {
-        name: 'Poorvi',
-        icon: BookOpen,
-        color: 'from-purple-500 to-purple-600',
-        bgColor: 'bg-purple-100',
-        textColor: 'text-purple-600',
-        description: 'NCERT Poorvi - English Textbook'
-      },
-      {
-        name: 'Hindi',
+        name: 'Hindi - Malhar',
         icon: Languages,
         color: 'from-pink-500 to-pink-600',
         bgColor: 'bg-pink-100',
         textColor: 'text-pink-600',
-        description: 'Improve your Hindi language proficiency'
+        description: 'NCERT Malhar - Hindi Textbook (13 chapters)'
+      },
+      {
+        name: 'Social Science - Exploring Society India and Beyond',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'Geography, History & Civics (14 chapters)'
+      },
+      {
+        name: 'Mathematics - Ganita Prakash',
+        icon: Calculator,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'NCERT Ganita Prakash (10 chapters)'
+      },
+      {
+        name: 'English - Poorvi',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'NCERT Poorvi - English Textbook (5 units)'
+      },
+      {
+        name: 'Science - Curiosity',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'NCERT Curiosity - Science (12 chapters)'
+      },
+      {
+        name: 'Sanskrit - Deepakam',
+        icon: Languages,
+        color: 'from-amber-500 to-amber-600',
+        bgColor: 'bg-amber-100',
+        textColor: 'text-amber-600',
+        description: 'NCERT Deepakam - Sanskrit (15 chapters)'
       }
     ];
   } else if (selectedClass === '7') {
