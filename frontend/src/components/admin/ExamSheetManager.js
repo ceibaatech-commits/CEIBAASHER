@@ -57,7 +57,12 @@ const ExamSheetManager = () => {
 
   // FIXED: Use exact exam IDs from exam_data.py (backend)
   // This ensures perfect matching between admin and frontend
+  const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+  
   const examNames = [
+    // CBSE Classes
+    ...classNames,
+    
     // Engineering & Medical
     'JEE',
     'NEET',
@@ -129,7 +134,6 @@ const ExamSheetManager = () => {
     'JAPANESE',
     'KOREAN'
   ];
-  const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
 
   // FIXED: Match exam IDs from exam_data.py exactly
   const syllabusTopicsMap = {
