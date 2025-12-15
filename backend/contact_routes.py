@@ -14,7 +14,9 @@ logger = logging.getLogger(__name__)
 # Resend Configuration
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-ADMIN_EMAIL = "ceibaatech@gmail.com"
+# In Resend test mode, emails can only go to the account owner's email
+# For production, verify your domain at https://resend.com/domains
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "aviitanwar1@gmail.com")
 
 # Initialize Resend
 if RESEND_API_KEY:
