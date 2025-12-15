@@ -1107,7 +1107,7 @@ const VictoryLane = () => {
 
     setExtractingQuestions(true);
     try {
-      const response = await axios.post(`${API_URL}/api/extract-questions-from-sheet`, {
+      const response = await axios.post(`${BACKEND_URL}/api/extract-questions-from-sheet`, {
         sheet_url: googleSheetUrl
       });
 
