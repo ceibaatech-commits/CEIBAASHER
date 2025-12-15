@@ -218,7 +218,7 @@ const SoloPractice = () => {
             <button
               onClick={() => {
                 if (isClassBased && classBasedData) {
-                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase().replace(/ - /g, '-').replace(/ /g, '-').toLowerCase()}`);
+                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
                 } else {
                   navigate(`/exam/${exam}`);
                 }
