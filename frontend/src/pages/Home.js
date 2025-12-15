@@ -160,6 +160,9 @@ const Home = () => {
         onLogout={handleLogout}
       />
 
+      {/* Spacer for fixed header - 64px header height */}
+      <div className="h-16"></div>
+
       {/* Mobile Hero Section - Fresh Design */}
       <div className="md:hidden bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white px-4 py-6">
         <div className="flex items-center justify-between mb-4">
