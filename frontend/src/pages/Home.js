@@ -98,12 +98,11 @@ const Home = () => {
         admission: { ids: ['CUET', 'CAT', 'CLAT', 'IPM', 'JEE', 'NEET', 'GATE', 'UGC_NET'], categories: ['Admission Tests'] },
         medical: { ids: ['NEET'], categories: ['Medical Entrance', 'Medical'] },
         defence: { ids: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'], categories: ['Defence', 'Defence Examinations'] },
-        government: { ids: ['UPSC', 'SSC_CGL', 'SSC_CHSL', 'RRB_NTPC'], categories: ['UPSC Examinations', 'SSC Examinations', 'Government'] },
         banking: { ids: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'], categories: ['Banking Examinations', 'Banking'] },
         teaching: { ids: ['CTET', 'UGC_NET'], categories: ['Teaching Examinations', 'Teaching'] },
         ssc: { ids: ['SSC_CGL', 'SSC_CHSL'], categories: ['SSC Examinations'] },
         upsc: { ids: ['UPSC'], categories: ['UPSC Examinations'] },
-        language: { ids: ['IELTS', 'TOEFL'], categories: ['Language Proficiency Tests', 'Language'] },
+        language: { ids: ['Spanish', 'French', 'Tamil', 'Telugu', 'Kannada', 'Chinese', 'Japanese', 'Korean', 'IELTS', 'TOEFL'], categories: ['Language Proficiency Tests', 'Language', 'Language Learning'] },
       };
       const mapping = categoryMap[activeCategory] || { ids: [], categories: [] };
       filtered = filtered.filter(exam => 
