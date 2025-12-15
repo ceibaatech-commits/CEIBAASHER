@@ -100,7 +100,7 @@ const Login = () => {
                   id="username"
                   value={demoUsername}
                   onChange={(e) => setDemoUsername(e.target.value)}
-                  placeholder="Enter username (e.g., demo1)"
+                  placeholder="Enter username (e.g., Sher ❤️)"
                   required
                 />
               </div>
