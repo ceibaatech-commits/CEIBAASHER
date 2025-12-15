@@ -282,13 +282,13 @@ const Home = () => {
 
       {/* Mobile: Show Selected Category Exams - Only when a category is selected */}
       {!searchQuery.trim() && activeCategory && (
-        <div className="md:hidden px-4 py-4 bg-white border-b">
-          <div className={`bg-gradient-to-r ${activeCateg?.color} rounded-xl p-4 text-white`}>
-            <div className="flex items-center gap-3">
-              <span className="text-3xl">{activeCateg?.icon}</span>
+        <div className="md:hidden px-4 py-3 bg-white border-b">
+          <div className={`bg-gradient-to-r ${activeCateg?.color} rounded-xl p-3 text-white mb-3`}>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{activeCateg?.icon}</span>
               <div>
-                <h2 className="font-bold text-lg">{activeCateg?.label}</h2>
-                <p className="text-white/80 text-sm">{filteredExams.length} exams available</p>
+                <h2 className="font-bold text-sm">{activeCateg?.label}</h2>
+                <p className="text-white/90 text-xs">{filteredExams.length} exams available</p>
               </div>
             </div>
           </div>
