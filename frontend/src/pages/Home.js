@@ -204,19 +204,19 @@ const Home = () => {
 
       {/* Category Filter - Grid Layout (3 per row) */}
       <div className="md:hidden bg-white sticky top-16 z-30 shadow-md border-b border-gray-200">
-        <div className="grid grid-cols-3 gap-2 py-3 px-3 auto-rows-fr">
+        <div className="grid grid-cols-3 gap-2 py-3 px-3">
           {categories.map(cat => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(activeCategory === cat.id ? '' : cat.id)}
-              className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl text-[10px] font-semibold transition-all min-h-[80px] max-h-[80px] ${
+              className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl text-[10px] font-semibold transition-all h-20 w-full ${
                 activeCategory === cat.id
                   ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <span className="text-xl flex-shrink-0">{cat.icon}</span>
-              <span className="text-center leading-tight px-1 line-clamp-2 overflow-hidden">{cat.label}</span>
+              <span className="text-xl leading-none">{cat.icon}</span>
+              <span className="text-center leading-tight px-1 line-clamp-2">{cat.label}</span>
             </button>
           ))}
         </div>
