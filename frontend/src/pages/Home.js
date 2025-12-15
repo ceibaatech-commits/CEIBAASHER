@@ -338,7 +338,7 @@ const Home = () => {
       )}
       
       {/* Desktop Banner Carousel */}
-      <div className="hidden md:block">
+      <div className="hidden md:block mt-16">
         <HomeBannerCarousel />
       </div>
       
