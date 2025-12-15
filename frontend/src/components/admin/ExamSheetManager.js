@@ -1813,9 +1813,16 @@ const ExamSheetManager = () => {
                       disabled={!classForm.class_name}
                     >
                       <option value="">Select Subject</option>
-                      <option value="Mathematics">Mathematics</option>
-                      <option value="Science">Science</option>
-                      {classForm.class_name === 'Class 7' ? (
+                      {classForm.class_name === 'Class 6' ? (
+                        <>
+                          <option value="Hindi - Malhar">Hindi - Malhar</option>
+                          <option value="Social Science - Exploring Society India and Beyond">Social Science - Exploring Society India and Beyond</option>
+                          <option value="Mathematics - Ganita Prakash">Mathematics - Ganita Prakash</option>
+                          <option value="English - Poorvi">English - Poorvi</option>
+                          <option value="Science - Curiosity">Science - Curiosity</option>
+                          <option value="Sanskrit - Deepakam">Sanskrit - Deepakam</option>
+                        </>
+                      ) : classForm.class_name === 'Class 7' ? (
                         <>
                           <option value="Geography">Geography</option>
                           <option value="History">History</option>
