@@ -191,7 +191,7 @@ async def extract_questions_for_victory_lane(
     Does NOT save to database - just returns extracted questions
     """
     try:
-        print(f"[Victory Lane Image Extraction] Starting extraction")
+        print("[Victory Lane Image Extraction] Starting extraction")
         
         # Read image file
         image_content = await image.read()
