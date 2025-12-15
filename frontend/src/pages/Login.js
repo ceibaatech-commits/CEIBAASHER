@@ -174,22 +174,6 @@ const Login = () => {
             </p>
           </CardFooter>
         </Card>
-
-        <Card className="mt-6 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
-          <CardHeader>
-            <CardTitle className="text-lg">Demo Credentials</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              <div className="font-semibold">demo1 / demo1</div>
-              <div className="text-gray-600">JEE aspirant</div>
-              <div className="font-semibold">demo2 / demo2</div>
-              <div className="text-gray-600">NEET aspirant</div>
-              <div className="font-semibold">demo3 / demo3</div>
-              <div className="text-gray-600">SSC aspirant</div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
