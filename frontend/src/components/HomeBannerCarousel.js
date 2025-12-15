@@ -165,7 +165,7 @@ const HomeBannerCarousel = () => {
               </div>
 
               {/* Right: Enhanced Decorative Element */}
-              <div className="hidden md:flex items-center justify-center relative">
+              <div className="hidden md:flex items-center justify-center relative py-6">
                 <div className="relative banner-3d-element">
                   {/* Rotating Ring 1 */}
                   <div className="absolute inset-0 banner-ring-1"></div>
@@ -173,8 +173,8 @@ const HomeBannerCarousel = () => {
                   <div className="absolute inset-0 banner-ring-2"></div>
                   
                   {/* Center Content - Responsive sizing */}
-                  <div className="w-64 h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-4 border-white/20 shadow-2xl relative z-10">
-                    <div className="w-52 h-52 lg:w-64 lg:h-64 xl:w-80 xl:h-80 bg-gradient-to-br from-white/20 to-white/5 rounded-full flex items-center justify-center border-2 border-white/30">
+                  <div className="w-72 h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-4 border-white/20 shadow-2xl relative z-10">
+                    <div className="w-60 h-60 lg:w-64 lg:h-64 xl:w-80 xl:h-80 bg-gradient-to-br from-white/20 to-white/5 rounded-full flex items-center justify-center border-2 border-white/30">
                       <div className="text-center">
                         <div className="relative">
                           <FileText className="w-16 h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 text-white mx-auto mb-3 lg:mb-4 animate-float" />
