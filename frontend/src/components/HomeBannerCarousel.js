@@ -172,16 +172,16 @@ const HomeBannerCarousel = () => {
                   {/* Rotating Ring 2 */}
                   <div className="absolute inset-0 banner-ring-2"></div>
                   
-                  {/* Center Content */}
-                  <div className="w-72 h-72 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-4 border-white/20 shadow-2xl relative z-10">
-                    <div className="w-56 h-56 bg-gradient-to-br from-white/20 to-white/5 rounded-full flex items-center justify-center border-2 border-white/30">
+                  {/* Center Content - Responsive sizing */}
+                  <div className="w-64 h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-4 border-white/20 shadow-2xl relative z-10">
+                    <div className="w-52 h-52 lg:w-64 lg:h-64 xl:w-80 xl:h-80 bg-gradient-to-br from-white/20 to-white/5 rounded-full flex items-center justify-center border-2 border-white/30">
                       <div className="text-center">
                         <div className="relative">
-                          <FileText className="w-20 h-20 text-white mx-auto mb-4 animate-float" />
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-ping"></div>
+                          <FileText className="w-16 h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 text-white mx-auto mb-3 lg:mb-4 animate-float" />
+                          <div className="absolute -top-2 -right-2 w-5 h-5 lg:w-6 lg:h-6 bg-yellow-400 rounded-full animate-ping"></div>
                         </div>
-                        <p className="text-white font-black text-3xl mb-1 banner-year-glow">2026</p>
-                        <p className="text-white/90 font-semibold">Exam Ready</p>
+                        <p className="text-white font-black text-2xl lg:text-3xl xl:text-4xl mb-1 banner-year-glow">2026</p>
+                        <p className="text-white/90 font-semibold text-sm lg:text-base">Exam Ready</p>
                       </div>
                     </div>
                   </div>
