@@ -825,94 +825,14 @@ const ExamSheetManager = () => {
           ]
         },
         'Class 7': {
-          'Mathematics': [
-            '1. Integers',
-            '2. Fractions and Decimals',
-            '3. Data Handling',
-            '4. Simple Equations',
-            '5. Lines and Angles',
-            '6. The Triangle and Its Properties',
-            '7. Comparing Quantities',
-            '8. Rational Numbers',
-            '9. Perimeter and Area',
-            '10. Algebraic Expressions',
-            '11. Exponents and Powers',
-            '12. Symmetry',
-            '13. Visualising Solid Shapes'
-          ],
-          'Science': [
-            '1. Nutrition in Plants',
-            '2. Nutrition in Animals',
-            '3. Heat',
-            '4. Acids, Bases and Salts',
-            '5. Physical and Chemical Changes',
-            '6. Respiration in Organisms',
-            '7. Transportation in Animals and Plants',
-            '8. Reproduction in Plants',
-            '9. Motion and Time',
-            '10. Electric Current and Its Effects',
-            '11. Light',
-            '12. Forests: Our Lifeline',
-            '13. Wastewater Story'
-          ],
-          'Geography': [
-            '1. Environment',
-            '2. Inside Our Earth',
-            '3. Our Changing Earth',
-            '4. Air',
-            '5. Water',
-            '6. Human Environment Interactions - The Tropical and the Subtropical Region',
-            '7. Life in the Deserts'
-          ],
-          'History': [
-            '1. Introduction: Tracing Changes Through A Thousand Years',
-            '2. Kings and Kingdoms',
-            '3. Delhi: 12th to 15th Century',
-            '4. The Mughals',
-            '5. Tribes, Nomads and Settled Communities',
-            '6. Devotional Paths To The Divine',
-            '7. The Making Of Regional Cultures',
-            '8. Eighteenth-Century Political Formation'
-          ],
-          'Civics': [
-            '1. On Equality',
-            '2. Role of the Government in Health',
-            '3. How The State Government Works',
-            '4. Growing Up As Boys And Girls',
-            '5. Women Change The World',
-            '6. Understanding Media',
-            '7. Markets Around Us',
-            '8. A Shirt In The Market'
-          ],
-          'English Honeycomb': [
-            '1. Three Questions',
-            '2. A Gift of Chappals',
-            '3. Gopal and the Hilsa Fish',
-            '4. The Ashes That Made Trees Bloom',
-            '5. Quality',
-            '6. Expert Detectives',
-            '7. The Invention of Vita – Wonk',
-            '8. Fire Friend and Foe',
-            '9. A Bicycle in Good Repair',
-            '10. The Story of Cricket'
-          ],
-          'Hindi Vasant': [
-            '1. Hum Panchi Unmukt Gagan Ke',
-            '2. Himalaya Ki Betiyan',
-            '3. Kathputli',
-            '4. Meethaiwala',
-            '5. Raja Kho Gaye',
-            '6. Shaam - Ek Kisan',
-            '7. Apoorv Anubhav',
-            '8. Rahim Ke Dohe',
-            '9. Ek Tinka',
-            '10. Khanpan Ki Badalti Tasveer',
-            '11. Neelkanth',
-            '12. Bhor Aur Bharkha',
-            '13. Veer Kunwar Singh',
-            '14. Sangatkaar Ki Karuna Mein Tungnathji Ho Gaye: Dhanraj',
-            '15. Atma Ka Anumanit Vyay'
-          ]
+          'Hindi - Malhar': ['1. Maan, Kah Ek Kahani', '2. Teen Buddhiman', '3. Phool Aur Kaanta', '4. Paani Re Paani', '5. Nahin Hona Bimar', '6. Giridhar Kaviray Ki Kundaliya', '7. Varsha-Bahar', '8. Birajoo Maharaj Se Sakshatkar', '9. Chidiya', '10. Meera Ke Pad'],
+          'Science - Curiosity': ['1. The Ever-Evolving World of Science', '2. Exploring Substances: Acidic, Basic and Neutral', '3. Electricity: Circuits and their Components', '4. The World of Metals and Non-metals', '5. Changes Around Us: Physical and Chemical', '6. Adolescence: A Stage of Growth and Change', '7. Heat Transfer in Nature', '8. Measurement of Time and Motion', '9. Life Processes in Animals', '10. Life Processes in Plants', '11. Light: Shadows and Reflections', '12. Earth, Moon and the Sun'],
+          'English - Poorvi': ['1. Three Questions', '2. A Gift of Chappals', '3. Gopal and the Hilsa Fish', '4. The Ashes That Made Trees Bloom', '5. Quality', '6. Expert Detectives', '7. The Invention of Vita-Wonk', '8. A Homage to our Brave Soldiers'],
+          'Social Science - Exploring Society India and Beyond Part 2': ['1. Tracing Changes through a Thousand Years', '2. Kings and Kingdoms', '3. Delhi: 12th to 15th Century', '4. The Mughals (16th to 17th Century)', '5. Tribes, Nomads and Settled Communities', '6. Devotional Paths to the Divine', '7. The Making of Regional Cultures', '8. Eighteenth Century Political Formations'],
+          'Social Science - Exploring Society India and Beyond': ['1. Geographical Diversity of India', '2. Understanding the Weather', '3. Climates of India', '4. New Beginnings: Cities and States', '5. The Rise of Empires', '6. The Age of Reorganisation', '7. The Gupta Era: An Age of', '8. How the Land Becomes Sacred', '9. From the Rulers to the Ruled: Types of Governments', '10. The Constitution of India — An Introduction', '11. From Barter to Money', '12. Understanding Markets'],
+          'Mathematics - Ganita Prakash 1': ['1. Large Numbers Around Us', '2. Arithmetic Expressions', '3. A Peek Beyond the Point', '4. Expressions using Letter-Numbers', '5. Parallel and Intersecting Lines', '6. Number Play', '7. A Tale of Three Intersecting Lines', '8. Working with Fractions'],
+          'Mathematics - Ganita Prakash 2': ['1. Geometric Twins', '2. Operations with Integers', '3. Finding Common Ground', '4. Another Peek Beyond the Point', '5. Connecting the Dots...', '6. Constructions and Tilings', '7. Finding the Unknown'],
+          'Sanskrit': ['1. वन्देभारतमातरम्', '2. नित्यं पिबाम: सुभाषितरसम्', '3. मित्राय नमः', '4. न लभ्यते चेत्आम्लं द्राक्षाफलम', '5. सेवा हि परमो धर्म:', '6. क्रीडाम वयं श्‍लोकान्त्याक्षरीम्', '7. ईशावास्यम्इदं सर्वम्', '8. हितं मनोहारि च दुर्लभं वचः', '9. अन्‍नाद् भवन्ति भूतानि', '10. दशमः कः ?', '11. द्वीपेषुरम्यः द्वीपोऽण्डमानः', '12. वीराङ्गना पन्‍नाधाया']
         },
         'Class 8': {
           'Mathematics': [
