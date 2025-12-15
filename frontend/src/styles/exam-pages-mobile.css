@@ -36,19 +36,19 @@
 
 /* ===== Home Banner Carousel ===== */
 .home-banner-carousel {
-  height: 320px;
+  height: 420px;
 }
 
 /* Desktop: Larger banner for better proportions */
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .home-banner-carousel {
-    height: 450px;
+    height: 480px;
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1536px) {
   .home-banner-carousel {
-    height: 500px;
+    height: 520px;
   }
 }
 
