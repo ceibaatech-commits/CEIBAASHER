@@ -180,3 +180,218 @@ Extract ALL questions you can see in the image. Be accurate and thorough."""
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error extracting questions: {str(e)}")
+
+
+@router.post("/victory-lane/extract-questions-from-image")
+async def extract_questions_for_victory_lane(
+    image: UploadFile = File(...)
+):
+    """
+    Extract MCQ questions from an uploaded image for Victory Lane quiz rooms
+    Does NOT save to database - just returns extracted questions
+    """
+    try:
+        print(f"[Victory Lane Image Extraction] Starting extraction")
+        
+        # Read image file
+        image_content = await image.read()
+        
+        # Convert to base64
+        image_base64 = base64.b64encode(image_content).decode('utf-8')
+        
+        # Determine image media type
+        media_type = image.content_type or "image/jpeg"
+        print(f"[Victory Lane Image Extraction] Image received, type: {media_type}, size: {len(image_content)} bytes")
+        
+        # Initialize LlmChat with Emergent key and Claude model
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=f"victory-image-{uuid.uuid4()}",
+            system_message="You are an expert at extracting structured data from images. You analyze images containing educational questions and extract them in JSON format."
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        
+        print("[Victory Lane Image Extraction] LlmChat initialized")
+        
+        # Create file content
+        image_attachment = FileContent(
+            content_type="image",
+            file_content_base64=image_base64
+        )
+        
+        # Construct prompt
+        prompt = """Extract all Multiple Choice Questions (MCQs) from this image. 
+
+For each question, provide:
+1. Question text (with proper mathematical notation if present)
+2. Four options (A, B, C, D)
+3. DO NOT include the correct answer - just extract the question and options
+
+Return ONLY a valid JSON array with this exact structure (no markdown, no extra text):
+[
+  {
+    "question": "Question text here",
+    "options": ["Option A text", "Option B text", "Option C text", "Option D text"]
+  }
+]
+
+Extract up to 50 questions. If there are mathematical formulas, use LaTeX notation within $ symbols.
+Be accurate and thorough."""
+
+        # Create user message
+        user_message = UserMessage(
+            text=prompt,
+            file_contents=[image_attachment]
+        )
+        
+        print("[Victory Lane Image Extraction] Sending request to Claude...")
+        
+        # Send message and get response
+        response_text = await chat.send_message(user_message)
+        
+        print(f"[Victory Lane Image Extraction] Response received, length: {len(response_text)} chars")
+        
+        # Parse JSON response
+        try:
+            if response_text.startswith("```"):
+                response_text = response_text.split("```json")[1].split("```")[0].strip() if "```json" in response_text else response_text.split("```")[1].split("```")[0].strip()
+            
+            questions = json.loads(response_text)
+        except json.JSONDecodeError as e:
+            import re
+            json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
+            if json_match:
+                questions = json.loads(json_match.group())
+            else:
+                raise HTTPException(status_code=500, detail=f"Failed to parse response: {str(e)}")
+        
+        # Validate questions structure
+        if not isinstance(questions, list) or len(questions) == 0:
+            raise HTTPException(status_code=400, detail="No questions extracted from image")
+        
+        # Limit to 50 questions
+        questions = questions[:50]
+        
+        print(f"[Victory Lane Image Extraction] Successfully extracted {len(questions)} questions")
+        
+        return {
+            "success": True,
+            "message": f"Successfully extracted {len(questions)} questions",
+            "questions": questions
+        }
+        
+    except Exception as e:
+        print(f"[Victory Lane Image Extraction] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error extracting questions: {str(e)}")
+
+
+@router.post("/extract-questions-from-sheet")
+async def extract_questions_from_sheet(request: dict):
+    """
+    Extract MCQ questions from a Google Sheet URL
+    Expected format: Question | Option A | Option B | Option C | Option D | Correct Answer (0-3)
+    """
+    try:
+        sheet_url = request.get("sheet_url", "")
+        
+        if not sheet_url or "docs.google.com/spreadsheets" not in sheet_url:
+            raise HTTPException(status_code=400, detail="Invalid Google Sheets URL")
+        
+        print(f"[Sheet Extraction] Starting extraction from: {sheet_url}")
+        
+        # Extract spreadsheet ID from URL
+        import re
+        sheet_id_match = re.search(r'/spreadsheets/d/([a-zA-Z0-9-_]+)', sheet_url)
+        if not sheet_id_match:
+            raise HTTPException(status_code=400, detail="Could not extract spreadsheet ID from URL")
+        
+        sheet_id = sheet_id_match.group(1)
+        
+        # Construct CSV export URL (this works for publicly accessible sheets)
+        csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+        
+        print(f"[Sheet Extraction] CSV URL: {csv_url}")
+        
+        # Fetch CSV data
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.get(csv_url) as response:
+                if response.status != 200:
+                    raise HTTPException(
+                        status_code=400, 
+                        detail="Failed to fetch sheet. Make sure it's publicly accessible (Anyone with the link can view)"
+                    )
+                
+                csv_content = await response.text()
+        
+        print(f"[Sheet Extraction] CSV fetched, size: {len(csv_content)} bytes")
+        
+        # Parse CSV
+        import csv
+        from io import StringIO
+        
+        csv_reader = csv.reader(StringIO(csv_content))
+        rows = list(csv_reader)
+        
+        if len(rows) < 2:  # At least header + 1 data row
+            raise HTTPException(status_code=400, detail="Sheet is empty or has insufficient data")
+        
+        # Skip header row and parse questions
+        questions = []
+        for idx, row in enumerate(rows[1:], start=2):  # Start from row 2 (after header)
+            if len(row) < 6:  # Need at least: question + 4 options + correct answer
+                print(f"[Sheet Extraction] Row {idx} skipped - insufficient columns")
+                continue
+            
+            try:
+                question_text = row[0].strip()
+                options = [row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip()]
+                
+                # Parse correct answer (can be 0-3 or A-D)
+                correct_answer_str = row[5].strip().upper()
+                if correct_answer_str in ['A', 'B', 'C', 'D']:
+                    correct_answer = ord(correct_answer_str) - ord('A')
+                else:
+                    correct_answer = int(correct_answer_str)
+                
+                if correct_answer < 0 or correct_answer > 3:
+                    print(f"[Sheet Extraction] Row {idx} skipped - invalid correct answer")
+                    continue
+                
+                # Optional explanation column
+                explanation = row[6].strip() if len(row) > 6 else ""
+                
+                questions.append({
+                    "question": question_text,
+                    "options": options,
+                    "correctAnswer": correct_answer,
+                    "explanation": explanation
+                })
+                
+                # Limit to 50 questions
+                if len(questions) >= 50:
+                    break
+                    
+            except (ValueError, IndexError) as e:
+                print(f"[Sheet Extraction] Row {idx} skipped - parse error: {str(e)}")
+                continue
+        
+        if len(questions) == 0:
+            raise HTTPException(status_code=400, detail="No valid questions found in sheet")
+        
+        print(f"[Sheet Extraction] Successfully extracted {len(questions)} questions")
+        
+        return {
+            "success": True,
+            "message": f"Successfully extracted {len(questions)} questions",
+            "questions": questions
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Sheet Extraction] Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error extracting questions from sheet: {str(e)}")
