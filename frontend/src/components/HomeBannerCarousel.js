@@ -112,8 +112,8 @@ const HomeBannerCarousel = () => {
           <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-glow"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '1s'}}></div>
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10">
-            <div className="grid md:grid-cols-2 gap-4 items-center w-full">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10 py-8">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center w-full">
               {/* Left: Text Content */}
               <div className="text-white home-banner-content compact-banner">
                 {/* Icon & Badge */}
