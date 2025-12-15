@@ -292,9 +292,8 @@ const Home = () => {
               </div>
             </div>
           </div>
-          
           {/* Exam Cards for Selected Category */}
-          <div className="mt-4 space-y-3">
+          <div className="space-y-2">
             {filteredExams.map((exam) => (
               <div
                 key={exam.id}
