@@ -1579,22 +1579,23 @@ const ExamSheetManager = () => {
                         </>
                       ) : classForm.class_name === 'Class 7' ? (
                         <>
-                          <option value="Geography">Geography</option>
-                          <option value="History">History</option>
-                          <option value="Civics">Civics</option>
-                          <option value="English Honeycomb">English Honeycomb</option>
-                          <option value="Hindi Vasant">Hindi Vasant</option>
+                          <option value="Hindi - Malhar">Hindi - Malhar</option>
+                          <option value="Science - Curiosity">Science - Curiosity</option>
+                          <option value="English - Poorvi">English - Poorvi</option>
+                          <option value="Social Science - Exploring Society India and Beyond Part 2">Social Science - Exploring Society India and Beyond Part 2</option>
+                          <option value="Social Science - Exploring Society India and Beyond">Social Science - Exploring Society India and Beyond</option>
+                          <option value="Mathematics - Ganita Prakash 1">Mathematics - Ganita Prakash 1</option>
+                          <option value="Mathematics - Ganita Prakash 2">Mathematics - Ganita Prakash 2</option>
+                          <option value="Sanskrit">Sanskrit</option>
                         </>
                       ) : classForm.class_name === 'Class 8' ? (
                         <>
-                          <option value="Geography">Geography</option>
-                          <option value="History">History</option>
-                          <option value="Civics">Civics</option>
-                          <option value="English Honeydew">English Honeydew</option>
-                          <option value="English It So Happened">English It So Happened</option>
-                          <option value="Hindi Vasant">Hindi Vasant</option>
-                          <option value="Hindi Durva">Hindi Durva</option>
-                          <option value="Hindi Bharat Ki Khoj">Hindi Bharat Ki Khoj</option>
+                          <option value="English - Poorvi">English - Poorvi</option>
+                          <option value="Hindi - Malhar">Hindi - Malhar</option>
+                          <option value="Science - Curiosity">Science - Curiosity</option>
+                          <option value="Social Science - Exploring Society: India and Beyond">Social Science - Exploring Society: India and Beyond</option>
+                          <option value="Mathematics - Ganita Prakash">Mathematics - Ganita Prakash</option>
+                          <option value="Sanskrit">Sanskrit</option>
                         </>
                       ) : classForm.class_name === 'Class 9' ? (
                         <>
