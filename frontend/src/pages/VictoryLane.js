@@ -1044,6 +1044,104 @@ const VictoryLane = () => {
     }));
   };
 
+  // Handle Image Extraction
+  const handleImageExtraction = async () => {
+    if (!selectedQuizImage) {
+      toast.error('Please select an image first');
+      return;
+    }
+
+    setExtractingQuestions(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedQuizImage);
+
+      const response = await axios.post(
+        `${API_URL}/api/extract-questions-from-image`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+
+      if (response.data.success && response.data.questions) {
+        const questions = response.data.questions.slice(0, 50); // Limit to 50
+        
+        if (questions.length > 50) {
+          toast.warning(`Extracted ${response.data.questions.length} questions, using first 50`);
+        }
+
+        // Format extracted questions - user must select correct answer
+        const formattedQuestions = questions.map(q => ({
+          question: q.question || '',
+          options: q.options || ['', '', '', ''],
+          correctAnswer: 0, // Default to first option, user must change
+          explanation: q.explanation || ''
+        }));
+
+        setExtractedQuestions(formattedQuestions);
+        setQuizForm(prev => ({
+          ...prev,
+          questions: formattedQuestions
+        }));
+
+        toast.success(`✅ Extracted ${formattedQuestions.length} questions! Please select correct answers manually.`);
+      }
+    } catch (error) {
+      console.error('Error extracting questions:', error);
+      toast.error(error.response?.data?.detail || 'Failed to extract questions from image');
+    } finally {
+      setExtractingQuestions(false);
+    }
+  };
+
+  // Handle Google Sheet Extraction
+  const handleGoogleSheetExtraction = async () => {
+    if (!googleSheetUrl.trim()) {
+      toast.error('Please enter a Google Sheet URL');
+      return;
+    }
+
+    if (!googleSheetUrl.includes('docs.google.com/spreadsheets')) {
+      toast.error('Please enter a valid Google Sheets URL');
+      return;
+    }
+
+    setExtractingQuestions(true);
+    try {
+      const response = await axios.post(`${API_URL}/api/extract-questions-from-sheet`, {
+        sheet_url: googleSheetUrl
+      });
+
+      if (response.data.success && response.data.questions) {
+        const questions = response.data.questions.slice(0, 50); // Limit to 50
+        
+        if (questions.length > 50) {
+          toast.warning(`Extracted ${response.data.questions.length} questions, using first 50`);
+        }
+
+        // Format extracted questions from sheet (includes correct answers)
+        const formattedQuestions = questions.map(q => ({
+          question: q.question || '',
+          options: q.options || ['', '', '', ''],
+          correctAnswer: q.correctAnswer || 0,
+          explanation: q.explanation || ''
+        }));
+
+        setExtractedQuestions(formattedQuestions);
+        setQuizForm(prev => ({
+          ...prev,
+          questions: formattedQuestions
+        }));
+
+        toast.success(`✅ Extracted ${formattedQuestions.length} questions from Google Sheet!`);
+      }
+    } catch (error) {
+      console.error('Error extracting from sheet:', error);
+      toast.error(error.response?.data?.detail || 'Failed to extract questions from Google Sheet');
+    } finally {
+      setExtractingQuestions(false);
+    }
+  };
+
   // Get difficulty color
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
