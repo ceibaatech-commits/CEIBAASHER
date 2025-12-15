@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { Trophy, Send, MessageCircle, Heart, Repeat2, Bookmark, MoreHorizontal, CheckCircle2, HelpCircle, Trash2, Tag, Play, Users, Clock, X, Plus, AlertCircle } from 'lucide-react';
+import { Trophy, Send, MessageCircle, Heart, Repeat2, Bookmark, MoreHorizontal, CheckCircle2, HelpCircle, Trash2, Tag, Play, Users, Clock, X, Plus, AlertCircle, Upload, FileSpreadsheet, Edit3, Link as LinkIcon } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
