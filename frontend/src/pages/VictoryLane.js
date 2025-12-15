@@ -1925,10 +1925,136 @@ const VictoryLane = () => {
                   </div>
                 </div>
 
+                {/* Input Method Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">Add Questions</label>
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => setQuizInputMethod('manual')}
+                      className={`flex-1 py-3 px-4 rounded-xl font-semibold transition ${
+                        quizInputMethod === 'manual'
+                          ? 'bg-blue-600 text-white shadow-lg'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <Edit3 className="w-4 h-4 inline mr-2" />
+                      Manual Entry
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuizInputMethod('image')}
+                      className={`flex-1 py-3 px-4 rounded-xl font-semibold transition ${
+                        quizInputMethod === 'image'
+                          ? 'bg-purple-600 text-white shadow-lg'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <Upload className="w-4 h-4 inline mr-2" />
+                      From Image
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuizInputMethod('sheet')}
+                      className={`flex-1 py-3 px-4 rounded-xl font-semibold transition ${
+                        quizInputMethod === 'sheet'
+                          ? 'bg-green-600 text-white shadow-lg'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <FileSpreadsheet className="w-4 h-4 inline mr-2" />
+                      Google Sheet
+                    </button>
+                  </div>
+
+                  {/* Image Upload Section */}
+                  {quizInputMethod === 'image' && (
+                    <div className="bg-purple-50 border-2 border-purple-200 border-dashed rounded-xl p-6 mb-4">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files[0];
+                          if (file) {
+                            if (file.size > 10 * 1024 * 1024) {
+                              toast.error('Image size must be less than 10MB');
+                              return;
+                            }
+                            setSelectedQuizImage(file);
+                            const reader = new FileReader();
+                            reader.onloadend = () => setQuizImagePreview(reader.result);
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                        id="quiz-image-upload"
+                      />
+                      <label htmlFor="quiz-image-upload" className="cursor-pointer block">
+                        {quizImagePreview ? (
+                          <div className="text-center">
+                            <img src={quizImagePreview} alt="Preview" className="max-h-64 mx-auto rounded-lg shadow-md mb-3" />
+                            <p className="text-sm text-gray-600 mb-3">{selectedQuizImage?.name}</p>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleImageExtraction();
+                              }}
+                              disabled={extractingQuestions}
+                              className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition disabled:opacity-50"
+                            >
+                              {extractingQuestions ? 'Extracting...' : '🔍 Extract Questions (Max 50)'}
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-600">
+                            <Upload className="w-12 h-12 mx-auto mb-3 text-purple-500" />
+                            <p className="text-lg font-semibold mb-1">Click to upload question image</p>
+                            <p className="text-sm">PNG, JPG, JPEG supported (Max 10MB)</p>
+                            <p className="text-xs text-purple-600 mt-2 font-medium">⚠️ AI extracts questions & options. You must select correct answers manually!</p>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Google Sheet URL Section */}
+                  {quizInputMethod === 'sheet' && (
+                    <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6 mb-4">
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Google Sheet Public Link</label>
+                        <div className="relative">
+                          <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <input
+                            type="url"
+                            value={googleSheetUrl}
+                            onChange={(e) => setGoogleSheetUrl(e.target.value)}
+                            placeholder="https://docs.google.com/spreadsheets/d/..."
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                          />
+                        </div>
+                        <p className="text-xs text-gray-600 mt-2">
+                          ℹ️ Make sure the sheet is publicly accessible and follows the format: Question | Option A | Option B | Option C | Option D | Correct Answer (0-3)
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleGoogleSheetExtraction}
+                        disabled={extractingQuestions || !googleSheetUrl.trim()}
+                        className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition disabled:opacity-50"
+                      >
+                        {extractingQuestions ? 'Extracting...' : '📊 Extract Questions from Sheet (Max 50)'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {/* Questions */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Questions ({quizForm.questions.filter(q => q.question.trim()).length}/{quizForm.questions.length} - Min: 5, Max: 50)
+                    {quizInputMethod === 'image' && extractedQuestions.length > 0 
+                      ? '⚠️ Select Correct Answer for Each Question' 
+                      : `Questions (${quizForm.questions.filter(q => q.question.trim()).length}/${quizForm.questions.length} - Min: 5, Max: 50)`}
                   </label>
                   <div className="space-y-4">
                     {quizForm.questions.map((q, idx) => (
