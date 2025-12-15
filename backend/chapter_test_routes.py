@@ -29,9 +29,10 @@ async def get_chapters(class_param: str = None, subject: str = None):
         if not subject:
             return {"success": False, "error": "Subject parameter is required"}
         
-        # Normalize subject name: convert from URL slug to proper capitalized name
-        # e.g., "mathematics" -> "Mathematics", "social-science" -> "Social Science"
-        normalized_subject = subject.replace('-', ' ').title()
+        # Normalize subject name: convert from URL slug to proper name
+        # Handle special cases with dashes like "Hindi - Malhar" -> "hindi---malhar"
+        # First replace triple dashes with special marker, then single dashes with spaces
+        normalized_subject = subject.replace('---', '|||').replace('-', ' ').replace('|||', ' - ').title()
         
         # Get chapters from data
         chapters = get_chapters_by_class_subject(class_number, normalized_subject)
