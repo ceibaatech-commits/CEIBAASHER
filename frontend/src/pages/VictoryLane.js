@@ -81,6 +81,14 @@ const VictoryLane = () => {
     accessControl: 'public', // 'public' or 'followers'
     questions: Array(5).fill({ question: '', options: ['', '', '', ''], correctAnswer: 0 })
   });
+  
+  // Quiz Input Method State
+  const [quizInputMethod, setQuizInputMethod] = useState('manual'); // 'manual', 'image', 'sheet'
+  const [selectedQuizImage, setSelectedQuizImage] = useState(null);
+  const [quizImagePreview, setQuizImagePreview] = useState(null);
+  const [googleSheetUrl, setGoogleSheetUrl] = useState('');
+  const [extractingQuestions, setExtractingQuestions] = useState(false);
+  const [extractedQuestions, setExtractedQuestions] = useState([]);
 
   // Comprehensive exam categories - All exams from backend
   const categories = [
