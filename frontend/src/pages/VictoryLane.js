@@ -1057,7 +1057,7 @@ const VictoryLane = () => {
       formData.append('image', selectedQuizImage);
 
       const response = await axios.post(
-        `${API_URL}/api/extract-questions-from-image`,
+        `${API_URL}/api/victory-lane/extract-questions-from-image`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
