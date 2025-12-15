@@ -25,8 +25,19 @@ const SheetManager = () => {
     sheet_name: ''
   });
 
-  // All 38 Exams with their complete syllabus structure
+  // All Exams with their complete syllabus structure (including CBSE Classes)
   const examSyllabusData = {
+    "Class 6": {
+      "name": "Class 6 - CBSE",
+      "subjects": {
+        "Hindi - Malhar": ["1. Mathru Bhumi (Poem)", "2. Gol", "3. Pehli Boond (Poem)", "4. Haar Ki Jeet", "5. Rahim ke dohe (Poem)", "6. Meri ma", "7. Jalate Chalo", "8. Satriya Aur Bihu Nruthya", "9. Maiya Me nahi maakna koyo (Poem)", "10. Pariksha", "11. Chetak ki veeratha", "12. Hindh mahasagar me chota-sa hindustan", "13. Ped Ki Bhata"],
+        "Social Science - Exploring Society India and Beyond": ["1. Locating Places on the Earth", "2. Oceans and Continents", "3. Landforms and Life", "4. Timeline and Sources of History", "5. India, That Is Bharat", "6. The Beginnings of Indian Civilisation", "7. India's Cultural Roots", "8. Unity in Diversity, or 'Many in the One'", "9. Family and Community", "10. Grassroots Democracy — Part 1: Governance", "11. Grassroots Democracy — Part 2: Local Government in Rural Areas", "12. Grassroots Democracy — Part 3: Local Government in Urban Areas", "13. The Value of Work", "14. Economic Activities Around Us"],
+        "Mathematics - Ganita Prakash": ["1. Patterns in Mathematics", "2. Lines and Angles", "3. Number Play Solutions", "4. Data Handling and Presentation", "5. Prime Time", "6. Perimeter and Area", "7. Fractions", "8. Playing with Construction", "9. Symmetry", "10. The Other Side of Zero"],
+        "English - Poorvi": ["1. Fables and Folk Tales", "2. Friendship", "3. Nurturing Nature", "4. Sports and Wellness", "5. Culture and Tradition"],
+        "Science - Curiosity": ["1. The Wonderful World of Science", "2. Diversity in the Living World", "3. Mindful Eating: A Path to a Healthy Body", "4. Exploring Magnets", "5. Measurement of Length and Motion", "6. Materials Around Us", "7. Temperature and its Measurement", "8. A Journey through States of Water", "9. Methods of Separation in Everyday Life", "10. Living Creatures: Exploring their Characteristics", "11. Nature's Treasures", "12. Beyond Earth"],
+        "Sanskrit - Deepakam": ["1. वयं वर्णमालां पठामः", "2. एषः कः ? एषा का ? एतत् किम् ?", "3. अहं च त्वं च", "4. अहं प्रातः उत्तिष्ठामि", "5. शूराः वयं धीराः वयम्", "6. सः एव महान् चित्रकारः", "7. अतिथिदेवो भव", "8. बुद्धिः सर्वार्थसाधिका", "9. यो जानाति सः पण्डितः", "10. त्वम् आपणं गच्छ", "11. पृथिव्यां त्रीणि रत्नानि", "12. आलस्यं हि मनुष्याणां शरीरस्थो महान् रिपुः", "13. सङ्ख्यागणना ननु सरला", "14. माधवस्य प्रियम् अङ्गम्", "15. वृक्षाः सत्पुरुषाः इव"]
+      }
+    },
     "JEE": {
       "name": "JEE Main & Advanced",
       "subjects": {
