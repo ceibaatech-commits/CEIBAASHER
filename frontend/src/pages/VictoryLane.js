@@ -1970,6 +1970,21 @@ const VictoryLane = () => {
                   {/* Image Upload Section */}
                   {quizInputMethod === 'image' && (
                     <div className="bg-purple-50 border-2 border-purple-200 border-dashed rounded-xl p-6 mb-4">
+                      {/* Instructions Box */}
+                      <div className="bg-purple-100 border border-purple-300 rounded-lg p-4 mb-4">
+                        <h4 className="font-semibold text-purple-900 mb-2 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-2" />
+                          Image Quality Guidelines
+                        </h4>
+                        <ul className="text-xs text-purple-800 space-y-1.5">
+                          <li>✅ <strong>High Resolution:</strong> Use clear, high-quality screenshots</li>
+                          <li>✅ <strong>Max Size:</strong> Under 3.8 MB (recommended) to avoid processing errors</li>
+                          <li>✅ <strong>Clarity:</strong> Ensure text is readable and not blurred</li>
+                          <li>✅ <strong>Format:</strong> PNG or JPEG files work best</li>
+                          <li>⚠️ <strong>Note:</strong> AI extracts questions & options only. You must select correct answers manually!</li>
+                        </ul>
+                      </div>
+
                       <input
                         type="file"
                         accept="image/*"
@@ -1979,6 +1994,9 @@ const VictoryLane = () => {
                             if (file.size > 10 * 1024 * 1024) {
                               toast.error('Image size must be less than 10MB');
                               return;
+                            }
+                            if (file.size > 3.8 * 1024 * 1024) {
+                              toast.warning('⚠️ Image larger than 3.8 MB may cause processing errors. Consider compressing it.');
                             }
                             setSelectedQuizImage(file);
                             const reader = new FileReader();
@@ -1993,7 +2011,13 @@ const VictoryLane = () => {
                         {quizImagePreview ? (
                           <div className="text-center">
                             <img src={quizImagePreview} alt="Preview" className="max-h-64 mx-auto rounded-lg shadow-md mb-3" />
-                            <p className="text-sm text-gray-600 mb-3">{selectedQuizImage?.name}</p>
+                            <p className="text-sm text-gray-600 mb-1">{selectedQuizImage?.name}</p>
+                            <p className="text-xs text-gray-500 mb-3">
+                              Size: {(selectedQuizImage?.size / (1024 * 1024)).toFixed(2)} MB
+                              {selectedQuizImage?.size > 3.8 * 1024 * 1024 && 
+                                <span className="text-orange-600 font-semibold"> (⚠️ May be too large)</span>
+                              }
+                            </p>
                             <button
                               type="button"
                               onClick={(e) => {
@@ -2003,15 +2027,15 @@ const VictoryLane = () => {
                               disabled={extractingQuestions}
                               className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition disabled:opacity-50"
                             >
-                              {extractingQuestions ? 'Extracting...' : '🔍 Extract Questions (Max 50)'}
+                              {extractingQuestions ? '⏳ Extracting Questions...' : '🔍 Extract Questions (Max 50)'}
                             </button>
                           </div>
                         ) : (
                           <div className="text-center text-gray-600">
                             <Upload className="w-12 h-12 mx-auto mb-3 text-purple-500" />
                             <p className="text-lg font-semibold mb-1">Click to upload question image</p>
-                            <p className="text-sm">PNG, JPG, JPEG supported (Max 10MB)</p>
-                            <p className="text-xs text-purple-600 mt-2 font-medium">⚠️ AI extracts questions & options. You must select correct answers manually!</p>
+                            <p className="text-sm text-gray-600">PNG, JPG, JPEG supported</p>
+                            <p className="text-xs text-purple-700 mt-2 font-medium">📸 Recommended: High-resolution screenshots under 3.8 MB</p>
                           </div>
                         )}
                       </label>
