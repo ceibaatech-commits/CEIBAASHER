@@ -100,3 +100,4 @@ yarl==1.22.0
 httpx
 python-socketio[asyncio]
 httpx==0.28.1
+resend==2.19.0
