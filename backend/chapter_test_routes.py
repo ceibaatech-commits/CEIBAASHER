@@ -34,6 +34,15 @@ async def get_chapters(class_param: str = None, subject: str = None):
         # First replace triple dashes with special marker, then single dashes with spaces
         normalized_subject = subject.replace('---', '|||').replace('-', ' ').replace('|||', ' - ').title()
         
+        # Fix common words that should stay lowercase (and, of, the, in, etc.)
+        # These words are typically lowercase in titles except at the start
+        lowercase_words = ['And', 'Of', 'The', 'In', 'On', 'At', 'To', 'For', 'With', 'Or']
+        words = normalized_subject.split(' ')
+        for i, word in enumerate(words):
+            if i > 0 and word in lowercase_words:  # Don't lowercase first word
+                words[i] = word.lower()
+        normalized_subject = ' '.join(words)
+        
         # Get chapters from data
         chapters = get_chapters_by_class_subject(class_number, normalized_subject)
         
