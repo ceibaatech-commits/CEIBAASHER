@@ -3157,6 +3157,7 @@ class BackendTester:
         print("=" * 60)
         
         tests = [
+            self.test_cbse_class_6_7_8_chapter_display_and_question_sync,
             self.test_victory_lane_pagination_feature,
             self.test_ncert_chapter_tests_functionality,
             self.test_ceibaa_quiz_platform_bug_fixes,
