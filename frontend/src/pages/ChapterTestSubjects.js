@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator } from 'lucide-react';
+import { ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator, Atom, Brain, Users } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../hooks/useAuth';
