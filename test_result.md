@@ -4209,6 +4209,18 @@ backend:
         agent: "main"
         comment: "Fixed multiple critical bugs: (1) JWT token decoding for profile updates - was using string replacement instead of proper JWT decode, (2) Added username field to posts for profile navigation, (3) Created new endpoints for fetching user posts, quiz rooms, and liked posts, (4) Fixed all follow system endpoints to use proper JWT decoding. Created decode_jwt_token() helper function to avoid code duplication."
 
+  - task: "Class-Based Quiz Fix for Classes 6, 7, 8"
+    implemented: true
+    working: true
+    file: "/app/backend/quiz_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "🎯 CLASS-BASED QUIZ FIX COMPREHENSIVE TEST COMPLETE (100% success rate - All 7 test scenarios passed): **CRITICAL BUG FIX VERIFIED**: Questions added via Google Sheet in admin panel for Classes 6, 7, 8 are now appearing correctly on frontend quiz pages. **ALL TEST SCENARIOS PASSED**: (1) ✅ Class 6 Science - Components of Food: 10 questions returned, (2) ✅ Class 6 Science - Fun with Magnets: 5 questions returned, (3) ✅ Class 8 Geography - Resources: 10 questions returned, (4) ✅ Class 6 Hindi - Malhar: 5 questions returned, (5) ✅ Regression Test - JEE Physics: 5 questions returned (no regression), (6) ✅ Question structure validation: All questions have proper id, question, options, correctAnswer fields, (7) ✅ Database query logic: ALL 4 class-based queries working correctly. **BACKEND API TESTS**: All POST /api/quiz/start requests with isClassBased: true return success: true with proper questions. **ROOT CAUSE CONFIRMED FIXED**: Modified quiz_routes.py to add proper class-based query support in database fallback section - now correctly queries by class_name, subject, and chapter for class-based quizzes (Classes 6-12). **TECHNICAL VERIFICATION**: Class-based query logic properly implemented with regex pattern matching for chapter names, both with and without number prefixes (e.g., 'Components of Food' matches '1. Components of Food'). All curl commands from review request working correctly."
+
 frontend:
   - task: "Profile Picture Display Fix"
     implemented: true
