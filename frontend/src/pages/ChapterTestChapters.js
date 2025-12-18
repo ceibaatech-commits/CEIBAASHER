@@ -20,12 +20,20 @@ const ChapterTestChapters = () => {
   // Triple dashes (---) become " - " (space-dash-space)
   const formattedSubject = useMemo(() => {
     if (!subject) return '';
+    const lowercaseWords = ['and', 'of', 'the', 'in', 'on', 'at', 'to', 'for', 'with', 'or'];
     return subject
       .replace(/---/g, '|||')  // Temporarily replace triple dashes
       .replace(/-/g, ' ')      // Replace single dashes with spaces
       .replace(/\|\|\|/g, ' - ') // Restore triple dashes as " - "
       .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word, index) => {
+        const capitalized = word.charAt(0).toUpperCase() + word.slice(1);
+        // Keep lowercase words lowercase (except first word)
+        if (index > 0 && lowercaseWords.includes(word.toLowerCase())) {
+          return word.toLowerCase();
+        }
+        return capitalized;
+      })
       .join(' ');
   }, [subject]);
 
