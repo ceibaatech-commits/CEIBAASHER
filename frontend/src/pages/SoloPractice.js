@@ -590,7 +590,7 @@ const SoloPractice = () => {
         {/* Question Card */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <div className="mb-6">
-            <div className="text-sm text-gray-500 mb-2">{examName} - {subjectName}</div>
+            <div className="text-sm text-gray-500 mb-2">- {classBasedData?.subject || subjectName}</div>
             <h2 className="text-2xl font-bold text-gray-900">
               <MathText text={currentQuestion?.question} />
             </h2>
