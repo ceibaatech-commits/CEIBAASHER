@@ -16,10 +16,18 @@ const ChapterTestChapters = () => {
   
   // Extract class number from URL path if not in params (for class 11/12 with streams)
   const selectedClass = classNumber?.replace('class-', '') || location.pathname.match(/class-(\d+)/)?.[1] || '';
-  const formattedSubject = useMemo(() => 
-    subject?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
-    [subject]
-  );
+  // Format subject: handle "hindi---malhar" -> "Hindi - Malhar"
+  // Triple dashes (---) become " - " (space-dash-space)
+  const formattedSubject = useMemo(() => {
+    if (!subject) return '';
+    return subject
+      .replace(/---/g, '|||')  // Temporarily replace triple dashes
+      .replace(/-/g, ' ')      // Replace single dashes with spaces
+      .replace(/\|\|\|/g, ' - ') // Restore triple dashes as " - "
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }, [subject]);
 
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
