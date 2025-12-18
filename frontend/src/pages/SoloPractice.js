@@ -379,11 +379,11 @@ const SoloPractice = () => {
             {/* Question count buttons with emojis */}
             <div className="grid grid-cols-5 gap-2 mb-5">
               {[
-                { num: 10, emoji: '🔥', color: 'from-orange-500 to-red-500' },
-                { num: 20, emoji: '⚡', color: 'from-yellow-500 to-orange-500' },
-                { num: 30, emoji: '💪', color: 'from-green-500 to-emerald-500' },
-                { num: 50, emoji: '🚀', color: 'from-blue-500 to-cyan-500' },
-                { num: 100, emoji: '🏆', color: 'from-purple-500 to-pink-500' }
+                { num: 10, emoji: '🔥', color: 'from-rose-600 to-orange-600' },
+                { num: 20, emoji: '⚡', color: 'from-amber-500 to-yellow-600' },
+                { num: 30, emoji: '💪', color: 'from-emerald-600 to-teal-600' },
+                { num: 50, emoji: '🚀', color: 'from-cyan-600 to-blue-600' },
+                { num: 100, emoji: '🏆', color: 'from-indigo-600 to-violet-600' }
               ].map(({ num, emoji, color }) => (
                 <button
                   key={num}
@@ -391,7 +391,7 @@ const SoloPractice = () => {
                   className={`relative py-4 rounded-2xl font-bold text-lg transition-all transform active:scale-95 ${
                     numberOfQuestions === num
                       ? `bg-gradient-to-br ${color} text-white shadow-xl scale-110`
-                      : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 hover:shadow-lg hover:scale-105 border-2 border-gray-200'
+                      : 'bg-white text-gray-700 hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="text-2xl mb-1">{emoji}</div>
