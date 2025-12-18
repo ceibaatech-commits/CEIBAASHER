@@ -330,10 +330,10 @@ const SoloPractice = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
           {/* Animated Header Card */}
-          <div className="relative bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl p-6 mb-6 overflow-hidden">
-            {/* Animated background circles */}
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 animate-pulse"></div>
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16 animate-pulse delay-300"></div>
+          <div className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 rounded-3xl shadow-2xl p-6 mb-6 overflow-hidden">
+            {/* Animated background pattern */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full -mr-20 -mt-20 animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/10 rounded-full -ml-16 -mb-16 animate-pulse delay-300"></div>
             
             <button
               onClick={() => {
