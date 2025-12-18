@@ -367,8 +367,8 @@ const SoloPractice = () => {
           {/* Questions Selection Card */}
           <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
             <div className="flex items-center gap-3 mb-5">
-              <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-3 shadow-lg">
-                <HelpCircle className="w-6 h-6 text-white" />
+              <div className="bg-slate-800 rounded-2xl p-3 shadow-lg">
+                <HelpCircle className="w-6 h-6 text-amber-400" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Number of Questions</h2>
