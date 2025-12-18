@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, ExternalLink, FileText, TrendingUp } from 'lucide-react';
+import { ExternalLink, TrendingUp, FileText } from 'lucide-react';
 
-const HomeBannerCarousel = () => {
-  const navigate = useNavigate();
+const CompactBanner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const banners = [
@@ -12,7 +10,6 @@ const HomeBannerCarousel = () => {
       exam: 'RRB NTPC',
       title: 'RRB NTPC 2026',
       subtitle: 'Railway Recruitment Board - Non-Technical Popular Categories',
-      description: 'Start your railway career with comprehensive preparation',
       highlights: [
         '5,800+ Vacancies Expected',
         'Complete Syllabus Coverage',
@@ -20,16 +17,13 @@ const HomeBannerCarousel = () => {
       ],
       gradient: 'from-blue-600 via-indigo-600 to-purple-700',
       ctaText: 'View Syllabus & Apply',
-      ctaLink: '/exams/rrb-ntpc',
-      icon: '🚂',
-      pattern: 'railway'
+      icon: '🚂'
     },
     {
       id: 2,
       exam: 'AFCAT',
       title: 'Indian Air Force AFCAT',
       subtitle: 'Air Force Common Admission Test 2026',
-      description: 'Join the Indian Air Force - Fly High, Aim Higher',
       highlights: [
         'Flying & Ground Duty Branches',
         'Complete Exam Pattern',
@@ -37,160 +31,140 @@ const HomeBannerCarousel = () => {
       ],
       gradient: 'from-sky-500 via-blue-600 to-indigo-700',
       ctaText: 'Details & Free Mock Test',
-      ctaLink: '/exams/afcat',
-      icon: '✈️',
-      pattern: 'airforce'
+      icon: '✈️'
     }
   ];
 
-  // Auto-slide every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % banners.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [banners.length]);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % banners.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + banners.length) % banners.length);
-  };
-
-  const goToSlide = (index) => {
-    setCurrentSlide(index);
-  };
+  }, []);
 
   const currentBanner = banners[currentSlide];
 
   return (
-    <div className="relative w-full bg-white overflow-hidden shadow-lg">
-      {/* Banner Container */}
-      <div className="relative home-banner-carousel">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          {currentBanner.pattern === 'railway' && (
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100">
-              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="railway-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M0 20h40M20 0v40" stroke="currentColor" strokeWidth="0.5" fill="none" className="text-blue-300"/>
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#railway-pattern)" />
-              </svg>
-            </div>
-          )}
-          {currentBanner.pattern === 'airforce' && (
-            <div className="absolute inset-0 bg-gradient-to-br from-sky-100 to-indigo-100">
-              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="airforce-pattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                    <circle cx="30" cy="30" r="2" fill="currentColor" className="text-sky-300"/>
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#airforce-pattern)" />
-              </svg>
-            </div>
-          )}
-        </div>
+    <div className="w-full bg-gray-50">
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes slideInLeft {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+        @keyframes rotateClockwise {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes rotateCounterClockwise {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        .animate-slide-in {
+          animation: slideInLeft 0.6s ease-out forwards;
+        }
+        .animate-pulse-glow {
+          animation: pulseGlow 4s ease-in-out infinite;
+        }
+        .rotate-ring-1 {
+          animation: rotateClockwise 20s linear infinite;
+        }
+        .rotate-ring-2 {
+          animation: rotateCounterClockwise 15s linear infinite;
+        }
+        .rotate-ring-3 {
+          animation: rotateClockwise 25s linear infinite;
+        }
+      `}</style>
 
-        {/* Content */}
-        <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient} banner-animated-gradient overflow-hidden`}>
-          {/* Floating Particles */}
-          <div className="absolute inset-0 banner-particles">
-            <div className="particle particle-1"></div>
-            <div className="particle particle-2"></div>
-            <div className="particle particle-3"></div>
-            <div className="particle particle-4"></div>
-            <div className="particle particle-5"></div>
-          </div>
+      <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 overflow-hidden shadow-lg">
+        <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`}>
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse-glow"></div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '2s'}}></div>
           
-          {/* Animated Glow Effects */}
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-glow"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '1s'}}></div>
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10 py-8">
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-center w-full">
-              {/* Left: Text Content */}
-              <div className="text-white home-banner-content compact-banner">
-                {/* Icon & Badge */}
-                <div className="flex items-center space-x-1.5 sm:space-x-2 mb-1.5 sm:mb-2 animate-slide-in-left">
-                  <div className="banner-icon-bounce text-xl sm:text-2xl md:text-3xl">{currentBanner.icon}</div>
-                  <span className="bg-white/30 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-bold border border-white/40">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10">
+            <div className="grid md:grid-cols-2 gap-8 items-center w-full">
+              
+              <div className="text-white space-y-3">
+                <div className="flex items-center gap-2 animate-slide-in">
+                  <span className="text-3xl sm:text-4xl">{currentBanner.icon}</span>
+                  <span className="bg-white/25 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold border border-white/30">
                     {currentBanner.exam}
                   </span>
                 </div>
 
-                {/* Title with Gradient Text */}
-                <div className="mb-1.5 sm:mb-2 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
-                  <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black mb-0.5 sm:mb-1 leading-tight banner-title-glow">
+                <div className="animate-slide-in" style={{animationDelay: '0.1s'}}>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 leading-tight">
                     {currentBanner.title}
                   </h2>
-                  <p className="text-xs sm:text-sm md:text-base text-white/95 font-semibold banner-subtitle-shine">
+                  <p className="text-sm sm:text-base text-white/90 font-medium hidden sm:block">
                     {currentBanner.subtitle}
                   </p>
                 </div>
 
-                {/* Description - Hidden on mobile */}
-                <p className="hidden sm:block text-sm md:text-base text-white/90 mb-2 animate-slide-in-left" style={{animationDelay: '0.2s'}}>
-                  {currentBanner.description}
-                </p>
-
-                {/* Highlights with Icons */}
-                <div className="space-y-1 mb-2 sm:mb-3">
+                <div className="space-y-2 animate-slide-in" style={{animationDelay: '0.2s'}}>
                   {currentBanner.highlights.map((highlight, index) => (
-                    <div key={index} className="flex items-center space-x-1.5 animate-slide-in-left" style={{animationDelay: `${0.3 + index * 0.1}s`}}>
-                      <div className="w-4 h-4 bg-white/20 backdrop-blur-sm rounded flex items-center justify-center flex-shrink-0">
-                        <TrendingUp className="w-2.5 h-2.5 text-white" />
+                    <div key={index} className="flex items-center gap-2 text-sm sm:text-base">
+                      <div className="w-5 h-5 bg-white/20 backdrop-blur-sm rounded flex items-center justify-center flex-shrink-0">
+                        <TrendingUp className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-xs sm:text-sm text-white font-medium">{highlight}</span>
+                      <span className="text-white/95 font-medium">{highlight}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* CTA Button Enhanced */}
-                <div className="animate-slide-in-left" style={{animationDelay: '0.6s'}}>
-                  <button
-                    onClick={() => navigate(currentBanner.ctaLink)}
-                    className="banner-cta-button bg-white text-gray-900 px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-gray-100 transition-all inline-flex items-center space-x-1.5 shadow-lg hover:shadow-white/50 relative overflow-hidden group"
-                  >
-                    <span className="relative z-10">{currentBanner.ctaText}</span>
-                    <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4 relative z-10 group-hover:rotate-12 transition-transform" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                <div className="animate-slide-in pt-2" style={{animationDelay: '0.3s'}}>
+                  <button className="bg-white text-gray-900 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-gray-100 transition-all inline-flex items-center gap-2 shadow-xl hover:shadow-2xl hover:scale-105 group">
+                    <span>{currentBanner.ctaText}</span>
+                    <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                   </button>
                 </div>
               </div>
 
-              {/* Right: Enhanced Decorative Element */}
-              <div className="hidden md:flex items-center justify-center relative py-6">
-                <div className="relative banner-3d-element">
-                  {/* Rotating Ring 1 */}
-                  <div className="absolute inset-0 banner-ring-1"></div>
-                  {/* Rotating Ring 2 */}
-                  <div className="absolute inset-0 banner-ring-2"></div>
+              <div className="hidden md:flex items-center justify-center relative">
+                <div className="relative w-72 h-72 lg:w-80 lg:h-80">
                   
-                  {/* Center Content - Responsive sizing */}
-                  <div className="w-72 h-72 lg:w-80 lg:h-80 xl:w-96 xl:h-96 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border-4 border-white/20 shadow-2xl relative z-10">
-                    <div className="w-60 h-60 lg:w-64 lg:h-64 xl:w-80 xl:h-80 bg-gradient-to-br from-white/20 to-white/5 rounded-full flex items-center justify-center border-2 border-white/30">
-                      <div className="text-center">
-                        <div className="relative">
-                          <FileText className="w-16 h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 text-white mx-auto mb-3 lg:mb-4 animate-float" />
-                          <div className="absolute -top-2 -right-2 w-5 h-5 lg:w-6 lg:h-6 bg-yellow-400 rounded-full animate-ping"></div>
+                  <div className="absolute inset-0 w-full h-full">
+                    <div className="w-full h-full border-[6px] border-white border-dashed rounded-full rotate-ring-1 shadow-lg"></div>
+                  </div>
+                  
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                    <div className="w-56 h-56 lg:w-64 lg:h-64 border-[5px] border-white rounded-full rotate-ring-2 shadow-lg"></div>
+                  </div>
+                  
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                    <div className="w-40 h-40 lg:w-48 lg:h-48 border-4 border-white border-dotted rounded-full rotate-ring-3 shadow-lg"></div>
+                  </div>
+                  
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+                    <div className="w-32 h-32 lg:w-40 lg:h-40 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border-4 border-white shadow-2xl">
+                      <div className="w-28 h-28 lg:w-36 lg:h-36 bg-gradient-to-br from-white/30 to-white/10 rounded-full flex items-center justify-center border-2 border-white/50">
+                        <div className="text-center">
+                          <div className="relative inline-block">
+                            <FileText className="w-14 h-14 lg:w-16 lg:h-16 text-white mx-auto mb-2 animate-float" />
+                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-lg"></div>
+                          </div>
+                          <p className="text-white font-black text-3xl lg:text-4xl mb-0.5 drop-shadow-lg">2026</p>
+                          <p className="text-white/95 font-semibold text-sm">Exam Ready</p>
                         </div>
-                        <p className="text-white font-black text-2xl lg:text-3xl xl:text-4xl mb-1 banner-year-glow">2026</p>
-                        <p className="text-white/90 font-semibold text-sm lg:text-base">Exam Ready</p>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Floating Badges */}
-                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm shadow-2xl animate-bounce-slow border-2 border-white/50">
+                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl animate-float border-2 border-white z-10">
                     🔥 Hot
                   </div>
-                  <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-green-400 to-emerald-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm shadow-2xl animate-bounce-slow border-2 border-white/50" style={{animationDelay: '0.5s'}}>
+                  <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-green-400 to-emerald-500 text-gray-900 px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl animate-float border-2 border-white z-10" style={{animationDelay: '1.5s'}}>
                     ✨ New
                   </div>
                 </div>
@@ -198,9 +172,21 @@ const HomeBannerCarousel = () => {
             </div>
           </div>
         </div>
+
+        <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          {banners.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-1.5 rounded-full transition-all ${
+                currentSlide === index ? 'w-8 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/70'
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-export default HomeBannerCarousel;
+export default CompactBanner;
