@@ -418,9 +418,9 @@ const SoloPractice = () => {
 
             {/* Current selection display */}
             <div className="text-center">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl px-6 py-3">
-                <CheckCircle2 className="w-6 h-6 text-purple-600" />
-                <span className="text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <div className="inline-flex items-center gap-3 bg-amber-50 border-2 border-amber-200 rounded-2xl px-6 py-3">
+                <CheckCircle2 className="w-6 h-6 text-amber-600" />
+                <span className="text-2xl font-black text-slate-800">
                   {numberOfQuestions} Questions Selected
                 </span>
               </div>
