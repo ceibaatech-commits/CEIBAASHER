@@ -39,13 +39,21 @@ const SoloPractice = () => {
       
       // Process subject: handle "hindi---malhar" -> "Hindi - Malhar"
       // Triple dashes (---) become " - " (space-dash-space)
-      // Then capitalize each word
+      // Then capitalize each word (except common lowercase words)
+      const lowercaseWords = ['and', 'of', 'the', 'in', 'on', 'at', 'to', 'for', 'with', 'or'];
       const processedSubject = urlSubject
         .replace(/---/g, '|||')  // Temporarily replace triple dashes
         .replace(/-/g, ' ')      // Replace single dashes with spaces
         .replace(/\|\|\|/g, ' - ') // Restore triple dashes as " - "
         .split(' ')
-        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .map((w, i) => {
+          const capitalized = w.charAt(0).toUpperCase() + w.slice(1);
+          // Keep lowercase words lowercase (except first word)
+          if (i > 0 && lowercaseWords.includes(w.toLowerCase())) {
+            return w.toLowerCase();
+          }
+          return capitalized;
+        })
         .join(' ');
       
       // Process chapter: handle "mathru-bhumi-(poem)" -> "Mathru Bhumi (Poem)"
