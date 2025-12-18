@@ -390,10 +390,10 @@ const SoloPractice = () => {
                   <button
                     key={num}
                     onClick={() => setNumberOfQuestions(num)}
-                    className={`py-3 px-4 rounded-lg font-semibold transition-all ${
+                    className={`py-4 px-4 rounded-xl font-semibold transition-all transform hover:scale-105 ${
                       numberOfQuestions === num
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-2 border-transparent'
+                        : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-blue-300 shadow-sm'
                     }`}
                   >
                     {num}
@@ -409,22 +409,22 @@ const SoloPractice = () => {
                 onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               />
-              <div className="flex justify-between items-center mt-3">
-                <span className="text-base text-gray-600 font-medium">10 questions</span>
-                <span className="font-bold text-xl text-purple-600">{numberOfQuestions} questions</span>
-                <span className="text-base text-gray-600 font-medium">100 questions</span>
+              <div className="flex justify-between text-sm text-gray-500 mt-2">
+                <span>10 questions</span>
+                <span className="font-bold text-lg text-purple-600">{numberOfQuestions} questions</span>
+                <span>100 questions</span>
               </div>
             </div>
 
             <button
               onClick={startQuiz}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-semibold text-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-semibold text-base hover:shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center space-x-2"
             >
-              <Trophy className="w-6 h-6" />
+              <Trophy className="w-5 h-5" />
               <span>Start Quiz</span>
             </button>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
               <p className="text-sm text-gray-700">
                 <strong>Note:</strong> Each question will have 30 seconds. You can review all answers at the end.
               </p>
