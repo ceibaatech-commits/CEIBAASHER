@@ -328,78 +328,80 @@ const SoloPractice = () => {
   if (quizState === 'setup') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="mb-6">
-              <button
-                onClick={() => {
-                  if (isClassBased && classBasedData) {
-                    navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`);
-                  } else {
-                    navigate(`/exam/${exam}`);
-                  }
-                }}
-                className="bg-white text-gray-700 hover:text-gray-900 flex items-center border-2 border-gray-300 hover:border-gray-400 px-4 py-2 rounded-lg transition-all font-semibold"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to {isClassBased ? 'Chapters' : 'Exam Topics'}
-              </button>
-            </div>
+        <div className="max-w-4xl mx-auto px-4">
+          {/* Animated Header Card */}
+          <div className="relative bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl shadow-2xl p-6 mb-6 overflow-hidden">
+            {/* Animated background circles */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-20 -mt-20 animate-pulse"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/10 rounded-full -ml-16 -mb-16 animate-pulse delay-300"></div>
+            
+            <button
+              onClick={() => {
+                if (isClassBased && classBasedData) {
+                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
+                } else {
+                  navigate(`/exam/${exam}`);
+                }
+              }}
+              className="relative flex items-center text-white/90 hover:text-white mb-4 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl transition-all hover:bg-white/20"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              <span className="font-semibold">Back to Chapters</span>
+            </button>
 
-            {/* Breadcrumb for class-based */}
-            {isClassBased && classBasedData && (
-              <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-                <button 
-                  onClick={() => navigate('/chapter-tests')} 
-                  className="hover:text-cyan-600 font-semibold"
-                >
-                  Home
-                </button>
-                <span>/</span>
-                <button 
-                  onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`)} 
-                  className="hover:text-cyan-600 font-semibold"
-                >
-                  {classBasedData.class_name}
-                </button>
-                <span>/</span>
-                <button 
-                  onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`)} 
-                  className="hover:text-cyan-600 font-semibold"
-                >
-                  {classBasedData.subject}
-                </button>
-                <span>/</span>
-                <span className="text-gray-900 font-semibold">{classBasedData.chapter}</span>
+            <div className="relative text-center mb-2">
+              <div className="inline-block bg-white/20 backdrop-blur-md rounded-full px-6 py-2 mb-4">
+                <p className="text-white/90 text-sm font-medium">
+                  {isClassBased ? `${classBasedData.class_name} • ${classBasedData.subject}` : `${exam} • ${subject}`}
+                </p>
               </div>
-            )}
-
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Setup Your Quiz</h1>
-              <p className="text-gray-600">
-                {isClassBased ? `${classBasedData.class_name} - ${classBasedData.subject} - ${classBasedData.chapter}` : `${exam} - ${subject} ${topic ? `- ${topic}` : ''} ${subTopic ? `- ${subTopic}` : ''}`}
+              <h1 className="text-3xl md:text-4xl font-black text-white mb-2 drop-shadow-lg">
+                🎯 Setup Your Quiz
+              </h1>
+              <p className="text-white/90 text-base font-medium">
+                {isClassBased ? classBasedData.chapter : `${topic || ''} ${subTopic || ''}`}
               </p>
             </div>
+          </div>
 
-            <div className="mb-8">
-              <label className="block text-lg font-semibold text-gray-900 mb-4">
-                Number of Questions
-              </label>
-              <div className="grid grid-cols-5 gap-3 mb-4">
-                {[10, 20, 30, 50, 100].map((num) => (
-                  <button
-                    key={num}
-                    onClick={() => setNumberOfQuestions(num)}
-                    className={`py-4 px-4 rounded-xl font-semibold transition-all transform hover:scale-105 ${
-                      numberOfQuestions === num
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg border-2 border-transparent'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-blue-300 shadow-sm'
-                    }`}
-                  >
-                    {num}
-                  </button>
-                ))}
+          {/* Questions Selection Card */}
+          <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-3 shadow-lg">
+                <HelpCircle className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Number of Questions</h2>
+                <p className="text-sm text-gray-500">Choose how many questions you want</p>
+              </div>
+            </div>
+
+            {/* Question count buttons with emojis */}
+            <div className="grid grid-cols-5 gap-2 mb-5">
+              {[
+                { num: 10, emoji: '🔥', color: 'from-orange-500 to-red-500' },
+                { num: 20, emoji: '⚡', color: 'from-yellow-500 to-orange-500' },
+                { num: 30, emoji: '💪', color: 'from-green-500 to-emerald-500' },
+                { num: 50, emoji: '🚀', color: 'from-blue-500 to-cyan-500' },
+                { num: 100, emoji: '🏆', color: 'from-purple-500 to-pink-500' }
+              ].map(({ num, emoji, color }) => (
+                <button
+                  key={num}
+                  onClick={() => setNumberOfQuestions(num)}
+                  className={`relative py-4 rounded-2xl font-bold text-lg transition-all transform active:scale-95 ${
+                    numberOfQuestions === num
+                      ? `bg-gradient-to-br ${color} text-white shadow-xl scale-110`
+                      : 'bg-gradient-to-br from-gray-50 to-gray-100 text-gray-600 hover:shadow-lg hover:scale-105 border-2 border-gray-200'
+                  }`}
+                >
+                  <div className="text-2xl mb-1">{emoji}</div>
+                  <div className="text-sm font-black">{num}</div>
+                </button>
+              ))}
+            </div>
+
+            {/* Animated slider */}
+            <div className="relative mb-4">
               <input
                 type="range"
                 min="10"
@@ -407,26 +409,42 @@ const SoloPractice = () => {
                 step="10"
                 value={numberOfQuestions}
                 onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                className="w-full h-3 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 rounded-full appearance-none cursor-pointer slider-thumb"
+                style={{
+                  background: `linear-gradient(to right, rgb(59 130 246) 0%, rgb(147 51 234) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) 100%)`
+                }}
               />
-              <div className="flex justify-between text-sm text-gray-500 mt-2">
-                <span>10 questions</span>
-                <span className="font-bold text-lg text-purple-600">{numberOfQuestions} questions</span>
-                <span>100 questions</span>
-              </div>
             </div>
 
-            <button
-              onClick={startQuiz}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3.5 rounded-xl font-semibold text-base hover:shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center space-x-2"
-            >
-              <Trophy className="w-5 h-5" />
-              <span>Start Quiz</span>
-            </button>
+            {/* Current selection display */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl px-6 py-3">
+                <CheckCircle2 className="w-6 h-6 text-purple-600" />
+                <span className="text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  {numberOfQuestions} Questions Selected
+                </span>
+              </div>
+            </div>
+          </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-gray-700">
-                <strong>Note:</strong> Each question will have 30 seconds. You can review all answers at the end.
+          {/* Start Quiz Button */}
+          <button
+            onClick={startQuiz}
+            className="w-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white py-5 rounded-2xl font-black text-xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3 mb-6"
+          >
+            <Trophy className="w-7 h-7" />
+            <span>🚀 Start Quiz Now!</span>
+          </button>
+
+          {/* Info Card */}
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-2xl p-5 flex items-start gap-4">
+            <div className="bg-blue-500 rounded-xl p-2 flex-shrink-0">
+              <Clock className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="font-bold text-blue-900 mb-1">⏱️ Quick Info</p>
+              <p className="text-sm text-blue-800">
+                Each question has <strong>30 seconds</strong>. Review all answers at the end before submitting!
               </p>
             </div>
           </div>
