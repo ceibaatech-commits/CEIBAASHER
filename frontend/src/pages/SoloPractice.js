@@ -32,15 +32,34 @@ const SoloPractice = () => {
       };
     } else if (isClassBasedFromUrl) {
       // Extract from URL if state not available
-      // URL format: /topic-quiz/Class-6/science/components-of-food
+      // URL format: /topic-quiz/Class-6/hindi---malhar/mathru-bhumi-(poem)
       const urlClassName = urlExamName; // "Class-6"
-      const urlSubject = subjectName; // "science"  
-      const urlChapter = topicName; // "components-of-food"
+      const urlSubject = subjectName; // "hindi---malhar" or "science"
+      const urlChapter = topicName; // "mathru-bhumi-(poem)" or "components-of-food"
+      
+      // Process subject: handle "hindi---malhar" -> "Hindi - Malhar"
+      // Triple dashes (---) become " - " (space-dash-space)
+      // Then capitalize each word
+      const processedSubject = urlSubject
+        .replace(/---/g, '|||')  // Temporarily replace triple dashes
+        .replace(/-/g, ' ')      // Replace single dashes with spaces
+        .replace(/\|\|\|/g, ' - ') // Restore triple dashes as " - "
+        .split(' ')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+      
+      // Process chapter: handle "mathru-bhumi-(poem)" -> "Mathru Bhumi (Poem)"
+      // Title case each word including words in parentheses
+      const processedChapter = urlChapter
+        .split('-')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ')
+        .replace(/\((\w)/g, (match, letter) => `(${letter.toUpperCase()}`); // Capitalize first letter after (
       
       classBasedData = {
         class_name: urlClassName.replace('Class-', 'Class ').replace(/-/g, ' '),
-        subject: urlSubject.charAt(0).toUpperCase() + urlSubject.slice(1),
-        chapter: urlChapter.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+        subject: processedSubject,
+        chapter: processedChapter
       };
     }
   }
