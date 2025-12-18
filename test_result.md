@@ -5043,3 +5043,42 @@ Please test and report if the retweet button is now working correctly."
       - working: false
         agent: "testing"
         comment: "CRITICAL BUG CONFIRMED: Quiz rooms appear in Victory Lane (37 posts found) but NOT in profile Quiz Rooms tab (0 rooms returned). Root cause: Backend /api/profile/{username}/quiz-rooms endpoint queries social_posts for room_codes but then looks for room details in empty quiz_rooms collection. API returns empty array despite quiz room posts existing in social_posts. Backend implementation needs fix to properly retrieve quiz room data for profile display."
+
+---
+
+## Test Request: Class-Based Quiz Fix Verification (Dec 18, 2025)
+
+### Bug Fixed
+**P0 Issue**: Questions added via Google Sheet in admin panel for Classes 6, 7, 8 were not appearing on frontend quiz pages.
+
+### Root Cause
+The fallback query in `quiz_routes.py` (lines 529-584) only had conditions for `exam_id`/`exam_name` fields but **never queried for `class_name`/`subject`/`chapter`** which is how class-based questions are stored.
+
+### Fix Applied
+Modified `/app/backend/quiz_routes.py` to add proper class-based query support in the database fallback section. Now it correctly queries by `class_name`, `subject`, and `chapter` for class-based quizzes (Classes 6-12).
+
+### Test Scenarios to Verify
+
+1. **Class 6 Science - Components of Food**
+   - URL: `/topic-quiz/Class-6/Science/components-of-food`
+   - Expected: Quiz should load with questions
+
+2. **Class 6 Science - Fun with Magnets**
+   - URL: `/topic-quiz/Class-6/Science/fun-with-magnets`
+   - Expected: Quiz should load with 50 questions
+
+3. **Class 8 Geography - Resources**
+   - URL: `/topic-quiz/Class-8/Geography/resources`
+   - Expected: Quiz should load with 150 questions
+
+4. **Class 6 Hindi - Mathru Bhumi**
+   - URL: `/topic-quiz/Class-6/Hindi---Malhar/mathru-bhumi-(poem)`
+   - Expected: Quiz should load with 50 questions
+
+5. **Exam-based quiz (regression test)**
+   - Ensure JEE, NEET, and other exam quizzes still work
+
+### API Endpoints to Test
+- `POST /api/quiz/start` with `isClassBased: true`
+- Verify questions are returned correctly for class-based quizzes
+
