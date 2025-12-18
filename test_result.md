@@ -5120,3 +5120,32 @@ Modified `/app/backend/quiz_routes.py` to add proper class-based query support i
 - `POST /api/quiz/start` with `isClassBased: true`
 - Verify questions are returned correctly for class-based quizzes
 
+
+---
+
+## Test Request: CBSE Chapter Matching Verification (Dec 18, 2025)
+
+### Verification Required
+
+**1. Subject Name Matching**
+All three sources must match exactly:
+- Backend: cbse_chapter_data.py
+- Admin: ExamSheetManager.js classWiseChapters
+- Frontend: ChapterTestSubjects.js subjects list
+
+**2. Chapter Display Test**
+Navigate to each Class 6, 7, 8 subject and verify chapters are displayed:
+- Class 6: Hindi - Malhar, Social Science, Math, English, Science, Sanskrit
+- Class 7: All 8 subjects  
+- Class 8: All 6 subjects
+
+**3. Admin Question Addition Test**
+Test adding questions via Google Sheet in ExamSheetManager for:
+- Class 6 Science - Curiosity
+- Verify questions sync to frontend quiz
+
+### Expected Results
+- All subjects should show their chapters correctly
+- No "No chapters available" messages
+- Questions added in admin should appear in frontend quizzes
+
