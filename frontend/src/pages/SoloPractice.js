@@ -409,9 +409,9 @@ const SoloPractice = () => {
                 step="10"
                 value={numberOfQuestions}
                 onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
-                className="w-full h-3 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 rounded-full appearance-none cursor-pointer slider-thumb"
+                className="w-full h-3 rounded-full appearance-none cursor-pointer slider-thumb"
                 style={{
-                  background: `linear-gradient(to right, rgb(59 130 246) 0%, rgb(147 51 234) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) 100%)`
+                  background: `linear-gradient(to right, rgb(15 23 42) 0%, rgb(15 23 42) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) 100%)`
                 }}
               />
             </div>
