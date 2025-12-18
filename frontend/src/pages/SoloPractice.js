@@ -409,10 +409,10 @@ const SoloPractice = () => {
                 onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
               />
-              <div className="flex justify-between text-sm text-gray-500 mt-2">
-                <span>10 questions</span>
-                <span className="font-bold text-lg text-purple-600">{numberOfQuestions} questions</span>
-                <span>100 questions</span>
+              <div className="flex justify-between items-center mt-3">
+                <span className="text-base text-gray-600 font-medium">10 questions</span>
+                <span className="font-bold text-xl text-purple-600">{numberOfQuestions} questions</span>
+                <span className="text-base text-gray-600 font-medium">100 questions</span>
               </div>
             </div>
 
