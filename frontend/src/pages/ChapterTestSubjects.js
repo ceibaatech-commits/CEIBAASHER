@@ -319,10 +319,274 @@ const ChapterTestSubjects = () => {
         bgColor: 'bg-teal-100',
         textColor: 'text-teal-600',
         description: 'Contemporary India II'
+      },
+      {
+        name: 'Hindi Kshitij',
+        icon: Languages,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'NCERT Kshitij - Hindi Textbook'
+      },
+      {
+        name: 'Hindi Kritika',
+        icon: Languages,
+        color: 'from-rose-500 to-rose-600',
+        bgColor: 'bg-rose-100',
+        textColor: 'text-rose-600',
+        description: 'Hindi Supplementary Reader'
+      },
+      {
+        name: 'Hindi Sparsh',
+        icon: Languages,
+        color: 'from-red-400 to-red-500',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-500',
+        description: 'Hindi Sparsh Textbook'
+      },
+      {
+        name: 'English First Flight Poems',
+        icon: BookOpen,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'Poetry Collection'
+      },
+      {
+        name: 'English First Flight Prose',
+        icon: BookOpen,
+        color: 'from-violet-500 to-violet-600',
+        bgColor: 'bg-violet-100',
+        textColor: 'text-violet-600',
+        description: 'Prose Stories and Essays'
+      },
+      {
+        name: 'English Footprints Without Feet',
+        icon: BookOpen,
+        color: 'from-fuchsia-500 to-fuchsia-600',
+        bgColor: 'bg-fuchsia-100',
+        textColor: 'text-fuchsia-600',
+        description: 'Supplementary Reader'
+      }
+    ];
+  } else if (selectedClass === '11') {
+    // Class 11 subjects
+    subjects = [
+      {
+        name: 'Physics',
+        icon: Atom,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Mechanics, Thermodynamics, Waves & Optics'
+      },
+      {
+        name: 'Chemistry',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Physical, Organic & Inorganic Chemistry'
+      },
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'Sets, Relations, Functions, Calculus'
+      },
+      {
+        name: 'Biology',
+        icon: Beaker,
+        color: 'from-emerald-500 to-emerald-600',
+        bgColor: 'bg-emerald-100',
+        textColor: 'text-emerald-600',
+        description: 'Living World, Cell Biology, Plant & Animal Physiology'
+      },
+      {
+        name: 'English',
+        icon: BookOpen,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'Hornbill & Snapshots'
+      },
+      {
+        name: 'Accountancy',
+        icon: Calculator,
+        color: 'from-amber-500 to-amber-600',
+        bgColor: 'bg-amber-100',
+        textColor: 'text-amber-600',
+        description: 'Financial Accounting Fundamentals'
+      },
+      {
+        name: 'Business Studies',
+        icon: Globe,
+        color: 'from-cyan-500 to-cyan-600',
+        bgColor: 'bg-cyan-100',
+        textColor: 'text-cyan-600',
+        description: 'Business Environment & Management'
+      },
+      {
+        name: 'Economics',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Indian Economic Development & Statistics'
+      },
+      {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'Themes in World History'
+      },
+      {
+        name: 'Geography',
+        icon: Globe,
+        color: 'from-lime-500 to-lime-600',
+        bgColor: 'bg-lime-100',
+        textColor: 'text-lime-600',
+        description: 'Physical & Human Geography'
+      },
+      {
+        name: 'Political Science',
+        icon: Globe,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-600',
+        description: 'Indian Constitution & Political Theory'
+      },
+      {
+        name: 'Psychology',
+        icon: Brain,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'Introduction to Psychology'
+      },
+      {
+        name: 'Sociology',
+        icon: Users,
+        color: 'from-violet-500 to-violet-600',
+        bgColor: 'bg-violet-100',
+        textColor: 'text-violet-600',
+        description: 'Introducing Sociology'
+      }
+    ];
+  } else if (selectedClass === '12') {
+    // Class 12 subjects
+    subjects = [
+      {
+        name: 'Physics',
+        icon: Atom,
+        color: 'from-blue-500 to-blue-600',
+        bgColor: 'bg-blue-100',
+        textColor: 'text-blue-600',
+        description: 'Electrostatics, Magnetism, Optics & Modern Physics'
+      },
+      {
+        name: 'Chemistry',
+        icon: Beaker,
+        color: 'from-green-500 to-green-600',
+        bgColor: 'bg-green-100',
+        textColor: 'text-green-600',
+        description: 'Solutions, Electrochemistry, Organic Chemistry'
+      },
+      {
+        name: 'Mathematics',
+        icon: Calculator,
+        color: 'from-purple-500 to-purple-600',
+        bgColor: 'bg-purple-100',
+        textColor: 'text-purple-600',
+        description: 'Relations, Calculus, Vectors, Probability'
+      },
+      {
+        name: 'Biology',
+        icon: Beaker,
+        color: 'from-emerald-500 to-emerald-600',
+        bgColor: 'bg-emerald-100',
+        textColor: 'text-emerald-600',
+        description: 'Reproduction, Genetics, Evolution, Ecology'
+      },
+      {
+        name: 'English',
+        icon: BookOpen,
+        color: 'from-indigo-500 to-indigo-600',
+        bgColor: 'bg-indigo-100',
+        textColor: 'text-indigo-600',
+        description: 'Flamingo & Vistas'
+      },
+      {
+        name: 'Accountancy',
+        icon: Calculator,
+        color: 'from-amber-500 to-amber-600',
+        bgColor: 'bg-amber-100',
+        textColor: 'text-amber-600',
+        description: 'Partnership & Company Accounts'
+      },
+      {
+        name: 'Business Studies',
+        icon: Globe,
+        color: 'from-cyan-500 to-cyan-600',
+        bgColor: 'bg-cyan-100',
+        textColor: 'text-cyan-600',
+        description: 'Business Finance & Marketing'
+      },
+      {
+        name: 'Economics',
+        icon: Globe,
+        color: 'from-teal-500 to-teal-600',
+        bgColor: 'bg-teal-100',
+        textColor: 'text-teal-600',
+        description: 'Macro Economics & Indian Economy'
+      },
+      {
+        name: 'History',
+        icon: Globe,
+        color: 'from-orange-500 to-orange-600',
+        bgColor: 'bg-orange-100',
+        textColor: 'text-orange-600',
+        description: 'Themes in Indian History'
+      },
+      {
+        name: 'Geography',
+        icon: Globe,
+        color: 'from-lime-500 to-lime-600',
+        bgColor: 'bg-lime-100',
+        textColor: 'text-lime-600',
+        description: 'India: People & Economy'
+      },
+      {
+        name: 'Political Science',
+        icon: Globe,
+        color: 'from-red-500 to-red-600',
+        bgColor: 'bg-red-100',
+        textColor: 'text-red-600',
+        description: 'Contemporary World Politics & Politics in India'
+      },
+      {
+        name: 'Psychology',
+        icon: Brain,
+        color: 'from-pink-500 to-pink-600',
+        bgColor: 'bg-pink-100',
+        textColor: 'text-pink-600',
+        description: 'Advanced Psychology'
+      },
+      {
+        name: 'Sociology',
+        icon: Users,
+        color: 'from-violet-500 to-violet-600',
+        bgColor: 'bg-violet-100',
+        textColor: 'text-violet-600',
+        description: 'Indian Society & Social Change'
       }
     ];
   } else {
-    // Other classes
+    // Other classes (fallback)
     subjects = [
       {
         name: 'Mathematics',
