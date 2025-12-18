@@ -430,20 +430,20 @@ const SoloPractice = () => {
           {/* Start Quiz Button */}
           <button
             onClick={startQuiz}
-            className="w-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 text-white py-5 rounded-2xl font-black text-xl shadow-2xl hover:shadow-3xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3 mb-6"
+            className="w-full bg-slate-800 hover:bg-slate-900 text-white py-5 rounded-2xl font-black text-xl shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3 mb-6"
           >
-            <Trophy className="w-7 h-7" />
-            <span>🚀 Start Quiz Now!</span>
+            <Trophy className="w-7 h-7 text-amber-400" />
+            <span>Start Quiz Now 🚀</span>
           </button>
 
           {/* Info Card */}
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-2xl p-5 flex items-start gap-4">
-            <div className="bg-blue-500 rounded-xl p-2 flex-shrink-0">
-              <Clock className="w-6 h-6 text-white" />
+          <div className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-5 flex items-start gap-4">
+            <div className="bg-slate-800 rounded-xl p-2 flex-shrink-0">
+              <Clock className="w-6 h-6 text-amber-400" />
             </div>
             <div>
-              <p className="font-bold text-blue-900 mb-1">⏱️ Quick Info</p>
-              <p className="text-sm text-blue-800">
+              <p className="font-bold text-slate-900 mb-1">⏱️ Quick Info</p>
+              <p className="text-sm text-slate-700">
                 Each question has <strong>30 seconds</strong>. Review all answers at the end before submitting!
               </p>
             </div>
