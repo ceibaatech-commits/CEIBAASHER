@@ -1304,6 +1304,226 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_class_based_quiz_fix(self):
+        """Test the Class-Based Quiz Fix for Classes 6, 7, 8 - Comprehensive verification"""
+        try:
+            print("\n🎯 TESTING CLASS-BASED QUIZ FIX FOR CLASSES 6, 7, 8")
+            print("=" * 60)
+            
+            # Step 1: Test Class 6 Science Quiz - Components of Food
+            self.log_result("Class Quiz Test - Scenario 1", True, "🔄 Testing Class 6 Science - Components of Food")
+            
+            quiz_data_1 = {
+                "exam": "Class-6",
+                "subject": "Science",
+                "isClassBased": True,
+                "class_name": "Class 6",
+                "chapter": "Components of Food",
+                "numberOfQuestions": 10
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data_1)
+            
+            if response.status_code != 200:
+                self.log_result("Class 6 Science - Components of Food", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result_1 = response.json()
+            
+            if not result_1.get('success'):
+                self.log_result("Class 6 Science - Components of Food", False, f"❌ API returned success=false: {result_1}")
+                return False
+            
+            questions_1 = result_1.get('questions', [])
+            if len(questions_1) == 0:
+                self.log_result("Class 6 Science - Components of Food", False, "❌ No questions returned - fix may not be working")
+                return False
+            
+            self.log_result("Class 6 Science - Components of Food", True, f"✅ SUCCESS: {len(questions_1)} questions returned")
+            
+            # Step 2: Test Class 6 Science Quiz - Fun with Magnets
+            self.log_result("Class Quiz Test - Scenario 2", True, "🔄 Testing Class 6 Science - Fun with Magnets")
+            
+            quiz_data_2 = {
+                "exam": "Class-6",
+                "subject": "Science",
+                "isClassBased": True,
+                "class_name": "Class 6",
+                "chapter": "Fun with Magnets",
+                "numberOfQuestions": 5
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data_2)
+            
+            if response.status_code != 200:
+                self.log_result("Class 6 Science - Fun with Magnets", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result_2 = response.json()
+            
+            if not result_2.get('success'):
+                self.log_result("Class 6 Science - Fun with Magnets", False, f"❌ API returned success=false: {result_2}")
+                return False
+            
+            questions_2 = result_2.get('questions', [])
+            if len(questions_2) == 0:
+                self.log_result("Class 6 Science - Fun with Magnets", False, "❌ No questions returned - fix may not be working")
+                return False
+            
+            self.log_result("Class 6 Science - Fun with Magnets", True, f"✅ SUCCESS: {len(questions_2)} questions returned")
+            
+            # Step 3: Test Class 8 Geography Resources
+            self.log_result("Class Quiz Test - Scenario 3", True, "🔄 Testing Class 8 Geography - Resources")
+            
+            quiz_data_3 = {
+                "exam": "Class-8",
+                "subject": "Geography",
+                "isClassBased": True,
+                "class_name": "Class 8",
+                "chapter": "Resources",
+                "numberOfQuestions": 10
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data_3)
+            
+            if response.status_code != 200:
+                self.log_result("Class 8 Geography - Resources", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result_3 = response.json()
+            
+            if not result_3.get('success'):
+                self.log_result("Class 8 Geography - Resources", False, f"❌ API returned success=false: {result_3}")
+                return False
+            
+            questions_3 = result_3.get('questions', [])
+            if len(questions_3) == 0:
+                self.log_result("Class 8 Geography - Resources", False, "❌ No questions returned - fix may not be working")
+                return False
+            
+            self.log_result("Class 8 Geography - Resources", True, f"✅ SUCCESS: {len(questions_3)} questions returned")
+            
+            # Step 4: Test Class 6 Hindi - Malhar
+            self.log_result("Class Quiz Test - Scenario 4", True, "🔄 Testing Class 6 Hindi - Malhar")
+            
+            quiz_data_4 = {
+                "exam": "Class-6",
+                "subject": "Hindi - Malhar",
+                "isClassBased": True,
+                "class_name": "Class 6",
+                "chapter": "Mathru Bhumi (Poem)",
+                "numberOfQuestions": 5
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data_4)
+            
+            if response.status_code != 200:
+                self.log_result("Class 6 Hindi - Malhar", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result_4 = response.json()
+            
+            if not result_4.get('success'):
+                self.log_result("Class 6 Hindi - Malhar", False, f"❌ API returned success=false: {result_4}")
+                return False
+            
+            questions_4 = result_4.get('questions', [])
+            if len(questions_4) == 0:
+                self.log_result("Class 6 Hindi - Malhar", False, "❌ No questions returned - fix may not be working")
+                return False
+            
+            self.log_result("Class 6 Hindi - Malhar", True, f"✅ SUCCESS: {len(questions_4)} questions returned")
+            
+            # Step 5: Regression Test - Exam-based Quiz (JEE/NEET)
+            self.log_result("Class Quiz Test - Scenario 5", True, "🔄 Testing Regression - JEE Physics")
+            
+            quiz_data_5 = {
+                "exam": "JEE",
+                "subject": "Physics",
+                "topic": "Mechanics",
+                "numberOfQuestions": 5
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data_5)
+            
+            if response.status_code != 200:
+                self.log_result("Regression Test - JEE Physics", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result_5 = response.json()
+            
+            if not result_5.get('success'):
+                # For JEE, it's acceptable if no questions exist, but API should still work
+                if "Questions not available" in result_5.get('detail', ''):
+                    self.log_result("Regression Test - JEE Physics", True, "✅ SUCCESS: API working correctly (no questions available is acceptable)")
+                else:
+                    self.log_result("Regression Test - JEE Physics", False, f"❌ Unexpected error: {result_5}")
+                    return False
+            else:
+                questions_5 = result_5.get('questions', [])
+                self.log_result("Regression Test - JEE Physics", True, f"✅ SUCCESS: {len(questions_5)} questions returned (regression test passed)")
+            
+            # Step 6: Verify Question Structure
+            self.log_result("Class Quiz Test - Scenario 6", True, "🔄 Verifying Question Structure")
+            
+            # Check structure of questions from Class 6 Science
+            if questions_1:
+                first_q = questions_1[0]
+                required_fields = ['id', 'question', 'options', 'correctAnswer']
+                missing_fields = [field for field in required_fields if field not in first_q]
+                
+                if missing_fields:
+                    self.log_result("Question Structure Verification", False, f"❌ Missing fields in question: {missing_fields}")
+                    return False
+                
+                # Check options structure
+                options = first_q.get('options', {})
+                if not options or len(options) < 2:
+                    self.log_result("Question Structure Verification", False, f"❌ Invalid options structure: {options}")
+                    return False
+                
+                self.log_result("Question Structure Verification", True, f"✅ Question structure is valid with {len(options)} options")
+            
+            # Step 7: Test Database Query Logic
+            self.log_result("Class Quiz Test - Scenario 7", True, "🔄 Testing Database Query Logic")
+            
+            # Verify the fix is working by checking if class-based queries are properly formed
+            # This tests the specific fix mentioned in the review request
+            success_count = 0
+            total_tests = 4
+            
+            if len(questions_1) > 0: success_count += 1  # Class 6 Science - Components of Food
+            if len(questions_2) > 0: success_count += 1  # Class 6 Science - Fun with Magnets  
+            if len(questions_3) > 0: success_count += 1  # Class 8 Geography - Resources
+            if len(questions_4) > 0: success_count += 1  # Class 6 Hindi - Malhar
+            
+            if success_count == total_tests:
+                self.log_result("Database Query Logic", True, f"✅ ALL {total_tests} class-based queries working correctly")
+            elif success_count > 0:
+                self.log_result("Database Query Logic", False, f"❌ Only {success_count}/{total_tests} class-based queries working")
+                return False
+            else:
+                self.log_result("Database Query Logic", False, "❌ NO class-based queries working - fix may not be applied")
+                return False
+            
+            print("\n🎉 CLASS-BASED QUIZ FIX TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Class 6 Science - Components of Food ✅")
+            print("  2. Class 6 Science - Fun with Magnets ✅")
+            print("  3. Class 8 Geography - Resources ✅")
+            print("  4. Class 6 Hindi - Malhar ✅")
+            print("  5. Regression test - JEE Physics ✅")
+            print("  6. Question structure verification ✅")
+            print("  7. Database query logic verification ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Class Quiz Fix Test - Exception", False, f"❌ Class quiz fix test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def test_victory_lane_pagination_feature(self):
         """Test Victory Lane pagination feature comprehensively"""
         try:
