@@ -529,48 +529,64 @@ async def start_quiz(request: QuizStartRequest):
     # Try to fetch from questions collection in MongoDB
     if not questions:
         try:
-            # Build a flexible query that handles both old format (syllabus_topic/subject) 
-            # and new format (exam_id/subject/topic)
-            query_filter = {
-                "$or": [
-                    # New format from image extraction (exam_id + subject + topic)
-                    {
-                        "exam_id": exam,
-                        "subject": subject,
-                        **({"topic": topic} if topic else {})
-                    },
-                    # Old format from sheets (exam_name matches + syllabus_topic + subject)
-                    {
-                        "exam_name": {"$regex": f"^{exam}", "$options": "i"},
-                        "syllabus_topic": subject,
-                        **({"subject": topic} if topic else {})
-                    }
-                ]
-            }
+            import re as regex_module
             
-            # Optionally filter by status if the field exists
-            # (some questions might not have status field)
-            
-            if sub_topic:
-                # Add sub_topic filter to each $or condition
+            # Check if this is a class-based quiz (Classes 6-12)
+            if request.isClassBased and request.class_name and request.chapter:
+                # CLASS-BASED QUERY: Query by class_name, subject, and chapter
+                # Handle chapter names with or without number prefix
+                # e.g., "Components of Food" matches "1. Components of Food"
+                chapter_pattern = regex_module.compile(
+                    f"(^\\d+\\.\\s*)?{regex_module.escape(request.chapter)}$", 
+                    regex_module.IGNORECASE
+                )
+                
+                query_filter = {
+                    "class_name": request.class_name,
+                    "subject": request.subject,
+                    "chapter": {"$regex": chapter_pattern}
+                }
+                print(f"🔍 Querying questions collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter}")
+            else:
+                # EXAM-BASED QUERY: Build a flexible query that handles both old format (syllabus_topic/subject) 
+                # and new format (exam_id/subject/topic)
                 query_filter = {
                     "$or": [
+                        # New format from image extraction (exam_id + subject + topic)
                         {
                             "exam_id": exam,
                             "subject": subject,
-                            **({"topic": topic} if topic else {}),
-                            "subtopic": sub_topic
+                            **({"topic": topic} if topic else {})
                         },
+                        # Old format from sheets (exam_name matches + syllabus_topic + subject)
                         {
                             "exam_name": {"$regex": f"^{exam}", "$options": "i"},
                             "syllabus_topic": subject,
-                            **({"subject": topic} if topic else {}),
-                            "sub_topic": sub_topic
+                            **({"subject": topic} if topic else {})
                         }
                     ]
                 }
+                
+                if sub_topic:
+                    # Add sub_topic filter to each $or condition
+                    query_filter = {
+                        "$or": [
+                            {
+                                "exam_id": exam,
+                                "subject": subject,
+                                **({"topic": topic} if topic else {}),
+                                "subtopic": sub_topic
+                            },
+                            {
+                                "exam_name": {"$regex": f"^{exam}", "$options": "i"},
+                                "syllabus_topic": subject,
+                                **({"subject": topic} if topic else {}),
+                                "sub_topic": sub_topic
+                            }
+                        ]
+                    }
+                print(f"🔍 Querying questions collection for EXAM-BASED: exam={exam}, subject={subject}, topic={topic}")
             
-            print(f"🔍 Querying questions collection with flexible filter")
             questions_cursor = db.questions.find(query_filter, {"_id": 0})
             db_questions = await questions_cursor.to_list(length=None)
             
