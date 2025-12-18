@@ -1304,6 +1304,170 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_cbse_class_6_7_8_chapter_display_and_question_sync(self):
+        """Test CBSE Class 6, 7, 8 Chapter Display and Question Sync - Comprehensive verification"""
+        try:
+            print("\n🎯 TESTING CBSE CLASS 6, 7, 8 CHAPTER DISPLAY AND QUESTION SYNC")
+            print("=" * 60)
+            
+            # Get API URL from frontend env
+            api_url = os.environ.get("REACT_APP_BACKEND_URL", BACKEND_URL)
+            
+            # Test 1: Chapter Endpoints for All Class 6 Subjects
+            self.log_result("CBSE Test - Class 6 Subjects", True, "🔄 Testing Chapter Endpoints for All Class 6 Subjects")
+            
+            class_6_subjects = [
+                "hindi---malhar",
+                "social-science---exploring-society-india-and-beyond", 
+                "mathematics---ganita-prakash",
+                "english---poorvi",
+                "science---curiosity",
+                "sanskrit---deepakam"
+            ]
+            
+            class_6_results = []
+            for subject in class_6_subjects:
+                response = requests.get(f"{api_url}/api/chapter-tests/chapters?class_param=6&subject={subject}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('success') and len(data.get('chapters', [])) > 0:
+                        chapters_count = len(data.get('chapters', []))
+                        class_6_results.append(f"✅ {subject}: {chapters_count} chapters")
+                        self.log_result(f"Class 6 - {subject}", True, f"✅ {chapters_count} chapters returned")
+                    else:
+                        class_6_results.append(f"❌ {subject}: No chapters or failed")
+                        self.log_result(f"Class 6 - {subject}", False, f"❌ No chapters returned: {data}")
+                else:
+                    class_6_results.append(f"❌ {subject}: HTTP {response.status_code}")
+                    self.log_result(f"Class 6 - {subject}", False, f"❌ HTTP {response.status_code}: {response.text}")
+            
+            # Test 2: Chapter Endpoints for All Class 7 Subjects  
+            self.log_result("CBSE Test - Class 7 Subjects", True, "🔄 Testing Chapter Endpoints for All Class 7 Subjects")
+            
+            class_7_subjects = [
+                "hindi---malhar",
+                "science---curiosity",
+                "social-science---exploring-society-india-and-beyond",
+                "social-science---exploring-society-india-and-beyond-part-2",
+                "mathematics---ganita-prakash-1",
+                "mathematics---ganita-prakash-2", 
+                "sanskrit"
+            ]
+            
+            class_7_results = []
+            for subject in class_7_subjects:
+                response = requests.get(f"{api_url}/api/chapter-tests/chapters?class_param=7&subject={subject}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('success') and len(data.get('chapters', [])) > 0:
+                        chapters_count = len(data.get('chapters', []))
+                        class_7_results.append(f"✅ {subject}: {chapters_count} chapters")
+                        self.log_result(f"Class 7 - {subject}", True, f"✅ {chapters_count} chapters returned")
+                    else:
+                        class_7_results.append(f"❌ {subject}: No chapters or failed")
+                        self.log_result(f"Class 7 - {subject}", False, f"❌ No chapters returned: {data}")
+                else:
+                    class_7_results.append(f"❌ {subject}: HTTP {response.status_code}")
+                    self.log_result(f"Class 7 - {subject}", False, f"❌ HTTP {response.status_code}: {response.text}")
+            
+            # Test 3: Chapter Endpoints for All Class 8 Subjects (Note: colon in Social Science name)
+            self.log_result("CBSE Test - Class 8 Subjects", True, "🔄 Testing Chapter Endpoints for All Class 8 Subjects")
+            
+            class_8_subjects = [
+                "hindi---malhar",
+                "science---curiosity", 
+                "social-science---exploring-society:-india-and-beyond",
+                "mathematics---ganita-prakash",
+                "sanskrit"
+            ]
+            
+            class_8_results = []
+            for subject in class_8_subjects:
+                response = requests.get(f"{api_url}/api/chapter-tests/chapters?class_param=8&subject={subject}")
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('success') and len(data.get('chapters', [])) > 0:
+                        chapters_count = len(data.get('chapters', []))
+                        class_8_results.append(f"✅ {subject}: {chapters_count} chapters")
+                        self.log_result(f"Class 8 - {subject}", True, f"✅ {chapters_count} chapters returned")
+                    else:
+                        class_8_results.append(f"❌ {subject}: No chapters or failed")
+                        self.log_result(f"Class 8 - {subject}", False, f"❌ No chapters returned: {data}")
+                else:
+                    class_8_results.append(f"❌ {subject}: HTTP {response.status_code}")
+                    self.log_result(f"Class 8 - {subject}", False, f"❌ HTTP {response.status_code}: {response.text}")
+            
+            # Test 4: Quiz Start for Class-Based Quizzes
+            self.log_result("CBSE Test - Quiz Start", True, "🔄 Testing Quiz Start for Class-Based Quizzes")
+            
+            quiz_test_data = {
+                "exam": "Class-6",
+                "subject": "Science - Curiosity", 
+                "isClassBased": True,
+                "class_name": "Class 6",
+                "chapter": "The Wonderful World of Science",
+                "numberOfQuestions": 5
+            }
+            
+            response = requests.post(f"{api_url}/api/quiz/start", json=quiz_test_data)
+            
+            if response.status_code == 200:
+                quiz_result = response.json()
+                if quiz_result.get('success') and len(quiz_result.get('questions', [])) > 0:
+                    questions_count = len(quiz_result.get('questions', []))
+                    self.log_result("Quiz Start Test", True, f"✅ Quiz started successfully with {questions_count} questions")
+                else:
+                    self.log_result("Quiz Start Test", False, f"❌ Quiz start failed: {quiz_result}")
+            else:
+                self.log_result("Quiz Start Test", False, f"❌ Quiz start HTTP {response.status_code}: {response.text}")
+            
+            # Test 5: Verify specific chapter counts for key subjects
+            self.log_result("CBSE Test - Chapter Count Verification", True, "🔄 Verifying Expected Chapter Counts")
+            
+            # Test Class 6 Science - should have 12 chapters
+            response = requests.get(f"{api_url}/api/chapter-tests/chapters?class_param=6&subject=science---curiosity")
+            if response.status_code == 200:
+                data = response.json()
+                chapters_count = len(data.get('chapters', []))
+                if chapters_count == 12:
+                    self.log_result("Class 6 Science Chapters", True, f"✅ Correct count: {chapters_count} chapters")
+                else:
+                    self.log_result("Class 6 Science Chapters", False, f"❌ Expected 12, got {chapters_count} chapters")
+            
+            # Test Class 8 Social Science - should have 7 chapters  
+            response = requests.get(f"{api_url}/api/chapter-tests/chapters?class_param=8&subject=social-science---exploring-society:-india-and-beyond")
+            if response.status_code == 200:
+                data = response.json()
+                chapters_count = len(data.get('chapters', []))
+                if chapters_count == 7:
+                    self.log_result("Class 8 Social Science Chapters", True, f"✅ Correct count: {chapters_count} chapters")
+                else:
+                    self.log_result("Class 8 Social Science Chapters", False, f"❌ Expected 7, got {chapters_count} chapters")
+            
+            # Summary
+            print("\n🎉 CBSE CLASS 6, 7, 8 CHAPTER DISPLAY AND QUESTION SYNC TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  Class 6 Subjects:")
+            for result in class_6_results:
+                print(f"    {result}")
+            print("  Class 7 Subjects:")
+            for result in class_7_results:
+                print(f"    {result}")
+            print("  Class 8 Subjects:")
+            for result in class_8_results:
+                print(f"    {result}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("CBSE Test - Exception", False, f"❌ CBSE test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def test_class_based_quiz_fix(self):
         """Test the Class-Based Quiz Fix for Classes 6, 7, 8 - Comprehensive verification"""
         try:
