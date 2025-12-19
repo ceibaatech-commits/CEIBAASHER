@@ -1881,65 +1881,24 @@ const ExamSheetManager = () => {
                           <option value="Social Science">Social Science</option>
                           <option value="Geography">Geography</option>
                           <option value="History">History</option>
-                          <option value="Civics">Civics</option>
-                          <option value="Economics">Economics</option>
-                          <option value="Hindi Kshitij">Hindi Kshitij</option>
-                          <option value="English Beehive Poems">English Beehive Poems</option>
-                          <option value="English Beehive Prose">English Beehive Prose</option>
-                          <option value="English Moments">English Moments</option>
-                        </>
-                      ) : classForm.class_name === 'Class 10' ? (
-                        <>
-                          <option value="Economics">Economics</option>
-                          <option value="History">History</option>
-                          <option value="Civics">Civics</option>
-                          <option value="Geography">Geography</option>
-                          <option value="English First Flight Prose">English First Flight Prose</option>
-                          <option value="English First Flight Poems">English First Flight Poems</option>
-                          <option value="English Footprints Without Feet">English Footprints Without Feet</option>
-                          <option value="Hindi Kshitij">Hindi Kshitij</option>
-                          <option value="Hindi Kritika">Hindi Kritika</option>
-                          <option value="Hindi Sparsh">Hindi Sparsh</option>
-                        </>
-                      ) : classForm.class_name === 'Class 11' ? (
-                        <>
-                          <option value="Physics">Physics</option>
-                          <option value="Chemistry">Chemistry</option>
-                          <option value="Biology">Biology</option>
-                          <option value="Mathematics">Mathematics</option>
-                          <option value="English">English</option>
-                          <option value="Accountancy">Accountancy</option>
-                          <option value="Business Studies">Business Studies</option>
-                          <option value="Economics">Economics</option>
-                          <option value="History">History</option>
-                          <option value="Geography">Geography</option>
                           <option value="Political Science">Political Science</option>
-                          <option value="Sociology">Sociology</option>
-                          <option value="Psychology">Psychology</option>
-                        </>
-                      ) : classForm.class_name === 'Class 12' ? (
-                        <>
-                          <option value="Physics">Physics</option>
-                          <option value="Chemistry">Chemistry</option>
-                          <option value="Biology">Biology</option>
-                          <option value="Mathematics">Mathematics</option>
-                          <option value="English">English</option>
-                          <option value="Accountancy">Accountancy</option>
-                          <option value="Business Studies">Business Studies</option>
                           <option value="Economics">Economics</option>
-                          <option value="History">History</option>
-                          <option value="Geography">Geography</option>
-                          <option value="Political Science">Political Science</option>
-                          <option value="Sociology">Sociology</option>
-                          <option value="Psychology">Psychology</option>
+                          <option value="Sanskrit">Sanskrit</option>
                         </>
-                      ) : (
+                      )}
+                      {/* Fallback for Class 10 if API not loaded */}
+                      {classForm.class_name === 'Class 10' && !cbseClassSubjects['Class 10'] && (
                         <>
                           <option value="Mathematics">Mathematics</option>
                           <option value="Science">Science</option>
-                          <option value="Social Science">Social Science</option>
-                          <option value="English">English</option>
                           <option value="Hindi">Hindi</option>
+                          <option value="English">English</option>
+                          <option value="Social Science">Social Science</option>
+                          <option value="Geography">Geography</option>
+                          <option value="History">History</option>
+                          <option value="Political Science">Political Science</option>
+                          <option value="Economics">Economics</option>
+                          <option value="Sanskrit">Sanskrit</option>
                         </>
                       )}
                     </select>
