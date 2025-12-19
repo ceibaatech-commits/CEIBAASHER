@@ -191,6 +191,43 @@ const Board = () => {
     filterRooms();
   }, [activeTab, searchQuery, rooms]);
 
+  const fetchUserGoal = async (userId) => {
+    try {
+      const res = await axios.get(`${BACKEND_URL}/api/dashboard/user-goal/${userId}`);
+      if (res.data.success) {
+        if (res.data.has_goal) {
+          setUserGoal(res.data.goal);
+          setGoalInfo(res.data.goal_info);
+        } else {
+          // Show goal selection modal for new users
+          setShowGoalModal(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user goal:', error);
+    }
+  };
+
+  const handleSelectGoal = async (goalType, goalCategory) => {
+    if (!user) return;
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/dashboard/set-goal/${user.id}`, {
+        goal_type: goalType,
+        goal_category: goalCategory
+      });
+      if (res.data.success) {
+        setGoalInfo(res.data.goal_info);
+        setUserGoal({ goal_type: goalType, goal_category: goalCategory });
+        // Refresh dashboard data with new goal
+        setLoadingSchedule(true);
+        setLoadingInsights(true);
+        fetchDashboardData(user.id);
+      }
+    } catch (error) {
+      console.error('Error setting goal:', error);
+    }
+  };
+
   const fetchDashboardData = async (userId) => {
     try {
       // Fetch stats
