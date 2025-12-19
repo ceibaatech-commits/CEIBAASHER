@@ -582,21 +582,21 @@ const Board = () => {
                 {subjectMastery.map((subject, index) => (
                   <div key={index} className="group">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-gray-700">{subject.subject}</span>
-                      <span className={`font-bold ${subject.textColor}`}>{subject.mastery}%</span>
+                      <span className="font-medium text-white/90">{subject.subject}</span>
+                      <span className="font-bold text-emerald-400">{subject.mastery}%</span>
                     </div>
-                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-3 bg-white/10 rounded-full overflow-hidden">
                       <div 
-                        className={`h-full bg-gradient-to-r ${subject.gradient} rounded-full transition-all duration-500 group-hover:shadow-md`}
+                        className={`h-full bg-gradient-to-r ${subject.gradient} rounded-full transition-all duration-500 group-hover:shadow-lg`}
                         style={{ width: `${subject.mastery}%` }}
                       />
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">{subject.tests_taken} tests taken</div>
+                    <div className="text-xs text-emerald-200/50 mt-1">{subject.tests_taken} tests taken</div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-emerald-200/50">
                 <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Complete quizzes to see your subject mastery</p>
               </div>
@@ -604,59 +604,59 @@ const Board = () => {
           </div>
 
           {/* AI Weekly Schedule */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-emerald-400" />
                 Today's Schedule
               </h3>
               <button 
                 onClick={regenerateSchedule}
                 disabled={loadingSchedule}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
                 title="Regenerate Schedule"
               >
-                <RefreshCw className={`w-4 h-4 text-gray-500 ${loadingSchedule ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 text-emerald-400 ${loadingSchedule ? 'animate-spin' : ''}`} />
               </button>
             </div>
             
             {loadingSchedule ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
               </div>
             ) : getTodaySchedule()?.sessions?.length > 0 ? (
               <div className="space-y-3">
                 {getTodaySchedule().sessions.slice(0, 4).map((session, index) => (
                   <div 
                     key={index} 
-                    className="flex items-center gap-4 p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer group"
+                    className="flex items-center gap-4 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group border border-white/10"
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold ${
-                      session.type === 'study' ? 'bg-emerald-500' :
-                      session.type === 'practice' ? 'bg-blue-500' :
-                      session.type === 'review' ? 'bg-purple-500' : 'bg-orange-500'
+                      session.type === 'study' ? 'bg-emerald-500/80' :
+                      session.type === 'practice' ? 'bg-blue-500/80' :
+                      session.type === 'review' ? 'bg-purple-500/80' : 'bg-orange-500/80'
                     }`}>
                       {session.subject?.substring(0, 3).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-800">{session.topic}</div>
-                      <div className="text-sm text-gray-500">{session.time} • {session.duration} mins</div>
+                      <div className="font-semibold text-white">{session.topic}</div>
+                      <div className="text-sm text-emerald-200/60">{session.time} • {session.duration} mins</div>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        session.priority === 'high' ? 'bg-red-100 text-red-700' :
-                        session.priority === 'medium' ? 'bg-amber-100 text-amber-700' :
-                        'bg-gray-100 text-gray-700'
+                        session.priority === 'high' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
+                        session.priority === 'medium' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                        'bg-white/10 text-white/70 border border-white/20'
                       }`}>
                         {session.priority}
                       </span>
-                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-500 transition-colors" />
+                      <ChevronRight className="w-4 h-4 text-emerald-400/50 group-hover:text-emerald-400 transition-colors" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-emerald-200/50">
                 <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>No schedule generated yet</p>
               </div>
