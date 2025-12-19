@@ -91,8 +91,8 @@ const CompactBanner = () => {
         }
       `}</style>
 
-      <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 overflow-hidden shadow-lg">
-        <div className={`absolute inset-0 bg-gradient-to-r ${currentBanner.gradient}`}>
+      <div className={`relative pt-16 overflow-hidden shadow-lg bg-gradient-to-r ${currentBanner.gradient}`}>
+        <div className="relative h-64 sm:h-72 md:h-80 lg:h-96">
           <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse-glow"></div>
           <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '2s'}}></div>
           
