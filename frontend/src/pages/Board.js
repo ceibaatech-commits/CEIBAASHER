@@ -428,7 +428,6 @@ const Board = () => {
   // Filter rooms when filters change
   useEffect(() => {
     filterRooms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, searchQuery, rooms]);
 
   // Check if user is logged in for Header
