@@ -873,6 +873,8 @@ Please test all scenarios and verify the pagination works smoothly without perfo
     message: "Test CBSE Class 6, 7, 8 Chapter Display and Question Sync"
   - agent: "user"
     message: "Test the new User Dashboard with AI Features at /board route"
+  - agent: "user"
+    message: "Test the User Dashboard with Goal Selection Feature"
   - agent: "testing"
     message: |
       🎯 PROFILE PICTURE DISPLAY FIX COMPREHENSIVE TEST COMPLETE (0% success rate - CRITICAL ISSUE IDENTIFIED)
