@@ -5380,3 +5380,6 @@ Test adding questions via Google Sheet in ExamSheetManager for:
 - AI features generate appropriate content
 - Stats reflect actual quiz history
 
+
+  - agent: "user"
+    message: "Test the Board page UI/UX improvements: 1. Verify Header and Footer are present on /board page, 2. Verify glassmorphism styling is applied correctly, 3. Test profile picture synchronization - when user updates profile picture in Dashboard, it should reflect on /board page, 4. Test mobile responsiveness"
