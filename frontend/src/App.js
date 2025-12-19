@@ -144,6 +144,7 @@ function App() {
           <Route path="/battle-results/:pin" element={<BattleResults />} />
           <Route path="/quiz-results/:pin" element={<QuizResults />} />
           <Route path="/profile/board" element={<Board />} />
+          <Route path="/board" element={<Board />} />
           <Route path="/room/:pin" element={<RoomDetail />} />
           
           {/* 1v1 Live Battle with video (matchmaking) */}
