@@ -4,9 +4,10 @@ import {
   Trophy, Clock, Users, Search, Play, CheckCircle,
   Target, Flame, BookOpen, TrendingUp, Calendar, Lightbulb,
   Star, Zap, Brain, ChevronRight, RefreshCw, Award, GraduationCap,
-  School, X, Settings
+  School, X, Settings, ArrowLeft
 } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
