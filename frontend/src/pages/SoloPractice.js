@@ -563,7 +563,12 @@ const SoloPractice = () => {
                 const hasProgress = selectedAnswer !== null || currentQuestionIndex > 0;
                 if (!hasProgress || window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
                   if (isClassBased && classBasedData) {
-                    navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`);
+                    // Convert subject to URL slug: "Hindi - Malhar" -> "hindi---malhar"
+                    const subjectSlug = classBasedData.subject
+                      .toLowerCase()
+                      .replace(/ - /g, '---')  // " - " becomes "---"
+                      .replace(/\s+/g, '-');   // spaces become "-"
+                    navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${subjectSlug}`);
                   } else {
                     navigate(`/exam/${exam}`);
                   }
