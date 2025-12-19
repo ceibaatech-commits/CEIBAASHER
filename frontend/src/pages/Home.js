@@ -487,7 +487,7 @@ const Home = () => {
             </div>
 
             {/* Card 2: Personalized Practice Plans */}
-            <div className="group transform transition-transform duration-300 hover:scale-105">
+            <div className="group transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/board')}>
               <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 {/* Gradient Accent Bar */}
                 <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-500"></div>
