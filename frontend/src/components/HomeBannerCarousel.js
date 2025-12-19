@@ -20,7 +20,7 @@ const CompactBanner = () => {
       gradient: 'from-blue-600 via-indigo-600 to-purple-700',
       ctaText: 'View Syllabus & Apply',
       icon: '🚂',
-      link: '/exam/RRB%20NTPC'
+      link: '/exams/rrb-ntpc'
     },
     {
       id: 2,
