@@ -49,7 +49,7 @@ const CompactBanner = () => {
   const currentBanner = banners[currentSlide];
 
   return (
-    <div className="w-full bg-gray-50">
+    <div className="w-full">
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
