@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Trophy, Clock, Users, Search, Play, CheckCircle, ArrowLeft,
   Target, Flame, BookOpen, TrendingUp, Calendar, Lightbulb,
-  Star, Zap, Brain, ChevronRight, RefreshCw, Award
+  Star, Zap, Brain, ChevronRight, RefreshCw, Award, GraduationCap,
+  School, X, Settings
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -19,9 +20,134 @@ const LEVEL_COLORS = {
   'Master': 'from-yellow-400 to-yellow-500'
 };
 
+// Goal Selection Modal Component
+const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal }) => {
+  const [selectedType, setSelectedType] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const goalOptions = {
+    competitive: {
+      name: "Competitive Exams",
+      icon: GraduationCap,
+      description: "JEE, NEET, UPSC, Defence, Banking & more",
+      color: "from-purple-500 to-indigo-600",
+      categories: [
+        { id: "jee", name: "JEE (Engineering)", icon: "🎯" },
+        { id: "neet", name: "NEET (Medical)", icon: "🏥" },
+        { id: "upsc", name: "UPSC (Civil Services)", icon: "🏛️" },
+        { id: "defence", name: "Defence Exams", icon: "🎖️" },
+        { id: "banking", name: "Banking & SSC", icon: "🏦" },
+        { id: "gate", name: "GATE", icon: "⚙️" },
+        { id: "cat", name: "CAT (MBA)", icon: "📊" }
+      ]
+    },
+    cbse: {
+      name: "CBSE Classes",
+      icon: School,
+      description: "Class 6 to 12 - All Streams",
+      color: "from-emerald-500 to-teal-600",
+      categories: [
+        { id: "class_6", name: "Class 6", icon: "6️⃣" },
+        { id: "class_7", name: "Class 7", icon: "7️⃣" },
+        { id: "class_8", name: "Class 8", icon: "8️⃣" },
+        { id: "class_9", name: "Class 9", icon: "9️⃣" },
+        { id: "class_10", name: "Class 10", icon: "🔟" },
+        { id: "class_11_science", name: "Class 11 (Science)", icon: "🔬" },
+        { id: "class_11_commerce", name: "Class 11 (Commerce)", icon: "💼" },
+        { id: "class_12_science", name: "Class 12 (Science)", icon: "🧪" },
+        { id: "class_12_commerce", name: "Class 12 (Commerce)", icon: "📈" }
+      ]
+    }
+  };
+
+  const handleSelectCategory = async (type, categoryId) => {
+    setLoading(true);
+    await onSelectGoal(type, categoryId);
+    setLoading(false);
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Choose Your Study Goal</h2>
+            <p className="text-gray-500">Personalize your dashboard and recommendations</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {!selectedType ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(goalOptions).map(([type, data]) => {
+                const Icon = data.icon;
+                return (
+                  <button
+                    key={type}
+                    onClick={() => setSelectedType(type)}
+                    className={`p-6 rounded-xl border-2 border-gray-200 hover:border-transparent hover:shadow-lg transition-all text-left group bg-gradient-to-br hover:${data.color} hover:text-white`}
+                  >
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${data.color} flex items-center justify-center mb-4 group-hover:bg-white/20`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-white">{data.name}</h3>
+                    <p className="text-gray-500 group-hover:text-white/80">{data.description}</p>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div>
+              <button 
+                onClick={() => setSelectedType(null)}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to categories
+              </button>
+              
+              <h3 className="text-lg font-semibold mb-4">Select your {goalOptions[selectedType].name}</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {goalOptions[selectedType].categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleSelectCategory(selectedType, cat.id)}
+                    disabled={loading}
+                    className={`p-4 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left flex items-center gap-3 ${
+                      currentGoal?.goal_category === cat.id ? 'border-emerald-500 bg-emerald-50' : ''
+                    } disabled:opacity-50`}
+                  >
+                    <span className="text-2xl">{cat.icon}</span>
+                    <span className="font-semibold text-gray-800">{cat.name}</span>
+                    {currentGoal?.goal_category === cat.id && (
+                      <CheckCircle className="w-5 h-5 text-emerald-500 ml-auto" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Board = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  
+  // Goal state
+  const [userGoal, setUserGoal] = useState(null);
+  const [goalInfo, setGoalInfo] = useState(null);
+  const [showGoalModal, setShowGoalModal] = useState(false);
   
   // Dashboard state
   const [dashboardStats, setDashboardStats] = useState({
@@ -56,6 +182,7 @@ const Board = () => {
     }
     const userData = JSON.parse(userStr);
     setUser(userData);
+    fetchUserGoal(userData.id);
     fetchRooms();
     fetchDashboardData(userData.id);
   }, []);
