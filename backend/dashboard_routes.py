@@ -413,8 +413,18 @@ async def get_ai_insights(user_id: str):
 
 @router.get("/recommended-tests/{user_id}")
 async def get_recommended_tests(user_id: str):
-    """Get AI-recommended tests based on performance"""
+    """Get AI-recommended tests based on user's goal and performance"""
     try:
+        # Get user's goal
+        user_goal = await db.user_goals.find_one({"user_id": user_id}, {"_id": 0})
+        goal_info = None
+        goal_subjects = []
+        
+        if user_goal:
+            goal_info = get_goal_info(user_goal.get("goal_type"), user_goal.get("goal_category"))
+            if goal_info:
+                goal_subjects = goal_info["subjects"]
+        
         # Get user's quiz history
         quiz_history = await db.quiz_history.find(
             {"user_id": user_id},
@@ -440,33 +450,57 @@ async def get_recommended_tests(user_id: str):
         # Generate recommendations
         recommendations = []
         
-        # Get available chapters/tests from cbse_chapter_data
-        from cbse_chapter_data import CBSE_CHAPTER_DATA
-        
-        # Add recommendations based on weak subjects
-        for i, weak in enumerate(weak_subjects[:3]):
-            subject = weak["subject"]
-            match_percent = max(60, 95 - int(weak["avg_score"] * 0.3))
+        # If user has a goal, prioritize goal-related recommendations
+        if goal_info:
+            goal_name = goal_info["category_name"]
+            is_competitive = goal_info["type"] == "competitive"
             
-            # Find a relevant chapter
-            chapter_name = "Practice Test"
-            for class_num, subjects in CBSE_CHAPTER_DATA.items():
-                for subj_name, chapters in subjects.items():
-                    if subject.lower() in subj_name.lower() and chapters:
-                        chapter_name = chapters[0].get("chapter_name", "Practice Test")
-                        break
+            # Add goal-specific recommendations
+            for i, subject in enumerate(goal_subjects[:3]):
+                # Check if user has attempted this subject
+                user_score = next((ws["avg_score"] for ws in weak_subjects if subject.lower() in ws["subject"].lower()), 50)
+                match_percent = max(70, 95 - int(user_score * 0.2))
+                
+                recommendations.append({
+                    "id": f"goal_rec_{i+1}",
+                    "title": f"{subject} - {goal_name}",
+                    "description": f"Practice {subject} for {goal_name} preparation",
+                    "match_percent": match_percent,
+                    "duration": "20 mins" if is_competitive else "15 mins",
+                    "questions": 15 if is_competitive else 10,
+                    "difficulty": "Hard" if is_competitive else "Medium",
+                    "subject": subject,
+                    "priority": "high" if i == 0 else "medium",
+                    "exam_type": goal_info["type"],
+                    "exam_category": goal_info["category"]
+                })
+        else:
+            # Fallback: recommendations based on weak subjects
+            from cbse_chapter_data import CBSE_CHAPTER_DATA
             
-            recommendations.append({
-                "id": f"rec_{i+1}",
-                "title": f"{subject} - {chapter_name}",
-                "description": f"Improve your {subject} skills with targeted practice",
-                "match_percent": match_percent,
-                "duration": "15 mins",
-                "questions": 10,
-                "difficulty": "Medium" if weak["avg_score"] >= 50 else "Easy",
-                "subject": subject,
-                "priority": "high" if i == 0 else "medium"
-            })
+            for i, weak in enumerate(weak_subjects[:3]):
+                subject = weak["subject"]
+                match_percent = max(60, 95 - int(weak["avg_score"] * 0.3))
+                
+                # Find a relevant chapter
+                chapter_name = "Practice Test"
+                for class_num, subjects in CBSE_CHAPTER_DATA.items():
+                    for subj_name, chapters in subjects.items():
+                        if subject.lower() in subj_name.lower() and chapters:
+                            chapter_name = chapters[0].get("chapter_name", "Practice Test")
+                            break
+                
+                recommendations.append({
+                    "id": f"rec_{i+1}",
+                    "title": f"{subject} - {chapter_name}",
+                    "description": f"Improve your {subject} skills with targeted practice",
+                    "match_percent": match_percent,
+                    "duration": "15 mins",
+                    "questions": 10,
+                    "difficulty": "Medium" if weak["avg_score"] >= 50 else "Easy",
+                    "subject": subject,
+                    "priority": "high" if i == 0 else "medium"
+                })
         
         # Add some general recommendations if not enough weak subjects
         if len(recommendations) < 4:
