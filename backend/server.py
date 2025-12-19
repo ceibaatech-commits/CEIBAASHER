@@ -166,6 +166,7 @@ fastapi_app.include_router(exam_management_router, prefix="/api/admin/manage")  
 fastapi_app.include_router(user_management_router, prefix="/api")  # User management (teacher status)
 fastapi_app.include_router(dashboard_router)  # AI-powered dashboard routes
 fastapi_app.include_router(question_image_router, prefix="/api")  # Question image upload routes
+fastapi_app.include_router(cbse_data_router, prefix="/api")  # CBSE data - single source of truth
 # socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
