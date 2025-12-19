@@ -5218,3 +5218,39 @@ Test adding questions via Google Sheet in ExamSheetManager for:
 - No "No chapters available" messages
 - Questions added in admin should appear in frontend quizzes
 
+
+---
+
+## Test Request: User Dashboard with AI Features (Dec 19, 2025)
+
+### New Features Implemented
+1. **Profile Header**: Avatar, name, learner level badge (Beginner → Master)
+2. **4 Stats Cards**: Tests Completed, Average Score, Day Streak, Study Hours
+3. **Subject Mastery**: Progress bars for each subject with test count
+4. **AI Weekly Schedule**: Generated once per week using Emergent LLM Key (GPT-4o-mini)
+5. **AI Insights**: Strengths, weaknesses, best study time, tip of the day
+6. **Recommended Tests**: AI-matched tests based on performance
+7. **Existing Quiz Battles & Rooms section preserved**
+
+### Backend APIs Created
+- `GET /api/dashboard/stats/{user_id}` - User statistics
+- `GET /api/dashboard/schedule/{user_id}` - Weekly schedule (AI-generated)
+- `GET /api/dashboard/insights/{user_id}` - AI insights
+- `GET /api/dashboard/recommended-tests/{user_id}` - Test recommendations
+- `POST /api/dashboard/regenerate-schedule/{user_id}` - Force regenerate schedule
+
+### Test Scenarios
+1. Navigate to `/board` after login
+2. Verify profile header shows user info
+3. Verify stats cards show real data from quiz_history
+4. Verify AI schedule loads (Today's Schedule)
+5. Verify AI insights display
+6. Verify recommended tests display
+7. Verify Quiz Battles & Rooms section still works
+8. Test regenerate schedule button
+
+### Expected Results
+- All sections load without errors
+- AI features generate appropriate content
+- Stats reflect actual quiz history
+
