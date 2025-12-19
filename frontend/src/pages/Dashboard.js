@@ -643,6 +643,12 @@ const Dashboard = () => {
         currentProfile={profile}
         onProfileUpdated={(updatedProfile) => {
           setProfile(updatedProfile);
+          // Update localStorage to sync profile picture across all pages (including Board)
+          updateUser({
+            profile_picture: updatedProfile.profile_picture,
+            avatar: updatedProfile.profile_picture,
+            name: updatedProfile.name
+          });
           setShowEditModal(false);
         }}
       />
