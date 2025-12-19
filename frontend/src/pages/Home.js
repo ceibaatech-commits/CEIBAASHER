@@ -421,7 +421,7 @@ const Home = () => {
               <p className="text-sm font-semibold text-gray-900">Topic-wise Quiz</p>
               <p className="text-xs text-gray-600">Focused Practice</p>
             </div>
-            <div className="text-center">
+            <div className="text-center cursor-pointer hover:opacity-80 transition-opacity" onClick={() => navigate('/board')}>
               <div className="bg-green-100 text-green-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                 <TrendingUp className="w-6 h-6" />
               </div>
