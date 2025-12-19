@@ -395,7 +395,17 @@ const Board = () => {
       // For CBSE classes, navigate to class subject page
       const classMatch = test.exam_category?.match(/class_(\d+)/);
       const classNum = classMatch ? classMatch[1] : '10';
-      const subjectSlug = test.subject.toLowerCase().replace(/\s+/g, '-');
+      
+      // Convert subject name to URL slug
+      // "Mathematics - Ganita Prakash" -> "mathematics---ganita-prakash"
+      // " - " (space-dash-space) becomes "---" (triple dash)
+      // Regular spaces become "-" (single dash)
+      const subjectSlug = test.subject
+        .toLowerCase()
+        .replace(/ - /g, '---')  // Space-dash-space becomes triple dash
+        .replace(/: /g, ':')     // Keep colon but remove space after
+        .replace(/\s+/g, '-');   // Regular spaces become dashes
+      
       navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
     } else {
       // Default: navigate to chapter tests
