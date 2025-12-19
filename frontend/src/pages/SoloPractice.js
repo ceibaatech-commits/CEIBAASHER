@@ -543,7 +543,13 @@ const SoloPractice = () => {
             </button>
             <span>/</span>
             <button 
-              onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${classBasedData.subject.toLowerCase()}`)} 
+              onClick={() => {
+                const subjectSlug = classBasedData.subject
+                  .toLowerCase()
+                  .replace(/ - /g, '---')
+                  .replace(/\s+/g, '-');
+                navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${subjectSlug}`);
+              }} 
               className="hover:text-cyan-600 font-semibold"
             >
               {classBasedData.subject}
