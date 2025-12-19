@@ -162,6 +162,7 @@ fastapi_app.include_router(emergent_auth_router, prefix="/api")
 fastapi_app.include_router(exam_sync_router)  # Exam sync/management routes
 fastapi_app.include_router(exam_management_router, prefix="/api/admin/manage")  # Exam CRUD management
 fastapi_app.include_router(user_management_router, prefix="/api")  # User management (teacher status)
+fastapi_app.include_router(dashboard_router)  # AI-powered dashboard routes
 # socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
