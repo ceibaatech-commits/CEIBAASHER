@@ -112,7 +112,23 @@ const ChapterTestSubjects = () => {
         </div>
 
         {/* Subjects Grid */}
-        {subjects.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
+            <Loader2 className="w-12 h-12 text-blue-500 mx-auto mb-4 animate-spin" />
+            <p className="text-xl text-gray-600">Loading subjects...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
+            <BookOpen className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <p className="text-xl text-gray-600">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        ) : subjects.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-2xl shadow-lg">
             <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <p className="text-xl text-gray-600">No subjects available for Class {selectedClass}</p>
