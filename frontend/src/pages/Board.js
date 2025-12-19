@@ -145,6 +145,7 @@ const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal }) => {
 
 const Board = () => {
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
   
   // Goal state
@@ -176,19 +177,30 @@ const Board = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0, created: 0 });
 
+  // Sync user from AuthContext (updates when profile picture changes)
   useEffect(() => {
-    const userStr = localStorage.getItem('ceibaa_user');
-    if (!userStr) {
-      alert('Please login to view your Board');
-      navigate('/login');
-      return;
+    if (authUser) {
+      setUser(authUser);
+    } else {
+      // Fallback to localStorage if authUser not available
+      const userStr = localStorage.getItem('ceibaa_user');
+      if (!userStr) {
+        alert('Please login to view your Board');
+        navigate('/login');
+        return;
+      }
+      setUser(JSON.parse(userStr));
     }
-    const userData = JSON.parse(userStr);
-    setUser(userData);
-    fetchUserGoal(userData.id);
-    fetchRooms();
-    fetchDashboardData(userData.id);
-  }, []);
+  }, [authUser, navigate]);
+
+  // Fetch dashboard data when user is available
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserGoal(user.id);
+      fetchRooms();
+      fetchDashboardData(user.id);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     filterRooms();
