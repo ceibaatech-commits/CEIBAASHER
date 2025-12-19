@@ -157,7 +157,7 @@ const ChapterTestChapters = () => {
   const totalQuestions = chapters.reduce((acc, ch) => acc + ch.total_questions, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Header 
         isLoggedIn={isLoggedIn}
         user={user}
@@ -165,11 +165,10 @@ const ChapterTestChapters = () => {
         onLogout={handleLogout}
       />
       
-      {/* Clean Header - Simplified Navigation */}
-      <div className={`bg-gradient-to-br ${colorGradient} text-white`}>
-        <div className="max-w-4xl mx-auto px-4 py-5">
+      {/* MOBILE Header - Clean & Simple */}
+      <div className={`md:hidden bg-gradient-to-br ${colorGradient} text-white`}>
+        <div className="px-4 py-4">
           <div className="flex items-center">
-            {/* Back Arrow */}
             <button
               onClick={() => {
                 if (stream && (selectedClass === '11' || selectedClass === '12')) {
@@ -182,59 +181,121 @@ const ChapterTestChapters = () => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            
-            {/* Centered Title & Subtitle */}
             <div className="flex-1 text-center">
-              <h1 className="text-xl font-bold">{formattedSubject}</h1>
+              <h1 className="text-lg font-bold">{formattedSubject}</h1>
               <p className="text-sm text-white/80">Class {selectedClass} • {chapters.length} Chapters</p>
             </div>
-            
-            {/* Spacer for alignment */}
             <div className="w-9"></div>
           </div>
         </div>
       </div>
 
+      {/* DESKTOP Header - Original Style */}
+      <div className={`hidden md:block bg-gradient-to-br ${colorGradient} text-white py-4`}>
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => {
+                  if (stream && (selectedClass === '11' || selectedClass === '12')) {
+                    navigate(`/chapter-tests/class-${selectedClass}/${stream}`);
+                  } else {
+                    navigate(`/chapter-tests/class-${selectedClass}`);
+                  }
+                }}
+                className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg hover:bg-white/20"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="font-semibold text-sm">Back</span>
+              </button>
+              <div className="flex items-center space-x-2">
+                <span className="bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold">
+                  Class {selectedClass}
+                </span>
+                <ChevronRight className="w-4 h-4" />
+                <span className="font-bold text-sm">{formattedSubject}</span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              <BookOpen className="w-4 h-4" />
+              <span className="font-bold text-sm">{chapters.length} Chapters</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-4 md:py-6">
         {chapters.length > 0 && (
           <>
-            {/* Stats & Practice Row - Unified */}
-            <div className="flex items-stretch gap-3 mb-5">
-              {/* Questions Stat - Secondary */}
-              <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex items-center gap-3">
+            {/* MOBILE Stats & Practice Row */}
+            <div className="md:hidden flex items-stretch gap-3 mb-4">
+              <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-3 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{totalQuestions}+</p>
+                  <p className="text-xl font-bold text-gray-900">{totalQuestions}+</p>
                   <p className="text-xs text-gray-500">Questions</p>
                 </div>
               </div>
-              
-              {/* Let's Practice - Primary CTA */}
               <button 
                 onClick={() => chapters[0] && handleStartPractice(chapters[0])} 
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg px-6 py-4 font-bold flex items-center justify-center gap-2 transition-all hover:shadow-xl active:scale-[0.98]"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-lg px-4 py-3 font-bold flex items-center justify-center gap-2 transition-all text-sm"
               >
                 <Play className="w-5 h-5 fill-white" />
                 <span>{"Let's Practice!"}</span>
               </button>
             </div>
 
-            {/* Chapters List - Modern Cards */}
-            <div className="space-y-3">
+            {/* DESKTOP Stats Bar - Original */}
+            <div className="hidden md:block bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-6 border border-white/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-8">
+                  <div className="flex items-center space-x-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                    <BookOpen className="w-6 h-6" />
+                    <div>
+                      <p className="text-2xl font-black">{totalQuestions}+</p>
+                      <p className="text-xs font-semibold opacity-90">Questions</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-gradient-to-br from-purple-500 to-purple-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                    <Target className="w-6 h-6" />
+                    <div>
+                      <p className="text-2xl font-black">{chapters.length}</p>
+                      <p className="text-xs font-semibold opacity-90">Chapters</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-gradient-to-br from-green-500 to-green-600 text-white px-5 py-3 rounded-xl shadow-lg">
+                    <Zap className="w-6 h-6" />
+                    <div>
+                      <p className="text-lg font-black">NCERT</p>
+                      <p className="text-xs font-semibold opacity-90">Based</p>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => chapters[0] && handleStartPractice(chapters[0])} 
+                  className={`bg-gradient-to-br ${colorGradient} text-white px-8 py-4 rounded-2xl font-black text-lg hover:scale-105 transform transition-all shadow-2xl flex items-center space-x-3`}
+                >
+                  <Play className="w-6 h-6 fill-white" />
+                  <span>{"Let's Practice!"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* MOBILE Chapters List - Modern Clean Cards */}
+            <div className="md:hidden space-y-3">
               {chapters.map((chapter, idx) => (
                 <motion.div 
                   key={idx} 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+                  transition={{ delay: idx * 0.03 }}
+                  className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
                 >
                   <div className="p-4">
-                    {/* Chapter Header */}
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
@@ -246,27 +307,18 @@ const ChapterTestChapters = () => {
                             </span>
                           )}
                         </div>
-                        <h4 className="font-semibold text-gray-900">{chapter.chapter_name}</h4>
+                        <h4 className="font-semibold text-gray-900 text-sm">{chapter.chapter_name}</h4>
                       </div>
-                      <button 
-                        onClick={() => setExpandedChapters(p => ({ ...p, [idx]: !p[idx] }))}
-                        className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        {expandedChapters[idx] ? 
-                          <ChevronUp className="w-4 h-4 text-gray-500" /> : 
-                          <ChevronDown className="w-4 h-4 text-gray-500" />
-                        }
-                      </button>
                     </div>
                     
                     {/* Stats Row - Icon Based */}
-                    <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                      <div className="flex items-center gap-1.5">
-                        <BookOpen className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+                      <div className="flex items-center gap-1">
+                        <BookOpen className="w-3.5 h-3.5" />
                         <span>{chapter.total_questions} Qs</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-gray-400" />
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5" />
                         <span>{chapter.duration}m</span>
                       </div>
                       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getDifficultyColor(chapter.difficulty)}`}>
@@ -274,15 +326,93 @@ const ChapterTestChapters = () => {
                       </span>
                     </div>
 
-                    {/* Previous Score */}
+                    {/* Action Buttons - Primary/Secondary */}
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleStartPractice(chapter)} 
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-1.5 text-sm"
+                      >
+                        <Play className="w-4 h-4 fill-white" />
+                        <span>Solo Practice</span>
+                      </button>
+                      <button 
+                        onClick={() => handleCreateRoom(chapter)} 
+                        className="flex-1 border-2 border-blue-200 text-blue-600 bg-white hover:bg-blue-50 py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-1.5 text-sm"
+                      >
+                        <Users className="w-4 h-4" />
+                        <span>Create Room</span>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* DESKTOP Chapters Grid - Original Style */}
+            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {chapters.map((chapter, idx) => (
+                <motion.div 
+                  key={idx} 
+                  whileHover={{ y: -4 }}
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
+                >
+                  <div className={`bg-gradient-to-br ${colorGradient} p-4 relative`}>
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="relative">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="bg-white/30 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-bold">
+                              Chapter {chapter.chapter_number}
+                            </span>
+                            {chapter.attempted && (
+                              <span className="bg-green-400/30 backdrop-blur-sm px-2 py-1 rounded-full text-white text-xs font-bold">
+                                ✓ Done
+                              </span>
+                            )}
+                          </div>
+                          <h4 className="text-white font-bold text-base drop-shadow-md">{chapter.chapter_name}</h4>
+                        </div>
+                        <button 
+                          onClick={() => setExpandedChapters(p => ({ ...p, [idx]: !p[idx] }))}
+                          className="bg-white/20 p-1 rounded hover:bg-white/30 transition-all"
+                        >
+                          {expandedChapters[idx] ? 
+                            <ChevronUp className="w-4 h-4 text-white" /> : 
+                            <ChevronDown className="w-4 h-4 text-white" />
+                          }
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div className="p-4">
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <div className="text-center">
+                        <p className="text-xs text-gray-600">Questions</p>
+                        <p className="font-bold text-blue-600 text-lg">{chapter.total_questions}</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-gray-600">Duration</p>
+                        <p className="font-bold text-purple-600 text-lg">{chapter.duration}m</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-gray-600">Level</p>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded ${getDifficultyColor(chapter.difficulty)}`}>
+                          {chapter.difficulty}
+                        </span>
+                      </div>
+                    </div>
+
                     {chapter.last_score && (
-                      <div className="bg-green-50 rounded-lg px-3 py-2 mb-3 flex items-center justify-between">
-                        <span className="text-xs text-gray-600">Previous Score</span>
-                        <span className="text-sm font-bold text-green-600">{chapter.last_score}%</span>
+                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-2 mb-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-700">Previous Score:</span>
+                          <span className="text-sm font-bold text-green-600">{chapter.last_score}%</span>
+                        </div>
                       </div>
                     )}
 
-                    {/* Expandable Details */}
                     <AnimatePresence>
                       {expandedChapters[idx] && (
                         <motion.div 
@@ -291,36 +421,39 @@ const ChapterTestChapters = () => {
                           exit={{ height: 0, opacity: 0 }}
                           className="mb-3"
                         >
+                          <div className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                            <Target className="w-3 h-3" />
+                            <span>Test Details:</span>
+                          </div>
                           <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-                            <div className="flex items-center gap-2 text-xs text-gray-600">
-                              <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                              <span>{chapter.total_questions} Multiple Choice Questions</span>
+                            <div className="flex items-center gap-2 text-xs">
+                              <CheckCircle className="w-3 h-3 text-teal-500" />
+                              <span className="text-gray-700">{chapter.total_questions} Multiple Choice Questions</span>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-600">
-                              <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                              <span>NCERT Based Content</span>
+                            <div className="flex items-center gap-2 text-xs">
+                              <CheckCircle className="w-3 h-3 text-teal-500" />
+                              <span className="text-gray-700">NCERT Based Content</span>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-600">
-                              <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                              <span>Instant Results & Analysis</span>
+                            <div className="flex items-center gap-2 text-xs">
+                              <CheckCircle className="w-3 h-3 text-teal-500" />
+                              <span className="text-gray-700">Instant Results & Analysis</span>
                             </div>
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    {/* Action Buttons - Primary/Secondary Hierarchy */}
                     <div className="flex gap-2">
                       <button 
                         onClick={() => handleStartPractice(chapter)} 
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-1.5 text-sm active:scale-[0.98]"
+                        className={`flex-1 bg-gradient-to-br ${colorGradient} text-white py-2 rounded-lg font-bold hover:opacity-90 transition-all flex items-center justify-center space-x-1 text-sm`}
                       >
                         <Play className="w-4 h-4 fill-white" />
                         <span>Solo Practice</span>
                       </button>
                       <button 
                         onClick={() => handleCreateRoom(chapter)} 
-                        className="flex-1 border-2 border-blue-600 text-blue-600 bg-white hover:bg-blue-50 py-2.5 rounded-xl font-semibold transition-all flex items-center justify-center gap-1.5 text-sm"
+                        className="flex-1 bg-gray-800 text-white py-2 rounded-lg font-bold hover:bg-gray-700 transition-all flex items-center justify-center space-x-1 text-sm"
                       >
                         <Users className="w-4 h-4" />
                         <span>Create Room</span>
