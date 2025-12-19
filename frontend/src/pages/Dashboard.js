@@ -11,7 +11,7 @@ import MathText from '../components/MathText';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
