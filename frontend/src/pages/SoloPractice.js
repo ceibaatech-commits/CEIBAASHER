@@ -624,12 +624,28 @@ const SoloPractice = () => {
             <h2 className="text-lg md:text-2xl font-bold text-gray-900 leading-relaxed">
               <MathText text={currentQuestion?.question} />
             </h2>
+            
+            {/* Question Image (if present) */}
+            {currentQuestion?.question_image && (
+              <div className="mt-4">
+                <img 
+                  src={currentQuestion.question_image.startsWith('/api') 
+                    ? `${process.env.REACT_APP_BACKEND_URL}${currentQuestion.question_image}`
+                    : currentQuestion.question_image
+                  }
+                  alt="Question diagram"
+                  className="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm"
+                  style={{ maxHeight: '300px', objectFit: 'contain' }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Answer Options - Pill-shaped, Modern styling */}
           <div className="space-y-3">
             {currentQuestion?.options.map((option, index) => {
               const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
+              const optionImage = typeof option === 'object' ? option.image : null;
               const isSelected = selectedAnswer === index;
               const isAnswered = selectedAnswer !== null;
               
@@ -656,8 +672,20 @@ const SoloPractice = () => {
                     }`}>
                       {String.fromCharCode(65 + index)}
                     </div>
-                    {/* Option Text */}
-                    <span className="flex-1 font-medium text-gray-800 text-sm md:text-base">
+                    {/* Option Content (Text and/or Image) */}
+                    <div className="flex-1">
+                      {optionImage && (
+                        <img 
+                          src={optionImage.startsWith('/api') 
+                            ? `${process.env.REACT_APP_BACKEND_URL}${optionImage}`
+                            : optionImage
+                          }
+                          alt={`Option ${String.fromCharCode(65 + index)}`}
+                          className="max-w-full h-auto rounded-md mb-1"
+                          style={{ maxHeight: '100px', objectFit: 'contain' }}
+                        />
+                      )}
+                      <span className="font-medium text-gray-800 text-sm md:text-base">
                       <MathText text={optionText} />
                     </span>
                   </div>
