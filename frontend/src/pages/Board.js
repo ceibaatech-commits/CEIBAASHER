@@ -400,6 +400,38 @@ const Board = () => {
     }
   };
 
+  // Sync user from AuthContext (updates when profile picture changes)
+  useEffect(() => {
+    if (authUser) {
+      setUser(authUser);
+    } else {
+      // Fallback to localStorage if authUser not available
+      const userStr = localStorage.getItem('ceibaa_user');
+      if (!userStr) {
+        alert('Please login to view your Board');
+        navigate('/login');
+        return;
+      }
+      setUser(JSON.parse(userStr));
+    }
+  }, [authUser, navigate]);
+
+  // Fetch dashboard data when user is available
+  useEffect(() => {
+    if (user?.id) {
+      fetchUserGoal(user.id);
+      fetchRooms();
+      fetchDashboardData(user.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Filter rooms when filters change
+  useEffect(() => {
+    filterRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, searchQuery, rooms]);
+
   // Check if user is logged in for Header
   const isLoggedIn = !!user;
 
