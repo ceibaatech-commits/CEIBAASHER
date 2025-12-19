@@ -369,8 +369,8 @@ const Home = () => {
         </div>
       )}
       
-      {/* Desktop Banner Carousel */}
-      <div className="hidden md:block pt-16">
+      {/* Desktop Banner Carousel - no gap after header */}
+      <div className="hidden md:block">
         <HomeBannerCarousel />
       </div>
       
