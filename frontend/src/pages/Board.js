@@ -748,26 +748,26 @@ const Board = () => {
                 {recommendedTests.slice(0, 4).map((test, index) => (
                   <div 
                     key={index}
-                    className="p-4 border border-gray-200 rounded-xl hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group"
+                    className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-emerald-500/30 transition-all cursor-pointer group"
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-semibold text-gray-800 group-hover:text-emerald-600 transition-colors">{test.title}</h4>
-                        <p className="text-sm text-gray-500">{test.description}</p>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-white group-hover:text-emerald-400 transition-colors">{test.title}</h4>
+                        <p className="text-sm text-emerald-200/60">{test.description}</p>
                       </div>
-                      <div className="flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-bold">
+                      <div className="flex items-center gap-1 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-bold border border-emerald-500/30 ml-2">
                         {test.match_percent}%
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <div className="flex gap-2 text-xs text-gray-500">
-                        <span className="px-2 py-1 bg-gray-100 rounded-full">{test.duration}</span>
-                        <span className="px-2 py-1 bg-gray-100 rounded-full">{test.questions} Q</span>
-                        <span className={`px-2 py-1 rounded-full ${
-                          test.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
-                          test.difficulty === 'Medium' ? 'bg-amber-100 text-amber-700' :
-                          test.difficulty === 'Hard' ? 'bg-red-100 text-red-700' :
-                          'bg-gray-100 text-gray-700'
+                      <div className="flex gap-2 text-xs">
+                        <span className="px-2 py-1 bg-white/10 text-white/70 rounded-full border border-white/10">{test.duration}</span>
+                        <span className="px-2 py-1 bg-white/10 text-white/70 rounded-full border border-white/10">{test.questions} Q</span>
+                        <span className={`px-2 py-1 rounded-full border ${
+                          test.difficulty === 'Easy' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
+                          test.difficulty === 'Medium' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
+                          test.difficulty === 'Hard' ? 'bg-red-500/20 text-red-300 border-red-500/30' :
+                          'bg-white/10 text-white/70 border-white/20'
                         }`}>{test.difficulty}</span>
                       </div>
                       <button 
@@ -775,7 +775,7 @@ const Board = () => {
                           e.stopPropagation();
                           startRecommendedTest(test);
                         }}
-                        className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-semibold rounded-lg hover:shadow-md transition-all"
+                        className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all"
                       >
                         Start
                       </button>
@@ -784,7 +784,7 @@ const Board = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-emerald-200/50">
                 <Award className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Complete quizzes to get personalized recommendations</p>
               </div>
@@ -793,41 +793,41 @@ const Board = () => {
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-4 my-8">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-          <span className="text-gray-500 font-medium">Quiz Battles & Rooms</span>
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <div className="flex items-center gap-4 my-10">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+          <span className="text-emerald-300/70 font-medium px-4">Quiz Battles & Rooms</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
         </div>
 
         {/* Existing Room Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
             <div className="flex items-center justify-between mb-2">
-              <Trophy className="w-8 h-8 text-yellow-500" />
-              <span className="text-3xl font-bold text-gray-900">{stats.total}</span>
+              <Trophy className="w-8 h-8 text-yellow-400" />
+              <span className="text-3xl font-bold text-white">{stats.total}</span>
             </div>
-            <div className="text-sm text-gray-600">Total Rooms</div>
+            <div className="text-sm text-yellow-200/70">Total Rooms</div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
             <div className="flex items-center justify-between mb-2">
-              <Play className="w-8 h-8 text-green-500" />
-              <span className="text-3xl font-bold text-gray-900">{stats.active}</span>
+              <Play className="w-8 h-8 text-green-400" />
+              <span className="text-3xl font-bold text-white">{stats.active}</span>
             </div>
-            <div className="text-sm text-gray-600">Active Rooms</div>
+            <div className="text-sm text-green-200/70">Active Rooms</div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
             <div className="flex items-center justify-between mb-2">
-              <CheckCircle className="w-8 h-8 text-blue-500" />
-              <span className="text-3xl font-bold text-gray-900">{stats.completed}</span>
+              <CheckCircle className="w-8 h-8 text-blue-400" />
+              <span className="text-3xl font-bold text-white">{stats.completed}</span>
             </div>
-            <div className="text-sm text-gray-600">Completed</div>
+            <div className="text-sm text-blue-200/70">Completed</div>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
             <div className="flex items-center justify-between mb-2">
-              <Users className="w-8 h-8 text-purple-500" />
-              <span className="text-3xl font-bold text-gray-900">{stats.created}</span>
+              <Users className="w-8 h-8 text-purple-400" />
+              <span className="text-3xl font-bold text-white">{stats.created}</span>
             </div>
-            <div className="text-sm text-gray-600">Created by Me</div>
+            <div className="text-sm text-purple-200/70">Created by Me</div>
           </div>
         </div>
 
