@@ -625,7 +625,7 @@ const Board = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-emerald-400" />
-                Today's Schedule
+                Today&apos;s Schedule
               </h3>
               <button 
                 onClick={regenerateSchedule}
