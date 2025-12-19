@@ -21,7 +21,7 @@ with open('/app/frontend/.env', 'r') as f:
             BACKEND_URL = line.split('=')[1].strip()
             break
     else:
-        BACKEND_URL = "https://quiz-app-updates.preview.emergentagent.com"
+        BACKEND_URL = "https://learn-board-2.preview.emergentagent.com"
 
 class SocialFeedTester:
     def __init__(self):
