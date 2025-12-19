@@ -423,7 +423,6 @@ const Board = () => {
       fetchRooms();
       fetchDashboardData(user.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
   // Filter rooms when filters change
