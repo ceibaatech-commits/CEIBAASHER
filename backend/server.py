@@ -46,6 +46,7 @@ from exam_management_routes import router as exam_management_router
 import exam_sync_routes
 from user_management_routes import router as user_management_router
 import user_management_routes
+from dashboard_routes import router as dashboard_router
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
