@@ -526,7 +526,7 @@ const Home = () => {
             </div>
 
             {/* Card 3: In-Depth Performance Analytics */}
-            <div className="group transform transition-transform duration-300 hover:scale-105">
+            <div className="group transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/board')}>
               <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 {/* Gradient Accent Bar */}
                 <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-500"></div>
