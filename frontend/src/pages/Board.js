@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Trophy, Clock, Users, Search, Play, CheckCircle, ArrowLeft,
+  Trophy, Clock, Users, Search, Play, CheckCircle,
   Target, Flame, BookOpen, TrendingUp, Calendar, Lightbulb,
   Star, Zap, Brain, ChevronRight, RefreshCw, Award, GraduationCap,
   School, X, Settings
 } from 'lucide-react';
 import axios from 'axios';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
