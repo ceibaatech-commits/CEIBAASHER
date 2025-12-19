@@ -18,17 +18,17 @@ const CreatePostFAB = ({
 
   return (
     <>
-      {/* Backdrop when menu is open */}
+      {/* Backdrop when menu is open - Mobile Only */}
       {showCreateMenu && (
         <div
-          className="fixed inset-0 bg-black/20 z-40 transition-opacity"
+          className="md:hidden fixed inset-0 bg-black/20 z-40 transition-opacity"
           onClick={() => setShowCreateMenu(false)}
         />
       )}
 
-      {/* Quick Action Menu */}
+      {/* Quick Action Menu - Mobile Only */}
       {showCreateMenu && (
-        <div className="fixed bottom-24 right-4 sm:right-8 z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="md:hidden fixed bottom-24 right-4 sm:right-8 z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Quiz Room Button */}
           <button
             onClick={() => {
