@@ -604,47 +604,55 @@ const SoloPractice = () => {
           </div>
         </div>
 
-        {/* Question Card */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="mb-6">
-            <div className="text-sm text-gray-500 mb-2">- {classBasedData?.subject || subjectName}</div>
-            <h2 className="text-2xl font-bold text-gray-900">
+        {/* Question Card - Modern Mobile Design */}
+        <div className="bg-white rounded-2xl md:rounded-xl shadow-lg p-4 md:p-8">
+          <div className="mb-5 md:mb-6">
+            <div className="text-xs md:text-sm text-gray-500 mb-2 font-medium">
+              {classBasedData?.subject || subjectName}
+            </div>
+            <h2 className="text-lg md:text-2xl font-bold text-gray-900 leading-relaxed">
               <MathText text={currentQuestion?.question} />
             </h2>
           </div>
 
+          {/* Answer Options - Pill-shaped, Modern styling */}
           <div className="space-y-3">
             {currentQuestion?.options.map((option, index) => {
-              // Handle both string options and object options {id, text}
               const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
+              const isSelected = selectedAnswer === index;
+              const isAnswered = selectedAnswer !== null;
+              
               return (
-              <button
-                key={index}
-                onClick={() => handleAnswerSelect(index)}
-                disabled={selectedAnswer !== null}
-                className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                  selectedAnswer === null
-                    ? 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
-                    : selectedAnswer === index
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 opacity-50'
-                }`}
-                data-testid={`option-${index}`}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                    selectedAnswer === index
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700'
-                  }`}>
-                    {String.fromCharCode(65 + index)}
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSelect(index)}
+                  disabled={isAnswered}
+                  className={`w-full text-left p-3.5 md:p-4 rounded-2xl border-2 transition-all duration-200 ${
+                    !isAnswered
+                      ? 'bg-slate-50 border-slate-200 hover:border-blue-400 hover:bg-blue-50 active:scale-[0.98]'
+                      : isSelected
+                        ? 'bg-blue-50 border-blue-500 shadow-sm'
+                        : 'bg-slate-50/50 border-slate-100 opacity-60'
+                  }`}
+                  data-testid={`option-${index}`}
+                >
+                  <div className="flex items-center gap-3">
+                    {/* Option Letter Badge - Pill style */}
+                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0 transition-colors ${
+                      isSelected
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {String.fromCharCode(65 + index)}
+                    </div>
+                    {/* Option Text */}
+                    <span className="flex-1 font-medium text-gray-800 text-sm md:text-base">
+                      <MathText text={optionText} />
+                    </span>
                   </div>
-                  <span className="flex-1 font-medium text-gray-900">
-                    <MathText text={optionText} />
-                  </span>
-                </div>
-              </button>
-            )})}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
