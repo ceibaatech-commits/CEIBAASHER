@@ -1304,6 +1304,261 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_user_dashboard_with_goal_selection(self):
+        """Test User Dashboard with Goal Selection Feature - Comprehensive verification"""
+        try:
+            print("\n🎯 TESTING USER DASHBOARD WITH GOAL SELECTION FEATURE")
+            print("=" * 60)
+            
+            # Get API URL from frontend env
+            api_url = os.environ.get("REACT_APP_BACKEND_URL", BACKEND_URL)
+            
+            # Step 1: Test Get Study Goals Options
+            self.log_result("Dashboard Test - Get Goals Options", True, "🔄 Testing GET /api/dashboard/goals")
+            
+            response = requests.get(f"{api_url}/api/dashboard/goals")
+            
+            if response.status_code != 200:
+                self.log_result("Get Study Goals Options", False, f"❌ Goals API failed: {response.status_code}")
+                return False
+            
+            goals_result = response.json()
+            if not goals_result.get('success'):
+                self.log_result("Get Study Goals Options", False, f"❌ Goals API returned success=false: {goals_result}")
+                return False
+            
+            goals = goals_result.get('goals', {})
+            if 'competitive' not in goals or 'cbse' not in goals:
+                self.log_result("Get Study Goals Options", False, f"❌ Missing goal categories: {goals.keys()}")
+                return False
+            
+            # Verify JEE exists in competitive
+            jee_found = False
+            for cat in goals.get('competitive', {}).get('categories', []):
+                if cat.get('id') == 'jee':
+                    jee_found = True
+                    break
+            
+            if not jee_found:
+                self.log_result("Get Study Goals Options", False, "❌ JEE not found in competitive categories")
+                return False
+            
+            self.log_result("Get Study Goals Options", True, "✅ Goals API working - competitive and cbse categories with JEE found")
+            
+            # Step 2: Set User Goal to JEE
+            self.log_result("Dashboard Test - Set Goal to JEE", True, "🔄 Testing POST /api/dashboard/set-goal/demo1")
+            
+            jee_goal_data = {
+                "goal_type": "competitive",
+                "goal_category": "jee"
+            }
+            
+            response = requests.post(f"{api_url}/api/dashboard/set-goal/demo1", json=jee_goal_data, 
+                                   headers={"Content-Type": "application/json"})
+            
+            if response.status_code != 200:
+                self.log_result("Set User Goal to JEE", False, f"❌ Set goal API failed: {response.status_code} - {response.text}")
+                return False
+            
+            set_goal_result = response.json()
+            if not set_goal_result.get('success'):
+                self.log_result("Set User Goal to JEE", False, f"❌ Set goal returned success=false: {set_goal_result}")
+                return False
+            
+            goal_info = set_goal_result.get('goal_info', {})
+            if goal_info.get('category_name') != 'JEE (Engineering)':
+                self.log_result("Set User Goal to JEE", False, f"❌ Wrong category name: {goal_info.get('category_name')}")
+                return False
+            
+            self.log_result("Set User Goal to JEE", True, f"✅ Goal set to JEE - category_name: {goal_info.get('category_name')}")
+            
+            # Step 3: Get User Goal
+            self.log_result("Dashboard Test - Get User Goal", True, "🔄 Testing GET /api/dashboard/user-goal/demo1")
+            
+            response = requests.get(f"{api_url}/api/dashboard/user-goal/demo1")
+            
+            if response.status_code != 200:
+                self.log_result("Get User Goal", False, f"❌ Get user goal API failed: {response.status_code}")
+                return False
+            
+            user_goal_result = response.json()
+            if not user_goal_result.get('success'):
+                self.log_result("Get User Goal", False, f"❌ Get user goal returned success=false: {user_goal_result}")
+                return False
+            
+            if not user_goal_result.get('has_goal'):
+                self.log_result("Get User Goal", False, "❌ User should have a goal but has_goal=false")
+                return False
+            
+            goal_info = user_goal_result.get('goal_info', {})
+            if goal_info.get('category_name') != 'JEE (Engineering)':
+                self.log_result("Get User Goal", False, f"❌ Wrong goal info: {goal_info}")
+                return False
+            
+            self.log_result("Get User Goal", True, f"✅ User goal retrieved - has_goal=true, JEE details: {goal_info.get('subjects')}")
+            
+            # Step 4: Get Schedule (should be JEE-specific)
+            self.log_result("Dashboard Test - Get JEE Schedule", True, "🔄 Testing GET /api/dashboard/schedule/demo1")
+            
+            response = requests.get(f"{api_url}/api/dashboard/schedule/demo1")
+            
+            if response.status_code != 200:
+                self.log_result("Get Schedule JEE-specific", False, f"❌ Schedule API failed: {response.status_code}")
+                return False
+            
+            schedule_result = response.json()
+            if not schedule_result.get('success'):
+                self.log_result("Get Schedule JEE-specific", False, f"❌ Schedule returned success=false: {schedule_result}")
+                return False
+            
+            schedule = schedule_result.get('schedule', [])
+            if not schedule:
+                self.log_result("Get Schedule JEE-specific", False, "❌ Empty schedule returned")
+                return False
+            
+            # Check if schedule contains JEE subjects (Physics, Chemistry, Mathematics)
+            jee_subjects = ['Physics', 'Chemistry', 'Mathematics']
+            schedule_subjects = set()
+            for day in schedule:
+                for session in day.get('sessions', []):
+                    schedule_subjects.add(session.get('subject', ''))
+            
+            jee_subjects_found = any(subj in schedule_subjects for subj in jee_subjects)
+            if not jee_subjects_found:
+                self.log_result("Get Schedule JEE-specific", False, f"❌ No JEE subjects found in schedule: {schedule_subjects}")
+                return False
+            
+            self.log_result("Get Schedule JEE-specific", True, f"✅ JEE-specific schedule generated with subjects: {schedule_subjects}")
+            
+            # Step 5: Get Recommended Tests (should be JEE-specific)
+            self.log_result("Dashboard Test - Get JEE Tests", True, "🔄 Testing GET /api/dashboard/recommended-tests/demo1")
+            
+            response = requests.get(f"{api_url}/api/dashboard/recommended-tests/demo1")
+            
+            if response.status_code != 200:
+                self.log_result("Get Recommended Tests JEE-specific", False, f"❌ Recommended tests API failed: {response.status_code}")
+                return False
+            
+            tests_result = response.json()
+            if not tests_result.get('success'):
+                self.log_result("Get Recommended Tests JEE-specific", False, f"❌ Recommended tests returned success=false: {tests_result}")
+                return False
+            
+            tests = tests_result.get('tests', [])
+            if not tests:
+                self.log_result("Get Recommended Tests JEE-specific", False, "❌ No recommended tests returned")
+                return False
+            
+            # Check if tests contain JEE subjects and are harder (20 mins, 15 questions)
+            jee_test_found = False
+            for test in tests:
+                test_subject = test.get('subject', '')
+                duration = test.get('duration', '')
+                questions = test.get('questions', 0)
+                difficulty = test.get('difficulty', '')
+                
+                if any(jee_subj in test_subject for jee_subj in jee_subjects):
+                    jee_test_found = True
+                    if '20 mins' in duration and questions == 15:
+                        self.log_result("Get Recommended Tests JEE-specific", True, 
+                                      f"✅ JEE test found: {test_subject}, {duration}, {questions} questions, {difficulty}")
+                        break
+            
+            if not jee_test_found:
+                self.log_result("Get Recommended Tests JEE-specific", False, f"❌ No JEE-specific tests found: {[t.get('subject') for t in tests]}")
+                return False
+            
+            # Step 6: Set Goal to CBSE Class 10
+            self.log_result("Dashboard Test - Set Goal to Class 10", True, "🔄 Testing POST /api/dashboard/set-goal/demo1 (Class 10)")
+            
+            class10_goal_data = {
+                "goal_type": "cbse",
+                "goal_category": "class_10"
+            }
+            
+            response = requests.post(f"{api_url}/api/dashboard/set-goal/demo1", json=class10_goal_data,
+                                   headers={"Content-Type": "application/json"})
+            
+            if response.status_code != 200:
+                self.log_result("Set Goal to CBSE Class 10", False, f"❌ Set Class 10 goal failed: {response.status_code}")
+                return False
+            
+            class10_result = response.json()
+            if not class10_result.get('success'):
+                self.log_result("Set Goal to CBSE Class 10", False, f"❌ Set Class 10 goal returned success=false: {class10_result}")
+                return False
+            
+            goal_info = class10_result.get('goal_info', {})
+            if goal_info.get('category_name') != 'Class 10':
+                self.log_result("Set Goal to CBSE Class 10", False, f"❌ Wrong Class 10 category name: {goal_info.get('category_name')}")
+                return False
+            
+            self.log_result("Set Goal to CBSE Class 10", True, f"✅ Goal set to Class 10 - category_name: {goal_info.get('category_name')}")
+            
+            # Step 7: Get Recommended Tests (should be Class 10 specific)
+            self.log_result("Dashboard Test - Get Class 10 Tests", True, "🔄 Testing GET /api/dashboard/recommended-tests/demo1 (Class 10)")
+            
+            response = requests.get(f"{api_url}/api/dashboard/recommended-tests/demo1")
+            
+            if response.status_code != 200:
+                self.log_result("Get Recommended Tests Class 10", False, f"❌ Class 10 tests API failed: {response.status_code}")
+                return False
+            
+            class10_tests_result = response.json()
+            if not class10_tests_result.get('success'):
+                self.log_result("Get Recommended Tests Class 10", False, f"❌ Class 10 tests returned success=false: {class10_tests_result}")
+                return False
+            
+            class10_tests = class10_tests_result.get('tests', [])
+            if not class10_tests:
+                self.log_result("Get Recommended Tests Class 10", False, "❌ No Class 10 tests returned")
+                return False
+            
+            # Check if tests contain Class 10 subjects (Mathematics, Science, Social Science, English, Hindi)
+            class10_subjects = ['Mathematics', 'Science', 'Social Science', 'English', 'Hindi']
+            class10_test_found = False
+            medium_difficulty_found = False
+            
+            for test in class10_tests:
+                test_subject = test.get('subject', '')
+                difficulty = test.get('difficulty', '')
+                duration = test.get('duration', '')
+                questions = test.get('questions', 0)
+                
+                if any(c10_subj in test_subject for c10_subj in class10_subjects):
+                    class10_test_found = True
+                    if difficulty == 'Medium':
+                        medium_difficulty_found = True
+                        self.log_result("Get Recommended Tests Class 10", True, 
+                                      f"✅ Class 10 test found: {test_subject}, {difficulty}, {duration}, {questions} questions")
+                        break
+            
+            if not class10_test_found:
+                self.log_result("Get Recommended Tests Class 10", False, f"❌ No Class 10 subjects found: {[t.get('subject') for t in class10_tests]}")
+                return False
+            
+            if not medium_difficulty_found:
+                self.log_result("Get Recommended Tests Class 10", False, f"❌ No medium difficulty tests found for Class 10")
+                return False
+            
+            print("\n🎉 USER DASHBOARD WITH GOAL SELECTION FEATURE TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Get study goals options (competitive & cbse) ✅")
+            print("  2. Set user goal to JEE ✅")
+            print("  3. Get user goal (JEE details) ✅")
+            print("  4. Get JEE-specific schedule (Physics, Chemistry, Mathematics) ✅")
+            print("  5. Get JEE-specific recommended tests (20 mins, 15 questions, Hard) ✅")
+            print("  6. Set goal to CBSE Class 10 ✅")
+            print("  7. Get Class 10 recommended tests (Medium difficulty) ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Dashboard Test - Exception", False, f"❌ Dashboard test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def test_cbse_class_6_7_8_chapter_display_and_question_sync(self):
         """Test CBSE Class 6, 7, 8 Chapter Display and Question Sync - Comprehensive verification"""
         try:
