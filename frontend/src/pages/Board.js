@@ -525,54 +525,54 @@ const Board = () => {
 
         {/* Stats Cards - Glassmorphism Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-105 cursor-pointer group">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Target className="w-6 h-6 text-emerald-400" />
               </div>
-              <span className="text-3xl font-bold text-gray-900">{dashboardStats.tests_completed}</span>
+              <span className="text-3xl font-bold text-white">{dashboardStats.tests_completed}</span>
             </div>
-            <div className="text-sm text-gray-600 font-medium">Tests Completed</div>
+            <div className="text-sm text-emerald-200/70 font-medium">Tests Completed</div>
           </div>
           
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-6 h-6 text-blue-400" />
               </div>
-              <span className="text-3xl font-bold text-gray-900">{dashboardStats.avg_score}%</span>
+              <span className="text-3xl font-bold text-white">{dashboardStats.avg_score}%</span>
             </div>
-            <div className="text-sm text-gray-600 font-medium">Average Score</div>
+            <div className="text-sm text-blue-200/70 font-medium">Average Score</div>
           </div>
           
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-                <Flame className="w-6 h-6 text-orange-600" />
+              <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Flame className="w-6 h-6 text-orange-400" />
               </div>
-              <span className="text-3xl font-bold text-gray-900">{dashboardStats.streak}</span>
+              <span className="text-3xl font-bold text-white">{dashboardStats.streak}</span>
             </div>
-            <div className="text-sm text-gray-600 font-medium">Day Streak 🔥</div>
+            <div className="text-sm text-orange-200/70 font-medium">Day Streak 🔥</div>
           </div>
           
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                <Clock className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Clock className="w-6 h-6 text-purple-400" />
               </div>
-              <span className="text-3xl font-bold text-gray-900">{dashboardStats.study_hours}</span>
+              <span className="text-3xl font-bold text-white">{dashboardStats.study_hours}</span>
             </div>
-            <div className="text-sm text-gray-600 font-medium">Study Hours</div>
+            <div className="text-sm text-purple-200/70 font-medium">Study Hours</div>
           </div>
         </div>
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Subject Mastery */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-emerald-600" />
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-emerald-400" />
                 Subject Mastery
               </h3>
             </div>
