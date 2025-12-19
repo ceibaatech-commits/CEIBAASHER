@@ -1,6 +1,7 @@
 """
 Dashboard Routes - AI-Powered Study Dashboard
 Provides user stats, subject mastery, AI weekly schedule, and AI insights
+Personalized based on user's study goal (Competitive Exams or CBSE Classes)
 """
 
 from fastapi import APIRouter, HTTPException
@@ -15,6 +16,36 @@ from dotenv import load_dotenv
 load_dotenv()
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
+
+# Study Goal Categories
+STUDY_GOALS = {
+    "competitive": {
+        "name": "Competitive Exams",
+        "categories": [
+            {"id": "jee", "name": "JEE (Engineering)", "subjects": ["Physics", "Chemistry", "Mathematics"]},
+            {"id": "neet", "name": "NEET (Medical)", "subjects": ["Physics", "Chemistry", "Biology"]},
+            {"id": "upsc", "name": "UPSC (Civil Services)", "subjects": ["General Studies", "Current Affairs", "History", "Geography", "Polity", "Economy"]},
+            {"id": "defence", "name": "Defence Exams", "subjects": ["Mathematics", "English", "General Knowledge", "Reasoning"]},
+            {"id": "banking", "name": "Banking & SSC", "subjects": ["Quantitative Aptitude", "Reasoning", "English", "General Awareness"]},
+            {"id": "gate", "name": "GATE", "subjects": ["Engineering Mathematics", "General Aptitude", "Core Subject"]},
+            {"id": "cat", "name": "CAT (MBA)", "subjects": ["Quantitative Aptitude", "Verbal Ability", "Data Interpretation", "Logical Reasoning"]}
+        ]
+    },
+    "cbse": {
+        "name": "CBSE Classes",
+        "categories": [
+            {"id": "class_6", "name": "Class 6", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
+            {"id": "class_7", "name": "Class 7", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
+            {"id": "class_8", "name": "Class 8", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
+            {"id": "class_9", "name": "Class 9", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
+            {"id": "class_10", "name": "Class 10", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
+            {"id": "class_11_science", "name": "Class 11 (Science)", "subjects": ["Physics", "Chemistry", "Mathematics", "Biology", "English"]},
+            {"id": "class_11_commerce", "name": "Class 11 (Commerce)", "subjects": ["Accountancy", "Business Studies", "Economics", "Mathematics", "English"]},
+            {"id": "class_12_science", "name": "Class 12 (Science)", "subjects": ["Physics", "Chemistry", "Mathematics", "Biology", "English"]},
+            {"id": "class_12_commerce", "name": "Class 12 (Commerce)", "subjects": ["Accountancy", "Business Studies", "Economics", "Mathematics", "English"]}
+        ]
+    }
+}
 
 # MongoDB connection
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
