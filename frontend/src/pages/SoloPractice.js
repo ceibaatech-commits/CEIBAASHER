@@ -686,8 +686,9 @@ const SoloPractice = () => {
                         />
                       )}
                       <span className="font-medium text-gray-800 text-sm md:text-base">
-                      <MathText text={optionText} />
-                    </span>
+                        <MathText text={optionText} />
+                      </span>
+                    </div>
                   </div>
                 </button>
               );
