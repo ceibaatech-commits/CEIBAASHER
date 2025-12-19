@@ -102,6 +102,103 @@ def calculate_learner_level(tests_completed: int, avg_score: float) -> str:
         return "Expert"
 
 
+def get_goal_info(goal_type: str, goal_category: str) -> Dict:
+    """Get goal information including name and subjects"""
+    if goal_type in STUDY_GOALS:
+        for cat in STUDY_GOALS[goal_type]["categories"]:
+            if cat["id"] == goal_category:
+                return {
+                    "type": goal_type,
+                    "type_name": STUDY_GOALS[goal_type]["name"],
+                    "category": goal_category,
+                    "category_name": cat["name"],
+                    "subjects": cat["subjects"]
+                }
+    return None
+
+
+@router.get("/goals")
+async def get_study_goals():
+    """Get all available study goal options"""
+    return {
+        "success": True,
+        "goals": STUDY_GOALS
+    }
+
+
+@router.get("/user-goal/{user_id}")
+async def get_user_goal(user_id: str):
+    """Get user's selected study goal"""
+    try:
+        user_goal = await db.user_goals.find_one(
+            {"user_id": user_id},
+            {"_id": 0}
+        )
+        
+        if user_goal:
+            goal_info = get_goal_info(user_goal.get("goal_type"), user_goal.get("goal_category"))
+            return {
+                "success": True,
+                "has_goal": True,
+                "goal": user_goal,
+                "goal_info": goal_info
+            }
+        
+        return {
+            "success": True,
+            "has_goal": False,
+            "goal": None,
+            "goal_info": None
+        }
+    except Exception as e:
+        print(f"Error fetching user goal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class SetGoalRequest(BaseModel):
+    goal_type: str  # "competitive" or "cbse"
+    goal_category: str  # e.g., "jee", "neet", "class_10", etc.
+
+
+@router.post("/set-goal/{user_id}")
+async def set_user_goal(user_id: str, request: SetGoalRequest):
+    """Set user's study goal"""
+    try:
+        # Validate goal
+        goal_info = get_goal_info(request.goal_type, request.goal_category)
+        if not goal_info:
+            raise HTTPException(status_code=400, detail="Invalid goal type or category")
+        
+        # Upsert user goal
+        await db.user_goals.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "user_id": user_id,
+                    "goal_type": request.goal_type,
+                    "goal_category": request.goal_category,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }
+            },
+            upsert=True
+        )
+        
+        # Clear cached schedule and insights to regenerate with new goal
+        await db.weekly_schedules.delete_many({"user_id": user_id})
+        await db.ai_insights.delete_many({"user_id": user_id})
+        
+        return {
+            "success": True,
+            "message": f"Goal set to {goal_info['category_name']}",
+            "goal_info": goal_info
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error setting user goal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/stats/{user_id}")
 async def get_dashboard_stats(user_id: str):
     """Get user dashboard statistics including tests completed, avg score, streak, and study hours"""
