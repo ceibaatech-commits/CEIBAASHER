@@ -415,28 +415,35 @@ const Board = () => {
     }
   };
 
+  // Check if user is logged in for Header
+  const isLoggedIn = !!user;
+
   if (loading || loadingDashboard) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-semibold mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Home
-          </button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">My Dashboard</h1>
-          <p className="text-gray-600">Track your progress and performance</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900">
+      {/* Header */}
+      <Header 
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onLogout={() => {
+          localStorage.removeItem('ceibaa_user');
+          localStorage.removeItem('ceibaa_token');
+          navigate('/login');
+        }}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Page Title */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">My Dashboard</h1>
+          <p className="text-emerald-200/70">Track your progress and achieve your goals</p>
         </div>
 
         {/* Goal Selection Modal */}
