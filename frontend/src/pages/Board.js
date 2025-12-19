@@ -177,35 +177,7 @@ const Board = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0, created: 0 });
 
-  // Sync user from AuthContext (updates when profile picture changes)
-  useEffect(() => {
-    if (authUser) {
-      setUser(authUser);
-    } else {
-      // Fallback to localStorage if authUser not available
-      const userStr = localStorage.getItem('ceibaa_user');
-      if (!userStr) {
-        alert('Please login to view your Board');
-        navigate('/login');
-        return;
-      }
-      setUser(JSON.parse(userStr));
-    }
-  }, [authUser, navigate]);
-
-  // Fetch dashboard data when user is available
-  useEffect(() => {
-    if (user?.id) {
-      fetchUserGoal(user.id);
-      fetchRooms();
-      fetchDashboardData(user.id);
-    }
-  }, [user?.id]);
-
-  useEffect(() => {
-    filterRooms();
-  }, [activeTab, searchQuery, rooms]);
-
+  // Fetch user goal
   const fetchUserGoal = async (userId) => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/dashboard/user-goal/${userId}`);
