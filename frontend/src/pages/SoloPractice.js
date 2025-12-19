@@ -553,12 +553,13 @@ const SoloPractice = () => {
           </div>
         )}
         
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
+        {/* Header - Improved Mobile UI */}
+        <div className="bg-white rounded-xl md:rounded-xl shadow-md mb-4 md:mb-6 overflow-hidden">
+          {/* Top Navigation Bar - Clean aligned row */}
+          <div className="flex items-center justify-between px-3 py-3 md:px-6 md:py-4 border-b border-gray-100">
+            {/* Left: Back button with subject */}
             <button
               onClick={() => {
-                // Only show confirmation if user has answered at least one question
                 const hasProgress = selectedAnswer !== null || currentQuestionIndex > 0;
                 if (!hasProgress || window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
                   if (isClassBased && classBasedData) {
@@ -568,28 +569,36 @@ const SoloPractice = () => {
                   }
                 }
               }}
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              className="flex items-center text-gray-700 hover:text-gray-900 min-w-0"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              {isClassBased ? 'Back to Chapters' : 'Back to Exam Topics'}
+              <ArrowLeft className="w-5 h-5 flex-shrink-0" />
+              <span className="ml-2 text-sm md:text-base font-medium truncate max-w-[100px] md:max-w-none">
+                {classBasedData?.subject || subjectName || 'Quiz'}
+              </span>
             </button>
             
-            <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-600">
-                Question {currentQuestionIndex + 1} / {questions.length}
-              </div>
-              <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                timeLeft <= 10 ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
-              }`}>
-                <Clock className="w-5 h-5" />
-                <span className="font-bold text-lg">{timeLeft}s</span>
-              </div>
+            {/* Center: Question count */}
+            <div className="flex items-center justify-center px-3 py-1 bg-gray-100 rounded-full">
+              <span className="text-sm font-semibold text-gray-700">
+                {currentQuestionIndex + 1}/{questions.length}
+              </span>
+            </div>
+            
+            {/* Right: Timer pill */}
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-semibold text-sm ${
+              timeLeft <= 10 
+                ? 'bg-red-100 text-red-600' 
+                : 'bg-blue-100 text-blue-600'
+            }`}>
+              <Clock className="w-4 h-4" />
+              <span>{timeLeft}s</span>
             </div>
           </div>
 
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          {/* Progress Bar - Thicker and more visible */}
+          <div className="w-full bg-gray-200 h-2 md:h-2.5">
             <div
-              className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300 ease-out"
               style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
             ></div>
           </div>
