@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ExternalLink, TrendingUp, FileText } from 'lucide-react';
 
 const CompactBanner = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const banners = [
@@ -17,7 +19,8 @@ const CompactBanner = () => {
       ],
       gradient: 'from-blue-600 via-indigo-600 to-purple-700',
       ctaText: 'View Syllabus & Apply',
-      icon: '🚂'
+      icon: '🚂',
+      link: '/exam/RRB%20NTPC'
     },
     {
       id: 2,
@@ -31,7 +34,8 @@ const CompactBanner = () => {
       ],
       gradient: 'from-sky-500 via-blue-600 to-indigo-700',
       ctaText: 'Details & Free Mock Test',
-      icon: '✈️'
+      icon: '✈️',
+      link: '/exams/afcat'
     }
   ];
 
