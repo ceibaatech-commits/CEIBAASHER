@@ -54,10 +54,30 @@ const ExamSheetManager = () => {
   });
 
   const [books, setBooks] = useState([]);
+  
+  // CBSE Data from API (Single Source of Truth)
+  const [cbseClassSubjects, setCbseClassSubjects] = useState({});
+  const [loadingCbseData, setLoadingCbseData] = useState(true);
 
-  // FIXED: Use exact exam IDs from exam_data.py (backend)
-  // This ensures perfect matching between admin and frontend
-  const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'];
+  // Fetch CBSE data from centralized API on mount
+  useEffect(() => {
+    const fetchCbseData = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/cbse-data/admin/class-subjects`);
+        if (response.data.success) {
+          setCbseClassSubjects(response.data.class_subjects);
+        }
+      } catch (error) {
+        console.error('Error fetching CBSE data:', error);
+      } finally {
+        setLoadingCbseData(false);
+      }
+    };
+    fetchCbseData();
+  }, []);
+
+  // Class names for dropdowns
+  const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 (Science)', 'Class 11 (Commerce)', 'Class 12 (Science)', 'Class 12 (Commerce)'];
   
   const examNames = [
     // CBSE Classes
