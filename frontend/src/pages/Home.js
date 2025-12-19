@@ -448,7 +448,7 @@ const Home = () => {
           {/* Three Feature Cards - Optimized */}
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Card 1: Real-Time Mock Tests */}
-            <div className="group transform transition-transform duration-300 hover:scale-105">
+            <div className="group transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/board')}>
               <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 {/* Gradient Accent Bar */}
                 <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-500"></div>
