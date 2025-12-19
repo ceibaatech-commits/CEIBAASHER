@@ -374,7 +374,7 @@ const Board = () => {
   const startRecommendedTest = (test) => {
     // Navigate based on goal type
     if (test.exam_type === 'competitive') {
-      // For competitive exams, navigate to exam-based quiz
+      // For competitive exams, navigate to exam selection page
       const examMap = {
         'jee': 'JEE',
         'neet': 'NEET',
@@ -385,25 +385,21 @@ const Board = () => {
         'cat': 'CAT'
       };
       const examName = examMap[test.exam_category] || 'JEE';
-      navigate(`/solo-practice/${examName}/${test.subject}/Practice`, {
+      // Navigate to exam page where user can select topic
+      navigate(`/exam/${examName}`, {
         state: {
-          examId: examName,
-          subject: test.subject,
-          topic: 'Practice',
-          numberOfQuestions: test.questions
+          highlightSubject: test.subject
         }
       });
     } else if (test.exam_type === 'cbse') {
-      // For CBSE classes, navigate to class-based quiz
+      // For CBSE classes, navigate to class subject page
       const classMatch = test.exam_category?.match(/class_(\d+)/);
       const classNum = classMatch ? classMatch[1] : '10';
       const subjectSlug = test.subject.toLowerCase().replace(/\s+/g, '-');
       navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
     } else {
-      // Default: navigate to chapter tests based on subject
-      navigate(`/chapter-tests`, {
-        state: { subject: test.subject }
-      });
+      // Default: navigate to chapter tests
+      navigate(`/chapter-tests`);
     }
   };
 
