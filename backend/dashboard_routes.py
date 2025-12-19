@@ -739,8 +739,24 @@ Return ONLY the JSON object, no other text."""
         return get_default_insights()
 
 
-def get_default_schedule() -> List[Dict]:
+async def get_default_schedule_for_user(user_id: str) -> List[Dict]:
+    """Return a default schedule based on user's goal"""
+    # Get user's goal
+    user_goal = await db.user_goals.find_one({"user_id": user_id}, {"_id": 0})
+    
+    if user_goal:
+        goal_info = get_goal_info(user_goal.get("goal_type"), user_goal.get("goal_category"))
+        if goal_info:
+            return get_default_schedule(goal_info["subjects"], goal_info["category_name"])
+    
+    return get_default_schedule()
+
+
+def get_default_schedule(subjects: List[str] = None, goal_name: str = "General Studies") -> List[Dict]:
     """Return a default schedule if AI generation fails"""
+    if not subjects:
+        subjects = ["Mathematics", "Science", "English", "Physics", "Chemistry"]
+    
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     schedule = []
     
@@ -748,16 +764,16 @@ def get_default_schedule() -> List[Dict]:
         sessions = [
             {
                 "time": "9:00 AM - 10:30 AM",
-                "subject": ["Mathematics", "Science", "English", "Physics", "Chemistry"][i % 5],
-                "topic": "Chapter Review",
+                "subject": subjects[i % len(subjects)],
+                "topic": f"{goal_name} - Chapter Review",
                 "duration": 90,
                 "type": "study",
                 "priority": "high"
             },
             {
                 "time": "2:00 PM - 3:00 PM",
-                "subject": ["Science", "English", "Mathematics", "Chemistry", "Physics"][i % 5],
-                "topic": "Practice Problems",
+                "subject": subjects[(i + 1) % len(subjects)],
+                "topic": f"{goal_name} - Practice Problems",
                 "duration": 60,
                 "type": "practice",
                 "priority": "medium"
