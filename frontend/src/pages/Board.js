@@ -395,6 +395,14 @@ const Board = () => {
           <p className="text-gray-600">Track your progress and performance</p>
         </div>
 
+        {/* Goal Selection Modal */}
+        <GoalSelectionModal 
+          isOpen={showGoalModal} 
+          onClose={() => setShowGoalModal(false)}
+          onSelectGoal={handleSelectGoal}
+          currentGoal={userGoal}
+        />
+
         {/* Profile Header Card */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
           <div className="flex flex-col md:flex-row items-center gap-6">
@@ -420,6 +428,35 @@ const Board = () => {
                   ⭐ {dashboardStats.avg_score}% Avg
                 </span>
               </div>
+            </div>
+            
+            {/* Study Goal Badge */}
+            <div className="text-center md:text-right">
+              {goalInfo ? (
+                <div className="inline-flex flex-col items-center md:items-end">
+                  <span className="text-xs text-gray-500 mb-1">Preparing for</span>
+                  <div className={`px-4 py-2 rounded-xl bg-gradient-to-r ${
+                    goalInfo.type === 'competitive' ? 'from-purple-500 to-indigo-600' : 'from-emerald-500 to-teal-600'
+                  } text-white font-semibold shadow-md flex items-center gap-2`}>
+                    {goalInfo.type === 'competitive' ? <GraduationCap className="w-4 h-4" /> : <School className="w-4 h-4" />}
+                    {goalInfo.category_name}
+                  </div>
+                  <button 
+                    onClick={() => setShowGoalModal(true)}
+                    className="text-xs text-gray-500 hover:text-emerald-600 mt-1 flex items-center gap-1"
+                  >
+                    <Settings className="w-3 h-3" /> Change Goal
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setShowGoalModal(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                >
+                  <Target className="w-4 h-4" />
+                  Set Study Goal
+                </button>
+              )}
             </div>
           </div>
         </div>
