@@ -532,23 +532,34 @@ async def regenerate_weekly_schedule(user_id: str):
 
 
 async def generate_ai_schedule(user_id: str) -> List[Dict]:
-    """Generate AI-powered weekly study schedule"""
+    """Generate AI-powered weekly study schedule based on user's goal"""
     try:
         from emergentintegrations.llm.chat import LlmChat, UserMessage
         
         api_key = os.getenv("EMERGENT_LLM_KEY")
         if not api_key:
-            return get_default_schedule()
+            return await get_default_schedule_for_user(user_id)
         
-        # Get user's quiz history for context
-        quiz_history = await db.quiz_history.find(
-            {"user_id": user_id},
-            {"_id": 0}
-        ).to_list(50)
+        # Get user's goal
+        user_goal = await db.user_goals.find_one({"user_id": user_id}, {"_id": 0})
+        goal_info = None
+        if user_goal:
+            goal_info = get_goal_info(user_goal.get("goal_type"), user_goal.get("goal_category"))
         
-        subjects = list(set(q.get("subject", "General") for q in quiz_history))
-        if not subjects:
-            subjects = ["Mathematics", "Science", "English"]
+        # Get subjects based on goal or quiz history
+        if goal_info:
+            subjects = goal_info["subjects"]
+            goal_name = goal_info["category_name"]
+        else:
+            # Fallback to quiz history
+            quiz_history = await db.quiz_history.find(
+                {"user_id": user_id},
+                {"_id": 0}
+            ).to_list(50)
+            subjects = list(set(q.get("subject", "General") for q in quiz_history))
+            if not subjects:
+                subjects = ["Mathematics", "Science", "English"]
+            goal_name = "General Studies"
         
         chat = LlmChat(
             api_key=api_key,
@@ -556,20 +567,21 @@ async def generate_ai_schedule(user_id: str) -> List[Dict]:
             system_message="You are an AI study planner. Generate personalized weekly study schedules in JSON format."
         ).with_model("openai", "gpt-4o-mini")
         
-        prompt = f"""Generate a weekly study schedule for a student studying these subjects: {', '.join(subjects[:5])}.
+        prompt = f"""Generate a weekly study schedule for a student preparing for {goal_name}.
+The student needs to study these subjects: {', '.join(subjects)}.
 
 Return ONLY a valid JSON array with 7 objects (one for each day), each containing:
 - "day": day name (Monday to Sunday)
 - "date": relative date description
 - "sessions": array of 2-3 study sessions, each with:
   - "time": time slot (e.g., "9:00 AM - 10:30 AM")
-  - "subject": subject name
-  - "topic": specific topic to study
+  - "subject": subject name (must be from the given subjects)
+  - "topic": specific topic to study for {goal_name}
   - "duration": duration in minutes
   - "type": one of "study", "practice", "review", "test"
   - "priority": one of "high", "medium", "low"
 
-Make it realistic with breaks and varied activities. Return ONLY the JSON array, no other text."""
+Make it realistic with proper time management for {goal_name} preparation. Return ONLY the JSON array, no other text."""
 
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
