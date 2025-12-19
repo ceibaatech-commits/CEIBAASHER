@@ -147,8 +147,13 @@ const ChapterTestSubjects = () => {
                 <button
                   key={subject.name}
                   onClick={() => {
-                    const subjectSlug = subject.name.toLowerCase().replace(/\s+/g, '-');
-                    navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}`);
+                    // Use slug from API (Single Source of Truth) or fallback to generated slug
+                    const subjectSlug = subject.slug || subject.name.toLowerCase().replace(/ - /g, '---').replace(/\s+/g, '-');
+                    if (stream && (selectedClass === '11' || selectedClass === '12')) {
+                      navigate(`/chapter-tests/class-${selectedClass}/${stream}/${subjectSlug}`);
+                    } else {
+                      navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}`);
+                    }
                   }}
                   className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent text-left overflow-hidden"
                 >
