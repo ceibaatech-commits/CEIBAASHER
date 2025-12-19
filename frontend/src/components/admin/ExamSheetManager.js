@@ -1853,7 +1853,7 @@ const ExamSheetManager = () => {
                     </select>
                   </div>
 
-                  {/* Subject */}
+                  {/* Subject - Dynamic from CBSE API */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Subject *
@@ -1863,40 +1863,22 @@ const ExamSheetManager = () => {
                       value={classForm.subject}
                       onChange={(e) => setClassForm({ ...classForm, subject: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      disabled={!classForm.class_name}
+                      disabled={!classForm.class_name || loadingCbseData}
                     >
-                      <option value="">Select Subject</option>
-                      {classForm.class_name === 'Class 6' ? (
+                      <option value="">{loadingCbseData ? 'Loading subjects...' : 'Select Subject'}</option>
+                      {classForm.class_name && cbseClassSubjects[classForm.class_name] && 
+                        Object.keys(cbseClassSubjects[classForm.class_name]).map((subject) => (
+                          <option key={subject} value={subject}>{subject}</option>
+                        ))
+                      }
+                      {/* Fallback for Class 9 if API not loaded */}
+                      {classForm.class_name === 'Class 9' && !cbseClassSubjects['Class 9'] && (
                         <>
-                          <option value="Hindi - Malhar">Hindi - Malhar</option>
-                          <option value="Social Science - Exploring Society India and Beyond">Social Science - Exploring Society India and Beyond</option>
-                          <option value="Mathematics - Ganita Prakash">Mathematics - Ganita Prakash</option>
-                          <option value="English - Poorvi">English - Poorvi</option>
-                          <option value="Science - Curiosity">Science - Curiosity</option>
-                          <option value="Sanskrit - Deepakam">Sanskrit - Deepakam</option>
-                        </>
-                      ) : classForm.class_name === 'Class 7' ? (
-                        <>
-                          <option value="Hindi - Malhar">Hindi - Malhar</option>
-                          <option value="Science - Curiosity">Science - Curiosity</option>
-                          <option value="English - Poorvi">English - Poorvi</option>
-                          <option value="Social Science - Exploring Society India and Beyond Part 2">Social Science - Exploring Society India and Beyond Part 2</option>
-                          <option value="Social Science - Exploring Society India and Beyond">Social Science - Exploring Society India and Beyond</option>
-                          <option value="Mathematics - Ganita Prakash 1">Mathematics - Ganita Prakash 1</option>
-                          <option value="Mathematics - Ganita Prakash 2">Mathematics - Ganita Prakash 2</option>
-                          <option value="Sanskrit">Sanskrit</option>
-                        </>
-                      ) : classForm.class_name === 'Class 8' ? (
-                        <>
-                          <option value="English - Poorvi">English - Poorvi</option>
-                          <option value="Hindi - Malhar">Hindi - Malhar</option>
-                          <option value="Science - Curiosity">Science - Curiosity</option>
-                          <option value="Social Science - Exploring Society: India and Beyond">Social Science - Exploring Society: India and Beyond</option>
-                          <option value="Mathematics - Ganita Prakash">Mathematics - Ganita Prakash</option>
-                          <option value="Sanskrit">Sanskrit</option>
-                        </>
-                      ) : classForm.class_name === 'Class 9' ? (
-                        <>
+                          <option value="Mathematics">Mathematics</option>
+                          <option value="Science">Science</option>
+                          <option value="Hindi">Hindi</option>
+                          <option value="English">English</option>
+                          <option value="Social Science">Social Science</option>
                           <option value="Geography">Geography</option>
                           <option value="History">History</option>
                           <option value="Civics">Civics</option>
