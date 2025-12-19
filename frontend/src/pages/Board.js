@@ -371,6 +371,42 @@ const Board = () => {
     return weeklySchedule.find(d => d.day === today) || weeklySchedule[0];
   };
 
+  const startRecommendedTest = (test) => {
+    // Navigate based on goal type
+    if (test.exam_type === 'competitive') {
+      // For competitive exams, navigate to exam-based quiz
+      const examMap = {
+        'jee': 'JEE',
+        'neet': 'NEET',
+        'upsc': 'UPSC',
+        'defence': 'NDA',
+        'banking': 'SSC',
+        'gate': 'GATE',
+        'cat': 'CAT'
+      };
+      const examName = examMap[test.exam_category] || 'JEE';
+      navigate(`/solo-practice/${examName}/${test.subject}/Practice`, {
+        state: {
+          examId: examName,
+          subject: test.subject,
+          topic: 'Practice',
+          numberOfQuestions: test.questions
+        }
+      });
+    } else if (test.exam_type === 'cbse') {
+      // For CBSE classes, navigate to class-based quiz
+      const classMatch = test.exam_category?.match(/class_(\d+)/);
+      const classNum = classMatch ? classMatch[1] : '10';
+      const subjectSlug = test.subject.toLowerCase().replace(/\s+/g, '-');
+      navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
+    } else {
+      // Default: navigate to chapter tests based on subject
+      navigate(`/chapter-tests`, {
+        state: { subject: test.subject }
+      });
+    }
+  };
+
   if (loading || loadingDashboard) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-teal-50 flex items-center justify-center">
