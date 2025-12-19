@@ -744,7 +744,13 @@ const Board = () => {
                           'bg-gray-100 text-gray-700'
                         }`}>{test.difficulty}</span>
                       </div>
-                      <button className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-semibold rounded-lg hover:shadow-md transition-all">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startRecommendedTest(test);
+                        }}
+                        className="px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-semibold rounded-lg hover:shadow-md transition-all"
+                      >
                         Start
                       </button>
                     </div>
