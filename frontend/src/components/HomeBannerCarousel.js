@@ -128,7 +128,10 @@ const CompactBanner = () => {
                 </div>
 
                 <div className="animate-slide-in pt-2" style={{animationDelay: '0.3s'}}>
-                  <button className="bg-white text-gray-900 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-gray-100 transition-all inline-flex items-center gap-2 shadow-xl hover:shadow-2xl hover:scale-105 group">
+                  <button 
+                    onClick={() => navigate(currentBanner.link)}
+                    className="bg-white text-gray-900 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-gray-100 transition-all inline-flex items-center gap-2 shadow-xl hover:shadow-2xl hover:scale-105 group"
+                  >
                     <span>{currentBanner.ctaText}</span>
                     <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform" />
                   </button>
