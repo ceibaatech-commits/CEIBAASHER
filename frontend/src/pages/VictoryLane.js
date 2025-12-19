@@ -1249,6 +1249,53 @@ const VictoryLane = () => {
           </div>
         )}
 
+        {/* Desktop Post Composer - Twitter Style */}
+        {user && (
+          <div className="hidden md:block bg-white border-b border-gray-200 p-4">
+            <div className="flex gap-3">
+              <UserAvatar
+                profilePicture={user.profile_picture}
+                name={user.name}
+                size="md"
+              />
+              <div className="flex-1">
+                <textarea
+                  value={newPostContent}
+                  onChange={(e) => setNewPostContent(e.target.value)}
+                  placeholder="Share your study wins, tips, or thoughts..."
+                  className="w-full border-none outline-none resize-none min-h-[80px] text-base placeholder-gray-400 focus:ring-0 bg-transparent"
+                  rows={2}
+                />
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setShowQuizModal(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 text-purple-600 hover:bg-purple-50 rounded-full transition text-sm font-medium"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      <span>Quiz Room</span>
+                    </button>
+                    <button
+                      onClick={() => setShowQuestionModal(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 text-green-600 hover:bg-green-50 rounded-full transition text-sm font-medium"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      <span>Question</span>
+                    </button>
+                  </div>
+                  <button
+                    onClick={handleCreatePost}
+                    disabled={!newPostContent.trim()}
+                    className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    Post
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Loading State */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
