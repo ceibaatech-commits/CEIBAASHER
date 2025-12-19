@@ -205,9 +205,26 @@ const Board = () => {
       if (res.data.success) {
         setGoalInfo(res.data.goal_info);
         setUserGoal({ goal_type: goalType, goal_category: goalCategory });
-        // Refresh dashboard data with new goal
+        
+        // Set ALL loading states to show refresh is happening
+        setLoadingDashboard(true);
         setLoadingSchedule(true);
         setLoadingInsights(true);
+        
+        // Clear existing data to show fresh content
+        setWeeklySchedule([]);
+        setAiInsights(null);
+        setRecommendedTests([]);
+        setSubjectMastery([]);
+        
+        // Force regenerate schedule for new goal and refresh all dashboard data
+        try {
+          await axios.post(`${BACKEND_URL}/api/dashboard/regenerate-schedule/${user.id}`);
+        } catch (scheduleError) {
+          console.error('Error regenerating schedule:', scheduleError);
+        }
+        
+        // Fetch all fresh data for new goal
         fetchDashboardData(user.id);
       }
     } catch (error) {
