@@ -1,20 +1,83 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator, Atom, Brain, Users } from 'lucide-react';
+import { ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator, Atom, Brain, Users, Loader2, FlaskConical, Scale, TrendingUp, Landmark, Map, Scroll, Briefcase, Dna } from 'lucide-react';
+import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../hooks/useAuth';
 import { CLASS_COLORS } from '../config/constants';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Icon mapping for subjects
+const ICON_MAP = {
+  'Calculator': Calculator,
+  'BookOpen': BookOpen,
+  'Languages': Languages,
+  'Beaker': Beaker,
+  'Globe': Globe,
+  'Atom': Atom,
+  'Brain': Brain,
+  'Flask': FlaskConical,
+  'Scale': Scale,
+  'TrendingUp': TrendingUp,
+  'Landmark': Landmark,
+  'Map': Map,
+  'Scroll': Scroll,
+  'Briefcase': Briefcase,
+  'Dna': Dna,
+};
+
 const ChapterTestSubjects = () => {
   const navigate = useNavigate();
-  const { classNumber } = useParams();
+  const { classNumber, stream } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
   
   const selectedClass = classNumber?.replace('class-', '') || '';
+  
+  // State for subjects from API
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Define subjects based on class
-  let subjects = [];
+  // Fetch subjects from API (Single Source of Truth)
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        let url = `${BACKEND_URL}/api/cbse-data/subjects/${selectedClass}`;
+        if (stream && (selectedClass === '11' || selectedClass === '12')) {
+          url += `?stream=${stream}`;
+        }
+        
+        const response = await axios.get(url);
+        if (response.data.success && response.data.subjects) {
+          // Map API data to component format
+          const mappedSubjects = response.data.subjects.map(subj => ({
+            name: subj.name,
+            slug: subj.slug,
+            icon: ICON_MAP[subj.icon] || BookOpen,
+            color: subj.color || 'from-blue-500 to-blue-600',
+            bgColor: `bg-${subj.color?.split('-')[1] || 'blue'}-100`,
+            textColor: `text-${subj.color?.split('-')[1] || 'blue'}-600`,
+            description: `NCERT ${subj.name} Chapters`
+          }));
+          setSubjects(mappedSubjects);
+        }
+      } catch (err) {
+        console.error('Error fetching subjects:', err);
+        setError('Failed to load subjects');
+        // Fallback to empty array - hardcoded fallback removed for single source of truth
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (selectedClass) {
+      fetchSubjects();
+    }
+  }, [selectedClass, stream]);
   
   if (selectedClass === '6') {
     subjects = [
