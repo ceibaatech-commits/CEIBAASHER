@@ -17,7 +17,7 @@ load_dotenv()
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
-# Study Goal Categories
+# Study Goal Categories - Subject names must match cbse_chapter_data.py exactly
 STUDY_GOALS = {
     "competitive": {
         "name": "Competitive Exams",
@@ -34,11 +34,36 @@ STUDY_GOALS = {
     "cbse": {
         "name": "CBSE Classes",
         "categories": [
-            {"id": "class_6", "name": "Class 6", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
-            {"id": "class_7", "name": "Class 7", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
-            {"id": "class_8", "name": "Class 8", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
-            {"id": "class_9", "name": "Class 9", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
-            {"id": "class_10", "name": "Class 10", "subjects": ["Mathematics", "Science", "Social Science", "English", "Hindi"]},
+            # Class 6-8 have special subject names matching cbse_chapter_data.py
+            {"id": "class_6", "name": "Class 6", "subjects": [
+                "Mathematics - Ganita Prakash", 
+                "Science - Curiosity", 
+                "Social Science - Exploring Society India and Beyond", 
+                "English - Poorvi", 
+                "Hindi - Malhar",
+                "Sanskrit - Deepakam"
+            ]},
+            {"id": "class_7", "name": "Class 7", "subjects": [
+                "Mathematics - Ganita Prakash 1",
+                "Mathematics - Ganita Prakash 2", 
+                "Science - Curiosity", 
+                "Social Science - Exploring Society India and Beyond",
+                "Social Science - Exploring Society India and Beyond Part 2",
+                "English - Poorvi", 
+                "Hindi - Malhar",
+                "Sanskrit"
+            ]},
+            {"id": "class_8", "name": "Class 8", "subjects": [
+                "Mathematics - Ganita Prakash", 
+                "Science - Curiosity", 
+                "Social Science - Exploring Society: India and Beyond", 
+                "English - Poorvi", 
+                "Hindi - Malhar",
+                "Sanskrit"
+            ]},
+            # Class 9-10 use standard subject names
+            {"id": "class_9", "name": "Class 9", "subjects": ["Mathematics", "Science", "History", "Geography", "Civics", "Economics", "English", "Hindi"]},
+            {"id": "class_10", "name": "Class 10", "subjects": ["Mathematics", "Science", "History", "Geography", "Civics", "Economics", "English", "Hindi"]},
             {"id": "class_11_science", "name": "Class 11 (Science)", "subjects": ["Physics", "Chemistry", "Mathematics", "Biology", "English"]},
             {"id": "class_11_commerce", "name": "Class 11 (Commerce)", "subjects": ["Accountancy", "Business Studies", "Economics", "Mathematics", "English"]},
             {"id": "class_12_science", "name": "Class 12 (Science)", "subjects": ["Physics", "Chemistry", "Mathematics", "Biology", "English"]},
