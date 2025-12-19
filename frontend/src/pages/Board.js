@@ -410,7 +410,16 @@ const Board = () => {
         .replace(/: /g, ':')     // Keep colon but remove space after
         .replace(/\s+/g, '-');   // Regular spaces become dashes
       
-      navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
+      // Class 11 and 12 require stream in URL
+      if (classNum === '11' || classNum === '12') {
+        // Determine stream from goal_category (class_11_science, class_11_commerce, etc.)
+        const streamMatch = test.exam_category?.match(/class_\d+_(\w+)/);
+        const stream = streamMatch ? streamMatch[1] : 'science';
+        navigate(`/chapter-tests/class-${classNum}/${stream}/${subjectSlug}`);
+      } else {
+        // Class 6-10 don't need stream
+        navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
+      }
     } else {
       // Default: navigate to chapter tests
       navigate(`/chapter-tests`);
