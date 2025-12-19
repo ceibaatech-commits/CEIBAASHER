@@ -1461,13 +1461,18 @@ const ExamSheetManager = () => {
         }
       };
 
-      // Get chapters based on selected class and subject
-      const selectedClassChapters = classWiseChapters[classForm.class_name];
-      if (selectedClassChapters && selectedClassChapters[classForm.subject]) {
-        setChapters(selectedClassChapters[classForm.subject]);
-      } else {
-        // Fallback to generic chapters if specific class data not found
-        setChapters([]);
+      // PRIORITY 1: Try to get chapters from CBSE API data (Single Source of Truth)
+      if (cbseClassSubjects[classForm.class_name] && cbseClassSubjects[classForm.class_name][classForm.subject]) {
+        setChapters(cbseClassSubjects[classForm.class_name][classForm.subject]);
+      } 
+      // PRIORITY 2: Fallback to hardcoded data if API data not available
+      else {
+        const selectedClassChapters = classWiseChapters[classForm.class_name];
+        if (selectedClassChapters && selectedClassChapters[classForm.subject]) {
+          setChapters(selectedClassChapters[classForm.subject]);
+        } else {
+          setChapters([]);
+        }
       }
       
       // Reset chapter when subject changes
@@ -1476,7 +1481,7 @@ const ExamSheetManager = () => {
         chapter: ''
       }));
     }
-  }, [classForm.class_name, classForm.subject]);
+  }, [classForm.class_name, classForm.subject, cbseClassSubjects]);
 
   const fetchSheets = async () => {
     try {
