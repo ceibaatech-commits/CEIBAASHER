@@ -108,56 +108,63 @@ CBSE_SUBJECTS = {
 # Chapters for each class and subject
 CBSE_CHAPTERS = {
     "6": {
-        "mathematics---ganita-prakash": [
+        "Mathematics - Ganita Prakash": [
             "1. Patterns in Mathematics", "2. Lines and Angles", "3. Number Play", "4. Data Handling and Presentation",
             "5. Prime Time", "6. Perimeter and Area", "7. Fractions", "8. Playing with Constructions",
             "9. Symmetry", "10. The Other Side of Zero"
         ],
-        "hindi---malhar": [
+        "Hindi - Malhar": [
             "1. Mathru Bhumi (Poem)", "2. Gol", "3. Amaltas (Poem)", "4. Ghar Ki Murgee Dal Barabar",
-            "5. Nasiruddin Kee Joroo Ka Kissa", "6. Koti Ka Ghar", "7. Chaand Ka Ghar (Poem)", 
-            "8. Rabi Ki Roti", "9. Chand Wali Amma", "10. Sabase Payara Desh Hamara (Poem)",
+            "5. Nasiruddin Kee Joroo Ka Kissa", "6. Meri ma", "7. Chaand Ka Ghar (Poem)", 
+            "8. Rabi Ki Roti", "9. Chand Wali Amma", "10. Pariksha",
             "11. Joota Jangal Pahucha", "12. Khadee Neem", "13. Lakadee Ka Raasta (Poem)"
         ],
-        "english---poorvi": [
+        "English - Poorvi": [
             "1. A Day in the Life of Apu", "2. Incredible Animals", "3. Rama's Journey To Lanka",
             "4. Sports", "5. Being Responsible", "6. Art and Creativity", "7. Technology and Communication",
             "8. Friendship", "9. Environment", "10. Adventure"
         ],
-        "science---curiosity": [
+        "Science": [
+            "1. Components of Food", "2. Sorting Materials into Groups", "3. Separation of Substances",
+            "4. Getting to Know Plants", "5. Body Movements", "6. Living Organisms and Their Surroundings",
+            "7. Motion and Measurement of Distances", "8. Light, Shadows and Reflections",
+            "9. Electricity and Circuits", "10. Fun with Magnets", "11. Air Around Us",
+            "12. Water", "13. Fibre to Fabric", "14. Garbage In, Garbage Out"
+        ],
+        "Science - Curiosity": [
             "1. The Wonderful World of Science", "2. Diversity in the Living World", "3. Mindful Eating - A Path to a Healthy Body",
             "4. Exploring Magnets", "5. Measurement of Length and Motion", "6. Materials Around Us",
             "7. Temperature and its Measurement", "8. A Journey through States of Water", "9. Methods of Separation in Everyday Life",
             "10. Living Creatures: Exploring their Characteristics", "11. Nature's Treasures", "12. Beyond Earth"
         ],
-        "social-science---exploring-society": [
+        "Social Science - Exploring Society": [
             "1. The Story of Civilization", "2. Early Humans", "3. The Indus Valley Civilization", "4. The Vedic Age",
             "5. Maps and Globes", "6. India: Physical Features", "7. Climate of India", "8. Governance",
             "9. Local Government", "10. Rural and Urban Life"
         ],
-        "sanskrit---sulabha": [
+        "Sanskrit - Sulabha": [
             "1. Prathama Paatha", "2. Dviteeyaha Paathaha", "3. Truteeyaha Paathaha", "4. Chaturthaha Paathaha",
             "5. Panchamaha Paathaha", "6. Shashthaha Paathaha", "7. Saptamaha Paathaha", "8. Ashtamaha Paathaha"
         ],
     },
     "7": {
-        "mathematics---ganita-prakash": [
+        "Mathematics - Ganita Prakash": [
             "1. Integers", "2. Fractions and Decimals", "3. Data Handling", "4. Simple Equations",
             "5. Lines and Angles", "6. The Triangle and Its Properties", "7. Comparing Quantities",
             "8. Rational Numbers", "9. Perimeter and Area", "10. Algebraic Expressions",
             "11. Exponents and Powers", "12. Symmetry", "13. Visualising Solid Shapes"
         ],
-        "hindi---malhar": [
-            "1. Mathru Bhumi (Poem)", "2. Gol", "3. Amaltas (Poem)", "4. Ghar Ki Murgee Dal Barabar",
+        "Hindi - Malhar": [
+            "1. Maan, Kah Ek Kahani", "2. Gol", "3. Amaltas (Poem)", "4. Ghar Ki Murgee Dal Barabar",
             "5. Nasiruddin Kee Joroo Ka Kissa", "6. Koti Ka Ghar", "7. Chaand Ka Ghar (Poem)", 
             "8. Rabi Ki Roti", "9. Chand Wali Amma", "10. Sabase Payara Desh Hamara (Poem)"
         ],
-        "english---poorvi": [
+        "English - Poorvi": [
             "1. Three Questions", "2. A Gift of Chappals", "3. Gopal and the Hilsa Fish",
             "4. The Ashes That Made Trees Bloom", "5. Quality", "6. Expert Detectives",
             "7. The Invention of Vita-Wonk", "8. A Homage to our Brave Soldiers"
         ],
-        "science---curiosity": [
+        "Science": [
             "1. Nutrition in Plants", "2. Nutrition in Animals", "3. Fibre to Fabric", "4. Heat",
             "5. Acids, Bases and Salts", "6. Physical and Chemical Changes", "7. Weather, Climate and Adaptations",
             "8. Winds, Storms and Cyclones", "9. Soil", "10. Respiration in Organisms",
@@ -165,49 +172,69 @@ CBSE_CHAPTERS = {
             "13. Motion and Time", "14. Electric Current and Its Effects", "15. Light",
             "16. Water: A Precious Resource", "17. Forests: Our Lifeline", "18. Wastewater Story"
         ],
-        "social-science---exploring-society": [
+        "Science - Curiosity": [
+            "1. Nutrition in Plants", "2. Nutrition in Animals", "3. Fibre to Fabric", "4. Heat",
+            "5. Acids, Bases and Salts", "6. Physical and Chemical Changes", "7. Weather, Climate and Adaptations",
+            "8. Winds, Storms and Cyclones", "9. Soil", "10. Respiration in Organisms",
+            "11. Transportation in Animals and Plants", "12. Reproduction in Plants",
+            "13. Motion and Time", "14. Electric Current and Its Effects", "15. Light",
+            "16. Water: A Precious Resource", "17. Forests: Our Lifeline", "18. Wastewater Story"
+        ],
+        "Social Science - Exploring Society": [
             "1. Tracing Changes Through a Thousand Years", "2. New Kings and Kingdoms",
             "3. The Delhi Sultans", "4. The Mughal Empire", "5. Rulers and Buildings",
             "6. Environment", "7. Our Changing Earth", "8. Inside Our Earth",
             "9. Air", "10. Water"
         ],
-        "sanskrit---sulabha": [
+        "Sanskrit - Sulabha": [
             "1. Prathama Paatha", "2. Dviteeyaha Paathaha", "3. Truteeyaha Paathaha",
             "4. Chaturthaha Paathaha", "5. Panchamaha Paathaha"
         ],
     },
     "8": {
-        "mathematics---ganita-prakash": [
+        "Mathematics - Ganita Prakash": [
             "1. Rational Numbers", "2. Linear Equations in One Variable", "3. Understanding Quadrilaterals",
             "4. Data Handling", "5. Squares and Square Roots", "6. Cubes and Cube Roots",
             "7. Comparing Quantities", "8. Algebraic Expressions and Identities", "9. Mensuration",
             "10. Exponents and Powers", "11. Direct and Inverse Proportions", "12. Factorisation",
             "13. Introduction to Graphs", "14. Playing with Numbers"
         ],
-        "hindi---malhar": [
-            "1. Mathru Bhumi (Poem)", "2. Gol", "3. Amaltas (Poem)", "4. Ghar Ki Murgee Dal Barabar",
-            "5. Nasiruddin Kee Joroo Ka Kissa", "6. Koti Ka Ghar", "7. Chaand Ka Ghar (Poem)", 
-            "8. Rabi Ki Roti"
+        "Hindi - Malhar": [
+            "1. Dhwani", "2. Lakh Ki Chudiyan", "3. Bus Ki Yatra", "4. Deewano Ki Hasti",
+            "5. Chitthiyon Ki Anoothi Duniya", "6. Bhagwan Ke Dakiye", "7. Kya Nirash Hua Jaye",
+            "8. Yeh Sabse Kathin Samay Nahin", "9. Kabir Ki Sakhi", "10. Kamchor"
         ],
-        "english---poorvi": [
+        "English - Poorvi": [
             "1. The Best Christmas Present in the World", "2. The Tsunami", "3. Glimpses of the Past",
-            "4. Bepin Choudhurys Lapse of Memory", "5. The Summit Within", "6. This is Jodys Fawn",
+            "4. Bepin Choudhury's Lapse of Memory", "5. The Summit Within", "6. This is Jody's Fawn",
             "7. A Visit to Cambridge", "8. A Short Monsoon Diary"
         ],
-        "science---curiosity": [
-            "1. Crop Production and Management", "2. Microorganisms: Friend and Foe", "3. Coal and Petroleum",
-            "4. Combustion and Flame", "5. Conservation of Plants and Animals", "6. Reproduction in Animals",
-            "7. Reaching the Age of Adolescence", "8. Force and Pressure", "9. Friction",
-            "10. Sound", "11. Chemical Effects of Electric Current", "12. Some Natural Phenomena",
-            "13. Light", "14. Stars and the Solar System", "15. Pollution of Air and Water"
+        "Science": [
+            "1. Crop Production and Management", "2. Microorganisms: Friend and Foe",
+            "3. Synthetic Fibres and Plastics", "4. Materials: Metals and Non-Metals",
+            "5. Coal and Petroleum", "6. Combustion and Flame", "7. Conservation of Plants and Animals",
+            "8. Cell: Structure and Functions", "9. Reproduction in Animals",
+            "10. Reaching the Age of Adolescence", "11. Force and Pressure",
+            "12. Friction", "13. Sound", "14. Chemical Effects of Electric Current",
+            "15. Some Natural Phenomena", "16. Light", "17. Stars and the Solar System",
+            "18. Pollution of Air and Water"
         ],
-        "social-science---exploring-society": [
-            "1. How, When and Where", "2. From Trade to Territory", "3. Ruling the Countryside",
-            "4. Tribals, Dikus and the Vision of a Golden Age", "5. When People Rebel",
-            "6. Resources", "7. Land, Soil, Water, Natural Vegetation and Wildlife Resources",
-            "8. Agriculture", "9. Industries", "10. Human Resources"
+        "Science - Curiosity": [
+            "1. Exploring the Investigative World of Science", "2. Microorganisms", "3. Synthetic Fibres and Plastics",
+            "4. Metals and Non-Metals", "5. Coal and Petroleum", "6. Combustion and Flame",
+            "7. Cell: Structure and Functions", "8. Reproduction in Animals", "9. Force and Pressure",
+            "10. Friction", "11. Sound", "12. Chemical Effects of Electric Current",
+            "13. Some Natural Phenomena", "14. Light", "15. Stars and the Solar System"
         ],
-        "sanskrit---sulabha": [
+        "Geography": [
+            "1. Resources", "2. Land, Soil, Water, Natural Vegetation and Wildlife Resources",
+            "3. Agriculture", "4. Industries", "5. Human Resources"
+        ],
+        "Social Science - Exploring Society: India and Beyond": [
+            "1. Natural Resources and Their Use", "2. Land, Soil, Water, Natural Vegetation and Wildlife",
+            "3. Agriculture", "4. Industries", "5. Human Resources"
+        ],
+        "Sanskrit - Sulabha": [
             "1. Prathama Paatha", "2. Dviteeyaha Paathaha", "3. Truteeyaha Paathaha",
             "4. Chaturthaha Paathaha", "5. Panchamaha Paathaha"
         ],
