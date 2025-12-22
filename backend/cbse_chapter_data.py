@@ -83,6 +83,22 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 13, "chapter_name": "सङ्ख्यागणना ननु सरला", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 14, "chapter_name": "माधवस्य प्रियम् अङ्गम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 15, "chapter_name": "वृक्षाः सत्पुरुषाः इव", "total_questions": 40, "difficulty": "Medium", "duration": 30}
+        ],
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Components of Food", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Sorting Materials into Groups", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Separation of Substances", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Getting to Know Plants", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Body Movements", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "Living Organisms and Their Surroundings", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Motion and Measurement of Distances", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Light, Shadows and Reflections", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Electricity and Circuits", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Fun with Magnets", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "Air Around Us", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "Water", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Fibre to Fabric", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 14, "chapter_name": "Garbage In, Garbage Out", "total_questions": 45, "difficulty": "Easy", "duration": 30}
         ]
     },
     "10": {
