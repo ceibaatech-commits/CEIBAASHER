@@ -319,7 +319,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 6, "chapter_name": "We Distribute, Yet Things Multiply", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 7, "chapter_name": "Proportional Reasoning-1", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
-        "Sanskrit": [
+        "Sanskrit - Sulabha": [
             {"chapter_number": 1, "chapter_name": "Subhaashitaani", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "Bilaasy Vaanee na Dadaapi me Shruta", "total_questions": 40, "difficulty": "Medium", "duration": 30},
             {"chapter_number": 3, "chapter_name": "Bhagavadjjukam", "total_questions": 45, "difficulty": "Medium", "duration": 35},
@@ -334,6 +334,13 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Kah Rakshati Kah Rakshitah", "total_questions": 40, "difficulty": "Medium", "duration": 30},
             {"chapter_number": 13, "chapter_name": "Himalayah", "total_questions": 45, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 14, "chapter_name": "Aaryabhatah", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+        ],
+        "Geography": [
+            {"chapter_number": 1, "chapter_name": "Resources", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Land, Soil, Water, Natural Vegetation and Wildlife Resources", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Agriculture", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Industries", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Human Resources", "total_questions": 45, "difficulty": "Easy", "duration": 30}
         ]
     },
     "9": {
