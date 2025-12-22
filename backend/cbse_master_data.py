@@ -562,14 +562,34 @@ def get_subjects_for_class(class_num: str, stream: str = None) -> list:
 
 
 def get_chapters_for_subject(class_num: str, subject_slug: str, stream: str = None) -> list:
-    """Get chapters for a subject in a class"""
+    """Get chapters for a subject in a class
+    
+    The subject_slug can be either:
+    - The display name (e.g., "Science - Curiosity", "Hindi - Malhar")
+    - A URL slug (e.g., "science---curiosity", "hindi---malhar")
+    
+    This function handles both formats for compatibility.
+    """
     if class_num in ["11", "12"] and stream:
         key = f"{class_num}_{stream}"
     else:
         key = class_num
     
     class_chapters = CBSE_CHAPTERS.get(key, {})
-    return class_chapters.get(subject_slug, [])
+    
+    # First try direct lookup (works if subject_slug is already the display name)
+    if subject_slug in class_chapters:
+        return class_chapters.get(subject_slug, [])
+    
+    # Try to find by matching slug to subject name
+    # This handles cases where subject_slug is URL-style (e.g., "science---curiosity")
+    for subject_name, chapters in class_chapters.items():
+        # Create a slug from the subject name for comparison
+        generated_slug = subject_name.lower().replace(" - ", "---").replace(" ", "-")
+        if generated_slug == subject_slug.lower() or subject_name.lower() == subject_slug.lower():
+            return chapters
+    
+    return []
 
 
 def get_all_cbse_data() -> dict:
