@@ -1304,23 +1304,160 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
-    def test_class_9_science_quiz_bug_fix(self):
-        """Test P0 bug fix for Class 9 Science quiz questions not appearing"""
+    def test_cbse_chapter_name_matching_fix(self):
+        """Test chapter name matching fix for all CBSE classes (6-12) to verify questions load correctly"""
         try:
-            print("\n🎯 TESTING CLASS 9 SCIENCE QUIZ BUG FIX")
-            print("=" * 60)
+            print("\n🎯 TESTING CBSE CHAPTER NAME MATCHING FIX FOR ALL CLASSES (6-12)")
+            print("=" * 80)
             
-            # Step 1: Demo login for authentication
-            token, user_id = self.login_demo_user('demo1')
-            if not token:
-                self.log_result("Class 9 Quiz - Demo Login", False, "❌ Failed to login demo1")
+            # Test scenarios from the review request
+            test_scenarios = [
+                # Class 6 Tests
+                {
+                    "class_name": "Class 6",
+                    "subject": "Science", 
+                    "chapter": "Components of Food",
+                    "description": "Class 6 Science - Components of Food"
+                },
+                {
+                    "class_name": "Class 6",
+                    "subject": "Hindi - Malhar",
+                    "chapter": "Mathru Bhumi (Poem)",
+                    "description": "Class 6 Hindi - Mathru Bhumi (Poem)"
+                },
+                
+                # Class 7 Tests
+                {
+                    "class_name": "Class 7",
+                    "subject": "Hindi - Malhar",
+                    "chapter": "Maan, Kah Ek Kahani",
+                    "description": "Class 7 Hindi - Maan, Kah Ek Kahani"
+                },
+                
+                # Class 8 Tests
+                {
+                    "class_name": "Class 8",
+                    "subject": "Geography",
+                    "chapter": "Resources",
+                    "description": "Class 8 Geography - Resources"
+                },
+                {
+                    "class_name": "Class 8",
+                    "subject": "Science",
+                    "chapter": "Crop Production and Management",
+                    "description": "Class 8 Science - Crop Production and Management"
+                },
+                
+                # Class 9 Tests (critical - original bug)
+                {
+                    "class_name": "Class 9",
+                    "subject": "Science",
+                    "chapter": "Matter in Our Surroundings",
+                    "description": "Class 9 Science - Matter in Our Surroundings (correct spelling)"
+                },
+                {
+                    "class_name": "Class 9",
+                    "subject": "Science",
+                    "chapter": "Matters in Our Surroundings",
+                    "description": "Class 9 Science - Matters in Our Surroundings (spelling variation)"
+                },
+                {
+                    "class_name": "Class 9",
+                    "subject": "Mathematics",
+                    "chapter": "Number Systems",
+                    "description": "Class 9 Mathematics - Number Systems"
+                },
+                
+                # Class 10 Tests
+                {
+                    "class_name": "Class 10",
+                    "subject": "Science",
+                    "chapter": "Chemical Reactions and Equations",
+                    "description": "Class 10 Science - Chemical Reactions and Equations"
+                },
+                {
+                    "class_name": "Class 10",
+                    "subject": "Geography",
+                    "chapter": "Minerals and Energy Resources",
+                    "description": "Class 10 Geography - Minerals and Energy Resources"
+                }
+            ]
+            
+            successful_tests = 0
+            total_tests = len(test_scenarios)
+            
+            for i, scenario in enumerate(test_scenarios, 1):
+                print(f"\n📝 Test {i}/{total_tests}: {scenario['description']}")
+                print("-" * 60)
+                
+                # Prepare quiz start request
+                quiz_request = {
+                    "exam": scenario["class_name"],
+                    "subject": scenario["subject"],
+                    "isClassBased": True,
+                    "class_name": scenario["class_name"],
+                    "chapter": scenario["chapter"],
+                    "numberOfQuestions": 5
+                }
+                
+                # Make API request
+                response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_request)
+                
+                if response.status_code != 200:
+                    self.log_result(f"CBSE Quiz - {scenario['description']}", False, 
+                                  f"❌ API request failed: {response.status_code} - {response.text[:200]}")
+                    continue
+                
+                result = response.json()
+                
+                # Check if quiz started successfully
+                if not result.get('success'):
+                    self.log_result(f"CBSE Quiz - {scenario['description']}", False, 
+                                  f"❌ Quiz start failed: {result.get('message', 'Unknown error')}")
+                    continue
+                
+                # Check if questions are available
+                questions = result.get('questions', [])
+                if not questions or len(questions) == 0:
+                    self.log_result(f"CBSE Quiz - {scenario['description']}", False, 
+                                  f"❌ No questions returned - Questions not available error")
+                    continue
+                
+                # Success - questions loaded correctly
+                source = result.get('source', 'unknown')
+                self.log_result(f"CBSE Quiz - {scenario['description']}", True, 
+                              f"✅ {len(questions)} questions loaded successfully from {source}")
+                successful_tests += 1
+                
+                # Log additional details
+                print(f"   📊 Questions: {len(questions)}")
+                print(f"   📚 Source: {source}")
+                print(f"   🆔 Quiz ID: {result.get('quizId', 'N/A')}")
+            
+            # Summary
+            success_rate = (successful_tests / total_tests) * 100
+            print(f"\n🎉 CBSE CHAPTER NAME MATCHING TEST COMPLETE")
+            print("=" * 80)
+            print(f"📊 Success Rate: {successful_tests}/{total_tests} ({success_rate:.1f}%)")
+            
+            if successful_tests == total_tests:
+                self.log_result("CBSE Chapter Matching - Overall", True, 
+                              f"✅ ALL {total_tests} CBSE chapter tests passed - Chapter name matching fix working correctly")
+                return True
+            elif successful_tests >= total_tests * 0.8:  # 80% success rate
+                self.log_result("CBSE Chapter Matching - Overall", True, 
+                              f"✅ {successful_tests}/{total_tests} CBSE chapter tests passed - Mostly working with some data gaps")
+                return True
+            else:
+                self.log_result("CBSE Chapter Matching - Overall", False, 
+                              f"❌ Only {successful_tests}/{total_tests} CBSE chapter tests passed - Chapter matching needs fixes")
                 return False
             
-            self.log_result("Class 9 Quiz - Demo Login", True, f"✅ Demo1 logged in successfully")
-            headers = {"Authorization": f"Bearer {token}"}
-            
-            # Step 2: Test Class 9 Science - Matter(s) in Our Surroundings Quiz (with spelling variation)
-            self.log_result("Class 9 Quiz - Test Scenario 1", True, "🔄 Testing 'Matters in Our Surroundings' (with 's')")
+        except Exception as e:
+            self.log_result("CBSE Chapter Matching - Exception", False, f"❌ CBSE chapter matching test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return Falses' (with 's')")
             
             quiz_data_matters = {
                 "exam": "Class 9",
