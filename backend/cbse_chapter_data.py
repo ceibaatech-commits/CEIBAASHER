@@ -487,7 +487,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 7, "chapter_name": "The Making of Regional Cultures", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 8, "chapter_name": "Eighteenth Century Political Formations", "total_questions": 55, "difficulty": "Hard", "duration": 40}
         ],
-        "Social Science - Exploring Society India and Beyond": [
+        "Social Science - Exploring Society": [
             {"chapter_number": 1, "chapter_name": "Geographical Diversity of India", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 2, "chapter_name": "Understanding the Weather", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 3, "chapter_name": "Climates of India", "total_questions": 55, "difficulty": "Medium", "duration": 40},
@@ -501,7 +501,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 11, "chapter_name": "From Barter to Money", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 12, "chapter_name": "Understanding Markets", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
-        "Mathematics - Ganita Prakash 1": [
+        "Mathematics - Ganita Prakash": [
             {"chapter_number": 1, "chapter_name": "Large Numbers Around Us", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 2, "chapter_name": "Arithmetic Expressions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 3, "chapter_name": "A Peek Beyond the Point", "total_questions": 55, "difficulty": "Medium", "duration": 40},
@@ -509,18 +509,16 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 5, "chapter_name": "Parallel and Intersecting Lines", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 6, "chapter_name": "Number Play", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "A Tale of Three Intersecting Lines", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Working with Fractions", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+            {"chapter_number": 8, "chapter_name": "Working with Fractions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Geometric Twins", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Operations with Integers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Finding Common Ground", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Another Peek Beyond the Point", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 13, "chapter_name": "Connecting the Dots...", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Constructions and Tilings", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 15, "chapter_name": "Finding the Unknown", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
-        "Mathematics - Ganita Prakash 2": [
-            {"chapter_number": 1, "chapter_name": "Geometric Twins", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Operations with Integers", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Finding Common Ground", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Another Peek Beyond the Point", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Connecting the Dots...", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Constructions and Tilings", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Finding the Unknown", "total_questions": 55, "difficulty": "Medium", "duration": 40}
-        ],
-        "Sanskrit": [
+        "Sanskrit - Sulabha": [
             {"chapter_number": 1, "chapter_name": "वन्देभारतमातरम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "नित्यं पिबाम: सुभाषितरसम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 3, "chapter_name": "मित्राय नमः", "total_questions": 40, "difficulty": "Easy", "duration": 30},
