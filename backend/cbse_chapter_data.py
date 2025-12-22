@@ -513,6 +513,26 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 10, "chapter_name": "दशमः कः ?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 11, "chapter_name": "द्वीपेषुरम्यः द्वीपोऽण्डमानः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
             {"chapter_number": 12, "chapter_name": "वीराङ्गना पन्‍नाधाया", "total_questions": 45, "difficulty": "Medium", "duration": 35}
+        ],
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Nutrition in Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Nutrition in Animals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Fibre to Fabric", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Heat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Acids, Bases and Salts", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Physical and Chemical Changes", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Weather, Climate and Adaptations", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Winds, Storms and Cyclones", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Soil", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Respiration in Organisms", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Transportation in Animals and Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Reproduction in Plants", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Motion and Time", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Electric Current and Its Effects", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 15, "chapter_name": "Light", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 16, "chapter_name": "Water: A Precious Resource", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 17, "chapter_name": "Forests: Our Lifeline", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 18, "chapter_name": "Wastewater Story", "total_questions": 45, "difficulty": "Easy", "duration": 30}
         ]
     },
     "11": {
