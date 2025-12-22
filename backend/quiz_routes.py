@@ -534,10 +534,21 @@ async def start_quiz(request: QuizStartRequest):
             # Check if this is a class-based quiz (Classes 6-12)
             if request.isClassBased and request.class_name and request.chapter:
                 # CLASS-BASED QUERY: Query by class_name, subject, and chapter
-                # Handle chapter names with or without number prefix
+                # Handle chapter names with or without number prefix and minor spelling variations
                 # e.g., "Components of Food" matches "1. Components of Food"
+                # e.g., "Matters in Our Surroundings" matches "1. Matter in Our Surroundings"
+                
+                # Normalize the chapter name for fuzzy matching
+                # Remove leading "s" issues (Matters -> Matter), handle apostrophes, etc.
+                chapter_clean = request.chapter
+                # Handle "Matters" vs "Matter" spelling variation
+                if chapter_clean.lower().startswith("matters "):
+                    chapter_clean = chapter_clean[0] + "atter" + chapter_clean[8:]  # Matters -> Matter
+                
+                # Escape for regex but allow optional number prefix
+                escaped_chapter = regex_module.escape(chapter_clean)
                 chapter_pattern = regex_module.compile(
-                    f"(^\\d+\\.\\s*)?{regex_module.escape(request.chapter)}$", 
+                    f"(^\\d+\\.\\s*)?{escaped_chapter}s?$",  # Allow optional trailing 's'
                     regex_module.IGNORECASE
                 )
                 
@@ -546,7 +557,7 @@ async def start_quiz(request: QuizStartRequest):
                     "subject": request.subject,
                     "chapter": {"$regex": chapter_pattern}
                 }
-                print(f"🔍 Querying questions collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter}")
+                print(f"🔍 Querying questions collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
             else:
                 # EXAM-BASED QUERY: Build a flexible query that handles both old format (syllabus_topic/subject) 
                 # and new format (exam_id/subject/topic)
