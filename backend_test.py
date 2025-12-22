@@ -1457,16 +1457,7 @@ class BackendTester:
             self.log_result("CBSE Chapter Matching - Exception", False, f"❌ CBSE chapter matching test error: {e}")
             import traceback
             traceback.print_exc()
-            return Falses' (with 's')")
-            
-            quiz_data_matters = {
-                "exam": "Class 9",
-                "subject": "Science", 
-                "isClassBased": True,
-                "class_name": "Class 9",
-                "chapter": "Matters in Our Surroundings",
-                "numberOfQuestions": 10
-            }
+            return False
             
             response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data_matters, headers=headers)
             
