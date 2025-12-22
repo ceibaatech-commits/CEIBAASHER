@@ -445,27 +445,45 @@ async def start_quiz(request: QuizStartRequest):
     
     # Build query based on whether it's class-based or exam-based
     if request.isClassBased and request.class_name and request.chapter:
-        # Class-based query (CBSE chapters)
+        # Class-based query (CBSE chapters for Classes 6-12)
         # Use regex to match chapter name with or without number prefix
-        # e.g., "Components of Food" matches "1. Components of Food"
-        # e.g., "Matters in Our Surroundings" matches "1. Matter in Our Surroundings"
+        # Database stores: "1. Components of Food", "2. Is Matter Around Us Pure"
+        # Frontend sends: "Components of Food", "Is Matter Around Us Pure"
         import re
         
         # Normalize the chapter name for fuzzy matching
         chapter_clean = request.chapter
-        # Handle "Matters" vs "Matter" spelling variation
-        # "Matters in" -> "Matter in" (remove trailing 's' from first word)
-        if chapter_clean.lower().startswith("matters "):
-            chapter_clean = "Matter " + chapter_clean[8:]  # "Matters X" -> "Matter X"
         
-        chapter_pattern = re.compile(f"^\\d+\\.\\s*{re.escape(chapter_clean)}s?$", re.IGNORECASE)
+        # Handle common spelling variations across all classes
+        spelling_fixes = {
+            "matters ": "matter ",  # Class 9 Science: "Matters in Our Surroundings" -> "Matter in Our Surroundings"
+            "heron's formula": "herons formula",  # Class 9 Math
+            "euclid's geometry": "euclids geometry",  # Class 9 Math
+        }
+        
+        chapter_lower = chapter_clean.lower()
+        for wrong, correct in spelling_fixes.items():
+            if chapter_lower.startswith(wrong):
+                chapter_clean = correct.title() + chapter_clean[len(wrong):]
+                break
+        
+        # Build regex that matches:
+        # 1. With number prefix: "1. Chapter Name", "12. Chapter Name"
+        # 2. Without number prefix: "Chapter Name"
+        # 3. Case-insensitive
+        # 4. Allow optional trailing 's' for pluralization variations
+        escaped_chapter = re.escape(chapter_clean)
+        chapter_pattern = re.compile(
+            f"^(\\d+\\.\\s*)?{escaped_chapter}s?$",
+            re.IGNORECASE
+        )
         
         query = {
             "class_name": request.class_name,
             "subject": request.subject,
             "chapter": {"$regex": chapter_pattern}
         }
-        print(f"🔍 Querying exam_sheets collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter pattern={request.chapter} (normalized: {chapter_clean})")
+        print(f"🔍 Querying exam_sheets for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
     elif topic:
         # Exam-based query (NEET, JEE, etc.)
         # Build query using NEW field names that match Admin Sheet Manager
