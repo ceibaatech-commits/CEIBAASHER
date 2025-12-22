@@ -446,6 +446,60 @@ CBSE_CHAPTERS = {
             "1. The Last Lesson", "2. Lost Spring", "3. Deep Water", "4. The Rattrap", "5. Indigo"
         ],
     },
+    "12_humanities": {
+        "history": [
+            "1. Bricks, Beads and Bones", "2. Kings, Farmers and Towns", "3. Kinship, Caste and Class",
+            "4. Thinkers, Beliefs and Buildings", "5. Through the Eyes of Travellers",
+            "6. Bhakti-Sufi Traditions", "7. An Imperial Capital: Vijayanagara", "8. Peasants, Zamindars and the State",
+            "9. Kings and Chronicles", "10. Colonialism and the Countryside", "11. Rebels and the Raj",
+            "12. Colonial Cities", "13. Mahatma Gandhi and the Nationalist Movement",
+            "14. Understanding Partition", "15. Framing the Constitution"
+        ],
+        "political-science": [
+            "1. Challenges of Nation Building", "2. Era of One-Party Dominance", "3. Politics of Planned Development",
+            "4. India's External Relations", "5. Challenges to and Restoration of the Congress System",
+            "6. The Crisis of Democratic Order", "7. Rise of Popular Movements", "8. Regional Aspirations",
+            "9. Recent Developments in Indian Politics", "10. The Cold War Era", "11. The End of Bipolarity",
+            "12. US Hegemony in World Politics", "13. Alternative Centres of Power",
+            "14. South Asia", "15. International Organisations", "16. Security in the Contemporary World",
+            "17. Environment and Natural Resources", "18. Globalisation"
+        ],
+        "geography": [
+            "1. Human Geography: Nature and Scope", "2. The World Population: Distribution, Density and Growth",
+            "3. Population Composition", "4. Human Development", "5. Primary Activities",
+            "6. Secondary Activities", "7. Tertiary and Quaternary Activities", "8. Transport and Communication",
+            "9. International Trade", "10. Human Settlements",
+            "11. Population: Distribution, Density, Growth and Composition", "12. Migration",
+            "13. Human Development", "14. Human Settlements", "15. Land Resources and Agriculture",
+            "16. Water Resources", "17. Mineral and Energy Resources", "18. Manufacturing Industries",
+            "19. Planning and Sustainable Development in Indian Context",
+            "20. Transport and Communication", "21. International Trade", "22. Geographical Perspective on Selected Issues"
+        ],
+        "sociology": [
+            "1. Indian Society: An Introduction", "2. The Demographic Structure of Indian Society",
+            "3. Social Institutions: Continuity and Change", "4. The Market as a Social Institution",
+            "5. Patterns of Social Inequality and Exclusion", "6. The Challenges of Cultural Diversity",
+            "7. Suggestions for Project Work", "8. Structural Change", "9. Cultural Change",
+            "10. The Story of Indian Democracy", "11. Change and Development in Rural Society",
+            "12. Change and Development in Industrial Society", "13. Globalisation and Social Change",
+            "14. Mass Media and Communications", "15. Social Movements"
+        ],
+        "psychology": [
+            "1. Variations in Psychological Attributes", "2. Self and Personality", "3. Meeting Life Challenges",
+            "4. Psychological Disorders", "5. Therapeutic Approaches", "6. Attitude and Social Cognition",
+            "7. Social Influence and Group Processes", "8. Psychology and Life", "9. Developing Psychological Skills"
+        ],
+        "economics": [
+            "1. Introduction to Microeconomics", "2. Theory of Consumer Behaviour", "3. Production and Costs",
+            "4. Theory of the Firm under Perfect Competition", "5. Market Equilibrium", "6. Non-competitive Markets",
+            "7. National Income Accounting", "8. Money and Banking", "9. Determination of Income and Employment",
+            "10. Government Budget and the Economy", "11. Balance of Payments", "12. Development Experience of India"
+        ],
+        "english": [
+            "1. The Last Lesson", "2. Lost Spring", "3. Deep Water", "4. The Rattrap",
+            "5. Indigo", "6. Poets and Pancakes", "7. The Interview", "8. Going Places"
+        ],
+    },
 }
 
 
