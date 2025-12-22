@@ -81,6 +81,24 @@ CBSE_SUBJECTS = {
         {"name": "Mathematics", "slug": "mathematics", "icon": "Calculator", "color": "from-amber-500 to-amber-600"},
         {"name": "English", "slug": "english", "icon": "Languages", "color": "from-orange-500 to-orange-600"},
     ],
+    "11_humanities": [
+        {"name": "History", "slug": "history", "icon": "Landmark", "color": "from-amber-500 to-amber-600"},
+        {"name": "Political Science", "slug": "political-science", "icon": "Scale", "color": "from-blue-500 to-blue-600"},
+        {"name": "Geography", "slug": "geography", "icon": "Map", "color": "from-green-500 to-green-600"},
+        {"name": "Sociology", "slug": "sociology", "icon": "Users", "color": "from-purple-500 to-purple-600"},
+        {"name": "Psychology", "slug": "psychology", "icon": "Brain", "color": "from-pink-500 to-pink-600"},
+        {"name": "Economics", "slug": "economics", "icon": "TrendingUp", "color": "from-emerald-500 to-emerald-600"},
+        {"name": "English", "slug": "english", "icon": "Languages", "color": "from-orange-500 to-orange-600"},
+    ],
+    "12_humanities": [
+        {"name": "History", "slug": "history", "icon": "Landmark", "color": "from-amber-500 to-amber-600"},
+        {"name": "Political Science", "slug": "political-science", "icon": "Scale", "color": "from-blue-500 to-blue-600"},
+        {"name": "Geography", "slug": "geography", "icon": "Map", "color": "from-green-500 to-green-600"},
+        {"name": "Sociology", "slug": "sociology", "icon": "Users", "color": "from-purple-500 to-purple-600"},
+        {"name": "Psychology", "slug": "psychology", "icon": "Brain", "color": "from-pink-500 to-pink-600"},
+        {"name": "Economics", "slug": "economics", "icon": "TrendingUp", "color": "from-emerald-500 to-emerald-600"},
+        {"name": "English", "slug": "english", "icon": "Languages", "color": "from-orange-500 to-orange-600"},
+    ],
 }
 
 # Chapters for each class and subject
