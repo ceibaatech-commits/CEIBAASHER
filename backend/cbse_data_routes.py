@@ -110,6 +110,20 @@ async def get_admin_class_subjects():
         chapters = get_chapters_for_subject("12", subj["slug"], "commerce")
         result["Class 12 (Commerce)"][subj["name"]] = chapters
     
+    # Class 11 Humanities
+    subjects_11_hum = get_subjects_for_class("11", "humanities")
+    result["Class 11 (Humanities)"] = {}
+    for subj in subjects_11_hum:
+        chapters = get_chapters_for_subject("11", subj["slug"], "humanities")
+        result["Class 11 (Humanities)"][subj["name"]] = chapters
+    
+    # Class 12 Humanities
+    subjects_12_hum = get_subjects_for_class("12", "humanities")
+    result["Class 12 (Humanities)"] = {}
+    for subj in subjects_12_hum:
+        chapters = get_chapters_for_subject("12", subj["slug"], "humanities")
+        result["Class 12 (Humanities)"][subj["name"]] = chapters
+    
     return {
         "success": True,
         "class_subjects": result
