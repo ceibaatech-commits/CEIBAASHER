@@ -281,6 +281,26 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "How Nature Works in Harmony", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 13, "chapter_name": "Our Home: Earth, a Unique Life Sustaining Planet", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
+        "Science": [
+            {"chapter_number": 1, "chapter_name": "Crop Production and Management", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Microorganisms: Friend and Foe", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Synthetic Fibres and Plastics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Materials: Metals and Non-Metals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Coal and Petroleum", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "Combustion and Flame", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Conservation of Plants and Animals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Cell: Structure and Functions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Reproduction in Animals", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Reaching the Age of Adolescence", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "Force and Pressure", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Friction", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Sound", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 14, "chapter_name": "Chemical Effects of Electric Current", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 15, "chapter_name": "Some Natural Phenomena", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 16, "chapter_name": "Light", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 17, "chapter_name": "Stars and the Solar System", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 18, "chapter_name": "Pollution of Air and Water", "total_questions": 45, "difficulty": "Easy", "duration": 30}
+        ],
         "Social Science - Exploring Society: India and Beyond": [
             {"chapter_number": 1, "chapter_name": "Natural Resources and Their Use", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 2, "chapter_name": "Reshaping India's Political Map", "total_questions": 55, "difficulty": "Medium", "duration": 40},
