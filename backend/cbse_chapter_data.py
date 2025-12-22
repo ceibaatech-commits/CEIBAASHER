@@ -67,7 +67,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 11, "chapter_name": "Nature's Treasures", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 12, "chapter_name": "Beyond Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30}
         ],
-        "Sanskrit - Deepakam": [
+        "Sanskrit - Sulabha": [
             {"chapter_number": 1, "chapter_name": "वयं वर्णमालां पठामः", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "एषः कः ? एषा का ? एतत् किम् ?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 3, "chapter_name": "अहं च त्वं च", "total_questions": 40, "difficulty": "Easy", "duration": 30},
