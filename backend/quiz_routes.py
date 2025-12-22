@@ -551,8 +551,9 @@ async def start_quiz(request: QuizStartRequest):
                 # Remove leading "s" issues (Matters -> Matter), handle apostrophes, etc.
                 chapter_clean = request.chapter
                 # Handle "Matters" vs "Matter" spelling variation
+                # "Matters in" -> "Matter in" (remove trailing 's' from first word)
                 if chapter_clean.lower().startswith("matters "):
-                    chapter_clean = chapter_clean[0] + "atter" + chapter_clean[8:]  # Matters -> Matter
+                    chapter_clean = "Matter " + chapter_clean[8:]  # "Matters X" -> "Matter X"
                 
                 # Escape for regex but allow optional number prefix
                 escaped_chapter = regex_module.escape(chapter_clean)
