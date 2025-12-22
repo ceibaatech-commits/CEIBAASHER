@@ -448,15 +448,23 @@ async def start_quiz(request: QuizStartRequest):
         # Class-based query (CBSE chapters)
         # Use regex to match chapter name with or without number prefix
         # e.g., "Components of Food" matches "1. Components of Food"
+        # e.g., "Matters in Our Surroundings" matches "1. Matter in Our Surroundings"
         import re
-        chapter_pattern = re.compile(f"^\\d+\\.\\s*{re.escape(request.chapter)}$", re.IGNORECASE)
+        
+        # Normalize the chapter name for fuzzy matching
+        chapter_clean = request.chapter
+        # Handle "Matters" vs "Matter" spelling variation
+        if chapter_clean.lower().startswith("matters "):
+            chapter_clean = chapter_clean[0] + "atter" + chapter_clean[8:]  # Matters -> Matter
+        
+        chapter_pattern = re.compile(f"^\\d+\\.\\s*{re.escape(chapter_clean)}s?$", re.IGNORECASE)
         
         query = {
             "class_name": request.class_name,
             "subject": request.subject,
             "chapter": {"$regex": chapter_pattern}
         }
-        print(f"🔍 Querying exam_sheets collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter pattern={request.chapter}")
+        print(f"🔍 Querying exam_sheets collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter pattern={request.chapter} (normalized: {chapter_clean})")
     elif topic:
         # Exam-based query (NEET, JEE, etc.)
         # Build query using NEW field names that match Admin Sheet Manager
