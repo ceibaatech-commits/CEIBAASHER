@@ -345,6 +345,46 @@ CBSE_CHAPTERS = {
             "4. Landscape of the Soul", "5. The Ailing Planet"
         ],
     },
+    "11_humanities": {
+        "history": [
+            "1. From the Beginning of Time", "2. Writing and City Life", "3. An Empire Across Three Continents",
+            "4. The Central Islamic Lands", "5. Nomadic Empires", "6. The Three Orders",
+            "7. Changing Cultural Traditions", "8. Confrontation of Cultures", "9. The Industrial Revolution",
+            "10. Displacing Indigenous Peoples", "11. Paths to Modernisation"
+        ],
+        "political-science": [
+            "1. Constitution: Why and How?", "2. Rights in the Indian Constitution", "3. Election and Representation",
+            "4. Executive", "5. Legislature", "6. Judiciary", "7. Federalism", "8. Local Governments",
+            "9. Constitution as a Living Document", "10. The Philosophy of the Constitution"
+        ],
+        "geography": [
+            "1. Geography as a Discipline", "2. The Origin and Evolution of the Earth", "3. Interior of the Earth",
+            "4. Distribution of Oceans and Continents", "5. Minerals and Rocks", "6. Geomorphic Processes",
+            "7. Landforms and their Evolution", "8. Composition and Structure of Atmosphere",
+            "9. Solar Radiation, Heat Balance and Temperature", "10. Atmospheric Circulation and Weather Systems",
+            "11. Water in the Atmosphere", "12. World Climate and Climate Change", "13. Water (Oceans)",
+            "14. Movements of Ocean Water", "15. Life on the Earth", "16. Biodiversity and Conservation"
+        ],
+        "sociology": [
+            "1. Sociology and Society", "2. Terms, Concepts and their Use in Sociology",
+            "3. Understanding Social Institutions", "4. Culture and Socialisation",
+            "5. Doing Sociology: Research Methods", "6. Social Structure, Stratification and Social Processes in Society"
+        ],
+        "psychology": [
+            "1. What is Psychology?", "2. Methods of Enquiry in Psychology", "3. The Bases of Human Behaviour",
+            "4. Human Development", "5. Sensory, Attentional and Perceptual Processes",
+            "6. Learning", "7. Human Memory", "8. Thinking", "9. Motivation and Emotion"
+        ],
+        "economics": [
+            "1. Introduction to Economics", "2. Collection of Data", "3. Organisation of Data",
+            "4. Presentation of Data", "5. Measures of Central Tendency", "6. Measures of Dispersion",
+            "7. Correlation", "8. Index Numbers", "9. Use of Statistical Tools"
+        ],
+        "english": [
+            "1. The Portrait of a Lady", "2. We are Not Afraid to Die", "3. Discovering Tut",
+            "4. Landscape of the Soul", "5. The Ailing Planet"
+        ],
+    },
     "12_science": {
         "physics": [
             "1. Electric Charges and Fields", "2. Electrostatic Potential and Capacitance", "3. Current Electricity",
