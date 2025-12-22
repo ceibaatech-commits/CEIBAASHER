@@ -562,21 +562,33 @@ async def start_quiz(request: QuizStartRequest):
             if request.isClassBased and request.class_name and request.chapter:
                 # CLASS-BASED QUERY: Query by class_name, subject, and chapter
                 # Handle chapter names with or without number prefix and minor spelling variations
-                # e.g., "Components of Food" matches "1. Components of Food"
-                # e.g., "Matters in Our Surroundings" matches "1. Matter in Our Surroundings"
+                # Database stores: "1. Components of Food", "2. Is Matter Around Us Pure"
+                # Frontend sends: "Components of Food", "Is Matter Around Us Pure"
                 
                 # Normalize the chapter name for fuzzy matching
-                # Remove leading "s" issues (Matters -> Matter), handle apostrophes, etc.
                 chapter_clean = request.chapter
-                # Handle "Matters" vs "Matter" spelling variation
-                # "Matters in" -> "Matter in" (remove trailing 's' from first word)
-                if chapter_clean.lower().startswith("matters "):
-                    chapter_clean = "Matter " + chapter_clean[8:]  # "Matters X" -> "Matter X"
                 
-                # Escape for regex but allow optional number prefix
+                # Handle common spelling variations across all classes
+                spelling_fixes = {
+                    "matters ": "matter ",  # Class 9 Science: "Matters in Our Surroundings" -> "Matter in Our Surroundings"
+                    "heron's formula": "herons formula",  # Class 9 Math
+                    "euclid's geometry": "euclids geometry",  # Class 9 Math
+                }
+                
+                chapter_lower = chapter_clean.lower()
+                for wrong, correct in spelling_fixes.items():
+                    if chapter_lower.startswith(wrong):
+                        chapter_clean = correct.title() + chapter_clean[len(wrong):]
+                        break
+                
+                # Build regex that matches:
+                # 1. With number prefix: "1. Chapter Name", "12. Chapter Name"
+                # 2. Without number prefix: "Chapter Name"
+                # 3. Case-insensitive
+                # 4. Allow optional trailing 's' for pluralization variations
                 escaped_chapter = regex_module.escape(chapter_clean)
                 chapter_pattern = regex_module.compile(
-                    f"(^\\d+\\.\\s*)?{escaped_chapter}s?$",  # Allow optional trailing 's'
+                    f"^(\\d+\\.\\s*)?{escaped_chapter}s?$",
                     regex_module.IGNORECASE
                 )
                 
@@ -585,7 +597,7 @@ async def start_quiz(request: QuizStartRequest):
                     "subject": request.subject,
                     "chapter": {"$regex": chapter_pattern}
                 }
-                print(f"🔍 Querying questions collection for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
+                print(f"🔍 Querying questions for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
             else:
                 # EXAM-BASED QUERY: Build a flexible query that handles both old format (syllabus_topic/subject) 
                 # and new format (exam_id/subject/topic)
