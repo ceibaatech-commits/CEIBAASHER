@@ -5435,3 +5435,31 @@ Test adding questions via Google Sheet in ExamSheetManager for:
       3. **Development Environment**: Need to resolve build pipeline issues
       
       **CONCLUSION**: Board page UI/UX improvements are PROPERLY IMPLEMENTED in code but CANNOT BE TESTED due to critical frontend compilation errors. All required features (Header, Footer, Glassmorphism, Profile Sync, Mobile Responsiveness) are present in the codebase but blocked by build issues.
+
+  - agent: "user"
+    message: "Fix P0 bug: Questions not appearing on quiz page for Class 9 Science - Matter in Our Surroundings"
+  - agent: "main"
+    message: |
+      ✅ P0 BUG FIX COMPLETE - Questions Now Appearing on Quiz Page
+      
+      **Issue**: Questions added via admin panel for "Class 9 - Science - Matters in Our Surroundings" were not appearing on the quiz page.
+      
+      **Root Cause Identified**: Chapter name mismatch between frontend data and database:
+      - Frontend (cbse_chapter_data.py): "Matters in Our Surroundings" (with s)
+      - Database (MongoDB questions collection): "1. Matter in Our Surroundings" (without s, with number prefix)
+      
+      **Fix Applied**: Updated quiz_routes.py regex pattern to:
+      1. Normalize "Matters" -> "Matter" (handle spelling variation)
+      2. Allow optional number prefix (e.g., "1. ")
+      3. Applied fix in both exam_sheets query and questions collection query
+      
+      **Files Modified**:
+      - /app/backend/quiz_routes.py (lines 454-458 and 551-555)
+      
+      **Verification**:
+      - ✅ API test with curl: 10 questions returned successfully
+      - ✅ Screenshot test: Quiz setup page loads correctly, quiz starts and displays questions
+      - ✅ Backend logs confirm: "Loaded 50 questions from Google Sheets for Class 9/Science/None"
+      
+      **Status**: FIXED and VERIFIED via curl and screenshot testing
+
