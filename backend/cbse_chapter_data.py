@@ -18,7 +18,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Hindh mahasagar me chota-sa hindustan", "total_questions": 45, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 13, "chapter_name": "Ped Ki Bhata", "total_questions": 40, "difficulty": "Easy", "duration": 30}
         ],
-        "Social Science - Exploring Society India and Beyond": [
+        "Social Science - Exploring Society": [
             {"chapter_number": 1, "chapter_name": "Locating Places on the Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "Oceans and Continents", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 3, "chapter_name": "Landforms and Life", "total_questions": 50, "difficulty": "Medium", "duration": 35},
