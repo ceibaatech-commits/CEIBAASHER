@@ -318,6 +318,13 @@ CBSE_CHAPTERS = {
             "1. Development", "2. Sectors of the Indian Economy", "3. Money and Credit",
             "4. Globalisation and the Indian Economy", "5. Consumer Rights"
         ],
+        "sanskrit": [
+            "1. Shuchiparyavaranam (शुचिपर्यावरणम्)", "2. Buddhirbalavati Sada (बुद्धिर्बलवती सदा)",
+            "3. Shishu Lalanam (शिशुलालनम्)", "4. Janani Tulyavatsala (जननी तुल्यवत्सला)",
+            "5. Subhashitani (सुभाषितानि)", "6. Sauhardam Prakriteh Shobha (सौहार्दं प्रकृतेः शोभा)",
+            "7. Vichitrah Sakshi (विचित्रः साक्षी)", "8. Suktayah (सूक्तयः)",
+            "9. Bhookampavibhishika (भूकम्पविभीषिका)", "10. Anyoktayah (अन्योक्तयः)"
+        ],
     },
     "11_science": {
         "physics": [
