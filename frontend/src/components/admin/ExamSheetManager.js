@@ -723,32 +723,6 @@ const ExamSheetManager = () => {
     }
   }, [examForm.subject, examMetadata.loaded]);
 
-  // Fetch chapters dynamically from backend for Class 11 and 12
-  const fetchChaptersFromBackend = async (classNumber, subject) => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/chapter-tests/chapters`, {
-        params: {
-          class_param: classNumber,
-          subject: subject
-        }
-      });
-      
-      if (response.data.success && response.data.chapters) {
-        // Format chapters as "1. Chapter Name" format to match existing chapters
-        const formattedChapters = response.data.chapters.map(ch => 
-          `${ch.chapter_number}. ${ch.chapter_name}`
-        );
-        setChapters(formattedChapters);
-        console.log(`✅ Loaded ${formattedChapters.length} chapters for Class ${classNumber} ${subject} from backend`);
-      } else {
-        setChapters([]);
-      }
-    } catch (error) {
-      console.error(`Error fetching chapters for Class ${classNumber} ${subject}:`, error);
-      setChapters([]);
-    }
-  };
-
   useEffect(() => {
     // Update chapters based on class and subject - Using CBSE API as Single Source of Truth
     if (classForm.class_name && classForm.subject) {
