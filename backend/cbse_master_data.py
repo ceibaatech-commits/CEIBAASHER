@@ -52,6 +52,7 @@ CBSE_SUBJECTS = {
         {"name": "History", "slug": "history", "icon": "Landmark", "color": "from-yellow-500 to-yellow-600"},
         {"name": "Civics", "slug": "civics", "icon": "Scale", "color": "from-indigo-500 to-indigo-600"},
         {"name": "Economics", "slug": "economics", "icon": "TrendingUp", "color": "from-emerald-500 to-emerald-600"},
+        {"name": "Sanskrit", "slug": "sanskrit", "icon": "Scroll", "color": "from-red-500 to-red-600"},
     ],
     "11_science": [
         {"name": "Physics", "slug": "physics", "icon": "Atom", "color": "from-blue-500 to-blue-600"},
