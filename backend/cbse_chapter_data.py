@@ -344,25 +344,15 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Megh Aaye", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 13, "chapter_name": "Bacche Kaam Par Ja Rahe Hain", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "English Beehive Poems": [
-            {"chapter_number": 1, "chapter_name": "The Road Not Taken", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Wind", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Rain On The Roof", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "The Lake Isle of Innisfree", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "A Legend of The Northland", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "No Men Are Foreign", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "On Killing A Tree", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "A Slumber Did My Spirit Seal", "total_questions": 40, "difficulty": "Easy", "duration": 30}
-        ],
-        "English Beehive Prose": [
+        "English Beehive": [
             {"chapter_number": 1, "chapter_name": "The Fun They Had", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 2, "chapter_name": "The Sound of Music", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 3, "chapter_name": "The Little Girl", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 4, "chapter_name": "A Truly Beautiful Mind", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "The Snake and The Mirror", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "The Snake and the Mirror", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 6, "chapter_name": "My Childhood", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "Reach for the Top", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "The Bond of Love", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Kathmandu", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 9, "chapter_name": "If I Were You", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
         "English Moments": [
