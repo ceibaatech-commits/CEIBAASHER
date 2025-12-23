@@ -203,6 +203,18 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Ab Kahan Dusro Ke Dukh Se Dukhi Hone Wale", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 13, "chapter_name": "Patjhad Mein Tooti Pattiyan", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 14, "chapter_name": "Karthus", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+        ],
+        "Sanskrit": [
+            {"chapter_number": 1, "chapter_name": "Shuchiparyavaranam (शुचिपर्यावरणम्)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Buddhirbalavati Sada (बुद्धिर्बलवती सदा)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Shishu Lalanam (शिशुलालनम्)", "total_questions": 45, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Janani Tulyavatsala (जननी तुल्यवत्सला)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Subhashitani (सुभाषितानि)", "total_questions": 45, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Sauhardam Prakriteh Shobha (सौहार्दं प्रकृतेः शोभा)", "total_questions": 50, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Vichitrah Sakshi (विचित्रः साक्षी)", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Suktayah (सूक्तयः)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Bhookampavibhishika (भूकम्पविभीषिका)", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 10, "chapter_name": "Anyoktayah (अन्योक्तयः)", "total_questions": 45, "difficulty": "Medium", "duration": 35}
         ]
     },
     "8": {
