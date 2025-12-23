@@ -147,30 +147,16 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 6, "chapter_name": "Manufacturing Industries", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "Lifelines of National Economy", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
-        "English First Flight Prose": [
+        "English First Flight": [
             {"chapter_number": 1, "chapter_name": "A Letter to God", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 2, "chapter_name": "Nelson Mandela: Long Walk to Freedom", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 3, "chapter_name": "Two Stories about Flying", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 4, "chapter_name": "From the Diary of Anne Frank", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "The Hundred Dresses – I", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "The Hundred Dresses – II", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Glimpses of India", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Mijbil the Otter", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Madam Rides the Bus", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "The Sermon at Benares", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "The Proposal", "total_questions": 50, "difficulty": "Easy", "duration": 35}
-        ],
-        "English First Flight Poems": [
-            {"chapter_number": 1, "chapter_name": "Dust of Snow", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Fire and Ice", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "A Tiger in the zoo", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "How to tell Wild Animals", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "The Ball Poem", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "Amanda", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "The Trees", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Fog", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "The Tale of Custard the Dragon", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "For Anne Gregory", "total_questions": 40, "difficulty": "Easy", "duration": 30}
+            {"chapter_number": 5, "chapter_name": "Glimpses of India", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Mijbil the Otter", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Madam Rides the Bus", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "The Sermon at Benares", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "The Proposal", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
         "English Footprints Without Feet": [
             {"chapter_number": 1, "chapter_name": "A Triumph of Surgery", "total_questions": 50, "difficulty": "Easy", "duration": 35},
