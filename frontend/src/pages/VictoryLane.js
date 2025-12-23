@@ -63,6 +63,9 @@ const VictoryLane = () => {
   const [deletingPost, setDeletingPost] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
   
+  // Academic Question Modal state
+  const [showAcademicModal, setShowAcademicModal] = useState(false);
+  
   // Dynamic user data
   const [usersData, setUsersData] = useState({});
   const [followingList, setFollowingList] = useState(new Set());
