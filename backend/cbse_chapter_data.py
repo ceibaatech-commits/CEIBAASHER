@@ -386,9 +386,16 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 5, "chapter_name": "Pastoralists in the Modern World", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
         "Sanskrit": [
-            {"chapter_number": 1, "chapter_name": "Shemushee", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Abhyasvan Bhav", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Vyakaranavithi", "total_questions": 50, "difficulty": "Hard", "duration": 40}
+            {"chapter_number": 1, "chapter_name": "Bharativasantagiti (भारतीवसन्तगीतिः)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Swarnakakah (स्वर्णकाकः)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Godohanam (गोदोहनम्)", "total_questions": 45, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Suktimuktikam (सूक्तिमौक्तिकम्)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Bhranto Balah (भ्रान्तो बालः)", "total_questions": 45, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Lauhatula (लौहतुला)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Siktasetu (सिकतासेतुः)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Jatayoh Shauryam (जटायोः शौर्यम्)", "total_questions": 50, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Paryavaranam (पर्यावरणम्)", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Vangmanahpranaswarupam (वाड्मनःप्राणस्वरूपम्)", "total_questions": 50, "difficulty": "Hard", "duration": 40}
         ]
     },
     "7": {
