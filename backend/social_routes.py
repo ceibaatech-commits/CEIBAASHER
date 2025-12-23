@@ -26,13 +26,17 @@ class PostCreate(BaseModel):
     quiz_id: Optional[str] = None
     quiz_title: Optional[str] = None
     media_urls: Optional[List[str]] = []
-    post_type: Optional[str] = "text"  # text, quiz_result, achievement, battle_result
+    post_type: Optional[str] = "text"  # text, quiz_result, achievement, battle_result, academic_question
     quiz_score: Optional[int] = None
     quiz_total: Optional[int] = None
     exam_name: Optional[str] = None
     opponent_id: Optional[str] = None
     opponent_name: Optional[str] = None
     battle_result: Optional[str] = None  # won, lost, draw
+    # Academic question fields
+    academic_class: Optional[str] = None  # e.g., "Class 9", "Class 11 (Science)"
+    academic_subject: Optional[str] = None  # e.g., "Mathematics", "Hindi - Malhar"
+    academic_chapter: Optional[str] = None  # e.g., "1. Number Systems"
 
 class FriendRequest(BaseModel):
     receiver_id: str
