@@ -750,33 +750,34 @@ const ExamSheetManager = () => {
   };
 
   useEffect(() => {
-    // Update chapters based on class and subject
+    // Update chapters based on class and subject - Using CBSE API as Single Source of Truth
     if (classForm.class_name && classForm.subject) {
-      // Fetch chapters dynamically from backend for Class 11 and 12
-      const classNumber = classForm.class_name.replace('Class ', '');
-      if (classNumber === '11' || classNumber === '12') {
-        fetchChaptersFromBackend(classNumber, classForm.subject);
-        return;
+      // Use chapters from centralized CBSE API data (Single Source of Truth)
+      if (cbseClassSubjects[classForm.class_name] && cbseClassSubjects[classForm.class_name][classForm.subject]) {
+        const chapters = cbseClassSubjects[classForm.class_name][classForm.subject];
+        setChapters(chapters);
+        console.log(`✅ Loaded ${chapters.length} chapters for ${classForm.class_name} - ${classForm.subject} from API`);
+      } else {
+        // No chapters found - likely API data not loaded yet or subject doesn't exist
+        setChapters([]);
+        console.log(`⚠️ No chapters found for ${classForm.class_name} - ${classForm.subject} in API data`);
       }
       
-      // Define comprehensive chapter data for each class and subject (Class 6-10 only)
-      const classWiseChapters = {
-        'Class 6': {
-          'Hindi - Malhar': [
-            '1. Mathru Bhumi (Poem)',
-            '2. Gol',
-            '3. Pehli Boond (Poem)',
-            '4. Haar Ki Jeet',
-            '5. Rahim ke dohe (Poem)',
-            '6. Meri ma',
-            '7. Jalate Chalo',
-            '8. Satriya Aur Bihu Nruthya',
-            '9. Maiya Me nahi maakna koyo (Poem)',
-            '10. Pariksha',
-            '11. Chetak ki veeratha',
-            '12. Hindh mahasagar me chota-sa hindustan',
-            '13. Ped Ki Bhata'
-          ],
+      // Reset chapter when subject changes
+      setClassForm(prev => ({
+        ...prev,
+        chapter: ''
+      }));
+    }
+  }, [classForm.class_name, classForm.subject, cbseClassSubjects]);
+
+  // Legacy hardcoded data removed - now using centralized CBSE API as Single Source of Truth
+  // This ensures chapter names in admin panel match exactly with quiz page
+  const _legacyClassWiseChaptersRemoved = {
+    note: 'Hardcoded chapter data has been removed to fix data inconsistency bugs.',
+    solution: 'All chapter data is now fetched from /api/cbse-data/admin/class-subjects API',
+    dataSource: '/app/backend/cbse_master_data.py'
+  };
           'Social Science - Exploring Society India and Beyond': [
             '1. Locating Places on the Earth',
             '2. Oceans and Continents',
