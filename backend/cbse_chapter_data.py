@@ -170,17 +170,17 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 9, "chapter_name": "The Book That Saved the Earth", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
         "Hindi Kshitij": [
-            {"chapter_number": 1, "chapter_name": "Surdas", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Ram-Lakshman-Parshuram Samvad", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Aatmakathya", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Utsah & Aat Nahi Rahi Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Yeh Danturit Muskaan & Fasal", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Sangatkar", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Netaji Ka Chashma", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Balgobin Bhagat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Lakhnavi Andaaz", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Ek Kahani Yeh Bhi", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 11, "chapter_name": "Naubatkhane Mein Ibadat", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 1, "chapter_name": "Pad (Surdas)", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "Ram-Lakshman-Parshuram Samvad", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "Atmakathya", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Utsah / At Nahi Rahi Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Yah Danturit Muskan / Fasal", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Sangatkar", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Netaji ka Chashma", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Balgobin Bhagat", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Lakhnavi Andaz", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Ek Kahani Yah Bhi", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "Naubatkhane Mein Ibadat", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 12, "chapter_name": "Sanskriti", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Hindi Kritika": [
