@@ -121,15 +121,8 @@ CBSE_CHAPTERS = {
             "4. Sports", "5. Being Responsible", "6. Art and Creativity", "7. Technology and Communication",
             "8. Friendship", "9. Environment", "10. Adventure"
         ],
-        "Science": [
-            "1. Components of Food", "2. Sorting Materials into Groups", "3. Separation of Substances",
-            "4. Getting to Know Plants", "5. Body Movements", "6. Living Organisms and Their Surroundings",
-            "7. Motion and Measurement of Distances", "8. Light, Shadows and Reflections",
-            "9. Electricity and Circuits", "10. Fun with Magnets", "11. Air Around Us",
-            "12. Water", "13. Fibre to Fabric", "14. Garbage In, Garbage Out"
-        ],
         "Science - Curiosity": [
-            "1. The Wonderful World of Science", "2. Diversity in the Living World", "3. Mindful Eating - A Path to a Healthy Body",
+            "1. The Wonderful World of Science", "2. Diversity in the Living World", "3. Mindful Eating: A Path to a Healthy Body",
             "4. Exploring Magnets", "5. Measurement of Length and Motion", "6. Materials Around Us",
             "7. Temperature and its Measurement", "8. A Journey through States of Water", "9. Methods of Separation in Everyday Life",
             "10. Living Creatures: Exploring their Characteristics", "11. Nature's Treasures", "12. Beyond Earth"
@@ -146,33 +139,30 @@ CBSE_CHAPTERS = {
     },
     "7": {
         "Mathematics - Ganita Prakash": [
-            "1. Integers", "2. Fractions and Decimals", "3. Data Handling", "4. Simple Equations",
-            "5. Lines and Angles", "6. The Triangle and Its Properties", "7. Comparing Quantities",
-            "8. Rational Numbers", "9. Perimeter and Area", "10. Algebraic Expressions",
-            "11. Exponents and Powers", "12. Symmetry", "13. Visualising Solid Shapes"
+            "1. Large Numbers Around Us", "2. Arithmetic Expressions", "3. A Peek Beyond the Point",
+            "4. Expressions using Letter-Numbers", "5. Parallel and Intersecting Lines", "6. Number Play",
+            "7. A Tale of Three Intersecting Lines", "8. Working with Fractions", "9. Geometric Twins",
+            "10. Operations with Integers", "11. Finding Common Ground", "12. Another Peek Beyond the Point",
+            "13. Connecting the Dots...", "14. Constructions and Tilings", "15. Finding the Unknown"
         ],
         "Hindi - Malhar": [
-            "1. Maan, Kah Ek Kahani", "2. Gol", "3. Amaltas (Poem)", "4. Ghar Ki Murgee Dal Barabar",
-            "5. Nasiruddin Kee Joroo Ka Kissa", "6. Koti Ka Ghar", "7. Chaand Ka Ghar (Poem)", 
-            "8. Rabi Ki Roti", "9. Chand Wali Amma", "10. Sabase Payara Desh Hamara (Poem)"
+            "1. Maan, Kah Ek Kahani", "2. Teen Buddhiman", "3. Phool Aur Kaanta",
+            "4. Paani Re Paani", "5. Nahin Hona Bimar", "6. Giridhar Kaviray Ki Kundaliya",
+            "7. Varsha-Bahar", "8. Birajoo Maharaj Se Sakshatkar", "9. Chidiya", "10. Meera Ke Pad"
         ],
         "English - Poorvi": [
             "1. Three Questions", "2. A Gift of Chappals", "3. Gopal and the Hilsa Fish",
             "4. The Ashes That Made Trees Bloom", "5. Quality", "6. Expert Detectives",
             "7. The Invention of Vita-Wonk", "8. A Homage to our Brave Soldiers"
         ],
-        "Science": [
-            "1. Nutrition in Plants", "2. Nutrition in Animals", "3. Fibre to Fabric", "4. Heat",
-            "5. Acids, Bases and Salts", "6. Physical and Chemical Changes", "7. Weather, Climate and Adaptations",
-            "8. Winds, Storms and Cyclones", "9. Soil", "10. Respiration in Organisms",
-            "11. Transportation in Animals and Plants", "12. Reproduction in Plants",
-            "13. Motion and Time", "14. Electric Current and Its Effects", "15. Light",
-            "16. Water: A Precious Resource", "17. Forests: Our Lifeline", "18. Wastewater Story"
-        ],
         "Science - Curiosity": [
-            "1. Nutrition in Plants", "2. Nutrition in Animals", "3. Fibre to Fabric", "4. Heat",
-            "5. Acids, Bases and Salts", "6. Physical and Chemical Changes", "7. Weather, Climate and Adaptations",
-            "8. Winds, Storms and Cyclones", "9. Soil", "10. Respiration in Organisms",
+            "1. The Ever-Evolving World of Science", "2. Exploring Substances: Acidic, Basic and Neutral",
+            "3. Electricity: Circuits and their Components", "4. The World of Metals and Non-metals",
+            "5. Changes Around Us: Physical and Chemical", "6. Adolescence: A Stage of Growth and Change",
+            "7. Heat Transfer in Nature", "8. Measurement of Time and Motion",
+            "9. Life Processes in Animals", "10. Life Processes in Plants",
+            "11. Light: Shadows and Reflections", "12. Earth, Moon and the Sun"
+        ],
             "11. Transportation in Animals and Plants", "12. Reproduction in Plants",
             "13. Motion and Time", "14. Electric Current and Its Effects", "15. Light",
             "16. Water: A Precious Resource", "17. Forests: Our Lifeline", "18. Wastewater Story"
