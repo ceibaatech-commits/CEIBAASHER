@@ -222,8 +222,8 @@ CBSE_CHAPTERS = {
     "9": {
         "mathematics": [
             "1. Number Systems", "2. Polynomials", "3. Coordinate Geometry", "4. Linear Equations in Two Variables",
-            "5. Introduction to Euclids Geometry", "6. Lines and Angles", "7. Triangles", "8. Quadrilaterals",
-            "9. Circles", "10. Herons Formula", "11. Surface Areas and Volumes", "12. Statistics"
+            "5. Introduction to Euclid's Geometry", "6. Lines and Angles", "7. Triangles", "8. Quadrilaterals",
+            "9. Circles", "10. Heron's Formula", "11. Surface Areas and Volumes", "12. Statistics"
         ],
         "science": [
             "1. Matter in Our Surroundings", "2. Is Matter Around Us Pure", "3. Atoms and Molecules",
@@ -231,29 +231,31 @@ CBSE_CHAPTERS = {
             "8. Force and Laws of Motion", "9. Gravitation", "10. Work and Energy", "11. Sound",
             "12. Improvement in Food Resources"
         ],
-        "hindi": [
+        "hindi-kshitij": [
             "1. Do Bailon Ki Katha", "2. Lhasa Ki Aur", "3. Upbhoktavad Ki Sanskriti",
-            "4. Sawale Sapno Ki Yaad", "5. Nana Sahab Ki Putri", "6. Premchand Ke Phate Joote",
-            "7. Mere Bachpan Ke Din", "8. Ek Kutta Aur Ek Maina"
+            "4. Sanwale Sapno Ki Yaad", "5. Premchand Ke Phate Joote", "6. Mere Bachpan Ke Din",
+            "7. Kabir (Sakhiyan)", "8. Lalkhad (Vaakh)", "9. Raskhan (Savaiye)",
+            "10. Kaidi Aur Kokila", "11. Gram Shree", "12. Megh Aaye", "13. Bachche Kaam Par Ja Rahe Hain"
         ],
-        "english": [
+        "english-beehive": [
             "1. The Fun They Had", "2. The Sound of Music", "3. The Little Girl", "4. A Truly Beautiful Mind",
-            "5. The Snake and the Mirror", "6. My Childhood", "7. Packing", "8. Reach for the Top",
-            "9. The Bond of Love", "10. Kathmandu", "11. If I Were You"
+            "5. The Snake and the Mirror", "6. My Childhood", "7. Reach for the Top",
+            "8. Kathmandu", "9. If I Were You"
         ],
-        "social-science": [
-            "1. The French Revolution", "2. Socialism in Europe", "3. Nazism and the Rise of Hitler",
-            "4. Forest Society and Colonialism", "5. Pastoralists in the Modern World"
+        "english-moments": [
+            "1. The Lost Child", "2. The Adventures of Toto", "3. Iswaran the Storyteller",
+            "4. In the Kingdom of Fools", "5. The Happy Prince", "6. The Last Leaf",
+            "7. A House Is Not a Home", "8. The Beggar"
         ],
         "geography": [
-            "1. India - Size and Location", "2. Physical Features of India", "3. Drainage",
-            "4. Climate", "5. Natural Vegetation and Wild Life", "6. Population"
+            "1. India – Size and Location", "2. Physical Features of India", "3. Drainage",
+            "4. Climate", "5. Natural Vegetation and Wildlife", "6. Population"
         ],
         "history": [
             "1. The French Revolution", "2. Socialism in Europe and the Russian Revolution",
             "3. Nazism and the Rise of Hitler", "4. Forest Society and Colonialism", "5. Pastoralists in the Modern World"
         ],
-        "political-science": [
+        "civics": [
             "1. What is Democracy? Why Democracy?", "2. Constitutional Design", "3. Electoral Politics",
             "4. Working of Institutions", "5. Democratic Rights"
         ],
@@ -275,9 +277,44 @@ CBSE_CHAPTERS = {
         "science": [
             "1. Chemical Reactions and Equations", "2. Acids, Bases and Salts", "3. Metals and Non-metals",
             "4. Carbon and its Compounds", "5. Life Processes", "6. Control and Coordination",
-            "7. How do Organisms Reproduce", "8. Heredity and Evolution", "9. Light - Reflection and Refraction",
-            "10. The Human Eye and the Colourful World", "11. Electricity", "12. Magnetic Effects of Electric Current",
+            "7. How do Organisms Reproduce?", "8. Heredity", "9. Light – Reflection and Refraction",
+            "10. The Human Eye and the Colorful World", "11. Electricity", "12. Magnetic Effects of Electric Current",
             "13. Our Environment"
+        ],
+        "hindi-kshitij": [
+            "1. Pad (Surdas)", "2. Ram-Lakshman-Parshuram Samvad", "3. Atmakathya",
+            "4. Utsah / At Nahi Rahi Hai", "5. Yah Danturit Muskan / Fasal", "6. Sangatkar",
+            "7. Netaji ka Chashma", "8. Balgobin Bhagat", "9. Lakhnavi Andaz",
+            "10. Ek Kahani Yah Bhi", "11. Naubatkhane Mein Ibadat", "12. Sanskriti"
+        ],
+        "english-first-flight": [
+            "1. A Letter to God", "2. Nelson Mandela: Long Walk to Freedom", "3. Two Stories about Flying",
+            "4. From the Diary of Anne Frank", "5. Glimpses of India", "6. Mijbil the Otter",
+            "7. Madam Rides the Bus", "8. The Sermon at Benares", "9. The Proposal"
+        ],
+        "english-footprints-without-feet": [
+            "1. A Triumph of Surgery", "2. The Thief's Story", "3. The Midnight Visitor",
+            "4. A Question of Trust", "5. Footprints without Feet", "6. The Making of a Scientist",
+            "7. The Necklace", "8. Bholi", "9. The Book That Saved the Earth"
+        ],
+        "geography": [
+            "1. Resources and Development", "2. Forest and Wildlife Resources", "3. Water Resources",
+            "4. Agriculture", "5. Minerals and Energy Resources", "6. Manufacturing Industries",
+            "7. Lifelines of National Economy"
+        ],
+        "history": [
+            "1. The Rise of Nationalism in Europe", "2. Nationalism in India", "3. The Making of a Global World",
+            "4. The Age of Industrialisation", "5. Print Culture and the Modern World"
+        ],
+        "civics": [
+            "1. Power Sharing", "2. Federalism", "3. Gender, Religion and Caste",
+            "4. Political Parties", "5. Outcomes of Democracy"
+        ],
+        "economics": [
+            "1. Development", "2. Sectors of the Indian Economy", "3. Money and Credit",
+            "4. Globalisation and the Indian Economy", "5. Consumer Rights"
+        ],
+    },
         ],
         "hindi": [
             "1. Surdas", "2. Tulsidas", "3. Dev", "4. Jayashankar Prasad", "5. Suryakant Tripathi Nirala",
