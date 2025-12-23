@@ -265,7 +265,10 @@ CBSE_CHAPTERS = {
             "4. Food Security in India"
         ],
         "sanskrit": [
-            "1. Shemushee", "2. Abhyasvan Bhav", "3. Vyakaranavithi"
+            "1. Bharativasantagiti (भारतीवसन्तगीतिः)", "2. Swarnakakah (स्वर्णकाकः)", "3. Godohanam (गोदोहनम्)",
+            "4. Suktimuktikam (सूक्तिमौक्तिकम्)", "5. Bhranto Balah (भ्रान्तो बालः)", "6. Lauhatula (लौहतुला)",
+            "7. Siktasetu (सिकतासेतुः)", "8. Jatayoh Shauryam (जटायोः शौर्यम्)", "9. Paryavaranam (पर्यावरणम्)",
+            "10. Vangmanahpranaswarupam (वाड्मनःप्राणस्वरूपम्)"
         ],
     },
     "10": {
