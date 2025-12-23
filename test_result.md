@@ -5609,3 +5609,27 @@ Test adding questions via Google Sheet in ExamSheetManager for:
       **SUCCESS RATE**: 10/10 tests passed (100% success rate)
       
       **CONCLUSION**: CBSE chapter name matching fix is FULLY OPERATIONAL and meets ALL review request requirements. The original Class 9 Science bug has been completely resolved, and the fix works correctly across all CBSE classes (6-12) with proper spelling variation handling.
+
+---
+## Test Session: P0 Bug Fix - ExamSheetManager Refactoring
+**Date**: 2024-12-23
+**Issue**: "Failed to Load Questions" - Data inconsistency between admin panel and quiz page
+
+### Changes Made:
+1. **Removed hardcoded `classWiseChapters` object** (~700 lines of duplicate chapter data) from `ExamSheetManager.js`
+2. **Refactored chapter loading** to use only the centralized API (`/api/cbse-data/admin/class-subjects`)
+3. **Removed `fetchChaptersFromBackend` function** as it was using a different endpoint
+
+### Expected Behavior:
+- Chapter dropdown in admin panel should now show chapters from the centralized API
+- Chapter names should match exactly with what the quiz page uses
+- Questions saved via admin panel should load correctly on quiz page
+
+### Test Plan:
+1. Verify admin panel loads chapters from API for Class 9 Sanskrit
+2. Verify chapters match `cbse_master_data.py`
+3. Test adding a question and verify it loads on quiz page
+
+### Initial Verification:
+- ✅ Class 9 Sanskrit chapters load correctly in admin panel
+- ✅ Chapters match cbse_master_data.py exactly
