@@ -124,6 +124,10 @@ async def create_post(post: PostCreate, request: Request):
         "opponent_id": post.opponent_id,
         "opponent_name": post.opponent_name,
         "battle_result": post.battle_result,
+        # Academic question fields
+        "academic_class": post.academic_class,
+        "academic_subject": post.academic_subject,
+        "academic_chapter": post.academic_chapter,
         "likes_count": 0,
         "comments_count": 0,
         "shares_count": 0,
@@ -145,7 +149,7 @@ async def create_post(post: PostCreate, request: Request):
         )
     
     new_post.pop("_id", None)
-    return new_post
+    return {"success": True, "post": new_post}
 
 @router.get("/social/feed")
 async def get_feed(request: Request, skip: int = 0, limit: int = 20):
