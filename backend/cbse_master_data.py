@@ -163,28 +163,25 @@ CBSE_CHAPTERS = {
             "9. Life Processes in Animals", "10. Life Processes in Plants",
             "11. Light: Shadows and Reflections", "12. Earth, Moon and the Sun"
         ],
-            "11. Transportation in Animals and Plants", "12. Reproduction in Plants",
-            "13. Motion and Time", "14. Electric Current and Its Effects", "15. Light",
-            "16. Water: A Precious Resource", "17. Forests: Our Lifeline", "18. Wastewater Story"
-        ],
         "Social Science - Exploring Society": [
-            "1. Tracing Changes Through a Thousand Years", "2. New Kings and Kingdoms",
-            "3. The Delhi Sultans", "4. The Mughal Empire", "5. Rulers and Buildings",
-            "6. Environment", "7. Our Changing Earth", "8. Inside Our Earth",
-            "9. Air", "10. Water"
+            "1. Geographical Diversity of India", "2. Understanding the Weather", "3. Climates of India",
+            "4. New Beginnings: Cities and States", "5. The Rise of Empires", "6. The Age of Reorganisation",
+            "7. The Gupta Era: An Age of", "8. How the Land Becomes Sacred",
+            "9. From the Rulers to the Ruled: Types of Governments", "10. The Constitution of India",
+            "11. From Barter to Money", "12. Understanding Markets"
         ],
         "Sanskrit - Sulabha": [
-            "1. Prathama Paatha", "2. Dviteeyaha Paathaha", "3. Truteeyaha Paathaha",
-            "4. Chaturthaha Paathaha", "5. Panchamaha Paathaha"
+            "1. वन्देभारतमातरम्", "2. नित्यं पिबाम: सुभाषितरसम्", "3. मित्राय नमः",
+            "4. न लभ्यते चेत्आम्लं द्राक्षाफलम", "5. सेवा हि परमो धर्म:", "6. क्रीडाम वयं श्‍लोकान्त्याक्षरीम्",
+            "7. ईशावास्यम्इदं सर्वम्", "8. हितं मनोहारि च दुर्लभं वचः", "9. अन्‍नाद् भवन्ति भूतानि",
+            "10. दशमः कः ?", "11. द्वीपेषुरम्यः द्वीपोऽण्डमानः", "12. वीराङ्गना पन्‍नाधाया"
         ],
     },
     "8": {
         "Mathematics - Ganita Prakash": [
-            "1. Rational Numbers", "2. Linear Equations in One Variable", "3. Understanding Quadrilaterals",
-            "4. Data Handling", "5. Squares and Square Roots", "6. Cubes and Cube Roots",
-            "7. Comparing Quantities", "8. Algebraic Expressions and Identities", "9. Mensuration",
-            "10. Exponents and Powers", "11. Direct and Inverse Proportions", "12. Factorisation",
-            "13. Introduction to Graphs", "14. Playing with Numbers"
+            "1. A Square and A Cube", "2. Power Play", "3. A Story of Numbers",
+            "4. Quadrilaterals", "5. Number Play", "6. We Distribute, Yet Things Multiply",
+            "7. Proportional Reasoning-1"
         ],
         "Hindi - Malhar": [
             "1. Dhwani", "2. Lakh Ki Chudiyan", "3. Bus Ki Yatra", "4. Deewano Ki Hasti",
@@ -196,34 +193,31 @@ CBSE_CHAPTERS = {
             "4. Bepin Choudhury's Lapse of Memory", "5. The Summit Within", "6. This is Jody's Fawn",
             "7. A Visit to Cambridge", "8. A Short Monsoon Diary"
         ],
-        "Science": [
-            "1. Crop Production and Management", "2. Microorganisms: Friend and Foe",
-            "3. Synthetic Fibres and Plastics", "4. Materials: Metals and Non-Metals",
-            "5. Coal and Petroleum", "6. Combustion and Flame", "7. Conservation of Plants and Animals",
-            "8. Cell: Structure and Functions", "9. Reproduction in Animals",
-            "10. Reaching the Age of Adolescence", "11. Force and Pressure",
-            "12. Friction", "13. Sound", "14. Chemical Effects of Electric Current",
-            "15. Some Natural Phenomena", "16. Light", "17. Stars and the Solar System",
-            "18. Pollution of Air and Water"
-        ],
         "Science - Curiosity": [
-            "1. Exploring the Investigative World of Science", "2. Microorganisms", "3. Synthetic Fibres and Plastics",
-            "4. Metals and Non-Metals", "5. Coal and Petroleum", "6. Combustion and Flame",
-            "7. Cell: Structure and Functions", "8. Reproduction in Animals", "9. Force and Pressure",
-            "10. Friction", "11. Sound", "12. Chemical Effects of Electric Current",
-            "13. Some Natural Phenomena", "14. Light", "15. Stars and the Solar System"
+            "1. Exploring the Investigative World of Science", "2. The Invisible Living World: Beyond Our Naked Eye",
+            "3. Health: The Ultimate Treasure", "4. Electricity: Magnetic and Heating Effects",
+            "5. Exploring Forces", "6. Pressure, Winds, Storms and Cyclones",
+            "7. Particulate Nature of Matter", "8. Nature of Matter: Elements, Compounds and Mixtures",
+            "9. The Amazing World of Solutes, Solvents and Solutions", "10. Light: Mirrors and Lenses",
+            "11. Keeping Time with the Skies", "12. How Nature Works in Harmony",
+            "13. Our Home: Earth, a Unique Life Sustaining Planet"
         ],
         "Geography": [
             "1. Resources", "2. Land, Soil, Water, Natural Vegetation and Wildlife Resources",
             "3. Agriculture", "4. Industries", "5. Human Resources"
         ],
         "Social Science - Exploring Society: India and Beyond": [
-            "1. Natural Resources and Their Use", "2. Land, Soil, Water, Natural Vegetation and Wildlife",
-            "3. Agriculture", "4. Industries", "5. Human Resources"
+            "1. Natural Resources and Their Use", "2. Reshaping India's Political Map",
+            "3. The Rise of the Marathas", "4. The Colonial Era in India",
+            "5. Universal Franchise and India's Electoral System",
+            "6. The Parliamentary System: Legislature and Executive", "7. Factors of Production"
         ],
         "Sanskrit - Sulabha": [
-            "1. Prathama Paatha", "2. Dviteeyaha Paathaha", "3. Truteeyaha Paathaha",
-            "4. Chaturthaha Paathaha", "5. Panchamaha Paathaha"
+            "1. Subhaashitaani", "2. Bilaasy Vaanee na Dadaapi me Shruta", "3. Bhagavadjjukam",
+            "4. Sadaiv Purato Nidhihi Charnam", "5. Dharme Dhamanan Paape Paunam",
+            "6. Premalasy Premalyaashch Katha", "7. Jalavaahinee", "8. Sansaarasaagarasy Naayakaah",
+            "9. Saptabhaginyah", "10. Ashokavanika", "11. Saavitree Baee Phule",
+            "12. Kah Rakshati Kah Rakshitah", "13. Himalayah", "14. Aaryabhatah"
         ],
     },
     "9": {
