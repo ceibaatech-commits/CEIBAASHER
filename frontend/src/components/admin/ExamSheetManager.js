@@ -773,81 +773,9 @@ const ExamSheetManager = () => {
 
   // Legacy hardcoded data removed - now using centralized CBSE API as Single Source of Truth
   // This ensures chapter names in admin panel match exactly with quiz page
-  const _legacyClassWiseChaptersRemoved = {
-    note: 'Hardcoded chapter data has been removed to fix data inconsistency bugs.',
-    solution: 'All chapter data is now fetched from /api/cbse-data/admin/class-subjects API',
-    dataSource: '/app/backend/cbse_master_data.py'
-  };
-          'Social Science - Exploring Society India and Beyond': [
-            '1. Locating Places on the Earth',
-            '2. Oceans and Continents',
-            '3. Landforms and Life',
-            '4. Timeline and Sources of History',
-            '5. India, That Is Bharat',
-            '6. The Beginnings of Indian Civilisation',
-            '7. India\'s Cultural Roots',
-            '8. Unity in Diversity, or \'Many in the One\'',
-            '9. Family and Community',
-            '10. Grassroots Democracy — Part 1: Governance',
-            '11. Grassroots Democracy — Part 2: Local Government in Rural Areas',
-            '12. Grassroots Democracy — Part 3: Local Government in Urban Areas',
-            '13. The Value of Work',
-            '14. Economic Activities Around Us'
-          ],
-          'Mathematics - Ganita Prakash': [
-            '1. Patterns in Mathematics',
-            '2. Lines and Angles',
-            '3. Number Play Solutions',
-            '4. Data Handling and Presentation',
-            '5. Prime Time',
-            '6. Perimeter and Area',
-            '7. Fractions',
-            '8. Playing with Construction',
-            '9. Symmetry',
-            '10. The Other Side of Zero'
-          ],
-          'English - Poorvi': [
-            '1. Fables and Folk Tales',
-            '2. Friendship',
-            '3. Nurturing Nature',
-            '4. Sports and Wellness',
-            '5. Culture and Tradition'
-          ],
-          'Science - Curiosity': [
-            '1. The Wonderful World of Science',
-            '2. Diversity in the Living World',
-            '3. Mindful Eating: A Path to a Healthy Body',
-            '4. Exploring Magnets',
-            '5. Measurement of Length and Motion',
-            '6. Materials Around Us',
-            '7. Temperature and its Measurement',
-            '8. A Journey through States of Water',
-            '9. Methods of Separation in Everyday Life',
-            '10. Living Creatures: Exploring their Characteristics',
-            '11. Nature\'s Treasures',
-            '12. Beyond Earth'
-          ],
-          'Sanskrit - Deepakam': [
-            '1. वयं वर्णमालां पठामः',
-            '2. एषः कः ? एषा का ? एतत् किम् ?',
-            '3. अहं च त्वं च',
-            '4. अहं प्रातः उत्तिष्ठामि',
-            '5. शूराः वयं धीराः वयम्',
-            '6. सः एव महान् चित्रकारः',
-            '7. अतिथिदेवो भव',
-            '8. बुद्धिः सर्वार्थसाधिका',
-            '9. यो जानाति सः पण्डितः',
-            '10. त्वम् आपणं गच्छ',
-            '11. पृथिव्यां त्रीणि रत्नानि',
-            '12. आलस्यं हि मनुष्याणां शरीरस्थो महान् रिपुः',
-            '13. सङ्ख्यागणना ननु सरला',
-            '14. माधवस्य प्रियम् अङ्गम्',
-            '15. वृक्षाः सत्पुरुषाः इव'
-          ]
-        },
-        'Class 7': {
-          'Hindi - Malhar': ['1. Maan, Kah Ek Kahani', '2. Teen Buddhiman', '3. Phool Aur Kaanta', '4. Paani Re Paani', '5. Nahin Hona Bimar', '6. Giridhar Kaviray Ki Kundaliya', '7. Varsha-Bahar', '8. Birajoo Maharaj Se Sakshatkar', '9. Chidiya', '10. Meera Ke Pad'],
-          'Science - Curiosity': ['1. The Ever-Evolving World of Science', '2. Exploring Substances: Acidic, Basic and Neutral', '3. Electricity: Circuits and their Components', '4. The World of Metals and Non-metals', '5. Changes Around Us: Physical and Chemical', '6. Adolescence: A Stage of Growth and Change', '7. Heat Transfer in Nature', '8. Measurement of Time and Motion', '9. Life Processes in Animals', '10. Life Processes in Plants', '11. Light: Shadows and Reflections', '12. Earth, Moon and the Sun'],
+  // Legacy hardcoded chapter data has been removed to fix data inconsistency bugs.
+  // All chapter data is now fetched from /api/cbse-data/admin/class-subjects API
+  // Data source: /app/backend/cbse_master_data.py (Single Source of Truth)
           'English - Poorvi': ['1. Three Questions', '2. A Gift of Chappals', '3. Gopal and the Hilsa Fish', '4. The Ashes That Made Trees Bloom', '5. Quality', '6. Expert Detectives', '7. The Invention of Vita-Wonk', '8. A Homage to our Brave Soldiers'],
           'Social Science - Exploring Society India and Beyond Part 2': ['1. Tracing Changes through a Thousand Years', '2. Kings and Kingdoms', '3. Delhi: 12th to 15th Century', '4. The Mughals (16th to 17th Century)', '5. Tribes, Nomads and Settled Communities', '6. Devotional Paths to the Divine', '7. The Making of Regional Cultures', '8. Eighteenth Century Political Formations'],
           'Social Science - Exploring Society India and Beyond': ['1. Geographical Diversity of India', '2. Understanding the Weather', '3. Climates of India', '4. New Beginnings: Cities and States', '5. The Rise of Empires', '6. The Age of Reorganisation', '7. The Gupta Era: An Age of', '8. How the Land Becomes Sacred', '9. From the Rulers to the Ruled: Types of Governments', '10. The Constitution of India — An Introduction', '11. From Barter to Money', '12. Understanding Markets'],
