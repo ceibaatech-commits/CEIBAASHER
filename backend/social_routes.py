@@ -151,6 +151,37 @@ async def create_post(post: PostCreate, request: Request):
     new_post.pop("_id", None)
     return {"success": True, "post": new_post}
 
+@router.get("/social/academic-posts")
+async def get_academic_posts(
+    class_name: str = Query(None, description="Class name e.g., 'Class 9'"),
+    subject: str = Query(None, description="Subject name e.g., 'Mathematics'"),
+    chapter: str = Query(None, description="Chapter name e.g., '1. Number Systems'"),
+    skip: int = 0,
+    limit: int = 20
+):
+    """Get academic question posts filtered by class, subject, and/or chapter"""
+    query = {"post_type": "academic_question"}
+    
+    if class_name:
+        query["academic_class"] = class_name
+    if subject:
+        # Use regex for flexible matching (handles display names vs slugs)
+        query["academic_subject"] = {"$regex": subject.replace("-", ".*"), "$options": "i"}
+    if chapter:
+        query["academic_chapter"] = chapter
+    
+    posts = await db.posts.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(None)
+    
+    # Get total count for pagination
+    total = await db.posts.count_documents(query)
+    
+    return {
+        "success": True,
+        "posts": posts,
+        "total": total,
+        "has_more": (skip + limit) < total
+    }
+
 @router.get("/social/feed")
 async def get_feed(request: Request, skip: int = 0, limit: int = 20):
     """Get user's social feed"""
