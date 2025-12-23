@@ -330,19 +330,19 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 6, "chapter_name": "Population", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Hindi Kshitij": [
-            {"chapter_number": 1, "chapter_name": "Do Bailon Ki Katha", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 1, "chapter_name": "Do Bailon Ki Katha", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 2, "chapter_name": "Lhasa Ki Aur", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Upbhoktaavad Ki Sanskriti", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Saanvle Sapno Ki Yaad", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Premchand Ke Fate Joote", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Upbhoktavad Ki Sanskriti", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 4, "chapter_name": "Sanwale Sapno Ki Yaad", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Premchand Ke Phate Joote", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 6, "chapter_name": "Mere Bachpan Ke Din", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Sakhiyan Evam Sabad", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "Vaakh", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Savaiye", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Kabir (Sakhiyan)", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Lalkhad (Vaakh)", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Raskhan (Savaiye)", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 10, "chapter_name": "Kaidi Aur Kokila", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "Gram Shri", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Gram Shree", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 12, "chapter_name": "Megh Aaye", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "Bacche Kaam Par Ja Rahe Hain", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 13, "chapter_name": "Bachche Kaam Par Ja Rahe Hain", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "English Beehive": [
             {"chapter_number": 1, "chapter_name": "The Fun They Had", "total_questions": 50, "difficulty": "Easy", "duration": 35},
