@@ -323,7 +323,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Statistics", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ],
         "Science": [
-            {"chapter_number": 1, "chapter_name": "Matters in Our Surroundings", "total_questions": 50, "difficulty": "Easy", "duration": 35},
+            {"chapter_number": 1, "chapter_name": "Matter in Our Surroundings", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 2, "chapter_name": "Is Matter Around Us Pure", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 3, "chapter_name": "Atoms and Molecules", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 4, "chapter_name": "Structure of the Atom", "total_questions": 60, "difficulty": "Hard", "duration": 45},
