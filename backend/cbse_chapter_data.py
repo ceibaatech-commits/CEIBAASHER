@@ -166,9 +166,8 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 5, "chapter_name": "Footprints without Feet", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 6, "chapter_name": "The Making of a Scientist", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 7, "chapter_name": "The Necklace", "total_questions": 55, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "The Hack Driver", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Bholi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "The Book that Saved the Earth", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+            {"chapter_number": 8, "chapter_name": "Bholi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "The Book That Saved the Earth", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
         "Hindi Kshitij": [
             {"chapter_number": 1, "chapter_name": "Surdas", "total_questions": 50, "difficulty": "Medium", "duration": 35},
