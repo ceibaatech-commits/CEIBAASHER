@@ -315,43 +315,6 @@ CBSE_CHAPTERS = {
             "4. Globalisation and the Indian Economy", "5. Consumer Rights"
         ],
     },
-        ],
-        "hindi": [
-            "1. Surdas", "2. Tulsidas", "3. Dev", "4. Jayashankar Prasad", "5. Suryakant Tripathi Nirala",
-            "6. Nagarjun", "7. Girija Kumar Mathur", "8. Rituraj", "9. Manglesh Dabral"
-        ],
-        "english": [
-            "1. A Letter to God", "2. Nelson Mandela: Long Walk to Freedom", "3. Two Stories about Flying",
-            "4. From the Diary of Anne Frank", "5. The Hundred Dresses - I", "6. The Hundred Dresses - II",
-            "7. Glimpses of India", "8. Mijbil the Otter", "9. Madam Rides the Bus", "10. The Sermon at Benares",
-            "11. The Proposal"
-        ],
-        "social-science": [
-            "1. The Rise of Nationalism in Europe", "2. Nationalism in India", "3. The Making of a Global World",
-            "4. The Age of Industrialisation", "5. Print Culture and the Modern World"
-        ],
-        "geography": [
-            "1. Resources and Development", "2. Forest and Wildlife Resources", "3. Water Resources",
-            "4. Agriculture", "5. Minerals and Energy Resources", "6. Manufacturing Industries",
-            "7. Lifelines of National Economy"
-        ],
-        "history": [
-            "1. The Rise of Nationalism in Europe", "2. Nationalism in India", "3. The Making of a Global World",
-            "4. The Age of Industrialisation", "5. Print Culture and the Modern World"
-        ],
-        "political-science": [
-            "1. Power Sharing", "2. Federalism", "3. Democracy and Diversity", "4. Gender, Religion and Caste",
-            "5. Popular Struggles and Movements", "6. Political Parties", "7. Outcomes of Democracy",
-            "8. Challenges to Democracy"
-        ],
-        "economics": [
-            "1. Development", "2. Sectors of the Indian Economy", "3. Money and Credit",
-            "4. Globalisation and the Indian Economy", "5. Consumer Rights"
-        ],
-        "sanskrit": [
-            "1. Shemushee", "2. Abhyasvan Bhav", "3. Vyakaranavithi"
-        ],
-    },
     "11_science": {
         "physics": [
             "1. Physical World", "2. Units and Measurements", "3. Motion in a Straight Line",
