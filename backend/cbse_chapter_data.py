@@ -445,6 +445,11 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 3, "chapter_name": "Nazism and the Rise of Hitler", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 4, "chapter_name": "Forest Society and Colonialism", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 5, "chapter_name": "Pastoralists in the Modern World", "total_questions": 55, "difficulty": "Medium", "duration": 40}
+        ],
+        "Sanskrit": [
+            {"chapter_number": 1, "chapter_name": "Shemushee", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "Abhyasvan Bhav", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Vyakaranavithi", "total_questions": 50, "difficulty": "Hard", "duration": 40}
         ]
     },
     "7": {
