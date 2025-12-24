@@ -182,7 +182,7 @@ async def filter_expired_quiz_posts(posts: list) -> list:
 # ==================== MODELS ====================
 
 class PostCreateRequest(BaseModel):
-    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq", "question"]
+    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq", "question", "academic_question"]
     mcq_data: Optional[dict] = None
     content: str
     battle_stats: Optional[dict] = None
@@ -192,6 +192,11 @@ class PostCreateRequest(BaseModel):
     tags: Optional[List[str]] = None
     exam_category: Optional[str] = None
     subject: Optional[str] = None
+    # Academic question fields
+    academic_class: Optional[str] = None  # e.g., "Class 9", "Class 11 (Science)"
+    academic_subject: Optional[str] = None  # e.g., "Mathematics", "Hindi - Malhar"
+    academic_chapter: Optional[str] = None  # e.g., "1. Number Systems"
+    hashtags: Optional[List[str]] = None  # For hashtags
 
 class CommentRequest(BaseModel):
     content: str
