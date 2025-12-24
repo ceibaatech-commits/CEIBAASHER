@@ -3188,7 +3188,7 @@ EXAM_DATA = {
         "name": "UPTET",
         "full_name": "UPTET Recruitment Exam 2025",
         "description": "Uttar Pradesh Basic Education Board (UPBEB) Teacher Eligibility Test - Paper 1 for Primary Level (Class 1-5) with Child Development, Languages, Maths & EVS",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
         "color": "from-green-600 to-teal-700",
         "total_questions": 150,
         "duration": "2.5 hours",
