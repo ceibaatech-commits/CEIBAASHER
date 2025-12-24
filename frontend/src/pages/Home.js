@@ -209,10 +209,10 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Category Filter - Grid Layout (3 per row) */}
+      {/* Category Filter - Grid Layout (3 per row) - Teaching hidden on mobile */}
       <div className="md:hidden bg-white sticky top-16 z-30 shadow-md border-b border-gray-200">
         <div className="grid grid-cols-3 gap-2 py-3 px-3">
-          {categories.map(cat => (
+          {mobileCategories.map(cat => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(activeCategory === cat.id ? '' : cat.id)}
