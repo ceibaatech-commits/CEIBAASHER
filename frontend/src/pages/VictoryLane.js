@@ -1440,8 +1440,66 @@ const VictoryLane = () => {
                   className="w-full border-none outline-none resize-none min-h-[80px] text-base placeholder-gray-400 focus:ring-0 bg-transparent"
                   rows={2}
                 />
+                
+                {/* Media Preview */}
+                {(postImagePreview || postVideoPreview) && (
+                  <div className="relative mt-2 mb-3">
+                    {postImagePreview && (
+                      <div className="relative inline-block">
+                        <img src={postImagePreview} alt="Preview" className="max-h-48 rounded-xl border border-gray-200" />
+                        <button
+                          onClick={clearPostMedia}
+                          className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    {postVideoPreview && (
+                      <div className="relative inline-block">
+                        <video src={postVideoPreview} className="max-h-48 rounded-xl border border-gray-200" controls />
+                        <button
+                          onClick={clearPostMedia}
+                          className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-2">
+                    {/* Media Upload Buttons (only if admin allowed) */}
+                    {mediaSettings.allow_media_posts && (
+                      <>
+                        {mediaSettings.allow_image_posts && (
+                          <label className="flex items-center gap-2 px-3 py-1.5 text-emerald-600 hover:bg-emerald-50 rounded-full transition text-sm font-medium cursor-pointer">
+                            <Upload className="w-4 h-4" />
+                            <span>Image</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handlePostImageSelect}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                        {mediaSettings.allow_video_posts && (
+                          <label className="flex items-center gap-2 px-3 py-1.5 text-pink-600 hover:bg-pink-50 rounded-full transition text-sm font-medium cursor-pointer">
+                            <Play className="w-4 h-4" />
+                            <span>Video</span>
+                            <input
+                              type="file"
+                              accept="video/*"
+                              onChange={handlePostVideoSelect}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </>
+                    )}
                     <button
                       onClick={() => setShowAcademicModal(true)}
                       className="flex items-center gap-2 px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition text-sm font-medium"
