@@ -60,6 +60,9 @@ import ChapterTestStreams from "@/pages/ChapterTestStreams";
 import ChapterTestStreamSubjects from "@/pages/ChapterTestStreamSubjects";
 import ChapterTestChapters from "@/pages/ChapterTestChapters";
 
+// Single Post View
+import SinglePost from "@/pages/SinglePost";
+
 function App() {
   return (
     <AuthProvider>
