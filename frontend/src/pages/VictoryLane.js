@@ -1308,6 +1308,13 @@ const VictoryLane = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => setShowAcademicModal(true)}
+                      className="flex items-center gap-2 px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition text-sm font-medium"
+                    >
+                      <GraduationCap className="w-4 h-4" />
+                      <span>Academic Q</span>
+                    </button>
+                    <button
                       onClick={() => setShowQuizModal(true)}
                       className="flex items-center gap-2 px-3 py-1.5 text-purple-600 hover:bg-purple-50 rounded-full transition text-sm font-medium"
                     >
