@@ -1917,7 +1917,7 @@ const VictoryLane = () => {
                 ) : hasMore ? (
                   <div className="text-sm text-gray-400">Scroll to load more</div>
                 ) : (
-                  <div className="text-sm text-gray-400">You've reached the end</div>
+                  <div className="text-sm text-gray-400">{"You've reached the end"}</div>
                 )}
               </div>
             )}
