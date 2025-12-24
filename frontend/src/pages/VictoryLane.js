@@ -197,6 +197,40 @@ const VictoryLane = () => {
     'HTET - Child Development',
     'MPSET - General Aptitude',
     
+    // RSMSSB Exams (Rajasthan)
+    'RSMSSB Patwari - Rajasthan GK',
+    'RSMSSB Patwari - General Science',
+    'RSMSSB Patwari - Hindi & English',
+    'RSMSSB Patwari - Reasoning',
+    'RSMSSB Patwari - Computer',
+    'Rajasthan Police - Reasoning',
+    'Rajasthan Police - GK & Current Affairs',
+    'Rajasthan Police - Rajasthan GK',
+    'Rajasthan Police - Computer',
+    'Rajasthan Police - Women & Children Laws',
+    'RPSC SO - Statistics',
+    'RPSC SO - Rajasthan GK',
+    'RPSC SO - Economics',
+    
+    // UPPSC Exams (Uttar Pradesh)
+    'UP Police - General Knowledge',
+    'UP Police - General Hindi',
+    'UP Police - Numerical Ability',
+    'UP Police - Mental Aptitude',
+    'UP Police - Reasoning',
+    'UPTET - Child Development',
+    'UPTET - Hindi',
+    'UPTET - English/Sanskrit',
+    'UPTET - Mathematics',
+    'UPTET - Environmental Studies',
+    
+    // CSBC Exams (Bihar)
+    'Bihar Police - Bihar GK',
+    'Bihar Police - Hindi & English',
+    'Bihar Police - General Science',
+    'Bihar Police - Social Studies',
+    'Bihar Police - Mathematics',
+    
     // Management & Law
     'CAT - Verbal Ability',
     'CAT - Quantitative Aptitude',
