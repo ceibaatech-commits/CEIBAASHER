@@ -2946,6 +2946,121 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    # RSMSSB - Rajasthan Police Constable Recruitment 2025
+    "Rajasthan_Police_Constable": {
+        "name": "Rajasthan Police Constable",
+        "full_name": "Rajasthan Police Constable Recruitment 2025",
+        "description": "Rajasthan Police Department (RPD) Constable Recruitment Examination with 5 sections including Reasoning, Computer, GK, Rajasthan GK, and Women & Children Laws",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-blue-700 to-indigo-800",
+        "total_questions": 150,
+        "duration": "2 hours",
+        "category": "RSMSSB Examinations",
+        "negative_marking": "0.25 marks (25%)",
+        "syllabus_topics": {
+            "Reasoning & Logic": {
+                "subjects": {
+                    "Logic": {
+                        "sub_topics": ["Coding-Decoding", "Blood Relations", "Direction Sense", "Venn Diagrams"],
+                        "questions": 15
+                    },
+                    "Analogy": {
+                        "sub_topics": ["Word & Alphabet Analogy", "Odd One Out", "Classification"],
+                        "questions": 10
+                    },
+                    "Data & Pattern": {
+                        "sub_topics": ["Series Completion", "Missing Characters", "Dice & Cubes", "Number Series"],
+                        "questions": 10
+                    },
+                    "Analytical": {
+                        "sub_topics": ["Statement & Conclusion", "Clock & Calendar", "Syllogism", "Puzzles"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Basic Computer Knowledge": {
+                "subjects": {
+                    "Hardware": {
+                        "sub_topics": ["RAM", "ROM", "Input/Output Devices", "CPU Components", "Storage Devices"],
+                        "questions": 5
+                    },
+                    "Software": {
+                        "sub_topics": ["Operating Systems (Windows)", "MS Word", "MS Excel", "MS PowerPoint"],
+                        "questions": 5
+                    },
+                    "Internet": {
+                        "sub_topics": ["Search Engines", "Networking (LAN/WAN)", "Email", "Web Browsers"],
+                        "questions": 3
+                    },
+                    "Cyber Safety": {
+                        "sub_topics": ["Cyber Crimes", "Virus/Malware", "Information Technology Act", "Online Security"],
+                        "questions": 2
+                    }
+                }
+            },
+            "General Knowledge & Science": {
+                "subjects": {
+                    "General Science": {
+                        "sub_topics": ["Everyday Physics", "Human Body & Diseases", "Chemical Changes", "Biology Basics"],
+                        "questions": 10
+                    },
+                    "Indian Polity": {
+                        "sub_topics": ["Constitution of India", "Parliament", "Rights & Duties", "Judiciary"],
+                        "questions": 8
+                    },
+                    "Current Affairs": {
+                        "sub_topics": ["Major National Awards", "Sports Events", "International Summits", "Government Schemes"],
+                        "questions": 10
+                    },
+                    "History & Geography": {
+                        "sub_topics": ["Indian Freedom Struggle (1857-1947)", "Physical Geography of India", "World Geography", "Ancient India"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Rajasthan GK": {
+                "subjects": {
+                    "Rajasthan History": {
+                        "sub_topics": ["Major Dynasties (Mewar, Marwar)", "1857 Revolution in Rajasthan", "Freedom Fighters", "Historical Events"],
+                        "questions": 12
+                    },
+                    "Art & Culture": {
+                        "sub_topics": ["Forts & Palaces", "Fairs & Festivals", "Folk Dances", "Dialects & Literature"],
+                        "questions": 12
+                    },
+                    "Rajasthan Geography": {
+                        "sub_topics": ["Climate", "Rivers & Lakes", "Mines & Minerals", "Population (Census)"],
+                        "questions": 11
+                    },
+                    "Rajasthan Polity": {
+                        "sub_topics": ["Governor", "Chief Minister", "State Assembly", "RPSC", "Panchayati Raj"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Women & Children Laws": {
+                "subjects": {
+                    "Women's Safety": {
+                        "sub_topics": ["Domestic Violence Act 2005", "Dowry Prohibition Act 1961", "Sexual Harassment at Workplace Act"],
+                        "questions": 4
+                    },
+                    "Child Safety": {
+                        "sub_topics": ["POCSO Act 2012", "Child Labour (Prohibition) Act", "Juvenile Justice Act"],
+                        "questions": 3
+                    },
+                    "IPC Sections": {
+                        "sub_topics": ["Sections related to Theft", "Assault", "Cyberstalking", "Kidnapping"],
+                        "questions": 2
+                    },
+                    "Helplines & Procedures": {
+                        "sub_topics": ["Police & Emergency Helplines", "FIR Procedures", "Women Helpline 181", "Child Helpline 1098"],
+                        "questions": 1
+                    }
+                }
+            }
+        }
     }
 
 }
