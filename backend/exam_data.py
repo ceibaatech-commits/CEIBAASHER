@@ -2796,6 +2796,112 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    # RSMSSB Examinations (Rajasthan State Exams)
+    "RSMSSB_Patwari": {
+        "name": "RSMSSB Patwari",
+        "full_name": "RSMSSB Patwari Recruitment Exam",
+        "description": "Rajasthan Subordinate and Ministerial Services Selection Board Patwari Examination",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-amber-600 to-orange-700",
+        "total_questions": 150,
+        "duration": "3 hours",
+        "category": "RSMSSB Examinations",
+        "syllabus_topics": {
+            "General Science & India GK": {
+                "subjects": {
+                    "General Science": {
+                        "sub_topics": ["Physical and Chemical changes", "Human diseases", "Nutrition", "Everyday Science"],
+                        "questions": 10
+                    },
+                    "Indian History": {
+                        "sub_topics": ["Ancient & Medieval history", "Indian Freedom Movement", "19th-20th Century History"],
+                        "questions": 10
+                    },
+                    "Indian Polity": {
+                        "sub_topics": ["Constitution of India", "Public Policy", "Rights & Duties", "Fundamental Rights"],
+                        "questions": 10
+                    },
+                    "Geography of India": {
+                        "sub_topics": ["Physical Geography", "Environmental issues", "Ecology", "Natural Resources"],
+                        "questions": 8
+                    }
+                }
+            },
+            "Rajasthan GK": {
+                "subjects": {
+                    "History & Culture": {
+                        "sub_topics": ["Major Forts", "Monuments", "Fairs & Festivals", "Folk Arts", "Handicrafts"],
+                        "questions": 10
+                    },
+                    "Geography of Rajasthan": {
+                        "sub_topics": ["Physiographic divisions", "Climate", "Soil", "Population", "Crops", "Water Resources"],
+                        "questions": 8
+                    },
+                    "Administration": {
+                        "sub_topics": ["Governor", "State Assembly", "High Court", "District Administration", "Panchayati Raj"],
+                        "questions": 7
+                    },
+                    "Key Movements": {
+                        "sub_topics": ["Peasant Movements", "Tribal Movements", "Political Integration of Rajasthan"],
+                        "questions": 5
+                    }
+                }
+            },
+            "General English & Hindi": {
+                "subjects": {
+                    "Hindi Grammar": {
+                        "sub_topics": ["Sandhi", "Samas", "Upsarg", "Pratyay", "Sentence Correction", "Shuddhi"],
+                        "questions": 12
+                    },
+                    "English Grammar": {
+                        "sub_topics": ["Tenses", "Articles", "Determiners", "Sentence Correction", "Active Passive"],
+                        "questions": 5
+                    },
+                    "Vocabulary": {
+                        "sub_topics": ["Synonyms", "Antonyms", "Idioms & Phrases", "Technical Terms", "One Word Substitution"],
+                        "questions": 5
+                    }
+                }
+            },
+            "Mental Ability & Reasoning": {
+                "subjects": {
+                    "Logical Reasoning": {
+                        "sub_topics": ["Series Making", "Analogy", "Classification", "Coding-Decoding", "Direction Sense"],
+                        "questions": 15
+                    },
+                    "Problem Solving": {
+                        "sub_topics": ["Blood Relations", "Sitting Arrangements", "Syllogism", "Statement Conclusions"],
+                        "questions": 10
+                    },
+                    "Mathematics": {
+                        "sub_topics": ["Average", "Ratio & Proportion", "Area & Volume", "Simple Interest", "Compound Interest"],
+                        "questions": 12
+                    },
+                    "Arithmetic": {
+                        "sub_topics": ["Profit & Loss", "Percentage", "Unitary Method", "Time & Work", "Speed Distance"],
+                        "questions": 8
+                    }
+                }
+            },
+            "Basic Computer": {
+                "subjects": {
+                    "Computer Fundamentals": {
+                        "sub_topics": ["RAM", "ROM", "File System", "Input/Output Devices", "Computer Generations"],
+                        "questions": 8
+                    },
+                    "Software": {
+                        "sub_topics": ["Operating Systems", "MS Word", "MS Excel", "MS PowerPoint", "Internet Basics"],
+                        "questions": 5
+                    },
+                    "Hardware & IT": {
+                        "sub_topics": ["Computer Hardware", "Characteristics of Computers", "Recent trends in IT", "Networking Basics"],
+                        "questions": 2
+                    }
+                }
+            }
+        }
     }
 
 }
