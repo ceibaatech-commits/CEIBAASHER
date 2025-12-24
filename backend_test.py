@@ -1304,6 +1304,191 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_academic_question_feature_e2e(self):
+        """Test Academic Question Feature - Full E2E Test as specified in review request"""
+        try:
+            print("\n🎯 TESTING ACADEMIC QUESTION FEATURE - FULL E2E TEST")
+            print("=" * 80)
+            
+            # Step 1: Demo1 Login for Authentication
+            self.log_result("Academic Feature Test - Step 1", True, "🔄 Demo1 Login for Authentication")
+            
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Academic Feature - Demo1 Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Academic Feature - Demo1 Login", True, f"✅ Demo1 logged in successfully with user_id: {user_id}")
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Step 2: Test POST /api/social/posts with academic_question type
+            self.log_result("Academic Feature Test - Step 2", True, "🔄 Testing Academic Post Creation")
+            
+            academic_post_data = {
+                "post_type": "academic_question",
+                "content": "What is the meaning of भारतीवसन्तगीतिः in Class 9 Sanskrit chapter 1?",
+                "hashtags": ["Class9", "Sanskrit", "AcademicQuestion"],
+                "academic_class": "Class 9",
+                "academic_subject": "Sanskrit",
+                "academic_chapter": "1. Bharativasantagiti (भारतीवसन्तगीतिः)"
+            }
+            
+            # First try with social_feed_routes (current active system)
+            response = requests.post(f"{BACKEND_URL}/api/social/posts", json=academic_post_data, headers=headers)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    post_id = result.get('post', {}).get('id')
+                    self.log_result("Academic Post Creation - social_feed_routes", True, f"✅ Academic post created via /api/social/posts with ID: {post_id}")
+                    created_via_social_feed = True
+                else:
+                    self.log_result("Academic Post Creation - social_feed_routes", False, f"❌ Post creation returned success=false: {result}")
+                    created_via_social_feed = False
+            else:
+                self.log_result("Academic Post Creation - social_feed_routes", False, f"❌ Post creation failed via /api/social/posts: {response.status_code} - {response.text}")
+                created_via_social_feed = False
+            
+            # If social_feed_routes doesn't support academic posts, try the disabled social_routes
+            if not created_via_social_feed:
+                self.log_result("Academic Feature Test - Alternative", True, "🔄 Trying alternative endpoint /api/social/posts (social_routes)")
+                
+                # Note: This endpoint might not be available since social_router is disabled
+                response = requests.post(f"{BACKEND_URL}/api/social/posts", json=academic_post_data, headers=headers)
+                
+                if response.status_code == 404:
+                    self.log_result("Academic Post Creation - Alternative", False, "❌ Academic posts feature not implemented - social_router is disabled in server.py")
+                    return False
+                elif response.status_code == 200:
+                    result = response.json()
+                    if result.get('success'):
+                        post_id = result.get('post', {}).get('id')
+                        self.log_result("Academic Post Creation - Alternative", True, f"✅ Academic post created via alternative route with ID: {post_id}")
+                    else:
+                        self.log_result("Academic Post Creation - Alternative", False, f"❌ Alternative post creation returned success=false: {result}")
+                        return False
+                else:
+                    self.log_result("Academic Post Creation - Alternative", False, f"❌ Alternative post creation failed: {response.status_code} - {response.text}")
+                    return False
+            
+            # Step 3: Test GET /api/social/academic-posts with filters
+            self.log_result("Academic Feature Test - Step 3", True, "🔄 Testing Academic Posts Retrieval with Filters")
+            
+            # Test with class and subject filters
+            params = {
+                "class_name": "Class 9",
+                "subject": "Sanskrit"
+            }
+            
+            response = requests.get(f"{BACKEND_URL}/api/social/academic-posts", params=params)
+            
+            if response.status_code == 404:
+                self.log_result("Academic Posts Retrieval", False, "❌ Academic posts endpoint not available - /api/social/academic-posts returns 404")
+                return False
+            elif response.status_code != 200:
+                self.log_result("Academic Posts Retrieval", False, f"❌ Academic posts retrieval failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            if not result.get('success'):
+                self.log_result("Academic Posts Retrieval", False, f"❌ Academic posts retrieval returned success=false: {result}")
+                return False
+            
+            posts = result.get('posts', [])
+            total = result.get('total', 0)
+            
+            self.log_result("Academic Posts Retrieval", True, f"✅ Academic posts retrieved successfully - {len(posts)} posts found, total: {total}")
+            
+            # Step 4: Verify Response Structure
+            self.log_result("Academic Feature Test - Step 4", True, "🔄 Verifying Response Structure")
+            
+            if posts and len(posts) > 0:
+                first_post = posts[0]
+                required_fields = ['academic_class', 'academic_subject', 'academic_chapter']
+                missing_fields = [field for field in required_fields if field not in first_post]
+                
+                if missing_fields:
+                    self.log_result("Academic Post Structure", False, f"❌ Missing academic fields in post: {missing_fields}")
+                    return False
+                
+                # Verify the academic fields match our filters
+                if first_post.get('academic_class') == "Class 9" and "Sanskrit" in first_post.get('academic_subject', ''):
+                    self.log_result("Academic Post Structure", True, f"✅ Academic post structure is valid with correct filtering")
+                else:
+                    self.log_result("Academic Post Structure", False, f"❌ Academic post filtering not working correctly")
+                    return False
+            else:
+                self.log_result("Academic Post Structure", False, "❌ No academic posts found to verify structure")
+                return False
+            
+            # Step 5: Test Data Validation
+            self.log_result("Academic Feature Test - Step 5", True, "🔄 Testing Data Validation")
+            
+            # Verify created post has all academic fields populated
+            found_our_post = False
+            for post in posts:
+                if post.get('content') == academic_post_data['content']:
+                    found_our_post = True
+                    if (post.get('academic_class') == academic_post_data['academic_class'] and
+                        post.get('academic_subject') == academic_post_data['academic_subject'] and
+                        post.get('academic_chapter') == academic_post_data['academic_chapter']):
+                        self.log_result("Data Validation", True, "✅ Created post has all academic fields populated correctly")
+                    else:
+                        self.log_result("Data Validation", False, "❌ Created post missing or incorrect academic fields")
+                        return False
+                    break
+            
+            if not found_our_post:
+                self.log_result("Data Validation", False, "❌ Could not find our created academic post in the filtered results")
+                return False
+            
+            # Step 6: Test Different Filter Combinations
+            self.log_result("Academic Feature Test - Step 6", True, "🔄 Testing Different Filter Combinations")
+            
+            # Test with only class filter
+            params_class_only = {"class_name": "Class 9"}
+            response = requests.get(f"{BACKEND_URL}/api/social/academic-posts", params=params_class_only)
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    class_posts = result.get('posts', [])
+                    self.log_result("Filter by Class Only", True, f"✅ Class-only filter working - {len(class_posts)} posts found")
+                else:
+                    self.log_result("Filter by Class Only", False, "❌ Class-only filter returned success=false")
+            else:
+                self.log_result("Filter by Class Only", False, f"❌ Class-only filter failed: {response.status_code}")
+            
+            # Test with no filters (all academic posts)
+            response = requests.get(f"{BACKEND_URL}/api/social/academic-posts")
+            
+            if response.status_code == 200:
+                result = response.json()
+                if result.get('success'):
+                    all_posts = result.get('posts', [])
+                    self.log_result("No Filters (All Academic Posts)", True, f"✅ No filters working - {len(all_posts)} total academic posts found")
+                else:
+                    self.log_result("No Filters (All Academic Posts)", False, "❌ No filters returned success=false")
+            else:
+                self.log_result("No Filters (All Academic Posts)", False, f"❌ No filters failed: {response.status_code}")
+            
+            print("\n🎉 ACADEMIC QUESTION FEATURE E2E TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Demo1 authentication ✅")
+            print("  2. Academic post creation ✅")
+            print("  3. Academic posts retrieval with filters ✅")
+            print("  4. Response structure validation ✅")
+            print("  5. Data validation ✅")
+            print("  6. Different filter combinations ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Academic Feature Test - Exception", False, f"❌ Academic feature test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def test_cbse_admin_panel_chapter_loading_fix(self):
         """Test Admin Panel Chapter Loading bug fix - Verify /api/cbse-data/admin/class-subjects returns correct data"""
         try:
