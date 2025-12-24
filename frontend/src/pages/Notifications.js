@@ -117,8 +117,7 @@ const Notifications = () => {
     { id: 'all', label: 'All', icon: Bell },
     { id: 'follow', label: 'Follows', icon: Users },
     { id: 'like', label: 'Likes', icon: Heart },
-    { id: 'comment', label: 'Comments', icon: MessageCircle },
-    { id: 'challenge', label: 'Challenges', icon: Trophy }
+    { id: 'comment', label: 'Comments', icon: MessageCircle }
   ];
 
   const handleDeleteNotification = async (e, notificationId) => {
