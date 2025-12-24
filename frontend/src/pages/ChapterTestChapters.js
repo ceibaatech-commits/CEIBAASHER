@@ -43,6 +43,10 @@ const ChapterTestChapters = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedChapters, setExpandedChapters] = useState({});
+  
+  // Academic posts state
+  const [academicPosts, setAcademicPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
 
   useEffect(() => {
     if (!selectedClass || !subject) {
@@ -51,6 +55,7 @@ const ChapterTestChapters = () => {
       return;
     }
     fetchChapters();
+    fetchAcademicPosts();
   }, [selectedClass, subject]);
 
   const fetchChapters = async () => {
@@ -75,6 +80,28 @@ const ChapterTestChapters = () => {
       setChapters([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAcademicPosts = async () => {
+    try {
+      setLoadingPosts(true);
+      const className = `Class ${selectedClass}`;
+      const response = await axios.get(`${API_URL}/api/social/academic-posts`, {
+        params: {
+          class_name: className,
+          subject: formattedSubject,
+          limit: 10
+        }
+      });
+      
+      if (response.data.success) {
+        setAcademicPosts(response.data.posts || []);
+      }
+    } catch (error) {
+      console.error('Error fetching academic posts:', error);
+    } finally {
+      setLoadingPosts(false);
     }
   };
 
