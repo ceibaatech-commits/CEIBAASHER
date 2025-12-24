@@ -1304,6 +1304,262 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_image_support_for_questions(self):
+        """Test Image Support for Questions - Backend API Test as specified in review request"""
+        try:
+            print("\n🎯 TESTING IMAGE SUPPORT FOR QUESTIONS - BACKEND API TEST")
+            print("=" * 80)
+            
+            # Step 1: Demo1 Login for Authentication
+            self.log_result("Image Support Test - Step 1", True, "🔄 Demo1 Login for Authentication")
+            
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Image Support - Demo1 Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Image Support - Demo1 Login", True, f"✅ Demo1 logged in successfully with user_id: {user_id}")
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Step 2: Test Image Upload API - POST /api/question-images/upload
+            self.log_result("Image Support Test - Step 2", True, "🔄 Testing Image Upload API")
+            
+            image_url = self._test_image_upload_api()
+            if not image_url:
+                return False
+            
+            # Step 3: Test Add Question API without images
+            self.log_result("Image Support Test - Step 3", True, "🔄 Testing Add Question API (Basic)")
+            
+            basic_question_id = self._test_add_question_basic()
+            if not basic_question_id:
+                return False
+            
+            # Step 4: Test Add Question API with option images
+            self.log_result("Image Support Test - Step 4", True, "🔄 Testing Add Question API with Option Images")
+            
+            option_images_question_id = self._test_add_question_with_option_images(image_url)
+            if not option_images_question_id:
+                return False
+            
+            # Step 5: Verify Questions Saved in Database
+            self.log_result("Image Support Test - Step 5", True, "🔄 Verifying Questions Saved in Database")
+            
+            if not self._verify_questions_in_database([basic_question_id, option_images_question_id]):
+                return False
+            
+            print("\n🎉 IMAGE SUPPORT FOR QUESTIONS TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Demo1 authentication ✅")
+            print("  2. Image upload API test ✅")
+            print("  3. Basic question addition ✅")
+            print("  4. Question with option images ✅")
+            print("  5. Database verification ✅")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Image Support Test - Exception", False, f"❌ Image support test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def _test_image_upload_api(self):
+        """Test POST /api/question-images/upload with a sample image file"""
+        try:
+            # Create a test image using PIL
+            from PIL import Image, ImageDraw
+            import io
+            
+            # Create a simple test image
+            img = Image.new('RGB', (200, 100), color='white')
+            draw = ImageDraw.Draw(img)
+            draw.text((10, 10), "Test Image", fill='black')
+            
+            # Save to bytes
+            img_bytes = io.BytesIO()
+            img.save(img_bytes, format='PNG')
+            img_bytes.seek(0)
+            
+            # Upload the image
+            files = {
+                'file': ('test_image.png', img_bytes, 'image/png')
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/question-images/upload", files=files)
+            
+            if response.status_code != 200:
+                self.log_result("Image Upload API", False, f"❌ Image upload failed: {response.status_code} - {response.text}")
+                return None
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Image Upload API", False, f"❌ Image upload returned success=false: {result}")
+                return None
+            
+            image_url = result.get('image_url')
+            if not image_url:
+                self.log_result("Image Upload API", False, "❌ No image_url returned from upload")
+                return None
+            
+            self.log_result("Image Upload API", True, f"✅ Image uploaded successfully: {image_url}")
+            return image_url
+            
+        except Exception as e:
+            self.log_result("Image Upload API", False, f"❌ Image upload test error: {e}")
+            return None
+
+    def _test_add_question_basic(self):
+        """Test POST /api/admin/add-question with basic question (no images)"""
+        try:
+            question_data = {
+                "question": "What is the meaning of भारतीवसन्तगीतिः?",
+                "question_image": None,
+                "options": ["Spring Song of India", "Winter Song", "Autumn Leaves", "Summer Heat"],
+                "correctAnswer": "A",
+                "explanation": "भारतीवसन्तगीतिः means 'Spring Song of India'",
+                "type": "class",
+                "class_name": "Class 9",
+                "subject": "Sanskrit",
+                "chapter": "1. Bharativasantagiti (भारतीवसन्तगीतिः)"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/admin/add-question", json=question_data)
+            
+            if response.status_code != 200:
+                self.log_result("Add Question Basic", False, f"❌ Add question failed: {response.status_code} - {response.text}")
+                return None
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Add Question Basic", False, f"❌ Add question returned success=false: {result}")
+                return None
+            
+            question_id = result.get('question_id')
+            if not question_id:
+                self.log_result("Add Question Basic", False, "❌ No question_id returned")
+                return None
+            
+            self.log_result("Add Question Basic", True, f"✅ Basic question added successfully: {question_id}")
+            return question_id
+            
+        except Exception as e:
+            self.log_result("Add Question Basic", False, f"❌ Add question basic test error: {e}")
+            return None
+
+    def _test_add_question_with_option_images(self, image_url):
+        """Test adding a question where options contain images"""
+        try:
+            question_data = {
+                "question": "Identify the correct diagram for photosynthesis",
+                "question_image": None,
+                "options": [
+                    {"text": "Diagram A", "image": image_url},
+                    "Option B",
+                    "Option C", 
+                    "Option D"
+                ],
+                "correctAnswer": "A",
+                "explanation": "Diagram A shows the correct process of photosynthesis",
+                "type": "class",
+                "class_name": "Class 9",
+                "subject": "Science",
+                "chapter": "1. Matter in Our Surroundings"
+            }
+            
+            response = requests.post(f"{BACKEND_URL}/api/admin/add-question", json=question_data)
+            
+            if response.status_code != 200:
+                self.log_result("Add Question with Option Images", False, f"❌ Add question with images failed: {response.status_code} - {response.text}")
+                return None
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Add Question with Option Images", False, f"❌ Add question with images returned success=false: {result}")
+                return None
+            
+            question_id = result.get('question_id')
+            if not question_id:
+                self.log_result("Add Question with Option Images", False, "❌ No question_id returned for option images question")
+                return None
+            
+            self.log_result("Add Question with Option Images", True, f"✅ Question with option images added successfully: {question_id}")
+            return question_id
+            
+        except Exception as e:
+            self.log_result("Add Question with Option Images", False, f"❌ Add question with option images test error: {e}")
+            return None
+
+    def _verify_questions_in_database(self, question_ids):
+        """Query the questions collection to verify the added questions exist"""
+        try:
+            import pymongo
+            from pymongo import MongoClient
+            
+            # Connect to MongoDB
+            client = MongoClient("mongodb://localhost:27017")
+            db = client["test_database"]
+            
+            all_verified = True
+            
+            for question_id in question_ids:
+                # Find the question in database
+                question = db.questions.find_one({"id": question_id})
+                
+                if not question:
+                    self.log_result("Database Verification", False, f"❌ Question {question_id} not found in database")
+                    all_verified = False
+                    continue
+                
+                # Verify required fields exist
+                required_fields = ['id', 'question', 'options', 'correctAnswer', 'type', 'source']
+                missing_fields = [field for field in required_fields if field not in question]
+                
+                if missing_fields:
+                    self.log_result("Database Verification", False, f"❌ Question {question_id} missing fields: {missing_fields}")
+                    all_verified = False
+                    continue
+                
+                # Verify class metadata for class questions
+                if question.get('type') == 'class':
+                    class_fields = ['class_name', 'subject', 'chapter']
+                    missing_class_fields = [field for field in class_fields if field not in question]
+                    
+                    if missing_class_fields:
+                        self.log_result("Database Verification", False, f"❌ Class question {question_id} missing class fields: {missing_class_fields}")
+                        all_verified = False
+                        continue
+                
+                # Check if options are preserved correctly
+                options = question.get('options', [])
+                if not options:
+                    self.log_result("Database Verification", False, f"❌ Question {question_id} has no options")
+                    all_verified = False
+                    continue
+                
+                # For questions with option images, verify image data is preserved
+                has_option_images = any(isinstance(opt, dict) and 'image' in opt for opt in options)
+                if has_option_images:
+                    self.log_result("Database Verification", True, f"✅ Question {question_id} has option images preserved correctly")
+                
+                self.log_result("Database Verification", True, f"✅ Question {question_id} verified in database with correct metadata")
+            
+            client.close()
+            
+            if all_verified:
+                self.log_result("Database Verification Complete", True, f"✅ All {len(question_ids)} questions verified in database")
+                return True
+            else:
+                self.log_result("Database Verification Complete", False, "❌ Some questions failed database verification")
+                return False
+            
+        except Exception as e:
+            self.log_result("Database Verification", False, f"❌ Database verification error: {e}")
+            return False
+
     def test_academic_question_feature_e2e(self):
         """Test Academic Question Feature - Full E2E Test as specified in review request"""
         try:
