@@ -1546,6 +1546,35 @@ const VictoryLane = () => {
                         </div>
                       )}
 
+                      {/* Academic Question Post Indicator */}
+                      {post.post_type === 'academic_question' && (
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4 mb-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <GraduationCap className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                            <span className="text-sm text-purple-800 font-semibold">
+                              Academic Question
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {post.academic_class && (
+                              <span className="inline-flex items-center px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                                📚 {post.academic_class}
+                              </span>
+                            )}
+                            {post.academic_subject && (
+                              <span className="inline-flex items-center px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                                📖 {post.academic_subject}
+                              </span>
+                            )}
+                            {post.academic_chapter && (
+                              <span className="inline-flex items-center px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                                📝 {post.academic_chapter}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Quiz Room Card */}
                       {(post.post_type === 'quiz_room' || post.quiz_details) && post.quiz_details && (
                         <div 
