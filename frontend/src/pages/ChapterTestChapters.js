@@ -542,10 +542,14 @@ const ChapterTestChapters = () => {
             
             <div className="divide-y divide-gray-100">
               {academicPosts.slice(0, 5).map((post) => (
-                <div key={post.id} className="p-4 md:p-5 hover:bg-gray-50 transition">
+                <Link 
+                  key={post.id} 
+                  to={`/post/${post.id}`}
+                  className="block p-4 md:p-5 hover:bg-gray-50 transition cursor-pointer"
+                >
                   <div className="flex gap-3">
                     <UserAvatar
-                      profilePicture={post.user_profile_picture}
+                      profilePicture={post.user_profile_picture || post.user_avatar}
                       name={post.user_name}
                       size="sm"
                     />
@@ -584,16 +588,13 @@ const ChapterTestChapters = () => {
                           <MessageCircle className="w-4 h-4" />
                           {post.comments_count || 0} answers
                         </span>
-                        <Link 
-                          to="/victory-lane" 
-                          className="text-blue-600 hover:text-blue-700 font-medium ml-auto"
-                        >
-                          View on Victory Lane →
-                        </Link>
+                        <span className="text-purple-600 font-medium ml-auto">
+                          View Question →
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             
