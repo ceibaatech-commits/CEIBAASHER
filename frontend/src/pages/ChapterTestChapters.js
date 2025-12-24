@@ -517,7 +517,7 @@ const ChapterTestChapters = () => {
           </div>
         )}
 
-        {/* Student Questions Section - Victory Lane Posts */}
+        {/* Comprehensive Question Section - Victory Lane Posts */}
         {academicPosts.length > 0 && (
           <div className="bg-white rounded-2xl shadow-lg mt-8 overflow-hidden border border-gray-100">
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 md:p-6">
@@ -527,7 +527,7 @@ const ChapterTestChapters = () => {
                     <GraduationCap className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-white">Student Questions</h2>
+                    <h2 className="text-xl font-bold text-white">Comprehensive Question</h2>
                     <p className="text-white/80 text-sm">Questions from Victory Lane for {formattedSubject}</p>
                   </div>
                 </div>
@@ -535,7 +535,7 @@ const ChapterTestChapters = () => {
                   to="/victory-lane"
                   className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
                 >
-                  Ask Question
+                  Expert Questions
                 </Link>
               </div>
             </div>
