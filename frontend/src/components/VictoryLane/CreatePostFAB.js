@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Trophy, HelpCircle, MessageCircle, X } from 'lucide-react';
+import { Plus, Trophy, HelpCircle, MessageCircle, X, GraduationCap } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 
 const CreatePostFAB = ({
@@ -12,7 +12,8 @@ const CreatePostFAB = ({
   setNewPostContent,
   handleCreatePost,
   setShowQuizModal,
-  setShowQuestionModal
+  setShowQuestionModal,
+  setShowAcademicModal
 }) => {
   if (!user) return null;
 
@@ -29,6 +30,20 @@ const CreatePostFAB = ({
       {/* Quick Action Menu - Mobile Only */}
       {showCreateMenu && (
         <div className="md:hidden fixed bottom-24 right-4 sm:right-8 z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          {/* Academic Question Button */}
+          <button
+            onClick={() => {
+              setShowAcademicModal(true);
+              setShowCreateMenu(false);
+            }}
+            className="flex items-center gap-3 bg-white hover:bg-blue-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+          >
+            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-semibold text-sm pr-2">Ask Academic Question</span>
+          </button>
+
           {/* Quiz Room Button */}
           <button
             onClick={() => {
@@ -54,7 +69,7 @@ const CreatePostFAB = ({
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-full">
               <HelpCircle className="w-5 h-5 text-white" />
             </div>
-            <span className="font-semibold text-sm pr-2">Ask Question</span>
+            <span className="font-semibold text-sm pr-2">Ask General Question</span>
           </button>
 
           {/* General Post Button */}
@@ -63,9 +78,9 @@ const CreatePostFAB = ({
               setShowQuickPostModal(true);
               setShowCreateMenu(false);
             }}
-            className="flex items-center gap-3 bg-white hover:bg-blue-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+            className="flex items-center gap-3 bg-white hover:bg-orange-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
           >
-            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
+            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full">
               <MessageCircle className="w-5 h-5 text-white" />
             </div>
             <span className="font-semibold text-sm pr-2">Create Post</span>
