@@ -65,7 +65,34 @@ const Home = () => {
     setIsLoggedIn(false);
   };
 
-  // Category filter
+  /*
+   * ══════════════════════════════════════════════════════════════════════════════
+   * 📋 ADDING A NEW EXAM CATEGORY - STEP BY STEP GUIDE
+   * ══════════════════════════════════════════════════════════════════════════════
+   * 
+   * When adding a NEW exam to /app/backend/exam_data.py:
+   * 
+   * STEP 1: Add exam to exam_data.py (REQUIRED)
+   *    - Add exam entry with: name, full_name, description, icon, color, 
+   *      total_questions, duration, category, syllabus_topics
+   *    - The "category" field determines which section it appears in
+   * 
+   * STEP 2: If using a NEW category (not existing), update this file:
+   *    a) Add to 'categories' array below (for mobile filter buttons)
+   *    b) Add to 'categoryMap' in getFilteredExams() function
+   *    c) Add a desktop section (search for "Examinations Section" to see examples)
+   * 
+   * STEP 3: Admin Panel will auto-update (reads from /api/exam-metadata)
+   * 
+   * EXISTING CATEGORIES (no changes needed if using these):
+   *    - Admission Tests, Medical, Defence, Banking Examinations
+   *    - Teaching Examinations, SSC Examinations, UPSC Examinations
+   *    - RSMSSB Examinations, Language Proficiency Tests
+   * 
+   * ══════════════════════════════════════════════════════════════════════════════
+   */
+
+  // Category filter buttons for mobile and desktop
   const categories = [
     { id: 'admission', label: 'Admission Tests', icon: '🎓', color: 'from-violet-600 to-purple-600' },
     { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600' },
