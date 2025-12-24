@@ -1,5 +1,49 @@
-# Complete Ceibaa Exam Data Structure
-# 8 Major Exam Categories with Full Syllabus
+# ══════════════════════════════════════════════════════════════════════════════
+# 📋 CEIBAA EXAM DATA - SINGLE SOURCE OF TRUTH
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# HOW TO ADD A NEW EXAM:
+# 
+# 1. Add your exam entry below following the structure:
+#    "EXAM_ID": {
+#        "name": "Display Name",
+#        "full_name": "Full Official Name",
+#        "description": "Brief description",
+#        "icon": "URL or emoji",
+#        "color": "from-color-500 to-color-600",  # Tailwind gradient
+#        "total_questions": 100,
+#        "duration": "3 hours",
+#        "category": "Category Name",  # IMPORTANT: Must match frontend category
+#        "syllabus_topics": {
+#            "Topic 1": {
+#                "subjects": {
+#                    "Subject 1": {
+#                        "sub_topics": ["Sub Topic 1", "Sub Topic 2"],
+#                        "questions": 10
+#                    }
+#                }
+#            }
+#        }
+#    }
+#
+# 2. EXISTING CATEGORIES (use these for auto-display on homepage):
+#    - "Admission Tests"
+#    - "Medical Entrance" / "Medical"
+#    - "Defence" / "Defence Examinations"
+#    - "Banking Examinations"
+#    - "Teaching Examinations"
+#    - "SSC Examinations"
+#    - "UPSC Examinations"
+#    - "RSMSSB Examinations"
+#    - "Language Proficiency Tests" / "Language Games"
+#
+# 3. If using a NEW category, also update:
+#    - /app/frontend/src/pages/Home.js (add category to 'categories' array)
+#    - /app/frontend/src/pages/Home.js (add desktop section for new category)
+#
+# 4. Admin Panel auto-loads from this file via /api/exam-metadata endpoint
+#
+# ══════════════════════════════════════════════════════════════════════════════
 
 EXAM_DATA = {
     "JEE": {
