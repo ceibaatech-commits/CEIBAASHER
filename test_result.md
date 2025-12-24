@@ -976,6 +976,49 @@ Please test all scenarios and verify the pagination works smoothly without perfo
       **CONCLUSION**: User Dashboard with Goal Selection Feature is FULLY OPERATIONAL and meets ALL review request requirements with 100% success rate. Goal personalization working correctly for both competitive exams and CBSE classes.
   - agent: "user"
     message: "Test the Professor/Teacher badge mutual exclusivity feature comprehensively"
+  - agent: "user"
+    message: "**Academic Question Feature - Full E2E Test**
+
+**Context**: A new feature has been added to Victory Lane that allows users to post academic questions related to their class syllabus. These posts include class, subject, and chapter metadata and should appear both in Victory Lane feed and on chapter test pages.
+
+**Test Requirements**:
+
+1. **Backend API Tests**:
+   - Test POST `/api/social/posts` with `post_type: \"academic_question\"` and academic fields
+   - Test GET `/api/social/academic-posts` with filters for class_name, subject, chapter
+   - Verify the response includes academic_class, academic_subject, academic_chapter fields
+
+2. **Create Academic Post Test**:
+   ```
+   POST /api/social/posts
+   Headers: Authorization: Bearer <token>
+   Body: {
+     \"post_type\": \"academic_question\",
+     \"content\": \"What is the meaning of भारतीवसन्तगीतिः in Class 9 Sanskrit chapter 1?\",
+     \"hashtags\": [\"Class9\", \"Sanskrit\", \"AcademicQuestion\"],
+     \"academic_class\": \"Class 9\",
+     \"academic_subject\": \"Sanskrit\",
+     \"academic_chapter\": \"1. Bharativasantagiti (भारतीवसन्तगीतिः)\"
+   }
+   ```
+
+3. **Fetch Academic Posts Test**:
+   ```
+   GET /api/social/academic-posts?class_name=Class%209&subject=Sanskrit
+   ```
+   Should return posts with matching academic_class and academic_subject
+
+4. **Data Validation**:
+   - Verify created post has all academic fields populated
+   - Verify posts appear when filtered by class and subject
+
+**Credentials**: demo1/demo1
+**Backend URL**: Use REACT_APP_BACKEND_URL from /app/frontend/.env
+
+**Expected Results**:
+- Post creation returns success with complete academic metadata
+- Academic posts endpoint returns filtered posts correctly
+- No errors in the flow"
   - agent: "testing"
     message: |
       🎯 TEACHER/PROFESSOR BADGE MUTUAL EXCLUSIVITY COMPREHENSIVE TEST COMPLETE (100% success rate - 15/15 critical tests passed)
