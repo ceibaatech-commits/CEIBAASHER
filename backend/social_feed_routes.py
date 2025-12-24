@@ -344,6 +344,40 @@ async def get_post(post_id: str, authorization: Optional[str] = Header(None)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching post: {str(e)}")
 
+@router.get("/academic-posts")
+async def get_academic_posts(
+    class_name: Optional[str] = Query(None, description="Class name e.g., 'Class 9'"),
+    subject: Optional[str] = Query(None, description="Subject name e.g., 'Mathematics'"),
+    chapter: Optional[str] = Query(None, description="Chapter name e.g., '1. Number Systems'"),
+    skip: int = 0,
+    limit: int = 20
+):
+    """Get academic question posts filtered by class, subject, and/or chapter"""
+    try:
+        query = {"post_type": "academic_question"}
+        
+        if class_name:
+            query["academic_class"] = class_name
+        if subject:
+            # Use regex for flexible matching (handles display names vs slugs)
+            query["academic_subject"] = {"$regex": subject.replace("-", ".*").replace("  ", " "), "$options": "i"}
+        if chapter:
+            query["academic_chapter"] = chapter
+        
+        posts = await db.social_posts.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(None)
+        
+        # Get total count for pagination
+        total = await db.social_posts.count_documents(query)
+        
+        return {
+            "success": True,
+            "posts": posts,
+            "total": total,
+            "has_more": (skip + limit) < total
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching academic posts: {str(e)}")
+
 @router.delete("/posts/{post_id}")
 async def delete_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Delete a post"""
