@@ -235,6 +235,9 @@ const ExamSheetManager = () => {
     // State Exams
     'RPSC': ['General Knowledge', 'General Science', 'Geography', 'History', 'Political Science'],
     
+    // RSMSSB (Rajasthan)
+    'RSMSSB_Patwari': ['General Science & India GK', 'Rajasthan GK', 'General English & Hindi', 'Mental Ability & Reasoning', 'Basic Computer'],
+    
     // Language Proficiency Tests (Standardized - 3 Categories Only)
     'SPANISH': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
     'FRENCH': ['Gap-fill', 'Vocabulary Building', 'One Word Substitution'],
