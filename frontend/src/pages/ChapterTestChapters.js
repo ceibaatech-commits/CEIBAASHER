@@ -517,6 +517,107 @@ const ChapterTestChapters = () => {
           </div>
         )}
 
+        {/* Student Questions Section - Victory Lane Posts */}
+        {academicPosts.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg mt-8 overflow-hidden border border-gray-100">
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 md:p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-lg">
+                    <GraduationCap className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Student Questions</h2>
+                    <p className="text-white/80 text-sm">Questions from Victory Lane for {formattedSubject}</p>
+                  </div>
+                </div>
+                <Link 
+                  to="/victory-lane"
+                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
+                >
+                  Ask Question
+                </Link>
+              </div>
+            </div>
+            
+            <div className="divide-y divide-gray-100">
+              {academicPosts.slice(0, 5).map((post) => (
+                <div key={post.id} className="p-4 md:p-5 hover:bg-gray-50 transition">
+                  <div className="flex gap-3">
+                    <UserAvatar
+                      profilePicture={post.user_profile_picture}
+                      name={post.user_name}
+                      size="sm"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold text-gray-900 text-sm">{post.user_name}</span>
+                        {post.is_verified && (
+                          <CheckCircle className="w-4 h-4 text-blue-500 fill-blue-500" />
+                        )}
+                        <span className="text-gray-500 text-xs">
+                          {new Date(post.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      
+                      {/* Chapter Tag */}
+                      {post.academic_chapter && (
+                        <div className="mb-2">
+                          <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                            📝 {post.academic_chapter}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Question Content */}
+                      <div className="text-gray-800 text-sm mb-3">
+                        <MathText text={post.content} />
+                      </div>
+                      
+                      {/* Engagement Stats */}
+                      <div className="flex items-center gap-4 text-gray-500 text-xs">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-4 h-4" />
+                          {post.likes_count || 0}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="w-4 h-4" />
+                          {post.comments_count || 0} answers
+                        </span>
+                        <Link 
+                          to="/victory-lane" 
+                          className="text-blue-600 hover:text-blue-700 font-medium ml-auto"
+                        >
+                          View on Victory Lane →
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {academicPosts.length > 5 && (
+              <div className="p-4 bg-gray-50 border-t border-gray-100 text-center">
+                <Link 
+                  to="/victory-lane"
+                  className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
+                >
+                  View all {academicPosts.length} questions on Victory Lane →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Loading Posts */}
+        {loadingPosts && academicPosts.length === 0 && (
+          <div className="bg-white rounded-2xl shadow-lg mt-8 p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
+            <p className="text-gray-500 text-sm">Loading student questions...</p>
+          </div>
+        )}
+
         {/* Why Choose Section */}
         {chapters.length > 0 && (
           <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 mt-12 mb-12 border border-gray-700">
