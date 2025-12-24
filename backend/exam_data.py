@@ -3061,6 +3061,126 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    # ══════════════════════════════════════════════════════════════════════════════
+    # UPPSC EXAMINATIONS (Uttar Pradesh Public Service Commission)
+    # ══════════════════════════════════════════════════════════════════════════════
+    
+    "UP_Police_Constable": {
+        "name": "UP Police Constable",
+        "full_name": "UP Police Constable Recruitment 2025",
+        "description": "Uttar Pradesh Police Recruitment & Promotion Board (UPPRPB) Constable Examination with 5 sections - GK, Hindi, Maths, Mental Aptitude & Reasoning",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-orange-600 to-red-700",
+        "total_questions": 150,
+        "total_marks": 300,
+        "duration": "2 hours",
+        "category": "UPPSC Examinations",
+        "negative_marking": "0.50 marks (25%)",
+        "marks_per_question": 2,
+        "syllabus_topics": {
+            "General Knowledge (GK)": {
+                "subjects": {
+                    "UP Specific GK": {
+                        "sub_topics": ["Education in UP", "Culture & Social Practices", "Revenue System in UP", "Police System in UP", "UP Districts"],
+                        "questions": 10
+                    },
+                    "India GK": {
+                        "sub_topics": ["Indian History", "Constitution of India", "Indian Economy", "Agriculture", "National Symbols"],
+                        "questions": 10
+                    },
+                    "General Science": {
+                        "sub_topics": ["Everyday Science", "Inventions & Discoveries", "Health & Disease", "Physics Basics", "Chemistry Basics"],
+                        "questions": 10
+                    },
+                    "Current Affairs": {
+                        "sub_topics": ["National/International Awards", "Demonetization", "GST", "Cyber Crime", "Government Schemes"],
+                        "questions": 8
+                    }
+                }
+            },
+            "General Hindi": {
+                "subjects": {
+                    "Grammar (Vyakaran)": {
+                        "sub_topics": ["Sandhi", "Samas", "Alankar", "Karak", "Ling", "Vachan", "Kaal"],
+                        "questions": 12
+                    },
+                    "Vocabulary (Shabd Gyan)": {
+                        "sub_topics": ["Tatsam-Tadbhav", "Paryayvachi (Synonyms)", "Vilom (Antonyms)", "One-word Substitution", "Muhavare"],
+                        "questions": 10
+                    },
+                    "Sentence Correction": {
+                        "sub_topics": ["Ashuddh Vakya Shuddhi", "Spotting Errors", "Sentence Rearrangement"],
+                        "questions": 8
+                    },
+                    "Literature (Sahitya)": {
+                        "sub_topics": ["Famous Poets (Kavi)", "Authors (Lekhak)", "Famous Works (Rachnaye)", "Hindi Prose & Poetry"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Numerical Ability": {
+                "subjects": {
+                    "Number System": {
+                        "sub_topics": ["Simplification", "Decimals & Fractions", "HCF & LCM", "Square Roots", "Cube Roots"],
+                        "questions": 10
+                    },
+                    "Commercial Math": {
+                        "sub_topics": ["Ratio & Proportion", "Percentage", "Profit & Loss", "Discount", "Simple/Compound Interest"],
+                        "questions": 12
+                    },
+                    "Time & Work": {
+                        "sub_topics": ["Partnership", "Time & Distance", "Pipes & Cisterns", "Tables & Graphs", "Average"],
+                        "questions": 10
+                    },
+                    "Mensuration": {
+                        "sub_topics": ["Area", "Volume", "Perimeter", "Surface Area", "Height & Distance"],
+                        "questions": 6
+                    }
+                }
+            },
+            "Mental Aptitude (Police Specific)": {
+                "subjects": {
+                    "Public Safety": {
+                        "sub_topics": ["Public Interest", "Law and Order", "Communal Harmony", "Crime Control", "Emergency Response"],
+                        "questions": 8
+                    },
+                    "Police System Knowledge": {
+                        "sub_topics": ["Rule of Law", "Ability of Adaptability", "Basic Law Knowledge", "Police Hierarchy", "FIR & Investigation"],
+                        "questions": 8
+                    },
+                    "Professionalism": {
+                        "sub_topics": ["Interest in Profession", "Mental Toughness", "Sensitivity towards Minorities", "Underprivileged Sections", "Ethics"],
+                        "questions": 6
+                    },
+                    "Gender Sensitivity": {
+                        "sub_topics": ["Women's Safety Issues", "Women's Rights", "Domestic Violence Awareness", "Eve Teasing Prevention", "POCSO Awareness"],
+                        "questions": 5
+                    }
+                }
+            },
+            "IQ & Reasoning Ability": {
+                "subjects": {
+                    "IQ Test": {
+                        "sub_topics": ["Direction Sense", "Blood Relations", "Coding-Decoding", "Venn Diagrams", "Puzzles"],
+                        "questions": 10
+                    },
+                    "Visual Reasoning": {
+                        "sub_topics": ["Space Visualization", "Visual Memory", "Series Completion", "Mirror Images", "Paper Folding"],
+                        "questions": 10
+                    },
+                    "Analytical Reasoning": {
+                        "sub_topics": ["Problem Solving", "Analysis & Judgment", "Decision Making", "Statement Conclusions"],
+                        "questions": 10
+                    },
+                    "Analogies": {
+                        "sub_topics": ["Word Analogies", "Alphabet Analogies", "Number Analogies", "Classification"],
+                        "questions": 7
+                    }
+                }
+            }
+        }
     }
 
 }
