@@ -5857,3 +5857,63 @@ agent_communication:
 - ✅ Modal opens with class dropdown
 - ✅ Dynamic subject loading works
 - ✅ Dynamic chapter loading works
+
+### Comprehensive E2E Test Results:
+🎯 **ACADEMIC QUESTION FEATURE COMPREHENSIVE E2E TEST COMPLETE (100% success rate - All 11 critical tests passed)**
+
+**Test Specification Met**: Full end-to-end testing of Academic Question feature per review request using demo1/demo1 credentials at https://contenthub-30.preview.emergentagent.com
+
+**✅ ALL CRITICAL SUCCESS CRITERIA MET PER REVIEW REQUEST**:
+
+**TEST SCENARIO 1 - Victory Lane Desktop Academic Q Button**:
+(1) ✅ Demo1 login successful with credentials (demo1/demo1)
+(2) ✅ Victory Lane navigation working correctly
+(3) ✅ Desktop post composer area found and functional
+(4) ✅ "Academic Q" button visible alongside Quiz Room and Question buttons
+(5) ✅ Academic Q button has graduation cap icon and proper styling
+(6) ✅ Button click opens modal with title "Ask Academic Question"
+
+**TEST SCENARIO 2 - Academic Question Modal Functionality**:
+(1) ✅ Modal opens with correct title and gradient header design
+(2) ✅ Class dropdown populated with 12 options (Class 6-12 with streams)
+(3) ✅ Class 9 selection successful from dropdown
+(4) ✅ Subject dropdown becomes enabled after class selection (11 subjects loaded)
+(5) ✅ Sanskrit selection successful from subject dropdown
+(6) ✅ Chapter dropdown becomes enabled after subject selection (11 chapters loaded)
+(7) ✅ First chapter "1. Bharativasantagiti (भारतीवसन्तगीतिः)" selected successfully
+(8) ✅ Question input area (textarea) working with math support and toolbar
+(9) ✅ Form validation working - Post Question button enabled when all fields filled
+(10) ✅ Question submission successful and modal closes after posting
+
+**TEST SCENARIO 3 - Academic Post Display in Victory Lane**:
+(1) ✅ Academic posts appear in Victory Lane feed with proper structure
+(2) ✅ Purple "Academic Question" badge displayed correctly (19 indicators found)
+(3) ✅ Class, subject, and chapter tags displayed with proper icons (📚 Class 9, 📖 Sanskrit, 📝 Chapter)
+(4) ✅ Academic metadata tags working (44 academic tags found in feed)
+(5) ✅ Posts show user information, timestamps, and engagement metrics
+(6) ✅ Academic question content displayed with MathText support
+
+**TEST SCENARIO 4 - Chapter Page Academic Posts Integration**:
+(1) ✅ Chapter test page navigation successful (/chapter-tests/class-9/sanskrit)
+(2) ✅ "Student Questions" section found on chapter page with proper header
+(3) ✅ Academic posts related to Class 9 Sanskrit displayed correctly
+(4) ✅ Posts show user names, content preview, and chapter tags (📝)
+(5) ✅ Integration between Victory Lane and Chapter pages working
+(6) ✅ "Ask Question" and "View on Victory Lane" links functional
+
+**TECHNICAL VERIFICATION**:
+- **Frontend Components**: AcademicQuestionModal.js fully functional with cascading dropdowns
+- **Backend Integration**: CBSE data API working (/api/cbse-data/admin/class-subjects)
+- **Form Validation**: All required fields validated before submission
+- **Data Flow**: Academic posts created with proper metadata (class, subject, chapter)
+- **UI/UX**: Modal design matches specification with gradient header and proper styling
+- **Cross-Page Integration**: Posts appear in both Victory Lane feed and chapter-specific pages
+
+**ARCHITECTURE CONFIRMED**:
+- Complete academic question flow: Button → Modal → Form → Submission → Feed Display → Chapter Page Display
+- Proper academic metadata structure: academic_class, academic_subject, academic_chapter
+- Purple badge system working for academic question identification
+- MathText support for mathematical equations in questions
+- Responsive design working on desktop viewport (1920x1080)
+
+**CONCLUSION**: Academic Question feature is FULLY OPERATIONAL and meets ALL review request requirements with 100% success rate. All expected behaviors verified and working correctly across Victory Lane and Chapter Test pages.
