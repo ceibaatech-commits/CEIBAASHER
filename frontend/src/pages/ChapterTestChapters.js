@@ -614,7 +614,7 @@ const ChapterTestChapters = () => {
         {loadingPosts && academicPosts.length === 0 && (
           <div className="bg-white rounded-2xl shadow-lg mt-8 p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-3"></div>
-            <p className="text-gray-500 text-sm">Loading student questions...</p>
+            <p className="text-gray-500 text-sm">Loading comprehensive questions...</p>
           </div>
         )}
 
