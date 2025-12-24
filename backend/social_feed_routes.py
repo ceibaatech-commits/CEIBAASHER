@@ -292,8 +292,13 @@ async def create_post(
             "room_code": room_code,
             "media_urls": post_data.media_urls,
             "tags": post_data.tags or [],
+            "hashtags": post_data.hashtags or [],
             "exam_category": post_data.exam_category,
             "subject": post_data.subject,
+            # Academic question fields
+            "academic_class": post_data.academic_class,
+            "academic_subject": post_data.academic_subject,
+            "academic_chapter": post_data.academic_chapter,
             "likes_count": 0,
             "comments_count": 0,
             "shares_count": 0,
