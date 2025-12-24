@@ -17,6 +17,78 @@ def init_db(database):
     global db
     db = database
 
+# ==================== PLATFORM SETTINGS ====================
+
+class PlatformSettingsModel(BaseModel):
+    allow_media_posts: Optional[bool] = False
+    allow_image_posts: Optional[bool] = False
+    allow_video_posts: Optional[bool] = False
+
+@router.get("/admin/settings")
+async def get_platform_settings():
+    """Get platform settings for Victory Lane media posting"""
+    try:
+        settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0})
+        if not settings:
+            # Return default settings if none exist
+            return {
+                "success": True,
+                "settings": {
+                    "allow_media_posts": False,
+                    "allow_image_posts": False,
+                    "allow_video_posts": False
+                }
+            }
+        return {"success": True, "settings": settings}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/admin/settings")
+async def update_platform_settings(settings: PlatformSettingsModel):
+    """Update platform settings for Victory Lane media posting"""
+    try:
+        settings_data = {
+            "type": "victory_lane",
+            "allow_media_posts": settings.allow_media_posts,
+            "allow_image_posts": settings.allow_image_posts,
+            "allow_video_posts": settings.allow_video_posts,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.platform_settings.update_one(
+            {"type": "victory_lane"},
+            {"$set": settings_data},
+            upsert=True
+        )
+        
+        return {"success": True, "message": "Settings updated successfully", "settings": settings_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Public endpoint to check if media posts are allowed
+@router.get("/settings/media-allowed")
+async def check_media_allowed():
+    """Public endpoint to check if media posts are allowed"""
+    try:
+        settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0})
+        if not settings:
+            return {
+                "allow_media_posts": False,
+                "allow_image_posts": False,
+                "allow_video_posts": False
+            }
+        return {
+            "allow_media_posts": settings.get("allow_media_posts", False),
+            "allow_image_posts": settings.get("allow_image_posts", False),
+            "allow_video_posts": settings.get("allow_video_posts", False)
+        }
+    except Exception as e:
+        return {
+            "allow_media_posts": False,
+            "allow_image_posts": False,
+            "allow_video_posts": False
+        }
+
 # ==================== USER MANAGEMENT ====================
 
 @router.get("/admin/users")
