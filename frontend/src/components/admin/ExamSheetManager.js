@@ -93,6 +93,29 @@ const ExamSheetManager = () => {
   // Class names for dropdowns
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 (Science)', 'Class 11 (Commerce)', 'Class 11 (Humanities)', 'Class 12 (Science)', 'Class 12 (Commerce)', 'Class 12 (Humanities)'];
   
+  /*
+   * ══════════════════════════════════════════════════════════════════════════════
+   * 📋 EXAM DATA SYSTEM - SINGLE SOURCE OF TRUTH
+   * ══════════════════════════════════════════════════════════════════════════════
+   * 
+   * HOW TO ADD A NEW EXAM:
+   * 1. Add the exam to /app/backend/exam_data.py in the EXAM_DATA dictionary
+   * 2. That's it! The system will automatically:
+   *    - Show it on the frontend homepage (via /api/quiz/exams)
+   *    - Show it in this Admin panel (via /api/exam-metadata)
+   *    - Include all syllabus topics, subjects, and sub-topics
+   * 
+   * The backend API /api/exam-metadata serves as the SINGLE SOURCE OF TRUTH.
+   * The static arrays below are FALLBACKS only (used if API fails to load).
+   * 
+   * To add a new category to the homepage, also update:
+   *    - /app/frontend/src/pages/Home.js - Add category to 'categories' array
+   *    - /app/frontend/src/pages/Home.js - Add category section in desktop view
+   * 
+   * ══════════════════════════════════════════════════════════════════════════════
+   */
+  
+  // STATIC FALLBACK: Used only if /api/exam-metadata fails to load
   const examNames = [
     // CBSE Classes
     ...classNames,
