@@ -102,6 +102,7 @@ const Home = () => {
     { id: 'ssc', label: 'SSC Examinations', icon: '📝', color: 'from-cyan-600 to-blue-600' },
     { id: 'upsc', label: 'UPSC Examinations', icon: '🏛️', color: 'from-purple-600 to-pink-600' },
     { id: 'uppsc', label: 'UPPSC', icon: '🏢', color: 'from-orange-600 to-red-600' },
+    { id: 'csbc', label: 'CSBC', icon: '🚔', color: 'from-red-600 to-pink-600' },
     { id: 'rsmssb', label: 'RSMSSB', icon: '🏜️', color: 'from-amber-600 to-orange-600' },
     { id: 'language', label: 'Language Proficiency Tests', icon: '🌍', color: 'from-teal-600 to-green-600' },
   ];
