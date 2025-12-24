@@ -1470,14 +1470,15 @@ const VictoryLane = () => {
                 )}
                 
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    {/* Media Upload Buttons (only if admin allowed) */}
+                  <div className="flex items-center gap-1">
+                    {/* Media Upload Icons (Twitter-style) - only if admin allowed */}
                     {mediaSettings.allow_media_posts && (
                       <>
                         {mediaSettings.allow_image_posts && (
-                          <label className="flex items-center gap-2 px-3 py-1.5 text-emerald-600 hover:bg-emerald-50 rounded-full transition text-sm font-medium cursor-pointer">
-                            <Upload className="w-4 h-4" />
-                            <span>Image</span>
+                          <label className="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition cursor-pointer" title="Add Image">
+                            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                              <path d="M3 5.5C3 4.119 4.119 3 5.5 3h13C19.881 3 21 4.119 21 5.5v13c0 1.381-1.119 2.5-2.5 2.5h-13C4.119 21 3 19.881 3 18.5v-13zM5.5 5c-.276 0-.5.224-.5.5v9.086l3-3 3 3 5-5 3 3V5.5c0-.276-.224-.5-.5-.5h-13zM19 15.414l-3-3-5 5-3-3-3 3V18.5c0 .276.224.5.5.5h13c.276 0 .5-.224.5-.5v-3.086zM9.75 7C8.784 7 8 7.784 8 8.75s.784 1.75 1.75 1.75 1.75-.784 1.75-1.75S10.716 7 9.75 7z"/>
+                            </svg>
                             <input
                               type="file"
                               accept="image/*"
@@ -1487,9 +1488,10 @@ const VictoryLane = () => {
                           </label>
                         )}
                         {mediaSettings.allow_video_posts && (
-                          <label className="flex items-center gap-2 px-3 py-1.5 text-pink-600 hover:bg-pink-50 rounded-full transition text-sm font-medium cursor-pointer">
-                            <Play className="w-4 h-4" />
-                            <span>Video</span>
+                          <label className="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition cursor-pointer" title="Add Video">
+                            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                              <path d="M3 5.5C3 4.119 4.12 3 5.5 3h13C19.88 3 21 4.119 21 5.5v13c0 1.381-1.12 2.5-2.5 2.5h-13C4.12 21 3 19.881 3 18.5v-13zM5.5 5c-.28 0-.5.224-.5.5v13c0 .276.22.5.5.5h13c.28 0 .5-.224.5-.5v-13c0-.276-.22-.5-.5-.5h-13zM10 8.5c0-.828.672-1.5 1.5-1.5.318 0 .612.099.856.267l4.6 3.053c.557.369.557 1.191 0 1.56l-4.6 3.053c-.244.168-.538.267-.856.267-.828 0-1.5-.672-1.5-1.5v-5.2z"/>
+                            </svg>
                             <input
                               type="file"
                               accept="video/*"
@@ -1502,24 +1504,24 @@ const VictoryLane = () => {
                     )}
                     <button
                       onClick={() => setShowAcademicModal(true)}
-                      className="flex items-center gap-2 px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition text-sm font-medium"
+                      className="p-2 text-blue-500 hover:bg-blue-50 rounded-full transition"
+                      title="Academic Question"
                     >
-                      <GraduationCap className="w-4 h-4" />
-                      <span>Academic Q</span>
+                      <GraduationCap className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => setShowQuizModal(true)}
-                      className="flex items-center gap-2 px-3 py-1.5 text-purple-600 hover:bg-purple-50 rounded-full transition text-sm font-medium"
+                      className="p-2 text-purple-500 hover:bg-purple-50 rounded-full transition"
+                      title="Quiz Room"
                     >
-                      <Trophy className="w-4 h-4" />
-                      <span>Quiz Room</span>
+                      <Trophy className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => setShowQuestionModal(true)}
-                      className="flex items-center gap-2 px-3 py-1.5 text-green-600 hover:bg-green-50 rounded-full transition text-sm font-medium"
+                      className="p-2 text-green-500 hover:bg-green-50 rounded-full transition"
+                      title="Ask Question"
                     >
-                      <HelpCircle className="w-4 h-4" />
-                      <span>Question</span>
+                      <HelpCircle className="w-5 h-5" />
                     </button>
                   </div>
                   <button
