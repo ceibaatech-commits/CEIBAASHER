@@ -29,6 +29,20 @@ const ExamSheetManager = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [extracting, setExtracting] = useState(false);
 
+  // Manual question entry state
+  const [manualQuestion, setManualQuestion] = useState({
+    question: '',
+    question_image: null,
+    question_image_preview: null,
+    options: ['', '', '', ''],
+    option_images: [null, null, null, null],
+    option_image_previews: [null, null, null, null],
+    correctAnswer: 0,
+    explanation: ''
+  });
+  const [uploadingQuestionImage, setUploadingQuestionImage] = useState(false);
+  const [uploadingOptionImage, setUploadingOptionImage] = useState(-1);
+
   // Dynamic exam metadata from backend (auto-sync!)
   const [examMetadata, setExamMetadata] = useState({
     loaded: false,
