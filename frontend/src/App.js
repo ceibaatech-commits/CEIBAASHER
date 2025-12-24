@@ -111,6 +111,7 @@ function App() {
           <Route path="/social" element={<VictoryLane />} />
           <Route path="/social-feed" element={<VictoryLane />} />
           <Route path="/victory-lane" element={<VictoryLane />} />
+          <Route path="/post/:postId" element={<SinglePost />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
