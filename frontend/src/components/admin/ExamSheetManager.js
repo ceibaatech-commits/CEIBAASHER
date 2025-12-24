@@ -351,6 +351,13 @@ const ExamSheetManager = () => {
     'General Knowledge': ['Static GK', 'Current Affairs', 'Awards', 'Books & Authors'],
     'General Science': ['Physics', 'Chemistry', 'Biology', 'General Science'],
     
+    // RSMSSB Patwari specific syllabus topics
+    'General Science & India GK': ['General Science', 'Indian History', 'Indian Polity', 'Geography of India'],
+    'Rajasthan GK': ['History & Culture', 'Geography of Rajasthan', 'Administration', 'Key Movements'],
+    'General English & Hindi': ['Hindi Grammar', 'English Grammar', 'Vocabulary'],
+    'Mental Ability & Reasoning': ['Logical Reasoning', 'Problem Solving', 'Mathematics', 'Arithmetic'],
+    'Basic Computer': ['Computer Fundamentals', 'Software', 'Hardware & IT'],
+    
     // Defense & Physical
     'Physical Fitness': ['Running', 'Push-ups', 'Sit-ups', 'Medical Standards'],
     'Elementary Mathematics': ['Arithmetic', 'Algebra', 'Geometry', 'Mensuration'],
