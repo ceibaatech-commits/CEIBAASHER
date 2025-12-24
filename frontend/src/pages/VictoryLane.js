@@ -2269,6 +2269,14 @@ const VictoryLane = () => {
         user={user}
       />
 
+      {/* Academic Question Modal */}
+      <AcademicQuestionModal
+        isOpen={showAcademicModal}
+        onClose={() => setShowAcademicModal(false)}
+        onSubmit={handleCreateAcademicQuestion}
+        user={user}
+      />
+
       {/* Floating Action Button - Refactored Component */}
       <CreatePostFAB
         user={user}
@@ -2281,6 +2289,7 @@ const VictoryLane = () => {
         handleCreatePost={handleCreatePost}
         setShowQuizModal={setShowQuizModal}
         setShowQuestionModal={setShowQuestionModal}
+        setShowAcademicModal={setShowAcademicModal}
       />
     </div>
   );
