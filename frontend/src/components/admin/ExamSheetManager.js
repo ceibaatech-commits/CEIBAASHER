@@ -158,6 +158,9 @@ const ExamSheetManager = () => {
     // State Exams
     'RPSC',
     
+    // RSMSSB (Rajasthan)
+    'RSMSSB_Patwari',
+    
     // Language Proficiency
     'SPANISH',
     'FRENCH',
