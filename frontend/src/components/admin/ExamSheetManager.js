@@ -1639,29 +1639,31 @@ const ExamSheetManager = () => {
               </div>
             )}
 
-            {/* Form Actions */}
-            <div className="flex items-center space-x-3 pt-4">
-              <button
-                type="submit"
-                disabled={loading || extracting}
-                className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Save className="w-4 h-4" />
-                <span>
-                  {extracting ? 'Extracting Questions...' : loading ? 'Saving...' : inputMethod === 'image' ? 'Extract & Save Questions' : 'Save Sheet'}
-                </span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowAddForm(false);
-                  resetForm();
-                }}
-                className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
+            {/* Form Actions - Only show for sheet and image methods */}
+            {inputMethod !== 'manual' && (
+              <div className="flex items-center space-x-3 pt-4">
+                <button
+                  type="submit"
+                  disabled={loading || extracting}
+                  className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>
+                    {extracting ? 'Extracting Questions...' : loading ? 'Saving...' : inputMethod === 'image' ? 'Extract & Save Questions' : 'Save Sheet'}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    resetForm();
+                  }}
+                  className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </form>
         </div>
       )}
