@@ -5917,3 +5917,37 @@ agent_communication:
 - Responsive design working on desktop viewport (1920x1080)
 
 **CONCLUSION**: Academic Question feature is FULLY OPERATIONAL and meets ALL review request requirements with 100% success rate. All expected behaviors verified and working correctly across Victory Lane and Chapter Test pages.
+
+---
+## Test Session: Complete Image Support for Questions
+**Date**: 2024-12-24
+**Feature**: Manual question entry with image support
+
+### Changes Made:
+1. Added `AcademicQuestionModal.js` state for manual question entry
+2. Added image upload handlers for question and option images
+3. Added `/api/admin/add-question` endpoint for single question creation
+4. Added "Manual Entry" tab in ExamSheetManager with full form:
+   - Question text with math support
+   - Question image upload (optional)
+   - 4 answer options with image upload per option
+   - Correct answer selection
+   - Explanation field
+
+### Test Plan:
+1. Login as admin
+2. Go to Exam Sheet Manager
+3. Add New Sheet > School Classes > Select Class 9 > Sanskrit > Chapter
+4. Click "Manual Entry" tab
+5. Enter question text
+6. Upload question image (optional)
+7. Enter options with images (optional)
+8. Select correct answer
+9. Click "Add This Question"
+10. Verify question is saved
+
+### Verified:
+- ✅ Manual Entry tab appears
+- ✅ Form renders correctly with all fields
+- ✅ Image upload areas for question and options
+- ✅ Correct answer selection buttons
