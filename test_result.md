@@ -5747,3 +5747,32 @@ agent_communication:
       **BUG FIX CONFIRMED**: The "Failed to Load Questions" bug caused by chapter name mismatches between admin panel and quiz page has been COMPLETELY RESOLVED. Admin panel now uses centralized API, eliminating hardcoded data inconsistencies.
       
       **CONCLUSION**: CBSE Admin Panel Chapter Loading bug fix is FULLY OPERATIONAL and meets ALL review request requirements with perfect API integration and data consistency.
+
+---
+## Test Session: Academic Question Feature
+**Date**: 2024-12-24
+**Feature**: Add Academic Question posting to Victory Lane
+
+### Changes Made:
+1. Created `AcademicQuestionModal.js` - New modal for posting academic questions with class/subject/chapter selection
+2. Updated `social_routes.py` - Added `academic_class`, `academic_subject`, `academic_chapter` fields to PostCreate model
+3. Added `/api/social/academic-posts` endpoint to fetch academic posts filtered by class/subject
+4. Updated `VictoryLane.js` - Added Academic Q button and modal integration
+5. Updated `CreatePostFAB.js` - Added Academic Question option to mobile FAB menu
+6. Updated `ChapterTestChapters.js` - Added section to display academic posts related to the current subject
+
+### Test Plan:
+1. Login as demo1/demo1
+2. Navigate to Victory Lane
+3. Click "Academic Q" button
+4. Select Class 9 > Sanskrit > First chapter
+5. Post a question
+6. Verify it appears in Victory Lane feed
+7. Navigate to Chapter Test Chapters page for Class 9 Sanskrit
+8. Verify the posted question appears in "Student Questions" section
+
+### Initial Verification:
+- ✅ Academic Q button visible on desktop
+- ✅ Modal opens with class dropdown
+- ✅ Dynamic subject loading works
+- ✅ Dynamic chapter loading works
