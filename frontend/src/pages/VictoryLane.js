@@ -290,6 +290,19 @@ const VictoryLane = () => {
     'General Science'
   ];
 
+  // Fetch media posting settings from admin
+  useEffect(() => {
+    const fetchMediaSettings = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/settings/media-allowed`);
+        setMediaSettings(response.data);
+      } catch (error) {
+        console.error('Error fetching media settings:', error);
+      }
+    };
+    fetchMediaSettings();
+  }, []);
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
