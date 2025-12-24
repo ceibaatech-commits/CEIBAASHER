@@ -110,6 +110,7 @@ const Home = () => {
         teaching: { ids: ['CTET', 'UGC_NET'], categories: ['Teaching Examinations', 'Teaching'] },
         ssc: { ids: ['SSC_CGL', 'SSC_CHSL'], categories: ['SSC Examinations'] },
         upsc: { ids: ['UPSC'], categories: ['UPSC Examinations'] },
+        rsmssb: { ids: ['RSMSSB_Patwari'], categories: ['RSMSSB Examinations', 'RSMSSB'] },
         language: { ids: ['SPANISH', 'FRENCH', 'TAMIL', 'TELUGU', 'KANNADA', 'CHINESE', 'JAPANESE', 'KOREAN', 'IELTS', 'TOEFL'], categories: ['Language Proficiency Tests', 'Language', 'Language Learning', 'Language Games'] },
       };
       const mapping = categoryMap[activeCategory] || { ids: [], categories: [] };
