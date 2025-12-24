@@ -778,6 +778,164 @@ const ExamSheetManager = () => {
     }
   };
 
+  // Upload question image
+  const handleQuestionImageUpload = async (file) => {
+    if (!file) return;
+    
+    setUploadingQuestionImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(
+        `${BACKEND_URL}/api/question-images/upload`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      
+      if (response.data.success) {
+        setManualQuestion(prev => ({
+          ...prev,
+          question_image: response.data.image_url,
+          question_image_preview: URL.createObjectURL(file)
+        }));
+      }
+    } catch (error) {
+      console.error('Error uploading question image:', error);
+      alert('Failed to upload image');
+    } finally {
+      setUploadingQuestionImage(false);
+    }
+  };
+
+  // Upload option image
+  const handleOptionImageUpload = async (file, index) => {
+    if (!file) return;
+    
+    setUploadingOptionImage(index);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(
+        `${BACKEND_URL}/api/question-images/upload`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      
+      if (response.data.success) {
+        const newOptionImages = [...manualQuestion.option_images];
+        const newOptionPreviews = [...manualQuestion.option_image_previews];
+        newOptionImages[index] = response.data.image_url;
+        newOptionPreviews[index] = URL.createObjectURL(file);
+        
+        setManualQuestion(prev => ({
+          ...prev,
+          option_images: newOptionImages,
+          option_image_previews: newOptionPreviews
+        }));
+      }
+    } catch (error) {
+      console.error('Error uploading option image:', error);
+      alert('Failed to upload image');
+    } finally {
+      setUploadingOptionImage(-1);
+    }
+  };
+
+  // Remove question image
+  const removeQuestionImage = () => {
+    setManualQuestion(prev => ({
+      ...prev,
+      question_image: null,
+      question_image_preview: null
+    }));
+  };
+
+  // Remove option image
+  const removeOptionImage = (index) => {
+    const newOptionImages = [...manualQuestion.option_images];
+    const newOptionPreviews = [...manualQuestion.option_image_previews];
+    newOptionImages[index] = null;
+    newOptionPreviews[index] = null;
+    
+    setManualQuestion(prev => ({
+      ...prev,
+      option_images: newOptionImages,
+      option_image_previews: newOptionPreviews
+    }));
+  };
+
+  // Submit manual question
+  const handleManualQuestionSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validate
+    if (!manualQuestion.question.trim()) {
+      alert('Please enter a question');
+      return;
+    }
+    
+    const filledOptions = manualQuestion.options.filter(opt => opt.trim() || manualQuestion.option_images[manualQuestion.options.indexOf(opt)]);
+    if (filledOptions.length < 2) {
+      alert('Please enter at least 2 options');
+      return;
+    }
+    
+    // Build question document
+    const questionDoc = {
+      question: manualQuestion.question,
+      question_image: manualQuestion.question_image,
+      options: manualQuestion.options.map((opt, idx) => {
+        if (manualQuestion.option_images[idx]) {
+          return { text: opt, image: manualQuestion.option_images[idx] };
+        }
+        return opt;
+      }),
+      correctAnswer: String.fromCharCode(65 + manualQuestion.correctAnswer),
+      explanation: manualQuestion.explanation
+    };
+    
+    // Add categorization based on selected option
+    if (selectedOption === 'class') {
+      questionDoc.type = 'class';
+      questionDoc.class_name = classForm.class_name;
+      questionDoc.subject = classForm.subject;
+      questionDoc.chapter = classForm.chapter;
+    } else if (selectedOption === 'exam') {
+      questionDoc.type = 'exam';
+      questionDoc.exam_name = examMetadata.exams.find(e => e.id === examForm.exam_name)?.name || examForm.exam_name;
+      questionDoc.syllabus_topic = examForm.syllabus_topic;
+      questionDoc.subject = examForm.subject;
+      questionDoc.sub_topic = examForm.sub_topic;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await axios.post(`${BACKEND_URL}/api/admin/add-question`, questionDoc);
+      
+      if (response.data.success) {
+        alert('✅ Question added successfully!');
+        // Reset form
+        setManualQuestion({
+          question: '',
+          question_image: null,
+          question_image_preview: null,
+          options: ['', '', '', ''],
+          option_images: [null, null, null, null],
+          option_image_previews: [null, null, null, null],
+          correctAnswer: 0,
+          explanation: ''
+        });
+      }
+    } catch (error) {
+      console.error('Error adding question:', error);
+      alert(error.response?.data?.detail || 'Failed to add question');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleImageExtraction = async (e) => {
     e.preventDefault();
     
