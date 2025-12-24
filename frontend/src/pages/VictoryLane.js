@@ -938,27 +938,104 @@ const VictoryLane = () => {
     navigate(`/profile/${usernameOrId}`);
   };
 
-  // Create text post
+  // Create text post (with optional media)
   const handleCreatePost = async () => {
     if (!newPostContent.trim() || !user) return;
     
     try {
+      let mediaUrls = [];
+      
+      // Upload image if selected and allowed
+      if (selectedPostImage && mediaSettings.allow_image_posts) {
+        const formData = new FormData();
+        formData.append('file', selectedPostImage);
+        formData.append('upload_type', 'post_media');
+        
+        const uploadResponse = await axios.post(`${BACKEND_URL}/api/upload/file`, formData, {
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (uploadResponse.data.url) {
+          mediaUrls.push(uploadResponse.data.url);
+        }
+      }
+      
+      // Upload video if selected and allowed
+      if (selectedPostVideo && mediaSettings.allow_video_posts) {
+        const formData = new FormData();
+        formData.append('file', selectedPostVideo);
+        formData.append('upload_type', 'post_video');
+        
+        const uploadResponse = await axios.post(`${BACKEND_URL}/api/upload/file`, formData, {
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (uploadResponse.data.url) {
+          mediaUrls.push(uploadResponse.data.url);
+        }
+      }
+      
       const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
         post_type: 'general',
         content: newPostContent,
-        user_id: user.id
+        user_id: user.id,
+        media_urls: mediaUrls.length > 0 ? mediaUrls : null
       }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       
       if (response.data.success) {
         setNewPostContent('');
+        setSelectedPostImage(null);
+        setPostImagePreview(null);
+        setSelectedPostVideo(null);
+        setPostVideoPreview(null);
         toast.success('Post created!');
         fetchFeed();
       }
     } catch (error) {
       toast.error('Failed to create post');
     }
+  };
+  
+  // Handle image selection for post
+  const handlePostImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast.error('Image must be less than 10MB');
+        return;
+      }
+      setSelectedPostImage(file);
+      setPostImagePreview(URL.createObjectURL(file));
+    }
+  };
+  
+  // Handle video selection for post
+  const handlePostVideoSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) { // 50MB limit
+        toast.error('Video must be less than 50MB');
+        return;
+      }
+      setSelectedPostVideo(file);
+      setPostVideoPreview(URL.createObjectURL(file));
+    }
+  };
+  
+  // Clear selected media
+  const clearPostMedia = () => {
+    setSelectedPostImage(null);
+    setPostImagePreview(null);
+    setSelectedPostVideo(null);
+    setPostVideoPreview(null);
   };
 
   // Create question post
