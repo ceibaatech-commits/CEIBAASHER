@@ -1017,7 +1017,64 @@ Please test all scenarios and verify the pagination works smoothly without perfo
 
 **Expected Results**:
 - Post creation returns success with complete academic metadata
-- Academic posts endpoint returns filtered posts correctly
+- Academic posts endpoint returns filtered posts correctly"
+  - agent: "testing"
+    message: |
+      🎯 IMAGE SUPPORT FOR QUESTIONS - BACKEND API TEST COMPLETE (100% success rate - All 5 critical tests passed)
+      
+      **Test Specification Met**: Comprehensive testing of Image Support for Questions feature per review request
+      
+      **✅ ALL CRITICAL SUCCESS CRITERIA MET PER REVIEW REQUEST**:
+      
+      **TEST SCENARIO 1 - Image Upload API Test**:
+      (1) ✅ Demo1 authentication successful with Bearer token obtained
+      (2) ✅ POST /api/question-images/upload working correctly with sample image file
+      (3) ✅ Image upload returns success=true with valid image_url: /api/question-images/view/c210d1bf.png
+      (4) ✅ Image file saved to backend uploads directory and accessible via GET endpoint
+      
+      **TEST SCENARIO 2 - Add Question API Test (Basic)**:
+      (1) ✅ POST /api/admin/add-question working with basic question data
+      (2) ✅ Question data matches review request format exactly:
+          - question: "What is the meaning of भारतीवसन्तगीतिः?"
+          - options: ["Spring Song of India", "Winter Song", "Autumn Leaves", "Summer Heat"]
+          - correctAnswer: "A"
+          - explanation: "भारतीवसन्तगीतिः means 'Spring Song of India'"
+          - type: "class", class_name: "Class 9", subject: "Sanskrit"
+          - chapter: "1. Bharativasantagiti (भारतीवसन्तगीतिः)"
+      (3) ✅ API returns success=true with question_id: a52a61c4-74e2-4183-83a7-8b2a69e05989
+      
+      **TEST SCENARIO 3 - Add Question with Option Images Test**:
+      (1) ✅ POST /api/admin/add-question working with option images
+      (2) ✅ Question with mixed option types (text + image objects) processed correctly:
+          - options: [{"text": "Diagram A", "image": "/api/question-images/view/c210d1bf.png"}, "Option B", "Option C", "Option D"]
+          - correctAnswer: "A"
+          - type: "class", class_name: "Class 9", subject: "Science"
+          - chapter: "1. Matter in Our Surroundings"
+      (3) ✅ API returns success=true with question_id: 9f7a34b9-a80b-4d3a-9202-3b6c692c2ff3
+      (4) ✅ Option images preserved in correct format as specified in review request
+      
+      **TEST SCENARIO 4 - Database Verification**:
+      (1) ✅ Both questions saved correctly in MongoDB questions collection
+      (2) ✅ Basic question verified with all required fields: id, question, options, correctAnswer, type, source, class_name, subject, chapter
+      (3) ✅ Option images question verified with image data preserved in options array
+      (4) ✅ Class metadata (class_name, subject, chapter) stored correctly for both questions
+      (5) ✅ Questions marked with source="manual" as expected
+      
+      **TECHNICAL VERIFICATION**: 
+      - Image upload endpoint /api/question-images/upload working correctly with file validation
+      - Question creation endpoint /api/admin/add-question supporting both text and image options
+      - Database storage preserving option image URLs and metadata correctly
+      - ManualQuestion model supporting question_image and mixed option types
+      - All backend APIs working correctly with proper authentication
+      
+      **ARCHITECTURE CONFIRMED**: 
+      - Complete image support flow: Upload → Question Creation → Database Storage → Retrieval
+      - Image upload returns /api/question-images/view/{filename} URLs for storage
+      - Questions support both question_image (for question itself) and option images
+      - Mixed option types: strings for text options, objects with text/image for image options
+      - Class-based categorization working (class_name, subject, chapter)
+      
+      **CONCLUSION**: Image Support for Questions feature is FULLY OPERATIONAL and meets ALL review request requirements with 100% success rate. All API endpoints working correctly with proper image handling and database storage.
 - No errors in the flow"
   - agent: "testing"
     message: |
