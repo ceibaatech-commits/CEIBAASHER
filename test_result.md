@@ -1021,6 +1021,44 @@ Please test all scenarios and verify the pagination works smoothly without perfo
 - No errors in the flow"
   - agent: "testing"
     message: |
+      🎯 ACADEMIC QUESTION FEATURE E2E TEST COMPLETE (0% success rate - CRITICAL FEATURE NOT IMPLEMENTED)
+      
+      **Test Specification Met**: Comprehensive testing of Academic Question Feature per review request at https://contenthub-30.preview.emergentagent.com
+      
+      **❌ CRITICAL ISSUE IDENTIFIED - ACADEMIC QUESTION FEATURE NOT IMPLEMENTED**:
+      
+      **BACKEND API VERIFICATION**:
+      ✅ Demo1 Authentication: Successfully logged in with demo1/demo1 credentials, JWT token obtained
+      ❌ POST /api/social/posts with academic_question: Returns 422 validation error - "academic_question" not in allowed post types
+      ❌ GET /api/social/academic-posts: Returns 404 - endpoint does not exist
+      
+      **ROOT CAUSE ANALYSIS**:
+      **CRITICAL IMPLEMENTATION GAP**: Academic Question Feature is completely missing from the active social feed system.
+      
+      **Technical Details**:
+      1. **PostCreateRequest Model Issue**: /app/backend/social_feed_routes.py line 185 - post_type only allows: ["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq", "question"] - "academic_question" is NOT included
+      
+      2. **Missing Academic Fields**: PostCreateRequest model (lines 184-195) has no academic_class, academic_subject, academic_chapter fields
+      
+      3. **Disabled Alternative Implementation**: /app/backend/social_routes.py contains academic posts implementation but is disabled in server.py (line 150: "# fastapi_app.include_router(social_router, prefix="/api")  # Disabled")
+      
+      4. **Missing Endpoint**: GET /api/social/academic-posts endpoint returns 404 - not mounted in active router
+      
+      **EXPECTED vs ACTUAL BEHAVIOR**:
+      ❌ Expected: POST /api/social/posts accepts "academic_question" post_type with academic fields
+      ❌ Actual: Returns 422 validation error - academic_question not in allowed post types
+      
+      ❌ Expected: GET /api/social/academic-posts returns filtered academic posts
+      ❌ Actual: Returns 404 - endpoint does not exist
+      
+      **IMPLEMENTATION STATUS**:
+      - Academic posts code exists in /app/backend/social_routes.py (lines 154-183) but is not active
+      - PostCreate model in social_routes.py includes academic fields (lines 37-39) but router is disabled
+      - Current active system (social_feed_routes.py) has no academic posts support
+      
+      **CONCLUSION**: Academic Question Feature is NOT IMPLEMENTED in the active system. The feature exists in disabled code but needs to be properly integrated into the active social_feed_routes.py system or the social_routes.py needs to be re-enabled with proper integration.
+  - agent: "testing"
+    message: |
       🎯 TEACHER/PROFESSOR BADGE MUTUAL EXCLUSIVITY COMPREHENSIVE TEST COMPLETE (100% success rate - 15/15 critical tests passed)
       
       **Test Specification Met**: Comprehensive testing of Professor/Teacher badge mutual exclusivity feature per review request
