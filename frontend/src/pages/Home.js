@@ -1130,6 +1130,105 @@ const Home = () => {
           </div>
         </div>
 
+        {/* RSMSSB Examinations Section - Rajasthan State Exams */}
+        <div className="mb-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 rounded-3xl p-8 mb-8 border-2 border-amber-200 shadow-lg"
+          >
+            <div className="flex items-center gap-4 mb-3">
+              <motion.div 
+                className="w-16 h-16 bg-gradient-to-br from-amber-600 via-orange-600 to-yellow-600 rounded-2xl flex items-center justify-center shadow-xl"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <span className="text-3xl">🏜️</span>
+              </motion.div>
+              <div>
+                <h2 className="text-4xl font-black bg-gradient-to-r from-amber-700 via-orange-700 to-yellow-700 bg-clip-text text-transparent">
+                  RSMSSB Examinations
+                </h2>
+                <p className="text-gray-700 font-medium text-lg">🏛️ Rajasthan State Government Jobs • RSMSSB Board</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-600 mt-4 flex-wrap">
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-amber-200">
+                📋 Patwari • Revenue
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-orange-200">
+                🏜️ Rajasthan GK • Culture
+              </span>
+              <span className="px-4 py-2 bg-white rounded-full shadow-sm border border-yellow-200">
+                💻 Computer • Reasoning
+              </span>
+            </div>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {exams.filter(exam => exam.category === 'RSMSSB Examinations').map((exam, index) => (
+              <motion.div
+                key={exam.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                onClick={() => navigate(`/exam/${exam.id}`)}
+                className="group relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-600 to-yellow-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"></div>
+                
+                <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-amber-300">
+                  <div className={`bg-gradient-to-br ${exam.color} p-8 relative overflow-hidden`}>
+                    <motion.div 
+                      className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full -mr-16 -mt-16"
+                      animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <motion.div 
+                      className="absolute bottom-0 left-0 w-24 h-24 bg-white/20 rounded-full -ml-12 -mb-12"
+                      animate={{ scale: [1, 1.3, 1], rotate: [0, -90, 0] }}
+                      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    ></motion.div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    
+                    <div className="relative text-white">
+                      <motion.div 
+                        className="mb-4"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        {exam.icon?.startsWith('http') ? (
+                          <div className="w-24 h-24 mx-auto bg-white/20 backdrop-blur-sm rounded-2xl p-3 shadow-2xl">
+                            <img src={exam.icon} alt={exam.name} className="w-full h-full object-contain drop-shadow-lg" />
+                          </div>
+                        ) : (
+                          <div className="text-6xl text-center">{exam.icon || '🏜️'}</div>
+                        )}
+                      </motion.div>
+                      <h3 className="text-2xl font-bold mb-2 drop-shadow-lg text-center">{exam.name}</h3>
+                      <p className="text-white/90 text-sm drop-shadow-md text-center font-medium">{exam.full_name}</p>
+                    </div>
+                  </div>
+                
+                  <div className="p-6">
+                    <p className="text-gray-700 text-sm mb-6 h-14 leading-relaxed text-center">{exam.description}</p>
+                    <div className="flex items-center justify-center gap-6 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-amber-600" />
+                        <span className="font-semibold">{exam.total_questions} Qs</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-orange-600" />
+                        <span className="font-semibold">{exam.duration}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
         {/* Teaching Examinations Section - Enhanced UI */}
         <div className="mb-16">
           {/* Unique Header with Gradient Background */}
