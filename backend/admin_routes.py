@@ -577,3 +577,63 @@ async def delete_user(user_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting user: {str(e)}")
+
+# ==================== MANUAL QUESTION ENTRY ====================
+
+class ManualQuestion(BaseModel):
+    question: str
+    question_image: Optional[str] = None
+    options: List
+    correctAnswer: str
+    explanation: Optional[str] = ""
+    type: Optional[str] = "class"
+    class_name: Optional[str] = None
+    subject: Optional[str] = None
+    chapter: Optional[str] = None
+    exam_name: Optional[str] = None
+    syllabus_topic: Optional[str] = None
+    sub_topic: Optional[str] = None
+
+@router.post("/admin/add-question")
+async def add_manual_question(question_data: ManualQuestion):
+    """
+    Add a single question manually with image support
+    """
+    try:
+        question_doc = {
+            "id": str(uuid.uuid4()),
+            "question": question_data.question,
+            "question_image": question_data.question_image,
+            "options": question_data.options,
+            "correctAnswer": question_data.correctAnswer,
+            "explanation": question_data.explanation or "",
+            "type": question_data.type,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "source": "manual"
+        }
+        
+        # Add categorization based on type
+        if question_data.type == "class":
+            question_doc.update({
+                "class_name": question_data.class_name,
+                "subject": question_data.subject,
+                "chapter": question_data.chapter
+            })
+        else:
+            question_doc.update({
+                "exam_name": question_data.exam_name,
+                "syllabus_topic": question_data.syllabus_topic,
+                "subject": question_data.subject,
+                "sub_topic": question_data.sub_topic
+            })
+        
+        await db.questions.insert_one(question_doc.copy())
+        
+        return {
+            "success": True,
+            "message": "Question added successfully",
+            "question_id": question_doc["id"]
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error adding question: {str(e)}")
