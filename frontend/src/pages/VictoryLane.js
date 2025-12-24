@@ -927,6 +927,41 @@ const VictoryLane = () => {
     }
   };
 
+  // Create academic question post
+  const handleCreateAcademicQuestion = async ({ class_name, subject, chapter, question }) => {
+    if (!question.trim() || !user) return;
+    
+    try {
+      // Create hashtags from class, subject, and chapter
+      const hashtags = [
+        class_name.replace(/\s+/g, ''),
+        subject.replace(/\s+/g, ''),
+        'AcademicQuestion'
+      ];
+      
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
+        post_type: 'academic_question',
+        content: question,
+        hashtags: hashtags,
+        academic_class: class_name,
+        academic_subject: subject,
+        academic_chapter: chapter,
+        user_id: user.id
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      
+      if (response.data.success) {
+        toast.success('Academic question posted! It will also appear on the chapter page.');
+        fetchFeed();
+      }
+    } catch (error) {
+      console.error('Error creating academic question:', error);
+      toast.error('Failed to post academic question');
+      throw error;
+    }
+  };
+
   // Create quiz room
   const handleCreateQuizRoom = async () => {
     const validQuestions = quizForm.questions.filter(q => q.question.trim());
