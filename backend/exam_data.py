@@ -3297,6 +3297,118 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    # ══════════════════════════════════════════════════════════════════════════════
+    # CSBC EXAMINATIONS (Central Selection Board of Constable - Bihar)
+    # ══════════════════════════════════════════════════════════════════════════════
+    
+    "Bihar_Police_Constable": {
+        "name": "Bihar Police Constable",
+        "full_name": "Bihar Police Constable Recruitment 2025",
+        "description": "Central Selection Board of Constable (CSBC) Bihar Police Recruitment - Matric Level Exam with GK, Languages, Science, Social Studies & Mathematics",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-red-600 to-pink-700",
+        "total_questions": 100,
+        "total_marks": 100,
+        "duration": "2 hours",
+        "category": "CSBC Examinations",
+        "negative_marking": "NO (0 Marks deducted)",
+        "level": "10th (Matric) Standard",
+        "syllabus_topics": {
+            "General Knowledge & Current Affairs": {
+                "subjects": {
+                    "Bihar GK": {
+                        "sub_topics": ["History of Bihar", "State Rivers", "Chhath Festival", "Local Polity", "Bihar Districts", "Famous Personalities of Bihar"],
+                        "questions": 12
+                    },
+                    "Current Affairs": {
+                        "sub_topics": ["National Awards", "Sports (Olympics/CWG)", "Bihar Govt Schemes", "National Events", "International Events"],
+                        "questions": 10
+                    },
+                    "Static GK": {
+                        "sub_topics": ["Indian Monuments", "Capitals & Currencies", "First in India", "Important Dates", "National Symbols"],
+                        "questions": 10
+                    },
+                    "Miscellaneous GK": {
+                        "sub_topics": ["Books & Authors", "International Organizations", "UN & Its Agencies", "Inventions & Discoveries"],
+                        "questions": 8
+                    }
+                }
+            },
+            "Languages (Hindi & English)": {
+                "subjects": {
+                    "Hindi Grammar": {
+                        "sub_topics": ["Samas", "Sandhi", "Alankar", "Muhavare (Idioms)", "Paryayvachi (Synonyms)", "Vilom (Antonyms)"],
+                        "questions": 8
+                    },
+                    "English Grammar": {
+                        "sub_topics": ["Prepositions", "Articles", "Spelling Correction", "Narration (Direct/Indirect)", "Voice"],
+                        "questions": 7
+                    },
+                    "Bihar Literature": {
+                        "sub_topics": ["Phanishwar Nath Renu", "Ramdhari Singh Dinkar", "Vidyapati", "Famous Bihar Authors"],
+                        "questions": 5
+                    }
+                }
+            },
+            "General Science": {
+                "subjects": {
+                    "Physics": {
+                        "sub_topics": ["Light (Optics)", "Force & Motion", "Sound", "Energy", "Heat", "Electricity Basics"],
+                        "questions": 10
+                    },
+                    "Chemistry": {
+                        "sub_topics": ["Acids, Bases & Salts", "Metals & Non-Metals", "Carbon Compounds", "Chemical Reactions", "Periodic Table"],
+                        "questions": 10
+                    },
+                    "Biology": {
+                        "sub_topics": ["Human Diseases", "Nutrition (Vitamins)", "Cell Structure", "Plant Classification", "Human Body Systems"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Social Sciences": {
+                "subjects": {
+                    "History": {
+                        "sub_topics": ["Revolt of 1857 (Kunwar Singh)", "Indian Freedom Movement", "Ancient Magadha", "Maurya Empire", "Medieval India"],
+                        "questions": 8
+                    },
+                    "Polity": {
+                        "sub_topics": ["Constitution Preamble", "Fundamental Rights", "Panchayat Raj System", "Parliament", "Judiciary"],
+                        "questions": 8
+                    },
+                    "Geography": {
+                        "sub_topics": ["Soil of India", "Agriculture", "Indian Monsoons", "Rivers of India", "Climate"],
+                        "questions": 7
+                    },
+                    "Economics": {
+                        "sub_topics": ["Poverty in India", "Inflation", "Rural Economy", "Banking Basics", "Five Year Plans"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Mathematics": {
+                "subjects": {
+                    "Arithmetic": {
+                        "sub_topics": ["Percentage", "Profit & Loss", "Average", "Time & Work", "Ratio & Proportion"],
+                        "questions": 4
+                    },
+                    "Number System": {
+                        "sub_topics": ["HCF & LCM", "Divisibility Rules", "Simplification", "Square & Cube Roots"],
+                        "questions": 3
+                    },
+                    "Mensuration": {
+                        "sub_topics": ["Area of Circle/Triangle", "Volume of Cube/Cylinder", "Perimeter", "Surface Area"],
+                        "questions": 2
+                    },
+                    "Algebra": {
+                        "sub_topics": ["Basic Equations", "Linear Equations", "Quadratic Equations (10th level)"],
+                        "questions": 1
+                    }
+                }
+            }
+        }
     }
 
 }
