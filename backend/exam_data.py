@@ -2952,7 +2952,7 @@ EXAM_DATA = {
     "Rajasthan_Police_Constable": {
         "name": "Rajasthan Police Constable",
         "full_name": "Rajasthan Police Constable Recruitment 2025",
-        "description": "Rajasthan Police Department (RPD) Constable Recruitment Examination with 5 sections including Reasoning, Computer, GK, Rajasthan GK, and Women & Children Laws",
+        "description": "Rajasthan Police Department (RPD) Constable Recruitment Exam",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
         "color": "from-blue-700 to-indigo-800",
         "total_questions": 150,
@@ -3070,7 +3070,7 @@ EXAM_DATA = {
     "UP_Police_Constable": {
         "name": "UP Police Constable",
         "full_name": "UP Police Constable Recruitment 2025",
-        "description": "Uttar Pradesh Police Recruitment & Promotion Board (UPPRPB) Constable Examination with 5 sections - GK, Hindi, Maths, Mental Aptitude & Reasoning",
+        "description": "UPPRPB Constable Exam - GK, Hindi, Maths & Reasoning",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
         "color": "from-orange-600 to-red-700",
         "total_questions": 150,
@@ -3187,7 +3187,7 @@ EXAM_DATA = {
     "UPTET": {
         "name": "UPTET",
         "full_name": "UPTET Recruitment Exam 2025",
-        "description": "Uttar Pradesh Basic Education Board (UPBEB) Teacher Eligibility Test - Paper 1 for Primary Level (Class 1-5) with Child Development, Languages, Maths & EVS",
+        "description": "UP Basic Education Board Teacher Eligibility Test - Paper 1",
         "icon": "https://customer-assets.emergentagent.com/job_prepninja-exams/artifacts/pv7esjzw_IMG_1360-removebg-preview.png",
         "color": "from-green-600 to-teal-700",
         "total_questions": 150,
@@ -3306,7 +3306,7 @@ EXAM_DATA = {
     "Bihar_Police_Constable": {
         "name": "Bihar Police Constable",
         "full_name": "Bihar Police Constable Recruitment 2025",
-        "description": "Central Selection Board of Constable (CSBC) Bihar Police Recruitment - Matric Level Exam with GK, Languages, Science, Social Studies & Mathematics",
+        "description": "CSBC Bihar Police Exam - Matric Level (10th Standard)",
         "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
         "color": "from-red-600 to-pink-700",
         "total_questions": 100,
