@@ -93,6 +93,17 @@ const VictoryLane = () => {
   const [googleSheetUrl, setGoogleSheetUrl] = useState('');
   const [extractingQuestions, setExtractingQuestions] = useState(false);
   const [extractedQuestions, setExtractedQuestions] = useState([]);
+  
+  // Media posting settings (controlled by admin)
+  const [mediaSettings, setMediaSettings] = useState({
+    allow_media_posts: false,
+    allow_image_posts: false,
+    allow_video_posts: false
+  });
+  const [selectedPostImage, setSelectedPostImage] = useState(null);
+  const [postImagePreview, setPostImagePreview] = useState(null);
+  const [selectedPostVideo, setSelectedPostVideo] = useState(null);
+  const [postVideoPreview, setPostVideoPreview] = useState(null);
 
   // Comprehensive exam categories - All exams from backend
   const categories = [
