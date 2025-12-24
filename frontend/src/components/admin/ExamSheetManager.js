@@ -671,7 +671,26 @@ const ExamSheetManager = () => {
     'Para Jumbles': ['Rearrangement', 'Sequencing', 'Ordering Sentences'],
     'Fillers': ['Single Filler', 'Double Filler', 'Word Usage'],
     'Word Swap': ['Swap Corrections', 'Context-based Usage'],
-    'Phrase Replacement': ['Error Correction', 'Phrase Improvement']
+    'Phrase Replacement': ['Error Correction', 'Phrase Improvement'],
+    
+    // RSMSSB Patwari specific sub-topics
+    'General Science': ['Physical and Chemical changes', 'Human diseases', 'Nutrition', 'Everyday Science'],
+    'Indian History': ['Ancient & Medieval history', 'Indian Freedom Movement', '19th-20th Century History'],
+    'Indian Polity': ['Constitution of India', 'Public Policy', 'Rights & Duties', 'Fundamental Rights'],
+    'Geography of India': ['Physical Geography', 'Environmental issues', 'Ecology', 'Natural Resources'],
+    'History & Culture': ['Major Forts', 'Monuments', 'Fairs & Festivals', 'Folk Arts', 'Handicrafts'],
+    'Geography of Rajasthan': ['Physiographic divisions', 'Climate', 'Soil', 'Population', 'Crops', 'Water Resources'],
+    'Administration': ['Governor', 'State Assembly', 'High Court', 'District Administration', 'Panchayati Raj'],
+    'Key Movements': ['Peasant Movements', 'Tribal Movements', 'Political Integration of Rajasthan'],
+    'Hindi Grammar': ['Sandhi', 'Samas', 'Upsarg', 'Pratyay', 'Sentence Correction', 'Shuddhi'],
+    'English Grammar': ['Tenses', 'Articles', 'Determiners', 'Sentence Correction', 'Active Passive'],
+    'Logical Reasoning': ['Series Making', 'Analogy', 'Classification', 'Coding-Decoding', 'Direction Sense'],
+    'Problem Solving': ['Blood Relations', 'Sitting Arrangements', 'Syllogism', 'Statement Conclusions'],
+    'Mathematics': ['Average', 'Ratio & Proportion', 'Area & Volume', 'Simple Interest', 'Compound Interest'],
+    'Arithmetic': ['Profit & Loss', 'Percentage', 'Unitary Method', 'Time & Work', 'Speed Distance'],
+    'Computer Fundamentals': ['RAM', 'ROM', 'File System', 'Input/Output Devices', 'Computer Generations'],
+    'Software': ['Operating Systems', 'MS Word', 'MS Excel', 'MS PowerPoint', 'Internet Basics'],
+    'Hardware & IT': ['Computer Hardware', 'Characteristics of Computers', 'Recent trends in IT', 'Networking Basics']
   };
 
   const [syllabusTopics, setSyllabusTopics] = useState([]);
