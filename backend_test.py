@@ -4361,6 +4361,7 @@ class BackendTester:
         print("=" * 60)
         
         tests = [
+            self.test_image_support_for_questions,
             self.test_user_dashboard_with_goal_selection,
             self.test_cbse_class_6_7_8_chapter_display_and_question_sync,
             self.test_victory_lane_pagination_feature,
