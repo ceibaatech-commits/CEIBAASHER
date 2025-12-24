@@ -3181,6 +3181,122 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    # UPPSC - UPTET (Uttar Pradesh Teacher Eligibility Test) 2025
+    "UPTET": {
+        "name": "UPTET",
+        "full_name": "UPTET Recruitment Exam 2025",
+        "description": "Uttar Pradesh Basic Education Board (UPBEB) Teacher Eligibility Test - Paper 1 for Primary Level (Class 1-5) with Child Development, Languages, Maths & EVS",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-green-600 to-teal-700",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "UPPSC Examinations",
+        "passing_marks": "90 (General) / 82 (Reserved)",
+        "paper_type": "Paper 1 - Primary Level (Class 1-5)",
+        "syllabus_topics": {
+            "Child Development (CDP)": {
+                "subjects": {
+                    "Child Development": {
+                        "sub_topics": ["Growth vs Development", "Heredity & Environment", "Socialization Process", "Multi-Dimensional Development", "Language & Thought"],
+                        "questions": 8
+                    },
+                    "Learning Theories": {
+                        "sub_topics": ["Piaget's Cognitive Development", "Vygotsky's Zone of Proximal Development", "Kohlberg's Moral Development", "Thorndike's Laws of Learning", "Bruner's Discovery Learning"],
+                        "questions": 8
+                    },
+                    "Inclusive Education": {
+                        "sub_topics": ["Understanding CWSN", "Dyslexia & Dysgraphia", "Gifted & Talented Children", "Learning Disabilities", "Autism Spectrum"],
+                        "questions": 7
+                    },
+                    "Pedagogy": {
+                        "sub_topics": ["Teaching Methods", "Motivation & Learning", "Emotion & Cognition", "Individual Differences", "Assessment & Evaluation"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Language I (Hindi)": {
+                "subjects": {
+                    "Vyakaran (Grammar)": {
+                        "sub_topics": ["Sandhi", "Samas", "Alankar", "Vilom Shabd", "Tatsam-Tadbhav", "Paryayvachi"],
+                        "questions": 10
+                    },
+                    "Hindi Literature": {
+                        "sub_topics": ["Famous Hindi Poets (Kavi)", "Compositions (Rachnaye)", "Prose & Poetry", "Chhayavaad Movement"],
+                        "questions": 7
+                    },
+                    "Comprehension": {
+                        "sub_topics": ["Unseen Passage (Apthit Gadyansh)", "Reading Comprehension", "Inference Questions"],
+                        "questions": 6
+                    },
+                    "Hindi Pedagogy": {
+                        "sub_topics": ["Language Acquisition", "Challenges in Teaching Hindi", "Listening & Speaking Skills", "Reading & Writing Development"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Language II (English/Sanskrit)": {
+                "subjects": {
+                    "English Grammar": {
+                        "sub_topics": ["Parts of Speech", "Tenses", "Voice & Narration", "Prepositions", "Articles"],
+                        "questions": 8
+                    },
+                    "Vocabulary": {
+                        "sub_topics": ["Synonyms & Antonyms", "Idioms & Phrases", "Word Formation", "One Word Substitution"],
+                        "questions": 7
+                    },
+                    "Sanskrit (Optional)": {
+                        "sub_topics": ["Maheshwar Sutras", "Karak", "Dhatu Roop", "Sandhi", "Sanskrit Literature"],
+                        "questions": 8
+                    },
+                    "Language Pedagogy": {
+                        "sub_topics": ["Methods of Teaching Second Language", "Remedial Teaching", "Error Analysis", "Language Skills Development"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Mathematics": {
+                "subjects": {
+                    "Number System": {
+                        "sub_topics": ["Place Value", "LCM & HCF", "Fractions", "Simplification", "Number Properties"],
+                        "questions": 8
+                    },
+                    "Arithmetic": {
+                        "sub_topics": ["Percentage", "Profit & Loss", "Simple Interest", "Time & Work", "Ratio & Proportion"],
+                        "questions": 8
+                    },
+                    "Geometry & Mensuration": {
+                        "sub_topics": ["Shapes & Properties", "Perimeter & Area", "Volume", "Calendar & Clock", "Lines & Angles"],
+                        "questions": 7
+                    },
+                    "Math Pedagogy": {
+                        "sub_topics": ["Nature of Mathematics", "Error Analysis", "Diagnostic Teaching", "Problem Solving Approach", "Concrete to Abstract"],
+                        "questions": 7
+                    }
+                }
+            },
+            "Environmental Studies (EVS)": {
+                "subjects": {
+                    "EVS Themes": {
+                        "sub_topics": ["Family & Friends", "Food & Nutrition", "Shelter & Housing", "Water Conservation", "Travel & Transport"],
+                        "questions": 8
+                    },
+                    "UP General Knowledge": {
+                        "sub_topics": ["Fairs & Festivals of UP", "Rivers of Uttar Pradesh", "Famous Personalities", "Historical Places", "Culture & Traditions"],
+                        "questions": 7
+                    },
+                    "Indian Constitution & Civics": {
+                        "sub_topics": ["Basic Constitutional Articles", "Parliament Structure", "Panchayat Raj System", "Fundamental Rights", "Fundamental Duties"],
+                        "questions": 8
+                    },
+                    "Ecology & Environment": {
+                        "sub_topics": ["Ecosystem", "Food Chain & Web", "Pollution Types", "Conservation", "Natural Resources"],
+                        "questions": 7
+                    }
+                }
+            }
+        }
     }
 
 }
