@@ -3063,6 +3063,134 @@ EXAM_DATA = {
         }
     },
 
+    # RSMSSB - RPSC Statistical Officer (SO) Recruitment 2025
+    "RPSC_Statistical_Officer": {
+        "name": "RPSC Statistical Officer",
+        "full_name": "RPSC Statistical Officer (SO) Recruitment 2025",
+        "description": "Rajasthan Public Service Commission SO Exam - Statistics & GK",
+        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "color": "from-purple-600 to-violet-700",
+        "total_questions": 150,
+        "duration": "2.5 hours",
+        "category": "RSMSSB Examinations",
+        "negative_marking": "1/3 Marks deducted",
+        "exam_pattern": "Part A: 40 Qs (GK) | Part B: 110 Qs (Subject)",
+        "syllabus_topics": {
+            "Rajasthan General Knowledge": {
+                "subjects": {
+                    "Rajasthan Geography": {
+                        "sub_topics": ["Physiographic Divisions", "Soil Types", "Mines & Minerals", "Livestock", "Population Distribution"],
+                        "questions": 10
+                    },
+                    "Rajasthan History": {
+                        "sub_topics": ["Major Dynasties (Mewar/Marwar)", "1857 Revolt in Rajasthan", "Prajamandal Movement", "Freedom Fighters"],
+                        "questions": 10
+                    },
+                    "Art & Culture": {
+                        "sub_topics": ["Forts & Temples", "Paintings (Miniature Art)", "Fairs & Festivals", "Folk Deities", "Handicrafts"],
+                        "questions": 10
+                    },
+                    "Rajasthan Current Affairs": {
+                        "sub_topics": ["Development Schemes", "Welfare Initiatives", "Recent Government Policies", "State Budget"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Core Statistics (Basics)": {
+                "subjects": {
+                    "Data Analysis": {
+                        "sub_topics": ["Classification of Data", "Tabulation", "Diagrammatic Presentation", "Graphical Methods"],
+                        "questions": 8
+                    },
+                    "Measures & Moments": {
+                        "sub_topics": ["Central Tendency (Mean/Median/Mode)", "Dispersion (SD/Variance)", "Moments", "Skewness & Kurtosis"],
+                        "questions": 10
+                    },
+                    "Correlation & Regression": {
+                        "sub_topics": ["Karl Pearson Correlation", "Rank Correlation", "Multiple Correlation", "Partial Correlation", "Regression Analysis"],
+                        "questions": 8
+                    },
+                    "Probability": {
+                        "sub_topics": ["Classical/Axiomatic Approach", "Bayes' Theorem", "Random Variables", "Expectation & Variance"],
+                        "questions": 8
+                    },
+                    "Probability Distributions": {
+                        "sub_topics": ["Binomial Distribution", "Poisson Distribution", "Normal Distribution", "Beta & Gamma", "Exponential Distribution"],
+                        "questions": 8
+                    }
+                }
+            },
+            "Advanced Statistics & Inference": {
+                "subjects": {
+                    "Estimation Theory": {
+                        "sub_topics": ["Point Estimation", "Interval Estimation", "MLE (Maximum Likelihood)", "Method of Moments", "Properties of Estimators"],
+                        "questions": 8
+                    },
+                    "Hypothesis Testing": {
+                        "sub_topics": ["Type I/II Errors", "Critical Region", "Z-test", "t-test", "F-test", "Chi-square Test"],
+                        "questions": 10
+                    },
+                    "Sampling Techniques": {
+                        "sub_topics": ["Simple Random Sampling", "Stratified Sampling", "Cluster Sampling", "Systematic Sampling", "Multi-stage Sampling"],
+                        "questions": 8
+                    },
+                    "Multivariate Analysis": {
+                        "sub_topics": ["Multivariate Normal Distribution", "Hotelling's T²", "Wishart Distribution", "Principal Component Analysis"],
+                        "questions": 6
+                    },
+                    "Design of Experiments": {
+                        "sub_topics": ["ANOVA (One-way/Two-way)", "RBD", "LSD", "Factorial Experiments", "Latin Square Design"],
+                        "questions": 6
+                    }
+                }
+            },
+            "Applied Statistics": {
+                "subjects": {
+                    "Time Series Analysis": {
+                        "sub_topics": ["Trend Measurement", "Seasonal Variations", "Cyclical Variations", "Irregular Components", "Moving Averages"],
+                        "questions": 6
+                    },
+                    "Index Numbers": {
+                        "sub_topics": ["Construction Methods", "Time Reversal Test", "Factor Reversal Test", "Cost of Living Index", "Wholesale Price Index"],
+                        "questions": 6
+                    },
+                    "Vital Statistics": {
+                        "sub_topics": ["Mortality Rates (CDR/IMR)", "Fertility Rates (CBR/TFR)", "Life Tables", "Survivorship Functions"],
+                        "questions": 5
+                    },
+                    "Population Studies": {
+                        "sub_topics": ["GRR & NRR", "Population Projection Methods", "Demographic Transition", "Census Analysis"],
+                        "questions": 5
+                    }
+                }
+            },
+            "Economics, Math & Computers": {
+                "subjects": {
+                    "Economics": {
+                        "sub_topics": ["Law of Demand/Supply", "National Income", "Inflation", "Banking System", "Fiscal Policy"],
+                        "questions": 5
+                    },
+                    "Econometrics": {
+                        "sub_topics": ["Autocorrelation", "Multicollinearity", "Heteroscedasticity", "OLS Estimation"],
+                        "questions": 4
+                    },
+                    "Economy of Rajasthan": {
+                        "sub_topics": ["Agriculture", "Public Finance", "Infrastructure Projects", "Industrial Development"],
+                        "questions": 4
+                    },
+                    "Elementary Mathematics": {
+                        "sub_topics": ["Decimal & Fractions", "Percentage", "Ratio & Proportion", "Average", "Simple/Compound Interest"],
+                        "questions": 4
+                    },
+                    "Computer Basics": {
+                        "sub_topics": ["MS Word", "MS Excel", "MS PowerPoint", "Internet Basics", "Email"],
+                        "questions": 3
+                    }
+                }
+            }
+        }
+    },
+
     # ══════════════════════════════════════════════════════════════════════════════
     # UPPSC EXAMINATIONS (Uttar Pradesh Public Service Commission)
     # ══════════════════════════════════════════════════════════════════════════════
