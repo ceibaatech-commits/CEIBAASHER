@@ -203,6 +203,17 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
                           <span className="font-medium text-sm">My Board</span>
                         </button>
                         
+                        <button
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            navigate('/earn');
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
+                        >
+                          <IndianRupee className="w-4 h-4 text-green-600" />
+                          <span className="font-medium text-sm">Earn</span>
+                        </button>
+                        
                         <div className="border-t border-gray-200 my-1"></div>
                         
                         <button
