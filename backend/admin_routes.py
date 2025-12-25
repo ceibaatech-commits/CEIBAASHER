@@ -91,32 +91,39 @@ async def check_media_allowed():
 
 # ==================== USER MANAGEMENT ====================
 
+class UserPermissionsModel(BaseModel):
+    can_post_images: Optional[bool] = True
+    can_post_videos: Optional[bool] = True
+    is_disabled: Optional[bool] = False
+
 @router.get("/admin/users")
 async def get_all_users():
     """
     Get all users with their details for admin panel
-    Returns: List of users with id, name, email, status, registration date
+    Returns: List of users with id, name, email, status, permissions
     """
     try:
         # Fetch all users from database (exclude sensitive fields)
         users = await db.users.find({}, {"_id": 0, "password": 0, "token": 0, "secret": 0}).to_list(1000)
         
-        # Enrich user data with status (for now, set all as offline - can be updated with real-time tracking)
+        # Enrich user data with status and permissions
         for user in users:
-            # Check if user has recent activity (within last 15 minutes)
             user_id = user.get('id') or user.get('user_id')
+            user['status'] = 'offline'
             
-            # For now, set status based on a simple heuristic
-            # You can implement real-time presence tracking later
-            user['status'] = 'offline'  # Default to offline
-            
-            # Ensure all required fields exist
             if not user.get('created_at'):
                 user['created_at'] = datetime.now(timezone.utc).isoformat()
             
-            # Normalize user_id field
             if not user.get('id') and user.get('user_id'):
                 user['id'] = user['user_id']
+            
+            # Add default permissions if not set
+            if 'can_post_images' not in user:
+                user['can_post_images'] = True
+            if 'can_post_videos' not in user:
+                user['can_post_videos'] = True
+            if 'is_disabled' not in user:
+                user['is_disabled'] = False
         
         return {
             "success": True,
@@ -126,6 +133,99 @@ async def get_all_users():
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching users: {str(e)}")
+
+@router.put("/admin/users/{user_id}/permissions")
+async def update_user_permissions(user_id: str, permissions: UserPermissionsModel):
+    """
+    Update individual user's permissions (can post images/videos, account status)
+    """
+    try:
+        # Find user by id or user_id
+        user = await db.users.find_one({"$or": [{"id": user_id}, {"user_id": user_id}]})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Update permissions
+        update_data = {
+            "can_post_images": permissions.can_post_images,
+            "can_post_videos": permissions.can_post_videos,
+            "is_disabled": permissions.is_disabled,
+            "permissions_updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.users.update_one(
+            {"$or": [{"id": user_id}, {"user_id": user_id}]},
+            {"$set": update_data}
+        )
+        
+        return {
+            "success": True,
+            "message": "User permissions updated",
+            "user_id": user_id,
+            "permissions": update_data
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating permissions: {str(e)}")
+
+@router.get("/admin/users/{user_id}/permissions")
+async def get_user_permissions(user_id: str):
+    """
+    Get individual user's permissions
+    """
+    try:
+        user = await db.users.find_one(
+            {"$or": [{"id": user_id}, {"user_id": user_id}]},
+            {"_id": 0, "can_post_images": 1, "can_post_videos": 1, "is_disabled": 1, "name": 1, "username": 1}
+        )
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return {
+            "success": True,
+            "user_id": user_id,
+            "name": user.get("name") or user.get("username"),
+            "can_post_images": user.get("can_post_images", True),
+            "can_post_videos": user.get("can_post_videos", True),
+            "is_disabled": user.get("is_disabled", False)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching permissions: {str(e)}")
+
+# Public endpoint to get current user's media permissions
+@router.get("/user/media-permissions")
+async def get_current_user_media_permissions(authorization: Optional[str] = Header(None)):
+    """
+    Get current logged-in user's media posting permissions
+    """
+    try:
+        if not authorization:
+            return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+        
+        token = authorization.replace("Bearer ", "")
+        session = await db.user_sessions.find_one({"token": token})
+        if not session:
+            return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+        
+        user_id = session.get("user_id")
+        user = await db.users.find_one(
+            {"$or": [{"id": user_id}, {"user_id": user_id}]},
+            {"_id": 0, "can_post_images": 1, "can_post_videos": 1, "is_disabled": 1}
+        )
+        
+        if not user:
+            return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+        
+        return {
+            "can_post_images": user.get("can_post_images", True),
+            "can_post_videos": user.get("can_post_videos", True),
+            "is_disabled": user.get("is_disabled", False)
+        }
+    except Exception as e:
+        return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
 
 @router.get("/admin/users/search")
 async def search_users(query: str, limit: int = 20):
