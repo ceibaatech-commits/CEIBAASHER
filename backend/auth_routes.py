@@ -424,6 +424,35 @@ async def demo_login(login_data: DemoLoginRequest):
         if login_data.password != user_data["password"]:
             raise HTTPException(status_code=401, detail="Invalid username or password")
         
+        # Upsert user into database to ensure permissions work
+        # This makes sure demo users exist in the database with their data
+        user_in_db = await db.users.find_one({"id": user_data["id"]})
+        if not user_in_db:
+            # Insert demo user into database (without password in stored doc)
+            user_to_store = {**user_data}
+            user_to_store.pop("password", None)  # Don't store password in db
+            await db.users.insert_one(user_to_store)
+        else:
+            # Update existing user's data (keep permissions if they exist)
+            update_data = {**user_data}
+            update_data.pop("password", None)
+            # Preserve existing permissions
+            for field in ["can_post_images", "can_post_videos", "is_disabled"]:
+                if field in user_in_db:
+                    update_data[field] = user_in_db[field]
+            await db.users.update_one(
+                {"id": user_data["id"]},
+                {"$set": update_data}
+            )
+            # Refresh user data with db permissions
+            user_in_db = await db.users.find_one({"id": user_data["id"]}, {"_id": 0})
+            if user_in_db:
+                user_data.update({
+                    "can_post_images": user_in_db.get("can_post_images", True),
+                    "can_post_videos": user_in_db.get("can_post_videos", True),
+                    "is_disabled": user_in_db.get("is_disabled", False)
+                })
+        
         # Generate JWT token
         token_data = {
             "sub": user_data["id"],
