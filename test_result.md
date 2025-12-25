@@ -6072,3 +6072,23 @@ agent_communication:
       - This is a minor API structure inconsistency that doesn't affect functionality
       
       **CONCLUSION**: User-based media controls and disabled user filtering is FULLY OPERATIONAL and meets ALL review request requirements with 90% success rate. All critical functionality working correctly with only minor API structure inconsistency.
+
+## User-Based Media Controls & Disabled User Filtering Test - December 25, 2025
+
+### Fixes Applied:
+1. **Fixed `/api/user/media-permissions` endpoint** - Was looking for `{"token": token}` but sessions use `"session_token"` field. Now supports both session tokens and JWT tokens.
+2. **Fixed disabled user profile filtering** - Profile route now returns limited info for disabled users when viewed by others.
+3. **Fixed disabled user posts filtering** - Posts endpoint returns empty array with message when disabled user's posts are accessed by others.
+4. **Added user persistence on demo login** - Demo users are now upserted to database on login so permissions can be properly managed.
+
+### Test Results:
+- ✅ Media Permissions API - Working correctly
+- ✅ Admin Update User Permissions - Working correctly  
+- ✅ Disabled User Profile - Shows limited info with is_disabled=True, can_view=False
+- ✅ Disabled User Posts Filter - Returns empty posts with "not available" message
+- ✅ Re-enable User - Profile and posts properly restored
+
+### Files Modified:
+- `/app/backend/admin_routes.py` - Fixed session lookup and JWT fallback
+- `/app/backend/profile_routes.py` - Added disabled user filtering
+- `/app/backend/auth_routes.py` - Added user upsert on demo login
