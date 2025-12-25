@@ -1304,6 +1304,310 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_milestone_and_monetization_system(self):
+        """Test the Milestone & Monetization System for the Earn page"""
+        try:
+            print("\n🎯 TESTING MILESTONE & MONETIZATION SYSTEM FOR EARN PAGE")
+            print("=" * 80)
+            
+            # Step 1: Login as demo1 via POST /api/auth/demo-login
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Milestone System - Demo1 Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Milestone System - Demo1 Login", True, f"✅ Demo1 logged in successfully with user_id: {user_id}")
+            headers = {"Authorization": f"Bearer {token}"}
+            
+            # Step 2: Test Milestone Progress API
+            self._test_milestone_progress_api(headers)
+            
+            # Step 3: Test Simulation API - Add Posts
+            self._test_simulation_add_posts(headers)
+            
+            # Step 4: Test Simulation API - Add Followers
+            self._test_simulation_add_followers(headers)
+            
+            # Step 5: Test Badge Selection API
+            self._test_badge_selection_api(headers)
+            
+            # Step 6: Test Earnings Simulation API
+            self._test_earnings_simulation_api(headers)
+            
+            # Step 7: Test Reset Simulation
+            self._test_reset_simulation(headers)
+            
+            print("\n🎉 MILESTONE & MONETIZATION SYSTEM TEST COMPLETE")
+            print("✅ All test scenarios completed successfully")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Milestone System - Exception", False, f"❌ Milestone system test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
+    def _test_milestone_progress_api(self, headers):
+        """Test GET /api/milestones/progress"""
+        try:
+            response = requests.get(f"{BACKEND_URL}/api/milestones/progress", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Milestone Progress API", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Milestone Progress API", False, f"❌ API returned success=false: {result}")
+                return False
+            
+            # Verify response structure
+            required_fields = ['user', 'stats', 'milestones', 'features']
+            missing_fields = [field for field in required_fields if field not in result]
+            
+            if missing_fields:
+                self.log_result("Milestone Progress Structure", False, f"❌ Missing fields: {missing_fields}")
+                return False
+            
+            # Verify user info
+            user_info = result.get('user', {})
+            if not all(field in user_info for field in ['id', 'name', 'username']):
+                self.log_result("Milestone User Info", False, f"❌ Incomplete user info: {user_info}")
+                return False
+            
+            # Verify stats
+            stats = result.get('stats', {})
+            if not all(field in stats for field in ['posts_count', 'followers_count']):
+                self.log_result("Milestone Stats", False, f"❌ Incomplete stats: {stats}")
+                return False
+            
+            # Verify milestones array has 3 items
+            milestones = result.get('milestones', [])
+            if len(milestones) != 3:
+                self.log_result("Milestone Array", False, f"❌ Expected 3 milestones, got {len(milestones)}")
+                return False
+            
+            milestone_names = [m.get('name') for m in milestones]
+            expected_names = ['Creator Badge', 'Media Creator', 'Monetization Partner']
+            if milestone_names != expected_names:
+                self.log_result("Milestone Names", False, f"❌ Expected {expected_names}, got {milestone_names}")
+                return False
+            
+            # Verify features object
+            features = result.get('features', {})
+            required_features = ['badge_unlocked', 'media_posting_unlocked', 'monetization_unlocked']
+            if not all(feature in features for feature in required_features):
+                self.log_result("Milestone Features", False, f"❌ Missing features: {features}")
+                return False
+            
+            self.log_result("Milestone Progress API", True, f"✅ API working correctly - Posts: {stats['posts_count']}, Followers: {stats['followers_count']}")
+            return True
+            
+        except Exception as e:
+            self.log_result("Milestone Progress API", False, f"❌ Test error: {e}")
+            return False
+
+    def _test_simulation_add_posts(self, headers):
+        """Test POST /api/milestones/simulate?action=add_post"""
+        try:
+            # Call multiple times to simulate reaching 500 posts
+            for i in range(5):  # 5 calls = 500 posts (100 each)
+                response = requests.post(f"{BACKEND_URL}/api/milestones/simulate?action=add_post", headers=headers)
+                
+                if response.status_code != 200:
+                    self.log_result("Simulation Add Posts", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                    return False
+                
+                result = response.json()
+                
+                if not result.get('success'):
+                    self.log_result("Simulation Add Posts", False, f"❌ API returned success=false: {result}")
+                    return False
+                
+                simulation = result.get('simulation', {})
+                expected_posts = (i + 1) * 100
+                
+                if simulation.get('posts') != expected_posts:
+                    self.log_result("Simulation Add Posts", False, f"❌ Expected {expected_posts} posts, got {simulation.get('posts')}")
+                    return False
+            
+            self.log_result("Simulation Add Posts", True, f"✅ Successfully simulated 500 posts (5 calls × 100 posts)")
+            return True
+            
+        except Exception as e:
+            self.log_result("Simulation Add Posts", False, f"❌ Test error: {e}")
+            return False
+
+    def _test_simulation_add_followers(self, headers):
+        """Test POST /api/milestones/simulate?action=add_followers"""
+        try:
+            # Call multiple times to simulate reaching 2500 followers
+            for i in range(10):  # 10 calls = 2500 followers (250 each)
+                response = requests.post(f"{BACKEND_URL}/api/milestones/simulate?action=add_followers", headers=headers)
+                
+                if response.status_code != 200:
+                    self.log_result("Simulation Add Followers", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                    return False
+                
+                result = response.json()
+                
+                if not result.get('success'):
+                    self.log_result("Simulation Add Followers", False, f"❌ API returned success=false: {result}")
+                    return False
+                
+                simulation = result.get('simulation', {})
+                expected_followers = (i + 1) * 250
+                
+                if simulation.get('followers') != expected_followers:
+                    self.log_result("Simulation Add Followers", False, f"❌ Expected {expected_followers} followers, got {simulation.get('followers')}")
+                    return False
+            
+            self.log_result("Simulation Add Followers", True, f"✅ Successfully simulated 2500 followers (10 calls × 250 followers)")
+            return True
+            
+        except Exception as e:
+            self.log_result("Simulation Add Followers", False, f"❌ Test error: {e}")
+            return False
+
+    def _test_badge_selection_api(self, headers):
+        """Test POST /api/milestones/select-badge"""
+        try:
+            # First test with insufficient posts (should fail)
+            # Reset simulation first
+            requests.post(f"{BACKEND_URL}/api/milestones/simulate?action=reset", headers=headers)
+            
+            badge_data = {"badge_type": "Teacher"}
+            response = requests.post(f"{BACKEND_URL}/api/milestones/select-badge", json=badge_data, headers=headers)
+            
+            if response.status_code == 400:
+                result = response.json()
+                if "500 posts" in result.get('detail', ''):
+                    self.log_result("Badge Selection - Insufficient Posts", True, "✅ Correctly rejected badge selection with insufficient posts")
+                else:
+                    self.log_result("Badge Selection - Insufficient Posts", False, f"❌ Wrong error message: {result}")
+                    return False
+            else:
+                self.log_result("Badge Selection - Insufficient Posts", False, f"❌ Expected 400 error, got {response.status_code}")
+                return False
+            
+            # Now add enough posts and test badge selection
+            for i in range(5):  # Add 500 posts
+                requests.post(f"{BACKEND_URL}/api/milestones/simulate?action=add_post", headers=headers)
+            
+            # Test badge selection with sufficient posts
+            response = requests.post(f"{BACKEND_URL}/api/milestones/select-badge", json=badge_data, headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Badge Selection - With Posts", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Badge Selection - With Posts", False, f"❌ API returned success=false: {result}")
+                return False
+            
+            if result.get('badge_type') != 'Teacher':
+                self.log_result("Badge Selection - Badge Type", False, f"❌ Expected 'Teacher', got {result.get('badge_type')}")
+                return False
+            
+            self.log_result("Badge Selection API", True, "✅ Badge selection working correctly - Teacher badge selected")
+            return True
+            
+        except Exception as e:
+            self.log_result("Badge Selection API", False, f"❌ Test error: {e}")
+            return False
+
+    def _test_earnings_simulation_api(self, headers):
+        """Test POST /api/monetization/simulate-earnings"""
+        try:
+            # Test with specific parameters
+            response = requests.post(f"{BACKEND_URL}/api/monetization/simulate-earnings?impressions=1000&cpm_rate=50", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Earnings Simulation API", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Earnings Simulation API", False, f"❌ API returned success=false: {result}")
+                return False
+            
+            # Verify response structure
+            simulation = result.get('simulation', {})
+            totals = result.get('totals', {})
+            
+            # Check calculations
+            expected_total_value = (1000 / 1000) * 50  # 50 INR
+            expected_creator_earning = expected_total_value * 0.90  # 45 INR
+            expected_platform_earning = expected_total_value * 0.10  # 5 INR
+            
+            if simulation.get('creator_earning') != expected_creator_earning:
+                self.log_result("Earnings Calculation", False, f"❌ Expected creator earning {expected_creator_earning}, got {simulation.get('creator_earning')}")
+                return False
+            
+            if simulation.get('platform_earning') != expected_platform_earning:
+                self.log_result("Earnings Calculation", False, f"❌ Expected platform earning {expected_platform_earning}, got {simulation.get('platform_earning')}")
+                return False
+            
+            # Verify totals are accumulated
+            if 'total_simulated_earnings' not in totals or 'total_simulated_impressions' not in totals:
+                self.log_result("Earnings Totals", False, f"❌ Missing totals fields: {totals}")
+                return False
+            
+            self.log_result("Earnings Simulation API", True, f"✅ Earnings simulation working - Creator: ₹{expected_creator_earning}, Platform: ₹{expected_platform_earning}")
+            return True
+            
+        except Exception as e:
+            self.log_result("Earnings Simulation API", False, f"❌ Test error: {e}")
+            return False
+
+    def _test_reset_simulation(self, headers):
+        """Test POST /api/milestones/simulate?action=reset and POST /api/monetization/reset-simulation"""
+        try:
+            # Reset milestone simulation
+            response = requests.post(f"{BACKEND_URL}/api/milestones/simulate?action=reset", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Reset Milestone Simulation", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Reset Milestone Simulation", False, f"❌ API returned success=false: {result}")
+                return False
+            
+            simulation = result.get('simulation', {})
+            if simulation.get('posts') != 0 or simulation.get('followers') != 0:
+                self.log_result("Reset Milestone Simulation", False, f"❌ Data not reset properly: {simulation}")
+                return False
+            
+            self.log_result("Reset Milestone Simulation", True, "✅ Milestone simulation reset successfully")
+            
+            # Reset monetization simulation
+            response = requests.post(f"{BACKEND_URL}/api/monetization/reset-simulation", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result("Reset Monetization Simulation", False, f"❌ API request failed: {response.status_code} - {response.text}")
+                return False
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                self.log_result("Reset Monetization Simulation", False, f"❌ API returned success=false: {result}")
+                return False
+            
+            self.log_result("Reset Monetization Simulation", True, "✅ Monetization simulation reset successfully")
+            return True
+            
+        except Exception as e:
+            self.log_result("Reset Simulation", False, f"❌ Test error: {e}")
+            return False
+
     def test_user_media_controls_and_disabled_filtering(self):
         """Test user-based media controls and disabled user filtering for Victory Lane"""
         try:
