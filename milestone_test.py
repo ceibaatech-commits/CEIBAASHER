@@ -389,6 +389,14 @@ class MilestoneSystemTester:
         if not self.login_demo1():
             return False
         
+        # Step 1.5: Reset simulation data first
+        print("\n🔄 SETUP: Reset Simulation Data")
+        print("-" * 40)
+        headers = {"Authorization": f"Bearer {self.token}"}
+        requests.post(f"{BACKEND_URL}/api/milestones/simulate?action=reset", headers=headers)
+        requests.post(f"{BACKEND_URL}/api/monetization/reset-simulation", headers=headers)
+        self.log_result("Reset Simulation Setup", True, "Simulation data reset for clean test environment")
+        
         # Step 2: Test Milestone Progress API
         print("\n📊 TEST CASE 1: Milestone Progress API")
         print("-" * 40)
