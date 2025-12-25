@@ -908,6 +908,16 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
         user = await get_user_by_username(username)
         user_id = user["id"]
         
+        # Check if the user is disabled
+        # If disabled, only the user themselves can see their posts
+        is_disabled = user.get("is_disabled", False)
+        if is_disabled and current_user_id != user_id:
+            return {
+                "success": True,
+                "posts": [],
+                "message": "This user's posts are not available"
+            }
+        
         # Privacy check - posts are publicly visible
         # (Privacy setting is optional but doesn't restrict post visibility)
         # This ensures consistency between timeline and profile views
