@@ -9,7 +9,7 @@ import {
   Trophy, Star, Users, FileText, Video, Image, DollarSign, TrendingUp,
   Lock, Unlock, ChevronRight, Play, Pause, RefreshCw, Award, Crown,
   MapPin, Eye, IndianRupee, Target, Zap, Gift, CheckCircle2, Circle,
-  GraduationCap, Building2, BookOpen, Sparkles, ArrowRight, Info
+  GraduationCap, Building2, BookOpen, Sparkles, ArrowRight, Info, TreePine
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -233,20 +233,20 @@ const Earn = () => {
 
   if (!isAuthenticated()) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-50">
         <Header isLoggedIn={false} />
         <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-          <div className="bg-white rounded-3xl shadow-xl p-12">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-              <DollarSign className="w-12 h-12 text-white" />
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12">
+            <div className="w-20 h-20 bg-emerald-600 rounded-2xl mx-auto mb-6 flex items-center justify-center">
+              <TreePine className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Creator Earnings Program</h1>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Unlock badges, media posting, and earn from local ads. Join now to start your journey!
+            <h1 className="text-3xl font-bold text-slate-900 mb-3">The Canopy</h1>
+            <p className="text-slate-600 mb-8 max-w-md mx-auto">
+              Grow under the canopy. Unlock badges, media posting, and earn from local ads.
             </p>
             <button
               onClick={() => navigate('/login')}
-              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full font-semibold hover:shadow-lg transition"
+              className="px-8 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition"
             >
               Login to Get Started
             </button>
@@ -259,49 +259,49 @@ const Earn = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-slate-50">
         <Header isLoggedIn={!!user} user={user} onLogout={logout} />
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-pink-50/30">
+    <div className="min-h-screen bg-slate-50">
       <Header isLoggedIn={!!user} user={user} onLogout={logout} />
       
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full text-purple-700 font-medium text-sm mb-4">
-            <Sparkles className="w-4 h-4" />
-            Creator Earnings Program
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full text-emerald-700 font-medium text-sm mb-4">
+            <TreePine className="w-4 h-4" />
+            The Canopy
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">Earn With Ceibaa</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Grow your account, unlock features, and earn from local vendor ads. 90% of all ad revenue goes directly to you!
+          <h1 className="text-3xl font-bold text-slate-900 mb-3">Grow & Earn</h1>
+          <p className="text-slate-600 max-w-2xl mx-auto">
+            Complete milestones, unlock features, and earn 90% of all ad revenue from local vendors.
           </p>
         </div>
 
         {/* Simulation Toggle */}
-        <div className="bg-white rounded-2xl shadow-lg p-4 mb-8">
+        <div className="bg-white rounded-xl border border-slate-200 p-4 mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${simulationMode ? 'bg-purple-100' : 'bg-gray-100'}`}>
-                {simulationMode ? <Play className="w-5 h-5 text-purple-600" /> : <Pause className="w-5 h-5 text-gray-500" />}
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${simulationMode ? 'bg-amber-100' : 'bg-slate-100'}`}>
+                {simulationMode ? <Play className="w-5 h-5 text-amber-600" /> : <Pause className="w-5 h-5 text-slate-400" />}
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Simulation Mode</h3>
-                <p className="text-sm text-gray-500">Test milestone progression and earnings</p>
+                <h3 className="font-semibold text-slate-900">Simulation Mode</h3>
+                <p className="text-sm text-slate-500">Test milestone progression</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               {simulationMode && (
                 <button
                   onClick={resetSimulation}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-900 flex items-center gap-2 text-sm"
+                  className="px-4 py-2 text-slate-600 hover:text-slate-900 flex items-center gap-2 text-sm"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Reset
@@ -309,10 +309,10 @@ const Earn = () => {
               )}
               <button
                 onClick={() => setSimulationMode(!simulationMode)}
-                className={`px-6 py-2 rounded-full font-medium transition ${
+                className={`px-5 py-2 rounded-lg font-medium transition ${
                   simulationMode
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-amber-500 text-white hover:bg-amber-600'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
                 {simulationMode ? 'Simulation ON' : 'Enable Simulation'}
@@ -323,98 +323,88 @@ const Earn = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-2xl shadow-md p-5">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <FileText className="w-5 h-5 text-blue-600" />
+              <div className="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center">
+                <FileText className="w-4 h-4 text-blue-600" />
               </div>
-              <span className="text-gray-500 text-sm">Posts</span>
+              <span className="text-slate-500 text-sm">Posts</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{displayStats.posts.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-slate-900">{displayStats.posts.toLocaleString()}</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-md p-5">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                <Users className="w-5 h-5 text-green-600" />
+              <div className="w-9 h-9 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 text-emerald-600" />
               </div>
-              <span className="text-gray-500 text-sm">Followers</span>
+              <span className="text-slate-500 text-sm">Followers</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">{displayStats.followers.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-slate-900">{displayStats.followers.toLocaleString()}</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-md p-5">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Eye className="w-5 h-5 text-purple-600" />
+              <div className="w-9 h-9 bg-violet-100 rounded-lg flex items-center justify-center">
+                <Eye className="w-4 h-4 text-violet-600" />
               </div>
-              <span className="text-gray-500 text-sm">Impressions</span>
+              <span className="text-slate-500 text-sm">Impressions</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-slate-900">
               {simulationMode ? earningsSimulation.impressions.toLocaleString() : (milestoneData?.monetization?.total_impressions || 0).toLocaleString()}
             </p>
           </div>
-          <div className="bg-white rounded-2xl shadow-md p-5">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
-                <IndianRupee className="w-5 h-5 text-yellow-600" />
+              <div className="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center">
+                <IndianRupee className="w-4 h-4 text-amber-600" />
               </div>
-              <span className="text-gray-500 text-sm">Earnings</span>
+              <span className="text-slate-500 text-sm">Earnings</span>
             </div>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-slate-900">
               ₹{simulationMode ? earningsSimulation.earnings.toFixed(2) : (milestoneData?.monetization?.total_earnings || 0).toFixed(2)}
             </p>
           </div>
         </div>
 
         {/* Milestones Section */}
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-              <Trophy className="w-7 h-7" />
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden mb-8">
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-6">
+            <h2 className="text-xl font-bold text-white flex items-center gap-3">
+              <Trophy className="w-6 h-6" />
               Milestone Rewards
             </h2>
-            <p className="text-purple-100 mt-1">Complete milestones to unlock exclusive features</p>
+            <p className="text-emerald-100 text-sm mt-1">Complete milestones to unlock exclusive features</p>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-6 space-y-5">
             {/* Milestone 1: Badge */}
-            <div className={`border-2 rounded-2xl p-6 transition ${isBadgeUnlocked ? 'border-green-200 bg-green-50/50' : 'border-gray-200'}`}>
+            <div className={`border rounded-xl p-5 transition ${isBadgeUnlocked ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'}`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isBadgeUnlocked ? 'bg-green-500' : 'bg-gray-200'}`}>
-                    {isBadgeUnlocked ? <Unlock className="w-7 h-7 text-white" /> : <Lock className="w-7 h-7 text-gray-400" />}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isBadgeUnlocked ? 'bg-emerald-500' : 'bg-slate-200'}`}>
+                    {isBadgeUnlocked ? <Unlock className="w-6 h-6 text-white" /> : <Lock className="w-6 h-6 text-slate-400" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-gray-900">Creator Badge</h3>
-                      {isBadgeUnlocked && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+                      <h3 className="text-base font-bold text-slate-900">Creator Badge</h3>
+                      {isBadgeUnlocked && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
                     </div>
-                    <p className="text-gray-600 text-sm mt-1">Unlock Teacher, Professor, or Institute badge</p>
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="flex items-center gap-2">
-                        <Award className="w-4 h-4 text-blue-500" />
-                        <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Teacher</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <GraduationCap className="w-4 h-4 text-indigo-500" />
-                        <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">Professor</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-purple-500" />
-                        <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Institute</span>
-                      </div>
+                    <p className="text-slate-500 text-sm mt-0.5">Unlock Teacher, Professor, or Institute badge</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md">Teacher</span>
+                      <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">Professor</span>
+                      <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md">Institute</span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">{displayStats.posts}/500</p>
-                  <p className="text-sm text-gray-500">Posts</p>
+                  <p className="text-xl font-bold text-slate-900">{displayStats.posts}/500</p>
+                  <p className="text-xs text-slate-500">Posts</p>
                 </div>
               </div>
-              {/* Progress Bar */}
               <div className="mt-4">
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min((displayStats.posts / 500) * 100, 100)}%` }}
                   />
                 </div>
@@ -422,54 +412,52 @@ const Earn = () => {
               {isBadgeUnlocked && !milestoneData?.features?.badge_selected && (
                 <button
                   onClick={() => setShowBadgeModal(true)}
-                  className="mt-4 w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition flex items-center justify-center gap-2"
+                  className="mt-4 w-full py-2.5 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition flex items-center justify-center gap-2"
                 >
-                  <Gift className="w-5 h-5" />
+                  <Gift className="w-4 h-4" />
                   Select Your Badge
                 </button>
               )}
               {milestoneData?.features?.badge_selected && (
-                <div className="mt-4 flex items-center gap-2 text-green-600">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="font-medium">Badge Selected: {milestoneData?.user?.badge_type}</span>
+                <div className="mt-3 flex items-center gap-2 text-emerald-600 text-sm">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span className="font-medium">Badge: {milestoneData?.user?.badge_type}</span>
                 </div>
               )}
             </div>
 
             {/* Milestone 2: Media Posting */}
-            <div className={`border-2 rounded-2xl p-6 transition ${isMediaUnlocked ? 'border-green-200 bg-green-50/50' : 'border-gray-200'}`}>
+            <div className={`border rounded-xl p-5 transition ${isMediaUnlocked ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'}`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isMediaUnlocked ? 'bg-green-500' : 'bg-gray-200'}`}>
-                    {isMediaUnlocked ? <Unlock className="w-7 h-7 text-white" /> : <Lock className="w-7 h-7 text-gray-400" />}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isMediaUnlocked ? 'bg-emerald-500' : 'bg-slate-200'}`}>
+                    {isMediaUnlocked ? <Unlock className="w-6 h-6 text-white" /> : <Lock className="w-6 h-6 text-slate-400" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-gray-900">Media Creator</h3>
-                      {isMediaUnlocked && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+                      <h3 className="text-base font-bold text-slate-900">Media Creator</h3>
+                      {isMediaUnlocked && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
                     </div>
-                    <p className="text-gray-600 text-sm mt-1">Unlock video and image posting abilities</p>
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="flex items-center gap-2">
-                        <Image className="w-4 h-4 text-green-500" />
-                        <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">Images</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Video className="w-4 h-4 text-red-500" />
-                        <span className="text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full">Videos</span>
-                      </div>
+                    <p className="text-slate-500 text-sm mt-0.5">Unlock video and image posting abilities</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md flex items-center gap-1">
+                        <Image className="w-3 h-3" /> Images
+                      </span>
+                      <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md flex items-center gap-1">
+                        <Video className="w-3 h-3" /> Videos
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">{displayStats.followers.toLocaleString()}/1,000</p>
-                  <p className="text-sm text-gray-500">Followers</p>
+                  <p className="text-xl font-bold text-slate-900">{displayStats.followers.toLocaleString()}/1,000</p>
+                  <p className="text-xs text-slate-500">Followers</p>
                 </div>
               </div>
               <div className="mt-4">
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min((displayStats.followers / 1000) * 100, 100)}%` }}
                   />
                 </div>
@@ -477,39 +465,37 @@ const Earn = () => {
             </div>
 
             {/* Milestone 3: Monetization */}
-            <div className={`border-2 rounded-2xl p-6 transition ${isMonetizationUnlocked ? 'border-yellow-200 bg-yellow-50/50' : 'border-gray-200'}`}>
+            <div className={`border rounded-xl p-5 transition ${isMonetizationUnlocked ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200'}`}>
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${isMonetizationUnlocked ? 'bg-yellow-500' : 'bg-gray-200'}`}>
-                    {isMonetizationUnlocked ? <Crown className="w-7 h-7 text-white" /> : <Lock className="w-7 h-7 text-gray-400" />}
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isMonetizationUnlocked ? 'bg-amber-500' : 'bg-slate-200'}`}>
+                    {isMonetizationUnlocked ? <Crown className="w-6 h-6 text-white" /> : <Lock className="w-6 h-6 text-slate-400" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-gray-900">Monetization Partner</h3>
-                      {isMonetizationUnlocked && <CheckCircle2 className="w-5 h-5 text-yellow-500" />}
+                      <h3 className="text-base font-bold text-slate-900">Monetization Partner</h3>
+                      {isMonetizationUnlocked && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
                     </div>
-                    <p className="text-gray-600 text-sm mt-1">Enable full monetization and ad revenue</p>
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="flex items-center gap-2">
-                        <IndianRupee className="w-4 h-4 text-yellow-500" />
-                        <span className="text-xs font-medium text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">90% Revenue</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-orange-500" />
-                        <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">Local Ads</span>
-                      </div>
+                    <p className="text-slate-500 text-sm mt-0.5">Enable full monetization and ad revenue</p>
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-md flex items-center gap-1">
+                        <IndianRupee className="w-3 h-3" /> 90% Revenue
+                      </span>
+                      <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-md flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> Local Ads
+                      </span>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">{displayStats.followers.toLocaleString()}/2,500</p>
-                  <p className="text-sm text-gray-500">Followers</p>
+                  <p className="text-xl font-bold text-slate-900">{displayStats.followers.toLocaleString()}/2,500</p>
+                  <p className="text-xs text-slate-500">Followers</p>
                 </div>
               </div>
               <div className="mt-4">
-                <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500"
                     style={{ width: `${Math.min((displayStats.followers / 2500) * 100, 100)}%` }}
                   />
                 </div>
@@ -520,112 +506,112 @@ const Earn = () => {
 
         {/* Simulation Controls */}
         {simulationMode && (
-          <div className="bg-white rounded-3xl shadow-xl p-6 mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Zap className="w-6 h-6 text-purple-500" />
+          <div className="bg-white rounded-xl border border-slate-200 p-6 mb-8">
+            <h2 className="text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
+              <Zap className="w-5 h-5 text-amber-500" />
               Simulation Controls
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button
                 onClick={simulateAddPosts}
                 disabled={isSimulating}
-                className="p-4 bg-blue-50 hover:bg-blue-100 rounded-2xl transition flex items-center justify-between group"
+                className="p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="font-semibold text-gray-900">Add Posts</p>
-                    <p className="text-sm text-gray-500">+100 posts</p>
+                    <p className="font-semibold text-slate-900">Add Posts</p>
+                    <p className="text-sm text-slate-500">+100 posts</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-blue-500 opacity-0 group-hover:opacity-100 transition" />
+                <ArrowRight className="w-4 h-4 text-blue-500 opacity-0 group-hover:opacity-100 transition" />
               </button>
               <button
                 onClick={simulateAddFollowers}
                 disabled={isSimulating}
-                className="p-4 bg-green-50 hover:bg-green-100 rounded-2xl transition flex items-center justify-between group"
+                className="p-4 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition flex items-center justify-between group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                    <Users className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="font-semibold text-gray-900">Add Followers</p>
-                    <p className="text-sm text-gray-500">+250 followers</p>
+                    <p className="font-semibold text-slate-900">Add Followers</p>
+                    <p className="text-sm text-slate-500">+250 followers</p>
                   </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-green-500 opacity-0 group-hover:opacity-100 transition" />
+                <ArrowRight className="w-4 h-4 text-emerald-500 opacity-0 group-hover:opacity-100 transition" />
               </button>
               <button
                 onClick={() => simulateEarnings(1000)}
                 disabled={isSimulating || !isMonetizationUnlocked}
-                className={`p-4 rounded-2xl transition flex items-center justify-between group ${
+                className={`p-4 rounded-xl transition flex items-center justify-between group border ${
                   isMonetizationUnlocked
-                    ? 'bg-yellow-50 hover:bg-yellow-100'
-                    : 'bg-gray-100 cursor-not-allowed'
+                    ? 'bg-amber-50 hover:bg-amber-100 border-amber-200'
+                    : 'bg-slate-50 border-slate-200 cursor-not-allowed'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isMonetizationUnlocked ? 'bg-yellow-500' : 'bg-gray-300'}`}>
-                    <IndianRupee className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isMonetizationUnlocked ? 'bg-amber-500' : 'bg-slate-300'}`}>
+                    <IndianRupee className="w-5 h-5 text-white" />
                   </div>
                   <div className="text-left">
-                    <p className="font-semibold text-gray-900">Simulate Earnings</p>
-                    <p className="text-sm text-gray-500">{isMonetizationUnlocked ? '+1000 impressions' : 'Unlock at 2,500 followers'}</p>
+                    <p className="font-semibold text-slate-900">Simulate Earnings</p>
+                    <p className="text-sm text-slate-500">{isMonetizationUnlocked ? '+1000 impressions' : 'Unlock at 2,500'}</p>
                   </div>
                 </div>
-                {isMonetizationUnlocked && <ArrowRight className="w-5 h-5 text-yellow-500 opacity-0 group-hover:opacity-100 transition" />}
+                {isMonetizationUnlocked && <ArrowRight className="w-4 h-4 text-amber-500 opacity-0 group-hover:opacity-100 transition" />}
               </button>
             </div>
           </div>
         )}
 
         {/* Monetization Info */}
-        <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 rounded-3xl shadow-xl p-8 text-white">
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl p-8 text-white">
           <div className="flex items-start gap-4 mb-6">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-              <TrendingUp className="w-8 h-8" />
+            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+              <TrendingUp className="w-7 h-7" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">How Monetization Works</h2>
-              <p className="text-white/80 mt-1">Local vendors, real earnings</p>
+              <h2 className="text-xl font-bold">How Monetization Works</h2>
+              <p className="text-emerald-100 text-sm mt-1">Local vendors, real earnings</p>
             </div>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                <MapPin className="w-5 h-5" />
+          <div className="grid md:grid-cols-3 gap-5">
+            <div className="bg-white/10 backdrop-blur rounded-xl p-5">
+              <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center mb-3">
+                <MapPin className="w-4 h-4" />
               </div>
-              <h3 className="font-semibold mb-2">Local Vendor Ads</h3>
-              <p className="text-sm text-white/70">District-level businesses approach us to promote their services to local audiences</p>
+              <h3 className="font-semibold mb-1.5">Local Vendor Ads</h3>
+              <p className="text-sm text-emerald-100">District-level businesses promote their services to local audiences</p>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                <Target className="w-5 h-5" />
+            <div className="bg-white/10 backdrop-blur rounded-xl p-5">
+              <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center mb-3">
+                <Target className="w-4 h-4" />
               </div>
-              <h3 className="font-semibold mb-2">City-Based Targeting</h3>
-              <p className="text-sm text-white/70">Ads are targeted by city, ensuring relevance for your local audience</p>
+              <h3 className="font-semibold mb-1.5">City-Based Targeting</h3>
+              <p className="text-sm text-emerald-100">Ads are targeted by city for relevance to your local audience</p>
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-5">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                <IndianRupee className="w-5 h-5" />
+            <div className="bg-white/10 backdrop-blur rounded-xl p-5">
+              <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center mb-3">
+                <IndianRupee className="w-4 h-4" />
               </div>
-              <h3 className="font-semibold mb-2">90/10 Revenue Split</h3>
-              <p className="text-sm text-white/70">You keep 90% of all ad revenue. Earn based on impressions from your content</p>
+              <h3 className="font-semibold mb-1.5">90/10 Revenue Split</h3>
+              <p className="text-sm text-emerald-100">Keep 90% of all ad revenue. Earn from impressions on your content</p>
             </div>
           </div>
           
-          <div className="mt-6 pt-6 border-t border-white/20 flex items-center justify-between flex-wrap gap-4">
+          <div className="mt-6 pt-5 border-t border-white/20 flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2">
-              <Info className="w-5 h-5 text-white/70" />
-              <span className="text-sm text-white/70">Currently targeting: Delhi NCR region</span>
+              <Info className="w-4 h-4 text-emerald-200" />
+              <span className="text-sm text-emerald-200">Currently targeting: Delhi NCR region</span>
             </div>
             <button
               onClick={() => navigate('/victory-lane')}
-              className="px-6 py-3 bg-white text-purple-600 rounded-full font-semibold hover:shadow-lg transition flex items-center gap-2"
+              className="px-6 py-2.5 bg-white text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition flex items-center gap-2"
             >
               Start Creating
               <ArrowRight className="w-4 h-4" />
@@ -637,57 +623,57 @@ const Earn = () => {
       {/* Badge Selection Modal */}
       {showBadgeModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl mx-auto mb-4 flex items-center justify-center">
-                <Gift className="w-8 h-8 text-white" />
+              <div className="w-14 h-14 bg-emerald-100 rounded-xl mx-auto mb-4 flex items-center justify-center">
+                <Gift className="w-7 h-7 text-emerald-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Select Your Badge</h2>
-              <p className="text-gray-600 mt-2">Choose a badge that represents you best</p>
+              <h2 className="text-xl font-bold text-slate-900">Select Your Badge</h2>
+              <p className="text-slate-500 text-sm mt-1">Choose a badge that represents you best</p>
             </div>
             
             <div className="space-y-3">
               <button
                 onClick={() => handleSelectBadge('Teacher')}
-                className="w-full p-4 border-2 border-gray-200 hover:border-blue-500 rounded-2xl transition flex items-center gap-4 group"
+                className="w-full p-4 border-2 border-slate-200 hover:border-blue-500 hover:bg-blue-50 rounded-xl transition flex items-center gap-4 group"
               >
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-500 transition">
-                  <Award className="w-6 h-6 text-blue-600 group-hover:text-white transition" />
+                <div className="w-11 h-11 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition">
+                  <Award className="w-5 h-5 text-blue-600 group-hover:text-white transition" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900">Teacher</p>
-                  <p className="text-sm text-gray-500">For educators and tutors</p>
+                  <p className="font-semibold text-slate-900">Teacher</p>
+                  <p className="text-sm text-slate-500">For educators and tutors</p>
                 </div>
               </button>
               <button
                 onClick={() => handleSelectBadge('Professor')}
-                className="w-full p-4 border-2 border-gray-200 hover:border-indigo-500 rounded-2xl transition flex items-center gap-4 group"
+                className="w-full p-4 border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50 rounded-xl transition flex items-center gap-4 group"
               >
-                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center group-hover:bg-indigo-500 transition">
-                  <GraduationCap className="w-6 h-6 text-indigo-600 group-hover:text-white transition" />
+                <div className="w-11 h-11 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-500 transition">
+                  <GraduationCap className="w-5 h-5 text-indigo-600 group-hover:text-white transition" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900">Professor</p>
-                  <p className="text-sm text-gray-500">For academic experts</p>
+                  <p className="font-semibold text-slate-900">Professor</p>
+                  <p className="text-sm text-slate-500">For academic experts</p>
                 </div>
               </button>
               <button
                 onClick={() => handleSelectBadge('Institute')}
-                className="w-full p-4 border-2 border-gray-200 hover:border-purple-500 rounded-2xl transition flex items-center gap-4 group"
+                className="w-full p-4 border-2 border-slate-200 hover:border-violet-500 hover:bg-violet-50 rounded-xl transition flex items-center gap-4 group"
               >
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-500 transition">
-                  <Building2 className="w-6 h-6 text-purple-600 group-hover:text-white transition" />
+                <div className="w-11 h-11 bg-violet-100 rounded-lg flex items-center justify-center group-hover:bg-violet-500 transition">
+                  <Building2 className="w-5 h-5 text-violet-600 group-hover:text-white transition" />
                 </div>
                 <div className="text-left">
-                  <p className="font-semibold text-gray-900">Institute</p>
-                  <p className="text-sm text-gray-500">For coaching centers & organizations</p>
+                  <p className="font-semibold text-slate-900">Institute</p>
+                  <p className="text-sm text-slate-500">For coaching centers & organizations</p>
                 </div>
               </button>
             </div>
             
             <button
               onClick={() => setShowBadgeModal(false)}
-              className="w-full mt-4 py-3 text-gray-500 hover:text-gray-700 transition"
+              className="w-full mt-4 py-2.5 text-slate-500 hover:text-slate-700 transition text-sm"
             >
               Cancel
             </button>
