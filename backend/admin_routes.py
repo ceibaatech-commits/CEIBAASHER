@@ -200,17 +200,36 @@ async def get_user_permissions(user_id: str):
 async def get_current_user_media_permissions(authorization: Optional[str] = Header(None)):
     """
     Get current logged-in user's media posting permissions
+    Supports both session tokens (Emergent auth) and JWT tokens
     """
+    from jose import jwt, JWTError
+    import os
+    
+    JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+    JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+    
     try:
         if not authorization:
             return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
         
         token = authorization.replace("Bearer ", "")
-        session = await db.user_sessions.find_one({"token": token})
-        if not session:
+        user_id = None
+        
+        # Try session token first (look in session_token field)
+        session = await db.user_sessions.find_one({"session_token": token})
+        if session:
+            user_id = session.get("user_id")
+        else:
+            # Try JWT token as fallback
+            try:
+                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                user_id = payload.get("sub")
+            except JWTError:
+                pass
+        
+        if not user_id:
             return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
         
-        user_id = session.get("user_id")
         user = await db.users.find_one(
             {"$or": [{"id": user_id}, {"user_id": user_id}]},
             {"_id": 0, "can_post_images": 1, "can_post_videos": 1, "is_disabled": 1}
@@ -225,6 +244,7 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
             "is_disabled": user.get("is_disabled", False)
         }
     except Exception as e:
+        print(f"Error fetching media permissions: {e}")
         return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
 
 @router.get("/admin/users/search")
