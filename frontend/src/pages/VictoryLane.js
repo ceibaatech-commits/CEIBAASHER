@@ -949,9 +949,8 @@ const VictoryLane = () => {
       if (selectedPostImage && mediaSettings.allow_image_posts) {
         const formData = new FormData();
         formData.append('file', selectedPostImage);
-        formData.append('upload_type', 'post_media');
         
-        const uploadResponse = await axios.post(`${BACKEND_URL}/api/upload/file`, formData, {
+        const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
           headers: { 
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -967,9 +966,8 @@ const VictoryLane = () => {
       if (selectedPostVideo && mediaSettings.allow_video_posts) {
         const formData = new FormData();
         formData.append('file', selectedPostVideo);
-        formData.append('upload_type', 'post_video');
         
-        const uploadResponse = await axios.post(`${BACKEND_URL}/api/upload/file`, formData, {
+        const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
           headers: { 
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -1000,7 +998,8 @@ const VictoryLane = () => {
         fetchFeed();
       }
     } catch (error) {
-      toast.error('Failed to create post');
+      console.error('Post error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to create post');
     }
   };
   
