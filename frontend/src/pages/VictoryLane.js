@@ -94,7 +94,7 @@ const VictoryLane = () => {
   const [extractingQuestions, setExtractingQuestions] = useState(false);
   const [extractedQuestions, setExtractedQuestions] = useState([]);
   
-  // Media posting settings (controlled by admin)
+  // Media posting settings (controlled by admin per-user)
   const [mediaSettings, setMediaSettings] = useState({
     allow_media_posts: false,
     allow_image_posts: false,
