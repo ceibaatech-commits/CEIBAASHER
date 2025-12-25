@@ -351,6 +351,14 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
               </button>
               
               <button 
+                onClick={() => { navigate('/earn'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-green-50 hover:text-green-600 transition-all"
+              >
+                <IndianRupee className="w-5 h-5" />
+                <span className="font-semibold text-base">Earn</span>
+              </button>
+              
+              <button 
                 onClick={() => { navigate('/join-room'); setMobileMenuOpen(false); }} 
                 className="w-full flex items-center space-x-4 px-5 py-4 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
               >
