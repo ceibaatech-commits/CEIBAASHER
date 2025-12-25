@@ -413,6 +413,12 @@ class MilestoneSystemTester:
         if not self.test_badge_selection_api():
             return False
         
+        # Step 5.5: Test Simulation Data Verification
+        print("\n📊 TEST CASE 4.5: Simulation Data Verification")
+        print("-" * 40)
+        if not self.test_simulation_data_verification():
+            return False
+        
         # Step 6: Test Earnings Simulation API
         print("\n💰 TEST CASE 5: Earnings Simulation API")
         print("-" * 40)
