@@ -1679,6 +1679,35 @@ const VictoryLane = () => {
                         <MathText text={post.content} />
                       </div>
 
+                      {/* Media Display (Images/Videos) */}
+                      {post.media_urls && post.media_urls.length > 0 && (
+                        <div className="mt-2 mb-3 rounded-2xl overflow-hidden border border-gray-200">
+                          {post.media_urls.map((url, idx) => {
+                            const fullUrl = url.startsWith('http') ? url : `${BACKEND_URL}${url}`;
+                            const isVideo = url.match(/\.(mp4|webm|mov|avi)$/i);
+                            
+                            return isVideo ? (
+                              <video 
+                                key={idx}
+                                src={fullUrl}
+                                controls
+                                className="w-full max-h-[500px] object-contain bg-black"
+                              />
+                            ) : (
+                              <img 
+                                key={idx}
+                                src={fullUrl}
+                                alt="Post media"
+                                className="w-full max-h-[500px] object-contain bg-gray-50"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                      )}
+
                       {/* Tags */}
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-3">
