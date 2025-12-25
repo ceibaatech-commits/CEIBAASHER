@@ -290,18 +290,33 @@ const VictoryLane = () => {
     'General Science'
   ];
 
-  // Fetch media posting settings from admin
+  // Fetch user's media posting permissions (per-user control by admin)
   useEffect(() => {
     const fetchMediaSettings = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/settings/media-allowed`);
-        setMediaSettings(response.data);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setMediaSettings({ allow_media_posts: false, allow_image_posts: false, allow_video_posts: false });
+          return;
+        }
+        
+        const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        // Map user permissions to media settings
+        setMediaSettings({
+          allow_media_posts: response.data.can_post_images || response.data.can_post_videos,
+          allow_image_posts: response.data.can_post_images ?? false,
+          allow_video_posts: response.data.can_post_videos ?? false
+        });
       } catch (error) {
-        console.error('Error fetching media settings:', error);
+        console.error('Error fetching media permissions:', error);
+        setMediaSettings({ allow_media_posts: false, allow_image_posts: false, allow_video_posts: false });
       }
     };
     fetchMediaSettings();
-  }, []);
+  }, [user]);
 
   // Close menu when clicking outside
   useEffect(() => {
