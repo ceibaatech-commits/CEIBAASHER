@@ -476,9 +476,13 @@ async def get_for_you_feed(
         if unique_user_ids:
             users = await db.users.find(
                 {"id": {"$in": unique_user_ids}},
-                {"_id": 0, "id": 1, "profile_picture": 1}
+                {"_id": 0, "id": 1, "profile_picture": 1, "is_disabled": 1}
             ).to_list(1000)
             user_profiles = {u["id"]: u.get("profile_picture") for u in users if u.get("profile_picture")}
+            disabled_users = {u["id"] for u in users if u.get("is_disabled", False)}
+            
+            # Filter out posts from disabled users
+            paginated = [p for p in paginated if p.get("user_id") not in disabled_users]
             
             for post in paginated:
                 if post.get("user_id") in user_profiles:
@@ -540,9 +544,13 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
         if unique_user_ids:
             users = await db.users.find(
                 {"id": {"$in": unique_user_ids}},
-                {"_id": 0, "id": 1, "profile_picture": 1}
+                {"_id": 0, "id": 1, "profile_picture": 1, "is_disabled": 1}
             ).to_list(1000)
             user_profiles = {u["id"]: u.get("profile_picture") for u in users if u.get("profile_picture")}
+            disabled_users = {u["id"] for u in users if u.get("is_disabled", False)}
+            
+            # Filter out posts from disabled users
+            paginated = [p for p in paginated if p.get("user_id") not in disabled_users]
             
             for post in paginated:
                 if post.get("user_id") in user_profiles:
@@ -617,9 +625,13 @@ async def get_following_feed(
         if unique_user_ids:
             users = await db.users.find(
                 {"id": {"$in": unique_user_ids}},
-                {"_id": 0, "id": 1, "profile_picture": 1}
+                {"_id": 0, "id": 1, "profile_picture": 1, "is_disabled": 1}
             ).to_list(1000)
             user_profiles = {u["id"]: u.get("profile_picture") for u in users if u.get("profile_picture")}
+            disabled_users = {u["id"] for u in users if u.get("is_disabled", False)}
+            
+            # Filter out posts from disabled users
+            paginated = [p for p in paginated if p.get("user_id") not in disabled_users]
             
             for post in paginated:
                 if post.get("user_id") in user_profiles:
