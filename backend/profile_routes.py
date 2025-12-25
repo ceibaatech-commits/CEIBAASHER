@@ -278,6 +278,28 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
         
         user.pop("_id", None)
         
+        # Check if user is disabled
+        is_disabled = user.get("is_disabled", False)
+        
+        # If user is disabled and viewer is not the user themselves, return limited info
+        if is_disabled and current_user_id != user["id"]:
+            return {
+                "success": True,
+                "profile": {
+                    "user_id": user["id"],
+                    "username": user.get("username"),
+                    "name": user.get("name"),
+                    "profile_picture": user.get("profile_picture"),
+                    "is_disabled": True,
+                    "followers_count": 0,
+                    "following_count": 0,
+                    "posts_count": 0,
+                    "can_view": False
+                },
+                "follow_status": None,
+                "is_disabled": True
+            }
+        
         # Get follow counts
         followers_count, following_count = await get_follow_counts(user["id"])
         user["followers_count"] = followers_count
@@ -349,7 +371,8 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
             "success": True,
             "profile": user,
             "follow_status": follow_status,
-            "can_view": can_view_full_profile
+            "can_view": can_view_full_profile,
+            "is_disabled": is_disabled
         }
         
     except HTTPException:
