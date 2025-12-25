@@ -172,6 +172,12 @@ fastapi_app.include_router(cbse_data_router, prefix="/api")  # CBSE data - singl
 from media_upload_routes import router as media_upload_router
 fastapi_app.include_router(media_upload_router, prefix="/api")  # Media upload routes
 
+# Milestone and monetization routes
+from milestone_routes import router as milestone_router
+import milestone_routes
+milestone_routes.init_db(db)
+fastapi_app.include_router(milestone_router, prefix="/api")  # Milestone & monetization routes
+
 # socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
