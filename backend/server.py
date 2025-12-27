@@ -148,7 +148,12 @@ fastapi_app.include_router(image_extraction_router, prefix="/api")
 fastapi_app.include_router(battle_router)
 fastapi_app.include_router(battle_async_router)  # Hybrid REST + Socket.IO battle system
 # fastapi_app.include_router(social_router, prefix="/api")  # Disabled - using social_feed_router instead
+
+# Contact/Support routes
+import contact_routes
+contact_routes.init_db(db)
 fastapi_app.include_router(contact_router, prefix="/api")
+
 fastapi_app.include_router(social_feed_router, prefix="/api/social")
 fastapi_app.include_router(ceep_router, prefix="/api/ceep")
 fastapi_app.include_router(admin_router, prefix="/api")
