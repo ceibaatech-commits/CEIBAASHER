@@ -514,8 +514,8 @@ async def get_for_you_feed(
 async def get_trending_feed(skip: int = 0, limit: int = 10):
     """Get trending posts - sorted by recency and engagement"""
     try:
-        # Get all posts
-        posts = await db.social_posts.find({}, {"_id": 0}).to_list(None)
+        # Get posts with limit for performance
+        posts = await db.social_posts.find({}, {"_id": 0}).sort("created_at", -1).limit(200).to_list(200)
         posts = await filter_expired_quiz_posts(posts)
         
         # Sort by created_at in Python to handle mixed date formats
