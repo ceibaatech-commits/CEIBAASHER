@@ -6249,3 +6249,27 @@ Complete Milestone & Monetization System with:
 - ✅ Simulation mode working
 - ✅ Milestone progress tracking working
 - ✅ Badge selection ready (when 500 posts reached)
+
+## Language Translation Feature for Quiz Pages - December 2025
+
+### Current Testing Task:
+Test the language translation feature on Quiz pages that was implemented but never tested.
+
+### Components Involved:
+- `/app/frontend/src/pages/QuizRoom.js` - Quiz page with language selector integration
+- `/app/frontend/src/components/LanguageSelector.js` - Language selector component with useTranslation hook
+- `/app/backend/translation_routes.py` - Backend translation API using deep-translator
+
+### Backend API Status (Verified):
+- ✅ `POST /api/translate/translate` - Single text translation WORKING
+- ✅ `POST /api/translate/translate/batch` - Batch translation WORKING  
+- ✅ Translation to Hindi tested successfully ("What is the capital of India?" → "भारत की राजधानी क्या है?")
+
+### Test Requirements:
+1. Navigate to a quiz room (need to find an active quiz or create one)
+2. Verify the language selector appears in the quiz header
+3. Select Hindi or another language
+4. Verify questions and options get translated
+5. Verify timer and UI elements remain functional during translation
+6. Verify answer selection works correctly with translated content
+7. Test that switching back to English shows original content
