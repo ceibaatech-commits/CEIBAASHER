@@ -634,43 +634,7 @@ async def email_login(login_data: EmailLoginRequest):
     except Exception as e:
         print(f"Login error: {str(e)}")
         raise HTTPException(status_code=500, detail="Login failed. Please try again.")
-        else:
-            # Update last login
-            await db.users.update_one(
-                {"provider": "demo", "provider_id": user_data["provider_id"]},
-                {"$set": {"last_login": datetime.utcnow().isoformat()}}
-            )
-            user_data = existing_user
-        
-        # Create token
-        token_data = {
-            "sub": user_data["id"],
-            "provider": "demo",
-            "provider_id": user_data["provider_id"]
-        }
-        access_token = create_access_token(token_data)
-        
-        print(f"✅ Demo login successful: {user_data['name']}")
-        
-        return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "user": {
-                "id": user_data["id"],
-                "name": user_data["name"],
-                "email": user_data.get("email"),
-                "profile_picture": user_data.get("profile_picture"),
-                "provider": "demo"
-            }
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Demo login error: {e}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Login failed")
+
 
 @router.post("/auth/create-demo-users")
 async def create_demo_users():
