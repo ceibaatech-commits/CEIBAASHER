@@ -212,11 +212,11 @@ const Contact = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-1">Call Us 📱</h3>
                     <p className="text-gray-600 text-sm mb-3">Available 9 AM - 6 PM IST</p>
                     <a 
-                      href="tel:+917303151691"
+                      href="tel:+917303151699"
                       className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-600 transition-all shadow-md hover:shadow-lg"
                     >
                       <Phone className="w-4 h-4" />
-                      +91 73031 51691
+                      +91 73031 51699
                     </a>
                   </div>
                 </motion.div>
