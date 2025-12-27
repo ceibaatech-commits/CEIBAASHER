@@ -488,10 +488,17 @@ async def get_for_you_feed(
                 if post.get("user_id") in user_profiles:
                     post["user_avatar"] = user_profiles[post["user_id"]]
         
-        if user_id:
+        # Batch query all likes at once instead of N+1 queries
+        if user_id and paginated:
+            post_ids = [p["id"] for p in paginated]
+            likes = await db.post_likes.find(
+                {"user_id": user_id, "post_id": {"$in": post_ids}},
+                {"_id": 0, "post_id": 1}
+            ).to_list(100)
+            liked_post_ids = {like["post_id"] for like in likes}
+            
             for post in paginated:
-                liked = await db.post_likes.find_one({"user_id": user_id, "post_id": post["id"]})
-                post["liked_by_user"] = liked is not None
+                post["liked_by_user"] = post["id"] in liked_post_ids
         
         # Ensure is_retweet is explicitly false if not present
         for post in paginated:
