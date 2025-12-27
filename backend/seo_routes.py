@@ -211,7 +211,7 @@ async def get_seo_stats():
             "total_quiz_rooms": 0
         }
         
-        if db:
+        if db is not None:
             stats["total_posts"] = await db.social_posts.count_documents({})
             stats["total_users"] = await db.users.count_documents({"is_disabled": {"$ne": True}})
             stats["total_quiz_rooms"] = await db.quiz_rooms.count_documents({})
