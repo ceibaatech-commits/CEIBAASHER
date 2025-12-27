@@ -7,7 +7,7 @@ import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 
 // Connect to battle server through the backend domain
-const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://victorylane-1.preview.emergentagent.com';
+const BATTLE_SERVER_URL = process.env.REACT_APP_BACKEND_URL || 'https://multilingual-quiz-2.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
