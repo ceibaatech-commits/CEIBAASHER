@@ -254,6 +254,7 @@ EXAM_DATA = {
         "color": "from-green-500 to-emerald-600",
         "total_questions": 120,
         "duration": "2 hours",
+        "category": "Government Jobs",
         "syllabus_topics": {
             "Agriculture": {
                 "subjects": {
