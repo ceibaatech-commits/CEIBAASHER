@@ -117,6 +117,28 @@ const QuizRoom = () => {
     fetchLeaderboard();
   }, [quizCompleted, roomCode, user]);
 
+  // Handle translation
+  useEffect(() => {
+    const q = questions[currentQuestionIndex];
+    if (!q) {
+      setDisplayQuestion(null);
+      return;
+    }
+
+    if (language === 'en') {
+      setDisplayQuestion(q);
+    } else {
+      // Keep showing previous question or show loader while translating could be better,
+      // but simpler is to just update when ready. 
+      // To avoid flashing English then target, we could check if we are switching questions.
+      translateQuestionObject(q, language).then(translated => {
+        if (questions[currentQuestionIndex] === q) { // Ensure we are still on same question
+          setDisplayQuestion(translated);
+        }
+      });
+    }
+  }, [currentQuestionIndex, language, questions, translateQuestionObject]);
+
   // Simple countdown timer (no auto-advance)
   useEffect(() => {
     if (quizCompleted) return;
