@@ -350,6 +350,7 @@ EXAM_DATA = {
         "color": "from-green-700 to-emerald-800",
         "total_questions": 270,
         "duration": "5 hours",
+        "category": "Defence Exams",
         "marks_distribution": {
             "Mathematics": 300,
             "General Ability Test": 600
