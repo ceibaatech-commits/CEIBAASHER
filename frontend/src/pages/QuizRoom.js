@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { Clock, Trophy, Check, X, Award, Users } from 'lucide-react';
+import { Clock, Trophy, Check, X, Award, Users, Loader2 } from 'lucide-react';
 import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { renderMathText } from '../utils/renderMath';
+import LanguageSelector, { useTranslation } from '../components/LanguageSelector';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -14,10 +15,12 @@ const QuizRoom = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { language, setLanguage, translateQuestionObject, isTranslating } = useTranslation();
 
   const [questions, setQuestions] = useState(location.state?.questions || []);
   const [roomData, setRoomData] = useState(location.state?.room || null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [displayQuestion, setDisplayQuestion] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [timeLeft, setTimeLeft] = useState(30);
