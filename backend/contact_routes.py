@@ -1,28 +1,27 @@
 import os
 import asyncio
 import logging
-import resend
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
+from typing import Optional, List
+from datetime import datetime, timezone
 from dotenv import load_dotenv
+import uuid
 
 load_dotenv()
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-# Resend Configuration
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
-# In Resend test mode, emails can only go to the account owner's email
-# For production, verify your domain at https://resend.com/domains
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "aviitanwar1@gmail.com")
+# Database connection will be injected
+db = None
 
-# Initialize Resend
-if RESEND_API_KEY:
-    resend.api_key = RESEND_API_KEY
-else:
-    logger.warning("RESEND_API_KEY not found in environment variables")
+def init_db(database):
+    """Initialize database connection"""
+    global db
+    db = database
+
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "ceibaatech@gmail.com")
 
 
 class ContactFormRequest(BaseModel):
@@ -37,127 +36,34 @@ class ContactResponse(BaseModel):
     message: str
 
 
+class TicketUpdateRequest(BaseModel):
+    status: Optional[str] = None
+    admin_notes: Optional[str] = None
+
+
 @router.post("/contact", response_model=ContactResponse)
 async def submit_contact_form(request: ContactFormRequest):
     """
-    Handle contact form submission and send email to ceibaatech@gmail.com
+    Handle contact form submission - saves to database for admin panel
     """
-    if not RESEND_API_KEY:
-        raise HTTPException(
-            status_code=500,
-            detail="Email service not configured. Please contact admin."
-        )
-    
     try:
-        # Create HTML email content
-        html_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    background-color: #f9f9f9;
-                }}
-                .header {{
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    padding: 30px;
-                    text-align: center;
-                    border-radius: 10px 10px 0 0;
-                }}
-                .content {{
-                    background: white;
-                    padding: 30px;
-                    border-radius: 0 0 10px 10px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                }}
-                .field {{
-                    margin-bottom: 20px;
-                }}
-                .label {{
-                    font-weight: bold;
-                    color: #667eea;
-                    display: block;
-                    margin-bottom: 5px;
-                }}
-                .value {{
-                    background: #f5f5f5;
-                    padding: 10px;
-                    border-radius: 5px;
-                    border-left: 3px solid #667eea;
-                }}
-                .message-box {{
-                    background: #f5f5f5;
-                    padding: 15px;
-                    border-radius: 5px;
-                    border-left: 3px solid #667eea;
-                    white-space: pre-wrap;
-                    word-wrap: break-word;
-                }}
-                .footer {{
-                    text-align: center;
-                    margin-top: 20px;
-                    color: #666;
-                    font-size: 12px;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>📧 New Contact Form Submission</h1>
-                    <p>Ceibaa Website</p>
-                </div>
-                <div class="content">
-                    <div class="field">
-                        <span class="label">👤 Name:</span>
-                        <div class="value">{request.name}</div>
-                    </div>
-                    
-                    <div class="field">
-                        <span class="label">📧 Email:</span>
-                        <div class="value">{request.email}</div>
-                    </div>
-                    
-                    {f'''<div class="field">
-                        <span class="label">📱 Phone:</span>
-                        <div class="value">{request.phone}</div>
-                    </div>''' if request.phone else ''}
-                    
-                    <div class="field">
-                        <span class="label">💬 Message:</span>
-                        <div class="message-box">{request.message}</div>
-                    </div>
-                </div>
-                <div class="footer">
-                    <p>This is an automated message from your Ceibaa contact form.</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        """
-        
-        # Prepare email parameters
-        params = {
-            "from": SENDER_EMAIL,
-            "to": [ADMIN_EMAIL],
-            "reply_to": request.email,  # Allow easy reply
-            "subject": f"New Contact Form - {request.name}",
-            "html": html_content
+        # Create support ticket document
+        ticket = {
+            "id": str(uuid.uuid4()),
+            "name": request.name,
+            "email": request.email,
+            "phone": request.phone or "",
+            "message": request.message,
+            "status": "new",  # new, in_progress, resolved, closed
+            "admin_notes": "",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        # Send email (non-blocking)
-        email_result = await asyncio.to_thread(resend.Emails.send, params)
+        # Save to database
+        await db.support_tickets.insert_one(ticket)
         
-        logger.info(f"Contact form email sent successfully. Email ID: {email_result.get('id')}")
+        logger.info(f"Support ticket created: {ticket['id']} from {request.email}")
         
         return ContactResponse(
             success=True,
@@ -165,8 +71,129 @@ async def submit_contact_form(request: ContactFormRequest):
         )
         
     except Exception as e:
-        logger.error(f"Failed to send contact form email: {str(e)}")
+        logger.error(f"Failed to save contact form: {str(e)}")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to send email. Please try again later or contact us directly at {ADMIN_EMAIL}"
+            detail=f"Failed to submit. Please try again or contact us directly at {ADMIN_EMAIL}"
         )
+
+
+# ==================== ADMIN ENDPOINTS ====================
+
+@router.get("/admin/support-tickets")
+async def get_support_tickets(
+    status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 50
+):
+    """
+    Get all support tickets for admin panel
+    """
+    try:
+        query = {}
+        if status:
+            query["status"] = status
+        
+        tickets = await db.support_tickets.find(
+            query, 
+            {"_id": 0}
+        ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+        
+        total = await db.support_tickets.count_documents(query)
+        
+        # Count by status
+        status_counts = {
+            "new": await db.support_tickets.count_documents({"status": "new"}),
+            "in_progress": await db.support_tickets.count_documents({"status": "in_progress"}),
+            "resolved": await db.support_tickets.count_documents({"status": "resolved"}),
+            "closed": await db.support_tickets.count_documents({"status": "closed"})
+        }
+        
+        return {
+            "success": True,
+            "tickets": tickets,
+            "total": total,
+            "status_counts": status_counts
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching tickets: {str(e)}")
+
+
+@router.get("/admin/support-tickets/{ticket_id}")
+async def get_ticket_details(ticket_id: str):
+    """
+    Get single ticket details
+    """
+    try:
+        ticket = await db.support_tickets.find_one({"id": ticket_id}, {"_id": 0})
+        
+        if not ticket:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        
+        return {
+            "success": True,
+            "ticket": ticket
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching ticket: {str(e)}")
+
+
+@router.put("/admin/support-tickets/{ticket_id}")
+async def update_ticket(ticket_id: str, update_data: TicketUpdateRequest):
+    """
+    Update ticket status or add admin notes
+    """
+    try:
+        ticket = await db.support_tickets.find_one({"id": ticket_id})
+        
+        if not ticket:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        
+        update_fields = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        if update_data.status:
+            update_fields["status"] = update_data.status
+        
+        if update_data.admin_notes is not None:
+            update_fields["admin_notes"] = update_data.admin_notes
+        
+        await db.support_tickets.update_one(
+            {"id": ticket_id},
+            {"$set": update_fields}
+        )
+        
+        return {
+            "success": True,
+            "message": "Ticket updated successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating ticket: {str(e)}")
+
+
+@router.delete("/admin/support-tickets/{ticket_id}")
+async def delete_ticket(ticket_id: str):
+    """
+    Delete a support ticket
+    """
+    try:
+        result = await db.support_tickets.delete_one({"id": ticket_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Ticket not found")
+        
+        return {
+            "success": True,
+            "message": "Ticket deleted successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting ticket: {str(e)}")
