@@ -28,7 +28,7 @@ const Footer = () => {
               <p className="text-xs text-gray-500 mb-2 font-semibold">Follow Us</p>
               <div className="flex space-x-3">
                 <a 
-                  href="https://www.instagram.com/ceibaaapp" 
+                  href="www.instagram.com/ceibaaapp/" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg"
@@ -55,7 +55,7 @@ const Footer = () => {
                   <Linkedin className="w-5 h-5 text-white" />
                 </a>
                 <a 
-                  href="https://www.youtube.com/@CeibaaTech-n7o" 
+                  href="https://www.youtube.com/@Ceibaa" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg"
