@@ -873,6 +873,7 @@ EXAM_DATA = {
         "color": "from-purple-600 to-indigo-700",
         "total_questions": 250,
         "duration": "4 hours",
+        "category": "Defence Exams",
         "syllabus_topics": {
             "General Ability": {
                 "subjects": {
