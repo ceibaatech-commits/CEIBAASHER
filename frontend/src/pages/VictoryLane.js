@@ -2520,8 +2520,6 @@ const VictoryLane = () => {
           </div>
         </div>
       )}
-
-      <Footer />
       
       {/* Delete Post Confirmation Modal */}
       <DeletePostModal
