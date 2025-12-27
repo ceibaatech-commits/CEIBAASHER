@@ -94,7 +94,7 @@ async def get_dynamic_sitemap():
   </url>''')
         
         # Add dynamic user profiles (public, non-disabled users)
-        if db:
+        if db is not None:
             try:
                 users = await db.users.find(
                     {"is_disabled": {"$ne": True}, "is_private": {"$ne": True}},
@@ -112,7 +112,7 @@ async def get_dynamic_sitemap():
                 print(f"Error fetching users for sitemap: {e}")
         
         # Add recent posts (last 100)
-        if db:
+        if db is not None:
             try:
                 posts = await db.social_posts.find(
                     {},
