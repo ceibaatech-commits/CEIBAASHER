@@ -163,17 +163,22 @@ async def get_academic_posts(
     query = {"post_type": "academic_question"}
     
     if class_name:
-        query["academic_class"] = class_name
+        # For Class 11/12, also match with stream suffix like "Class 11 (Science)"
+        if class_name in ["Class 11", "Class 12"]:
+            query["academic_class"] = {"$regex": f"^{class_name}", "$options": "i"}
+        else:
+            query["academic_class"] = class_name
     if subject:
         # Use regex for flexible matching (handles display names vs slugs)
         query["academic_subject"] = {"$regex": subject.replace("-", ".*"), "$options": "i"}
     if chapter:
         query["academic_chapter"] = chapter
     
-    posts = await db.posts.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(None)
+    # Query from social_posts collection (where academic posts are stored)
+    posts = await db.social_posts.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(None)
     
     # Get total count for pagination
-    total = await db.posts.count_documents(query)
+    total = await db.social_posts.count_documents(query)
     
     return {
         "success": True,
