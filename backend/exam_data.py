@@ -2953,7 +2953,7 @@ EXAM_DATA = {
         "name": "Rajasthan Police Constable",
         "full_name": "Rajasthan Police Constable Recruitment 2025",
         "description": "Rajasthan Police Department (RPD) Constable Recruitment Exam",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "icon": "https://customer-assets.emergentagent.com/job_quiz-translate/artifacts/wwy5znuf_Gemini_Generated_Image_uuhw1cuuhw1cuuhw-removebg-preview.png",
         "color": "from-blue-700 to-indigo-800",
         "total_questions": 150,
         "duration": "2 hours",
