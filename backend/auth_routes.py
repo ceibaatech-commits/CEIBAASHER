@@ -563,16 +563,77 @@ async def signup(request: SignupRequest):
     except Exception as e:
         print(f"Signup error: {str(e)}")
         raise HTTPException(status_code=500, detail="Signup failed. Please try again.")
+
+
+@router.post("/auth/login")
+async def email_login(login_data: EmailLoginRequest):
+    """Login with email and password"""
+    try:
+        email_lower = login_data.email.strip().lower()
         
-        user_data = demo_users[username]
+        # Find user by email
+        user = await db.users.find_one({"email": email_lower}, {"_id": 0})
         
-        # Check if user exists in DB
-        existing_user = await db.users.find_one({"provider": "demo", "provider_id": user_data["provider_id"]})
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid email or password")
         
-        if not existing_user:
-            # Create user in DB
-            await db.users.insert_one(user_data)
-            print(f"✅ Created new demo user: {user_data['name']}")
+        # Check if user has a password (signed up with email)
+        stored_password = user.get("password")
+        if not stored_password:
+            # User might have signed up with Google
+            raise HTTPException(
+                status_code=401, 
+                detail="This account uses Google login. Please use 'Continue with Google'."
+            )
+        
+        # Verify password
+        if not verify_password(login_data.password, stored_password):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
+        
+        # Update last login
+        await db.users.update_one(
+            {"email": email_lower},
+            {"$set": {"last_login": datetime.utcnow().isoformat()}}
+        )
+        
+        # Generate JWT token
+        token_data = {
+            "sub": user["id"],
+            "email": email_lower,
+            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+        }
+        token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        
+        # Return user data (without password)
+        user_response = {
+            "id": user["id"],
+            "user_id": user.get("user_id", user["id"]),
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "username": user.get("username"),
+            "avatar": user.get("avatar") or user.get("profile_picture"),
+            "profile_picture": user.get("profile_picture") or user.get("avatar"),
+            "verified": user.get("verified", False),
+            "rating": user.get("rating", 1200),
+            "streak": user.get("streak", 0),
+            "isTeacher": user.get("isTeacher", False),
+            "isProfessor": user.get("isProfessor", False),
+            "isOfficial": user.get("isOfficial", False),
+            "isInstitute": user.get("isInstitute", False)
+        }
+        
+        return {
+            "user": user_response,
+            "token": token,
+            "access_token": token,
+            "token_type": "bearer"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Login failed. Please try again.")
         else:
             # Update last login
             await db.users.update_one(
