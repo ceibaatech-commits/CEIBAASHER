@@ -50,7 +50,7 @@ const FAQ = () => {
       faqs: [
         {
           question: "What is Ceibaa?",
-          answer: "Ceibaa is India's #1 Live Quiz Battle Platform that combines social media engagement with exam preparation. Think of it as 'viral video apps meets Education' - where students compete in real-time quiz battles with video streaming, making learning as addictive as social media."
+          answer: "Ceibaa is India's #1 Live Quiz Battle Platform that combines social media engagement with exam preparation. Think of it as 'viral video apps meets Education' - where students compete in real-time quiz battles with video streaming, making learning as addictive as social media. Ceibaa is a trademark which is under process of SHER INVESTMENT PVT LTD."
         },
         {
           question: "How is Ceibaa different from other learning apps?",

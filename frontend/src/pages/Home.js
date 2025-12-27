@@ -114,12 +114,12 @@ const Home = () => {
     { id: 'class-8', name: 'Class 8', icon: '📙', color: 'from-indigo-500 to-purple-500', subjects: 'Science, Maths, SST' },
     { id: 'class-9', name: 'Class 9', icon: '📕', color: 'from-purple-500 to-pink-500', subjects: 'Science, Maths, SST' },
     { id: 'class-10', name: 'Class 10', icon: '📓', color: 'from-pink-500 to-rose-500', subjects: 'Science, Maths, SST' },
-    { id: 'class-11-science', name: 'Class 11 Science', icon: '🔬', color: 'from-emerald-500 to-teal-500', subjects: 'Physics, Chemistry, Maths/Bio' },
-    { id: 'class-11-commerce', name: 'Class 11 Commerce', icon: '📊', color: 'from-amber-500 to-orange-500', subjects: 'Accounts, Economics, Business' },
-    { id: 'class-11-humanities', name: 'Class 11 Humanities', icon: '📜', color: 'from-violet-500 to-purple-500', subjects: 'History, Geography, Political Sc.' },
-    { id: 'class-12-science', name: 'Class 12 Science', icon: '⚛️', color: 'from-teal-500 to-cyan-500', subjects: 'Physics, Chemistry, Maths/Bio' },
-    { id: 'class-12-commerce', name: 'Class 12 Commerce', icon: '💹', color: 'from-orange-500 to-red-500', subjects: 'Accounts, Economics, Business' },
-    { id: 'class-12-humanities', name: 'Class 12 Humanities', icon: '🌍', color: 'from-purple-500 to-pink-500', subjects: 'History, Geography, Political Sc.' },
+    { id: 'class-11/science', name: 'Class 11 Science', icon: '🔬', color: 'from-emerald-500 to-teal-500', subjects: 'Physics, Chemistry, Maths/Bio' },
+    { id: 'class-11/commerce', name: 'Class 11 Commerce', icon: '📊', color: 'from-amber-500 to-orange-500', subjects: 'Accounts, Economics, Business' },
+    { id: 'class-11/humanities', name: 'Class 11 Humanities', icon: '📜', color: 'from-violet-500 to-purple-500', subjects: 'History, Geography, Political Sc.' },
+    { id: 'class-12/science', name: 'Class 12 Science', icon: '🔬', color: 'from-teal-500 to-cyan-500', subjects: 'Physics, Chemistry, Maths/Bio' },
+    { id: 'class-12/commerce', name: 'Class 12 Commerce', icon: '📊', color: 'from-orange-500 to-red-500', subjects: 'Accounts, Economics, Business' },
+    { id: 'class-12/humanities', name: 'Class 12 Humanities', icon: '📜', color: 'from-purple-500 to-pink-500', subjects: 'History, Geography, Political Sc.' },
   ];
   
   // Categories for mobile - exclude Teaching on mobile
