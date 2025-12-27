@@ -1850,7 +1850,11 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Other Competitive Exams Section - Enhanced */}
+        {/* Other Competitive Exams Section - Enhanced - Only show if there are exams */}
+        {exams.filter(exam => 
+          !['NDA', 'Agniveer', 'CDS', 'CAPF'].includes(exam.id) && 
+          !['Admission Tests', 'Banking Examinations', 'UPSC Examinations', 'SSC Examinations', 'Teaching Examinations', 'Language Proficiency Tests', 'Language Games', 'UPPSC Examinations', 'CSBC Examinations', 'RSMSSB Examinations', 'Defence Exams', 'Government Jobs', 'Medical Entrance'].includes(exam.category)
+        ).length > 0 && (
         <div className="mb-16">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
