@@ -15,6 +15,7 @@ import RevenueManagement from '../components/admin/RevenueManagement';
 import SystemSettings from '../components/admin/SystemSettings';
 import ExamSheetManager from '../components/admin/ExamSheetManager';
 import ExamCategoryManager from '../components/admin/ExamCategoryManager';
+import SupportPanel from '../components/admin/SupportPanel';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
