@@ -165,6 +165,85 @@ export const useTranslation = () => {
     }
   };
 
+  const translateQuestionObject = async (question, targetLang = language) => {
+    if (targetLang === 'en' || !question) return question;
+    
+    try {
+      // Prepare texts to translate: question + options
+      const textsToTranslate = [question.question_text || question.question];
+      
+      // Handle options formats (array of strings, array of objects, or option_a/b/c/d keys)
+      let optionKeys = [];
+      let optionsArray = [];
+      
+      if (Array.isArray(question.options)) {
+        // Array format
+        question.options.forEach(opt => {
+          if (typeof opt === 'string') {
+            textsToTranslate.push(opt);
+          } else if (typeof opt === 'object' && opt.text) {
+            textsToTranslate.push(opt.text);
+          } else if (typeof opt === 'object' && opt.value) {
+            textsToTranslate.push(opt.value);
+          }
+        });
+      } else {
+        // Key format (option_a, option_b...)
+        ['option_a', 'option_b', 'option_c', 'option_d'].forEach(key => {
+          if (question[key]) {
+            textsToTranslate.push(question[key]);
+            optionKeys.push(key);
+          }
+        });
+      }
+
+      // Add explanation if exists
+      if (question.explanation) {
+        textsToTranslate.push(question.explanation);
+      }
+      
+      // Call batch translation
+      const response = await axios.post(`${BACKEND_URL}/api/translate/translate/batch`, {
+        texts: textsToTranslate,
+        target_lang: targetLang,
+        source_lang: 'en'
+      });
+      
+      if (response.data.success) {
+        const translations = response.data.translations;
+        const translatedQuestion = { ...question };
+        
+        // Map back translations
+        let tIndex = 0;
+        translatedQuestion.question_text = translations[tIndex++]; // or .question based on original
+        if (question.question) translatedQuestion.question = translatedQuestion.question_text;
+        
+        if (Array.isArray(question.options)) {
+          translatedQuestion.options = question.options.map(opt => {
+            const translatedText = translations[tIndex++];
+            if (typeof opt === 'string') return translatedText;
+            if (typeof opt === 'object') return { ...opt, text: translatedText, value: translatedText };
+            return opt;
+          });
+        } else {
+          optionKeys.forEach(key => {
+            translatedQuestion[key] = translations[tIndex++];
+          });
+        }
+        
+        if (question.explanation) {
+          translatedQuestion.explanation = translations[tIndex++];
+        }
+        
+        return translatedQuestion;
+      }
+      return question;
+    } catch (error) {
+      console.error('Question object translation error:', error);
+      return question;
+    }
+  };
+
   const translateQuestion = async (questionId, targetLang = language) => {
     if (targetLang === 'en') return null;
     
