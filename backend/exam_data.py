@@ -573,6 +573,7 @@ EXAM_DATA = {
         "total_questions": 50,
         "total_marks": 100,
         "duration": "1 hour",
+        "category": "Defence Exams",
         "negative_marking": "No negative marking",
         "marks_per_question": 2,
         "exam_type": "Objective Type Questions",
