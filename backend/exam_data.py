@@ -2847,7 +2847,7 @@ EXAM_DATA = {
         "name": "RSMSSB Patwari",
         "full_name": "RSMSSB Patwari Recruitment Exam",
         "description": "Rajasthan Subordinate and Ministerial Services Selection Board Patwari Examination",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "icon": "https://customer-assets.emergentagent.com/job_quiz-translate/artifacts/wwy5znuf_Gemini_Generated_Image_uuhw1cuuhw1cuuhw-removebg-preview.png",
         "color": "from-amber-600 to-orange-700",
         "total_questions": 150,
         "duration": "3 hours",
