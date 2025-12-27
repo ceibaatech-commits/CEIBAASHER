@@ -301,6 +301,7 @@ EXAM_DATA = {
         "color": "from-orange-500 to-red-500",
         "total_questions": 150,
         "duration": "3 hours",
+        "category": "RSMSSB Examinations",
         "syllabus_topics": {
             "General Knowledge": {
                 "subjects": {
