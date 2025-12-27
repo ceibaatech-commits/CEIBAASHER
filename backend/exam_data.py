@@ -3199,7 +3199,7 @@ EXAM_DATA = {
         "name": "UP Police Constable",
         "full_name": "UP Police Constable Recruitment 2025",
         "description": "UPPRPB Constable Exam - GK, Hindi, Maths & Reasoning",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "icon": "https://customer-assets.emergentagent.com/job_quiz-translate/artifacts/8abwv0xk_IMG_2261.png",
         "color": "from-orange-600 to-red-700",
         "total_questions": 150,
         "total_marks": 300,
