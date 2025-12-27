@@ -429,11 +429,11 @@ async def get_for_you_feed(
             if following_ids:
                 following_posts = await db.social_posts.find(
                     {"user_id": {"$in": following_ids}}, {"_id": 0}
-                ).sort("created_at", -1).to_list(None)
+                ).sort("created_at", -1).limit(100).to_list(100)
                 mixed_posts.extend(following_posts)
         
-        # Get trending posts (without pagination first)
-        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).to_list(None)
+        # Get trending posts (with limit for performance)
+        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).limit(100).to_list(100)
         
         # Get recent quiz rooms (last 24 hours) to ensure they appear
         recent_quiz_rooms = await db.social_posts.find(
