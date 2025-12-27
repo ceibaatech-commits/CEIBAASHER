@@ -195,15 +195,15 @@ async def get_follow_counts(user_id: str):
     Note: App writes to both 'ceeps' (legacy) and 'follows' (current) collections for compatibility
     We must deduplicate to avoid double-counting
     """
-    # Get all follower relationships from both collections
+    # Get all follower relationships from both collections (with reasonable limit)
     followers_follows = await db.follows.find({
         "following_id": user_id,
         "status": "approved"
-    }, {"follower_id": 1, "_id": 0}).to_list(length=None)
+    }, {"follower_id": 1, "_id": 0}).to_list(length=10000)
     
     followers_ceeps = await db.ceeps.find({
         "ceep_user_id": user_id
-    }, {"user_id": 1, "_id": 0}).to_list(length=None)
+    }, {"user_id": 1, "_id": 0}).to_list(length=10000)
     
     # Deduplicate follower IDs
     follower_ids = set()
@@ -213,15 +213,15 @@ async def get_follow_counts(user_id: str):
         follower_ids.add(ceep.get("user_id"))
     follower_ids.discard(None)  # Remove any None values
     
-    # Get all following relationships from both collections
+    # Get all following relationships from both collections (with reasonable limit)
     following_follows = await db.follows.find({
         "follower_id": user_id,
         "status": "approved"
-    }, {"following_id": 1, "_id": 0}).to_list(length=None)
+    }, {"following_id": 1, "_id": 0}).to_list(length=10000)
     
     following_ceeps = await db.ceeps.find({
         "user_id": user_id
-    }, {"ceep_user_id": 1, "_id": 0}).to_list(length=None)
+    }, {"ceep_user_id": 1, "_id": 0}).to_list(length=10000)
     
     # Deduplicate following IDs
     following_ids = set()
