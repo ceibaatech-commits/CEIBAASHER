@@ -42,13 +42,27 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/demo-login`, {
-        username: demoUsername,
-        password: demoPassword
-      });
+      let response;
+      
+      // Check if input is email format
+      const isEmail = demoUsername.includes('@');
+      
+      if (isEmail) {
+        // Try email login first
+        response = await axios.post(`${BACKEND_URL}/api/auth/login`, {
+          email: demoUsername,
+          password: demoPassword
+        });
+      } else {
+        // Try demo login for username-based login
+        response = await axios.post(`${BACKEND_URL}/api/auth/demo-login`, {
+          username: demoUsername,
+          password: demoPassword
+        });
+      }
 
-      localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('auth_token', response.data.access_token);
+      localStorage.setItem('token', response.data.access_token || response.data.token);
+      localStorage.setItem('auth_token', response.data.access_token || response.data.token);
       const userData = response.data.user;
       setUserData(userData);
 
