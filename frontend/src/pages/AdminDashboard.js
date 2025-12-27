@@ -73,6 +73,8 @@ const AdminDashboard = () => {
         return <ContentModeration />;
       case 'revenue':
         return <RevenueManagement />;
+      case 'support':
+        return <SupportPanel />;
       case 'settings':
         return <SystemSettings />;
       default:
