@@ -139,7 +139,7 @@ const CreatePostFAB = ({
       {/* Main FAB Button - Mobile Only */}
       <button
         onClick={() => setShowCreateMenu(!showCreateMenu)}
-        className={`md:hidden fixed bottom-6 right-4 sm:right-8 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center ${
+        className={`md:hidden fixed bottom-6 left-4 sm:left-8 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center ${
           showCreateMenu ? 'rotate-45' : 'rotate-0'
         }`}
       >
