@@ -276,6 +276,7 @@ export const useTranslation = () => {
     translateText,
     translateBatch,
     translateQuestion,
+    translateQuestionObject,
     LANGUAGES
   };
 };
