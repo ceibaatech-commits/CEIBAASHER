@@ -1888,7 +1888,7 @@ const Home = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {exams.filter(exam => 
             !['NDA', 'Agniveer', 'CDS', 'CAPF'].includes(exam.id) && 
-            !['Admission Tests', 'Banking Examinations', 'UPSC Examinations', 'SSC Examinations', 'Teaching Examinations', 'Language Proficiency Tests', 'Language Games'].includes(exam.category)
+            !['Admission Tests', 'Banking Examinations', 'UPSC Examinations', 'SSC Examinations', 'Teaching Examinations', 'Language Proficiency Tests', 'Language Games', 'UPPSC Examinations', 'CSBC Examinations', 'RSMSSB Examinations'].includes(exam.category)
           ).map((exam, index) => (
             <motion.div
               key={exam.id}
