@@ -837,6 +837,7 @@ EXAM_DATA = {
         "color": "from-teal-600 to-cyan-700",
         "total_questions": 340,
         "duration": "6 hours",
+        "category": "Defence Exams",
         "syllabus_topics": {
             "English": {
                 "subjects": {
