@@ -1956,6 +1956,7 @@ const Home = () => {
           ))}
         </div>
         </div>
+        )}
 
         {/* How Ceibaa Works Section - Compact Version */}
         <div className="mt-12 relative overflow-hidden rounded-3xl shadow-2xl">
