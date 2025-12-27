@@ -440,9 +440,14 @@ async def create_sheet(sheet: ExamSheet):
 @router.delete("/admin/sheets/{sheet_id}")
 async def delete_sheet(sheet_id: str):
     """
-    Delete an exam sheet
+    Delete an exam sheet AND all its associated questions
     """
     try:
+        # First, delete all questions associated with this sheet
+        questions_result = await db.questions.delete_many({"sheet_id": sheet_id})
+        print(f"🗑️ Deleted {questions_result.deleted_count} questions for sheet {sheet_id}")
+        
+        # Then delete the sheet itself
         result = await db.exam_sheets.delete_one({"id": sheet_id})
         
         if result.deleted_count == 0:
@@ -450,7 +455,8 @@ async def delete_sheet(sheet_id: str):
         
         return {
             "success": True,
-            "message": "Sheet deleted successfully"
+            "message": "Sheet and all questions deleted successfully",
+            "deleted_questions": questions_result.deleted_count
         }
         
     except HTTPException:
