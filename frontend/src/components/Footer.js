@@ -172,15 +172,19 @@ const Footer = () => {
           {/* Contact Info */}
           <div>
             <h4 className="text-lg font-bold mb-4 text-pink-400">Contact Us</h4>
-            <ul className="space-y-3">
-              <li className="flex items-start space-x-3">
-                <Mail className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+            <ul className="space-y-4">
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-4 h-4 text-cyan-400" />
+                </div>
                 <a href="mailto:support@ceibaa.in" className="text-gray-400 hover:text-white transition-colors text-sm">
                   support@ceibaa.in
                 </a>
               </li>
-              <li className="flex items-start space-x-3">
-                <Phone className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Phone className="w-4 h-4 text-cyan-400" />
+                </div>
                 <div>
                   <a 
                     href="tel:+917303151691" 
@@ -191,8 +195,10 @@ const Footer = () => {
                   <span className="text-gray-500 text-xs">9 AM - 6 PM IST</span>
                 </div>
               </li>
-              <li className="flex items-start space-x-3">
-                <MapPin className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+              <li className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-cyan-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <MapPin className="w-4 h-4 text-cyan-400" />
+                </div>
                 <span className="text-gray-400 text-sm">India</span>
               </li>
             </ul>
