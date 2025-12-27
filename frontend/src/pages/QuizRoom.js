@@ -459,13 +459,13 @@ const QuizRoom = () => {
     );
   }
 
-  const currentQuestion = questions[currentQuestionIndex];
+  const currentQuestion = displayQuestion || questions[currentQuestionIndex];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <div className="mb-4">
+        {/* Header with Back, Timer, Language */}
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <button
             onClick={() => {
               if (window.confirm('Are you sure you want to exit? Your progress will be lost.')) {
@@ -479,6 +479,15 @@ const QuizRoom = () => {
             </svg>
             <span className="font-medium">Exit Quiz</span>
           </button>
+
+          <div className="flex items-center gap-3">
+             <LanguageSelector 
+               selectedLanguage={language} 
+               onLanguageChange={setLanguage}
+               size="sm"
+             />
+             {isTranslating && <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />}
+          </div>
         </div>
 
         {/* Progress Bar */}
