@@ -3068,7 +3068,7 @@ EXAM_DATA = {
         "name": "RPSC Statistical Officer",
         "full_name": "RPSC Statistical Officer (SO) Recruitment 2025",
         "description": "Rajasthan Public Service Commission SO Exam - Statistics & GK",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "icon": "https://customer-assets.emergentagent.com/job_quiz-translate/artifacts/wwy5znuf_Gemini_Generated_Image_uuhw1cuuhw1cuuhw-removebg-preview.png",
         "color": "from-purple-600 to-violet-700",
         "total_questions": 150,
         "duration": "2.5 hours",
