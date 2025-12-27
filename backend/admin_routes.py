@@ -111,8 +111,14 @@ async def get_all_users():
             user_id = user.get('id') or user.get('user_id')
             user['status'] = 'offline'
             
+            # Use existing created_at, joined_at, or set as 'Unknown'
             if not user.get('created_at'):
-                user['created_at'] = datetime.now(timezone.utc).isoformat()
+                # Check for alternative date fields
+                if user.get('joined_at'):
+                    user['created_at'] = user.get('joined_at')
+                elif user.get('last_login'):
+                    user['created_at'] = user.get('last_login')
+                # Don't set current time - leave as None so frontend shows 'N/A'
             
             if not user.get('id') and user.get('user_id'):
                 user['id'] = user['user_id']
