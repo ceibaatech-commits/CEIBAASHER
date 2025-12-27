@@ -181,19 +181,28 @@ const Footer = () => {
               </li>
               <li className="flex items-start space-x-3">
                 <Phone className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
-                <span className="text-gray-400 text-sm">Available 9 AM - 6 PM IST</span>
+                <div>
+                  <a 
+                    href="tel:+917303151691" 
+                    className="text-gray-400 hover:text-white transition-colors text-sm block"
+                  >
+                    +91 73031 51691
+                  </a>
+                  <span className="text-gray-500 text-xs">9 AM - 6 PM IST</span>
+                </div>
               </li>
               <li className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-cyan-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">India</span>
               </li>
             </ul>
-            <button 
-              onClick={() => navigate('/contact')}
-              className="mt-4 w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-4 py-2 rounded-lg font-semibold transition-all text-sm"
+            <a 
+              href="tel:+917303151691"
+              className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 px-4 py-2 rounded-lg font-semibold transition-all text-sm flex items-center justify-center gap-2"
             >
-              Get Support
-            </button>
+              <Phone className="w-4 h-4" />
+              Call Now
+            </a>
           </div>
         </div>
 
