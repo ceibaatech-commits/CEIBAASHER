@@ -3433,9 +3433,9 @@ EXAM_DATA = {
     
     "Bihar_Police_Constable": {
         "name": "Bihar Police Constable",
-        "full_name": "Bihar Police Constable Recruitment 2025",
+        "full_name": "Bihar Police Constable Recruitment 2026",
         "description": "CSBC Bihar Police Exam - Matric Level (10th Standard)",
-        "icon": "https://customer-assets.emergentagent.com/job_prepchamp/artifacts/37tv8za2_Gemini_Generated_Image_6rtg7l6rtg7l6rtg_2-removebg-preview.png",
+        "icon": "https://customer-assets.emergentagent.com/job_quiz-translate/artifacts/3fjjz67m_Gemini_Generated_Image_4usbdj4usbdj4usb-removebg-preview.png",
         "color": "from-red-600 to-pink-700",
         "total_questions": 100,
         "total_marks": 100,
