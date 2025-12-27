@@ -178,6 +178,12 @@ import milestone_routes
 milestone_routes.init_db(db)
 fastapi_app.include_router(milestone_router, prefix="/api")  # Milestone & monetization routes
 
+# SEO routes (sitemap, robots.txt)
+from seo_routes import router as seo_router
+import seo_routes
+seo_routes.init_db(db)
+fastapi_app.include_router(seo_router, prefix="/api")  # SEO routes
+
 # socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
