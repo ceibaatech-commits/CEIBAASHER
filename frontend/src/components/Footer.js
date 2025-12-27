@@ -187,10 +187,10 @@ const Footer = () => {
                 </div>
                 <div>
                   <a 
-                    href="tel:+917303151691" 
+                    href="tel:+917303151699" 
                     className="text-gray-400 hover:text-white transition-colors text-sm block"
                   >
-                    +91 73031 51691
+                    +91 73031 51699
                   </a>
                   <span className="text-gray-500 text-xs">9 AM - 6 PM IST</span>
                 </div>
@@ -203,7 +203,7 @@ const Footer = () => {
               </li>
             </ul>
             <a 
-              href="tel:+917303151691"
+              href="tel:+917303151699"
               className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 px-4 py-2 rounded-lg font-semibold transition-all text-sm flex items-center justify-center gap-2"
             >
               <Phone className="w-4 h-4" />
