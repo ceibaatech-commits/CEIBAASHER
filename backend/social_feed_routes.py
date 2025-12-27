@@ -357,7 +357,11 @@ async def get_academic_posts(
         query = {"post_type": "academic_question"}
         
         if class_name:
-            query["academic_class"] = class_name
+            # For Class 11/12, also match with stream suffix like "Class 11 (Science)"
+            if class_name in ["Class 11", "Class 12"]:
+                query["academic_class"] = {"$regex": f"^{class_name}", "$options": "i"}
+            else:
+                query["academic_class"] = class_name
         if subject:
             # Use regex for flexible matching (handles display names vs slugs)
             query["academic_subject"] = {"$regex": subject.replace("-", ".*").replace("  ", " "), "$options": "i"}
