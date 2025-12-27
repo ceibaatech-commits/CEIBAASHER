@@ -29,7 +29,7 @@ const CreatePostFAB = ({
 
       {/* Quick Action Menu - Mobile Only */}
       {showCreateMenu && (
-        <div className="md:hidden fixed bottom-24 right-4 sm:right-8 z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="md:hidden fixed bottom-24 left-4 sm:left-8 z-50 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Academic Question Button */}
           <button
             onClick={() => {
