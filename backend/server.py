@@ -189,6 +189,12 @@ import seo_routes
 seo_routes.init_db(db)
 fastapi_app.include_router(seo_router, prefix="/api")  # SEO routes
 
+# Translation routes (multi-language support)
+from translation_routes import router as translation_router
+import translation_routes
+translation_routes.init_db(db)
+fastapi_app.include_router(translation_router, prefix="/api/translate")  # Translation routes
+
 # socketio_proxy_router removed - using proper Socket.io ASGI app at /api/battlews instead
 
 # Test routes for debugging
