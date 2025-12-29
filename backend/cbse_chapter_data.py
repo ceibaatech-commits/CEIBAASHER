@@ -135,28 +135,19 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 4, "chapter_name": "Globalisation and the Indian Economy", "total_questions": 55, "difficulty": "Hard", "duration": 40},
             {"chapter_number": 5, "chapter_name": "Consumer Rights", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
-        "History": [
-            {"chapter_number": 1, "chapter_name": "The Rise of Nationalism in Europe", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 2, "chapter_name": "Nationalism in India", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 3, "chapter_name": "The Making of the Global World", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "The Age of Industrialisation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Print Culture and the Modern World", "total_questions": 50, "difficulty": "Medium", "duration": 35}
-        ],
-        "Civics": [
-            {"chapter_number": 1, "chapter_name": "Power-sharing", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Federalism", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Gender, Religion, and Caste", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 4, "chapter_name": "Political Parties", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 5, "chapter_name": "Outcomes of Democracy", "total_questions": 50, "difficulty": "Easy", "duration": 35}
-        ],
-        "Geography": [
+        "Social Science": [
             {"chapter_number": 1, "chapter_name": "Resources and Development", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 2, "chapter_name": "Forest and Wildlife Resources", "total_questions": 50, "difficulty": "Easy", "duration": 35},
             {"chapter_number": 3, "chapter_name": "Water Resources", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 4, "chapter_name": "Agriculture", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 5, "chapter_name": "Minerals and Energy Resources", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 6, "chapter_name": "Manufacturing Industries", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Lifelines of National Economy", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 7, "chapter_name": "Lifelines of National Economy", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "The Rise of Nationalism in Europe", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Nationalism in India", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "The Making of a Global World", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "The Age of Industrialisation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "Print Culture and the Modern World", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "English First Flight": [
             {"chapter_number": 1, "chapter_name": "A Letter to God", "total_questions": 50, "difficulty": "Medium", "duration": 35},
