@@ -326,19 +326,21 @@ const ExamCategoryManager = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search exams..."
+            placeholder={activeTab === 'cbse-chapters' ? "Search classes or subjects..." : "Search exams..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
-        <button
-          onClick={() => openModal('exam', 'create')}
-          className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Add New Exam
-        </button>
+        {activeTab === 'all-exams' && (
+          <button
+            onClick={() => openModal('exam', 'create')}
+            className="ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Add New Exam
+          </button>
+        )}
       </div>
 
       {/* Main Content */}
@@ -348,22 +350,239 @@ const ExamCategoryManager = () => {
           <span className="ml-2 text-gray-600">Loading...</span>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {filteredExams.length === 0 ? (
-            <div className="p-12 text-center">
-              <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Exams Found</h3>
-              <p className="text-gray-500 mb-4">Get started by creating your first exam</p>
-              <button
-                onClick={() => openModal('exam', 'create')}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Create Exam
-              </button>
+        <>
+          {/* Other Competitive Exams Tab */}
+          {activeTab === 'other-exams' && (
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-4 bg-purple-50 border-b border-purple-100">
+                <h3 className="font-semibold text-purple-800">Other Competitive Exams</h3>
+                <p className="text-sm text-purple-600">
+                  Exams NOT in: {EXCLUDED_EXAM_IDS.join(', ')} | Categories excluded: {EXCLUDED_CATEGORIES.length} categories
+                </p>
+              </div>
+              {otherCompetitiveExams.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Filter className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Matching Exams</h3>
+                  <p className="text-gray-500">No exams match the filter criteria</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {otherCompetitiveExams.map((exam) => (
+                    <div key={exam.id} className="p-4 hover:bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center flex-1">
+                          {exam.icon ? (
+                            <img src={exam.icon} alt="" className="w-10 h-10 rounded-lg mr-3 object-cover" />
+                          ) : (
+                            <span className="text-2xl mr-3">📚</span>
+                          )}
+                          <div>
+                            <h4 className="font-medium text-gray-900">{exam.name}</h4>
+                            <p className="text-sm text-gray-500">
+                              ID: {exam.id} | Category: {exam.category || 'N/A'} | Questions: {exam.total_questions || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 text-xs rounded-full bg-${exam.color?.split('-')[1] || 'blue'}-100 text-${exam.color?.split('-')[1] || 'blue'}-700`}>
+                            {exam.category || 'Uncategorized'}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setEditingItem(exam);
+                              setFormData({
+                                name: exam.name,
+                                description: exam.description,
+                                icon: exam.icon,
+                                color: exam.color,
+                                category: exam.category
+                              });
+                              setModalType('hardcoded-exam');
+                              setModalMode('edit');
+                              setShowModal(true);
+                            }}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                            title="Edit Exam"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteHardcodedExam(exam.id, exam.name)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                            title="Delete Exam"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="p-4 bg-gray-50 border-t text-sm text-gray-600">
+                Showing {otherCompetitiveExams.length} of {hardcodedExams.length} total exams (filtered)
+              </div>
             </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {filteredExams.map((exam) => (
+          )}
+
+          {/* CBSE Chapters Tab */}
+          {activeTab === 'cbse-chapters' && (
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="p-4 bg-green-50 border-b border-green-100">
+                <h3 className="font-semibold text-green-800">CBSE Chapter Management</h3>
+                <p className="text-sm text-green-600">Manage chapters for CBSE Class 6-12 across all subjects</p>
+              </div>
+              {cbseChapters.length === 0 ? (
+                <div className="p-12 text-center">
+                  <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No CBSE Data Found</h3>
+                  <p className="text-gray-500">CBSE chapter data is not available</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {cbseChapters
+                    .filter(item => !searchTerm || 
+                      item.class?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      item.subjects?.some(s => s.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+                    )
+                    .map((classData) => (
+                    <div key={classData.class} className="bg-white">
+                      {/* Class Row */}
+                      <div 
+                        className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => toggleClass(classData.class)}
+                      >
+                        <div className="flex items-center flex-1">
+                          <button className="mr-3 text-gray-400 hover:text-gray-600">
+                            {expandedClasses[classData.class] ? 
+                              <ChevronDown className="w-5 h-5" /> : 
+                              <ChevronRight className="w-5 h-5" />
+                            }
+                          </button>
+                          <GraduationCap className="w-6 h-6 text-green-600 mr-3" />
+                          <div>
+                            <h4 className="font-medium text-gray-900">Class {classData.class.replace('_', ' ').replace('science', '(Science)').replace('commerce', '(Commerce)').replace('humanities', '(Humanities)')}</h4>
+                            <p className="text-sm text-gray-500">{classData.subjects?.length || 0} subjects</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Subjects (expandable) */}
+                      {expandedClasses[classData.class] && (
+                        <div className="bg-gray-50 border-t border-gray-200">
+                          {classData.subjects?.map((subject) => (
+                            <div key={subject.slug} className="border-t border-gray-100">
+                              <div 
+                                className="flex items-center justify-between p-3 pl-12 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => toggleCategory(`${classData.class}-${subject.slug}`)}
+                              >
+                                <div className="flex items-center flex-1">
+                                  <button className="mr-3 text-gray-400">
+                                    {expandedCategories[`${classData.class}-${subject.slug}`] ? 
+                                      <ChevronDown className="w-4 h-4" /> : 
+                                      <ChevronRight className="w-4 h-4" />
+                                    }
+                                  </button>
+                                  <BookOpen className="w-5 h-5 text-blue-500 mr-2" />
+                                  <div>
+                                    <h5 className="font-medium text-gray-800">{subject.name}</h5>
+                                    <p className="text-xs text-gray-500">{subject.chapters?.length || 0} chapters</p>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Add chapter to this subject
+                                    setFormData({
+                                      class: classData.class,
+                                      subject: subject.name,
+                                      subject_slug: subject.slug,
+                                      chapter_name: ''
+                                    });
+                                    setModalType('cbse-chapter');
+                                    setModalMode('create');
+                                    setShowModal(true);
+                                  }}
+                                  className="p-1.5 text-green-600 hover:bg-green-100 rounded"
+                                  title="Add Chapter"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </button>
+                              </div>
+
+                              {/* Chapters */}
+                              {expandedCategories[`${classData.class}-${subject.slug}`] && (
+                                <div className="bg-gray-100 pl-20 py-2">
+                                  {subject.chapters?.length === 0 ? (
+                                    <p className="text-sm text-gray-500 py-2">No chapters</p>
+                                  ) : (
+                                    subject.chapters?.map((chapter, idx) => (
+                                      <div key={idx} className="flex items-center justify-between py-1.5 pr-4">
+                                        <div className="flex items-center">
+                                          <FileText className="w-4 h-4 text-gray-400 mr-2" />
+                                          <span className="text-sm text-gray-700">{chapter}</span>
+                                        </div>
+                                        <div className="flex items-center space-x-1">
+                                          <button
+                                            onClick={() => {
+                                              setEditingItem({ chapter, index: idx });
+                                              setFormData({
+                                                class: classData.class,
+                                                subject: subject.name,
+                                                subject_slug: subject.slug,
+                                                chapter_name: chapter,
+                                                chapter_index: idx
+                                              });
+                                              setModalType('cbse-chapter');
+                                              setModalMode('edit');
+                                              setShowModal(true);
+                                            }}
+                                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                                          >
+                                            <Edit2 className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            onClick={() => handleDeleteCbseChapter(classData.class, subject.slug, idx, chapter)}
+                                            className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                          >
+                                            <Trash2 className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* All DB Exams Tab */}
+          {activeTab === 'all-exams' && (
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              {filteredExams.length === 0 ? (
+                <div className="p-12 text-center">
+                  <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Exams Found</h3>
+                  <p className="text-gray-500 mb-4">Get started by creating your first exam</p>
+                  <button
+                    onClick={() => openModal('exam', 'create')}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Create Exam
+                  </button>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {filteredExams.map((exam) => (
                 <div key={exam.id} className="bg-white">
                   {/* Exam Row */}
                   <div className="flex items-center justify-between p-4 hover:bg-gray-50">
