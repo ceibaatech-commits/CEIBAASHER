@@ -495,8 +495,9 @@ CBSE_CHAPTERS = {
         ],
         "mathematics": [
             "1. Relations and Functions", "2. Inverse Trigonometric Functions", "3. Matrices",
-            "4. Determinants", "5. Continuity and Differentiability", "6. Application of Derivatives",
-            "7. Integrals", "8. Application of Integrals", "9. Differential Equations", "10. Linear Programming"
+            "4. Determinants", "5. Continuity and Differentiability", "6. Applications of Derivatives",
+            "7. Integrals", "8. Applications of Integrals", "9. Differential Equations",
+            "10. Vector Algebra", "11. Three-Dimensional Geometry", "12. Linear Programming", "13. Probability"
         ],
         "english": [
             "1. The Last Lesson", "2. Lost Spring", "3. Deep Water", "4. The Rattrap",
