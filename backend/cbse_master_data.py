@@ -340,10 +340,10 @@ CBSE_CHAPTERS = {
             "7. Redox Reactions", "8. Organic Chemistry: Some Basic Principles and Techniques", "9. Hydrocarbons"
         ],
         "mathematics": [
-            "1. Sets", "2. Relations and Functions", "3. Trigonometric Functions", "4. Complex Numbers",
+            "1. Sets", "2. Relations and Functions", "3. Trigonometric Functions", "4. Complex Numbers and Quadratic Equations",
             "5. Linear Inequalities", "6. Permutations and Combinations", "7. Binomial Theorem",
-            "8. Sequences and Series", "9. Straight Lines", "10. Conic Sections", "11. Limits and Derivatives",
-            "12. Statistics", "13. Probability"
+            "8. Sequence and Series", "9. Straight Lines", "10. Conic Sections", "11. Introduction to Three Dimensional Geometry",
+            "12. Limits and Derivatives", "13. Statistics", "14. Probability"
         ],
         "biology": [
             "1. The Living World", "2. Biological Classification", "3. Plant Kingdom", "4. Animal Kingdom",
