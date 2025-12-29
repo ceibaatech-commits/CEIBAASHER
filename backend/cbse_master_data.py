@@ -363,10 +363,9 @@ CBSE_CHAPTERS = {
     },
     "11_commerce": {
         "accountancy": [
-            "1. Introduction to Accounting", "2. Theory Base of Accounting", "3. Recording of Transactions - I",
-            "4. Recording of Transactions - II", "5. Bank Reconciliation Statement", "6. Trial Balance and Rectification",
-            "7. Depreciation", "8. Bills of Exchange", "9. Financial Statements - I", "10. Financial Statements - II",
-            "11. Accounts from Incomplete Records", "12. Applications of Computers in Accounting"
+            "1. Introduction to Accounting", "2. Theory Base of Accounting", "3. Recording of Transactions – I",
+            "4. Recording of Transactions – II", "5. Bank Reconciliation Statement", "6. Trial Balance and Rectification of Errors",
+            "7. Depreciation, Provisions and Reserves", "8. Financial Statements – I", "9. Financial Statements – II"
         ],
         "business-studies": [
             "1. Nature and Purpose of Business", "2. Forms of Business Organisation", "3. Private, Public and Global Enterprises",
