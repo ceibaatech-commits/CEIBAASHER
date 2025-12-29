@@ -543,16 +543,11 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 2, "chapter_name": "Structure of Atom", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 3, "chapter_name": "Classification of Elements and Periodicity in Properties", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 4, "chapter_name": "Chemical Bonding and Molecular Structure", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 5, "chapter_name": "States of Matter", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Thermodynamics", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 7, "chapter_name": "Equilibrium", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 8, "chapter_name": "Redox Reactions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 9, "chapter_name": "Hydrogen", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "The s-Block Elements", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "The p-Block Elements", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 12, "chapter_name": "Organic Chemistry - Some Basic Principles and Techniques", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 13, "chapter_name": "Hydrocarbons", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 14, "chapter_name": "Environmental Chemistry", "total_questions": 45, "difficulty": "Easy", "duration": 30}
+            {"chapter_number": 5, "chapter_name": "Chemical Thermodynamics", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Equilibrium", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 7, "chapter_name": "Redox Reactions", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Organic Chemistry: Some Basic Principles and Techniques", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Hydrocarbons", "total_questions": 60, "difficulty": "Hard", "duration": 45}
         ],
         "Biology": [
             {"chapter_number": 1, "chapter_name": "The Living World", "total_questions": 45, "difficulty": "Easy", "duration": 30},
