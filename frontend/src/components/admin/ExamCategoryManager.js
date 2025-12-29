@@ -47,22 +47,28 @@ const ExamCategoryManager = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [examsRes, categoriesRes, chaptersRes, statsRes] = await Promise.all([
+      const [examsRes, categoriesRes, chaptersRes, statsRes, hardcodedRes, cbseRes] = await Promise.all([
         fetch(`${BACKEND_URL}/api/admin/manage/exams`),
         fetch(`${BACKEND_URL}/api/admin/manage/categories`),
         fetch(`${BACKEND_URL}/api/admin/manage/chapters`),
-        fetch(`${BACKEND_URL}/api/admin/manage/stats`)
+        fetch(`${BACKEND_URL}/api/admin/manage/stats`),
+        fetch(`${BACKEND_URL}/api/exam-metadata`),
+        fetch(`${BACKEND_URL}/api/admin/class-subjects`)
       ]);
       
       const examsData = await examsRes.json();
       const categoriesData = await categoriesRes.json();
       const chaptersData = await chaptersRes.json();
       const statsData = await statsRes.json();
+      const hardcodedData = await hardcodedRes.json();
+      const cbseData = await cbseRes.json();
       
       if (examsData.success) setExams(examsData.exams || []);
       if (categoriesData.success) setCategories(categoriesData.categories || []);
       if (chaptersData.success) setChapters(chaptersData.chapters || []);
       if (statsData.success) setStats(statsData.stats || {});
+      if (hardcodedData.exams) setHardcodedExams(hardcodedData.exams || []);
+      if (cbseData.data) setCbseChapters(cbseData.data || []);
       
       setError(null);
     } catch (err) {
