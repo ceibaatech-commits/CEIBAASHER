@@ -656,7 +656,15 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 7, "chapter_name": "Federalism", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 8, "chapter_name": "Local Governments", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 9, "chapter_name": "Constitution as a Living Document", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "The Philosophy of the Constitution", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 10, "chapter_name": "The Philosophy of the Constitution", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Political Theory: An Introduction", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "Freedom", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Equality", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "Social Justice", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 15, "chapter_name": "Rights", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 16, "chapter_name": "Citizenship", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 17, "chapter_name": "Nationalism", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 18, "chapter_name": "Secularism", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Sociology": [
             {"chapter_number": 1, "chapter_name": "Sociology and Society", "total_questions": 45, "difficulty": "Easy", "duration": 30},
