@@ -770,17 +770,16 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 19, "chapter_name": "Memories of Childhood", "total_questions": 45, "difficulty": "Medium", "duration": 30}
         ],
         "Accountancy": [
-            {"chapter_number": 1, "chapter_name": "Accounting for Not-for-Profit Organisations", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 2, "chapter_name": "Accounting for Partnership: Basic Concepts", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 3, "chapter_name": "Reconstitution of a Partnership Firm – Admission of a Partner", "total_questions": 65, "difficulty": "Hard", "duration": 50},
-            {"chapter_number": 4, "chapter_name": "Reconstitution of a Partnership Firm – Retirement/Death of a Partner", "total_questions": 65, "difficulty": "Hard", "duration": 50},
-            {"chapter_number": 5, "chapter_name": "Dissolution of Partnership Firm", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 6, "chapter_name": "Accounting for Share Capital", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 7, "chapter_name": "Issue and Redemption of Debentures", "total_questions": 65, "difficulty": "Hard", "duration": 50},
-            {"chapter_number": 8, "chapter_name": "Financial Statements of a Company", "total_questions": 65, "difficulty": "Hard", "duration": 50},
-            {"chapter_number": 9, "chapter_name": "Analysis of Financial Statements", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 10, "chapter_name": "Accounting Ratios", "total_questions": 65, "difficulty": "Hard", "duration": 50},
-            {"chapter_number": 11, "chapter_name": "Cash Flow Statement", "total_questions": 65, "difficulty": "Hard", "duration": 50}
+            {"chapter_number": 1, "chapter_name": "Accounting for Partnership Firms – Basic Concepts", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 2, "chapter_name": "Reconstitution of a Partnership Firm – Admission of a Partner", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 3, "chapter_name": "Reconstitution of a Partnership Firm – Retirement/Death of a Partner", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 4, "chapter_name": "Dissolution of a Partnership Firm", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "Accounting for Share Capital", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Accounting for Debentures", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 7, "chapter_name": "Financial Statements of a Company", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 8, "chapter_name": "Analysis of Financial Statements", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Accounting Ratios", "total_questions": 65, "difficulty": "Hard", "duration": 50},
+            {"chapter_number": 10, "chapter_name": "Cash Flow Statement", "total_questions": 65, "difficulty": "Hard", "duration": 50}
         ],
         "Business Studies": [
             {"chapter_number": 1, "chapter_name": "Nature and Significance of Management", "total_questions": 45, "difficulty": "Easy", "duration": 30},
