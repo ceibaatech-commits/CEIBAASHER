@@ -414,9 +414,11 @@ CBSE_CHAPTERS = {
             "14. Biodiversity and Conservation"
         ],
         "sociology": [
-            "1. Sociology and Society", "2. Terms, Concepts and their Use in Sociology",
+            "1. Sociology, Society and its Relationship with other Social Sciences", "2. Terms, Concepts and their use in Sociology",
             "3. Understanding Social Institutions", "4. Culture and Socialisation",
-            "5. Doing Sociology: Research Methods", "6. Social Structure, Stratification and Social Processes in Society"
+            "5. Doing Sociology: Research Methods", "6. Social Structure, Stratification and Social Processes in Society",
+            "7. Social Change and Social Order in Rural and Urban Society", "8. Introducing Western Sociologists",
+            "9. Indian Sociologists"
         ],
         "psychology": [
             "1. What is Psychology?", "2. Methods of Enquiry in Psychology", "3. The Bases of Human Behaviour",
