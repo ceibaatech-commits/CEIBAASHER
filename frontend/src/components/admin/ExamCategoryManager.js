@@ -223,7 +223,7 @@ const ExamCategoryManager = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Exam & Category Manager</h1>
-        <p className="text-gray-600">Create, edit, and manage exams, categories, and chapters</p>
+        <p className="text-gray-600">Create, edit, and manage exams, categories, chapters, and CBSE content</p>
       </div>
 
       {/* Success/Error Messages */}
@@ -242,6 +242,43 @@ const ExamCategoryManager = () => {
           </button>
         </div>
       )}
+
+      {/* Tabs */}
+      <div className="flex space-x-2 mb-6 border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('other-exams')}
+          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition ${
+            activeTab === 'other-exams' 
+              ? 'bg-purple-100 text-purple-700 border-b-2 border-purple-500' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Filter className="w-4 h-4 inline mr-2" />
+          Other Competitive Exams
+        </button>
+        <button
+          onClick={() => setActiveTab('cbse-chapters')}
+          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition ${
+            activeTab === 'cbse-chapters' 
+              ? 'bg-green-100 text-green-700 border-b-2 border-green-500' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <GraduationCap className="w-4 h-4 inline mr-2" />
+          CBSE Chapters
+        </button>
+        <button
+          onClick={() => setActiveTab('all-exams')}
+          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition ${
+            activeTab === 'all-exams' 
+              ? 'bg-blue-100 text-blue-700 border-b-2 border-blue-500' 
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <BookOpen className="w-4 h-4 inline mr-2" />
+          All DB Exams
+        </button>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4 mb-6">
