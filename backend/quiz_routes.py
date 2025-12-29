@@ -592,8 +592,15 @@ async def start_quiz(request: QuizStartRequest):
                     regex_module.IGNORECASE
                 )
                 
+                # Build class_name pattern to match both "Class 11" and "Class 11 (Science)" formats
+                # Database may store: "Class 11", "Class 11 (Science)", "Class 11 (Commerce)", etc.
+                class_name_pattern = regex_module.compile(
+                    f"^{regex_module.escape(request.class_name)}(\\s*\\(.*\\))?$",
+                    regex_module.IGNORECASE
+                )
+                
                 query_filter = {
-                    "class_name": request.class_name,
+                    "class_name": {"$regex": class_name_pattern},
                     "subject": request.subject,
                     "chapter": {"$regex": chapter_pattern}
                 }
