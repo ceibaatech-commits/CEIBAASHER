@@ -378,9 +378,10 @@ CBSE_CHAPTERS = {
             "7. Correlation", "8. Index Numbers", "9. Use of Statistical Tools"
         ],
         "mathematics": [
-            "1. Sets", "2. Relations and Functions", "3. Trigonometric Functions", "4. Complex Numbers",
+            "1. Sets", "2. Relations and Functions", "3. Trigonometric Functions", "4. Complex Numbers and Quadratic Equations",
             "5. Linear Inequalities", "6. Permutations and Combinations", "7. Binomial Theorem",
-            "8. Sequences and Series", "9. Straight Lines", "10. Conic Sections"
+            "8. Sequence and Series", "9. Straight Lines", "10. Conic Sections", "11. Introduction to Three Dimensional Geometry",
+            "12. Limits and Derivatives", "13. Statistics", "14. Probability"
         ],
         "english": [
             "1. The Portrait of a Lady", "2. We are Not Afraid to Die", "3. Discovering Tut",
