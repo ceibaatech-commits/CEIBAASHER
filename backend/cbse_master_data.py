@@ -349,7 +349,9 @@ CBSE_CHAPTERS = {
             "1. The Living World", "2. Biological Classification", "3. Plant Kingdom", "4. Animal Kingdom",
             "5. Morphology of Flowering Plants", "6. Anatomy of Flowering Plants", "7. Structural Organisation in Animals",
             "8. Cell: The Unit of Life", "9. Biomolecules", "10. Cell Cycle and Cell Division",
-            "11. Photosynthesis", "12. Respiration in Plants", "13. Plant Growth and Development"
+            "11. Photosynthesis in Higher Plants", "12. Respiration in Plants", "13. Plant Growth and Development",
+            "14. Breathing and Exchange of Gases", "15. Body Fluids and Circulation", "16. Excretory Products and Their Elimination",
+            "17. Locomotion and Movement", "18. Neural Control and Coordination", "19. Chemical Coordination and Integration"
         ],
         "english": [
             "1. The Portrait of a Lady", "2. We are Not Afraid to Die", "3. Discovering Tut",
