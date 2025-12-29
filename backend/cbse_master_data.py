@@ -545,7 +545,7 @@ CBSE_CHAPTERS = {
         "psychology": [
             "1. Variations in Psychological Attributes", "2. Self and Personality", "3. Meeting Life Challenges",
             "4. Psychological Disorders", "5. Therapeutic Approaches", "6. Attitude and Social Cognition",
-            "7. Social Influence and Group Processes", "8. Psychology and Life", "9. Developing Psychological Skills"
+            "7. Social Influence and Group Processes"
         ],
         "economics": [
             "1. Introduction to Microeconomics", "2. Theory of Consumer Behaviour", "3. Production and Costs",

@@ -880,9 +880,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 4, "chapter_name": "Psychological Disorders", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 5, "chapter_name": "Therapeutic Approaches", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 6, "chapter_name": "Attitude and Social Cognition", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "Social Influence and Group Processes", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Psychology and Life", "total_questions": 50, "difficulty": "Easy", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Developing Psychological Skills", "total_questions": 50, "difficulty": "Easy", "duration": 35}
+            {"chapter_number": 7, "chapter_name": "Social Influence and Group Processes", "total_questions": 55, "difficulty": "Medium", "duration": 40}
         ]
     }
 }
