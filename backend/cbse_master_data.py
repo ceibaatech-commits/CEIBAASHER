@@ -314,18 +314,12 @@ CBSE_CHAPTERS = {
             "4. A Question of Trust", "5. Footprints without Feet", "6. The Making of a Scientist",
             "7. The Necklace", "8. Bholi", "9. The Book That Saved the Earth"
         ],
-        "geography": [
+        "social-science": [
             "1. Resources and Development", "2. Forest and Wildlife Resources", "3. Water Resources",
             "4. Agriculture", "5. Minerals and Energy Resources", "6. Manufacturing Industries",
-            "7. Lifelines of National Economy"
-        ],
-        "history": [
-            "1. The Rise of Nationalism in Europe", "2. Nationalism in India", "3. The Making of a Global World",
-            "4. The Age of Industrialisation", "5. Print Culture and the Modern World"
-        ],
-        "civics": [
-            "1. Power Sharing", "2. Federalism", "3. Gender, Religion and Caste",
-            "4. Political Parties", "5. Outcomes of Democracy"
+            "7. Lifelines of National Economy", "8. The Rise of Nationalism in Europe",
+            "9. Nationalism in India", "10. The Making of a Global World",
+            "11. The Age of Industrialisation", "12. Print Culture and the Modern World"
         ],
         "economics": [
             "1. Development", "2. Sectors of the Indian Economy", "3. Money and Credit",
