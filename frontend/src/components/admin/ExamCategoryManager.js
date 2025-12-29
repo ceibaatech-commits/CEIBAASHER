@@ -178,10 +178,31 @@ const ExamCategoryManager = () => {
     setExpandedCategories(prev => ({ ...prev, [categoryId]: !prev[categoryId] }));
   };
 
+  const toggleClass = (classKey) => {
+    setExpandedClasses(prev => ({ ...prev, [classKey]: !prev[classKey] }));
+  };
+
   // Filter data by search term
   const filteredExams = exams.filter(e => 
     e.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Filter "Other Competitive Exams" from hardcoded data
+  const otherCompetitiveExams = hardcodedExams.filter(exam => {
+    const examId = exam.id?.toUpperCase() || '';
+    const examCategory = exam.category || '';
+    
+    // Exclude if ID is in excluded list
+    if (EXCLUDED_EXAM_IDS.includes(examId)) return false;
+    
+    // Exclude if category is in excluded list
+    if (EXCLUDED_CATEGORIES.includes(examCategory)) return false;
+    
+    // Apply search filter
+    if (searchTerm && !exam.name?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    
+    return true;
+  });
 
   // Get categories for an exam
   const getExamCategories = (examId) => {
