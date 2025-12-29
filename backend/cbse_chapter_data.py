@@ -667,16 +667,15 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 18, "chapter_name": "Secularism", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Sociology": [
-            {"chapter_number": 1, "chapter_name": "Sociology and Society", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Terms, Concepts and their Use in Sociology", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 1, "chapter_name": "Sociology, Society and its Relationship with other Social Sciences", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Terms, Concepts and their use in Sociology", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 3, "chapter_name": "Understanding Social Institutions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 4, "chapter_name": "Culture and Socialisation", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 5, "chapter_name": "Doing Sociology: Research Methods", "total_questions": 55, "difficulty": "Hard", "duration": 40},
             {"chapter_number": 6, "chapter_name": "Social Structure, Stratification and Social Processes in Society", "total_questions": 55, "difficulty": "Hard", "duration": 40},
             {"chapter_number": 7, "chapter_name": "Social Change and Social Order in Rural and Urban Society", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Environment and Society", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "Introducing Western Sociologists", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Indian Sociologists", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 8, "chapter_name": "Introducing Western Sociologists", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 9, "chapter_name": "Indian Sociologists", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Psychology": [
             {"chapter_number": 1, "chapter_name": "What is Psychology?", "total_questions": 45, "difficulty": "Easy", "duration": 30},
