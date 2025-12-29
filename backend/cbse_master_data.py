@@ -373,9 +373,10 @@ CBSE_CHAPTERS = {
             "7. Sources of Business Finance", "8. Small Business and Entrepreneurship", "9. Internal Trade", "10. International Business"
         ],
         "economics": [
-            "1. Introduction to Economics", "2. Collection of Data", "3. Organisation of Data",
-            "4. Presentation of Data", "5. Measures of Central Tendency", "6. Measures of Dispersion",
-            "7. Correlation", "8. Index Numbers", "9. Use of Statistical Tools"
+            "1. Introduction (Statistics)", "2. Collection of Data", "3. Organisation of Data",
+            "4. Presentation of Data", "5. Measures of Central Tendency", "6. Correlation",
+            "7. Index Numbers", "8. Introduction (Microeconomics)", "9. Consumer's Equilibrium and Demand",
+            "10. Producer Behaviour and Supply", "11. Forms of Market and Price Determination"
         ],
         "mathematics": [
             "1. Sets", "2. Relations and Functions", "3. Trigonometric Functions", "4. Complex Numbers and Quadratic Equations",
