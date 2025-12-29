@@ -756,7 +756,18 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 5, "chapter_name": "Indigo", "total_questions": 45, "difficulty": "Medium", "duration": 30},
             {"chapter_number": 6, "chapter_name": "Poets and Pancakes", "total_questions": 40, "difficulty": "Medium", "duration": 25},
             {"chapter_number": 7, "chapter_name": "The Interview", "total_questions": 40, "difficulty": "Easy", "duration": 25},
-            {"chapter_number": 8, "chapter_name": "Going Places", "total_questions": 40, "difficulty": "Easy", "duration": 25}
+            {"chapter_number": 8, "chapter_name": "Going Places", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 9, "chapter_name": "My Mother at Sixty-Six", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 10, "chapter_name": "Keeping Quiet", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 11, "chapter_name": "A Thing of Beauty", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 12, "chapter_name": "A Roadside Stand", "total_questions": 40, "difficulty": "Medium", "duration": 25},
+            {"chapter_number": 13, "chapter_name": "Aunt Jennifer's Tigers", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 14, "chapter_name": "The Third Level", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "The Tiger King", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 16, "chapter_name": "Journey to the End of the Earth", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 17, "chapter_name": "The Enemy", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 18, "chapter_name": "On the Face of It", "total_questions": 40, "difficulty": "Medium", "duration": 25},
+            {"chapter_number": 19, "chapter_name": "Memories of Childhood", "total_questions": 45, "difficulty": "Medium", "duration": 30}
         ],
         "Accountancy": [
             {"chapter_number": 1, "chapter_name": "Accounting for Not-for-Profit Organisations", "total_questions": 60, "difficulty": "Hard", "duration": 45},
