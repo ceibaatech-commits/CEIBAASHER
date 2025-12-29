@@ -571,12 +571,19 @@ CBSE_CHAPTER_DATA = {
         "English": [
             {"chapter_number": 1, "chapter_name": "The Portrait of a Lady", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "A Photograph", "total_questions": 40, "difficulty": "Easy", "duration": 25},
-            {"chapter_number": 3, "chapter_name": "We're Not Afraid to Die", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Discovering Tut", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "The Ailing Planet", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "The Browning Version", "total_questions": 40, "difficulty": "Medium", "duration": 25},
-            {"chapter_number": 7, "chapter_name": "The Adventure", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Silk Road", "total_questions": 45, "difficulty": "Medium", "duration": 30}
+            {"chapter_number": 3, "chapter_name": "We're Not Afraid to Die... if We Can All Be Together", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "Discovering Tut: the Saga Continues", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "The Laburnum Top", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 6, "chapter_name": "The Voice of the Rain", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 7, "chapter_name": "Childhood", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 8, "chapter_name": "The Adventure", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Silk Road", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "Father to Son", "total_questions": 40, "difficulty": "Easy", "duration": 25},
+            {"chapter_number": 11, "chapter_name": "The Summer of the Beautiful White Horse", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "The Address", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Mother's Day", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 14, "chapter_name": "Birth", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "The Tale of Melon City", "total_questions": 40, "difficulty": "Easy", "duration": 25}
         ],
         "Accountancy": [
             {"chapter_number": 1, "chapter_name": "Introduction to Accounting", "total_questions": 45, "difficulty": "Easy", "duration": 30},
