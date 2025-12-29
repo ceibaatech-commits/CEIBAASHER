@@ -291,15 +291,18 @@ CBSE_CHAPTERS = {
         "science": [
             "1. Chemical Reactions and Equations", "2. Acids, Bases and Salts", "3. Metals and Non-metals",
             "4. Carbon and its Compounds", "5. Life Processes", "6. Control and Coordination",
-            "7. How do Organisms Reproduce?", "8. Heredity", "9. Light – Reflection and Refraction",
-            "10. The Human Eye and the Colorful World", "11. Electricity", "12. Magnetic Effects of Electric Current",
+            "7. How do Organisms Reproduce?", "8. Heredity and Evolution", "9. Light – Reflection and Refraction",
+            "10. The Human Eye and the Colourful World", "11. Electricity", "12. Magnetic Effects of Electric Current",
             "13. Our Environment"
         ],
         "hindi-kshitij": [
-            "1. Pad (Surdas)", "2. Ram-Lakshman-Parshuram Samvad", "3. Atmakathya",
-            "4. Utsah / At Nahi Rahi Hai", "5. Yah Danturit Muskan / Fasal", "6. Sangatkar",
-            "7. Netaji ka Chashma", "8. Balgobin Bhagat", "9. Lakhnavi Andaz",
-            "10. Ek Kahani Yah Bhi", "11. Naubatkhane Mein Ibadat", "12. Sanskriti"
+            "1. सूरदास के पद", "2. राम-लक्ष्मण-परशुराम संवाद", "3. आत्मकथ्य",
+            "4. उत्साह / अट नहीं रही है", "5. यह दंतुरित मुसकान / फसल", "6. संगतकार",
+            "7. नेताजी का चश्मा", "8. बालगोबिन भगत", "9. लखनवी अंदाज़",
+            "10. एक कहानी यह भी", "11. नौबतखाने में इबादत", "12. संस्कृति"
+        ],
+        "hindi-kritika": [
+            "1. माता का अँचल", "2. साना-साना हाथ जोड़ि", "3. मैं क्यों लिखता हूँ?"
         ],
         "english-first-flight": [
             "1. A Letter to God", "2. Nelson Mandela: Long Walk to Freedom", "3. Two Stories about Flying",
