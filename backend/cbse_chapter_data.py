@@ -4,19 +4,19 @@
 CBSE_CHAPTER_DATA = {
     "6": {
         "Hindi - Malhar": [
-            {"chapter_number": 1, "chapter_name": "Mathru Bhumi (Poem)", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Gol", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Pehli Boond (Poem)", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "Haar Ki Jeet", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Rahim ke dohe (Poem)", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "Meri ma", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Jalate Chalo", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "Satriya Aur Bihu Nruthya", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 9, "chapter_name": "Maiya Me nahi maakna koyo (Poem)", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "Pariksha", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "Chetak ki veeratha", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 12, "chapter_name": "Hindh mahasagar me chota-sa hindustan", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "Ped Ki Bhata", "total_questions": 40, "difficulty": "Easy", "duration": 30}
+            {"chapter_number": 1, "chapter_name": "मातृभूमि", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "गोल", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "पहली बूँद", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "हार की जीत", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "रहीम के दोहे", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "मेरी माँ", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "जलाते चलो", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "सत्रिया और बिहू नृत्य", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "मैया मैं नहिं माखन खायो", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "परीक्षा", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "चेतक की वीरता", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "हिंद महासागर में छोटा-सा हिंदुस्तान", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "पेड़ की बात", "total_questions": 40, "difficulty": "Easy", "duration": 30}
         ],
         "Social Science - Exploring Society": [
             {"chapter_number": 1, "chapter_name": "Locating Places on the Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30},
@@ -47,11 +47,22 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 10, "chapter_name": "The Other Side of Zero", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "English - Poorvi": [
-            {"chapter_number": 1, "chapter_name": "Fables and Folk Tales", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Friendship", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Nurturing Nature", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Sports and Wellness", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Culture and Tradition", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 1, "chapter_name": "A Bottle of Dew", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "The Raven and the Fox", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "Rama to the Rescue", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "The Unlikely Best Friends", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "A Friend's Prayer", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "The Chair", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "Neem Baba", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "What a Bird Thought", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Spices that Heal Us", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Change of Heart", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 11, "chapter_name": "The Winner", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "Yoga — A Way of Life", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "Hamara Bharat — Incredible India!", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 14, "chapter_name": "The Kites", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 15, "chapter_name": "Ila Sachani: Embroidering Dreams with her Feet", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 16, "chapter_name": "National War Memorial", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Science - Curiosity": [
             {"chapter_number": 1, "chapter_name": "The Wonderful World of Science", "total_questions": 45, "difficulty": "Easy", "duration": 30},
@@ -67,22 +78,22 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 11, "chapter_name": "Nature's Treasures", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 12, "chapter_name": "Beyond Earth", "total_questions": 45, "difficulty": "Easy", "duration": 30}
         ],
-        "Sanskrit - Sulabha": [
+        "Sanskrit - Deepakam": [
             {"chapter_number": 1, "chapter_name": "वयं वर्णमालां पठामः", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "एषः कः ? एषा का ? एतत् किम् ?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "अहं च त्वं च", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "अहं प्रातः उत्तिष्ठामि", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 5, "chapter_name": "शूराः वयं धीराः वयम्", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 6, "chapter_name": "सः एव महान् चित्रकारः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "अतिथिदेवो भव", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "बुद्धिः सर्वार्थसाधिका", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "यो जानाति सः पण्डितः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "त्वम् आपणं गच्छ", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 11, "chapter_name": "पृथिव्यां त्रीणि रत्नानि", "total_questions": 40, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 12, "chapter_name": "आलस्यं हि मनुष्याणां शरीरस्थो महान् रिपुः", "total_questions": 45, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 13, "chapter_name": "सङ्ख्यागणना ननु सरला", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 14, "chapter_name": "माधवस्य प्रियम् अङ्गम्", "total_questions": 40, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 15, "chapter_name": "वृक्षाः सत्पुरुषाः इव", "total_questions": 40, "difficulty": "Medium", "duration": 30}
+            {"chapter_number": 2, "chapter_name": "संयुक्‍त-व्यञ्जनानि", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 3, "chapter_name": "एषः कः ? एषा का ? एतत् किम्?", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 4, "chapter_name": "अहं च त्वं च", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "संख्‍यागणना ननु सरला", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 6, "chapter_name": "अहं प्रातः उत्तिष्ठामि", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 7, "chapter_name": "शूराः वयं धीराः वयम्", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 8, "chapter_name": "सः एव महान् चित्रकारः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "अतिथिदेवो भव", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 10, "chapter_name": "बुद्धिः सर्वार्थसाधिका", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "यः जानाति सः पण्डितः", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 12, "chapter_name": "त्वम् आपणं गच्छ", "total_questions": 40, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 13, "chapter_name": "पृथिव्यां त्रीणि रत्नानि", "total_questions": 40, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 14, "chapter_name": "आलस्यं हि मनुष्याणां शरीरस्थः महान् रिपुः", "total_questions": 45, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 15, "chapter_name": "माधवस्य प्रियम् अङ्गम", "total_questions": 40, "difficulty": "Easy", "duration": 30}
         ]
     },
     "10": {

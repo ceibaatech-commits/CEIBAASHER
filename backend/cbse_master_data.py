@@ -111,15 +111,17 @@ CBSE_CHAPTERS = {
             "9. Symmetry", "10. The Other Side of Zero"
         ],
         "Hindi - Malhar": [
-            "1. Mathru Bhumi (Poem)", "2. Gol", "3. Amaltas (Poem)", "4. Ghar Ki Murgee Dal Barabar",
-            "5. Nasiruddin Kee Joroo Ka Kissa", "6. Meri ma", "7. Chaand Ka Ghar (Poem)", 
-            "8. Rabi Ki Roti", "9. Chand Wali Amma", "10. Pariksha",
-            "11. Joota Jangal Pahucha", "12. Khadee Neem", "13. Lakadee Ka Raasta (Poem)"
+            "1. मातृभूमि", "2. गोल", "3. पहली बूँद", "4. हार की जीत",
+            "5. रहीम के दोहे", "6. मेरी माँ", "7. जलाते चलो", "8. सत्रिया और बिहू नृत्य",
+            "9. मैया मैं नहिं माखन खायो", "10. परीक्षा", "11. चेतक की वीरता",
+            "12. हिंद महासागर में छोटा-सा हिंदुस्तान", "13. पेड़ की बात"
         ],
         "English - Poorvi": [
-            "1. A Day in the Life of Apu", "2. Incredible Animals", "3. Rama's Journey To Lanka",
-            "4. Sports", "5. Being Responsible", "6. Art and Creativity", "7. Technology and Communication",
-            "8. Friendship", "9. Environment", "10. Adventure"
+            "1. A Bottle of Dew", "2. The Raven and the Fox", "3. Rama to the Rescue",
+            "4. The Unlikely Best Friends", "5. A Friend's Prayer", "6. The Chair", "7. Neem Baba",
+            "8. What a Bird Thought", "9. Spices that Heal Us", "10. Change of Heart",
+            "11. The Winner", "12. Yoga — A Way of Life", "13. Hamara Bharat — Incredible India!",
+            "14. The Kites", "15. Ila Sachani: Embroidering Dreams with her Feet", "16. National War Memorial"
         ],
         "Science - Curiosity": [
             "1. The Wonderful World of Science", "2. Diversity in the Living World", "3. Mindful Eating: A Path to a Healthy Body",
@@ -128,13 +130,18 @@ CBSE_CHAPTERS = {
             "10. Living Creatures: Exploring their Characteristics", "11. Nature's Treasures", "12. Beyond Earth"
         ],
         "Social Science - Exploring Society": [
-            "1. The Story of Civilization", "2. Early Humans", "3. The Indus Valley Civilization", "4. The Vedic Age",
-            "5. Maps and Globes", "6. India: Physical Features", "7. Climate of India", "8. Governance",
-            "9. Local Government", "10. Rural and Urban Life"
+            "1. Locating Places on the Earth", "2. Oceans and Continents", "3. Landforms and Life",
+            "4. Timeline and Sources of History", "5. India, That Is Bharat", "6. The Beginnings of Indian Civilisation",
+            "7. India's Cultural Roots", "8. Unity in Diversity, or 'Many in the One'", "9. Family and Community",
+            "10. Grassroots Democracy — Part 1: Governance", "11. Grassroots Democracy — Part 2: Local Government in Rural Areas",
+            "12. Grassroots Democracy — Part 3: Local Government in Urban Areas", "13. The Value of Work", "14. Economic Activities Around Us"
         ],
-        "Sanskrit - Sulabha": [
-            "1. Prathama Paatha", "2. Dviteeyaha Paathaha", "3. Truteeyaha Paathaha", "4. Chaturthaha Paathaha",
-            "5. Panchamaha Paathaha", "6. Shashthaha Paathaha", "7. Saptamaha Paathaha", "8. Ashtamaha Paathaha"
+        "Sanskrit - Deepakam": [
+            "1. वयं वर्णमालां पठामः", "2. संयुक्‍त-व्यञ्जनानि", "3. एषः कः ? एषा का ? एतत् किम्?",
+            "4. अहं च त्वं च", "5. संख्‍यागणना ननु सरला", "6. अहं प्रातः उत्तिष्ठामि",
+            "7. शूराः वयं धीराः वयम्", "8. सः एव महान् चित्रकारः", "9. अतिथिदेवो भव",
+            "10. बुद्धिः सर्वार्थसाधिका", "11. यः जानाति सः पण्डितः", "12. त्वम् आपणं गच्छ",
+            "13. पृथिव्यां त्रीणि रत्नानि", "14. आलस्यं हि मनुष्याणां शरीरस्थः महान् रिपुः", "15. माधवस्य प्रियम् अङ्गम"
         ],
     },
     "7": {
