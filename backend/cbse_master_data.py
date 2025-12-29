@@ -394,10 +394,9 @@ CBSE_CHAPTERS = {
     },
     "11_humanities": {
         "history": [
-            "1. From the Beginning of Time", "2. Writing and City Life", "3. An Empire Across Three Continents",
-            "4. The Central Islamic Lands", "5. Nomadic Empires", "6. The Three Orders",
-            "7. Changing Cultural Traditions", "8. Confrontation of Cultures", "9. The Industrial Revolution",
-            "10. Displacing Indigenous Peoples", "11. Paths to Modernisation"
+            "1. Writing and City Life", "2. An Empire Across Three Continents", "3. Nomadic Empires",
+            "4. The Three Orders", "5. Changing Cultural Traditions", "6. Displacing Indigenous Peoples",
+            "7. Paths to Modernisation"
         ],
         "political-science": [
             "1. Constitution: Why and How?", "2. Rights in the Indian Constitution", "3. Election and Representation",
