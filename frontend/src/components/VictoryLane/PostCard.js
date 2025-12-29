@@ -116,16 +116,16 @@ const PostCard = ({
             </button>
             
             {openMenuId === post.id && (
-              <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+              <div className="absolute right-full top-0 mr-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onDeletePost(post);
                   }}
-                  className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2 text-sm"
+                  className="w-full px-4 py-3 text-left text-red-600 hover:bg-gray-50 flex items-center gap-3 font-medium"
                 >
-                  <Trash2 className="w-4 h-4" />
-                  Delete Post
+                  <Trash2 className="w-5 h-5" />
+                  <span>Delete</span>
                 </button>
               </div>
             )}
