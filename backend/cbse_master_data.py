@@ -405,11 +405,11 @@ CBSE_CHAPTERS = {
         ],
         "geography": [
             "1. Geography as a Discipline", "2. The Origin and Evolution of the Earth", "3. Interior of the Earth",
-            "4. Distribution of Oceans and Continents", "5. Minerals and Rocks", "6. Geomorphic Processes",
-            "7. Landforms and their Evolution", "8. Composition and Structure of Atmosphere",
-            "9. Solar Radiation, Heat Balance and Temperature", "10. Atmospheric Circulation and Weather Systems",
-            "11. Water in the Atmosphere", "12. World Climate and Climate Change", "13. Water (Oceans)",
-            "14. Movements of Ocean Water", "15. Life on the Earth", "16. Biodiversity and Conservation"
+            "4. Distribution of Oceans and Continents", "5. Geomorphic Processes", "6. Landforms and their Evolution",
+            "7. Composition and Structure of Atmosphere", "8. Solar Radiation, Heat Balance and Temperature",
+            "9. Atmospheric Circulation and Weather Systems", "10. Water in the Atmosphere",
+            "11. World Climate and Climate Change", "12. Water (Oceans)", "13. Movements of Ocean Water",
+            "14. Biodiversity and Conservation"
         ],
         "sociology": [
             "1. Sociology and Society", "2. Terms, Concepts and their Use in Sociology",
