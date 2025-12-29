@@ -2,14 +2,25 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, ChevronDown, ChevronRight, 
   BookOpen, Layers, FileText, Search, X, Save,
-  AlertCircle, CheckCircle, Loader2
+  AlertCircle, CheckCircle, Loader2, Filter, GraduationCap
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Excluded IDs and Categories for "Other Competitive Exams"
+const EXCLUDED_EXAM_IDS = ['NDA', 'Agniveer', 'CDS', 'CAPF'];
+const EXCLUDED_CATEGORIES = [
+  'Admission Tests', 'Banking Examinations', 'UPSC Examinations', 
+  'SSC Examinations', 'Teaching Examinations', 'Language Proficiency Tests', 
+  'Language Games', 'UPPSC Examinations', 'CSBC Examinations', 
+  'RSMSSB Examinations', 'Defence Exams', 'Government Jobs', 'Medical Entrance'
+];
+
 const ExamCategoryManager = () => {
   // State
   const [exams, setExams] = useState([]);
+  const [hardcodedExams, setHardcodedExams] = useState([]);
+  const [cbseChapters, setCbseChapters] = useState({});
   const [categories, setCategories] = useState([]);
   const [chapters, setChapters] = useState([]);
   const [stats, setStats] = useState({ exams: 0, categories: 0, chapters: 0, questions: 0 });
@@ -18,15 +29,16 @@ const ExamCategoryManager = () => {
   const [successMessage, setSuccessMessage] = useState(null);
   
   // UI State
-  const [activeTab, setActiveTab] = useState('exams');
+  const [activeTab, setActiveTab] = useState('other-exams'); // 'other-exams', 'cbse-chapters', 'all-exams'
   const [expandedExams, setExpandedExams] = useState({});
   const [expandedCategories, setExpandedCategories] = useState({});
+  const [expandedClasses, setExpandedClasses] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   
   // Modal State
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState('create'); // create or edit
-  const [modalType, setModalType] = useState('exam'); // exam, category, or chapter
+  const [modalType, setModalType] = useState('exam'); // exam, category, chapter, or cbse-chapter
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [saving, setSaving] = useState(false);
