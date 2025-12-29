@@ -11,7 +11,7 @@ CBSE_SUBJECTS = {
         {"name": "English - Poorvi", "slug": "english---poorvi", "icon": "Languages", "color": "from-purple-500 to-purple-600"},
         {"name": "Science - Curiosity", "slug": "science---curiosity", "icon": "Flask", "color": "from-teal-500 to-teal-600"},
         {"name": "Social Science - Exploring Society", "slug": "social-science---exploring-society", "icon": "Globe", "color": "from-amber-500 to-amber-600"},
-        {"name": "Sanskrit - Sulabha", "slug": "sanskrit---sulabha", "icon": "Scroll", "color": "from-red-500 to-red-600"},
+        {"name": "Sanskrit - Deepakam", "slug": "sanskrit---deepakam", "icon": "Scroll", "color": "from-red-500 to-red-600"},
     ],
     "7": [
         {"name": "Mathematics - Ganita Prakash", "slug": "mathematics---ganita-prakash", "icon": "Calculator", "color": "from-blue-500 to-blue-600"},
