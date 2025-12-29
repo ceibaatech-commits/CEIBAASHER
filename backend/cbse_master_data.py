@@ -443,8 +443,9 @@ CBSE_CHAPTERS = {
         "physics": [
             "1. Electric Charges and Fields", "2. Electrostatic Potential and Capacitance", "3. Current Electricity",
             "4. Moving Charges and Magnetism", "5. Magnetism and Matter", "6. Electromagnetic Induction",
-            "7. Alternating Current", "8. Electromagnetic Waves", "9. Ray Optics", "10. Wave Optics",
-            "11. Dual Nature of Radiation and Matter", "12. Atoms", "13. Nuclei", "14. Semiconductor Electronics"
+            "7. Alternating Current", "8. Electromagnetic Waves", "9. Ray Optics and Optical Instruments",
+            "10. Wave Optics", "11. Dual Nature of Radiation and Matter", "12. Atoms", "13. Nuclei",
+            "14. Semiconductor Electronics"
         ],
         "chemistry": [
             "1. The Solid State", "2. Solutions", "3. Electrochemistry", "4. Chemical Kinetics",
