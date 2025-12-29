@@ -465,14 +465,6 @@ CBSE_CHAPTERS = {
             "7. Integrals", "8. Application of Integrals", "9. Differential Equations",
             "10. Vector Algebra", "11. Three Dimensional Geometry", "12. Linear Programming", "13. Probability"
         ],
-        "biology": [
-            "1. Reproduction in Organisms", "2. Sexual Reproduction in Flowering Plants", "3. Human Reproduction",
-            "4. Reproductive Health", "5. Principles of Inheritance and Variation", "6. Molecular Basis of Inheritance",
-            "7. Evolution", "8. Human Health and Disease", "9. Strategies for Enhancement in Food Production",
-            "10. Microbes in Human Welfare", "11. Biotechnology: Principles and Processes",
-            "12. Biotechnology and its Applications", "13. Organisms and Populations", "14. Ecosystem",
-            "15. Biodiversity and Conservation", "16. Environmental Issues"
-        ],
         "english": [
             "1. The Last Lesson", "2. Lost Spring", "3. Deep Water", "4. The Rattrap",
             "5. Indigo", "6. Poets and Pancakes", "7. The Interview", "8. Going Places"
