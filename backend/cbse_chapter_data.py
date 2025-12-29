@@ -181,23 +181,23 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 9, "chapter_name": "The Book That Saved the Earth", "total_questions": 50, "difficulty": "Easy", "duration": 35}
         ],
         "Hindi Kshitij": [
-            {"chapter_number": 1, "chapter_name": "Pad (Surdas)", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 2, "chapter_name": "Ram-Lakshman-Parshuram Samvad", "total_questions": 55, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 3, "chapter_name": "Atmakathya", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "Utsah / At Nahi Rahi Hai", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Yah Danturit Muskan / Fasal", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Sangatkar", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Netaji ka Chashma", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Balgobin Bhagat", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 9, "chapter_name": "Lakhnavi Andaz", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Ek Kahani Yah Bhi", "total_questions": 55, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 11, "chapter_name": "Naubatkhane Mein Ibadat", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 12, "chapter_name": "Sanskriti", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 1, "chapter_name": "सूरदास के पद", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 2, "chapter_name": "राम-लक्ष्मण-परशुराम संवाद", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 3, "chapter_name": "आत्मकथ्य", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "उत्साह / अट नहीं रही है", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "यह दंतुरित मुसकान / फसल", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "संगतकार", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "नेताजी का चश्मा", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "बालगोबिन भगत", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "लखनवी अंदाज़", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "एक कहानी यह भी", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 11, "chapter_name": "नौबतखाने में इबादत", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 12, "chapter_name": "संस्कृति", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Hindi Kritika": [
-            {"chapter_number": 1, "chapter_name": "Mata Ka Anchal", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Saana Saana Hath Jodi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Main Kyun Likhta hun", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 1, "chapter_name": "माता का अँचल", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "साना-साना हाथ जोड़ि", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "मैं क्यों लिखता हूँ?", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Hindi Sparsh": [
             {"chapter_number": 1, "chapter_name": "Saakhi", "total_questions": 50, "difficulty": "Medium", "duration": 35},
