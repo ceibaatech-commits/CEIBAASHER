@@ -737,6 +737,8 @@ const ExamCategoryManager = () => {
             </div>
           )}
         </div>
+          )}
+        </>
       )}
 
       {/* Modal */}
