@@ -558,7 +558,11 @@ CBSE_CHAPTERS = {
         ],
         "english": [
             "1. The Last Lesson", "2. Lost Spring", "3. Deep Water", "4. The Rattrap",
-            "5. Indigo", "6. Poets and Pancakes", "7. The Interview", "8. Going Places"
+            "5. Indigo", "6. Poets and Pancakes", "7. The Interview", "8. Going Places",
+            "9. My Mother at Sixty-Six", "10. Keeping Quiet", "11. A Thing of Beauty",
+            "12. A Roadside Stand", "13. Aunt Jennifer's Tigers", "14. The Third Level",
+            "15. The Tiger King", "16. Journey to the End of the Earth", "17. The Enemy",
+            "18. On the Face of It", "19. Memories of Childhood"
         ],
     },
 }
