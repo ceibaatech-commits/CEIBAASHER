@@ -448,11 +448,16 @@ CBSE_CHAPTERS = {
             "14. Semiconductor Electronics"
         ],
         "chemistry": [
-            "1. The Solid State", "2. Solutions", "3. Electrochemistry", "4. Chemical Kinetics",
-            "5. Surface Chemistry", "6. Isolation of Elements", "7. The p-Block Elements",
-            "8. The d and f Block Elements", "9. Coordination Compounds", "10. Haloalkanes and Haloarenes",
-            "11. Alcohols, Phenols and Ethers", "12. Aldehydes, Ketones and Carboxylic Acids",
-            "13. Amines", "14. Biomolecules", "15. Polymers", "16. Chemistry in Everyday Life"
+            "1. Solutions", "2. Electrochemistry", "3. Chemical Kinetics", "4. The d-and f-Block Elements",
+            "5. Coordination Compounds", "6. Haloalkanes and Haloarenes", "7. Alcohols, Phenols and Ethers",
+            "8. Aldehydes, Ketones and Carboxylic Acids", "9. Amines", "10. Biomolecules"
+        ],
+        "biology": [
+            "1. Sexual Reproduction in Flowering Plants", "2. Human Reproduction", "3. Reproductive Health",
+            "4. Principles of Inheritance and Variation", "5. Molecular Basis of Inheritance", "6. Evolution",
+            "7. Human Health and Diseases", "8. Microbes in Human Welfare", "9. Biotechnology: Principles and Processes",
+            "10. Biotechnology and its Applications", "11. Organisms and Populations", "12. Ecosystem",
+            "13. Biodiversity and Conservation"
         ],
         "mathematics": [
             "1. Relations and Functions", "2. Inverse Trigonometric Functions", "3. Matrices",
