@@ -588,14 +588,13 @@ CBSE_CHAPTER_DATA = {
         "Accountancy": [
             {"chapter_number": 1, "chapter_name": "Introduction to Accounting", "total_questions": 45, "difficulty": "Easy", "duration": 30},
             {"chapter_number": 2, "chapter_name": "Theory Base of Accounting", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "Recording of Transactions I", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 4, "chapter_name": "Recording of Transactions II", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Recording of Transactions – I", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "Recording of Transactions – II", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 5, "chapter_name": "Bank Reconciliation Statement", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 6, "chapter_name": "Trial Balance and Rectification of Errors", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 7, "chapter_name": "Depreciation, Provisions and Reserves", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 8, "chapter_name": "Bill of Exchange", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 9, "chapter_name": "Financial Statements I", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 10, "chapter_name": "Financial Statements II", "total_questions": 60, "difficulty": "Hard", "duration": 45}
+            {"chapter_number": 8, "chapter_name": "Financial Statements – I", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "Financial Statements – II", "total_questions": 60, "difficulty": "Hard", "duration": 45}
         ],
         "Business Studies": [
             {"chapter_number": 1, "chapter_name": "Nature and Purpose of Business", "total_questions": 45, "difficulty": "Easy", "duration": 30},
