@@ -116,18 +116,29 @@ const PostCard = ({
             </button>
             
             {openMenuId === post.id && (
-              <div className="absolute right-full top-0 mr-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
-                <button
+              <>
+                {/* Backdrop to close menu when clicking outside */}
+                <div 
+                  className="fixed inset-0 z-40" 
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDeletePost(post);
+                    onOpenMenu(null);
                   }}
-                  className="w-full px-4 py-3 text-left text-red-600 hover:bg-gray-50 flex items-center gap-3 font-medium"
-                >
-                  <Trash2 className="w-5 h-5" />
-                  <span>Delete</span>
-                </button>
-              </div>
+                />
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 top-full mt-1 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3 z-50 overflow-hidden">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeletePost(post);
+                    }}
+                    className="w-full px-4 py-3 text-left text-red-500 hover:bg-gray-50 flex items-center gap-3 font-semibold text-base"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </>
             )}
           </div>
         )}
