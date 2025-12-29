@@ -476,11 +476,10 @@ CBSE_CHAPTERS = {
     },
     "12_commerce": {
         "accountancy": [
-            "1. Accounting for Not-for-Profit Organisation", "2. Accounting for Partnership: Basic Concepts",
-            "3. Reconstitution of a Partnership Firm - Admission", "4. Reconstitution - Retirement/Death",
-            "5. Dissolution of Partnership Firm", "6. Accounting for Share Capital",
-            "7. Issue and Redemption of Debentures", "8. Financial Statements of a Company",
-            "9. Analysis of Financial Statements", "10. Cash Flow Statement"
+            "1. Accounting for Partnership Firms – Basic Concepts", "2. Reconstitution of a Partnership Firm – Admission of a Partner",
+            "3. Reconstitution of a Partnership Firm – Retirement/Death of a Partner", "4. Dissolution of a Partnership Firm",
+            "5. Accounting for Share Capital", "6. Accounting for Debentures", "7. Financial Statements of a Company",
+            "8. Analysis of Financial Statements", "9. Accounting Ratios", "10. Cash Flow Statement"
         ],
         "business-studies": [
             "1. Nature and Significance of Management", "2. Principles of Management", "3. Business Environment",
@@ -488,10 +487,10 @@ CBSE_CHAPTERS = {
             "9. Financial Management", "10. Financial Markets", "11. Marketing Management", "12. Consumer Protection"
         ],
         "economics": [
-            "1. Introduction to Microeconomics", "2. Theory of Consumer Behaviour", "3. Production and Costs",
-            "4. Theory of the Firm under Perfect Competition", "5. Market Equilibrium", "6. Non-competitive Markets",
-            "7. National Income Accounting", "8. Money and Banking", "9. Determination of Income and Employment",
-            "10. Government Budget and the Economy", "11. Balance of Payments", "12. Development Experience of India"
+            "1. National Income and Related Aggregates", "2. Money and Banking", "3. Determination of Income and Employment",
+            "4. Government Budget and the Economy", "5. Balance of Payments",
+            "6. Development Experience (1947-90) and Economic Reforms since 1991",
+            "7. Current Challenges facing Indian Economy", "8. Development Experience of India – A Comparison with Neighbours"
         ],
         "mathematics": [
             "1. Relations and Functions", "2. Inverse Trigonometric Functions", "3. Matrices",
