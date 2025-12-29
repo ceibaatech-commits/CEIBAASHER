@@ -335,9 +335,9 @@ CBSE_CHAPTERS = {
             "13. Oscillations", "14. Waves"
         ],
         "chemistry": [
-            "1. Some Basic Concepts of Chemistry", "2. Structure of Atom", "3. Classification of Elements",
-            "4. Chemical Bonding and Molecular Structure", "5. Thermodynamics", "6. Equilibrium",
-            "7. Redox Reactions", "8. Organic Chemistry", "9. Hydrocarbons"
+            "1. Some Basic Concepts of Chemistry", "2. Structure of Atom", "3. Classification of Elements and Periodicity in Properties",
+            "4. Chemical Bonding and Molecular Structure", "5. Chemical Thermodynamics", "6. Equilibrium",
+            "7. Redox Reactions", "8. Organic Chemistry: Some Basic Principles and Techniques", "9. Hydrocarbons"
         ],
         "mathematics": [
             "1. Sets", "2. Relations and Functions", "3. Trigonometric Functions", "4. Complex Numbers",
