@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://quiz-translate.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://educompass-10.preview.emergentagent.com")
 SOCKET_URL = f"{BACKEND_URL}/api/battlews"
 
 class BackendTester:
