@@ -801,9 +801,14 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 3, "chapter_name": "Determination of Income and Employment", "total_questions": 65, "difficulty": "Hard", "duration": 50},
             {"chapter_number": 4, "chapter_name": "Government Budget and the Economy", "total_questions": 60, "difficulty": "Hard", "duration": 45},
             {"chapter_number": 5, "chapter_name": "Balance of Payments", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 6, "chapter_name": "Development Experience (1947-90) and Economic Reforms since 1991", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "Current Challenges facing Indian Economy", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "Development Experience of India – A Comparison with Neighbours", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 6, "chapter_name": "Indian Economy on the Eve of Independence", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Indian Economy (1950-1990)", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Economic Reforms Since 1991 (LPG)", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 9, "chapter_name": "Human Capital Formation in India", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "Rural Development", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 11, "chapter_name": "Employment: Growth, Informalisation and Other Issues", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 12, "chapter_name": "Sustainable Economic Development", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 13, "chapter_name": "Development Experience of India: A Comparison with Neighbours", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "History": [
             {"chapter_number": 1, "chapter_name": "Bricks, Beads and Bones", "total_questions": 50, "difficulty": "Medium", "duration": 35},

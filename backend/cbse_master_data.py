@@ -489,8 +489,10 @@ CBSE_CHAPTERS = {
         "economics": [
             "1. National Income and Related Aggregates", "2. Money and Banking", "3. Determination of Income and Employment",
             "4. Government Budget and the Economy", "5. Balance of Payments",
-            "6. Development Experience (1947-90) and Economic Reforms since 1991",
-            "7. Current Challenges facing Indian Economy", "8. Development Experience of India – A Comparison with Neighbours"
+            "6. Indian Economy on the Eve of Independence", "7. Indian Economy (1950-1990)",
+            "8. Economic Reforms Since 1991 (LPG)", "9. Human Capital Formation in India",
+            "10. Rural Development", "11. Employment: Growth, Informalisation and Other Issues",
+            "12. Sustainable Economic Development", "13. Development Experience of India: A Comparison with Neighbours"
         ],
         "mathematics": [
             "1. Relations and Functions", "2. Inverse Trigonometric Functions", "3. Matrices",
