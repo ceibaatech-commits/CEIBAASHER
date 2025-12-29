@@ -704,8 +704,7 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 11, "chapter_name": "Dual Nature of Radiation and Matter", "total_questions": 55, "difficulty": "Hard", "duration": 40},
             {"chapter_number": 12, "chapter_name": "Atoms", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 13, "chapter_name": "Nuclei", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 14, "chapter_name": "Semiconductor Electronics", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 15, "chapter_name": "Communication Systems", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 14, "chapter_name": "Semiconductor Electronics", "total_questions": 60, "difficulty": "Hard", "duration": 45}
         ],
         "Mathematics": [
             {"chapter_number": 1, "chapter_name": "Relations and Functions", "total_questions": 60, "difficulty": "Hard", "duration": 45},
