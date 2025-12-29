@@ -597,17 +597,16 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 9, "chapter_name": "Financial Statements – II", "total_questions": 60, "difficulty": "Hard", "duration": 45}
         ],
         "Business Studies": [
-            {"chapter_number": 1, "chapter_name": "Nature and Purpose of Business", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Forms of Business Organisation", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 1, "chapter_name": "Business, Trade and Commerce", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Forms of Business Organisations", "total_questions": 55, "difficulty": "Medium", "duration": 40},
             {"chapter_number": 3, "chapter_name": "Private, Public and Global Enterprises", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 4, "chapter_name": "Business Services", "total_questions": 50, "difficulty": "Medium", "duration": 35},
             {"chapter_number": 5, "chapter_name": "Emerging Modes of Business", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Social Responsibilities of Business and Business Ethics", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "Formation of a Company", "total_questions": 55, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 8, "chapter_name": "Sources of Business Finance", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 9, "chapter_name": "Small Business", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 10, "chapter_name": "Internal Trade", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "International Business", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 6, "chapter_name": "Social Responsibility of Business and Business Ethics", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Sources of Business Finance", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 8, "chapter_name": "Small Business and Entrepreneurship", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Internal Trade", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 10, "chapter_name": "International Business", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Economics": [
             {"chapter_number": 1, "chapter_name": "Introduction to Microeconomics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
