@@ -43,6 +43,7 @@ from emergent_auth_routes import router as emergent_auth_router
 from search_routes import router as search_router
 from exam_sync_routes import router as exam_sync_router
 from exam_management_routes import router as exam_management_router
+from admin_data_routes import router as admin_data_router
 import exam_sync_routes
 from user_management_routes import router as user_management_router
 import user_management_routes
