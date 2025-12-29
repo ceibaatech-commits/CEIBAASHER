@@ -169,6 +169,62 @@ const ExamCategoryManager = () => {
     }
   };
 
+  // Handle delete hardcoded exam (from exam_data.py)
+  const handleDeleteHardcodedExam = async (examId, examName) => {
+    if (!window.confirm(`Are you sure you want to delete "${examName}"? This will remove it from the exam data.`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/hardcoded-exam/${examId}`, {
+        method: 'DELETE'
+      });
+      
+      if (res.ok) {
+        setSuccessMessage(`Exam "${examName}" deleted successfully`);
+        setTimeout(() => setSuccessMessage(null), 3000);
+        fetchData(); // Refresh data
+      } else {
+        const error = await res.json();
+        setError(error.detail || 'Failed to delete exam');
+      }
+    } catch (err) {
+      setError('Failed to delete exam. This feature may require backend implementation.');
+      console.error(err);
+    }
+  };
+
+  // Handle delete CBSE chapter
+  const handleDeleteCbseChapter = async (classKey, subjectSlug, chapterIndex, chapterName) => {
+    if (!window.confirm(`Are you sure you want to delete "${chapterName}"?`)) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/cbse-chapter`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          class_key: classKey,
+          subject_slug: subjectSlug,
+          chapter_index: chapterIndex
+        })
+      });
+      
+      if (res.ok) {
+        setSuccessMessage(`Chapter "${chapterName}" deleted successfully`);
+        setTimeout(() => setSuccessMessage(null), 3000);
+        fetchData(); // Refresh data
+      } else {
+        const error = await res.json();
+        setError(error.detail || 'Failed to delete chapter');
+      }
+    } catch (err) {
+      setError('Failed to delete chapter. This feature may require backend implementation.');
+      console.error(err);
+    }
+  };
+
   // Toggle expand/collapse
   const toggleExam = (examId) => {
     setExpandedExams(prev => ({ ...prev, [examId]: !prev[examId] }));
