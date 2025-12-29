@@ -368,10 +368,9 @@ CBSE_CHAPTERS = {
             "7. Depreciation, Provisions and Reserves", "8. Financial Statements – I", "9. Financial Statements – II"
         ],
         "business-studies": [
-            "1. Nature and Purpose of Business", "2. Forms of Business Organisation", "3. Private, Public and Global Enterprises",
-            "4. Business Services", "5. Emerging Modes of Business", "6. Social Responsibilities of Business",
-            "7. Formation of a Company", "8. Sources of Business Finance", "9. Small Business", "10. Internal Trade",
-            "11. International Business"
+            "1. Business, Trade and Commerce", "2. Forms of Business Organisations", "3. Private, Public and Global Enterprises",
+            "4. Business Services", "5. Emerging Modes of Business", "6. Social Responsibility of Business and Business Ethics",
+            "7. Sources of Business Finance", "8. Small Business and Entrepreneurship", "9. Internal Trade", "10. International Business"
         ],
         "economics": [
             "1. Introduction to Economics", "2. Collection of Data", "3. Organisation of Data",
