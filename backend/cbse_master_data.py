@@ -386,8 +386,11 @@ CBSE_CHAPTERS = {
             "12. Limits and Derivatives", "13. Statistics", "14. Probability"
         ],
         "english": [
-            "1. The Portrait of a Lady", "2. We are Not Afraid to Die", "3. Discovering Tut",
-            "4. Landscape of the Soul", "5. The Ailing Planet"
+            "1. The Portrait of a Lady", "2. A Photograph", "3. We're Not Afraid to Die... if We Can All Be Together",
+            "4. Discovering Tut: the Saga Continues", "5. The Laburnum Top", "6. The Voice of the Rain",
+            "7. Childhood", "8. The Adventure", "9. Silk Road", "10. Father to Son",
+            "11. The Summer of the Beautiful White Horse", "12. The Address", "13. Mother's Day",
+            "14. Birth", "15. The Tale of Melon City"
         ],
     },
     "11_humanities": {
