@@ -401,7 +401,9 @@ CBSE_CHAPTERS = {
         "political-science": [
             "1. Constitution: Why and How?", "2. Rights in the Indian Constitution", "3. Election and Representation",
             "4. Executive", "5. Legislature", "6. Judiciary", "7. Federalism", "8. Local Governments",
-            "9. Constitution as a Living Document", "10. The Philosophy of the Constitution"
+            "9. Constitution as a Living Document", "10. The Philosophy of the Constitution",
+            "11. Political Theory: An Introduction", "12. Freedom", "13. Equality", "14. Social Justice",
+            "15. Rights", "16. Citizenship", "17. Nationalism", "18. Secularism"
         ],
         "geography": [
             "1. Geography as a Discipline", "2. The Origin and Evolution of the Earth", "3. Interior of the Earth",
