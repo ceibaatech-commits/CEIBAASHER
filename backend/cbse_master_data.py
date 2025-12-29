@@ -511,41 +511,36 @@ CBSE_CHAPTERS = {
     },
     "12_humanities": {
         "history": [
-            "1. Bricks, Beads and Bones", "2. Kings, Farmers and Towns", "3. Kinship, Caste and Class",
-            "4. Thinkers, Beliefs and Buildings", "5. Through the Eyes of Travellers",
-            "6. Bhakti-Sufi Traditions", "7. An Imperial Capital: Vijayanagara", "8. Peasants, Zamindars and the State",
-            "9. Kings and Chronicles", "10. Colonialism and the Countryside", "11. Rebels and the Raj",
-            "12. Colonial Cities", "13. Mahatma Gandhi and the Nationalist Movement",
-            "14. Understanding Partition", "15. Framing the Constitution"
+            "1. Bricks, Beads and Bones (The Harappan Civilisation)", "2. Kings, Farmers and Towns (Early States and Economies)",
+            "3. Kinship, Caste and Class (Early Societies)", "4. Thinkers, Beliefs and Buildings (Cultural Developments)",
+            "5. Through the Eyes of Travellers (Perceptions of Society)", "6. Bhakti-Sufi Traditions (Changes in Religious Beliefs)",
+            "7. An Imperial Capital: Vijayanagara", "8. Peasants, Zamindars and the State (Agrarian Society)",
+            "9. Colonialism and the Countryside (Official Archives)", "10. Rebels and the Raj (1857 Revolt)",
+            "11. Mahatma Gandhi and the Nationalist Movement", "12. Framing the Constitution (The Beginning of a New Era)"
         ],
         "political-science": [
-            "1. Challenges of Nation Building", "2. Era of One-Party Dominance", "3. Politics of Planned Development",
-            "4. India's External Relations", "5. Challenges to and Restoration of the Congress System",
-            "6. The Crisis of Democratic Order", "7. Rise of Popular Movements", "8. Regional Aspirations",
-            "9. Recent Developments in Indian Politics", "10. The Cold War Era", "11. The End of Bipolarity",
-            "12. US Hegemony in World Politics", "13. Alternative Centres of Power",
-            "14. South Asia", "15. International Organisations", "16. Security in the Contemporary World",
-            "17. Environment and Natural Resources", "18. Globalisation"
+            "1. The End of Bipolarity", "2. Contemporary Centres of Power", "3. Contemporary South Asia",
+            "4. International Organisations", "5. Security in the Contemporary World",
+            "6. Environment and Natural Resources", "7. Globalisation",
+            "8. Challenges of Nation-Building", "9. Era of One-Party Dominance", "10. Politics of Planned Development",
+            "11. India's External Relations", "12. Challenges to and Restoration of the Congress System",
+            "13. The Crisis of Democratic Order", "14. Regional Aspirations", "15. Recent Developments in Indian Politics"
         ],
         "geography": [
             "1. Human Geography: Nature and Scope", "2. The World Population: Distribution, Density and Growth",
-            "3. Population Composition", "4. Human Development", "5. Primary Activities",
-            "6. Secondary Activities", "7. Tertiary and Quaternary Activities", "8. Transport and Communication",
-            "9. International Trade", "10. Human Settlements",
-            "11. Population: Distribution, Density, Growth and Composition", "12. Migration",
-            "13. Human Development", "14. Human Settlements", "15. Land Resources and Agriculture",
-            "16. Water Resources", "17. Mineral and Energy Resources", "18. Manufacturing Industries",
-            "19. Planning and Sustainable Development in Indian Context",
-            "20. Transport and Communication", "21. International Trade", "22. Geographical Perspective on Selected Issues"
+            "3. Human Development", "4. Primary Activities", "5. Secondary Activities",
+            "6. Tertiary and Quaternary Activities", "7. Transport, Communication and Trade", "8. International Trade",
+            "9. Population: Distribution, Density, Growth and Composition", "10. Human Settlements",
+            "11. Land Resources and Agriculture", "12. Water Resources", "13. Mineral and Energy Resources",
+            "14. Planning and Sustainable Development in Indian Context", "15. Transport and Communication",
+            "16. International Trade (India)", "17. Geographical Perspective on Selected Issues and Problems"
         ],
         "sociology": [
-            "1. Indian Society: An Introduction", "2. The Demographic Structure of Indian Society",
+            "1. Introducing Indian Society (Non-evaluative)", "2. The Demographic Structure of the Indian Society",
             "3. Social Institutions: Continuity and Change", "4. The Market as a Social Institution",
             "5. Patterns of Social Inequality and Exclusion", "6. The Challenges of Cultural Diversity",
-            "7. Suggestions for Project Work", "8. Structural Change", "9. Cultural Change",
-            "10. The Story of Indian Democracy", "11. Change and Development in Rural Society",
-            "12. Change and Development in Industrial Society", "13. Globalisation and Social Change",
-            "14. Mass Media and Communications", "15. Social Movements"
+            "7. Structural Change", "8. Cultural Change", "9. Change and Development in Rural Society",
+            "10. Change and Development in Industrial Society", "11. Social Movements"
         ],
         "psychology": [
             "1. Variations in Psychological Attributes", "2. Self and Personality", "3. Meeting Life Challenges",
