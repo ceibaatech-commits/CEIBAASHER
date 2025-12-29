@@ -609,16 +609,17 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 10, "chapter_name": "International Business", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "Economics": [
-            {"chapter_number": 1, "chapter_name": "Introduction to Microeconomics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "Theory of Consumer Behaviour", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 3, "chapter_name": "Production and Costs", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 4, "chapter_name": "The Theory of the Firm under Perfect Competition", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 5, "chapter_name": "Market Equilibrium", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 6, "chapter_name": "Non-competitive Markets", "total_questions": 55, "difficulty": "Hard", "duration": 40},
-            {"chapter_number": 7, "chapter_name": "Introduction to Macroeconomics", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "National Income Accounting", "total_questions": 60, "difficulty": "Hard", "duration": 45},
-            {"chapter_number": 9, "chapter_name": "Money and Banking", "total_questions": 55, "difficulty": "Medium", "duration": 40},
-            {"chapter_number": 10, "chapter_name": "Income Determination", "total_questions": 60, "difficulty": "Hard", "duration": 45}
+            {"chapter_number": 1, "chapter_name": "Introduction (Statistics)", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 2, "chapter_name": "Collection of Data", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Organisation of Data", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "Presentation of Data", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 5, "chapter_name": "Measures of Central Tendency", "total_questions": 55, "difficulty": "Medium", "duration": 40},
+            {"chapter_number": 6, "chapter_name": "Correlation", "total_questions": 55, "difficulty": "Hard", "duration": 40},
+            {"chapter_number": 7, "chapter_name": "Index Numbers", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 8, "chapter_name": "Introduction (Microeconomics)", "total_questions": 45, "difficulty": "Easy", "duration": 30},
+            {"chapter_number": 9, "chapter_name": "Consumer's Equilibrium and Demand", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "Producer Behaviour and Supply", "total_questions": 60, "difficulty": "Hard", "duration": 45},
+            {"chapter_number": 11, "chapter_name": "Forms of Market and Price Determination", "total_questions": 55, "difficulty": "Hard", "duration": 40}
         ],
         "History": [
             {"chapter_number": 1, "chapter_name": "From the Beginning of Time", "total_questions": 50, "difficulty": "Medium", "duration": 35},
