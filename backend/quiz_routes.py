@@ -478,8 +478,14 @@ async def start_quiz(request: QuizStartRequest):
             re.IGNORECASE
         )
         
+        # Build class_name pattern to match both "Class 11" and "Class 11 (Science)" formats
+        class_name_pattern = re.compile(
+            f"^{re.escape(request.class_name)}(\\s*\\(.*\\))?$",
+            re.IGNORECASE
+        )
+        
         query = {
-            "class_name": request.class_name,
+            "class_name": {"$regex": class_name_pattern},
             "subject": request.subject,
             "chapter": {"$regex": chapter_pattern}
         }
