@@ -1,0 +1,14 @@
+[
+  {
+    "content": "Create performance test file in /tmp directory with all GET routes",
+    "status": "completed"
+  },
+  {
+    "content": "Run performance tests against all three backends (preview, caddy, cloudflare)",
+    "status": "completed"
+  },
+  {
+    "content": "Collect and report results using Performance_result callback",
+    "status": "completed"
+  }
+]
