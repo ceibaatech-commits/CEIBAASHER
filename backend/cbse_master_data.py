@@ -185,46 +185,50 @@ CBSE_CHAPTERS = {
         ],
     },
     "8": {
-        "Mathematics - Ganita Prakash": [
-            "1. A Square and A Cube", "2. Power Play", "3. A Story of Numbers",
-            "4. Quadrilaterals", "5. Number Play", "6. We Distribute, Yet Things Multiply",
-            "7. Proportional Reasoning-1"
+        "Mathematics": [
+            "1. Rational Numbers", "2. Linear Equations in One Variable", "3. Understanding Quadrilaterals",
+            "4. Data Handling", "5. Squares and Square Roots", "6. Cubes and Cube Roots",
+            "7. Comparing Quantities", "8. Algebraic Expressions and Identities", "9. Mensuration",
+            "10. Exponents and Powers", "11. Direct and Inverse Proportions", "12. Factorisation", "13. Introduction to Graphs"
         ],
         "Hindi - Malhar": [
-            "1. Dhwani", "2. Lakh Ki Chudiyan", "3. Bus Ki Yatra", "4. Deewano Ki Hasti",
-            "5. Chitthiyon Ki Anoothi Duniya", "6. Bhagwan Ke Dakiye", "7. Kya Nirash Hua Jaye",
-            "8. Yeh Sabse Kathin Samay Nahin", "9. Kabir Ki Sakhi", "10. Kamchor"
+            "1. स्वदेश", "2. दो गौरैयाँ", "3. एक आशीर्वाद", "4. हरिद्वार",
+            "5. कबीर के दोहे", "6. एक टोकरी भर मिट्टी", "7. मत बाँधो",
+            "8. नए मेहमान", "9. आदमी का अनपढ़", "10. तरुण के स्वप्न"
         ],
         "English - Poorvi": [
-            "1. The Best Christmas Present in the World", "2. The Tsunami", "3. Glimpses of the Past",
-            "4. Bepin Choudhury's Lapse of Memory", "5. The Summit Within", "6. This is Jody's Fawn",
-            "7. A Visit to Cambridge", "8. A Short Monsoon Diary"
+            "1. The Wit that Won Hearts", "2. A Concrete Example", "3. Wisdom Paves the Way",
+            "4. A Tale of Valour: Major Somnath Sharma", "5. Somebody's Mother",
+            "6. Verghese Kurien – I Too Had a Dream", "7. The Case of the Fifth Word",
+            "8. The Magic Brush of Dreams", "9. Spectacular Wonders", "10. The Cherry Tree",
+            "11. Harvest Hymn", "12. Waiting for the Rain", "13. Feathered Friend",
+            "14. Magnifying Glass", "15. Bibha Chowdhuri: The Beam of Light"
         ],
-        "Science - Curiosity": [
-            "1. Exploring the Investigative World of Science", "2. The Invisible Living World: Beyond Our Naked Eye",
-            "3. Health: The Ultimate Treasure", "4. Electricity: Magnetic and Heating Effects",
-            "5. Exploring Forces", "6. Pressure, Winds, Storms and Cyclones",
-            "7. Particulate Nature of Matter", "8. Nature of Matter: Elements, Compounds and Mixtures",
-            "9. The Amazing World of Solutes, Solvents and Solutions", "10. Light: Mirrors and Lenses",
-            "11. Keeping Time with the Skies", "12. How Nature Works in Harmony",
-            "13. Our Home: Earth, a Unique Life Sustaining Planet"
+        "Science": [
+            "1. Crop Production and Management", "2. Microorganisms: Friend and Foe",
+            "3. Coal and Petroleum", "4. Combustion and Flame", "5. Conservation of Plants and Animals",
+            "6. Reproduction in Animals", "7. Reaching the Age of Adolescence",
+            "8. Force and Pressure", "9. Friction", "10. Sound",
+            "11. Chemical Effects of Electric Current", "12. Some Natural Phenomena", "13. Light"
         ],
-        "Geography": [
-            "1. Resources", "2. Land, Soil, Water, Natural Vegetation and Wildlife Resources",
-            "3. Agriculture", "4. Industries", "5. Human Resources"
+        "Social Science": [
+            "1. How, When and Where", "2. From Trade to Territory", "3. Ruling the Countryside",
+            "4. Tribals, Dikus and the Vision of a Golden Age", "5. When People Rebel: 1857 and After",
+            "6. Civilising the 'Native', Educating the Nation", "7. Women, Caste and Reform",
+            "8. The Making of the National Movement", "9. Resources",
+            "10. Land, Soil, Water, Natural Vegetation and Wildlife", "11. Agriculture",
+            "12. Industries", "13. Human Resources", "14. The Indian Constitution",
+            "15. Understanding Secularism", "16. Parliament and the Making of Laws",
+            "17. Judiciary", "18. Understanding Marginalisation", "19. Confronting Marginalisation",
+            "20. Public Facilities", "21. Law and Social Justice"
         ],
-        "Social Science - Exploring Society: India and Beyond": [
-            "1. Natural Resources and Their Use", "2. Reshaping India's Political Map",
-            "3. The Rise of the Marathas", "4. The Colonial Era in India",
-            "5. Universal Franchise and India's Electoral System",
-            "6. The Parliamentary System: Legislature and Executive", "7. Factors of Production"
-        ],
-        "Sanskrit - Sulabha": [
-            "1. Subhaashitaani", "2. Bilaasy Vaanee na Dadaapi me Shruta", "3. Bhagavadjjukam",
-            "4. Sadaiv Purato Nidhihi Charnam", "5. Dharme Dhamanan Paape Paunam",
-            "6. Premalasy Premalyaashch Katha", "7. Jalavaahinee", "8. Sansaarasaagarasy Naayakaah",
-            "9. Saptabhaginyah", "10. Ashokavanika", "11. Saavitree Baee Phule",
-            "12. Kah Rakshati Kah Rakshitah", "13. Himalayah", "14. Aaryabhatah"
+        "Sanskrit - Deepakam": [
+            "1. संगच्छध्वं संवदध्वम्", "2. अल्पानामपि वस्तूनां संहतिः कार्यसाधिका",
+            "3. सुभाषितरसं पीत्वा जीवनं सफलं कुरु", "4. प्रणम्यो देशभक्तोऽयं गोपबन्धुर्महामनाः",
+            "5. गीता सुगीता कर्तव्या", "6. डिजि‍भारतम्- युगपरिवर्तनम्",
+            "7. मञ्जुलमञ्जूषा सुन्दरसुरभाषा", "8. पश्यत कोणमैशान्यं भारतस्य मनोहरम्",
+            "9. कोऽरुक् ? कोऽरुक् ? कोऽरुक् ?", "10. सन्निमित्ते वरं त्यागः (क-भागः)",
+            "11. सन्निमित्ते वरं त्यागः (ख-भागः)", "12. सम्यग्वर्णप्रयोगेण ब्रह्मलोके महीयते"
         ],
     },
     "9": {
