@@ -622,17 +622,13 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 11, "chapter_name": "Forms of Market and Price Determination", "total_questions": 55, "difficulty": "Hard", "duration": 40}
         ],
         "History": [
-            {"chapter_number": 1, "chapter_name": "From the Beginning of Time", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 2, "chapter_name": "Writing and City Life", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 3, "chapter_name": "An Empire Across Three Continents", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 4, "chapter_name": "The Central Islamic Lands", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Nomadic Empires", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "The Three Orders", "total_questions": 45, "difficulty": "Medium", "duration": 30},
-            {"chapter_number": 7, "chapter_name": "Changing Cultural Traditions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 8, "chapter_name": "Confrontation of Cultures", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 9, "chapter_name": "Paths to Modernisation", "total_questions": 50, "difficulty": "Hard", "duration": 35},
-            {"chapter_number": 10, "chapter_name": "Displacing Indigenous Peoples", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 11, "chapter_name": "Industrialisation and Social Change", "total_questions": 55, "difficulty": "Hard", "duration": 40}
+            {"chapter_number": 1, "chapter_name": "Writing and City Life", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 2, "chapter_name": "An Empire Across Three Continents", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 3, "chapter_name": "Nomadic Empires", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 4, "chapter_name": "The Three Orders", "total_questions": 45, "difficulty": "Medium", "duration": 30},
+            {"chapter_number": 5, "chapter_name": "Changing Cultural Traditions", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 6, "chapter_name": "Displacing Indigenous Peoples", "total_questions": 50, "difficulty": "Medium", "duration": 35},
+            {"chapter_number": 7, "chapter_name": "Paths to Modernisation", "total_questions": 50, "difficulty": "Hard", "duration": 35}
         ],
         "Geography": [
             {"chapter_number": 1, "chapter_name": "Geography as a Discipline", "total_questions": 40, "difficulty": "Easy", "duration": 25},
