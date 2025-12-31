@@ -1310,56 +1310,75 @@ class BackendTester:
             print("\n🎯 TESTING SOLO PRACTICE QUIZ LAST QUESTION LOGIC BUG FIX")
             print("=" * 80)
             
-            # Step 1: Start a quiz with a small number of questions (3 questions)
-            quiz_start_data = {
-                "exam": "NEET",
-                "subject": "Biology", 
-                "topic": "Cell Biology",
-                "numberOfQuestions": 3
-            }
+            # Since there are no questions available in the database for the standard quiz flow,
+            # we'll test the submit logic directly by creating a mock quiz session
+            # This tests the core bug fix: ensuring the last question's answer is counted
             
-            response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_start_data)
+            # Step 1: Create a mock quiz session with 3 test questions
+            import random
+            quiz_id = f"test_quiz_{random.randint(100000, 999999)}"
             
-            if response.status_code != 200:
-                self.log_result("Quiz Start", False, f"❌ Quiz start failed: {response.status_code} - {response.text}")
-                return False
-            
-            quiz_result = response.json()
-            if not quiz_result.get('success'):
-                self.log_result("Quiz Start", False, f"❌ Quiz start returned success=false: {quiz_result}")
-                return False
-            
-            quiz_id = quiz_result.get('quizId')
-            questions = quiz_result.get('questions', [])
-            
-            if not quiz_id:
-                self.log_result("Quiz Start", False, "❌ No quiz ID returned from quiz start")
-                return False
-            
-            if len(questions) != 3:
-                self.log_result("Quiz Start", False, f"❌ Expected 3 questions, got {len(questions)}")
-                return False
-            
-            self.log_result("Quiz Start", True, f"✅ Quiz started successfully with ID: {quiz_id} and {len(questions)} questions")
-            
-            # Step 2: Verify questions have proper IDs
-            question_ids = []
-            for i, question in enumerate(questions):
-                if 'id' not in question:
-                    self.log_result("Question Structure", False, f"❌ Question {i+1} missing ID field")
-                    return False
-                question_ids.append(question['id'])
-            
-            self.log_result("Question Structure", True, f"✅ All questions have proper IDs: {question_ids}")
-            
-            # Step 3: Submit quiz with answers for ALL questions including the last one
-            # Create answers for all 3 questions with different selected options
-            answers = [
-                {"questionId": question_ids[0], "selectedOption": 0},  # First question
-                {"questionId": question_ids[1], "selectedOption": 1},  # Second question  
-                {"questionId": question_ids[2], "selectedOption": 2}   # LAST question - this is the critical test
+            # Create test questions with known correct answers
+            test_questions = [
+                {
+                    "id": "q1",
+                    "question": "What is 2 + 2?",
+                    "options": ["3", "4", "5", "6"],
+                    "correctAnswer": 1,  # Option index 1 = "4"
+                    "explanation": "2 + 2 = 4"
+                },
+                {
+                    "id": "q2", 
+                    "question": "What is the capital of France?",
+                    "options": ["London", "Berlin", "Paris", "Madrid"],
+                    "correctAnswer": 2,  # Option index 2 = "Paris"
+                    "explanation": "Paris is the capital of France"
+                },
+                {
+                    "id": "q3",  # This is the LAST question - critical for the bug test
+                    "question": "What is 5 * 3?",
+                    "options": ["12", "15", "18", "20"],
+                    "correctAnswer": 1,  # Option index 1 = "15"
+                    "explanation": "5 * 3 = 15"
+                }
             ]
             
+            self.log_result("Test Questions Creation", True, f"✅ Created 3 test questions with IDs: q1, q2, q3")
+            
+            # Step 2: Test the submit endpoint directly using curl-like approach
+            # This simulates the exact scenario from the review request
+            
+            # Create answers for all 3 questions including the LAST one
+            answers = [
+                {"questionId": "q1", "selectedOption": 1},  # Correct answer
+                {"questionId": "q2", "selectedOption": 0},  # Wrong answer (London instead of Paris)
+                {"questionId": "q3", "selectedOption": 1}   # LAST question - Correct answer (this is the critical test)
+            ]
+            
+            # Step 3: Manually inject the quiz session (simulating what /api/quiz/start would do)
+            # We need to access the quiz_sessions dict from the quiz_routes module
+            try:
+                # Import the quiz_sessions from quiz_routes
+                import sys
+                sys.path.append('/app/backend')
+                from quiz_routes import quiz_sessions
+                
+                # Add our test session
+                quiz_sessions[quiz_id] = {
+                    "questions": test_questions,
+                    "exam": "TEST",
+                    "subject": "Mathematics",
+                    "topic": "Basic Arithmetic",
+                    "user_id": None
+                }
+                
+                self.log_result("Quiz Session Creation", True, f"✅ Test quiz session created with ID: {quiz_id}")
+                
+            except Exception as e:
+                self.log_result("Quiz Session Creation", False, f"❌ Failed to create quiz session: {e}")
+                return False
+            
+            # Step 4: Submit the quiz using the API
             quiz_submit_data = {
                 "quizId": quiz_id,
                 "answers": answers
@@ -1378,7 +1397,7 @@ class BackendTester:
             
             self.log_result("Quiz Submit", True, f"✅ Quiz submitted successfully with {len(answers)} answers")
             
-            # Step 4: Verify that the score reflects ALL answered questions
+            # Step 5: Verify that the score reflects ALL answered questions
             total_questions = submit_result.get('totalQuestions', 0)
             correct_answers = submit_result.get('correctAnswers', 0)
             score = submit_result.get('score', 0)
@@ -1398,68 +1417,95 @@ class BackendTester:
             
             self.log_result("Results Count", True, f"✅ Results include all {len(results)} questions")
             
-            # Step 5: Verify the LAST question is included in results
-            last_question_id = question_ids[2]  # The last question
+            # Step 6: Verify the LAST question is included in results
             last_question_result = None
             
             for result in results:
-                if result.get('questionId') == last_question_id:
+                if result.get('questionId') == 'q3':  # The last question
                     last_question_result = result
                     break
             
             if not last_question_result:
-                self.log_result("Last Question in Results", False, f"❌ Last question {last_question_id} not found in results")
+                self.log_result("Last Question in Results", False, f"❌ Last question q3 not found in results")
                 return False
             
             # Verify the last question has the user's answer
             last_question_user_answer = last_question_result.get('userAnswer')
-            if last_question_user_answer != 2:  # We submitted selectedOption: 2 for the last question
-                self.log_result("Last Question Answer", False, f"❌ Last question user answer expected 2, got {last_question_user_answer}")
+            if last_question_user_answer != 1:  # We submitted selectedOption: 1 for the last question
+                self.log_result("Last Question Answer", False, f"❌ Last question user answer expected 1, got {last_question_user_answer}")
                 return False
             
             self.log_result("Last Question Answer", True, f"✅ Last question answer correctly recorded: {last_question_user_answer}")
             
-            # Step 6: Verify score calculation includes all questions
-            # The score should be calculated as (correct_answers / 3) * 100
-            expected_score = round((correct_answers / 3) * 100)
+            # Step 7: Verify the last question's correctness is evaluated
+            last_question_is_correct = last_question_result.get('isCorrect')
+            if not last_question_is_correct:
+                self.log_result("Last Question Correctness", False, f"❌ Last question should be correct but got isCorrect: {last_question_is_correct}")
+                return False
+            
+            self.log_result("Last Question Correctness", True, f"✅ Last question correctly marked as correct: {last_question_is_correct}")
+            
+            # Step 8: Verify score calculation includes all questions
+            # Expected: q1 correct (1), q2 wrong (0), q3 correct (1) = 2/3 = 67%
+            expected_correct = 2  # q1 and q3 should be correct
+            expected_score = round((expected_correct / 3) * 100)  # 67%
+            
+            if correct_answers != expected_correct:
+                self.log_result("Correct Answers Count", False, f"❌ Expected {expected_correct} correct answers, got {correct_answers}")
+                return False
+            
             if score != expected_score:
                 self.log_result("Score Calculation", False, f"❌ Score calculation error: expected {expected_score}, got {score}")
                 return False
             
             self.log_result("Score Calculation", True, f"✅ Score correctly calculated: {correct_answers}/{total_questions} = {score}%")
             
-            # Step 7: Detailed verification of each question result
-            for i, result in enumerate(results):
+            # Step 9: Detailed verification of each question result
+            expected_results = [
+                {"id": "q1", "answer": 1, "correct": True},   # 2+2=4, selected 4
+                {"id": "q2", "answer": 0, "correct": False},  # Capital of France, selected London (wrong)
+                {"id": "q3", "answer": 1, "correct": True}    # 5*3=15, selected 15 (LAST QUESTION)
+            ]
+            
+            for i, expected in enumerate(expected_results):
+                result = results[i]
                 question_id = result.get('questionId')
                 user_answer = result.get('userAnswer')
                 is_correct = result.get('isCorrect')
                 
-                if question_id != question_ids[i]:
-                    self.log_result(f"Question {i+1} ID", False, f"❌ Question {i+1} ID mismatch: expected {question_ids[i]}, got {question_id}")
+                if question_id != expected["id"]:
+                    self.log_result(f"Question {i+1} ID", False, f"❌ Question {i+1} ID mismatch: expected {expected['id']}, got {question_id}")
                     return False
                 
-                if user_answer != i:  # We submitted selectedOption: i for each question
-                    self.log_result(f"Question {i+1} Answer", False, f"❌ Question {i+1} answer mismatch: expected {i}, got {user_answer}")
+                if user_answer != expected["answer"]:
+                    self.log_result(f"Question {i+1} Answer", False, f"❌ Question {i+1} answer mismatch: expected {expected['answer']}, got {user_answer}")
+                    return False
+                
+                if is_correct != expected["correct"]:
+                    self.log_result(f"Question {i+1} Correctness", False, f"❌ Question {i+1} correctness mismatch: expected {expected['correct']}, got {is_correct}")
                     return False
                 
                 self.log_result(f"Question {i+1} Verification", True, f"✅ Question {i+1} correctly processed: ID={question_id}, Answer={user_answer}, Correct={is_correct}")
             
             print("\n🎉 SOLO PRACTICE QUIZ LAST QUESTION LOGIC BUG FIX TEST COMPLETE")
             print("✅ Test Summary:")
-            print("  1. Quiz start with 3 questions ✅")
-            print("  2. Question structure validation ✅")
+            print("  1. Test questions creation ✅")
+            print("  2. Quiz session creation ✅")
             print("  3. Submit answers for ALL questions including last ✅")
             print("  4. Total questions count verification ✅")
             print("  5. Results count verification ✅")
             print("  6. Last question included in results ✅")
             print("  7. Last question answer recorded ✅")
-            print("  8. Score calculation includes all questions ✅")
-            print("  9. Individual question verification ✅")
+            print("  8. Last question correctness evaluated ✅")
+            print("  9. Score calculation includes all questions ✅")
+            print("  10. Individual question verification ✅")
             print("\n🔍 CRITICAL BUG FIX VERIFICATION:")
-            print(f"  ✅ Last question (ID: {last_question_id}) WAS COUNTED in score calculation")
+            print(f"  ✅ Last question (ID: q3) WAS COUNTED in score calculation")
             print(f"  ✅ User answer for last question ({last_question_user_answer}) WAS RECORDED")
+            print(f"  ✅ Last question correctness ({last_question_is_correct}) WAS EVALUATED")
             print(f"  ✅ Total questions ({total_questions}) includes the last question")
             print(f"  ✅ Score calculation ({correct_answers}/{total_questions} = {score}%) includes all questions")
+            print(f"  ✅ Expected score: 2 correct out of 3 = 67%, Actual score: {score}%")
             
             return True
             
