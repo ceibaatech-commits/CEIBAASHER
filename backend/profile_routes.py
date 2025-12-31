@@ -435,10 +435,14 @@ async def update_user_profile(
             {"$set": update_data}
         )
         
+        # Fetch updated profile to return
+        updated_user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+        
         return {
             "success": True,
             "message": "Profile updated successfully",
-            "updated_fields": list(update_data.keys())
+            "updated_fields": list(update_data.keys()),
+            "profile": updated_user
         }
         
     except HTTPException:
