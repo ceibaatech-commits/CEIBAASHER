@@ -80,6 +80,15 @@ social_auto_post.init_db(db)
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
 
+origins = [origin.strip() for origin in os.getenv("CORS_ORIGINS", "").split(",") if origin.strip()]
+# print(":white_tick: CORS Origins:", origins)
+fastapi_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # Add session middleware for OAuth
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
@@ -203,13 +212,13 @@ fastapi_app.include_router(translation_router, prefix="/api/translate")  # Trans
 from test_routes import router as test_router
 fastapi_app.include_router(test_router, prefix="/api")
 
-fastapi_app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# fastapi_app.add_middleware(
+#     CORSMiddleware,
+#     allow_credentials=True,
+#     allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 # Configure logging
 logging.basicConfig(
