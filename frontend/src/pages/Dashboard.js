@@ -320,10 +320,12 @@ const Dashboard = () => {
 
             {/* Stats Row - Properly Aligned */}
             <div className="mt-6 grid grid-cols-3 gap-4 border-t border-gray-200 pt-6">
-              <div className="text-center">
+              <button
+                className="text-center hover:bg-gray-50 py-2 rounded-lg transition-colors"
+              >
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
                 <p className="text-gray-600 text-sm">Posts</p>
-              </div>
+              </button>
               <button
                 onClick={() => {
                   setFollowModalType('followers');
