@@ -406,14 +406,14 @@ const PublicProfile = () => {
             )}
 
             {/* Stats Row - Properly Aligned */}
-            <div className="mt-6 flex items-end justify-start gap-8 border-t border-gray-200 pt-6">
-              <div className="text-center">
+            <div className="mt-6 flex items-center justify-start gap-8 border-t border-gray-200 pt-6">
+              <div className="flex flex-col items-center">
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
                 <p className="text-gray-600 text-sm">Posts</p>
               </div>
               <button
                 onClick={handleFollowersClick}
-                className={`text-center hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
+                className={`flex flex-col items-center hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
                 disabled={!canView}
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
@@ -421,7 +421,7 @@ const PublicProfile = () => {
               </button>
               <button
                 onClick={handleFollowingClick}
-                className={`text-center hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
+                className={`flex flex-col items-center hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
                 disabled={!canView}
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
