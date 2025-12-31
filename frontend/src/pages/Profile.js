@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { 
   Heart, MessageCircle, Trophy, Calendar, MapPin, Link2, 
-  CheckCircle2, Users, ArrowLeft, Play, Clock
+  CheckCircle2, Users, ArrowLeft, Play, Clock, Plus, MoreHorizontal, Trash2, Edit2
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
