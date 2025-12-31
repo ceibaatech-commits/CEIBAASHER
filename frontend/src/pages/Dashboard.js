@@ -233,7 +233,7 @@ const Dashboard = () => {
               {/* Edit Profile Button */}
               <button
                 onClick={() => setShowEditModal(true)}
-                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg text-sm"
+                className="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold shadow-lg text-sm"
               >
                 Edit Profile
               </button>
@@ -318,8 +318,8 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Stats Row */}
-            <div className="mt-6 flex gap-6 border-t border-gray-200 pt-6">
+            {/* Stats Row - Properly Aligned */}
+            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-gray-200 pt-6">
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
                 <p className="text-gray-600 text-sm">Posts</p>
@@ -329,7 +329,7 @@ const Dashboard = () => {
                   setFollowModalType('followers');
                   setShowFollowModal(true);
                 }}
-                className="text-center hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors"
+                className="text-center hover:bg-gray-50 py-2 rounded-lg transition-colors"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
                 <p className="text-gray-600 text-sm">Followers</p>
@@ -339,7 +339,7 @@ const Dashboard = () => {
                   setFollowModalType('following');
                   setShowFollowModal(true);
                 }}
-                className="text-center hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors"
+                className="text-center hover:bg-gray-50 py-2 rounded-lg transition-colors"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
                 <p className="text-gray-600 text-sm">Following</p>
