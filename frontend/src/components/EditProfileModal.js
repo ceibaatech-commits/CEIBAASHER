@@ -98,8 +98,7 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
       
       // Debug logging
       console.log('Token from localStorage:', token);
-      console.log('Token length:', token ? token.length : 0);
-      console.log('Token parts count:', token ? token.split('.').length : 0);
+      console.log('Form data being sent:', formData);
       
       if (!token) {
         alert('You are not logged in. Please log in again.');
@@ -116,13 +115,16 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
       );
 
       if (response.data.success) {
-        // Close modal first
-        onClose();
+        // Get updated data from response or use formData
+        const updatedData = response.data.profile || { ...currentProfile, ...formData };
         
-        // Update profile state in parent
+        // Update profile state in parent FIRST (before closing)
         if (onProfileUpdated) {
-          onProfileUpdated({ ...currentProfile, ...formData });
+          onProfileUpdated(updatedData);
         }
+        
+        // Then close modal
+        onClose();
         
         // Show success message after a brief delay
         setTimeout(() => {
