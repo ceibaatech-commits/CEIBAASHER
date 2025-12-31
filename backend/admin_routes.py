@@ -192,8 +192,8 @@ async def get_user_permissions(user_id: str):
             "success": True,
             "user_id": user_id,
             "name": user.get("name") or user.get("username"),
-            "can_post_images": user.get("can_post_images", True),
-            "can_post_videos": user.get("can_post_videos", True),
+            "can_post_images": user.get("can_post_images", False),
+            "can_post_videos": user.get("can_post_videos", False),
             "is_disabled": user.get("is_disabled", False)
         }
     except HTTPException:
