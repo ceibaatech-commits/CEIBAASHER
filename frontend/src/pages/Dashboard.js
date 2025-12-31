@@ -319,19 +319,17 @@ const Dashboard = () => {
             )}
 
             {/* Stats Row - Properly Aligned */}
-            <div className="mt-6 grid grid-cols-3 gap-4 border-t border-gray-200 pt-6">
-              <button
-                className="text-center hover:bg-gray-50 py-2 rounded-lg transition-colors"
-              >
+            <div className="mt-6 flex items-end justify-start gap-8 border-t border-gray-200 pt-6">
+              <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
                 <p className="text-gray-600 text-sm">Posts</p>
-              </button>
+              </div>
               <button
                 onClick={() => {
                   setFollowModalType('followers');
                   setShowFollowModal(true);
                 }}
-                className="text-center hover:bg-gray-50 py-2 rounded-lg transition-colors"
+                className="text-center hover:opacity-70 transition-opacity"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
                 <p className="text-gray-600 text-sm">Followers</p>
@@ -341,7 +339,7 @@ const Dashboard = () => {
                   setFollowModalType('following');
                   setShowFollowModal(true);
                 }}
-                className="text-center hover:bg-gray-50 py-2 rounded-lg transition-colors"
+                className="text-center hover:opacity-70 transition-opacity"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
                 <p className="text-gray-600 text-sm">Following</p>
