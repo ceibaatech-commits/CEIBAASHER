@@ -28,7 +28,7 @@ const Footer = () => {
               <p className="text-xs text-gray-500 mb-2 font-semibold">Follow Us</p>
               <div className="flex space-x-3">
                 <a 
-                  href="www.instagram.com/ceibaaapp/" 
+                  href="https://www.instagram.com/ceibaaapp/" 
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 hover:from-purple-700 hover:via-pink-700 hover:to-orange-600 rounded-full flex items-center justify-center transition-all transform hover:scale-110 shadow-lg"
