@@ -11,8 +11,7 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
     location: '',
     exam_focus: [],
     website: '',
-    profile_picture: '',
-    cover_photo: ''
+    profile_picture: ''
   });
   const [loading, setLoading] = useState(false);
   const [charCount, setCharCount] = useState(0);
@@ -25,14 +24,16 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
         location: currentProfile.location || '',
         exam_focus: currentProfile.exam_focus || [],
         website: currentProfile.website || '',
-        profile_picture: currentProfile.profile_picture || '',
-        cover_photo: currentProfile.cover_photo || ''
+        profile_picture: currentProfile.profile_picture || ''
       });
       setCharCount((currentProfile.bio || '').length);
     }
   }, [currentProfile]);
 
-  const examOptions = ['JEE', 'NEET', 'SSC', 'UPSC', 'CAT', 'GATE', 'Banking', 'Railways', 'Other'];
+  const examOptions = [
+    'JEE', 'NEET', 'SSC', 'UPSC', 'CAT', 'GATE', 'Banking', 'Railways',
+    'B.Com', 'M.Com', 'B.Tech', 'M.Tech', 'B.Ed', 'MBA', 'BSc', 'BBA', 'M.A.', 'Other'
+  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
