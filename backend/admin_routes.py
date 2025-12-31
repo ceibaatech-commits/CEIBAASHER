@@ -123,11 +123,11 @@ async def get_all_users():
             if not user.get('id') and user.get('user_id'):
                 user['id'] = user['user_id']
             
-            # Add default permissions if not set
+            # Add default permissions if not set (DEFAULT: FALSE - admin must enable)
             if 'can_post_images' not in user:
-                user['can_post_images'] = True
+                user['can_post_images'] = False
             if 'can_post_videos' not in user:
-                user['can_post_videos'] = True
+                user['can_post_videos'] = False
             if 'is_disabled' not in user:
                 user['is_disabled'] = False
         
