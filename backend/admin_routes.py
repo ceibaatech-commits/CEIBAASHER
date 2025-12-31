@@ -245,8 +245,8 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
             return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
         
         return {
-            "can_post_images": user.get("can_post_images", True),
-            "can_post_videos": user.get("can_post_videos", True),
+            "can_post_images": user.get("can_post_images", False),
+            "can_post_videos": user.get("can_post_videos", False),
             "is_disabled": user.get("is_disabled", False)
         }
     except Exception as e:
