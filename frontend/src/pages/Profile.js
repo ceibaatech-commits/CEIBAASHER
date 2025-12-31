@@ -26,6 +26,9 @@ const Profile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [showQuickPostModal, setShowQuickPostModal] = useState(false);
+  const [newPostContent, setNewPostContent] = useState('');
 
   // Fetch profile data
   useEffect(() => {
