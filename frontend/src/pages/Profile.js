@@ -259,19 +259,27 @@ const Profile = () => {
 
         {/* Profile Header */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          {/* Cover Photo */}
-          <div className="h-48 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-          
           {/* Profile Info */}
-          <div className="px-6 pb-6">
+          <div className="px-6 py-6">
             {/* Avatar & Follow Button */}
-            <div className="-mt-20 mb-4 flex justify-between items-end">
-              <div className="border-4 border-white shadow-lg rounded-full">
-                <UserAvatar
-                  profilePicture={profile.profile_picture}
-                  name={profile.name}
-                  size="xxl"
-                />
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-4">
+                <div className="border-4 border-purple-100 shadow-lg rounded-full">
+                  <UserAvatar
+                    profilePicture={profile.profile_picture}
+                    name={profile.name}
+                    size="xxl"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
+                    {profile.is_verified && (
+                      <CheckCircle2 className="w-6 h-6 text-blue-500 fill-blue-500" />
+                    )}
+                  </div>
+                  <p className="text-gray-500">@{profile.username}</p>
+                </div>
               </div>
               {!isOwnProfile && currentUser && (
                 <button
@@ -287,67 +295,56 @@ const Profile = () => {
               )}
             </div>
             
-            {/* Name & Username */}
-            <div className="mb-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-                {profile.is_verified && (
-                  <CheckCircle2 className="w-7 h-7 text-blue-500 fill-blue-500" />
+            {/* Badges Section */}
+            {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute) && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {(profile.badges.isTeacher || profile.isTeacher) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm"
+                    title="Teacher Badge"
+                  >
+                    <Trophy className="w-4 h-4 mr-1.5" />
+                    Teacher
+                  </span>
+                )}
+                {(profile.badges?.isProfessor || profile.isProfessor) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm"
+                    title="Professor Badge"
+                  >
+                    <Trophy className="w-4 h-4 mr-1.5" />
+                    Professor
+                  </span>
+                )}
+                {(profile.badges?.isOfficial || profile.isOfficial) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm"
+                    title="Official Badge"
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-1.5 fill-white" />
+                    Official
+                  </span>
+                )}
+                {(profile.badges?.isInstitute || profile.isInstitute) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm"
+                    style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
+                    title="Institute Badge"
+                  >
+                    <Trophy className="w-4 h-4 mr-1.5" />
+                    Institute
+                  </span>
                 )}
               </div>
-              <p className="text-gray-500 text-lg mb-3">@{profile.username}</p>
-              
-              {/* Badges Section */}
-              {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute) && (
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {(profile.badges.isTeacher || profile.isTeacher) && (
-                    <span 
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                      title="Teacher Badge - Educator verified by administration"
-                    >
-                      <Trophy className="w-4 h-4 mr-1.5" />
-                      Teacher
-                    </span>
-                  )}
-                  {(profile.badges?.isProfessor || profile.isProfessor) && (
-                    <span 
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                      title="Professor Badge - Academic professor verified by administration"
-                    >
-                      <Trophy className="w-4 h-4 mr-1.5" />
-                      Professor
-                    </span>
-                  )}
-                  {(profile.badges?.isOfficial || profile.isOfficial) && (
-                    <span 
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                      title="Official Badge - Verified organization or official entity"
-                    >
-                      <CheckCircle2 className="w-4 h-4 mr-1.5 fill-white" />
-                      Official
-                    </span>
-                  )}
-                  {(profile.badges?.isInstitute || profile.isInstitute) && (
-                    <span 
-                      className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                      style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
-                      title="Institute Badge - Verified educational institution"
-                    >
-                      <Trophy className="w-4 h-4 mr-1.5" />
-                      Institute
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+            )}
             
             {/* Bio */}
             {profile.bio && (
-              <p className="text-gray-700 mb-4">{profile.bio}</p>
+              <p className="text-gray-700 mt-4">{profile.bio}</p>
             )}
             
             {/* Location & Website & Joined */}
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mt-4">
               {profile.location && (
                 <span className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
@@ -372,7 +369,7 @@ const Profile = () => {
             </div>
             
             {/* Stats */}
-            <div className="flex gap-6 border-t border-gray-200 pt-4">
+            <div className="flex gap-6 border-t border-gray-200 mt-4 pt-4">
               <div className="text-center cursor-pointer hover:bg-gray-50 px-4 py-2 rounded-lg transition" onClick={() => handleTabChange('posts')}>
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || posts.length || 0}</p>
                 <p className="text-sm text-gray-500">Posts</p>
