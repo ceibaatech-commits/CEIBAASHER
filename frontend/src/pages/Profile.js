@@ -413,6 +413,14 @@ const Profile = () => {
                   <div className="text-center py-12 text-gray-500">
                     <Trophy className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                     <p>No posts yet</p>
+                    {isOwnProfile && (
+                      <button
+                        onClick={() => setShowQuickPostModal(true)}
+                        className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition"
+                      >
+                        Create your first post
+                      </button>
+                    )}
                   </div>
                 ) : (
                   posts.map(post => (
@@ -424,12 +432,47 @@ const Profile = () => {
                           size="lg"
                         />
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-bold text-gray-900">{profile.name}</span>
-                            {profile.is_verified && (
-                              <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-bold text-gray-900">{profile.name}</span>
+                              {profile.is_verified && (
+                                <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
+                              )}
+                              <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
+                            </div>
+                            
+                            {/* Delete menu for own posts */}
+                            {isOwnProfile && (
+                              <div className="relative">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setOpenMenuId(openMenuId === post.id ? null : post.id);
+                                  }}
+                                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                  <MoreHorizontal className="w-5 h-5" />
+                                </button>
+                                
+                                {openMenuId === post.id && (
+                                  <>
+                                    <div 
+                                      className="fixed inset-0 z-40" 
+                                      onClick={() => setOpenMenuId(null)}
+                                    />
+                                    <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+                                      <button
+                                        onClick={() => handleDeletePost(post.id)}
+                                        className="p-3 text-red-500 hover:bg-gray-50 flex items-center justify-center"
+                                        title="Delete Post"
+                                      >
+                                        <Trash2 className="w-5 h-5" />
+                                      </button>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
                             )}
-                            <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
                           </div>
                           <p className="text-gray-900 mb-3 whitespace-pre-wrap">{post.content}</p>
 
