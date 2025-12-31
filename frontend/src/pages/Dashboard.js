@@ -319,8 +319,8 @@ const Dashboard = () => {
             )}
 
             {/* Stats Row - Properly Aligned */}
-            <div className="mt-6 flex items-end justify-start gap-8 border-t border-gray-200 pt-6">
-              <div className="text-center">
+            <div className="mt-6 flex items-center justify-start gap-8 border-t border-gray-200 pt-6">
+              <div className="flex flex-col items-center">
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
                 <p className="text-gray-600 text-sm">Posts</p>
               </div>
@@ -329,7 +329,7 @@ const Dashboard = () => {
                   setFollowModalType('followers');
                   setShowFollowModal(true);
                 }}
-                className="text-center hover:opacity-70 transition-opacity"
+                className="flex flex-col items-center hover:opacity-70 transition-opacity"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
                 <p className="text-gray-600 text-sm">Followers</p>
@@ -339,7 +339,7 @@ const Dashboard = () => {
                   setFollowModalType('following');
                   setShowFollowModal(true);
                 }}
-                className="text-center hover:opacity-70 transition-opacity"
+                className="flex flex-col items-center hover:opacity-70 transition-opacity"
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
                 <p className="text-gray-600 text-sm">Following</p>
