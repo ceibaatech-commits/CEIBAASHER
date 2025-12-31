@@ -633,7 +633,12 @@ const Dashboard = () => {
         onClose={() => setShowEditModal(false)}
         currentProfile={profile}
         onProfileUpdated={(updatedProfile) => {
-          setProfile(updatedProfile);
+          // Update profile with all fields including exam_focus
+          setProfile(prev => ({
+            ...prev,
+            ...updatedProfile,
+            exam_focus: updatedProfile.exam_focus || []
+          }));
           // Update localStorage to sync profile picture across all pages (including Board)
           updateUser({
             profile_picture: updatedProfile.profile_picture,
@@ -641,6 +646,8 @@ const Dashboard = () => {
             name: updatedProfile.name
           });
           setShowEditModal(false);
+          // Refetch profile to ensure consistency
+          fetchProfile();
         }}
       />
 
