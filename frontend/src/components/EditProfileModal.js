@@ -206,62 +206,6 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
             </div>
           </div>
 
-          {/* Cover Photo */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cover Photo
-            </label>
-            <div className="relative">
-              {/* Cover Photo Preview */}
-              <div className="w-full h-40 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg overflow-hidden border-2 border-gray-200">
-                {formData.cover_photo ? (
-                  <img
-                    src={formData.cover_photo}
-                    alt="Cover"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-white">
-                    <div className="text-center">
-                      <Upload className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm opacity-75">No cover photo</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* File Input (Hidden) */}
-              <input
-                id="cover-photo-input"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, 'cover_photo')}
-                className="hidden"
-              />
-
-              {/* Upload/Remove Buttons */}
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('cover-photo-input').click()}
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold transition-all flex items-center justify-center gap-2"
-                >
-                  <Upload className="w-4 h-4" />
-                  {formData.cover_photo ? 'Change Cover' : 'Add Cover Photo'}
-                </button>
-                {formData.cover_photo && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, cover_photo: '' })}
-                    className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 font-semibold transition-all"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* Name */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
