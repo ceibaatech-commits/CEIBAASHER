@@ -371,51 +371,49 @@ const PublicProfile = () => {
                     title="Teacher Badge"
                   >
                     <Trophy className="w-4 h-4 mr-1.5" />
-                        Teacher
-                      </span>
-                    )}
-                    {(profile.badges?.isProfessor || profile.isProfessor) && (
-                      <span 
-                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                        title="Professor Badge - Academic professor verified by administration"
-                      >
-                        <Trophy className="w-4 h-4 mr-1.5" />
-                        Professor
-                      </span>
-                    )}
-                    {(profile.badges?.isOfficial || profile.isOfficial) && (
-                      <span 
-                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                        title="Official Badge - Verified organization or official entity"
-                      >
-                        <Award className="w-4 h-4 mr-1.5 fill-white" />
-                        Official
-                      </span>
-                    )}
-                    {(profile.badges?.isInstitute || profile.isInstitute) && (
-                      <span 
-                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                        style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
-                        title="Institute Badge - Verified educational institution"
-                      >
-                        <Trophy className="w-4 h-4 mr-1.5" />
-                        Institute
-                      </span>
-                    )}
-                  </div>
+                    Teacher
+                  </span>
+                )}
+                {(profile.badges?.isProfessor || profile.isProfessor) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm"
+                    title="Professor Badge"
+                  >
+                    <Trophy className="w-4 h-4 mr-1.5" />
+                    Professor
+                  </span>
+                )}
+                {(profile.badges?.isOfficial || profile.isOfficial) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm"
+                    title="Official Badge"
+                  >
+                    <Award className="w-4 h-4 mr-1.5 fill-white" />
+                    Official
+                  </span>
+                )}
+                {(profile.badges?.isInstitute || profile.isInstitute) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm"
+                    style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
+                    title="Institute Badge"
+                  >
+                    <Trophy className="w-4 h-4 mr-1.5" />
+                    Institute
+                  </span>
                 )}
               </div>
-            </div>
+            )}
 
             {/* Stats Row */}
-            <div className="mt-6 flex gap-8 border-t border-gray-200 pt-6">
+            <div className="mt-6 flex gap-6 border-t border-gray-200 pt-6">
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
                 <p className="text-gray-600 text-sm">Posts</p>
               </div>
               <button
                 onClick={handleFollowersClick}
-                className={`text-center hover:bg-gray-50 px-4 rounded-lg transition-colors ${!canView && 'cursor-not-allowed opacity-50'}`}
+                className={`text-center hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors ${!canView && 'cursor-not-allowed opacity-50'}`}
                 disabled={!canView}
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
@@ -423,7 +421,7 @@ const PublicProfile = () => {
               </button>
               <button
                 onClick={handleFollowingClick}
-                className={`text-center hover:bg-gray-50 px-4 rounded-lg transition-colors ${!canView && 'cursor-not-allowed opacity-50'}`}
+                className={`text-center hover:bg-gray-50 px-4 py-2 rounded-lg transition-colors ${!canView && 'cursor-not-allowed opacity-50'}`}
                 disabled={!canView}
               >
                 <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
