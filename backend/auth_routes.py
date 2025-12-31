@@ -455,8 +455,8 @@ async def demo_login(login_data: DemoLoginRequest):
                 user_in_db = await db.users.find_one({"id": user_data["id"]}, {"_id": 0})
                 if user_in_db:
                     user_data.update({
-                        "can_post_images": user_in_db.get("can_post_images", True),
-                        "can_post_videos": user_in_db.get("can_post_videos", True),
+                        "can_post_images": user_in_db.get("can_post_images", False),
+                        "can_post_videos": user_in_db.get("can_post_videos", False),
                         "is_disabled": user_in_db.get("is_disabled", False)
                     })
         except Exception as db_err:
