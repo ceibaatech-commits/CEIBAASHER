@@ -92,8 +92,8 @@ async def check_media_allowed():
 # ==================== USER MANAGEMENT ====================
 
 class UserPermissionsModel(BaseModel):
-    can_post_images: Optional[bool] = True
-    can_post_videos: Optional[bool] = True
+    can_post_images: Optional[bool] = False
+    can_post_videos: Optional[bool] = False
     is_disabled: Optional[bool] = False
 
 @router.get("/admin/users")
