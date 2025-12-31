@@ -152,6 +152,49 @@ const Profile = () => {
     }
   };
 
+  // Delete post
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPosts(posts.filter(p => p.id !== postId));
+      setOpenMenuId(null);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  // Create new post
+  const handleCreatePost = async () => {
+    if (!newPostContent.trim()) return;
+    
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
+        content: newPostContent,
+        post_type: 'general'
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data.success) {
+        setNewPostContent('');
+        setShowQuickPostModal(false);
+        fetchUserPosts(); // Refresh posts
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+    }
+  };
+
   const formatTimestamp = (timestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp);
