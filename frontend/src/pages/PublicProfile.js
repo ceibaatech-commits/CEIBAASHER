@@ -271,113 +271,106 @@ const PublicProfile = () => {
           Back
         </button>
 
-        {/* Cover Photo & Profile Picture */}
+        {/* Profile Card - No Banner */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Cover Photo */}
-          <div className="relative h-48 bg-gradient-to-r from-purple-600 to-pink-600">
-            {profile.cover_photo && (
-              <img
-                src={profile.cover_photo}
-                alt="Cover"
-                className="w-full h-full object-cover"
-              />
-            )}
-          </div>
-
           {/* Profile Info Section */}
-          <div className="relative px-6 pb-6">
-            {/* Follow/Edit Button - positioned at top right */}
-            <div className="pt-4 flex justify-end">
-              {user && user.id !== profile.id ? (
-                <FollowButton
-                  targetUserId={profile.id}
-                  targetUsername={profile.username}
-                  initialStatus={followStatus}
-                  onFollowChange={handleFollowChange}
-                />
-              ) : user && user.id === profile.id ? (
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg"
-                >
-                  Edit Profile
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate('/login')}
-                  className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
-                >
-                  Login to Follow
-                </button>
-              )}
-            </div>
-
-            {/* Avatar and User Info - Horizontal Layout */}
-            <div className="flex items-start gap-4 mt-4">
-              {/* Profile Picture */}
-              <div className="relative flex-shrink-0">
-                <img
-                  src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
-                  alt={profile.name}
-                  className="w-24 h-24 rounded-full border-4 border-white shadow-xl object-cover"
-                />
-                {profile.is_verified && (
-                  <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center border-2 border-white">
-                    <span className="text-white text-xs">🤖</span>
-                  </div>
-                )}
-              </div>
-
-              {/* User Info */}
-              <div className="flex-1 min-w-0 mt-2">
-                <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
-                <p className="text-gray-500">@{profile.username}</p>
-
-                {/* Bio */}
-                {profile.bio && (
-                  <p className="mt-3 text-gray-700">{profile.bio}</p>
-                )}
-
-                {/* Location & Joined Date */}
-                <div className="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
-                  {profile.location && (
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{profile.location}</span>
-                    </div>
-                  )}
-                  {profile.joined_at && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+          <div className="px-6 py-6">
+            {/* Avatar, User Info & Follow Button */}
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                {/* Profile Picture */}
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
+                    alt={profile.name}
+                    className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-purple-100 shadow-lg object-cover"
+                  />
+                  {profile.is_verified && (
+                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center border-2 border-white">
+                      <span className="text-white text-xs">✓</span>
                     </div>
                   )}
                 </div>
 
-                {/* Exam Focus Tags */}
-                {profile.exam_focus && profile.exam_focus.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {profile.exam_focus.map(exam => (
-                      <span
-                        key={exam}
-                        className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
-                      >
-                        🎯 {exam}
-                      </span>
-                    ))}
-                  </div>
-                )}
+                {/* User Info */}
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-900">{profile.name}</h1>
+                  <p className="text-gray-500">@{profile.username}</p>
+                </div>
+              </div>
 
-                {/* Badges */}
-                {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute ||
-                  profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {(profile.badges?.isTeacher || profile.isTeacher) && (
-                      <span 
-                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm hover:shadow-md transition-all cursor-pointer"
-                        title="Teacher Badge - Educator verified by administration"
-                      >
-                        <Trophy className="w-4 h-4 mr-1.5" />
+              {/* Follow/Edit Button */}
+              <div className="flex-shrink-0">
+                {user && user.id !== profile.id ? (
+                  <FollowButton
+                    targetUserId={profile.id}
+                    targetUsername={profile.username}
+                    initialStatus={followStatus}
+                    onFollowChange={handleFollowChange}
+                  />
+                ) : user && user.id === profile.id ? (
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold shadow-lg text-sm"
+                  >
+                    Edit Profile
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold text-sm"
+                  >
+                    Login to Follow
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Bio */}
+            {profile.bio && (
+              <p className="mt-4 text-gray-700">{profile.bio}</p>
+            )}
+
+            {/* Location & Joined Date */}
+            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
+              {profile.location && (
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4" />
+                  <span>{profile.location}</span>
+                </div>
+              )}
+              {profile.joined_at && (
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Exam Focus Tags */}
+            {profile.exam_focus && profile.exam_focus.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {profile.exam_focus.map(exam => (
+                  <span
+                    key={exam}
+                    className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
+                  >
+                    🎯 {exam}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Badges */}
+            {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute ||
+              profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {(profile.badges?.isTeacher || profile.isTeacher) && (
+                  <span 
+                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm"
+                    title="Teacher Badge"
+                  >
+                    <Trophy className="w-4 h-4 mr-1.5" />
                         Teacher
                       </span>
                     )}
