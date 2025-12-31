@@ -172,7 +172,13 @@ const SoloPractice = () => {
 
       // Auto-advance after 1.5 seconds
       setTimeout(() => {
-        handleNextQuestion();
+        // IMPORTANT: Pass the newAnswers directly for the last question
+        // because React state updates are async and won't be ready yet
+        if (currentQuestionIndex >= questions.length - 1) {
+          submitQuiz(newAnswers);
+        } else {
+          handleNextQuestion();
+        }
       }, 1500);
     }
   };
@@ -183,15 +189,20 @@ const SoloPractice = () => {
       setSelectedAnswer(null);
       setTimeLeft(30);
     } else {
-      submitQuiz();
+      // Last question - submit with current answers
+      // This handles the timer timeout case
+      submitQuiz(answers);
     }
   };
 
-  const submitQuiz = async () => {
+  const submitQuiz = async (answersToSubmit) => {
+    // Use provided answers or fall back to state
+    const finalAnswers = answersToSubmit || answers;
+    
     try {
       const response = await axios.post(`${QUIZ_API_URL}/api/quiz/submit`, {
         quizId,
-        answers
+        answers: finalAnswers
       });
       
       if (response.data.success) {
