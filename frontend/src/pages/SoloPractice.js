@@ -105,6 +105,38 @@ const SoloPractice = () => {
     setResults(null);
   }, [exam, subject, topic, subTopic]);
 
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer(null);
+      setTimeLeft(30);
+    } else {
+      // Last question - submit with current answers
+      // This handles the timer timeout case
+      submitQuiz(answers);
+    }
+  };
+
+  const submitQuiz = async (answersToSubmit) => {
+    // Use provided answers or fall back to state
+    const finalAnswers = answersToSubmit || answers;
+    
+    try {
+      const response = await axios.post(`${QUIZ_API_URL}/api/quiz/submit`, {
+        quizId,
+        answers: finalAnswers
+      });
+      
+      if (response.data.success) {
+        setScore(response.data.score);
+        setResults(response.data.results);
+        setQuizState('results');
+      }
+    } catch (error) {
+      console.error('Error submitting quiz:', error);
+    }
+  };
+
   useEffect(() => {
     if (quizState === 'playing' && timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -112,6 +144,7 @@ const SoloPractice = () => {
     } else if (quizState === 'playing' && timeLeft === 0) {
       handleNextQuestion();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeLeft, quizState]);
 
   const startQuiz = async () => {
