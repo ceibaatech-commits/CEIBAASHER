@@ -426,39 +426,38 @@ const Earn = () => {
             </div>
 
             {/* Milestone 2: Media Posting */}
-            <div className={`border rounded-xl p-5 transition ${isMediaUnlocked ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'}`}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isMediaUnlocked ? 'bg-emerald-500' : 'bg-slate-200'}`}>
-                    {isMediaUnlocked ? <Unlock className="w-6 h-6 text-white" /> : <Lock className="w-6 h-6 text-slate-400" />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-900">Media Creator</h3>
-                      {isMediaUnlocked && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                    </div>
-                    <p className="text-slate-500 text-sm mt-0.5">Unlock video and image posting abilities</p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md flex items-center gap-1">
-                        <Image className="w-3 h-3" /> Images
-                      </span>
-                      <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md flex items-center gap-1">
-                        <Video className="w-3 h-3" /> Videos
-                      </span>
-                    </div>
-                  </div>
+            <div className={`border rounded-xl p-4 md:p-5 transition ${isMediaUnlocked ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'}`}>
+              <div className="flex items-start gap-3 md:gap-4">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isMediaUnlocked ? 'bg-emerald-500' : 'bg-slate-200'}`}>
+                  {isMediaUnlocked ? <Unlock className="w-5 h-5 md:w-6 md:h-6 text-white" /> : <Lock className="w-5 h-5 md:w-6 md:h-6 text-slate-400" />}
                 </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-slate-900">{displayStats.followers.toLocaleString()}/1,000</p>
-                  <p className="text-xs text-slate-500">Followers</p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((displayStats.followers / 1000) * 100, 100)}%` }}
-                  />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm md:text-base font-bold text-slate-900">Media Creator</h3>
+                    {isMediaUnlocked && <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
+                  </div>
+                  <p className="text-slate-500 text-xs md:text-sm mt-0.5">Unlock video and image posting abilities</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md flex items-center gap-1">
+                      <Image className="w-3 h-3" /> Images
+                    </span>
+                    <span className="text-xs font-medium text-rose-600 bg-rose-50 px-2 py-1 rounded-md flex items-center gap-1">
+                      <Video className="w-3 h-3" /> Videos
+                    </span>
+                  </div>
+                  {/* Progress indicator - inline on mobile */}
+                  <div className="flex items-center gap-2 mt-3">
+                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((displayStats.followers / 1000) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <div className="flex items-baseline gap-1 flex-shrink-0">
+                      <span className="text-sm md:text-base font-bold text-slate-900">{displayStats.followers.toLocaleString()}</span>
+                      <span className="text-xs text-slate-500">/1K</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
