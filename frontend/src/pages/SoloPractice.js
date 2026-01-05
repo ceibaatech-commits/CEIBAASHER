@@ -655,13 +655,27 @@ const SoloPractice = () => {
             )}
           </div>
 
-          {/* Answer Options - Pill-shaped, Modern styling */}
+          {/* Answer Options - Pill-shaped, Modern styling with correct/incorrect feedback */}
           <div className="space-y-3">
             {currentQuestion?.options.map((option, index) => {
               const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
               const optionImage = typeof option === 'object' ? option.image : null;
               const isSelected = selectedAnswer === index;
               const isAnswered = selectedAnswer !== null;
+              
+              // Get correct answer - handle both letter (A,B,C,D) and index (0,1,2,3) formats
+              const correctAnswerRaw = currentQuestion?.correctAnswer || currentQuestion?.correct_answer;
+              let correctAnswerIndex;
+              if (typeof correctAnswerRaw === 'string' && /^[A-Da-d]$/.test(correctAnswerRaw)) {
+                correctAnswerIndex = correctAnswerRaw.toUpperCase().charCodeAt(0) - 65;
+              } else if (typeof correctAnswerRaw === 'number') {
+                correctAnswerIndex = correctAnswerRaw;
+              } else {
+                correctAnswerIndex = parseInt(correctAnswerRaw) || 0;
+              }
+              
+              const isCorrectOption = index === correctAnswerIndex;
+              const isWrongSelected = isSelected && !isCorrectOption;
               
               return (
                 <button
@@ -671,18 +685,24 @@ const SoloPractice = () => {
                   className={`w-full text-left p-3.5 md:p-4 rounded-2xl border-2 transition-all duration-200 ${
                     !isAnswered
                       ? 'bg-slate-50 border-slate-200 hover:border-blue-400 hover:bg-blue-50 active:scale-[0.98]'
-                      : isSelected
-                        ? 'bg-blue-50 border-blue-500 shadow-sm'
-                        : 'bg-slate-50/50 border-slate-100 opacity-60'
+                      : isCorrectOption
+                        ? 'bg-green-50 border-green-500 shadow-sm'
+                        : isWrongSelected
+                          ? 'bg-red-50 border-red-500 shadow-sm'
+                          : 'bg-slate-50/50 border-slate-100 opacity-60'
                   }`}
                   data-testid={`option-${index}`}
                 >
                   <div className="flex items-center gap-3">
                     {/* Option Letter Badge - Pill style */}
                     <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0 transition-colors ${
-                      isSelected
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-200 text-slate-600'
+                      !isAnswered
+                        ? 'bg-slate-200 text-slate-600'
+                        : isCorrectOption
+                          ? 'bg-green-600 text-white'
+                          : isWrongSelected
+                            ? 'bg-red-600 text-white'
+                            : 'bg-slate-200 text-slate-600'
                     }`}>
                       {String.fromCharCode(65 + index)}
                     </div>
@@ -703,6 +723,13 @@ const SoloPractice = () => {
                         <MathText text={optionText} />
                       </span>
                     </div>
+                    {/* Correct/Incorrect indicators */}
+                    {isAnswered && isCorrectOption && (
+                      <span className="text-green-600 font-bold text-lg">✓</span>
+                    )}
+                    {isAnswered && isWrongSelected && (
+                      <span className="text-red-600 font-bold text-lg">✗</span>
+                    )}
                   </div>
                 </button>
               );
