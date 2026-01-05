@@ -251,7 +251,7 @@ const JoinRoom = () => {
           </div>
 
           <div className="mt-8 pt-8 border-t border-gray-200">
-            <p className="text-center text-sm text-gray-600 mb-4">Don't have a PIN?</p>
+            <p className="text-center text-sm text-gray-600 mb-4">Don&apos;t have a PIN?</p>
             <button
               onClick={() => navigate('/')}
               className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all"
