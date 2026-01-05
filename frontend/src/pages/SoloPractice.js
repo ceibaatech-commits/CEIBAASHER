@@ -15,15 +15,10 @@ const SoloPractice = () => {
   const location = useLocation();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   
-  // Detect class-based quiz from URL pattern (Class-6, Class-10, etc.)
-  const urlExamName = examId || examName;
-  const isClassBasedFromUrl = urlExamName?.startsWith('Class-') || urlExamName?.toLowerCase().startsWith('class-');
-  
-  // Check if this is a class-based quiz (from state OR from URL pattern)
-  const isClassBased = location.state?.isClassBased || isClassBasedFromUrl;
-  
   // Check authentication status (isAuthenticated is a function)
   const isUserAuthenticated = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
+  
+  // Detect class-based quiz from URL pattern (Class-6, Class-10, etc.)
   const urlExamName = examId || examName;
   const isClassBasedFromUrl = urlExamName?.startsWith('Class-') || urlExamName?.toLowerCase().startsWith('class-');
   
