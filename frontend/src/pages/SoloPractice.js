@@ -138,12 +138,16 @@ const SoloPractice = () => {
   }, [currentQuestionIndex, questions.length, answers, submitQuiz]);
 
   useEffect(() => {
+    let timer;
     if (quizState === 'playing' && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
     } else if (quizState === 'playing' && timeLeft === 0) {
-      handleNextQuestion();
+      // Use setTimeout to avoid calling setState in effect body
+      timer = setTimeout(() => handleNextQuestion(), 0);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, [timeLeft, quizState, handleNextQuestion]);
 
   const startQuiz = async () => {
