@@ -50,6 +50,7 @@ const AdminDashboard = () => {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, color: 'blue' },
     { id: 'users', label: 'User Management', icon: Users, color: 'green' },
+    { id: 'employees', label: 'Employee Portal', icon: Briefcase, color: 'violet' },
     { id: 'sheets', label: 'Exam Sheet Manager', icon: BookOpen, color: 'indigo' },
     { id: 'exams', label: 'Exam & Categories', icon: Layers, color: 'purple' },
     { id: 'content', label: 'Content Moderation', icon: FileText, color: 'purple' },
