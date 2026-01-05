@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users, Lock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const JoinRoom = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const prefilledPin = location.state?.prefilledPin || '';
   
   const [pin, setPin] = useState(prefilledPin);
@@ -15,17 +17,64 @@ const JoinRoom = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Pre-fill player name from user data
+  useEffect(() => {
+    if (user && user.name) {
+      setPlayerName(user.name);
+    }
+  }, [user]);
+
+  // Show login required screen if not authenticated
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Login Required</h2>
+          <p className="text-gray-600 mb-6">
+            Please login or create an account to join quiz rooms and compete with others.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/login', { state: { from: location.pathname } })}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            >
+              Login to Continue
+            </button>
+            <button
+              onClick={() => navigate('/signup', { state: { from: location.pathname } })}
+              className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
+            >
+              Create Account
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full text-gray-500 py-2 text-sm hover:text-gray-700"
+            >
+              ← Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleJoinRoom = async () => {
     // Clear previous errors
     setError('');
-    
-    // Check authentication
-    const userStr = localStorage.getItem('ceibaa_user');
-    if (!userStr) {
-      alert('Please login to join a room');
-      navigate('/login');
-      return;
-    }
     
     // Validation
     if (!pin.trim() || !playerName.trim()) {
