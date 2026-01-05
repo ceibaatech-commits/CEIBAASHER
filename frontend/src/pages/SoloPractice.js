@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Clock, CheckCircle, XCircle, Trophy, HelpCircle, CheckCircle2, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, XCircle, Trophy, HelpCircle, CheckCircle2, RotateCcw, Lock } from 'lucide-react';
 import axios from 'axios';
 import MathText from '../components/MathText';
 import PassageQuizLayout from '../components/PassageQuizLayout';
+import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
@@ -12,6 +13,7 @@ const SoloPractice = () => {
   const { examName, subjectName, examId, topicName } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   
   // Detect class-based quiz from URL pattern (Class-6, Class-10, etc.)
   const urlExamName = examId || examName;
