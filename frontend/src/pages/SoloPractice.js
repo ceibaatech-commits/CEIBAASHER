@@ -105,19 +105,7 @@ const SoloPractice = () => {
     setResults(null);
   }, [exam, subject, topic, subTopic]);
 
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer(null);
-      setTimeLeft(30);
-    } else {
-      // Last question - submit with current answers
-      // This handles the timer timeout case
-      submitQuiz(answers);
-    }
-  };
-
-  const submitQuiz = async (answersToSubmit) => {
+  const submitQuiz = useCallback(async (answersToSubmit) => {
     // Use provided answers or fall back to state
     const finalAnswers = answersToSubmit || answers;
     
@@ -135,7 +123,19 @@ const SoloPractice = () => {
     } catch (error) {
       console.error('Error submitting quiz:', error);
     }
-  };
+  }, [quizId, answers]);
+
+  const handleNextQuestion = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer(null);
+      setTimeLeft(30);
+    } else {
+      // Last question - submit with current answers
+      // This handles the timer timeout case
+      submitQuiz(answers);
+    }
+  }, [currentQuestionIndex, questions.length, answers, submitQuiz]);
 
   useEffect(() => {
     if (quizState === 'playing' && timeLeft > 0) {
