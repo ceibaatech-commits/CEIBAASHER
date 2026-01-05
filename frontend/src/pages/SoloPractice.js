@@ -617,11 +617,14 @@ const SoloPractice = () => {
             </div>
           </div>
 
-          {/* Progress Bar - Thicker and more visible */}
-          <div className="w-full bg-gray-200 h-2 md:h-2.5">
+          {/* Progress Bar - Modern sleek style */}
+          <div className="w-full bg-gray-100 h-1.5 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300 ease-out"
-              style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+              className="h-full transition-all duration-500 ease-out"
+              style={{ 
+                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
+                background: 'linear-gradient(90deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)'
+              }}
             ></div>
           </div>
         </div>
