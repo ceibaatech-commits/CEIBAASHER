@@ -498,7 +498,6 @@ const Earn = () => {
                 </div>
               </div>
             </div>
-            </div>
           </div>
         </div>
 
