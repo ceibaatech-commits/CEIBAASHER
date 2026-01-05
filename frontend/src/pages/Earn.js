@@ -377,36 +377,35 @@ const Earn = () => {
 
           <div className="p-6 space-y-5">
             {/* Milestone 1: Badge */}
-            <div className={`border rounded-xl p-5 transition ${isBadgeUnlocked ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'}`}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isBadgeUnlocked ? 'bg-emerald-500' : 'bg-slate-200'}`}>
-                    {isBadgeUnlocked ? <Unlock className="w-6 h-6 text-white" /> : <Lock className="w-6 h-6 text-slate-400" />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-900">Creator Badge</h3>
-                      {isBadgeUnlocked && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                    </div>
-                    <p className="text-slate-500 text-sm mt-0.5">Unlock Teacher, Professor, or Institute badge</p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md">Teacher</span>
-                      <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">Professor</span>
-                      <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md">Institute</span>
-                    </div>
-                  </div>
+            <div className={`border rounded-xl p-4 md:p-5 transition ${isBadgeUnlocked ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200'}`}>
+              <div className="flex items-start gap-3 md:gap-4">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isBadgeUnlocked ? 'bg-emerald-500' : 'bg-slate-200'}`}>
+                  {isBadgeUnlocked ? <Unlock className="w-5 h-5 md:w-6 md:h-6 text-white" /> : <Lock className="w-5 h-5 md:w-6 md:h-6 text-slate-400" />}
                 </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-slate-900">{displayStats.posts}/500</p>
-                  <p className="text-xs text-slate-500">Posts</p>
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((displayStats.posts / 500) * 100, 100)}%` }}
-                  />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm md:text-base font-bold text-slate-900">Creator Badge</h3>
+                    {isBadgeUnlocked && <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />}
+                  </div>
+                  <p className="text-slate-500 text-xs md:text-sm mt-0.5">Unlock Teacher, Professor, or Institute badge</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md">Teacher</span>
+                    <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">Professor</span>
+                    <span className="text-xs font-medium text-violet-600 bg-violet-50 px-2 py-1 rounded-md">Institute</span>
+                  </div>
+                  {/* Progress indicator - inline on mobile */}
+                  <div className="flex items-center gap-2 mt-3">
+                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((displayStats.posts / 500) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <div className="flex items-baseline gap-1 flex-shrink-0">
+                      <span className="text-sm md:text-base font-bold text-slate-900">{displayStats.posts}</span>
+                      <span className="text-xs text-slate-500">/500</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               {isBadgeUnlocked && !milestoneData?.features?.badge_selected && (
