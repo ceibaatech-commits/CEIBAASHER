@@ -125,6 +125,10 @@ function App() {
           <Route path="/admin/sheets" element={<SheetManager />} />
           <Route path="/sheet-manager" element={<SheetManager />} />
           
+          {/* Employee Portal */}
+          <Route path="/employee" element={<EmployeeLogin />} />
+          <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+          
           {/* Platform Pages */}
           <Route path="/about" element={<AboutUs />} />
           <Route path="/faq" element={<FAQ />} />
