@@ -490,21 +490,27 @@ const QuizRoom = () => {
           </div>
         </div>
 
-        {/* Progress Bar */}
+        {/* Progress Bar - Modern Design */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-600">
-              Question {currentQuestionIndex + 1} of {questions.length}
-            </span>
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">{currentQuestionIndex + 1}</span>
+              </div>
+              <span className="text-gray-600 text-sm font-medium">of {questions.length}</span>
+            </div>
             <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow">
               <Clock className="w-4 h-4 text-indigo-600" />
               <span className="font-bold text-indigo-600">{timeLeft}s</span>
             </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+              className="h-full rounded-full transition-all duration-500 ease-out"
+              style={{ 
+                width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
+                background: 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)'
+              }}
             ></div>
           </div>
         </div>
