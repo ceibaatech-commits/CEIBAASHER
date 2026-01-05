@@ -188,6 +188,12 @@ fastapi_app.include_router(cbse_data_router, prefix="/api")  # CBSE data - singl
 from media_upload_routes import router as media_upload_router
 fastapi_app.include_router(media_upload_router, prefix="/api")  # Media upload routes
 
+# Employee routes for employee portal
+from employee_routes import router as employee_router
+import employee_routes
+employee_routes.init_db(db)
+fastapi_app.include_router(employee_router, prefix="/api")  # Employee portal routes
+
 # Milestone and monetization routes
 from milestone_routes import router as milestone_router
 import milestone_routes
