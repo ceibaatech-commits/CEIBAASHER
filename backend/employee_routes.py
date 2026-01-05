@@ -1,0 +1,376 @@
+"""
+Employee Routes for Ceibaa Platform
+Handles employee authentication and management by admin
+"""
+from fastapi import APIRouter, HTTPException, Header, Depends
+from pydantic import BaseModel
+from typing import Optional, List
+from datetime import datetime, timezone
+import uuid
+import hashlib
+import secrets
+import jwt
+import os
+
+router = APIRouter()
+
+# Global db instance (will be set from server.py)
+db = None
+
+JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-secret-key")
+
+def init_db(database):
+    global db
+    db = database
+
+
+# ==================== MODELS ====================
+
+class EmployeeCreate(BaseModel):
+    name: str
+    employee_id: str
+    password: str
+    role: Optional[str] = "sheet_manager"  # Role: sheet_manager, content_manager, etc.
+
+
+class EmployeeUpdate(BaseModel):
+    name: Optional[str] = None
+    password: Optional[str] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class EmployeeLogin(BaseModel):
+    employee_id: str
+    password: str
+
+
+# ==================== HELPER FUNCTIONS ====================
+
+def hash_password(password: str) -> str:
+    """Hash password using SHA256"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
+def generate_employee_token(employee: dict) -> str:
+    """Generate JWT token for employee"""
+    payload = {
+        "id": employee["id"],
+        "employee_id": employee["employee_id"],
+        "name": employee["name"],
+        "role": employee["role"],
+        "type": "employee",
+        "exp": datetime.now(timezone.utc).timestamp() + (24 * 60 * 60)  # 24 hours
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
+
+async def verify_employee_token(authorization: str = Header(None)):
+    """Verify employee JWT token"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        
+        if payload.get("type") != "employee":
+            raise HTTPException(status_code=403, detail="Not an employee token")
+        
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+async def verify_admin_token(authorization: str = Header(None)):
+    """Verify admin JWT token for employee management"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+    
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        
+        # Check if user is admin
+        user_id = payload.get("id") or payload.get("user_id")
+        if user_id:
+            user = await db.users.find_one({"id": user_id}, {"_id": 0})
+            if user and user.get("role") == "admin":
+                return payload
+        
+        raise HTTPException(status_code=403, detail="Admin access required")
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+# ==================== EMPLOYEE AUTH ROUTES ====================
+
+@router.post("/employee/login")
+async def employee_login(credentials: EmployeeLogin):
+    """Employee login endpoint"""
+    try:
+        # Find employee by employee_id
+        employee = await db.employees.find_one(
+            {"employee_id": credentials.employee_id},
+            {"_id": 0}
+        )
+        
+        if not employee:
+            raise HTTPException(status_code=401, detail="Invalid employee ID or password")
+        
+        # Check if employee is active
+        if not employee.get("is_active", True):
+            raise HTTPException(status_code=403, detail="Your account has been deactivated. Contact admin.")
+        
+        # Verify password
+        hashed_password = hash_password(credentials.password)
+        if employee.get("password_hash") != hashed_password:
+            raise HTTPException(status_code=401, detail="Invalid employee ID or password")
+        
+        # Update last login
+        await db.employees.update_one(
+            {"employee_id": credentials.employee_id},
+            {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+        )
+        
+        # Generate token
+        token = generate_employee_token(employee)
+        
+        return {
+            "success": True,
+            "token": token,
+            "employee": {
+                "id": employee["id"],
+                "employee_id": employee["employee_id"],
+                "name": employee["name"],
+                "role": employee["role"]
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/employee/me")
+async def get_employee_profile(employee: dict = Depends(verify_employee_token)):
+    """Get current employee profile"""
+    try:
+        emp = await db.employees.find_one(
+            {"id": employee["id"]},
+            {"_id": 0, "password_hash": 0}
+        )
+        
+        if not emp:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        return {"success": True, "employee": emp}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== ADMIN EMPLOYEE MANAGEMENT ====================
+
+@router.get("/admin/employees")
+async def get_all_employees(admin: dict = Depends(verify_admin_token)):
+    """Get all employees (Admin only)"""
+    try:
+        employees = await db.employees.find(
+            {},
+            {"_id": 0, "password_hash": 0}
+        ).sort("created_at", -1).to_list(1000)
+        
+        return {"success": True, "employees": employees}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/admin/employees")
+async def create_employee(employee_data: EmployeeCreate, admin: dict = Depends(verify_admin_token)):
+    """Create a new employee (Admin only)"""
+    try:
+        # Check if employee_id already exists
+        existing = await db.employees.find_one({"employee_id": employee_data.employee_id})
+        if existing:
+            raise HTTPException(status_code=400, detail="Employee ID already exists")
+        
+        # Create employee record
+        employee = {
+            "id": str(uuid.uuid4()),
+            "employee_id": employee_data.employee_id,
+            "name": employee_data.name,
+            "password_hash": hash_password(employee_data.password),
+            "role": employee_data.role,
+            "is_active": True,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": admin.get("id") or admin.get("user_id"),
+            "last_login": None,
+            "sheets_added": 0,
+            "questions_added": 0
+        }
+        
+        await db.employees.insert_one(employee)
+        
+        # Remove sensitive data for response
+        employee.pop("password_hash", None)
+        
+        return {
+            "success": True,
+            "message": f"Employee '{employee_data.name}' created successfully",
+            "employee": employee
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/admin/employees/{employee_id}")
+async def update_employee(
+    employee_id: str, 
+    update_data: EmployeeUpdate, 
+    admin: dict = Depends(verify_admin_token)
+):
+    """Update employee details (Admin only)"""
+    try:
+        # Find employee
+        employee = await db.employees.find_one({"id": employee_id})
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        # Build update document
+        update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        if update_data.name is not None:
+            update_doc["name"] = update_data.name
+        
+        if update_data.password is not None:
+            update_doc["password_hash"] = hash_password(update_data.password)
+        
+        if update_data.role is not None:
+            update_doc["role"] = update_data.role
+        
+        if update_data.is_active is not None:
+            update_doc["is_active"] = update_data.is_active
+        
+        await db.employees.update_one(
+            {"id": employee_id},
+            {"$set": update_doc}
+        )
+        
+        # Get updated employee
+        updated = await db.employees.find_one(
+            {"id": employee_id},
+            {"_id": 0, "password_hash": 0}
+        )
+        
+        return {
+            "success": True,
+            "message": "Employee updated successfully",
+            "employee": updated
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/admin/employees/{employee_id}")
+async def delete_employee(employee_id: str, admin: dict = Depends(verify_admin_token)):
+    """Delete an employee (Admin only)"""
+    try:
+        result = await db.employees.delete_one({"id": employee_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        return {"success": True, "message": "Employee deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== EMPLOYEE SHEET MANAGEMENT ====================
+
+@router.post("/employee/sheets/add")
+async def employee_add_sheet(sheet_data: dict, employee: dict = Depends(verify_employee_token)):
+    """Employee adds a Google Sheet - treated same as admin"""
+    try:
+        # Add employee info to sheet data
+        sheet_data["added_by"] = {
+            "type": "employee",
+            "id": employee["id"],
+            "employee_id": employee["employee_id"],
+            "name": employee["name"]
+        }
+        sheet_data["created_at"] = datetime.now(timezone.utc).isoformat()
+        sheet_data["id"] = str(uuid.uuid4())
+        
+        # Save to exam_sheets collection (same as admin)
+        await db.exam_sheets.insert_one(sheet_data)
+        
+        # Update employee stats
+        await db.employees.update_one(
+            {"id": employee["id"]},
+            {"$inc": {"sheets_added": 1}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Sheet added successfully",
+            "sheet_id": sheet_data["id"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/employee/sheets")
+async def get_employee_sheets(employee: dict = Depends(verify_employee_token)):
+    """Get all sheets (employee can view all, same as admin)"""
+    try:
+        sheets = await db.exam_sheets.find(
+            {},
+            {"_id": 0}
+        ).sort("created_at", -1).to_list(1000)
+        
+        return {"success": True, "sheets": sheets}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/employee/sheets/{sheet_id}")
+async def employee_delete_sheet(sheet_id: str, employee: dict = Depends(verify_employee_token)):
+    """Employee can delete sheets they added"""
+    try:
+        # Check if sheet exists and was added by this employee
+        sheet = await db.exam_sheets.find_one({"id": sheet_id})
+        
+        if not sheet:
+            raise HTTPException(status_code=404, detail="Sheet not found")
+        
+        # Allow deletion if employee added it or if they have admin-like role
+        added_by = sheet.get("added_by", {})
+        if added_by.get("id") != employee["id"] and employee.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="You can only delete sheets you added")
+        
+        await db.exam_sheets.delete_one({"id": sheet_id})
+        
+        # Update employee stats
+        if added_by.get("id") == employee["id"]:
+            await db.employees.update_one(
+                {"id": employee["id"]},
+                {"$inc": {"sheets_added": -1}}
+            )
+        
+        return {"success": True, "message": "Sheet deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
