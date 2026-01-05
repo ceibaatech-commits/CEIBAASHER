@@ -455,12 +455,23 @@ const LiveBattle = () => {
     
     setSelectedAnswer(index);
     
-    // Get correct answer from question
-    const correctAnswerIndex = currentQuestion.correctAnswer;
+    // Get correct answer from question - handle both letter (A,B,C,D) and index (0,1,2,3) formats
+    const correctAnswerRaw = currentQuestion.correctAnswer || currentQuestion.correct_answer;
+    let correctAnswerIndex;
+    
+    if (typeof correctAnswerRaw === 'string' && /^[A-Da-d]$/.test(correctAnswerRaw)) {
+      // Convert letter to index: A->0, B->1, C->2, D->3
+      correctAnswerIndex = correctAnswerRaw.toUpperCase().charCodeAt(0) - 65;
+    } else if (typeof correctAnswerRaw === 'number') {
+      correctAnswerIndex = correctAnswerRaw;
+    } else {
+      correctAnswerIndex = parseInt(correctAnswerRaw) || 0;
+    }
+    
     const isCorrect = index === correctAnswerIndex;
     const pointsEarned = isCorrect ? Math.max(10, timeLeft * 2) : 0;
     
-    console.log(`📝 Answer selected: ${index}, Correct: ${correctAnswerIndex}, Is Correct: ${isCorrect}, Points: ${pointsEarned}`);
+    console.log(`📝 Answer selected: ${index}, Correct answer raw: ${correctAnswerRaw}, Correct index: ${correctAnswerIndex}, Is Correct: ${isCorrect}, Points: ${pointsEarned}`);
     
     // Show immediate feedback
     setAnswerResult({
