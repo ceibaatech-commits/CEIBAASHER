@@ -37,7 +37,8 @@ const EmployeeManager = () => {
   }, []);
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem('ceibaa_token');
+    // Use admin token stored during admin login
+    const token = localStorage.getItem('ceibaa_admin_token');
     return {
       headers: {
         'Authorization': `Bearer ${token}`
