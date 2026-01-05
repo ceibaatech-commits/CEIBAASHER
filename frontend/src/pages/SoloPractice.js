@@ -459,19 +459,6 @@ const SoloPractice = () => {
       </div>
     );
   }
-                  // Navigate to exam page for exam-based
-                  navigate(`/exam/${exam}`);
-                }
-              }}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-lg font-semibold transition-all shadow-md"
-            >
-              {isClassBased ? 'Choose Another Chapter' : 'Choose Another Subject'}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Setup screen - select number of questions
   if (quizState === 'setup') {
