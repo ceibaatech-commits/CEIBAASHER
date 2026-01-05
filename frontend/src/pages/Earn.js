@@ -463,41 +463,41 @@ const Earn = () => {
             </div>
 
             {/* Milestone 3: Monetization */}
-            <div className={`border rounded-xl p-5 transition ${isMonetizationUnlocked ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200'}`}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isMonetizationUnlocked ? 'bg-amber-500' : 'bg-slate-200'}`}>
-                    {isMonetizationUnlocked ? <Crown className="w-6 h-6 text-white" /> : <Lock className="w-6 h-6 text-slate-400" />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-900">Monetization Partner</h3>
-                      {isMonetizationUnlocked && <CheckCircle2 className="w-4 h-4 text-amber-500" />}
-                    </div>
-                    <p className="text-slate-500 text-sm mt-0.5">Enable full monetization and ad revenue</p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-md flex items-center gap-1">
-                        <IndianRupee className="w-3 h-3" /> 90% Revenue
-                      </span>
-                      <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-md flex items-center gap-1">
-                        <MapPin className="w-3 h-3" /> Local Ads
-                      </span>
-                    </div>
-                  </div>
+            <div className={`border rounded-xl p-4 md:p-5 transition ${isMonetizationUnlocked ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200'}`}>
+              <div className="flex items-start gap-3 md:gap-4">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${isMonetizationUnlocked ? 'bg-amber-500' : 'bg-slate-200'}`}>
+                  {isMonetizationUnlocked ? <Crown className="w-5 h-5 md:w-6 md:h-6 text-white" /> : <Lock className="w-5 h-5 md:w-6 md:h-6 text-slate-400" />}
                 </div>
-                <div className="text-right">
-                  <p className="text-xl font-bold text-slate-900">{displayStats.followers.toLocaleString()}/2,500</p>
-                  <p className="text-xs text-slate-500">Followers</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm md:text-base font-bold text-slate-900">Monetization Partner</h3>
+                    {isMonetizationUnlocked && <CheckCircle2 className="w-4 h-4 text-amber-500 flex-shrink-0" />}
+                  </div>
+                  <p className="text-slate-500 text-xs md:text-sm mt-0.5">Enable full monetization and ad revenue</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-md flex items-center gap-1">
+                      <IndianRupee className="w-3 h-3" /> 90% Revenue
+                    </span>
+                    <span className="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-md flex items-center gap-1">
+                      <MapPin className="w-3 h-3" /> Local Ads
+                    </span>
+                  </div>
+                  {/* Progress indicator - inline on mobile */}
+                  <div className="flex items-center gap-2 mt-3">
+                    <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((displayStats.followers / 2500) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <div className="flex items-baseline gap-1 flex-shrink-0">
+                      <span className="text-sm md:text-base font-bold text-slate-900">{displayStats.followers.toLocaleString()}</span>
+                      <span className="text-xs text-slate-500">/2.5K</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4">
-                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min((displayStats.followers / 2500) * 100, 100)}%` }}
-                  />
-                </div>
-              </div>
+            </div>
             </div>
           </div>
         </div>
