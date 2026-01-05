@@ -144,8 +144,7 @@ const SoloPractice = () => {
     } else if (quizState === 'playing' && timeLeft === 0) {
       handleNextQuestion();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeLeft, quizState]);
+  }, [timeLeft, quizState, handleNextQuestion]);
 
   const startQuiz = async () => {
     setQuizState('loading'); // Show loading while fetching
