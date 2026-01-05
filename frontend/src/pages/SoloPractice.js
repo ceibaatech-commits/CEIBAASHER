@@ -248,11 +248,200 @@ const SoloPractice = () => {
   }
 
   if (quizState === 'results') {
+    // Helper function to convert letter to index
+    const letterToIndex = (letter) => {
+      if (typeof letter === 'number') return letter;
+      if (typeof letter === 'string' && /^[A-Da-d]$/.test(letter)) {
+        return letter.toUpperCase().charCodeAt(0) - 65;
+      }
+      return parseInt(letter) || -1;
+    };
+
+    const correctCount = results?.filter(r => r.isCorrect).length || 0;
+    const totalCount = results?.length || 0;
+    const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+    
+    // Determine performance level for styling
+    const getPerformanceColor = () => {
+      if (percentage >= 80) return 'from-green-500 to-emerald-600';
+      if (percentage >= 60) return 'from-blue-500 to-indigo-600';
+      if (percentage >= 40) return 'from-yellow-500 to-orange-500';
+      return 'from-red-500 to-pink-600';
+    };
+
+    const getPerformanceMessage = () => {
+      if (percentage >= 80) return '🎉 Excellent Work!';
+      if (percentage >= 60) return '👍 Good Job!';
+      if (percentage >= 40) return '💪 Keep Practicing!';
+      return '📚 Need More Practice';
+    };
+
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          {/* Header */}
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+      <div className="min-h-screen bg-gray-50 py-4 md:py-8">
+        <div className="max-w-3xl mx-auto px-4">
+          {/* Back Button */}
+          <button
+            onClick={() => {
+              if (isClassBased && classBasedData) {
+                navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
+              } else {
+                navigate(`/exam/${exam}`);
+              }
+            }}
+            className="flex items-center text-gray-600 hover:text-gray-900 mb-4 text-sm"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back to {isClassBased ? `${classBasedData?.class_name} Topics` : `${exam} Topics`}
+          </button>
+
+          {/* Score Card - Modern Design */}
+          <div className={`bg-gradient-to-br ${getPerformanceColor()} rounded-2xl shadow-lg p-6 mb-6 text-white`}>
+            <div className="text-center">
+              <div className="text-lg font-medium opacity-90 mb-1">{getPerformanceMessage()}</div>
+              <div className="text-6xl font-bold mb-2">{score || percentage}%</div>
+              <div className="flex items-center justify-center gap-2 text-white/90">
+                <CheckCircle className="w-5 h-5" />
+                <span className="text-lg">{correctCount} of {totalCount} correct</span>
+              </div>
+              <div className="mt-3 text-sm opacity-80">
+                {isClassBased 
+                  ? `${classBasedData?.class_name} • ${classBasedData?.subject} • ${classBasedData?.chapter}`
+                  : `${exam} • ${subject}${topic ? ` • ${topic}` : ''}`
+                }
+              </div>
+            </div>
+          </div>
+
+          {/* Review Answers Section */}
+          <div className="mb-4">
+            <h2 className="text-lg font-bold text-gray-800 mb-1">Review Your Answers</h2>
+            <p className="text-sm text-gray-500">Tap on each question to see the explanation</p>
+          </div>
+
+          {/* Results Details - Redesigned */}
+          <div className="space-y-4">
+            {results?.map((result, index) => {
+              const correctIndex = letterToIndex(result.correctAnswer);
+              const userIndex = letterToIndex(result.userAnswer || result.selectedOption);
+              
+              return (
+                <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                  {/* Question Header */}
+                  <div className={`px-4 py-3 flex items-start gap-3 ${
+                    result.isCorrect ? 'bg-green-50 border-b border-green-100' : 'bg-red-50 border-b border-red-100'
+                  }`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      result.isCorrect ? 'bg-green-500' : 'bg-red-500'
+                    }`}>
+                      {result.isCorrect ? (
+                        <CheckCircle className="w-5 h-5 text-white" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-white" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-gray-500 mb-1">Question {index + 1}</div>
+                      <h3 className="font-medium text-gray-900 text-sm leading-relaxed">
+                        <MathText text={result.question} />
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Options */}
+                  <div className="p-4 space-y-2">
+                    {result.options?.map((option, optIndex) => {
+                      const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
+                      const isCorrectOption = optIndex === correctIndex;
+                      const isUserSelection = optIndex === userIndex;
+                      const isWrongSelection = isUserSelection && !result.isCorrect;
+                      
+                      return (
+                        <div
+                          key={optIndex}
+                          className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                            isCorrectOption
+                              ? 'border-green-500 bg-green-50'
+                              : isWrongSelection
+                                ? 'border-red-500 bg-red-50'
+                                : 'border-gray-100 bg-gray-50'
+                          }`}
+                        >
+                          {/* Option Badge */}
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
+                            isCorrectOption
+                              ? 'bg-green-500 text-white'
+                              : isWrongSelection
+                                ? 'bg-red-500 text-white'
+                                : 'bg-gray-200 text-gray-600'
+                          }`}>
+                            {String.fromCharCode(65 + optIndex)}
+                          </div>
+                          
+                          {/* Option Text */}
+                          <span className={`flex-1 text-sm ${
+                            isCorrectOption ? 'text-green-800 font-medium' : 
+                            isWrongSelection ? 'text-red-800' : 'text-gray-600'
+                          }`}>
+                            <MathText text={optionText} />
+                          </span>
+                          
+                          {/* Status Icons */}
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {isCorrectOption && (
+                              <span className="text-green-600 text-xs font-semibold flex items-center gap-1">
+                                <CheckCircle className="w-4 h-4" />
+                                Correct
+                              </span>
+                            )}
+                            {isWrongSelection && (
+                              <span className="text-red-600 text-xs font-semibold flex items-center gap-1">
+                                <XCircle className="w-4 h-4" />
+                                Your answer
+                              </span>
+                            )}
+                            {isUserSelection && result.isCorrect && (
+                              <span className="text-green-600 text-xs font-semibold flex items-center gap-1">
+                                ✓ You got it!
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Explanation */}
+                  {result.explanation && (
+                    <div className="px-4 pb-4">
+                      <div className="bg-blue-50 border border-blue-100 rounded-xl p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-white text-xs">💡</span>
+                          </div>
+                          <div>
+                            <div className="text-xs font-semibold text-blue-800 mb-1">Explanation</div>
+                            <p className="text-sm text-blue-900 leading-relaxed">
+                              <MathText text={result.explanation} />
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mt-6 flex gap-3 sticky bottom-4">
+            <button
+              onClick={() => window.location.reload()}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <RotateCcw className="w-5 h-5" />
+              Practice Again
+            </button>
             <button
               onClick={() => {
                 if (isClassBased && classBasedData) {
@@ -261,93 +450,15 @@ const SoloPractice = () => {
                   navigate(`/exam/${exam}`);
                 }
               }}
-              className="flex items-center text-gray-600 hover:text-gray-900 mb-4"
+              className="flex-1 bg-white border-2 border-gray-200 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-50 transition-all"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to {isClassBased ? `${classBasedData?.class_name} Topics` : `${exam} Topics`}
+              More Topics
             </button>
-            
-            <div className="text-center">
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Trophy className="w-10 h-10" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Quiz Complete!</h1>
-              <div className="text-5xl font-bold text-blue-600 mb-2">{score}%</div>
-              <p className="text-gray-600">
-                You got {results?.filter(r => r.isCorrect).length} out of {results?.length} correct
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                {isClassBased ? `${classBasedData.class_name} - ${classBasedData.subject} - ${classBasedData.chapter}` : `${exam} - ${subject} ${topic ? `- ${topic}` : ''}`}
-              </p>
-            </div>
           </div>
-
-          {/* Results Details */}
-          <div className="space-y-4">
-            {results?.map((result, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-md p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900 flex-1">
-                    Q{index + 1}. {result.question}
-                  </h3>
-                  {result.isCorrect ? (
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 ml-2" />
-                  ) : (
-                    <XCircle className="w-6 h-6 text-red-500 flex-shrink-0 ml-2" />
-                  )}
-                </div>
-
-                <div className="space-y-2 mb-3">
-                  {result.options.map((option, optIndex) => {
-                    // Handle both string options and object options {id, text}
-                    const optionText = typeof option === 'object' ? (option.text || option.value || option) : option;
-                    return (
-                    <div
-                      key={optIndex}
-                      className={`p-3 rounded-lg border-2 ${
-                        optIndex === result.correctAnswer
-                          ? 'border-green-500 bg-green-50'
-                          : optIndex === result.userAnswer && !result.isCorrect
-                          ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span className="font-medium">{String.fromCharCode(65 + optIndex)}.</span>
-                        <span><MathText text={optionText} /></span>
-                        {optIndex === result.correctAnswer && (
-                          <CheckCircle className="w-4 h-4 text-green-500 ml-auto" />
-                        )}
-                        {optIndex === result.userAnswer && !result.isCorrect && (
-                          <XCircle className="w-4 h-4 text-red-500 ml-auto" />
-                        )}
-                      </div>
-                    </div>
-                  )})}
-                </div>
-
-                <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
-                  <p className="text-sm text-gray-700">
-                    <strong>Explanation:</strong> <MathText text={result.explanation} />
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex gap-4">
-            <button
-              onClick={() => window.location.reload()}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
-            >
-              Practice Again
-            </button>
-            <button
-              onClick={() => {
-                if (isClassBased && classBasedData) {
-                  // Navigate back to subject selection for class-based
-                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
-                } else {
+        </div>
+      </div>
+    );
+  }
                   // Navigate to exam page for exam-based
                   navigate(`/exam/${exam}`);
                 }
