@@ -871,23 +871,30 @@ const LiveBattle = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Question Section */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Timer & Progress */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-sm text-gray-600">
-                  Question {questionNumber} / {totalQuestions}
+            {/* Timer & Progress - Modern Mobile Design */}
+            <div className="bg-white rounded-xl shadow-md p-4 md:p-6">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">{questionNumber}</span>
+                  </div>
+                  <span className="text-gray-600 text-sm font-medium">of {totalQuestions}</span>
                 </div>
-                <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                  timeLeft <= 10 ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold ${
+                  timeLeft <= 10 ? 'bg-red-100 text-red-600' : 'bg-indigo-100 text-indigo-600'
                 }`}>
-                  <Clock className="w-5 h-5" />
-                  <span className="font-bold text-lg">{timeLeft}s</span>
+                  <Clock className="w-4 h-4" />
+                  <span className="text-lg">{timeLeft}s</span>
                 </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              {/* Modern Progress Bar - Sleek and minimal */}
+              <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                 <div
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all"
-                  style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
+                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  style={{ 
+                    width: `${(questionNumber / totalQuestions) * 100}%`,
+                    background: 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)'
+                  }}
                 ></div>
               </div>
             </div>
