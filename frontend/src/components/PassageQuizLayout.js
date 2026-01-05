@@ -37,12 +37,15 @@ const PassageQuizLayout = ({
             </div>
           </div>
           
-          {/* Progress bar */}
+          {/* Progress bar - Modern sleek style */}
           <div className="mt-4">
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((questionIndex + 1) / totalQuestions) * 100}%` }}
+                className="h-full rounded-full transition-all duration-500 ease-out"
+                style={{ 
+                  width: `${((questionIndex + 1) / totalQuestions) * 100}%`,
+                  background: 'linear-gradient(90deg, #3b82f6 0%, #6366f1 50%, #8b5cf6 100%)'
+                }}
               ></div>
             </div>
           </div>
