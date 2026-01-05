@@ -22,6 +22,14 @@ const SoloPractice = () => {
   // Check if this is a class-based quiz (from state OR from URL pattern)
   const isClassBased = location.state?.isClassBased || isClassBasedFromUrl;
   
+  // Check authentication status (isAuthenticated is a function)
+  const isUserAuthenticated = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
+  const urlExamName = examId || examName;
+  const isClassBasedFromUrl = urlExamName?.startsWith('Class-') || urlExamName?.toLowerCase().startsWith('class-');
+  
+  // Check if this is a class-based quiz (from state OR from URL pattern)
+  const isClassBased = location.state?.isClassBased || isClassBasedFromUrl;
+  
   // Extract class-based data
   let classBasedData = null;
   if (isClassBased) {
