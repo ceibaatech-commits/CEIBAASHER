@@ -393,19 +393,25 @@ const LiveBattleMode = () => {
               </div>
             </div>
 
-            {/* Question Progress */}
+            {/* Question Progress - Modern Design */}
             <div className="bg-white rounded-xl shadow-md p-4 flex flex-col justify-center">
               <div className="text-center">
-                <div className={`text-5xl font-bold mb-2 ${timeLeft <= 10 ? 'text-red-600' : 'text-blue-600'}`}>
+                <div className={`text-5xl font-bold mb-2 ${timeLeft <= 10 ? 'text-red-600' : 'text-indigo-600'}`}>
                   {timeLeft}s
                 </div>
-                <div className="text-sm text-gray-600">
-                  Question {currentQuestionIndex + 1} / {questions.length}
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <span className="text-white font-bold text-xs">{currentQuestionIndex + 1}</span>
+                  </div>
+                  <span className="text-gray-600 text-sm font-medium">of {questions.length}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full transition-all"
-                    style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    style={{ 
+                      width: `${((currentQuestionIndex + 1) / questions.length) * 100}%`,
+                      background: 'linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)'
+                    }}
                   ></div>
                 </div>
               </div>
