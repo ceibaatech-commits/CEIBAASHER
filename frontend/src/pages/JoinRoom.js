@@ -17,6 +17,9 @@ const JoinRoom = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Check authentication status (isAuthenticated is a function)
+  const isUserAuthenticated = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
+
   // Pre-fill player name from user data
   useEffect(() => {
     if (user && user.name) {
