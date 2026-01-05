@@ -42,30 +42,30 @@ const JoinRoom = () => {
   if (!isUserAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-10 h-10 text-white" />
+        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Login Required</h2>
-          <p className="text-gray-600 mb-6">
-            Please login or create an account to join quiz rooms and compete with others.
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Login Required</h2>
+          <p className="text-gray-600 text-sm mb-5">
+            Please login or create an account to join quiz rooms.
           </p>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <button
               onClick={() => navigate('/login', { state: { from: location.pathname } })}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:shadow-lg transition-all"
             >
               Login to Continue
             </button>
             <button
               onClick={() => navigate('/signup', { state: { from: location.pathname } })}
-              className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
+              className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-all"
             >
               Create Account
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="w-full text-gray-500 py-2 text-sm hover:text-gray-700"
+              className="w-full text-gray-500 py-1.5 text-xs hover:text-gray-700"
             >
               ← Go Back
             </button>
