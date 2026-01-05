@@ -250,13 +250,13 @@ const SoloPractice = () => {
           <div className="space-y-2">
             <button
               onClick={() => navigate('/login', { state: { from: location.pathname } })}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:shadow-lg transition-all"
+              className="w-full h-11 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-all"
             >
               Login to Continue
             </button>
             <button
               onClick={() => navigate('/signup', { state: { from: location.pathname } })}
-              className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-all"
+              className="w-full h-11 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-all"
             >
               Create Account
             </button>
