@@ -30,7 +30,7 @@ const CommentsSection = ({
   return (
     <div className="mt-4 pt-4 border-t border-gray-100">
       {/* Add Comment Input */}
-      {isAuthenticated() && user && (
+      {checkAuth() && user && (
         <div className="flex gap-2 mb-4">
           <UserAvatar
             profilePicture={user.profile_picture}
