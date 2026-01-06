@@ -70,10 +70,30 @@ const SoloPractice = () => {
         .join(' ')
         .replace(/\((\w)/g, (match, letter) => `(${letter.toUpperCase()}`); // Capitalize first letter after (
       
+      // Infer stream from subject for Class 11/12
+      const classNum = urlClassName.replace('Class-', '').replace('class-', '');
+      let inferredStream = null;
+      if (classNum === '11' || classNum === '12') {
+        const subjectLower = processedSubject.toLowerCase();
+        // Science stream subjects
+        if (['physics', 'chemistry', 'biology', 'mathematics', 'computer science'].some(s => subjectLower.includes(s))) {
+          inferredStream = 'science';
+        }
+        // Commerce stream subjects
+        else if (['accountancy', 'business studies', 'economics'].some(s => subjectLower.includes(s))) {
+          inferredStream = 'commerce';
+        }
+        // Humanities stream subjects
+        else if (['history', 'geography', 'political science', 'psychology', 'sociology'].some(s => subjectLower.includes(s))) {
+          inferredStream = 'humanities';
+        }
+      }
+      
       classBasedData = {
         class_name: urlClassName.replace('Class-', 'Class ').replace(/-/g, ' '),
         subject: processedSubject,
-        chapter: processedChapter
+        chapter: processedChapter,
+        stream: inferredStream
       };
     }
   }
