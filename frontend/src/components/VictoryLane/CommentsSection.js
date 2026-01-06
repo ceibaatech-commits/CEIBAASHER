@@ -19,6 +19,14 @@ const CommentsSection = ({
   openProfile,
   formatTimestamp
 }) => {
+  // Safe check for authentication - handle both function and boolean
+  const checkAuth = () => {
+    if (typeof isAuthenticated === 'function') {
+      return isAuthenticated();
+    }
+    return !!user;
+  };
+
   return (
     <div className="mt-4 pt-4 border-t border-gray-100">
       {/* Add Comment Input */}
