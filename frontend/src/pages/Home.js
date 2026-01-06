@@ -205,7 +205,7 @@ const Home = () => {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-xl font-bold">Welcome to Ceibaa</h1>
-            <p className="text-slate-300 text-sm">Master your competitive exams</p>
+            <p className="text-slate-300 text-sm">Competitive Exam In Battle Arena</p>
           </div>
           <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
             <Trophy className="w-6 h-6 text-white" />
