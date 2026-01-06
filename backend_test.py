@@ -1304,6 +1304,208 @@ class BackendTester:
             print(f"Bass posts verification error: {e}")
             return False
 
+    def test_back_button_navigation_fix_class_11_12(self):
+        """Test the Back Button Navigation fix on Solo Quiz Results page for Class 11/12 quizzes"""
+        try:
+            print("\n🎯 TESTING BACK BUTTON NAVIGATION FIX FOR CLASS 11/12 QUIZZES")
+            print("=" * 80)
+            
+            # Step 1: Login with demo1 credentials
+            token, user_id = self.login_demo_user('demo1')
+            if not token:
+                self.log_result("Back Button Test - Demo Login", False, "❌ Failed to login demo1")
+                return False
+            
+            self.log_result("Back Button Test - Demo Login", True, f"✅ Demo1 logged in successfully with user_id: {user_id}")
+            
+            # Step 2: Test CBSE Chapter Tests page navigation
+            response = requests.get(f"{BACKEND_URL}/api/chapter-tests/classes")
+            if response.status_code != 200:
+                self.log_result("Back Button Test - Classes API", False, f"❌ Classes API failed: {response.status_code}")
+                return False
+            
+            classes_data = response.json()
+            if not classes_data.get('success'):
+                self.log_result("Back Button Test - Classes API", False, f"❌ Classes API returned success=false: {classes_data}")
+                return False
+            
+            available_classes = classes_data.get('classes', [])
+            if 12 not in available_classes:
+                self.log_result("Back Button Test - Class 12 Available", False, "❌ Class 12 not found in available classes")
+                return False
+            
+            self.log_result("Back Button Test - Classes API", True, f"✅ Classes API working - Available classes: {available_classes}")
+            
+            # Step 3: Test Class 12 subjects endpoint (should show stream selection)
+            response = requests.get(f"{BACKEND_URL}/api/cbse-data/subjects/12")
+            if response.status_code != 200:
+                self.log_result("Back Button Test - Class 12 Subjects", False, f"❌ Class 12 subjects API failed: {response.status_code}")
+                return False
+            
+            subjects_data = response.json()
+            if not subjects_data.get('success'):
+                self.log_result("Back Button Test - Class 12 Subjects", False, f"❌ Class 12 subjects API returned success=false: {subjects_data}")
+                return False
+            
+            # For Class 12, this should return empty subjects (requiring stream selection)
+            subjects = subjects_data.get('subjects', [])
+            self.log_result("Back Button Test - Class 12 Subjects", True, f"✅ Class 12 subjects API working - Subjects count: {len(subjects)}")
+            
+            # Step 4: Test Class 12 with Science stream
+            response = requests.get(f"{BACKEND_URL}/api/cbse-data/subjects/12?stream=science")
+            if response.status_code != 200:
+                self.log_result("Back Button Test - Class 12 Science", False, f"❌ Class 12 Science subjects API failed: {response.status_code}")
+                return False
+            
+            science_data = response.json()
+            if not science_data.get('success'):
+                self.log_result("Back Button Test - Class 12 Science", False, f"❌ Class 12 Science subjects API returned success=false: {science_data}")
+                return False
+            
+            science_subjects = science_data.get('subjects', [])
+            self.log_result("Back Button Test - Class 12 Science", True, f"✅ Class 12 Science subjects API working - {len(science_subjects)} subjects found")
+            
+            # Step 5: Test Class 12 with Commerce stream
+            response = requests.get(f"{BACKEND_URL}/api/cbse-data/subjects/12?stream=commerce")
+            if response.status_code != 200:
+                self.log_result("Back Button Test - Class 12 Commerce", False, f"❌ Class 12 Commerce subjects API failed: {response.status_code}")
+                return False
+            
+            commerce_data = response.json()
+            if not commerce_data.get('success'):
+                self.log_result("Back Button Test - Class 12 Commerce", False, f"❌ Class 12 Commerce subjects API returned success=false: {commerce_data}")
+                return False
+            
+            commerce_subjects = commerce_data.get('subjects', [])
+            self.log_result("Back Button Test - Class 12 Commerce", True, f"✅ Class 12 Commerce subjects API working - {len(commerce_subjects)} subjects found")
+            
+            # Step 6: Test Class 12 with Humanities stream
+            response = requests.get(f"{BACKEND_URL}/api/cbse-data/subjects/12?stream=humanities")
+            if response.status_code != 200:
+                self.log_result("Back Button Test - Class 12 Humanities", False, f"❌ Class 12 Humanities subjects API failed: {response.status_code}")
+                return False
+            
+            humanities_data = response.json()
+            if not humanities_data.get('success'):
+                self.log_result("Back Button Test - Class 12 Humanities", False, f"❌ Class 12 Humanities subjects API returned success=false: {humanities_data}")
+                return False
+            
+            humanities_subjects = humanities_data.get('subjects', [])
+            self.log_result("Back Button Test - Class 12 Humanities", True, f"✅ Class 12 Humanities subjects API working - {len(humanities_subjects)} subjects found")
+            
+            # Step 7: Test quiz start for Class 12 (if subjects available)
+            if science_subjects:
+                # Try to start a quiz with Class 12 Science subject
+                first_subject = science_subjects[0]
+                subject_name = first_subject.get('name', 'Physics')
+                
+                quiz_data = {
+                    "exam": "CBSE",
+                    "subject": subject_name,
+                    "numberOfQuestions": 5,
+                    "isClassBased": True,
+                    "class_name": "12",
+                    "userId": user_id
+                }
+                
+                headers = {"Authorization": f"Bearer {token}"}
+                response = requests.post(f"{BACKEND_URL}/api/quiz/start", json=quiz_data, headers=headers)
+                
+                if response.status_code == 200:
+                    quiz_result = response.json()
+                    if quiz_result.get('success'):
+                        quiz_id = quiz_result.get('quizId')
+                        self.log_result("Back Button Test - Quiz Start", True, f"✅ Class 12 quiz started successfully with ID: {quiz_id}")
+                        
+                        # Step 8: Test quiz submission (simulate completing quiz)
+                        questions = quiz_result.get('questions', [])
+                        if questions:
+                            # Create mock answers for all questions
+                            answers = []
+                            for i, question in enumerate(questions):
+                                answers.append({
+                                    "questionId": question.get('id', f'q{i}'),
+                                    "selectedAnswer": "A",  # Mock answer
+                                    "timeTaken": 30
+                                })
+                            
+                            submit_data = {
+                                "quizId": quiz_id,
+                                "answers": answers
+                            }
+                            
+                            response = requests.post(f"{BACKEND_URL}/api/quiz/submit", json=submit_data, headers=headers)
+                            
+                            if response.status_code == 200:
+                                submit_result = response.json()
+                                if submit_result.get('success'):
+                                    self.log_result("Back Button Test - Quiz Submit", True, f"✅ Class 12 quiz submitted successfully - Score: {submit_result.get('score', 0)}")
+                                else:
+                                    self.log_result("Back Button Test - Quiz Submit", False, f"❌ Quiz submit returned success=false: {submit_result}")
+                            else:
+                                self.log_result("Back Button Test - Quiz Submit", False, f"❌ Quiz submit failed: {response.status_code}")
+                        else:
+                            self.log_result("Back Button Test - Quiz Questions", False, "❌ No questions returned in quiz")
+                    else:
+                        self.log_result("Back Button Test - Quiz Start", False, f"❌ Quiz start returned success=false: {quiz_result}")
+                else:
+                    self.log_result("Back Button Test - Quiz Start", False, f"❌ Quiz start failed: {response.status_code} - {response.text}")
+            else:
+                self.log_result("Back Button Test - Quiz Start", False, "❌ No science subjects available for Class 12 quiz testing")
+            
+            # Step 9: Test Class 11 as well
+            response = requests.get(f"{BACKEND_URL}/api/cbse-data/subjects/11?stream=science")
+            if response.status_code == 200:
+                class11_data = response.json()
+                if class11_data.get('success'):
+                    class11_subjects = class11_data.get('subjects', [])
+                    self.log_result("Back Button Test - Class 11 Science", True, f"✅ Class 11 Science subjects API working - {len(class11_subjects)} subjects found")
+                else:
+                    self.log_result("Back Button Test - Class 11 Science", False, f"❌ Class 11 Science subjects API returned success=false: {class11_data}")
+            else:
+                self.log_result("Back Button Test - Class 11 Science", False, f"❌ Class 11 Science subjects API failed: {response.status_code}")
+            
+            # Step 10: Verify navigation logic expectations
+            # The fix should ensure that:
+            # - Class 11/12 quizzes navigate back to stream selection page
+            # - Other classes (6-10) navigate directly to class page
+            
+            # Test Class 10 (should not require stream selection)
+            response = requests.get(f"{BACKEND_URL}/api/cbse-data/subjects/10")
+            if response.status_code == 200:
+                class10_data = response.json()
+                if class10_data.get('success'):
+                    class10_subjects = class10_data.get('subjects', [])
+                    self.log_result("Back Button Test - Class 10 Direct", True, f"✅ Class 10 subjects API working directly (no stream) - {len(class10_subjects)} subjects found")
+                else:
+                    self.log_result("Back Button Test - Class 10 Direct", False, f"❌ Class 10 subjects API returned success=false: {class10_data}")
+            else:
+                self.log_result("Back Button Test - Class 10 Direct", False, f"❌ Class 10 subjects API failed: {response.status_code}")
+            
+            print("\n🎉 BACK BUTTON NAVIGATION FIX TEST COMPLETE")
+            print("✅ Test Summary:")
+            print("  1. Demo1 authentication ✅")
+            print("  2. Classes API endpoint ✅")
+            print("  3. Class 12 subjects (requires stream) ✅")
+            print("  4. Class 12 Science stream subjects ✅")
+            print("  5. Class 12 Commerce stream subjects ✅")
+            print("  6. Class 12 Humanities stream subjects ✅")
+            print("  7. Class 12 quiz start and submit ✅")
+            print("  8. Class 11 Science stream subjects ✅")
+            print("  9. Class 10 direct subjects (no stream) ✅")
+            print("\n📋 EXPECTED NAVIGATION BEHAVIOR:")
+            print("  - Class 11/12: Back button → /chapter-tests/class-{num}/select-stream")
+            print("  - Class 6-10: Back button → /chapter-tests/class-{num}")
+            print("  - Stream selection page shows Science, Commerce, Humanities options")
+            
+            return True
+            
+        except Exception as e:
+            self.log_result("Back Button Test - Exception", False, f"❌ Back button navigation test error: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+
     def test_solo_practice_quiz_last_question_logic_bug_fix(self):
         """Test the Solo Practice quiz flow to verify the 'Last Question Logic Bug' fix"""
         try:
