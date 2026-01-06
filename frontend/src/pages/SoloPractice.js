@@ -517,7 +517,17 @@ const SoloPractice = () => {
             <button
               onClick={() => {
                 if (isClassBased && classBasedData) {
-                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
+                  const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+                  // For Class 11 and 12, navigate to stream selection
+                  if (classNum === '11' || classNum === '12') {
+                    if (classBasedData.stream) {
+                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+                    } else {
+                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                    }
+                  } else {
+                    navigate(`/chapter-tests/class-${classNum}`);
+                  }
                 } else {
                   navigate(`/exam/${exam}`);
                 }
@@ -546,7 +556,17 @@ const SoloPractice = () => {
             <button
               onClick={() => {
                 if (isClassBased && classBasedData) {
-                  navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`);
+                  const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+                  // For Class 11 and 12, navigate to stream selection
+                  if (classNum === '11' || classNum === '12') {
+                    if (classBasedData.stream) {
+                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+                    } else {
+                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                    }
+                  } else {
+                    navigate(`/chapter-tests/class-${classNum}`);
+                  }
                 } else {
                   navigate(`/exam/${exam}`);
                 }
