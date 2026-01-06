@@ -262,7 +262,21 @@ const SoloPractice = () => {
               Create Account
             </button>
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                // Navigate to appropriate page based on quiz type
+                if (isClassBased && classBasedData) {
+                  const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+                  if (classNum === '11' || classNum === '12') {
+                    navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                  } else {
+                    navigate(`/chapter-tests/class-${classNum}`);
+                  }
+                } else if (exam) {
+                  navigate(`/exam/${exam}`);
+                } else {
+                  navigate('/');
+                }
+              }}
               className="w-full text-gray-500 py-1.5 text-xs hover:text-gray-700"
             >
               ← Go Back
