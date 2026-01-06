@@ -784,12 +784,23 @@ const SoloPractice = () => {
                 const hasProgress = selectedAnswer !== null || currentQuestionIndex > 0;
                 if (!hasProgress || window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
                   if (isClassBased && classBasedData) {
+                    const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
                     // Convert subject to URL slug: "Hindi - Malhar" -> "hindi---malhar"
                     const subjectSlug = classBasedData.subject
                       .toLowerCase()
                       .replace(/ - /g, '---')  // " - " becomes "---"
                       .replace(/\s+/g, '-');   // spaces become "-"
-                    navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${subjectSlug}`);
+                    
+                    // For Class 11 and 12, include stream in the path
+                    if ((classNum === '11' || classNum === '12') && classBasedData.stream) {
+                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}/${subjectSlug}`);
+                    } else if (classNum === '11' || classNum === '12') {
+                      // No stream info, go to stream selection
+                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                    } else {
+                      // For Class 6-10, go directly to subject
+                      navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
+                    }
                   } else if (exam) {
                     navigate(`/exam/${exam}`);
                   } else {
