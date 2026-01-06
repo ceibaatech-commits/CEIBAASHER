@@ -738,25 +738,59 @@ async def submit_quiz(request: QuizSubmitRequest):
     for question in questions:
         user_answer = next((a for a in answers if a["questionId"] == question["id"]), None)
         
-        # Handle answer comparison - selectedOption can be:
-        # - An integer index (0, 1, 2, 3) which needs to be converted to letter (A, B, C, D)
-        # - A letter string ("A", "B", "C", "D") which can be compared directly
+        # Handle answer comparison - both selectedOption and correctAnswer can be:
+        # - An integer index (0, 1, 2, 3)
+        # - A letter string ("A", "B", "C", "D")
         selected_option = user_answer.get("selectedOption") if user_answer else None
         correct_answer = question.get("correctAnswer") or question.get("correct_answer")
         
         is_correct = False
         selected_letter = None
+        correct_index = None
         
+        # Normalize correct answer to index
+        if correct_answer is not None:
+            if isinstance(correct_answer, int):
+                correct_index = correct_answer
+            elif isinstance(correct_answer, str):
+                if correct_answer.isdigit():
+                    correct_index = int(correct_answer)
+                elif len(correct_answer) == 1 and correct_answer.upper() in 'ABCD':
+                    correct_index = ord(correct_answer.upper()) - 65
+                else:
+                    # Try to parse as integer string
+                    try:
+                        correct_index = int(correct_answer)
+                    except:
+                        correct_index = None
+        
+        # Normalize selected option to index
+        selected_index = None
         if selected_option is not None:
-            # Convert integer index to letter if needed
             if isinstance(selected_option, int):
-                selected_letter = chr(ord('A') + selected_option)
-            else:
-                selected_letter = str(selected_option).upper()
-            
-            # Compare with correct answer (case-insensitive)
-            if correct_answer:
-                is_correct = selected_letter.upper() == str(correct_answer).upper()
+                selected_index = selected_option
+            elif isinstance(selected_option, str):
+                if selected_option.isdigit():
+                    selected_index = int(selected_option)
+                elif len(selected_option) == 1 and selected_option.upper() in 'ABCD':
+                    selected_index = ord(selected_option.upper()) - 65
+                else:
+                    try:
+                        selected_index = int(selected_option)
+                    except:
+                        selected_index = None
+        
+        # Convert indices to letters for display
+        if selected_index is not None:
+            selected_letter = chr(65 + selected_index)  # 0->A, 1->B, etc.
+        
+        correct_letter = None
+        if correct_index is not None:
+            correct_letter = chr(65 + correct_index)
+        
+        # Compare indices
+        if selected_index is not None and correct_index is not None:
+            is_correct = selected_index == correct_index
         
         if is_correct:
             correct_answers += 1
@@ -765,7 +799,7 @@ async def submit_quiz(request: QuizSubmitRequest):
             "questionId": question["id"],
             "question": question["question"],
             "options": question["options"],
-            "correctAnswer": correct_answer,
+            "correctAnswer": correct_letter or str(correct_answer),
             "selectedOption": selected_letter,
             "userAnswer": selected_letter,
             "isCorrect": is_correct,
