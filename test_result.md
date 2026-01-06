@@ -6395,3 +6395,22 @@ Test the language translation feature on Quiz pages that was implemented but nev
       - Timer and progress functionality independent of translation state
       
       **CONCLUSION**: Language Translation Feature on Quiz Pages is SUBSTANTIALLY OPERATIONAL with 80% success rate. Backend translation APIs and frontend components are fully implemented and working. Only UI interaction testing was limited due to Playwright script issues, but all core functionality is verified and ready for user testing.
+
+# BACK BUTTON NAVIGATION FIX - January 6, 2025
+agent_communication:
+  - agent: "user"
+    message: "Fix Back Button Navigation (IN PROGRESS) - The Back to Class 12 Topics button on Solo Quiz results page incorrectly redirects to a blank page instead of stream selection page for Classes 11 and 12"
+  - agent: "main"
+    message: |
+      Fixed navigation logic in SoloPractice.js:
+      1. Back button on results page (line 341-366) - Already had the fix
+      2. More Topics button on results page (line 517-528) - FIXED to use stream selection for Class 11/12
+      3. Back to Chapters button on setup page (line 546-558) - FIXED to use stream selection for Class 11/12
+      
+      Changes made:
+      - Added conditional logic to check if classNum === '11' || classNum === '12'
+      - If stream info available, navigate to /chapter-tests/class-{num}/{stream}
+      - Otherwise navigate to /chapter-tests/class-{num}/select-stream
+      - For other classes (6-10), navigate directly to /chapter-tests/class-{num}
+      
+      Test needed: Login, take a Class 12 solo quiz, finish it, and verify the back button navigates to stream selection page
