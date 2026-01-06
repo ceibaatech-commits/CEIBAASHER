@@ -790,8 +790,10 @@ const SoloPractice = () => {
                       .replace(/ - /g, '---')  // " - " becomes "---"
                       .replace(/\s+/g, '-');   // spaces become "-"
                     navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${subjectSlug}`);
-                  } else {
+                  } else if (exam) {
                     navigate(`/exam/${exam}`);
+                  } else {
+                    navigate('/');
                   }
                 }
               }}
