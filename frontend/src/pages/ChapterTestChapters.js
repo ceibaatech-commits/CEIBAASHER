@@ -117,7 +117,8 @@ const ChapterTestChapters = () => {
         class_name: `Class ${selectedClass}`,
         subject: formattedSubject,
         chapter: chapter.chapter_name,
-        chapterNumber: chapter.chapter_number
+        chapterNumber: chapter.chapter_number,
+        stream: stream // Include stream for Class 11/12
       } 
     });
   };
