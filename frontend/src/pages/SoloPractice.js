@@ -287,7 +287,12 @@ const SoloPractice = () => {
                 if (isClassBased && classBasedData) {
                   const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
                   if (classNum === '11' || classNum === '12') {
-                    navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                    // If we have stream info, go to that stream's subjects
+                    if (classBasedData.stream) {
+                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+                    } else {
+                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                    }
                   } else {
                     navigate(`/chapter-tests/class-${classNum}`);
                   }
