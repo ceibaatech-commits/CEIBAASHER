@@ -1511,16 +1511,19 @@ const VictoryLane = () => {
                   {expandedComments.has(post.id) && (
                     <CommentsSection
                         post={post}
-                        currentUser={user}
-                        comments={postComments[post.id] || []}
-                        loading={loadingComments[post.id]}
-                        onSubmitComment={submitComment}
+                        user={user}
+                        isAuthenticated={isAuthenticated}
+                        postComments={postComments}
+                        loadingComments={loadingComments}
+                        submitComment={submitComment}
                         replyingTo={replyingTo}
                         setReplyingTo={setReplyingTo}
                         replyContent={replyContent}
                         setReplyContent={setReplyContent}
                         newComment={newComment}
                         setNewComment={setNewComment}
+                        openProfile={(userId) => navigate(`/profile/${userId}`)}
+                        formatTimestamp={formatTimestamp}
                     />
                   )}
                 </div>
