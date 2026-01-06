@@ -200,8 +200,28 @@ const Home = () => {
         onLogout={handleLogout}
       />
 
-      {/* Mobile Hero Section - Fresh Design */}
-      <div className="md:hidden bg-gradient-to-br from-slate-900 via-slate-800 to-zinc-900 text-white px-4 py-6">
+      {/* Mobile Hero Section - Fresh Design with Animated Gradient */}
+      <style>
+        {`
+          @keyframes gradientFlow {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
+          .animated-gradient-hero {
+            background: linear-gradient(-45deg, #0f172a, #155e75, #164e63, #0e7490, #0c4a6e, #1e3a5a);
+            background-size: 400% 400%;
+            animation: gradientFlow 8s ease infinite;
+          }
+        `}
+      </style>
+      <div className="md:hidden animated-gradient-hero text-white px-4 py-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-xl font-bold">Welcome to Ceibaa</h1>
