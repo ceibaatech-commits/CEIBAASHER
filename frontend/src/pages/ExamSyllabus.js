@@ -142,13 +142,12 @@ const ExamSyllabus = () => {
               <span className="text-[10px] font-medium">5K+</span>
             </div>
           </div>
-          <button 
-            onClick={() => navigate(`/topic-quiz/${examId}/${subjects[0] || 'all'}/random`)}
-            className="bg-white text-slate-800 px-2 py-1 rounded text-[10px] font-bold flex items-center space-x-0.5 shadow-sm"
+          <div 
+            className="bg-white text-slate-800 px-2 py-1 rounded text-[10px] font-bold flex items-center space-x-0.5 shadow-sm cursor-default"
           >
             <span>▶</span>
             <span>Start</span>
-          </button>
+          </div>
         </div>
       </div>
 
