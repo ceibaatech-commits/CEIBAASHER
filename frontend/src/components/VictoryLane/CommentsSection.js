@@ -115,7 +115,7 @@ const CommentsSection = ({
                       <span className="text-xs text-gray-400">
                         {formatTimestamp(comment.created_at)}
                       </span>
-                      {isAuthenticated() && (
+                      {checkAuth() && (
                         <button
                           onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
                           className="text-xs font-semibold text-blue-600 hover:text-blue-700"
