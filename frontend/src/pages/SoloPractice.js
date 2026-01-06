@@ -33,7 +33,8 @@ const SoloPractice = () => {
       classBasedData = {
         class_name: location.state.class_name,
         subject: location.state.subject,
-        chapter: location.state.chapter
+        chapter: location.state.chapter,
+        stream: location.state.stream  // Include stream if available
       };
     } else if (isClassBasedFromUrl) {
       // Extract from URL if state not available
