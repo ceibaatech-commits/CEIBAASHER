@@ -887,7 +887,15 @@ const VictoryLane = () => {
       toast.error('Please enter a comment');
       return;
     }
-    if (!isAuthenticated() || !user) {
+    // Safe check for authentication - handle both function and boolean
+    const checkAuth = () => {
+      if (typeof isAuthenticated === 'function') {
+        return isAuthenticated();
+      }
+      return !!user;
+    };
+    
+    if (!checkAuth() || !user) {
       toast.error('Please login to comment');
       return;
     }
