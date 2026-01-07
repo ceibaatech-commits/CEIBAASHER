@@ -168,6 +168,8 @@ function App() {
           {/* 1v1 Live Battle with video (matchmaking) */}
           <Route path="/live-battle-1v1/:examId/:subject/:topic" element={<LiveBattleMode />} />
         </Routes>
+            </div>
+            <MobileBottomNav />
       </BrowserRouter>
     </div>
       </NotificationProvider>
