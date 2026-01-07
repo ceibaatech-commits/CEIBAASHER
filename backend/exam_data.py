@@ -3808,6 +3808,127 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    "BCOM": {
+        "name": "B.Com (3 Year)",
+        "full_name": "Bachelor of Commerce - 3 Year Degree Program",
+        "description": "Complete 3-year B.Com degree program covering all semesters from 1st Year to 3rd Year with comprehensive commerce and business subjects",
+        "icon": "📊",
+        "color": "from-blue-600 to-indigo-600",
+        "total_questions": 300,
+        "duration": "3 Years",
+        "category": "University & Degree Exams",
+        "syllabus_topics": {
+            "1st Year": {
+                "subjects": {
+                    "Semester I - Principles of Management": {
+                        "sub_topics": ["Introduction to Management", "Planning", "Organizing", "Directing", "Controlling", "Management Theories", "Decision Making"],
+                        "questions": 15
+                    },
+                    "Semester I - Business Communication": {
+                        "sub_topics": ["Business Letters", "Report Writing", "Presentation Skills", "Business Etiquette", "Communication Process", "Barriers to Communication"],
+                        "questions": 15
+                    },
+                    "Semester I - Principles of Financial Accounting": {
+                        "sub_topics": ["Accounting Concepts", "Journal Entries", "Ledger Accounts", "Trial Balance", "Final Accounts", "Depreciation", "Bank Reconciliation"],
+                        "questions": 15
+                    },
+                    "Semester I - Language Paper I": {
+                        "sub_topics": ["Grammar", "Comprehension", "Essay Writing", "Vocabulary", "Translation", "Prose and Poetry"],
+                        "questions": 10
+                    },
+                    "Semester II - Business Law": {
+                        "sub_topics": ["Contract Act", "Sale of Goods Act", "Partnership Act", "Negotiable Instruments Act", "Consumer Protection Act", "Company Law Basics"],
+                        "questions": 15
+                    },
+                    "Semester II - Business Economics": {
+                        "sub_topics": ["Demand Analysis", "Supply Analysis", "Market Structures", "Price Determination", "National Income", "Business Cycles"],
+                        "questions": 15
+                    },
+                    "Semester II - Financial Management": {
+                        "sub_topics": ["Capital Budgeting", "Working Capital Management", "Cost of Capital", "Leverage", "Dividend Policy", "Sources of Finance"],
+                        "questions": 15
+                    },
+                    "Semester II - English Paper I": {
+                        "sub_topics": ["Business English", "Grammar", "Comprehension", "Letter Writing", "Essay Writing", "Vocabulary Building"],
+                        "questions": 10
+                    }
+                }
+            },
+            "2nd Year": {
+                "subjects": {
+                    "Semester III - Corporate Accounting": {
+                        "sub_topics": ["Issue of Shares", "Issue of Debentures", "Redemption of Debentures", "Company Final Accounts", "Amalgamation", "Holding Companies"],
+                        "questions": 15
+                    },
+                    "Semester III - Business Statistics": {
+                        "sub_topics": ["Measures of Central Tendency", "Measures of Dispersion", "Correlation", "Regression", "Index Numbers", "Time Series Analysis"],
+                        "questions": 15
+                    },
+                    "Semester III - Organizational Behaviour": {
+                        "sub_topics": ["Individual Behaviour", "Perception", "Motivation", "Leadership", "Group Dynamics", "Organizational Culture", "Change Management"],
+                        "questions": 15
+                    },
+                    "Semester III - English Paper II": {
+                        "sub_topics": ["Advanced Grammar", "Report Writing", "Précis Writing", "Technical Writing", "Communication Skills", "Presentation"],
+                        "questions": 10
+                    },
+                    "Semester IV - Business Environment": {
+                        "sub_topics": ["Economic Environment", "Political Environment", "Legal Environment", "Technological Environment", "Social Environment", "Globalization"],
+                        "questions": 15
+                    },
+                    "Semester IV - Banking Theory Law & Practice": {
+                        "sub_topics": ["Banking System in India", "RBI Functions", "Commercial Banking", "Negotiable Instruments", "E-Banking", "Banking Regulations"],
+                        "questions": 15
+                    },
+                    "Semester IV - E-Commerce": {
+                        "sub_topics": ["E-Commerce Models", "Electronic Payment Systems", "E-Marketing", "M-Commerce", "Security Issues", "Legal Aspects of E-Commerce"],
+                        "questions": 15
+                    },
+                    "Semester IV - Business Ethics": {
+                        "sub_topics": ["Ethics in Business", "Corporate Governance", "CSR", "Ethical Decision Making", "Business Ethics Theories", "Workplace Ethics"],
+                        "questions": 10
+                    }
+                }
+            },
+            "3rd Year": {
+                "subjects": {
+                    "Semester V - Cost Accounting": {
+                        "sub_topics": ["Cost Classification", "Material Costing", "Labour Costing", "Overhead Costing", "Process Costing", "Standard Costing", "Marginal Costing"],
+                        "questions": 15
+                    },
+                    "Semester V - Management Accounting": {
+                        "sub_topics": ["Ratio Analysis", "Fund Flow Statement", "Cash Flow Statement", "Budget and Budgetary Control", "Variance Analysis", "Break-Even Analysis"],
+                        "questions": 15
+                    },
+                    "Semester V - Auditing": {
+                        "sub_topics": ["Audit Process", "Internal Control", "Vouching", "Verification of Assets", "Company Audit", "Audit Report", "Tax Audit"],
+                        "questions": 15
+                    },
+                    "Semester V - Entrepreneurship Development": {
+                        "sub_topics": ["Entrepreneurship Concepts", "Business Plan", "Sources of Finance", "Government Schemes", "MSME", "Startup Ecosystem", "Innovation"],
+                        "questions": 10
+                    },
+                    "Semester VI - Human Resource Management": {
+                        "sub_topics": ["HRM Functions", "Recruitment and Selection", "Training and Development", "Performance Appraisal", "Compensation Management", "Employee Relations"],
+                        "questions": 15
+                    },
+                    "Semester VI - Production and Materials Management": {
+                        "sub_topics": ["Production Planning", "Inventory Management", "Quality Control", "Supply Chain Management", "Materials Handling", "JIT and TQM"],
+                        "questions": 15
+                    },
+                    "Semester VI - Accounting for Management Decisions": {
+                        "sub_topics": ["Decision Making", "Make or Buy Decisions", "Pricing Decisions", "Capital Investment Decisions", "Performance Evaluation", "Strategic Cost Management"],
+                        "questions": 15
+                    },
+                    "Semester VI - Elements of Marketing": {
+                        "sub_topics": ["Marketing Concepts", "Marketing Mix", "Product Management", "Pricing Strategies", "Distribution Channels", "Promotion Mix", "Consumer Behaviour"],
+                        "questions": 15
+                    }
+                }
+            }
+        }
     }
 
 }
