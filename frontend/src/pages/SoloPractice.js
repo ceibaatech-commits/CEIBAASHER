@@ -315,6 +315,7 @@ const SoloPractice = () => {
             </button>
           </div>
         </div>
+        </div>
       </div>
     );
   }
