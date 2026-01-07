@@ -137,7 +137,7 @@ const Home = () => {
         medical: { ids: ['NEET'], categories: ['Medical Entrance', 'Medical'] },
         defence: { ids: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'], categories: ['Defence', 'Defence Examinations'] },
         banking: { ids: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'], categories: ['Banking Examinations', 'Banking'] },
-        university: { ids: ['LLB'], categories: ['University & Degree Exams', 'University & Degree'] },
+        university: { ids: ['LLB', 'BCOM'], categories: ['University & Degree Exams', 'University & Degree'] },
         teaching: { ids: ['CTET', 'UGC_NET'], categories: ['Teaching Examinations', 'Teaching'] },
         ssc: { ids: ['SSC_CGL', 'SSC_CHSL'], categories: ['SSC Examinations'] },
         upsc: { ids: ['UPSC'], categories: ['UPSC Examinations'] },
