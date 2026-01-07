@@ -585,7 +585,15 @@ const SoloPractice = () => {
   // Setup screen - select number of questions
   if (quizState === 'setup') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-4 md:py-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+        <Header 
+          isLoggedIn={isUserAuthenticated}
+          user={user}
+          onLogout={() => {
+            // Handle logout if needed
+          }}
+        />
+        <div className="py-4 md:py-8">
         <div className="max-w-4xl mx-auto px-4">
           {/* Animated Header Card */}
           <div className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 mb-4 md:mb-6 overflow-hidden">
