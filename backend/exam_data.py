@@ -3543,6 +3543,271 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # UNIVERSITY & DEGREE EXAMS
+    # ═══════════════════════════════════════════════════════════════════════════
+    
+    "LLB": {
+        "name": "LLB (5 Year)",
+        "full_name": "Bachelor of Legislative Law - 5 Year Integrated Program",
+        "description": "Complete 5-year LLB integrated program covering all semesters from 1st Year to 5th Year with comprehensive law subjects",
+        "icon": "⚖️",
+        "color": "from-amber-600 to-yellow-600",
+        "total_questions": 500,
+        "duration": "5 Years",
+        "category": "University & Degree Exams",
+        "syllabus_topics": {
+            "1st Year": {
+                "subjects": {
+                    "Semester I - Legal Method": {
+                        "sub_topics": ["Introduction to Law", "Sources of Law", "Legal Systems", "Principles of Legal Reasoning", "Legal Research Methods"],
+                        "questions": 15
+                    },
+                    "Semester I - Law of Contract I": {
+                        "sub_topics": ["Formation of Contract", "Offer and Acceptance", "Consideration", "Capacity to Contract", "Free Consent"],
+                        "questions": 15
+                    },
+                    "Semester I - English I": {
+                        "sub_topics": ["Legal Terminology", "Language Skills", "Law and Literature", "Legal Writing", "Communication Skills"],
+                        "questions": 10
+                    },
+                    "Semester I - History I": {
+                        "sub_topics": ["Ancient India", "Medieval India", "Mughal Period", "Early Legal Systems", "Evolution of Indian Law"],
+                        "questions": 10
+                    },
+                    "Semester I - Sociology I": {
+                        "sub_topics": ["Introduction to Sociology", "Society and Culture", "Social Institutions", "Social Groups", "Social Stratification"],
+                        "questions": 10
+                    },
+                    "Semester I - Political Science I": {
+                        "sub_topics": ["Political Theory", "State and Sovereignty", "Democracy", "Political Ideologies", "Indian Political System"],
+                        "questions": 10
+                    },
+                    "Semester I - Economics I": {
+                        "sub_topics": ["Microeconomics", "Demand and Supply", "Market Structures", "Price Theory", "Consumer Behavior"],
+                        "questions": 10
+                    },
+                    "Semester II - Law of Contract II": {
+                        "sub_topics": ["Performance of Contract", "Breach of Contract", "Quasi Contracts", "Indemnity and Guarantee", "Bailment and Pledge"],
+                        "questions": 15
+                    },
+                    "Semester II - Law of Torts": {
+                        "sub_topics": ["Nature of Torts", "Negligence", "Defamation", "Nuisance", "Consumer Protection Act"],
+                        "questions": 15
+                    },
+                    "Semester II - Constitutional Law I": {
+                        "sub_topics": ["Preamble", "Fundamental Rights", "Directive Principles", "Fundamental Duties", "Constitutional Framework"],
+                        "questions": 15
+                    },
+                    "Semester II - Legal History": {
+                        "sub_topics": ["Evolution of Indian Legal System", "British Legal Reforms", "Personal Laws", "Codification of Laws", "Legal Landmarks"],
+                        "questions": 10
+                    },
+                    "Semester II - Sociology II": {
+                        "sub_topics": ["Indian Society", "Caste System", "Family and Marriage", "Religion in India", "Social Change"],
+                        "questions": 10
+                    },
+                    "Semester II - English II": {
+                        "sub_topics": ["Advanced Legal Writing", "Legal Drafting Basics", "Communication in Law", "Legal English", "Presentation Skills"],
+                        "questions": 10
+                    },
+                    "Semester II - Legal Research & Moot Court": {
+                        "sub_topics": ["Research Methodology", "Case Analysis", "Moot Court Procedure", "Legal Documentation", "Argumentation"],
+                        "questions": 10
+                    }
+                }
+            },
+            "2nd Year": {
+                "subjects": {
+                    "Semester III - Family Law I": {
+                        "sub_topics": ["Hindu Marriage Act", "Hindu Succession Act", "Guardianship", "Adoption", "Maintenance"],
+                        "questions": 15
+                    },
+                    "Semester III - Law of Crimes I (IPC)": {
+                        "sub_topics": ["General Principles of IPC", "Offences Against State", "Offences Against Human Body", "Kidnapping & Abduction", "Criminal Conspiracy"],
+                        "questions": 15
+                    },
+                    "Semester III - Constitutional Law II": {
+                        "sub_topics": ["Union Executive", "Parliament", "Judiciary", "Centre-State Relations", "Emergency Provisions"],
+                        "questions": 15
+                    },
+                    "Semester III - History II": {
+                        "sub_topics": ["Indian National Movement", "Freedom Struggle", "Constitutional Development", "Post-Independence India", "Modern Indian History"],
+                        "questions": 10
+                    },
+                    "Semester III - Economics II": {
+                        "sub_topics": ["Macroeconomics", "National Income", "Money and Banking", "Fiscal Policy", "Monetary Policy"],
+                        "questions": 10
+                    },
+                    "Semester III - Political Science II": {
+                        "sub_topics": ["Indian Constitution", "Federalism", "Electoral System", "Political Parties", "Pressure Groups"],
+                        "questions": 10
+                    },
+                    "Semester IV - Family Law II": {
+                        "sub_topics": ["Muslim Personal Law", "Christian Law", "Parsi Law", "Special Marriage Act", "Uniform Civil Code"],
+                        "questions": 15
+                    },
+                    "Semester IV - Law of Crimes II": {
+                        "sub_topics": ["Offences Against Property", "Cheating", "Forgery", "Criminal Breach of Trust", "Defences"],
+                        "questions": 15
+                    },
+                    "Semester IV - Administrative Law": {
+                        "sub_topics": ["Nature of Administrative Law", "Delegated Legislation", "Administrative Tribunals", "Judicial Review", "Natural Justice"],
+                        "questions": 15
+                    },
+                    "Semester IV - History III": {
+                        "sub_topics": ["Modern Europe", "World Wars", "International Relations", "UN and International Organizations", "Contemporary History"],
+                        "questions": 10
+                    },
+                    "Semester IV - Economics III": {
+                        "sub_topics": ["Economic Development", "Planning in India", "Industrial Policy", "Agricultural Economics", "International Trade"],
+                        "questions": 10
+                    },
+                    "Semester IV - Political Science III": {
+                        "sub_topics": ["International Relations", "Foreign Policy", "International Organizations", "Global Issues", "Diplomacy"],
+                        "questions": 10
+                    }
+                }
+            },
+            "3rd Year": {
+                "subjects": {
+                    "Semester V - Environmental Laws": {
+                        "sub_topics": ["Environmental Protection Act", "Wildlife Protection", "Water & Air Pollution Acts", "Forest Conservation", "Environmental Impact Assessment"],
+                        "questions": 15
+                    },
+                    "Semester V - Code of Civil Procedure I": {
+                        "sub_topics": ["Jurisdiction", "Res Judicata", "Place of Suing", "Parties to Suit", "Pleadings"],
+                        "questions": 15
+                    },
+                    "Semester V - Code of Criminal Procedure I": {
+                        "sub_topics": ["FIR and Investigation", "Arrest and Bail", "Search and Seizure", "Cognizable Offences", "Magistrate Powers"],
+                        "questions": 15
+                    },
+                    "Semester V - Human Rights Law": {
+                        "sub_topics": ["UDHR", "ICCPR", "ICESCR", "NHRC", "Human Rights Protection"],
+                        "questions": 10
+                    },
+                    "Semester V - ADR": {
+                        "sub_topics": ["Arbitration Act", "Conciliation", "Mediation", "Lok Adalat", "Alternative Dispute Resolution Mechanisms"],
+                        "questions": 10
+                    },
+                    "Semester V - Sociology III": {
+                        "sub_topics": ["Law and Deviance", "Crime and Society", "Social Control", "Juvenile Justice", "Criminology Basics"],
+                        "questions": 10
+                    },
+                    "Semester VI - Jurisprudence": {
+                        "sub_topics": ["Schools of Law", "Nature of Law", "Sources of Law", "Rights and Duties", "Legal Concepts"],
+                        "questions": 15
+                    },
+                    "Semester VI - Law of Evidence": {
+                        "sub_topics": ["Relevancy of Facts", "Burden of Proof", "Witnesses", "Documentary Evidence", "Examination of Witnesses"],
+                        "questions": 15
+                    },
+                    "Semester VI - Code of Criminal Procedure II": {
+                        "sub_topics": ["Trial Procedure", "Charge Framing", "Acquittal and Conviction", "Appeals and Revision", "Execution of Sentences"],
+                        "questions": 15
+                    },
+                    "Semester VI - Property Law": {
+                        "sub_topics": ["Transfer of Property Act", "Sale and Mortgage", "Lease and License", "Gift and Exchange", "Easements"],
+                        "questions": 15
+                    },
+                    "Semester VI - Code of Civil Procedure II": {
+                        "sub_topics": ["Suits", "Judgment and Decree", "Appeals", "Review and Revision", "Execution of Decrees"],
+                        "questions": 15
+                    },
+                    "Semester VI - Public International Law": {
+                        "sub_topics": ["Sources of International Law", "Treaties", "State Responsibility", "International Disputes", "Law of Sea"],
+                        "questions": 10
+                    }
+                }
+            },
+            "4th Year": {
+                "subjects": {
+                    "Semester VII - Labour Law I": {
+                        "sub_topics": ["Industrial Disputes Act", "Trade Unions Act", "Factories Act", "Minimum Wages Act", "Payment of Wages Act"],
+                        "questions": 15
+                    },
+                    "Semester VII - Competition Law": {
+                        "sub_topics": ["Competition Act 2002", "Anti-Competitive Agreements", "Abuse of Dominance", "Combinations", "Competition Commission"],
+                        "questions": 15
+                    },
+                    "Semester VII - Company Law": {
+                        "sub_topics": ["Incorporation", "Memorandum & Articles", "Directors", "Meetings", "Winding Up"],
+                        "questions": 15
+                    },
+                    "Semester VII - Law & Emerging Technology": {
+                        "sub_topics": ["IT Act 2000", "Cyber Crimes", "E-Commerce Law", "Data Protection", "Digital Signatures"],
+                        "questions": 10
+                    },
+                    "Semester VII - Intellectual Property Rights I": {
+                        "sub_topics": ["Patents Act", "Copyright Act", "Trade Marks Act", "Design Act", "IP Protection"],
+                        "questions": 15
+                    },
+                    "Semester VII - Election Law": {
+                        "sub_topics": ["Representation of People Act", "Electoral Process", "Election Commission", "Electoral Offences", "Election Petitions"],
+                        "questions": 10
+                    },
+                    "Semester VIII - Intellectual Property Rights II": {
+                        "sub_topics": ["International IP Treaties", "TRIPS Agreement", "IP Enforcement", "Geographical Indications", "Plant Varieties"],
+                        "questions": 15
+                    },
+                    "Semester VIII - Interpretation of Statutes": {
+                        "sub_topics": ["Rules of Interpretation", "Internal Aids", "External Aids", "Presumptions", "Maxims of Interpretation"],
+                        "questions": 15
+                    },
+                    "Semester VIII - Labour Law II": {
+                        "sub_topics": ["Employees Compensation Act", "ESI Act", "EPF Act", "Maternity Benefit Act", "Contract Labour Act"],
+                        "questions": 15
+                    },
+                    "Semester VIII - International Trade Law": {
+                        "sub_topics": ["WTO", "GATT", "Trade Remedies", "Customs Law", "Foreign Trade Policy"],
+                        "questions": 10
+                    },
+                    "Semester VIII - Income Tax Law": {
+                        "sub_topics": ["Residential Status", "Heads of Income", "Deductions", "Assessment", "Tax Planning"],
+                        "questions": 15
+                    },
+                    "Semester VIII - Criminology": {
+                        "sub_topics": ["Theories of Crime", "Types of Criminals", "Penology", "Victimology", "Prison Reforms"],
+                        "questions": 10
+                    }
+                }
+            },
+            "5th Year": {
+                "subjects": {
+                    "Semester IX - Legal Ethics & Court Craft": {
+                        "sub_topics": ["Professional Ethics", "Bar Council Rules", "Advocate's Duties", "Court Etiquette", "Client Relationship"],
+                        "questions": 15
+                    },
+                    "Semester IX - Drafting, Pleading & Conveyancing": {
+                        "sub_topics": ["Civil Drafting", "Criminal Drafting", "Conveyancing", "Legal Documents", "Petitions and Applications"],
+                        "questions": 15
+                    },
+                    "Semester IX - Land and Real Estate Laws": {
+                        "sub_topics": ["Land Acquisition Act", "RERA", "Stamp Act", "Registration Act", "Tenancy Laws"],
+                        "questions": 15
+                    },
+                    "Semester IX - Banking and Insurance Law": {
+                        "sub_topics": ["Banking Regulation Act", "Negotiable Instruments Act", "Insurance Act", "SARFAESI Act", "Banking Ombudsman"],
+                        "questions": 10
+                    },
+                    "Semester IX - Media and Entertainment Law": {
+                        "sub_topics": ["Press Laws", "Broadcasting Laws", "Cinematograph Act", "Censorship", "Media Ethics"],
+                        "questions": 10
+                    },
+                    "Semester X - Dissertation": {
+                        "sub_topics": ["Research Topic Selection", "Literature Review", "Research Methodology", "Data Analysis", "Thesis Writing"],
+                        "questions": 10
+                    },
+                    "Semester X - Internship": {
+                        "sub_topics": ["Law Firm Practice", "Court Experience", "Legal Aid", "Corporate Legal Department", "Practical Training"],
+                        "questions": 10
+                    }
+                }
+            }
+        }
     }
 
 }
