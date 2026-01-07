@@ -28,28 +28,28 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   // Lock body scroll when mobile menu is open (stronger approach for mobile)
   React.useEffect(() => {
     if (mobileMenuOpen) {
-      // Lock body scroll
+      // Lock body scroll but allow menu scrolling
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      // Prevent touch move on mobile
-      document.body.style.touchAction = 'none';
+      document.body.style.top = `-${window.scrollY}px`;
     } else {
-      // Restore scroll
+      // Restore scroll position
+      const scrollY = document.body.style.top;
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
-      document.body.style.height = '';
-      document.body.style.touchAction = '';
+      document.body.style.top = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      }
     }
     return () => {
       // Cleanup
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
-      document.body.style.height = '';
-      document.body.style.touchAction = '';
+      document.body.style.top = '';
     };
   }, [mobileMenuOpen]);
 
