@@ -725,6 +725,7 @@ const SoloPractice = () => {
             </div>
           </div>
         </div>
+        </div>
       </div>
     );
   }
