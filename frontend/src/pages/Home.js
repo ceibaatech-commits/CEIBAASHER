@@ -187,7 +187,7 @@ const Home = () => {
   const activeCateg = categories.find(c => c.id === activeCategory);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 pb-20 md:pb-0">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 pb-0 md:pb-0">
       {/* SEO Component for Home Page */}
       <SEO 
         title="Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for JEE, NEET, UPSC, SSC & 38+ Competitive Exams"
