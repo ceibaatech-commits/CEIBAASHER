@@ -562,53 +562,53 @@ const Home = () => {
       </div>
 
       {/* New Section: Unlocking Exam Potential - Optimized */}
-      <section className="py-16 bg-gradient-to-b from-white via-indigo-50/30 to-white relative overflow-hidden">
+      <section className="py-8 md:py-16 bg-gradient-to-b from-white via-indigo-50/30 to-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header */}
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black mb-3 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent leading-tight">
+          <div className="text-center mb-6 md:mb-12">
+            <h2 className="text-2xl md:text-5xl font-black mb-2 md:mb-3 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent leading-tight">
               UNLOCKING YOUR EXAM POTENTIAL
             </h2>
-            <p className="text-lg md:text-xl text-gray-600 font-medium">
+            <p className="text-sm md:text-xl text-gray-600 font-medium">
               Preparing global learners for competitive success
             </p>
           </div>
 
           {/* Three Feature Cards - Optimized */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-6xl mx-auto">
             {/* Card 1: Real-Time Mock Tests */}
             <div className="group transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/board')}>
-              <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
+              <div className="relative bg-white rounded-2xl md:rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 {/* Gradient Accent Bar */}
-                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-500"></div>
+                <div className="absolute top-0 left-0 right-0 h-1.5 md:h-2 bg-gradient-to-r from-green-400 via-emerald-400 to-green-500"></div>
                 
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">
+                  <h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 md:mb-3 text-center">
                     Real-Time Mock Tests
                   </h3>
                   
                   {/* Character - Optimized */}
-                  <div className="flex items-center justify-center my-6">
+                  <div className="flex items-center justify-center my-3 md:my-6">
                     <img 
                       src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/dyz1aut8_Gemini_Generated_Image_pzpy3hpzpy3hpzpy_2-removebg-preview.png"
                       alt="Real-Time Mock Tests"
-                      className="w-48 h-48 object-contain"
+                      className="w-28 h-28 md:w-48 md:h-48 object-contain"
                       loading="lazy"
                       decoding="async"
                     />
                   </div>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-center leading-relaxed">
+                  <p className="text-gray-600 text-center leading-relaxed text-xs md:text-base">
                     Experience authentic exam simulations with timed sections, just like the real thing.
                   </p>
                   
                   {/* Icon Badge */}
-                  <div className="mt-4 flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-full">
-                      <Clock className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">Timed Practice</span>
+                  <div className="mt-3 md:mt-4 flex justify-center">
+                    <div className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-full">
+                      <Clock className="w-3 h-3 md:w-4 md:h-4 text-green-600" />
+                      <span className="text-xs md:text-sm font-semibold text-green-700">Timed Practice</span>
                     </div>
                   </div>
                 </div>
@@ -617,37 +617,37 @@ const Home = () => {
 
             {/* Card 2: Personalized Practice Plans */}
             <div className="group transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/board')}>
-              <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
+              <div className="relative bg-white rounded-2xl md:rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 {/* Gradient Accent Bar */}
-                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-500"></div>
+                <div className="absolute top-0 left-0 right-0 h-1.5 md:h-2 bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-500"></div>
                 
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">
+                  <h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 md:mb-3 text-center">
                     Personalized Plans
                   </h3>
                   
                   {/* Character - Optimized */}
-                  <div className="flex items-center justify-center my-6">
+                  <div className="flex items-center justify-center my-3 md:my-6">
                     <img 
                       src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/vi47czpu_Gemini_Generated_Image_fduhiefduhiefduh_2-removebg-preview.png"
                       alt="Personalized Practice Plans"
-                      className="w-48 h-48 object-contain"
+                      className="w-28 h-28 md:w-48 md:h-48 object-contain"
                       loading="lazy"
                       decoding="async"
                     />
                   </div>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-center leading-relaxed">
+                  <p className="text-gray-600 text-center leading-relaxed text-xs md:text-base">
                     Get custom study schedules and recommended tests based on your performance.
                   </p>
                   
                   {/* Icon Badge */}
-                  <div className="mt-4 flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-full">
-                      <BookOpen className="w-4 h-4 text-purple-600" />
-                      <span className="text-sm font-semibold text-purple-700">Smart Study</span>
+                  <div className="mt-3 md:mt-4 flex justify-center">
+                    <div className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-full">
+                      <BookOpen className="w-3 h-3 md:w-4 md:h-4 text-purple-600" />
+                      <span className="text-xs md:text-sm font-semibold text-purple-700">Smart Study</span>
                     </div>
                   </div>
                 </div>
@@ -656,22 +656,22 @@ const Home = () => {
 
             {/* Card 3: In-Depth Performance Analytics */}
             <div className="group transform transition-transform duration-300 hover:scale-105 cursor-pointer" onClick={() => navigate('/board')}>
-              <div className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
+              <div className="relative bg-white rounded-2xl md:rounded-3xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden border border-gray-100">
                 {/* Gradient Accent Bar */}
-                <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-500"></div>
+                <div className="absolute top-0 left-0 right-0 h-1.5 md:h-2 bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-500"></div>
                 
-                <div className="p-8">
+                <div className="p-4 md:p-8">
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3 text-center">
+                  <h3 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 md:mb-3 text-center">
                     Performance Analytics
                   </h3>
                   
                   {/* Character - Optimized */}
-                  <div className="flex items-center justify-center my-6">
+                  <div className="flex items-center justify-center my-3 md:my-6">
                     <img 
                       src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/zn7jiygr_Gemini_Generated_Image_jj536ojj536ojj53_2-removebg-preview.png"
                       alt="Performance Analytics"
-                      className="w-48 h-48 object-contain"
+                      className="w-28 h-28 md:w-48 md:h-48 object-contain"
                       loading="lazy"
                       decoding="async"
                     />
