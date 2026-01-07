@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, CheckCircle, XCircle, Trophy, HelpCircle, CheckCircle
 import axios from 'axios';
 import MathText from '../components/MathText';
 import PassageQuizLayout from '../components/PassageQuizLayout';
+import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
