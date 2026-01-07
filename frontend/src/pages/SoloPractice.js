@@ -584,10 +584,10 @@ const SoloPractice = () => {
   // Setup screen - select number of questions
   if (quizState === 'setup') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-4 md:py-8">
         <div className="max-w-4xl mx-auto px-4">
           {/* Animated Header Card */}
-          <div className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 rounded-3xl shadow-2xl p-6 mb-6 overflow-hidden">
+          <div className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-6 mb-4 md:mb-6 overflow-hidden">
             {/* Animated background pattern */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/10 rounded-full -mr-20 -mt-20 animate-pulse"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/10 rounded-full -ml-16 -mb-16 animate-pulse delay-300"></div>
@@ -610,41 +610,41 @@ const SoloPractice = () => {
                   navigate(`/exam/${exam}`);
                 }
               }}
-              className="relative flex items-center text-white/90 hover:text-white mb-4 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl transition-all hover:bg-white/20"
+              className="relative flex items-center text-white/90 hover:text-white mb-3 md:mb-4 bg-white/10 backdrop-blur-sm px-3 py-1.5 md:px-4 md:py-2 rounded-xl transition-all hover:bg-white/20"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              <span className="font-semibold">Back to Chapters</span>
+              <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              <span className="font-semibold text-sm md:text-base">Back to Chapters</span>
             </button>
 
-            <div className="relative text-center mb-2">
-              <div className="inline-block bg-white/20 backdrop-blur-md rounded-full px-6 py-2 mb-4">
-                <p className="text-white/90 text-sm font-medium">
+            <div className="relative text-center mb-1 md:mb-2">
+              <div className="inline-block bg-white/20 backdrop-blur-md rounded-full px-4 py-1.5 md:px-6 md:py-2 mb-2 md:mb-4">
+                <p className="text-white/90 text-xs md:text-sm font-medium">
                   {isClassBased ? `${classBasedData.class_name} • ${classBasedData.subject}` : `${exam} • ${subject}`}
                 </p>
               </div>
-              <h1 className="text-3xl md:text-4xl font-black text-white mb-2 drop-shadow-lg">
+              <h1 className="text-2xl md:text-4xl font-black text-white mb-1 md:mb-2 drop-shadow-lg">
                 🎯 Setup Your Quiz
               </h1>
-              <p className="text-white/90 text-base font-medium">
+              <p className="text-white/90 text-sm md:text-base font-medium">
                 {isClassBased ? classBasedData.chapter : `${topic || ''} ${subTopic || ''}`}
               </p>
             </div>
           </div>
 
           {/* Questions Selection Card */}
-          <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="bg-slate-800 rounded-2xl p-3 shadow-lg">
-                <HelpCircle className="w-6 h-6 text-amber-400" />
+          <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-4 md:mb-6">
+            <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-5">
+              <div className="bg-slate-800 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-lg">
+                <HelpCircle className="w-5 h-5 md:w-6 md:h-6 text-amber-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Number of Questions</h2>
-                <p className="text-sm text-gray-500">Choose how many questions you want</p>
+                <h2 className="text-lg md:text-xl font-bold text-gray-900">Number of Questions</h2>
+                <p className="text-xs md:text-sm text-gray-500">Choose how many questions you want</p>
               </div>
             </div>
 
             {/* Question count buttons with emojis */}
-            <div className="grid grid-cols-5 gap-2 mb-5">
+            <div className="grid grid-cols-5 gap-1.5 md:gap-2 mb-4 md:mb-5">
               {[
                 { num: 10, emoji: '🔥', color: 'from-rose-600 to-orange-600' },
                 { num: 20, emoji: '⚡', color: 'from-amber-500 to-yellow-600' },
@@ -655,20 +655,20 @@ const SoloPractice = () => {
                 <button
                   key={num}
                   onClick={() => setNumberOfQuestions(num)}
-                  className={`relative py-4 rounded-2xl font-bold text-lg transition-all transform active:scale-95 ${
+                  className={`relative py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all transform active:scale-95 ${
                     numberOfQuestions === num
-                      ? `bg-gradient-to-br ${color} text-white shadow-xl scale-110`
+                      ? `bg-gradient-to-br ${color} text-white shadow-xl scale-105 md:scale-110`
                       : 'bg-white text-gray-700 hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="text-2xl mb-1">{emoji}</div>
-                  <div className="text-sm font-black">{num}</div>
+                  <div className="text-xl md:text-2xl mb-0.5 md:mb-1">{emoji}</div>
+                  <div className="text-xs md:text-sm font-black">{num}</div>
                 </button>
               ))}
             </div>
 
             {/* Animated slider */}
-            <div className="relative mb-4">
+            <div className="relative mb-3 md:mb-4">
               <input
                 type="range"
                 min="10"
@@ -676,7 +676,7 @@ const SoloPractice = () => {
                 step="10"
                 value={numberOfQuestions}
                 onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
-                className="w-full h-3 rounded-full appearance-none cursor-pointer slider-thumb"
+                className="w-full h-2 md:h-3 rounded-full appearance-none cursor-pointer slider-thumb"
                 style={{
                   background: `linear-gradient(to right, rgb(15 23 42) 0%, rgb(15 23 42) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) ${((numberOfQuestions - 10) / 90) * 100}%, rgb(229 231 235) 100%)`
                 }}
@@ -685,9 +685,9 @@ const SoloPractice = () => {
 
             {/* Current selection display */}
             <div className="text-center">
-              <div className="inline-flex items-center gap-3 bg-amber-50 border-2 border-amber-200 rounded-2xl px-6 py-3">
-                <CheckCircle2 className="w-6 h-6 text-amber-600" />
-                <span className="text-2xl font-black text-slate-800">
+              <div className="inline-flex items-center gap-2 md:gap-3 bg-amber-50 border-2 border-amber-200 rounded-xl md:rounded-2xl px-4 py-2 md:px-6 md:py-3">
+                <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-amber-600" />
+                <span className="text-lg md:text-2xl font-black text-slate-800">
                   {numberOfQuestions} Questions Selected
                 </span>
               </div>
@@ -697,7 +697,7 @@ const SoloPractice = () => {
           {/* Start Quiz Button */}
           <button
             onClick={startQuiz}
-            className="w-full bg-slate-800 hover:bg-slate-900 text-white py-5 rounded-2xl font-black text-xl shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3 mb-6"
+            className="w-full bg-slate-800 hover:bg-slate-900 text-white py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-lg md:text-xl shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center space-x-3 mb-4 md:mb-6"
           >
             <Trophy className="w-7 h-7 text-amber-400" />
             <span>Start Quiz Now 🚀</span>
