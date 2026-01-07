@@ -276,7 +276,8 @@ const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
         {mobileMenuOpen && (
           <div 
             ref={mobileMenuRef}
-            className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto"
+            className="md:hidden fixed inset-x-0 top-16 bg-white shadow-2xl z-50 border-t border-gray-200 max-h-[calc(100vh-64px)] overflow-y-auto overscroll-contain"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {/* Mobile User Profile Section - Clickable to My Board */}
             {isLoggedIn && user && (
