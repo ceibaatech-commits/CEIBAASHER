@@ -8,65 +8,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-gradient-to-r from-gray-900 via-slate-900 to-black text-white mt-auto border-t border-white/10">
-      {/* Mobile Footer - Simple Version */}
-      <div className="md:hidden py-6 px-4">
-        <div className="flex flex-col items-center space-y-4">
-          {/* Social Media Icons */}
-          <div className="flex space-x-4">
-            <a 
-              href="https://www.instagram.com/ceibaaapp/" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 rounded-full flex items-center justify-center shadow-lg"
-            >
-              <Instagram className="w-5 h-5 text-white" />
-            </a>
-            <a 
-              href="https://x.com/Ceibaaapp" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-black rounded-full flex items-center justify-center shadow-lg border border-gray-700"
-            >
-              <FaXTwitter className="w-5 h-5 text-white" />
-            </a>
-            <a 
-              href="https://www.linkedin.com/company/ceibaa/" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shadow-lg"
-            >
-              <Linkedin className="w-5 h-5 text-white" />
-            </a>
-            <a 
-              href="https://www.youtube.com/@Ceibaa" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center shadow-lg"
-            >
-              <Youtube className="w-5 h-5 text-white" />
-            </a>
-          </div>
-
-          {/* Made with love */}
-          <p className="text-gray-400 text-sm">
-            Made with <span className="text-red-500">❤️</span> in India
-          </p>
-
-          {/* Copyright */}
-          <p className="text-gray-500 text-xs">
-            © 2025 Ceibaa. All rights reserved
-          </p>
-
-          {/* Policy Links */}
-          <div className="flex items-center space-x-2 text-xs text-gray-400">
-            <button onClick={() => navigate('/privacy')} className="hover:text-white transition-colors">Privacy Policy</button>
-            <span>|</span>
-            <button onClick={() => navigate('/terms')} className="hover:text-white transition-colors">Terms of Service</button>
-            <span>|</span>
-            <a href="#" className="hover:text-white transition-colors">Refund Policy</a>
-          </div>
-        </div>
-      </div>
+      {/* Mobile Footer - Hidden, replaced by MobileBottomNav */}
+      {/* No footer content on mobile - using app-style bottom navigation instead */}
 
       {/* Desktop Footer - Full Version */}
       <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
