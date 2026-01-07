@@ -260,7 +260,13 @@ const SoloPractice = () => {
 
   if (!isUserAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Header 
+          isLoggedIn={false}
+          user={null}
+          onLogout={() => {}}
+        />
+        <div className="flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 64px)' }}>
         <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-white" />
