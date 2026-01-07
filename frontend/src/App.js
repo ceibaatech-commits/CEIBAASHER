@@ -68,6 +68,9 @@ import ChapterTestChapters from "@/pages/ChapterTestChapters";
 // Single Post View
 import SinglePost from "@/pages/SinglePost";
 
+// Mobile Bottom Navigation
+import MobileBottomNav from "@/components/MobileBottomNav";
+
 function App() {
   return (
     <AuthProvider>
@@ -75,6 +78,7 @@ function App() {
         <div className="App" style={{ paddingTop: '64px' }}>
           <BrowserRouter>
             <ScrollRestoration />
+            <div className="pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
             <Routes>
               <Route path="/" element={<Home />} />
             <Route path="/exam/:examId" element={<ModernExamSyllabus />} />
