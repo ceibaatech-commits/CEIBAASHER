@@ -678,15 +678,15 @@ const Home = () => {
                   </div>
                   
                   {/* Description */}
-                  <p className="text-gray-600 text-center leading-relaxed">
+                  <p className="text-gray-600 text-center leading-relaxed text-xs md:text-base">
                     Track your progress with detailed reports, identify strengths and weaknesses.
                   </p>
                   
                   {/* Icon Badge */}
-                  <div className="mt-4 flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-full">
-                      <TrendingUp className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-semibold text-blue-700">Track Growth</span>
+                  <div className="mt-3 md:mt-4 flex justify-center">
+                    <div className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-full">
+                      <TrendingUp className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
+                      <span className="text-xs md:text-sm font-semibold text-blue-700">Track Growth</span>
                     </div>
                   </div>
                 </div>
@@ -697,7 +697,7 @@ const Home = () => {
       </section>
 
       {/* Professional Courses Card - Mobile Only */}
-      <section className="md:hidden max-w-7xl mx-auto px-4 py-8">
+      <section className="md:hidden max-w-7xl mx-auto px-4 py-4">
         {/* Single Professional Courses Card */}
         <motion.div
           whileTap={{ scale: 0.98 }}
