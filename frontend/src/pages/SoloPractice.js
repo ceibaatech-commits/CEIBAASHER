@@ -382,7 +382,13 @@ const SoloPractice = () => {
     };
 
     return (
-      <div className="min-h-screen bg-gray-50 py-4 md:py-8">
+      <div className="min-h-screen bg-gray-50">
+        <Header 
+          isLoggedIn={isUserAuthenticated}
+          user={user}
+          onLogout={() => {}}
+        />
+        <div className="py-4 md:py-8">
         <div className="max-w-3xl mx-auto px-4">
           {/* Back Button */}
           <button
