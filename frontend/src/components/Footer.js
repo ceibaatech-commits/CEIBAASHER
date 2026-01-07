@@ -7,12 +7,9 @@ const Footer = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="bg-gradient-to-r from-gray-900 via-slate-900 to-black text-white mt-auto border-t border-white/10">
-      {/* Mobile Footer - Hidden, replaced by MobileBottomNav */}
-      {/* No footer content on mobile - using app-style bottom navigation instead */}
-
+    <footer className="hidden md:block bg-gradient-to-r from-gray-900 via-slate-900 to-black text-white mt-auto border-t border-white/10">
       {/* Desktop Footer - Full Version */}
-      <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
