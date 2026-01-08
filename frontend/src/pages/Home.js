@@ -98,14 +98,14 @@ const Home = () => {
     { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600' },
     { id: 'defence', label: 'Defence', icon: '🎖️', color: 'from-green-700 to-emerald-700' },
     { id: 'banking', label: 'Banking', icon: '🏦', color: 'from-rose-600 to-red-600' },
-    { id: 'university', label: 'University & Degree', icon: '🎓', color: 'from-amber-600 to-yellow-600' },
+    { id: 'university', label: 'University & Degree', icon: '🎓', color: 'from-amber-600 to-yellow-600', image: 'https://customer-assets.emergentagent.com/job_quizmaster-299/artifacts/ndexgxo7_image.png' },
     { id: 'teaching', label: 'Teaching Examinations', icon: '👨‍🏫', color: 'from-blue-600 to-indigo-600' },
     { id: 'ssc', label: 'SSC Examinations', icon: '📝', color: 'from-cyan-600 to-blue-600' },
     { id: 'upsc', label: 'UPSC Examinations', icon: '🏛️', color: 'from-purple-600 to-pink-600' },
     { id: 'uppsc', label: 'UPPSC', icon: '🏢', color: 'from-orange-600 to-red-600' },
     { id: 'csbc', label: 'CSBC', icon: '🚔', color: 'from-red-600 to-pink-600' },
     { id: 'rsmssb', label: 'RSMSSB', icon: '🏜️', color: 'from-amber-600 to-orange-600' },
-    { id: 'language', label: 'Language Proficiency Tests', icon: '🌍', color: 'from-teal-600 to-green-600' },
+    { id: 'language', label: 'Language Proficiency Tests', icon: '🗣️', color: 'from-teal-600 to-green-600', image: 'https://customer-assets.emergentagent.com/job_quizmaster-299/artifacts/fcifoi4k_image.png' },
   ];
 
   // Skill Drill Classes (CBSE)
