@@ -3814,7 +3814,7 @@ EXAM_DATA = {
         "name": "B.Com (3 Year)",
         "full_name": "Bachelor of Commerce - 3 Year Degree Program",
         "description": "Complete 3-year B.Com degree program covering all semesters from 1st Year to 3rd Year with comprehensive commerce and business subjects",
-        "icon": "📊",
+        "icon": "🎓",
         "color": "from-blue-600 to-indigo-600",
         "total_questions": 300,
         "duration": "3 Years",
