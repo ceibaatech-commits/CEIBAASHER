@@ -277,7 +277,11 @@ const Home = () => {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              <span className="text-xl leading-none">{cat.icon}</span>
+              {cat.image ? (
+                <img src={cat.image} alt={cat.label} className="w-7 h-7 object-contain" />
+              ) : (
+                <span className="text-xl leading-none">{cat.icon}</span>
+              )}
               <span className="text-center leading-tight px-1 line-clamp-2">{cat.label}</span>
             </button>
           ))}
