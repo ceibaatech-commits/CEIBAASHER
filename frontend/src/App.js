@@ -58,6 +58,9 @@ import EmployeeDashboard from "@/pages/EmployeeDashboard";
 import RRB_NTPC from "@/pages/RRB_NTPC";
 import AFCAT from "@/pages/AFCAT";
 
+// Teacher Earnings Page
+import TeacherEarnings from "@/pages/TeacherEarnings";
+
 // Chapter Test Pages
 import ChapterTestHome from "@/pages/ChapterTestHome";
 import ChapterTestSubjects from "@/pages/ChapterTestSubjects";
