@@ -143,6 +143,9 @@ function App() {
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/teachers" element={<TeacherEarnings />} />
+          <Route path="/creator-rewards" element={<TeacherEarnings />} />
+          <Route path="/earn-with-ceibaa" element={<TeacherEarnings />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/test-sheets" element={<TestSheets />} />
           <Route path="/test-socket" element={<TestSocket />} />
