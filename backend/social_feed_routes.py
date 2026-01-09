@@ -503,6 +503,16 @@ async def get_for_you_feed(
             
             for post in paginated:
                 post["liked_by_user"] = post["id"] in liked_post_ids
+            
+            # Also check which posts the user has shared/reposted
+            reposts = await db.social_posts.find(
+                {"user_id": user_id, "is_retweet": True, "original_post_id": {"$in": post_ids}},
+                {"_id": 0, "original_post_id": 1}
+            ).to_list(100)
+            reposted_post_ids = {repost["original_post_id"] for repost in reposts}
+            
+            for post in paginated:
+                post["shared_by_user"] = post["id"] in reposted_post_ids
         
         # Ensure is_retweet is explicitly false if not present
         for post in paginated:
