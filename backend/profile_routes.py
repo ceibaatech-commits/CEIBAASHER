@@ -1164,10 +1164,13 @@ async def get_user_liked_posts(username: str, current_user_id: Optional[str] = N
 async def get_user_reposts(username: str, current_user_id: Optional[str] = None):
     """Get all reposts/shares by a specific user"""
     try:
-        # Get user by username
+        # Get user by username first, then try by ID if that fails
         user = await db.users.find_one({"username": username}, {"_id": 0})
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            # Try looking up by ID (for UUID-based URLs)
+            user = await db.users.find_one({"id": username}, {"_id": 0})
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
         
         user_id = user.get("id")
         
