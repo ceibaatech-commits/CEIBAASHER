@@ -394,13 +394,15 @@ const PostCard = ({
           <button
             onClick={() => onToggleBookmark(post.id)}
             data-testid="bookmark-button"
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`group p-2 rounded-full transition-all duration-200 ${
               bookmarkedPosts.has(post.id) 
-                ? 'text-blue-600 bg-blue-50' 
-                : 'text-gray-400 hover:text-blue-600 hover:bg-gray-50'
+                ? 'text-blue-500' 
+                : 'text-gray-400 hover:text-blue-500'
             }`}
           >
-            <Bookmark className={`w-4 h-4 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
+            <div className={`p-1 rounded-full transition-all duration-200 group-hover:bg-blue-50 ${bookmarkedPosts.has(post.id) ? 'bg-blue-50' : ''}`}>
+              <Bookmark className={`w-[18px] h-[18px] transition-transform group-hover:scale-110 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
+            </div>
           </button>
         </div>
       </div>
