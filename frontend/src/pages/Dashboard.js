@@ -293,20 +293,21 @@ const Dashboard = () => {
   };
 
   // Undo a repost (remove from reposts)
-  const handleUndoRepost = async (postId) => {
+  const handleUndoRepost = async (postId, originalPostId) => {
     if (!window.confirm('Are you sure you want to undo this repost?')) return;
     
     // Optimistic update - remove from UI immediately
     setPosts(prev => prev.filter(post => post.id !== postId));
     setSharedPosts(prev => {
       const newSet = new Set(prev);
-      newSet.delete(postId);
+      newSet.delete(originalPostId);
       return newSet;
     });
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
+      // Use the original_post_id for the unshare endpoint
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${originalPostId}/unshare`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Repost removed');
