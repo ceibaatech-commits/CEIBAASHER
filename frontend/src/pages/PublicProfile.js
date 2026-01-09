@@ -769,6 +769,17 @@ const PublicProfile = () => {
                                   )}
                                 </div>
                               </div>
+                              
+                              {/* Delete Button - only show for own posts */}
+                              {user && (user.id === post.user_id || user.username === profile.username) && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleDeletePost(post.id); }}
+                                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                  title="Delete post"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
                             </div>
 
                             {/* Comment Content with Original Post Preview */}
