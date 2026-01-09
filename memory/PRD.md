@@ -43,6 +43,12 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 - Updated profile API endpoints to handle both username and user_id lookups
 - Fixed: `/api/profile/{username}/posts`, `/api/profile/{username}/quiz-rooms`, `/api/profile/{username}/liked-posts`, `/api/profile/{username}/reposts`
 
+### Repost Toggle Fix (Jan 9, 2025) - COMPLETED
+- Added unshare endpoint `/api/social/posts/{post_id}/unshare` to allow removing reposts
+- Fixed frontend to track shared state from API response (`shared_by_user` field)
+- Added auth header to feed API calls so backend can return user-specific shared state
+- Repost button now properly toggles: share → count increases, unshare → count decreases
+
 ### Victory Lane Post UI Redesign (Jan 9, 2025) - COMPLETED
 - Redesigned PostCard component with modern, clean layout
 - Avatar, username, timestamp, and tags now inline in single row
