@@ -34,10 +34,15 @@ const PostCard = ({
   const isOwnPost = user && post.user_id === user.id;
   const isFollowing = followingList.has(post.user_id);
   
+  // Check if post has any tags or categories to display inline
+  const hasTags = post.tags && post.tags.length > 0;
+  const hasCategory = post.exam_category || post.subject;
+  
   return (
     <div 
       ref={(el) => postRefs.current[post.id] = el}
-      className="bg-white border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
+      data-testid={`post-card-${post.id}`}
+      className="bg-white border-b border-gray-100 hover:bg-gray-50/30 transition-colors"
     >
       {/* Repost Header */}
       {post.is_retweet && (
@@ -47,34 +52,34 @@ const PostCard = ({
         </div>
       )}
 
-      <div className="px-4 py-3">
-        {/* Modern Post Header - All in one row */}
-        <div className="flex items-center gap-3 mb-3">
-          {/* Avatar with gradient ring */}
+      <div className="px-4 py-4">
+        {/* Modern Header Row - Avatar, User Info, Tags, Time, Actions all inline */}
+        <div className="flex items-start gap-3 mb-3">
+          {/* Avatar */}
           <div 
-            className="relative cursor-pointer flex-shrink-0"
+            className="cursor-pointer flex-shrink-0"
             onClick={() => onOpenProfile(post.is_retweet ? post.original_user_id : post.user_id)}
           >
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 p-[2px]">
-              <div className="w-full h-full rounded-full bg-white p-[2px]">
-                <UserAvatar
-                  profilePicture={post.is_retweet ? post.original_user_avatar : post.user_avatar}
-                  name={post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username)}
-                  size="md"
-                  clickable={false}
-                  className="w-full h-full"
-                />
-              </div>
+            <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-100 hover:ring-blue-200 transition-all">
+              <UserAvatar
+                profilePicture={post.is_retweet ? post.original_user_avatar : post.user_avatar}
+                name={post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username)}
+                size="md"
+                clickable={false}
+                className="w-full h-full"
+              />
             </div>
           </div>
 
-          {/* User Info - Name, badges, date in one row */}
+          {/* Main Content Area */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
+            {/* Top Row: Username, badges, tags, timestamp - All inline with wrapping */}
+            <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1 mb-0.5">
               {/* Username */}
               <span 
-                className="font-bold text-gray-900 hover:underline cursor-pointer text-sm"
+                className="font-semibold text-gray-900 hover:text-blue-600 cursor-pointer text-[15px] transition-colors"
                 onClick={() => onOpenProfile(post.is_retweet ? post.original_user_id : post.user_id)}
+                data-testid="post-username"
               >
                 {post.is_retweet ? (post.original_user_name || post.original_username || 'Anonymous') : (post.user_name || post.username || 'Anonymous')}
               </span>
@@ -84,47 +89,81 @@ const PostCard = ({
                 <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500 flex-shrink-0" />
               )}
               
-              {/* Role Badges */}
+              {/* Role Badges - Compact inline pills */}
               {post.isTeacher && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500 text-white">
                   Teacher
                 </span>
               )}
               {post.isProfessor && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-600 text-white">
                   Professor
                 </span>
               )}
               {post.isInstitute && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gradient-to-r from-rose-600 to-red-600 text-white">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-600 text-white">
                   Institute
                 </span>
               )}
               {post.isOfficial && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-gray-800 text-white">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-800 text-white">
                   Official
                 </span>
               )}
               
+              {/* Separator dot */}
+              <span className="text-gray-300 text-xs">·</span>
+              
               {/* Timestamp */}
-              <span className="text-gray-400 text-xs">
-                · {formatTimestamp(post.is_retweet ? post.original_created_at : post.created_at)}
+              <span className="text-gray-400 text-xs" data-testid="post-timestamp">
+                {formatTimestamp(post.is_retweet ? post.original_created_at : post.created_at)}
               </span>
+              
+              {/* Inline Tags (first 2 only for header) */}
+              {hasTags && (
+                <>
+                  <span className="text-gray-300 text-xs">·</span>
+                  {post.tags.slice(0, 2).map((tag, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => onTagClick(tag)}
+                      className="text-blue-500 hover:text-blue-600 text-xs font-medium hover:underline"
+                      data-testid={`post-tag-${idx}`}
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                  {post.tags.length > 2 && (
+                    <span className="text-gray-400 text-xs">+{post.tags.length - 2}</span>
+                  )}
+                </>
+              )}
+              
+              {/* Inline Category (if present) */}
+              {hasCategory && !hasTags && (
+                <>
+                  <span className="text-gray-300 text-xs">·</span>
+                  <span className="text-purple-500 text-xs font-medium">
+                    {post.exam_category || post.subject}
+                  </span>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Action Buttons - Follow/Menu */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Right Side Actions - Follow/Menu */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             {user && post.user_id !== user.id && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onToggleFollow(post.user_id);
                 }}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                data-testid="follow-button"
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                   isFollowing
-                    ? 'border border-gray-300 text-gray-600 hover:border-red-300 hover:text-red-500 hover:bg-red-50'
-                    : 'bg-blue-500 text-white hover:bg-blue-600 shadow-sm'
+                    ? 'border border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-500 hover:bg-red-50'
+                    : 'bg-gray-900 text-white hover:bg-gray-800'
                 }`}
               >
                 {isFollowing ? 'Following' : 'Follow'}
@@ -138,9 +177,10 @@ const PostCard = ({
                     e.stopPropagation();
                     onOpenMenu(post.id);
                   }}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                  data-testid="post-menu-button"
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <MoreHorizontal className="w-5 h-5" />
+                  <MoreHorizontal className="w-4 h-4" />
                 </button>
                 
                 {openMenuId === post.id && (
@@ -152,15 +192,16 @@ const PostCard = ({
                         onOpenMenu(null);
                       }}
                     />
-                    <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden min-w-[120px]">
+                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden min-w-[100px]">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onDeletePost(post);
                         }}
-                        className="w-full px-4 py-2.5 text-red-500 hover:bg-red-50 flex items-center gap-2 text-sm font-medium"
+                        data-testid="delete-post-button"
+                        className="w-full px-3 py-2 text-red-500 hover:bg-red-50 flex items-center gap-2 text-sm font-medium"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                         Delete
                       </button>
                     </div>
@@ -172,36 +213,33 @@ const PostCard = ({
         </div>
 
         {/* Post Content */}
-        <div className="text-gray-800 text-[15px] leading-relaxed mb-3 whitespace-pre-wrap">
+        <div className="text-gray-800 text-[15px] leading-relaxed mb-3 whitespace-pre-wrap pl-[52px]">
           <MathText text={post.content} />
         </div>
 
-        {/* Tags */}
-        {post.tags && post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            {post.tags.slice(0, 5).map((tag, idx) => (
+        {/* Additional Tags Row (if more than 2 tags) */}
+        {hasTags && post.tags.length > 2 && (
+          <div className="flex flex-wrap gap-1.5 mb-3 pl-[52px]">
+            {post.tags.slice(2).map((tag, idx) => (
               <button
                 key={idx}
                 onClick={() => onTagClick(tag)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-medium hover:bg-blue-100 transition-colors"
+                className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-50 text-gray-600 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors"
               >
-                <Tag className="w-3 h-3" />
+                <Tag className="w-2.5 h-2.5" />
                 {tag}
               </button>
             ))}
-            {post.tags.length > 5 && (
-              <span className="text-xs text-gray-400 py-1 px-1">+{post.tags.length - 5}</span>
-            )}
           </div>
         )}
 
-        {/* Category/Subject Tags */}
-        {(post.exam_category || post.subject) && (
-          <div className="flex flex-wrap gap-1.5 mb-3">
+        {/* Category/Subject Tags (show full if not in header) */}
+        {hasCategory && hasTags && (
+          <div className="flex flex-wrap gap-1.5 mb-3 pl-[52px]">
             {post.exam_category && (
               <button
                 onClick={() => onCategoryClick(post.exam_category)}
-                className="inline-flex items-center px-2.5 py-1 bg-purple-50 text-purple-600 rounded-full text-xs font-medium hover:bg-purple-100 transition-colors"
+                className="inline-flex items-center px-2 py-0.5 bg-purple-50 text-purple-600 rounded-full text-xs font-medium hover:bg-purple-100 transition-colors"
               >
                 📚 {post.exam_category}
               </button>
@@ -209,7 +247,7 @@ const PostCard = ({
             {post.subject && post.subject !== post.exam_category && (
               <button
                 onClick={() => onCategoryClick(post.subject)}
-                className="inline-flex items-center px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-medium hover:bg-emerald-100 transition-colors"
+                className="inline-flex items-center px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-full text-xs font-medium hover:bg-emerald-100 transition-colors"
               >
                 📖 {post.subject}
               </button>
