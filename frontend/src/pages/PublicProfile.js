@@ -846,18 +846,6 @@ const PublicProfile = () => {
                                   <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
                                 </button>
                               </div>
-                              
-                              {/* Bookmark Button */}
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleBookmark(post.id); }}
-                                className={`group p-2 rounded-full transition-all duration-200 ${
-                                  bookmarkedPosts.has(post.id) 
-                                    ? 'text-blue-500' 
-                                    : 'text-gray-400 hover:text-blue-500'
-                                }`}
-                              >
-                                <Bookmark className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
-                              </button>
                             </div>
                           </div>
                         </div>
