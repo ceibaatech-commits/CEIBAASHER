@@ -249,15 +249,25 @@ const SinglePost = () => {
                 <p className="text-sm text-gray-500">{formatDate(post.created_at)}</p>
               </div>
               
-              {/* Delete Button - only for own posts */}
+              {/* Delete or Undo Button - only for own posts/reposts */}
               {user && user.id === post.user_id && (
-                <button
-                  onClick={handleDeletePost}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                  title="Delete post"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
+                post.is_retweet ? (
+                  <button
+                    onClick={handleUndoRepost}
+                    className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
+                    title="Undo repost"
+                  >
+                    <Undo2 className="w-5 h-5" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleDeletePost}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    title="Delete post"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )
               )}
             </div>
           </div>
