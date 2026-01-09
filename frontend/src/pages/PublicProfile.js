@@ -799,34 +799,61 @@ const PublicProfile = () => {
                               </div>
                             )}
                             
-                            {/* Modern Interaction Bar - Click to view post on Victory Lane */}
-                            <div className="flex items-center pl-[52px] pt-2 mt-1 -ml-2">
-                              <button 
-                                onClick={() => navigate(`/victory-lane?post=${post.id}`)}
-                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-rose-500 transition-colors"
+                            {/* Modern Interaction Bar */}
+                            <div className="flex items-center justify-between pl-[52px] pt-2 mt-1">
+                              <div className="flex items-center -ml-2">
+                                {/* Like Button */}
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); handleLike(post.id); }}
+                                  className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
+                                    likedPosts.has(post.id) 
+                                      ? 'text-rose-500' 
+                                      : 'text-gray-400 hover:text-rose-500'
+                                  }`}
+                                >
+                                  <div className={`p-1 rounded-full transition-all duration-200 group-hover:bg-rose-50 ${likedPosts.has(post.id) ? 'bg-rose-50' : ''}`}>
+                                    <Heart className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                                  </div>
+                                  <span className="text-sm tabular-nums">{post.likes_count || 0}</span>
+                                </button>
+                                
+                                {/* Comment Button - navigates to single post */}
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); navigate(`/post/${post.id}`); }}
+                                  className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-blue-500 transition-all duration-200"
+                                >
+                                  <div className="p-1 rounded-full transition-all duration-200 group-hover:bg-blue-50">
+                                    <MessageCircle className="w-[16px] h-[16px] transition-transform group-hover:scale-110" />
+                                  </div>
+                                  <span className="text-sm tabular-nums">{post.comments_count || 0}</span>
+                                </button>
+                                
+                                {/* Share/Repost Button */}
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); handleShare(post.id); }}
+                                  className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
+                                    sharedPosts.has(post.id) 
+                                      ? 'text-emerald-500' 
+                                      : 'text-gray-400 hover:text-emerald-500'
+                                  }`}
+                                >
+                                  <div className={`p-1 rounded-full transition-all duration-200 group-hover:bg-emerald-50 ${sharedPosts.has(post.id) ? 'bg-emerald-50' : ''}`}>
+                                    <Repeat2 className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${sharedPosts.has(post.id) ? 'rotate-180' : ''}`} />
+                                  </div>
+                                  <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
+                                </button>
+                              </div>
+                              
+                              {/* Bookmark Button */}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleBookmark(post.id); }}
+                                className={`group p-2 rounded-full transition-all duration-200 ${
+                                  bookmarkedPosts.has(post.id) 
+                                    ? 'text-blue-500' 
+                                    : 'text-gray-400 hover:text-blue-500'
+                                }`}
                               >
-                                <div className="p-1 rounded-full bg-rose-50/50 group-hover:bg-rose-100 transition-colors">
-                                  <Heart className="w-[16px] h-[16px] text-rose-400 group-hover:text-rose-500 transition-colors" />
-                                </div>
-                                <span className="text-sm tabular-nums">{post.likes_count || 0}</span>
-                              </button>
-                              <button 
-                                onClick={() => navigate(`/victory-lane?post=${post.id}`)}
-                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-blue-500 transition-colors"
-                              >
-                                <div className="p-1 rounded-full bg-blue-50/50 group-hover:bg-blue-100 transition-colors">
-                                  <MessageCircle className="w-[16px] h-[16px] text-blue-400 group-hover:text-blue-500 transition-colors" />
-                                </div>
-                                <span className="text-sm tabular-nums">{post.comments_count || 0}</span>
-                              </button>
-                              <button 
-                                onClick={() => navigate(`/victory-lane?post=${post.id}`)}
-                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-emerald-500 transition-colors"
-                              >
-                                <div className="p-1 rounded-full bg-emerald-50/50 group-hover:bg-emerald-100 transition-colors">
-                                  <Repeat2 className="w-[16px] h-[16px] text-emerald-400 group-hover:text-emerald-500 transition-colors" />
-                                </div>
-                                <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
+                                <Bookmark className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
                               </button>
                             </div>
                           </div>
