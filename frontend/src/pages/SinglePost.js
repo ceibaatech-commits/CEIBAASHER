@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, MessageCircle, Share2, MoreHorizontal, CheckCircle, GraduationCap, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, Heart, MessageCircle, Share2, MoreHorizontal, CheckCircle, GraduationCap, Send, Trash2, Undo2 } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
