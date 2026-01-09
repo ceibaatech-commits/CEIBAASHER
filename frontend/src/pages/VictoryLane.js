@@ -477,7 +477,7 @@ const VictoryLane = () => {
         setLikedPosts(prev => {
           const liked = append ? new Set(prev) : new Set();
           postsData.forEach(post => {
-            if (post.liked_by?.includes(user?.id) || post.user_liked) liked.add(post.id);
+            if (post.liked_by?.includes(user?.id) || post.user_liked || post.liked_by_user) liked.add(post.id);
           });
           return liked;
         });
@@ -488,6 +488,15 @@ const VictoryLane = () => {
             if (post.bookmarked_by?.includes(user?.id) || post.user_bookmarked) bookmarked.add(post.id);
           });
           return bookmarked;
+        });
+        
+        // Initialize shared/reposted states from fresh data
+        setSharedPosts(prev => {
+          const shared = append ? new Set(prev) : new Set();
+          postsData.forEach(post => {
+            if (post.shared_by_user) shared.add(post.id);
+          });
+          return shared;
         });
       }
     } catch (error) {
