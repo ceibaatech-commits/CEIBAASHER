@@ -369,9 +369,31 @@ const SinglePost = () => {
                       size="sm"
                     />
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-gray-900">{comment.user_name}</span>
-                        <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-900">{comment.user_name}</span>
+                          {comment.isTeacher && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500 text-white">
+                              Teacher
+                            </span>
+                          )}
+                          {comment.isProfessor && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-600 text-white">
+                              Professor
+                            </span>
+                          )}
+                          <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
+                        </div>
+                        {/* Delete comment button - only for own comments */}
+                        {user && user.id === comment.user_id && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                            title="Delete comment"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
                       </div>
                       <div className="text-gray-700">
                         <MathText text={comment.content} />
