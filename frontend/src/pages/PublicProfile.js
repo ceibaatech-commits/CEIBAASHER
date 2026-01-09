@@ -638,17 +638,26 @@ const PublicProfile = () => {
                               </div>
                             )}
                             
-                            {/* Interaction Bar */}
-                            <div className="flex items-center gap-0.5 pl-[52px] pt-3 mt-2">
-                              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-500 text-xs">
-                                <Heart className="w-4 h-4" /> {post.likes_count || 0}
-                              </span>
-                              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-500 text-xs">
-                                <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
-                              </span>
-                              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-500 text-xs">
-                                <Repeat2 className="w-4 h-4" /> {post.shares_count || 0}
-                              </span>
+                            {/* Modern Interaction Bar */}
+                            <div className="flex items-center pl-[52px] pt-2 mt-1 -ml-2">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400">
+                                <div className="p-1 rounded-full bg-rose-50/50">
+                                  <Heart className="w-[16px] h-[16px] text-rose-400" />
+                                </div>
+                                <span className="text-sm tabular-nums">{post.likes_count || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400">
+                                <div className="p-1 rounded-full bg-blue-50/50">
+                                  <MessageCircle className="w-[16px] h-[16px] text-blue-400" />
+                                </div>
+                                <span className="text-sm tabular-nums">{post.comments_count || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400">
+                                <div className="p-1 rounded-full bg-emerald-50/50">
+                                  <Repeat2 className="w-[16px] h-[16px] text-emerald-400" />
+                                </div>
+                                <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
