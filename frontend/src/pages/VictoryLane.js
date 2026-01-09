@@ -800,12 +800,52 @@ const VictoryLane = () => {
 
     const isShared = sharedPosts.has(postId);
     
-    // For share, we only allow adding (not un-sharing)
     if (isShared) {
-      toast.info('You already shared this post');
+      // Unshare/remove repost
+      // Optimistic update
+      setSharedPosts(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+      
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return { 
+            ...post, 
+            shares_count: Math.max((post.shares_count || 1) - 1, 0)
+          };
+        }
+        return post;
+      }));
+
+      try {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+        toast.success('Repost removed');
+      } catch (error) {
+        // Revert on error
+        setSharedPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.add(postId);
+          return newSet;
+        });
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            return { 
+              ...post, 
+              shares_count: (post.shares_count || 0) + 1
+            };
+          }
+          return post;
+        }));
+        toast.error('Failed to remove repost');
+      }
       return;
     }
 
+    // Share/repost
     // Optimistic update
     setSharedPosts(prev => {
       const newSet = new Set(prev);
@@ -844,7 +884,17 @@ const VictoryLane = () => {
         }
         return post;
       }));
-      toast.error('Failed to share post');
+      if (error.response?.data?.detail === "You already shared this post") {
+        toast.info('You already shared this post');
+        // Add back to shared set since it's actually shared
+        setSharedPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.add(postId);
+          return newSet;
+        });
+      } else {
+        toast.error('Failed to share post');
+      }
     }
   };
 
