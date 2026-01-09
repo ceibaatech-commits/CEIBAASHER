@@ -654,14 +654,14 @@ const Dashboard = () => {
                                     })}
                                   </span>
                                   
-                                  {/* Post Type Tag */}
+                                  {/* Post Type Tag - Gradient Style */}
                                   {post.post_type && post.post_type !== 'general' && (
-                                    <>
-                                      <span className="text-gray-300 text-xs">·</span>
-                                      <span className="text-purple-500 text-xs font-medium">
-                                        {post.post_type === 'quiz_room' ? 'Quiz' : post.post_type}
-                                      </span>
-                                    </>
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-sm">
+                                      {post.post_type === 'quiz_room' ? '🎯 Quiz' : 
+                                       post.post_type === 'question' ? '❓ Question' : 
+                                       post.post_type === 'academic_question' ? '📚 Academic' : 
+                                       post.post_type}
+                                    </span>
                                   )}
                                 </div>
                               </div>
