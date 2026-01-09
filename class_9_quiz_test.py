@@ -3,7 +3,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://quizmaster-299.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://quizmaster-304.preview.emergentagent.com")
 
 class Class9QuizTester:
     def __init__(self):
