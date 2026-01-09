@@ -109,14 +109,32 @@ const Dashboard = () => {
     setLoadingContent(true);
     try {
       if (tab === 'posts' || tab === 'reposts') {
+        const token = localStorage.getItem('token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        
         const response = await axios.get(
           `${BACKEND_URL}/api/profile/${user.username}/posts`,
           {
-            params: { current_user_id: user.id }
+            params: { current_user_id: user.id },
+            headers
           }
         );
         if (response.data.success) {
-          setPosts(response.data.posts || []);
+          const postsData = response.data.posts || [];
+          setPosts(postsData);
+          
+          // Initialize interaction states
+          const liked = new Set();
+          const shared = new Set();
+          const bookmarked = new Set();
+          postsData.forEach(post => {
+            if (post.liked_by_user || post.liked_by?.includes(user?.id)) liked.add(post.id);
+            if (post.shared_by_user) shared.add(post.id);
+            if (post.bookmarked_by_user || post.bookmarked_by?.includes(user?.id)) bookmarked.add(post.id);
+          });
+          setLikedPosts(liked);
+          setSharedPosts(shared);
+          setBookmarkedPosts(bookmarked);
         }
       } else if (tab === 'quizzes') {
         const response = await axios.get(
@@ -133,6 +151,128 @@ const Dashboard = () => {
       console.error(`Error fetching ${tab}:`, error);
     } finally {
       setLoadingContent(false);
+    }
+  };
+
+  // Like/Unlike a post
+  const handleLike = async (postId) => {
+    const isLiked = likedPosts.has(postId);
+    
+    // Optimistic update
+    setLikedPosts(prev => {
+      const newSet = new Set(prev);
+      if (isLiked) newSet.delete(postId);
+      else newSet.add(postId);
+      return newSet;
+    });
+    
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return { ...post, likes_count: (post.likes_count || 0) + (isLiked ? -1 : 1) };
+      }
+      return post;
+    }));
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (error) {
+      // Revert on error
+      setLikedPosts(prev => {
+        const newSet = new Set(prev);
+        if (isLiked) newSet.add(postId);
+        else newSet.delete(postId);
+        return newSet;
+      });
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return { ...post, likes_count: (post.likes_count || 0) + (isLiked ? 1 : -1) };
+        }
+        return post;
+      }));
+      toast.error('Failed to update like');
+    }
+  };
+
+  // Share/Unshare a post
+  const handleShare = async (postId) => {
+    const isShared = sharedPosts.has(postId);
+    
+    // Optimistic update
+    setSharedPosts(prev => {
+      const newSet = new Set(prev);
+      if (isShared) newSet.delete(postId);
+      else newSet.add(postId);
+      return newSet;
+    });
+    
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return { ...post, shares_count: Math.max((post.shares_count || 0) + (isShared ? -1 : 1), 0) };
+      }
+      return post;
+    }));
+
+    try {
+      const token = localStorage.getItem('token');
+      if (isShared) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Repost removed');
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Post shared!');
+      }
+    } catch (error) {
+      // Revert on error
+      setSharedPosts(prev => {
+        const newSet = new Set(prev);
+        if (isShared) newSet.add(postId);
+        else newSet.delete(postId);
+        return newSet;
+      });
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return { ...post, shares_count: Math.max((post.shares_count || 0) + (isShared ? 1 : -1), 0) };
+        }
+        return post;
+      }));
+      toast.error('Failed to update share');
+    }
+  };
+
+  // Bookmark a post
+  const handleBookmark = async (postId) => {
+    const isBookmarked = bookmarkedPosts.has(postId);
+    
+    // Optimistic update
+    setBookmarkedPosts(prev => {
+      const newSet = new Set(prev);
+      if (isBookmarked) newSet.delete(postId);
+      else newSet.add(postId);
+      return newSet;
+    });
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success(isBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks');
+    } catch (error) {
+      // Revert on error
+      setBookmarkedPosts(prev => {
+        const newSet = new Set(prev);
+        if (isBookmarked) newSet.add(postId);
+        else newSet.delete(postId);
+        return newSet;
+      });
+      toast.error('Failed to update bookmark');
     }
   };
 
