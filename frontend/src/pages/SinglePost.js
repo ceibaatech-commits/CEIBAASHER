@@ -119,6 +119,23 @@ const SinglePost = () => {
     }
   };
 
+  // Undo repost (for when viewing a repost)
+  const handleUndoRepost = async () => {
+    if (!window.confirm('Are you sure you want to undo this repost?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      // Use the original_post_id for the unshare endpoint
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${post.original_post_id}/unshare`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Repost removed');
+      navigate(-1);
+    } catch (err) {
+      toast.error('Failed to undo repost');
+    }
+  };
+
   // Delete comment
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm('Are you sure you want to delete this comment?')) return;
