@@ -104,6 +104,7 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 - `/app/frontend/src/components/VictoryLane/PostCard.js` - Post UI component
 - `/app/frontend/src/pages/VictoryLane.js` - Main social feed page
 - `/app/frontend/src/components/MobileBottomNav.js` - App-style navigation
+- `/app/backend/profile_routes.py` - Profile API endpoints
 - `/app/backend/exam_data.py` - Exam syllabus data
 
 ## Test Credentials
