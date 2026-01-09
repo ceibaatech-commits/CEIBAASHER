@@ -257,56 +257,55 @@ const PostCard = ({
 
         {/* Question Post Indicator */}
         {post.post_type === 'question' && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-3 mb-3 flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0">
-              <HelpCircle className="w-4 h-4 text-white" />
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-2.5 mb-3 ml-[52px] flex items-center gap-2">
+            <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center flex-shrink-0">
+              <HelpCircle className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="text-sm text-blue-700 font-medium">
-              Academic Question - See answers in comments
+            <span className="text-xs text-blue-700 font-medium">
+              Academic Question · See answers in comments
             </span>
           </div>
         )}
 
-        {/* Quiz Room Card - Modern Design */}
+        {/* Quiz Room Card - Clean Design */}
         {post.post_type === 'quiz_room' && post.quiz_details && (
-          <div className="border border-gray-200 rounded-2xl overflow-hidden hover:border-gray-300 hover:shadow-md transition-all mb-3">
+          <div className="border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all mb-3 ml-[52px]">
             <div 
-              className="h-24 flex items-center justify-center relative"
-              style={{ background: `linear-gradient(135deg, ${getGradientColor(post.quiz_details.category)} 0%, ${getGradientColor(post.quiz_details.category)}bb 100%)` }}
+              className="h-16 flex items-center justify-center relative"
+              style={{ background: `linear-gradient(135deg, ${getGradientColor(post.quiz_details.category)} 0%, ${getGradientColor(post.quiz_details.category)}cc 100%)` }}
             >
-              <div className="absolute inset-0 bg-black/10"></div>
-              <Trophy className="w-10 h-10 text-white relative z-10" />
+              <Trophy className="w-8 h-8 text-white/90" />
             </div>
-            <div className="p-4 bg-white">
-              <h3 className="font-bold text-base text-gray-900 mb-1">
+            <div className="p-3 bg-white">
+              <h3 className="font-semibold text-sm text-gray-900 mb-0.5">
                 {post.quiz_details.title || 'Quiz Room'}
               </h3>
-              <p className="text-sm text-gray-500 mb-3">{post.quiz_details.category}</p>
+              <p className="text-xs text-gray-500 mb-2">{post.quiz_details.category}</p>
               
-              <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+              <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
                 <div className="flex items-center gap-1">
-                  <Play className="w-3.5 h-3.5" />
+                  <Play className="w-3 h-3" />
                   <span>{post.quiz_details.questions_count || post.quiz_details.question_count || 5} Qs</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" />
+                  <Users className="w-3 h-3" />
                   <span>{post.quiz_details.participants || 0}/{post.quiz_details.max_participants || 150}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{post.quiz_details.time_limit || 15} min</span>
+                  <Clock className="w-3 h-3" />
+                  <span>{post.quiz_details.time_limit || 15}m</span>
                 </div>
               </div>
               
               {post.quiz_details.access_control === 'followers' && (
-                <div className="mb-3 flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2.5 py-1.5 rounded-full w-fit">
+                <div className="mb-2 flex items-center gap-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded w-fit">
                   <Users className="w-3 h-3" />
                   <span className="font-medium">Followers Only</span>
                 </div>
               )}
               
-              <div className="flex items-center justify-between gap-3">
-                <span className={`text-xs px-3 py-1 rounded-full font-medium ${getDifficultyColor(post.quiz_details.difficulty || 'Medium')}`}>
+              <div className="flex items-center justify-between gap-2">
+                <span className={`text-xs px-2 py-0.5 rounded font-medium ${getDifficultyColor(post.quiz_details.difficulty || 'Medium')}`}>
                   {post.quiz_details.difficulty || 'Medium'}
                 </span>
                 {(() => {
@@ -317,8 +316,8 @@ const PostCard = ({
                   
                   if (!canJoin) {
                     return (
-                      <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                        <Users className="w-3.5 h-3.5" />
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <Users className="w-3 h-3" />
                         <span>Follow to join</span>
                       </div>
                     );
@@ -327,7 +326,8 @@ const PostCard = ({
                   return (
                     <button 
                       onClick={() => handleJoinRoom(post.quiz_details.room_code)}
-                      className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all"
+                      data-testid="join-quiz-room-button"
+                      className="px-4 py-1.5 bg-gray-900 text-white rounded-lg text-xs font-semibold hover:bg-gray-800 transition-colors"
                     >
                       Join Room
                     </button>
@@ -338,59 +338,63 @@ const PostCard = ({
           </div>
         )}
 
-        {/* Modern Interaction Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="flex items-center gap-1">
+        {/* Clean Interaction Bar */}
+        <div className="flex items-center justify-between pl-[52px] pt-1">
+          <div className="flex items-center gap-0.5">
             {/* Comments */}
             <button 
               onClick={() => onToggleComments(post.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full transition-all ${
+              data-testid="comments-button"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 expandedComments.has(post.id) 
-                  ? 'text-blue-500 bg-blue-50' 
-                  : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50'
+                  ? 'text-blue-600 bg-blue-50' 
+                  : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
               }`}
             >
-              <MessageCircle className={`w-[18px] h-[18px] ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
-              <span className="text-xs font-semibold">{post.comments_count || 0}</span>
+              <MessageCircle className={`w-4 h-4 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
+              <span className="text-xs font-medium">{post.comments_count || 0}</span>
             </button>
 
             {/* Likes */}
             <button
               onClick={() => onToggleLike(post.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full transition-all ${
+              data-testid="like-button"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 likedPosts.has(post.id) 
                   ? 'text-red-500 bg-red-50' 
-                  : 'text-gray-500 hover:text-red-500 hover:bg-red-50'
+                  : 'text-gray-500 hover:text-red-500 hover:bg-gray-50'
               }`}
             >
-              <Heart className={`w-[18px] h-[18px] transition-transform ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
-              <span className="text-xs font-semibold">{post.likes_count || 0}</span>
+              <Heart className={`w-4 h-4 transition-transform ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
+              <span className="text-xs font-medium">{post.likes_count || 0}</span>
             </button>
 
             {/* Repost */}
             <button 
               onClick={() => onToggleShare(post.id)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-full transition-all ${
+              data-testid="share-button"
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
                 sharedPosts.has(post.id) 
-                  ? 'text-green-500 bg-green-50' 
-                  : 'text-gray-500 hover:text-green-500 hover:bg-green-50'
+                  ? 'text-green-600 bg-green-50' 
+                  : 'text-gray-500 hover:text-green-600 hover:bg-gray-50'
               }`}
             >
-              <Repeat2 className={`w-[18px] h-[18px] ${sharedPosts.has(post.id) ? 'text-green-500' : ''}`} />
-              <span className="text-xs font-semibold">{post.shares_count || 0}</span>
+              <Repeat2 className={`w-4 h-4 ${sharedPosts.has(post.id) ? 'text-green-600' : ''}`} />
+              <span className="text-xs font-medium">{post.shares_count || 0}</span>
             </button>
           </div>
 
           {/* Bookmark */}
           <button
             onClick={() => onToggleBookmark(post.id)}
-            className={`p-2 rounded-full transition-all ${
+            data-testid="bookmark-button"
+            className={`p-1.5 rounded-lg transition-colors ${
               bookmarkedPosts.has(post.id) 
-                ? 'text-blue-500 bg-blue-50' 
-                : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50'
+                ? 'text-blue-600 bg-blue-50' 
+                : 'text-gray-400 hover:text-blue-600 hover:bg-gray-50'
             }`}
           >
-            <Bookmark className={`w-[18px] h-[18px] ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
           </button>
         </div>
       </div>
