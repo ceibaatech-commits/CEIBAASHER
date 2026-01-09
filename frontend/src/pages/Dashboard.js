@@ -276,6 +276,22 @@ const Dashboard = () => {
     }
   };
 
+  // Delete a post
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPosts(prev => prev.filter(post => post.id !== postId));
+      toast.success('Post deleted');
+    } catch (error) {
+      toast.error('Failed to delete post');
+    }
+  };
+
   useEffect(() => {
     if (profile) {
       fetchUserContent(activeTab);
