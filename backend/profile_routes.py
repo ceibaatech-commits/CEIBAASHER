@@ -931,8 +931,14 @@ async def get_follow_status(
 async def get_user_posts(username: str, current_user_id: Optional[str] = None):
     """Get all posts by a specific user, including their comments on other posts"""
     try:
-        # Get user by username
-        user = await get_user_by_username(username)
+        # Get user by username first, then try by ID if that fails
+        try:
+            user = await get_user_by_username(username)
+        except:
+            # If username lookup fails, try looking up by ID (for UUID-based URLs)
+            user = await db.users.find_one({"id": username}, {"_id": 0})
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
         user_id = user["id"]
         
         # Check if the user is disabled
