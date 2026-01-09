@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2 } from 'lucide-react';
+import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2, Bookmark } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModal';
 import FollowListModal from '../components/FollowListModal';
 import Header from '../components/Header';
 import MathText from '../components/MathText';
+import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -22,6 +23,11 @@ const Dashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [followModalType, setFollowModalType] = useState('followers');
+  
+  // Interaction states
+  const [likedPosts, setLikedPosts] = useState(new Set());
+  const [sharedPosts, setSharedPosts] = useState(new Set());
+  const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
 
   useEffect(() => {
     if (user) {
