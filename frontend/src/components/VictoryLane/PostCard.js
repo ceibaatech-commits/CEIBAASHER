@@ -338,49 +338,55 @@ const PostCard = ({
           </div>
         )}
 
-        {/* Clean Interaction Bar */}
-        <div className="flex items-center justify-between pl-[52px] pt-1">
-          <div className="flex items-center gap-0.5">
+        {/* Modern Interaction Bar */}
+        <div className="flex items-center justify-between pl-[52px] pt-2 mt-1">
+          <div className="flex items-center -ml-2">
             {/* Comments */}
             <button 
               onClick={() => onToggleComments(post.id)}
               data-testid="comments-button"
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+              className={`group flex items-center gap-1.5 px-3 py-2 rounded-full transition-all duration-200 ${
                 expandedComments.has(post.id) 
-                  ? 'text-blue-600 bg-blue-50' 
-                  : 'text-gray-500 hover:text-blue-600 hover:bg-gray-50'
+                  ? 'text-blue-600' 
+                  : 'text-gray-400 hover:text-blue-500'
               }`}
             >
-              <MessageCircle className={`w-4 h-4 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
-              <span className="text-xs font-medium">{post.comments_count || 0}</span>
+              <div className={`p-1.5 rounded-full transition-all duration-200 group-hover:bg-blue-50 ${expandedComments.has(post.id) ? 'bg-blue-50' : ''}`}>
+                <MessageCircle className={`w-[18px] h-[18px] transition-transform group-hover:scale-110 ${expandedComments.has(post.id) ? 'fill-blue-100' : ''}`} />
+              </div>
+              <span className={`text-sm tabular-nums ${post.comments_count > 0 ? 'font-medium' : ''}`}>{post.comments_count || 0}</span>
             </button>
 
             {/* Likes */}
             <button
               onClick={() => onToggleLike(post.id)}
               data-testid="like-button"
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+              className={`group flex items-center gap-1.5 px-3 py-2 rounded-full transition-all duration-200 ${
                 likedPosts.has(post.id) 
-                  ? 'text-red-500 bg-red-50' 
-                  : 'text-gray-500 hover:text-red-500 hover:bg-gray-50'
+                  ? 'text-rose-500' 
+                  : 'text-gray-400 hover:text-rose-500'
               }`}
             >
-              <Heart className={`w-4 h-4 transition-transform ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
-              <span className="text-xs font-medium">{post.likes_count || 0}</span>
+              <div className={`p-1.5 rounded-full transition-all duration-200 group-hover:bg-rose-50 ${likedPosts.has(post.id) ? 'bg-rose-50' : ''}`}>
+                <Heart className={`w-[18px] h-[18px] transition-all duration-200 group-hover:scale-110 ${likedPosts.has(post.id) ? 'fill-current scale-110' : ''}`} />
+              </div>
+              <span className={`text-sm tabular-nums ${post.likes_count > 0 ? 'font-medium' : ''}`}>{post.likes_count || 0}</span>
             </button>
 
             {/* Repost */}
             <button 
               onClick={() => onToggleShare(post.id)}
               data-testid="share-button"
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-colors ${
+              className={`group flex items-center gap-1.5 px-3 py-2 rounded-full transition-all duration-200 ${
                 sharedPosts.has(post.id) 
-                  ? 'text-green-600 bg-green-50' 
-                  : 'text-gray-500 hover:text-green-600 hover:bg-gray-50'
+                  ? 'text-emerald-500' 
+                  : 'text-gray-400 hover:text-emerald-500'
               }`}
             >
-              <Repeat2 className={`w-4 h-4 ${sharedPosts.has(post.id) ? 'text-green-600' : ''}`} />
-              <span className="text-xs font-medium">{post.shares_count || 0}</span>
+              <div className={`p-1.5 rounded-full transition-all duration-200 group-hover:bg-emerald-50 ${sharedPosts.has(post.id) ? 'bg-emerald-50' : ''}`}>
+                <Repeat2 className={`w-[18px] h-[18px] transition-transform group-hover:scale-110 ${sharedPosts.has(post.id) ? 'rotate-180' : ''}`} />
+              </div>
+              <span className={`text-sm tabular-nums ${post.shares_count > 0 ? 'font-medium' : ''}`}>{post.shares_count || 0}</span>
             </button>
           </div>
 
