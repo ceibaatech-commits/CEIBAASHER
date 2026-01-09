@@ -639,6 +639,16 @@ const Dashboard = () => {
                                       Professor
                                     </span>
                                   )}
+                                  {(profile.badges?.isInstitute || profile.isInstitute) && !post.is_retweet && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-600 text-white">
+                                      Institute
+                                    </span>
+                                  )}
+                                  {(profile.badges?.isOfficial || profile.isOfficial) && !post.is_retweet && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-800 text-white">
+                                      Official
+                                    </span>
+                                  )}
                                   
                                   {/* Separator dot */}
                                   <span className="text-gray-300 text-xs">·</span>
