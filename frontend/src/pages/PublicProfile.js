@@ -785,9 +785,12 @@ const PublicProfile = () => {
                               </div>
                             )}
                             
-                            {/* Post Content (for regular posts and reposts) */}
+                            {/* Post Content (for regular posts and reposts) - Clickable to view single post */}
                             {!post.is_comment && (
-                              <div className="text-gray-800 text-[15px] leading-relaxed pl-[52px]">
+                              <div 
+                                className="text-gray-800 text-[15px] leading-relaxed pl-[52px] cursor-pointer hover:bg-gray-50/50 -mx-4 px-4 py-2 transition-colors"
+                                onClick={() => navigate(`/post/${post.id}`)}
+                              >
                                 <MathText text={post.content} />
                               </div>
                             )}
