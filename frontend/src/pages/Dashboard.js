@@ -705,7 +705,7 @@ const Dashboard = () => {
                               {/* Delete Button (for own posts) or Undo Button (for reposts) */}
                               {post.is_retweet ? (
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); handleUndoRepost(post.id); }}
+                                  onClick={(e) => { e.stopPropagation(); handleUndoRepost(post.id, post.original_post_id); }}
                                   className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
                                   title="Undo repost"
                                 >
