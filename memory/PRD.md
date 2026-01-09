@@ -32,6 +32,12 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 
 ## Recent Implementations (January 2025)
 
+### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
+- Fixed UX issue: reposts now show "Undo" button instead of "Delete"
+- For reposts (`is_retweet === true`): Shows Undo icon (orange) that calls `/api/social/posts/{id}/unshare`
+- For original posts: Shows Delete icon (red) that deletes the post
+- Added `handleUndoRepost` function to Dashboard.js
+
 ### Profile Posts UI Redesign (Jan 9, 2025) - COMPLETED
 - Updated profile page post cards to match Victory Lane modern design
 - Avatar, username, badges, date all in one horizontal row
