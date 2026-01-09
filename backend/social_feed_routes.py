@@ -861,6 +861,40 @@ async def add_comment(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding comment: {str(e)}")
 
+
+@router.delete("/comments/{comment_id}")
+async def delete_comment(comment_id: str, authorization: Optional[str] = Header(None)):
+    """Delete a comment - only the comment author can delete"""
+    try:
+        user_id = get_optional_user_id(authorization)
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        # Find the comment
+        comment = await db.comments.find_one({"id": comment_id})
+        if not comment:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        
+        # Check if user owns the comment
+        if comment.get("user_id") != user_id:
+            raise HTTPException(status_code=403, detail="You can only delete your own comments")
+        
+        # Delete the comment
+        await db.comments.delete_one({"id": comment_id})
+        
+        # Decrement comment count on the post
+        await db.social_posts.update_one(
+            {"id": comment.get("post_id")},
+            {"$inc": {"comments_count": -1}}
+        )
+        
+        return {"success": True, "message": "Comment deleted"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting comment: {str(e)}")
+
+
 @router.post("/posts/{post_id}/share")
 async def share_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Share a post - creates a retweet post on user's profile"""
