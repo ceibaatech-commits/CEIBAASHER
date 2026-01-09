@@ -372,7 +372,7 @@ const Earn = () => {
               <Trophy className="w-6 h-6" />
               Milestone Rewards
             </h2>
-            <p className="text-emerald-100 text-sm mt-1">Complete milestones to unlock exclusive features</p>
+            <p className="text-emerald-100 text-sm mt-1">Achieve followers milestones to unlock advanced features.</p>
           </div>
 
           <div className="p-6 space-y-5">
