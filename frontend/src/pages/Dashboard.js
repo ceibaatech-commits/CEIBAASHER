@@ -292,6 +292,31 @@ const Dashboard = () => {
     }
   };
 
+  // Undo a repost (remove from reposts)
+  const handleUndoRepost = async (postId) => {
+    if (!window.confirm('Are you sure you want to undo this repost?')) return;
+    
+    // Optimistic update - remove from UI immediately
+    setPosts(prev => prev.filter(post => post.id !== postId));
+    setSharedPosts(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(postId);
+      return newSet;
+    });
+    
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Repost removed');
+    } catch (error) {
+      // Revert on error - refetch posts
+      fetchUserContent(activeTab);
+      toast.error('Failed to undo repost');
+    }
+  };
+
   useEffect(() => {
     if (profile) {
       fetchUserContent(activeTab);
