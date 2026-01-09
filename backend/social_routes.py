@@ -553,13 +553,13 @@ async def unshare_post(post_id: str, request: Request):
             "is_retweet": True
         })
         collection_to_use = db.posts
-        logger.warning(f"[UNSHARE] Found in posts: {shared_post is not None}")
+        print(f"[UNSHARE] Found in posts: {shared_post is not None}", file=sys.stderr, flush=True)
     
     if not shared_post:
-        logger.warning(f"[UNSHARE] Repost NOT FOUND - returning 404")
+        print(f"[UNSHARE] Repost NOT FOUND - returning 404", file=sys.stderr, flush=True)
         raise HTTPException(status_code=404, detail="Repost not found")
     
-    logger.warning(f"[UNSHARE] Deleting repost id: {shared_post.get('id')}")
+    print(f"[UNSHARE] Deleting repost id: {shared_post.get('id')}", file=sys.stderr, flush=True)
     
     # Delete the repost from the correct collection
     await collection_to_use.delete_one({"id": shared_post["id"]})
