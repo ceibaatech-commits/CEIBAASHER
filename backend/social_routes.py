@@ -528,13 +528,13 @@ async def share_post(post_id: str, request: Request):
 @router.delete("/social/posts/{post_id}/unshare")
 async def unshare_post(post_id: str, request: Request):
     """Remove a repost/share of a post"""
-    import logging
-    logger = logging.getLogger(__name__)
+    import sys
+    print(f"[UNSHARE START] post_id: {post_id}", file=sys.stderr, flush=True)
     
     current_user = get_user_from_token(request)
     user = await get_user_details(current_user["id"])
     
-    logger.warning(f"[UNSHARE] Looking for repost - user_id: {user['id']}, original_post_id: {post_id}")
+    print(f"[UNSHARE] user_id: {user['id']}, looking for original_post_id: {post_id}", file=sys.stderr, flush=True)
     
     # Find the user's repost of this post (check social_posts first, then posts)
     shared_post = await db.social_posts.find_one({
@@ -543,7 +543,7 @@ async def unshare_post(post_id: str, request: Request):
         "is_retweet": True
     })
     
-    logger.warning(f"[UNSHARE] Found in social_posts: {shared_post is not None}, data: {shared_post.get('id') if shared_post else None}")
+    print(f"[UNSHARE] Found in social_posts: {shared_post is not None}", file=sys.stderr, flush=True)
     
     collection_to_use = db.social_posts
     if not shared_post:
