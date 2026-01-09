@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2 } from 'lucide-react';
+import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Bookmark } from 'lucide-react';
 import FollowButton from '../components/FollowButton';
 import FollowListModal from '../components/FollowListModal';
 import Header from '../components/Header';
 import MathText from '../components/MathText';
+import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -24,6 +25,11 @@ const PublicProfile = () => {
   const [posts, setPosts] = useState([]);
   const [quizRooms, setQuizRooms] = useState([]);
   const [loadingContent, setLoadingContent] = useState(false);
+  
+  // Interaction states
+  const [likedPosts, setLikedPosts] = useState(new Set());
+  const [sharedPosts, setSharedPosts] = useState(new Set());
+  const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
 
   useEffect(() => {
     fetchProfile();
