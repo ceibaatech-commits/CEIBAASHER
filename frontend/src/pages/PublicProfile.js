@@ -733,14 +733,24 @@ const PublicProfile = () => {
                                   )}
                                   
                                   {/* Role Badges */}
-                                  {profile.badges?.isTeacher && !post.is_retweet && (
+                                  {(profile.badges?.isTeacher || profile.isTeacher || post.isTeacher) && !post.is_retweet && (
                                     <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500 text-white">
                                       Teacher
                                     </span>
                                   )}
-                                  {profile.badges?.isProfessor && !post.is_retweet && (
+                                  {(profile.badges?.isProfessor || profile.isProfessor || post.isProfessor) && !post.is_retweet && (
                                     <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-600 text-white">
                                       Professor
+                                    </span>
+                                  )}
+                                  {(profile.badges?.isInstitute || profile.isInstitute || post.isInstitute) && !post.is_retweet && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-600 text-white">
+                                      Institute
+                                    </span>
+                                  )}
+                                  {(profile.badges?.isOfficial || profile.isOfficial || post.isOfficial) && !post.is_retweet && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-800 text-white">
+                                      Official
                                     </span>
                                   )}
                                   
@@ -758,14 +768,14 @@ const PublicProfile = () => {
                                     })}
                                   </span>
                                   
-                                  {/* Post Type Tag */}
+                                  {/* Post Type Tag - Gradient Style */}
                                   {post.post_type && post.post_type !== 'general' && (
-                                    <>
-                                      <span className="text-gray-300 text-xs">·</span>
-                                      <span className="text-purple-500 text-xs font-medium">
-                                        {post.post_type === 'quiz_room' ? 'Quiz' : post.post_type}
-                                      </span>
-                                    </>
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-sm">
+                                      {post.post_type === 'quiz_room' ? '🎯 Quiz' : 
+                                       post.post_type === 'question' ? '❓ Question' : 
+                                       post.post_type === 'academic_question' ? '📚 Academic' : 
+                                       post.post_type}
+                                    </span>
                                   )}
                                 </div>
                               </div>
