@@ -408,144 +408,160 @@ const Dashboard = () => {
                       {filteredPosts
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
-                        <div key={post.id} className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                        <div key={post.id} className="bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors overflow-hidden">
+                          {/* Repost Indicator */}
+                          {post.is_retweet === true && (
+                            <div className="flex items-center gap-2 text-xs text-gray-500 px-4 pt-3 pb-1">
+                              <Repeat2 className="w-3.5 h-3.5" />
+                              <span className="font-medium">You reposted</span>
+                            </div>
+                          )}
+                          
                           {/* Comment Indicator */}
                           {post.is_comment && (
-                            <div className="flex items-center gap-2 text-sm text-blue-600 mb-3">
-                              <MessageCircle className="w-4 h-4" />
+                            <div className="flex items-center gap-2 text-xs text-blue-600 px-4 pt-3 pb-1">
+                              <MessageCircle className="w-3.5 h-3.5" />
                               <span className="font-medium">You commented</span>
                             </div>
                           )}
-                          
-                          {/* Repost Indicator */}
-                          {post.is_retweet === true && (
-                            <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                              <Repeat2 className="w-4 h-4" />
-                              <span>You reposted</span>
-                            </div>
-                          )}
-                          
-                          {/* Comment Content */}
-                          {post.is_comment && (
-                            <div className="mb-3">
-                              <p className="text-sm text-gray-500 mb-1">
-                                {new Date(post.created_at).toLocaleString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
-                              <div className="text-gray-900 font-medium mb-3">
-                                <MathText text={post.comment_content} />
+
+                          <div className="px-4 py-4">
+                            {/* Modern Header Row - Avatar, User Info, Date, Tags all inline */}
+                            <div className="flex items-start gap-3 mb-3">
+                              {/* Avatar */}
+                              <div 
+                                className="cursor-pointer flex-shrink-0"
+                                onClick={() => post.is_retweet && post.original_username 
+                                  ? handleProfileClick(post.original_username)
+                                  : null
+                                }
+                              >
+                                <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-100">
+                                  <img
+                                    src={post.is_retweet 
+                                      ? `https://ui-avatars.com/api/?name=${post.original_user_name || post.original_username}&background=random&size=40`
+                                      : profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=40`
+                                    }
+                                    alt={post.is_retweet ? post.original_user_name : profile.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
                               </div>
-                              
-                              {/* Original Post Preview */}
-                              {post.original_post && (
-                                <div className="ml-4 pl-4 border-l-2 border-blue-300 bg-blue-50 p-3 rounded-r-lg">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <img
-                                      src={post.original_post.user_avatar || `https://ui-avatars.com/api/?name=${post.original_post.user_name}&background=random&size=32`}
-                                      alt={post.original_post.user_name}
-                                      className="w-6 h-6 rounded-full"
-                                    />
-                                    <span className="text-sm font-semibold text-gray-700">
-                                      {post.original_post.user_name}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                      @{post.original_post.username}
-                                    </span>
-                                  </div>
-                                  <div className="text-sm text-gray-700 line-clamp-3">
-                                    <MathText text={post.original_post.content} />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Original Author Info (for reposts) */}
-                          {post.is_retweet && post.original_username && (
-                            <div className="mb-3 flex items-start gap-3">
-                              <img
-                                src={`https://ui-avatars.com/api/?name=${post.original_user_name || post.original_username}&background=random&size=40`}
-                                alt={post.original_user_name}
-                                className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80"
-                                onClick={() => handleProfileClick(post.original_username)}
-                              />
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
+
+                              {/* Main Content Area */}
+                              <div className="flex-1 min-w-0">
+                                {/* Top Row: Username, timestamp, post type - All inline */}
+                                <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1">
+                                  {/* Username */}
                                   <span 
-                                    className="font-semibold text-gray-900 hover:underline cursor-pointer"
-                                    onClick={() => handleProfileClick(post.original_username)}
+                                    className="font-semibold text-gray-900 text-[15px]"
+                                    onClick={() => post.is_retweet && post.original_username 
+                                      ? handleProfileClick(post.original_username)
+                                      : null
+                                    }
                                   >
-                                    {post.original_user_name || post.original_username}
+                                    {post.is_retweet 
+                                      ? (post.original_user_name || post.original_username || 'Anonymous')
+                                      : 'You'
+                                    }
                                   </span>
-                                  <span 
-                                    className="text-gray-500 text-sm hover:underline cursor-pointer"
-                                    onClick={() => handleProfileClick(post.original_username)}
-                                  >
-                                    @{post.original_username}
+                                  
+                                  {/* Role Badges */}
+                                  {(profile.badges?.isTeacher || profile.isTeacher) && !post.is_retweet && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500 text-white">
+                                      Teacher
+                                    </span>
+                                  )}
+                                  {(profile.badges?.isProfessor || profile.isProfessor) && !post.is_retweet && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-600 text-white">
+                                      Professor
+                                    </span>
+                                  )}
+                                  
+                                  {/* Separator dot */}
+                                  <span className="text-gray-300 text-xs">·</span>
+                                  
+                                  {/* Timestamp */}
+                                  <span className="text-gray-400 text-xs">
+                                    {new Date(post.is_retweet ? (post.original_created_at || post.created_at) : post.created_at).toLocaleString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
                                   </span>
+                                  
+                                  {/* Post Type Tag */}
+                                  {post.post_type && post.post_type !== 'general' && (
+                                    <>
+                                      <span className="text-gray-300 text-xs">·</span>
+                                      <span className="text-purple-500 text-xs font-medium">
+                                        {post.post_type === 'quiz_room' ? 'Quiz' : post.post_type}
+                                      </span>
+                                    </>
+                                  )}
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {new Date(post.original_created_at || post.created_at).toLocaleString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </p>
                               </div>
                             </div>
-                          )}
-                          
-                          {/* Post Content (for regular posts and reposts) */}
-                          {!post.is_retweet && !post.is_comment && (
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <p className="text-sm text-gray-500">
-                                  {new Date(post.created_at).toLocaleString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                  })}
-                                </p>
-                                {post.post_type && (
-                                  <span className="inline-block mt-1 px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
-                                    {post.post_type === 'quiz_room' ? 'Quiz Room' : post.post_type}
-                                  </span>
+
+                            {/* Comment Content with Original Post Preview */}
+                            {post.is_comment && (
+                              <div className="pl-[52px] mb-3">
+                                <div className="text-gray-900 mb-3">
+                                  <MathText text={post.comment_content || post.content} />
+                                </div>
+                                
+                                {/* Original Post Preview */}
+                                {post.original_post && (
+                                  <div className="pl-3 border-l-2 border-blue-200 bg-blue-50/50 p-3 rounded-r-lg">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <img
+                                        src={post.original_post.user_avatar || `https://ui-avatars.com/api/?name=${post.original_post.user_name}&background=random&size=24`}
+                                        alt={post.original_post.user_name}
+                                        className="w-5 h-5 rounded-full"
+                                      />
+                                      <span className="text-sm font-medium text-gray-700">
+                                        {post.original_post.user_name}
+                                      </span>
+                                      <span className="text-xs text-gray-400">
+                                        @{post.original_post.username}
+                                      </span>
+                                    </div>
+                                    <div className="text-sm text-gray-600 line-clamp-2">
+                                      <MathText text={post.original_post.content} />
+                                    </div>
+                                  </div>
                                 )}
                               </div>
+                            )}
+                            
+                            {/* Post Content (for regular posts and reposts) */}
+                            {!post.is_comment && (
+                              <div className="text-gray-800 text-[15px] leading-relaxed pl-[52px]">
+                                <MathText text={post.content} />
+                              </div>
+                            )}
+                            
+                            {/* Room Code */}
+                            {post.room_code && (
+                              <div className="mt-3 ml-[52px] p-2 bg-green-50 border border-green-200 rounded-lg inline-block">
+                                <p className="text-xs text-green-700 font-medium">Room: {post.room_code}</p>
+                              </div>
+                            )}
+                            
+                            {/* Interaction Bar */}
+                            <div className="flex items-center gap-0.5 pl-[52px] pt-3 mt-2">
+                              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-500 text-xs">
+                                <Heart className="w-4 h-4" /> {post.likes_count || 0}
+                              </span>
+                              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-500 text-xs">
+                                <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
+                              </span>
+                              <span className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-gray-500 text-xs">
+                                <Repeat2 className="w-4 h-4" /> {post.shares_count || 0}
+                              </span>
                             </div>
-                          )}
-                          
-                          {!post.is_comment && (
-                            <div className="text-gray-800">
-                              <MathText text={post.content} />
-                            </div>
-                          )}
-                          
-                          {post.room_code && (
-                            <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                              <p className="text-sm text-green-700 font-semibold">Room Code: {post.room_code}</p>
-                            </div>
-                          )}
-                          
-                          <div className="mt-3 flex gap-4 text-sm text-gray-600">
-                            <span className="flex items-center gap-1">
-                              <Heart className="w-4 h-4" /> {post.likes_count || 0}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MessageCircle className="w-4 h-4" /> {post.comments_count || 0}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <Repeat2 className="w-4 h-4" /> {post.shares_count || 0}
-                            </span>
                           </div>
                         </div>
                       ))}
