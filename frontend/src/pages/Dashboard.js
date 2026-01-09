@@ -701,14 +701,24 @@ const Dashboard = () => {
                                 </div>
                               </div>
                               
-                              {/* Delete Button */}
-                              <button
-                                onClick={(e) => { e.stopPropagation(); handleDeletePost(post.id); }}
-                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                                title="Delete post"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              {/* Delete Button (for own posts) or Undo Button (for reposts) */}
+                              {post.is_retweet ? (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleUndoRepost(post.id); }}
+                                  className="p-1.5 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
+                                  title="Undo repost"
+                                >
+                                  <Undo2 className="w-4 h-4" />
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); handleDeletePost(post.id); }}
+                                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                  title="Delete post"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              )}
                             </div>
 
                             {/* Comment Content with Original Post Preview */}
