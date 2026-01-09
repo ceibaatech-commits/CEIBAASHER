@@ -103,6 +103,38 @@ const SinglePost = () => {
     }
   };
 
+  // Delete post
+  const handleDeletePost = async () => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Post deleted');
+      navigate(-1);
+    } catch (err) {
+      toast.error('Failed to delete post');
+    }
+  };
+
+  // Delete comment
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${BACKEND_URL}/api/social/comments/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setComments(prev => prev.filter(c => c.id !== commentId));
+      toast.success('Comment deleted');
+    } catch (err) {
+      toast.error('Failed to delete comment');
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', {
