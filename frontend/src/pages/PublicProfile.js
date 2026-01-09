@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Bookmark } from 'lucide-react';
+import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Trash2, MoreHorizontal } from 'lucide-react';
 import FollowButton from '../components/FollowButton';
 import FollowListModal from '../components/FollowListModal';
 import Header from '../components/Header';
