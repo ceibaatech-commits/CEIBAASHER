@@ -638,26 +638,35 @@ const PublicProfile = () => {
                               </div>
                             )}
                             
-                            {/* Modern Interaction Bar */}
+                            {/* Modern Interaction Bar - Click to view post on Victory Lane */}
                             <div className="flex items-center pl-[52px] pt-2 mt-1 -ml-2">
-                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400">
-                                <div className="p-1 rounded-full bg-rose-50/50">
-                                  <Heart className="w-[16px] h-[16px] text-rose-400" />
+                              <button 
+                                onClick={() => navigate(`/victory-lane?post=${post.id}`)}
+                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-rose-500 transition-colors"
+                              >
+                                <div className="p-1 rounded-full bg-rose-50/50 group-hover:bg-rose-100 transition-colors">
+                                  <Heart className="w-[16px] h-[16px] text-rose-400 group-hover:text-rose-500 transition-colors" />
                                 </div>
                                 <span className="text-sm tabular-nums">{post.likes_count || 0}</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400">
-                                <div className="p-1 rounded-full bg-blue-50/50">
-                                  <MessageCircle className="w-[16px] h-[16px] text-blue-400" />
+                              </button>
+                              <button 
+                                onClick={() => navigate(`/victory-lane?post=${post.id}`)}
+                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-blue-500 transition-colors"
+                              >
+                                <div className="p-1 rounded-full bg-blue-50/50 group-hover:bg-blue-100 transition-colors">
+                                  <MessageCircle className="w-[16px] h-[16px] text-blue-400 group-hover:text-blue-500 transition-colors" />
                                 </div>
                                 <span className="text-sm tabular-nums">{post.comments_count || 0}</span>
-                              </div>
-                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400">
-                                <div className="p-1 rounded-full bg-emerald-50/50">
-                                  <Repeat2 className="w-[16px] h-[16px] text-emerald-400" />
+                              </button>
+                              <button 
+                                onClick={() => navigate(`/victory-lane?post=${post.id}`)}
+                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-emerald-500 transition-colors"
+                              >
+                                <div className="p-1 rounded-full bg-emerald-50/50 group-hover:bg-emerald-100 transition-colors">
+                                  <Repeat2 className="w-[16px] h-[16px] text-emerald-400 group-hover:text-emerald-500 transition-colors" />
                                 </div>
                                 <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
-                              </div>
+                              </button>
                             </div>
                           </div>
                         </div>
