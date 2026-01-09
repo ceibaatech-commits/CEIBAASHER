@@ -665,6 +665,15 @@ const Dashboard = () => {
                                   )}
                                 </div>
                               </div>
+                              
+                              {/* Delete Button */}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDeletePost(post.id); }}
+                                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                title="Delete post"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
                             </div>
 
                             {/* Comment Content with Original Post Preview */}
