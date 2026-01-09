@@ -938,6 +938,44 @@ async def share_post(post_id: str, request: Request, authorization: Optional[str
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error sharing post: {str(e)}")
 
+
+@router.delete("/posts/{post_id}/unshare")
+async def unshare_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
+    """Remove a repost/share of a post"""
+    try:
+        user_id = get_optional_user_id(authorization)
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        # Find the user's repost of this post
+        shared_post = await db.social_posts.find_one({
+            "user_id": user_id,
+            "original_post_id": post_id,
+            "is_retweet": True
+        })
+        
+        if not shared_post:
+            raise HTTPException(status_code=404, detail="Repost not found")
+        
+        # Delete the repost
+        await db.social_posts.delete_one({"id": shared_post["id"]})
+        
+        # Decrement share count on original post
+        await db.social_posts.update_one(
+            {"id": post_id},
+            {"$inc": {"shares_count": -1}}
+        )
+        
+        # Get updated shares count and broadcast
+        updated_post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "shares_count": 1})
+        shares_count = max(updated_post.get("shares_count", 0), 0) if updated_post else 0
+        
+        return {"success": True, "message": "Repost removed", "shares_count": shares_count}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error removing repost: {str(e)}")
+
 # ==================== USER PROFILE ENDPOINTS ====================
 
 @router.get("/user/{user_id}")
