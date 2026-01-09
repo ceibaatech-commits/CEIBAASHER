@@ -439,7 +439,14 @@ const VictoryLane = () => {
       if (activeTab === 'trending') endpoint = `${BACKEND_URL}/api/social/feed/trending?skip=${skip}&limit=${limit}`;
       if (activeTab === 'following' && user) endpoint = `${BACKEND_URL}/api/social/feed/following?user_id=${user.id}&skip=${skip}&limit=${limit}`;
       
-      const response = await axios.get(endpoint);
+      // Include auth header if user is logged in
+      const headers = {};
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await axios.get(endpoint, { headers });
       if (response.data.success) {
         const postsData = response.data.posts || [];
         const hasMoreData = response.data.has_more || false;
