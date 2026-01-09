@@ -755,14 +755,6 @@ const Dashboard = () => {
                               >
                                 <Bookmark className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${bookmarkedPosts.has(post.id) ? 'fill-current' : ''}`} />
                               </button>
-                            </div>}
-                                className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-emerald-500 transition-colors"
-                              >
-                                <div className="p-1 rounded-full bg-emerald-50/50 group-hover:bg-emerald-100 transition-colors">
-                                  <Repeat2 className="w-[16px] h-[16px] text-emerald-400 group-hover:text-emerald-500 transition-colors" />
-                                </div>
-                                <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
-                              </button>
                             </div>
                           </div>
                         </div>
