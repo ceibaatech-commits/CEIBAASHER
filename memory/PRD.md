@@ -32,6 +32,11 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 
 ## Recent Implementations (January 2025)
 
+### Profile Posts Bug Fix (Jan 9, 2025) - COMPLETED
+- Fixed bug where clicking username on Victory Lane showed "No posts yet" on profile
+- Updated profile API endpoints to handle both username and user_id lookups
+- Fixed: `/api/profile/{username}/posts`, `/api/profile/{username}/quiz-rooms`, `/api/profile/{username}/liked-posts`, `/api/profile/{username}/reposts`
+
 ### Victory Lane Post UI Redesign (Jan 9, 2025) - COMPLETED
 - Redesigned PostCard component with modern, clean layout
 - Avatar, username, timestamp, and tags now inline in single row
