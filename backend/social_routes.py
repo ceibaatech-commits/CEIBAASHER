@@ -454,18 +454,27 @@ async def share_post(post_id: str, request: Request):
     """Share/retweet a post"""
     current_user = get_user_from_token(request)
     
-    original_post = await db.posts.find_one({"id": post_id})
+    # Check in social_posts first (main collection), then posts
+    original_post = await db.social_posts.find_one({"id": post_id})
+    if not original_post:
+        original_post = await db.posts.find_one({"id": post_id})
     if not original_post:
         raise HTTPException(status_code=404, detail="Post not found")
     
     user = await get_user_details(current_user["id"])
     
-    # Check if user already shared this post
-    existing_share = await db.posts.find_one({
+    # Check if user already shared this post (check both collections)
+    existing_share = await db.social_posts.find_one({
         "user_id": user["id"],
         "original_post_id": post_id,
         "is_retweet": True
     })
+    if not existing_share:
+        existing_share = await db.posts.find_one({
+            "user_id": user["id"],
+            "original_post_id": post_id,
+            "is_retweet": True
+        })
     
     if existing_share:
         raise HTTPException(status_code=400, detail="You already shared this post")
@@ -498,13 +507,19 @@ async def share_post(post_id: str, request: Request):
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.posts.insert_one(shared_post)
+    # Insert into social_posts (main collection used by feed)
+    await db.social_posts.insert_one(shared_post)
     
-    # Increment share count on original post
-    await db.posts.update_one(
+    # Increment share count on original post (try both collections)
+    result = await db.social_posts.update_one(
         {"id": post_id},
         {"$inc": {"shares_count": 1}}
     )
+    if result.modified_count == 0:
+        await db.posts.update_one(
+            {"id": post_id},
+            {"$inc": {"shares_count": 1}}
+        )
     
     shared_post.pop("_id", None)
     return shared_post
@@ -516,24 +531,38 @@ async def unshare_post(post_id: str, request: Request):
     current_user = get_user_from_token(request)
     user = await get_user_details(current_user["id"])
     
-    # Find the user's repost of this post
-    shared_post = await db.posts.find_one({
+    # Find the user's repost of this post (check social_posts first, then posts)
+    shared_post = await db.social_posts.find_one({
         "user_id": user["id"],
         "original_post_id": post_id,
         "is_retweet": True
     })
     
+    collection_to_use = db.social_posts
+    if not shared_post:
+        shared_post = await db.posts.find_one({
+            "user_id": user["id"],
+            "original_post_id": post_id,
+            "is_retweet": True
+        })
+        collection_to_use = db.posts
+    
     if not shared_post:
         raise HTTPException(status_code=404, detail="Repost not found")
     
-    # Delete the repost
-    await db.posts.delete_one({"id": shared_post["id"]})
+    # Delete the repost from the correct collection
+    await collection_to_use.delete_one({"id": shared_post["id"]})
     
-    # Decrement share count on original post
-    await db.posts.update_one(
+    # Decrement share count on original post (try both collections)
+    result = await db.social_posts.update_one(
         {"id": post_id},
         {"$inc": {"shares_count": -1}}
     )
+    if result.modified_count == 0:
+        await db.posts.update_one(
+            {"id": post_id},
+            {"$inc": {"shares_count": -1}}
+        )
     
     return {"message": "Repost removed successfully"}
 
