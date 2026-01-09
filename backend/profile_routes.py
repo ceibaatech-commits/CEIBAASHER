@@ -1034,8 +1034,14 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
 async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = None):
     """Get all quiz rooms created by a specific user"""
     try:
-        # Get user by username
-        user = await get_user_by_username(username)
+        # Get user by username first, then try by ID if that fails
+        try:
+            user = await get_user_by_username(username)
+        except:
+            # If username lookup fails, try looking up by ID (for UUID-based URLs)
+            user = await db.users.find_one({"id": username}, {"_id": 0})
+            if not user:
+                raise HTTPException(status_code=404, detail="User not found")
         user_id = user["id"]
         
         # Privacy check - quiz rooms are publicly visible
