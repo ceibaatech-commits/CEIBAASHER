@@ -171,10 +171,30 @@ const SinglePost = () => {
                 size="lg"
               />
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
                   <span className="font-bold text-gray-900">{post.user_name}</span>
-                  {post.user_verified && (
+                  {post.is_verified && (
                     <CheckCircle className="w-5 h-5 text-blue-500 fill-blue-500" />
+                  )}
+                  {post.isTeacher && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-500 text-white">
+                      Teacher
+                    </span>
+                  )}
+                  {post.isProfessor && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-600 text-white">
+                      Professor
+                    </span>
+                  )}
+                  {post.isInstitute && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-600 text-white">
+                      Institute
+                    </span>
+                  )}
+                  {post.isOfficial && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-800 text-white">
+                      Official
+                    </span>
                   )}
                 </div>
                 <p className="text-sm text-gray-500">{formatDate(post.created_at)}</p>
