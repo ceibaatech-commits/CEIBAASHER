@@ -460,19 +460,37 @@ async def share_post(post_id: str, request: Request):
     
     user = await get_user_details(current_user["id"])
     
+    # Check if user already shared this post
+    existing_share = await db.posts.find_one({
+        "user_id": user["id"],
+        "original_post_id": post_id,
+        "is_retweet": True
+    })
+    
+    if existing_share:
+        raise HTTPException(status_code=400, detail="You already shared this post")
+    
     # Create a new post that references the original
     share_id = str(uuid.uuid4())
     shared_post = {
         "id": share_id,
         "user_id": user["id"],
+        "username": user.get("username", ""),
         "user_name": user["name"],
+        "user_avatar": user.get("profile_picture"),
         "user_profile_picture": user.get("profile_picture"),
         "is_verified": user.get("is_verified", False),
-        "content": f"Shared: {original_post['content'][:50]}...",
+        "is_retweet": True,
+        "content": original_post.get('content', ''),
         "original_post_id": post_id,
-        "original_user_name": original_post["user_name"],
-        "hashtags": [],
-        "media_urls": [],
+        "original_user_id": original_post.get("user_id"),
+        "original_user_name": original_post.get("user_name"),
+        "original_username": original_post.get("username"),
+        "original_user_avatar": original_post.get("user_avatar") or original_post.get("user_profile_picture"),
+        "original_created_at": original_post.get("created_at"),
+        "hashtags": original_post.get("hashtags", []),
+        "tags": original_post.get("tags", []),
+        "media_urls": original_post.get("media_urls", []),
         "likes_count": 0,
         "comments_count": 0,
         "shares_count": 0,
@@ -490,6 +508,34 @@ async def share_post(post_id: str, request: Request):
     
     shared_post.pop("_id", None)
     return shared_post
+
+
+@router.delete("/social/posts/{post_id}/unshare")
+async def unshare_post(post_id: str, request: Request):
+    """Remove a repost/share of a post"""
+    current_user = get_user_from_token(request)
+    user = await get_user_details(current_user["id"])
+    
+    # Find the user's repost of this post
+    shared_post = await db.posts.find_one({
+        "user_id": user["id"],
+        "original_post_id": post_id,
+        "is_retweet": True
+    })
+    
+    if not shared_post:
+        raise HTTPException(status_code=404, detail="Repost not found")
+    
+    # Delete the repost
+    await db.posts.delete_one({"id": shared_post["id"]})
+    
+    # Decrement share count on original post
+    await db.posts.update_one(
+        {"id": post_id},
+        {"$inc": {"shares_count": -1}}
+    )
+    
+    return {"message": "Repost removed successfully"}
 
 # ==================== FOLLOW SYSTEM ====================
 
