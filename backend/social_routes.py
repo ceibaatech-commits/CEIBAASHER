@@ -528,10 +528,13 @@ async def share_post(post_id: str, request: Request):
 @router.delete("/social/posts/{post_id}/unshare")
 async def unshare_post(post_id: str, request: Request):
     """Remove a repost/share of a post"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     current_user = get_user_from_token(request)
     user = await get_user_details(current_user["id"])
     
-    print(f"[UNSHARE] Looking for repost - user_id: {user['id']}, original_post_id: {post_id}")
+    logger.warning(f"[UNSHARE] Looking for repost - user_id: {user['id']}, original_post_id: {post_id}")
     
     # Find the user's repost of this post (check social_posts first, then posts)
     shared_post = await db.social_posts.find_one({
@@ -540,7 +543,7 @@ async def unshare_post(post_id: str, request: Request):
         "is_retweet": True
     })
     
-    print(f"[UNSHARE] Found in social_posts: {shared_post is not None}")
+    logger.warning(f"[UNSHARE] Found in social_posts: {shared_post is not None}, data: {shared_post.get('id') if shared_post else None}")
     
     collection_to_use = db.social_posts
     if not shared_post:
@@ -550,13 +553,13 @@ async def unshare_post(post_id: str, request: Request):
             "is_retweet": True
         })
         collection_to_use = db.posts
-        print(f"[UNSHARE] Found in posts: {shared_post is not None}")
+        logger.warning(f"[UNSHARE] Found in posts: {shared_post is not None}")
     
     if not shared_post:
-        print(f"[UNSHARE] Repost NOT FOUND - returning 404")
+        logger.warning(f"[UNSHARE] Repost NOT FOUND - returning 404")
         raise HTTPException(status_code=404, detail="Repost not found")
     
-    print(f"[UNSHARE] Deleting repost id: {shared_post.get('id')}")
+    logger.warning(f"[UNSHARE] Deleting repost id: {shared_post.get('id')}")
     
     # Delete the repost from the correct collection
     await collection_to_use.delete_one({"id": shared_post["id"]})
