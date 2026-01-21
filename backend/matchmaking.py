@@ -38,6 +38,15 @@ class MatchmakingManager:
         self.waiting_players: List[WaitingPlayer] = []
         self.active_battles: Dict[str, MatchedBattle] = {}
     
+    def normalize_subject(self, subject: str) -> str:
+        """Normalize subject name for matching (remove marks info, lowercase, strip)"""
+        import re
+        # Remove anything in parentheses like "(300 Marks)"
+        normalized = re.sub(r'\s*\([^)]*\)\s*', '', subject)
+        # Convert to lowercase and strip whitespace
+        normalized = normalized.lower().strip()
+        return normalized
+    
     def add_to_queue(self, socket_id: str, player_name: str, exam: str, subject: str) -> Optional[WaitingPlayer]:
         """
         Add a player to matchmaking queue
@@ -47,13 +56,21 @@ class MatchmakingManager:
         if any(p.socket_id == socket_id for p in self.waiting_players):
             return None
         
+        # Normalize exam and subject for matching
+        normalized_exam = exam.lower().strip()
+        normalized_subject = self.normalize_subject(subject)
+        
         # Try to find a match
         for i, waiting_player in enumerate(self.waiting_players):
-            if (waiting_player.exam == exam and 
-                waiting_player.subject == subject and 
+            waiting_normalized_exam = waiting_player.exam.lower().strip()
+            waiting_normalized_subject = self.normalize_subject(waiting_player.subject)
+            
+            if (waiting_normalized_exam == normalized_exam and 
+                waiting_normalized_subject == normalized_subject and 
                 waiting_player.socket_id != socket_id):
                 # Match found! Remove from queue and return
                 opponent = self.waiting_players.pop(i)
+                print(f"[MATCHMAKING] Match found: '{exam}/{subject}' matches '{waiting_player.exam}/{waiting_player.subject}'")
                 return opponent
         
         # No match found, add to queue
