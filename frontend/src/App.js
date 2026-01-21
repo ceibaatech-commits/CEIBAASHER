@@ -178,7 +178,7 @@ function App() {
           <Route path="/live-battle-1v1/:examId/:subject/:topic" element={<LiveBattleMode />} />
           
           {/* 1v1 Matchmaking without audio/video */}
-          <Route path="/matchmaking/:examId/:subject/:topic" element={<Matchmaking1v1} />
+          <Route path="/matchmaking/:examId/:subject/:topic" element={<Matchmaking1v1 />} />
         </Routes>
             </div>
             <MobileBottomNav />
