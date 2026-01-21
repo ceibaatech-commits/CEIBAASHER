@@ -921,6 +921,60 @@ async def battle_answer(sid, data):
         print(f"[ERROR] battle_answer: {str(e)}")
 
 
+@sio.event
+async def battle_chat(sid, data):
+    """Handle chat messages in 1v1 battles"""
+    try:
+        room_id = data.get('roomId')
+        player_name = data.get('playerName', 'Player')
+        message = data.get('message', '')
+        
+        if not room_id or not message:
+            return
+            
+        # Broadcast message to opponent in the room
+        await sio.emit('chat-message', {
+            'playerName': player_name,
+            'message': message,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        }, room=room_id, skip_sid=sid)
+        
+        print(f"[BATTLE_CHAT] {player_name} in {room_id}: {message[:50]}...")
+        
+    except Exception as e:
+        print(f"[ERROR] battle_chat: {str(e)}")
+
+
+@sio.event
+async def battle_complete(sid, data):
+    """Handle battle completion"""
+    try:
+        room_id = data.get('roomId')
+        player_name = data.get('playerName', 'Player')
+        final_score = data.get('finalScore', 0)
+        
+        battle = matchmaking_manager.get_battle(room_id)
+        if not battle:
+            return
+            
+        # Update final score
+        if battle.player1['socketId'] == sid:
+            battle.player1['finalScore'] = final_score
+        elif battle.player2['socketId'] == sid:
+            battle.player2['finalScore'] = final_score
+            
+        # Notify opponent
+        await sio.emit('opponent-score-update', {
+            'playerName': player_name,
+            'score': final_score
+        }, room=room_id, skip_sid=sid)
+        
+        print(f"[BATTLE_COMPLETE] {player_name} finished with {final_score} pts in {room_id}")
+        
+    except Exception as e:
+        print(f"[ERROR] battle_complete: {str(e)}")
+
+
 # ==================== WEBRTC SIGNALING EVENTS ====================
 
 @sio.event
