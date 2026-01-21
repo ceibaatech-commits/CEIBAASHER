@@ -810,17 +810,18 @@ async def leave_room(sid, data):
 
 # ==================== MATCHMAKING EVENTS ====================
 
-@sio.event
+@sio.on('find-match')
 async def find_match(sid, data):
     """Find a match for quiz battle"""
     try:
         player_name = data.get('playerName', 'Player')
         exam = data.get('exam', '')
         subject = data.get('subject', '')
+        topic = data.get('topic', '')
 
-        print(f"[MATCHMAKING] {player_name} looking for match in {exam} - {subject}")
+        print(f"[MATCHMAKING] {player_name} looking for match in {exam} - {subject} - {topic}")
 
-        # Try to find a match
+        # Try to find a match (match on exam + subject for now)
         opponent = matchmaking_manager.add_to_queue(sid, player_name, exam, subject)
 
         if opponent:
