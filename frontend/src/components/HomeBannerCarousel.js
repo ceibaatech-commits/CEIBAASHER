@@ -1,199 +1,214 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, TrendingUp, FileText } from 'lucide-react';
+import { User, Users, Trophy, Swords } from 'lucide-react';
 
-const CompactBanner = () => {
+const HeroBanner = () => {
   const navigate = useNavigate();
-  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const banners = [
+  const features = [
     {
-      id: 1,
-      exam: 'RRB NTPC',
-      title: 'RRB NTPC 2026',
-      subtitle: 'Railway Recruitment Board - Non-Technical Popular Categories',
-      highlights: [
-        '5,800+ Vacancies Expected',
-        'Complete Syllabus Coverage',
-        'Previous Year Questions'
-      ],
-      gradient: 'from-blue-600 via-indigo-600 to-purple-700',
-      ctaText: 'View Syllabus & Apply',
-      icon: '🚂',
-      link: '/exams/rrb-ntpc'
+      id: 'solo',
+      title: 'Solo Practice',
+      description: 'Perfect your mechanics with unlimited MCQs & mock tests',
+      icon: User,
+      gradient: 'from-cyan-500 to-blue-600',
+      bgGlow: 'bg-cyan-500/20',
+      link: '/skill-drills'
     },
     {
-      id: 2,
-      exam: 'AFCAT',
-      title: 'Indian Air Force AFCAT',
-      subtitle: 'Air Force Common Admission Test 2026',
-      highlights: [
-        'Flying & Ground Duty Branches',
-        'Complete Exam Pattern',
-        'Free Mock Tests Available'
-      ],
-      gradient: 'from-sky-500 via-blue-600 to-indigo-700',
-      ctaText: 'Details & Free Mock Test',
-      icon: '✈️',
-      link: '/exams/afcat'
+      id: 'rooms',
+      title: 'Join Rooms',
+      description: 'Team up instantly in multiplayer quiz battles',
+      icon: Users,
+      gradient: 'from-purple-500 to-pink-600',
+      bgGlow: 'bg-purple-500/20',
+      link: '/join-room'
+    },
+    {
+      id: 'victory',
+      title: 'Victory Lane',
+      description: 'Post your glory on leaderboards & achievements',
+      icon: Trophy,
+      gradient: 'from-amber-500 to-orange-600',
+      bgGlow: 'bg-amber-500/20',
+      link: '/victory-lane'
+    },
+    {
+      id: 'matchmaking',
+      title: '1v1 Matchmaking',
+      description: 'Real-time duels against matched opponents',
+      icon: Swords,
+      gradient: 'from-rose-500 to-red-600',
+      bgGlow: 'bg-rose-500/20',
+      link: '/matchmaking'
     }
   ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % banners.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentBanner = banners[currentSlide];
 
   return (
     <div className="w-full">
       <style>{`
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          0%, 100% { transform: translateY(0px) rotateX(0deg); }
+          50% { transform: translateY(-8px) rotateX(2deg); }
         }
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-20px); }
-          to { opacity: 1; transform: translateX(0); }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
         }
-        @keyframes pulseGlow {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.6; }
+        @keyframes pulse-ring {
+          0% { transform: scale(1); opacity: 0.5; }
+          50% { transform: scale(1.05); opacity: 0.3; }
+          100% { transform: scale(1); opacity: 0.5; }
         }
-        @keyframes rotateClockwise {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        @keyframes gradient-shift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
-        @keyframes rotateCounterClockwise {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0deg); }
+        @keyframes card-hover-glow {
+          0%, 100% { box-shadow: 0 20px 40px -15px rgba(0,0,0,0.3); }
+          50% { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); }
         }
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 4s ease-in-out infinite;
         }
-        .animate-slide-in {
-          animation: slideInLeft 0.6s ease-out forwards;
+        .animate-shimmer {
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          background-size: 200% 100%;
+          animation: shimmer 2s infinite;
         }
-        .animate-pulse-glow {
-          animation: pulseGlow 4s ease-in-out infinite;
+        .animate-pulse-ring {
+          animation: pulse-ring 3s ease-in-out infinite;
         }
-        .rotate-ring-1 {
-          animation: rotateClockwise 20s linear infinite;
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradient-shift 8s ease infinite;
         }
-        .rotate-ring-2 {
-          animation: rotateCounterClockwise 15s linear infinite;
+        .card-3d {
+          transform-style: preserve-3d;
+          perspective: 1000px;
         }
-        .rotate-ring-3 {
-          animation: rotateClockwise 25s linear infinite;
+        .card-3d:hover {
+          transform: translateY(-8px) rotateX(5deg);
+        }
+        .card-3d:hover .icon-container {
+          transform: translateZ(30px) scale(1.1);
+        }
+        .card-3d:hover .card-content {
+          transform: translateZ(20px);
+        }
+        .icon-container {
+          transition: transform 0.4s ease;
+        }
+        .card-content {
+          transition: transform 0.4s ease;
         }
       `}</style>
 
-      <div className={`relative pt-16 overflow-hidden shadow-lg bg-gradient-to-r ${currentBanner.gradient}`}>
-        <div className="relative h-64 sm:h-72 md:h-80 lg:h-96">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse-glow"></div>
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse-glow" style={{animationDelay: '2s'}}></div>
-          
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center relative z-10 pt-4">
-            <div className="grid md:grid-cols-2 gap-8 items-center w-full">
-              
-              <div className="text-white space-y-3">
-                <div className="flex items-center gap-2 animate-slide-in">
-                  <span className="text-3xl sm:text-4xl">{currentBanner.icon}</span>
-                  <span className="bg-white/25 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold border border-white/30">
-                    {currentBanner.exam}
-                  </span>
-                </div>
+      {/* Main Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 animate-gradient"></div>
+        
+        {/* Floating Orbs */}
+        <div className="absolute top-10 left-10 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-ring"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse-ring" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-3xl animate-pulse-ring" style={{animationDelay: '2s'}}></div>
+        
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }}></div>
 
-                <div className="animate-slide-in" style={{animationDelay: '0.1s'}}>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 leading-tight">
-                    {currentBanner.title}
-                  </h2>
-                  <p className="text-sm sm:text-base text-white/90 font-medium hidden sm:block">
-                    {currentBanner.subtitle}
-                  </p>
-                </div>
-
-                <div className="space-y-2 animate-slide-in" style={{animationDelay: '0.2s'}}>
-                  {currentBanner.highlights.map((highlight, index) => (
-                    <div key={index} className="flex items-center gap-2 text-sm sm:text-base">
-                      <div className="w-5 h-5 bg-white/20 backdrop-blur-sm rounded flex items-center justify-center flex-shrink-0">
-                        <TrendingUp className="w-3 h-3 text-white" />
-                      </div>
-                      <span className="text-white/95 font-medium">{highlight}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="animate-slide-in pt-2" style={{animationDelay: '0.3s'}}>
-                  <button 
-                    onClick={() => navigate(currentBanner.link)}
-                    className="bg-white text-gray-900 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-bold text-sm sm:text-base hover:bg-gray-100 transition-all inline-flex items-center gap-2 shadow-xl hover:shadow-2xl hover:scale-105 group"
-                  >
-                    <span>{currentBanner.ctaText}</span>
-                    <ExternalLink className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="hidden md:flex items-center justify-center relative">
-                <div className="relative w-72 h-72 lg:w-80 lg:h-80">
-                  
-                  <div className="absolute inset-0 w-full h-full">
-                    <div className="w-full h-full border-[6px] border-white border-dashed rounded-full rotate-ring-1 shadow-lg"></div>
-                  </div>
-                  
-                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
-                    <div className="w-56 h-56 lg:w-64 lg:h-64 border-[5px] border-white rounded-full rotate-ring-2 shadow-lg"></div>
-                  </div>
-                  
-                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
-                    <div className="w-40 h-40 lg:w-48 lg:h-48 border-4 border-white border-dotted rounded-full rotate-ring-3 shadow-lg"></div>
-                  </div>
-                  
-                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
-                    <div className="w-32 h-32 lg:w-40 lg:h-40 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border-4 border-white shadow-2xl">
-                      <div className="w-28 h-28 lg:w-36 lg:h-36 bg-gradient-to-br from-white/30 to-white/10 rounded-full flex items-center justify-center border-2 border-white/50">
-                        <div className="text-center">
-                          <div className="relative inline-block">
-                            <FileText className="w-14 h-14 lg:w-16 lg:h-16 text-white mx-auto mb-2 animate-float" />
-                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse shadow-lg"></div>
-                          </div>
-                          <p className="text-white font-black text-3xl lg:text-4xl mb-0.5 drop-shadow-lg">2026</p>
-                          <p className="text-white/95 font-semibold text-sm">Exam Ready</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl animate-float border-2 border-white z-10">
-                    🔥 Hot
-                  </div>
-                  <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-green-400 to-emerald-500 text-gray-900 px-3 py-1.5 rounded-full font-bold text-sm shadow-2xl animate-float border-2 border-white z-10" style={{animationDelay: '1.5s'}}>
-                    ✨ New
-                  </div>
-                </div>
-              </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+          {/* Header Section */}
+          <div className="text-center mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 mb-6">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+              <span className="text-white/90 text-sm font-medium">Experience Gaming-Style Learning</span>
             </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 leading-tight">
+              <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Level Up
+              </span>
+              {' '}Your Exam Prep
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+              Master competitive exams with our battle-tested platform featuring solo practice, multiplayer battles, and real-time matchmaking
+            </p>
           </div>
-        </div>
 
-        <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {banners.map((_, index) => (
+          {/* 3D Feature Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon;
+              return (
+                <div
+                  key={feature.id}
+                  onClick={() => navigate(feature.link)}
+                  className="card-3d relative group cursor-pointer transition-all duration-500"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {/* Background Glow */}
+                  <div className={`absolute inset-0 ${feature.bgGlow} rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                  
+                  {/* Card */}
+                  <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 md:p-8 overflow-hidden transition-all duration-500 group-hover:bg-white/15 group-hover:border-white/30">
+                    {/* Shimmer Effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="absolute inset-0 animate-shimmer"></div>
+                    </div>
+                    
+                    {/* Icon Container */}
+                    <div className="icon-container relative mb-6">
+                      <div className={`w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-shadow duration-300`}>
+                        <IconComponent className="w-8 h-8 md:w-10 md:h-10 text-white" strokeWidth={2} />
+                      </div>
+                      {/* Floating Ring */}
+                      <div className={`absolute -inset-2 border-2 border-dashed rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-500`} style={{borderColor: 'rgba(255,255,255,0.3)'}}></div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="card-content relative">
+                      <h3 className="text-xl md:text-2xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/80 group-hover:bg-clip-text transition-all duration-300">
+                        {feature.title}
+                      </h3>
+                      <p className="text-white/60 text-sm md:text-base leading-relaxed group-hover:text-white/80 transition-colors duration-300">
+                        {feature.description}
+                      </p>
+                    </div>
+                    
+                    {/* Bottom Accent Line */}
+                    <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* CTA Section */}
+          <div className="mt-12 md:mt-16 text-center">
             <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-1.5 rounded-full transition-all ${
-                currentSlide === index ? 'w-8 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/70'
-              }`}
-            />
-          ))}
+              onClick={() => navigate('/skill-drills')}
+              className="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-purple-500/25 hover:scale-105 transition-all duration-300 animate-gradient"
+              style={{ backgroundSize: '200% 200%' }}
+            >
+              <span>Start Your Journey</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </button>
+            
+            <p className="mt-4 text-white/50 text-sm">
+              Join 50,000+ students already leveling up
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default CompactBanner;
+export default HeroBanner;
