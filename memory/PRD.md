@@ -42,6 +42,17 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 - Features animated gradients, glassmorphism, 3D hover effects
 - Dark theme with cyan/purple/pink accent colors
 
+### 1v1 Matchmaking System (Jan 21, 2025) - COMPLETED
+- Created new `/matchmaking/:examId/:subject/:topic` route
+- Built `Matchmaking1v1.js` page with:
+  - Setup screen with battle rules
+  - Real-time matchmaking via Socket.IO
+  - Live quiz battle interface (no audio/video)
+  - Live chat with opponent during battle
+  - Results screen with winner/loser display
+- Added backend handlers for `battle-chat` and `battle_complete` events
+- Updated ExamSyllabus.js and ModernExamSyllabus.js to use new matchmaking route
+
 ### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
 - Fixed UX issue: reposts now show "Undo" button instead of "Delete"
 - For reposts (`is_retweet === true`): Shows Undo icon (orange) that calls `/api/social/posts/{id}/unshare`
