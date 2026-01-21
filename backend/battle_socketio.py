@@ -922,7 +922,7 @@ async def battle_answer(sid, data):
         print(f"[ERROR] battle_answer: {str(e)}")
 
 
-@sio.event
+@sio.on('battle-chat')
 async def battle_chat(sid, data):
     """Handle chat messages in 1v1 battles"""
     try:
