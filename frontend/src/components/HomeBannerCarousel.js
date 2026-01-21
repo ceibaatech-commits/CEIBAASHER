@@ -1,37 +1,50 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Users, Trophy, Swords, Sparkles } from 'lucide-react';
 
 const HeroBanner = () => {
+  const navigate = useNavigate();
+  
   const features = [
     {
       id: 'solo',
       title: 'Solo Practice',
       desc: 'Unlimited MCQs & mock tests',
       icon: User,
-      iconBg: '#0891b2'
+      iconBg: '#0891b2',
+      link: null
     },
     {
       id: 'rooms',
       title: 'Join Rooms',
       desc: 'Multiplayer quiz battles',
       icon: Users,
-      iconBg: '#7c3aed'
+      iconBg: '#7c3aed',
+      link: '/join-room'
     },
     {
       id: 'victory',
       title: 'Victory Lane',
       desc: 'Leaderboards & glory',
       icon: Trophy,
-      iconBg: '#ea580c'
+      iconBg: '#ea580c',
+      link: '/victory-lane'
     },
     {
       id: 'duel',
       title: '1v1 Duels',
       desc: 'Real-time matchmaking',
       icon: Swords,
-      iconBg: '#dc2626'
+      iconBg: '#dc2626',
+      link: null
     }
   ];
+
+  const handleCardClick = (link) => {
+    if (link) {
+      navigate(link);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -103,10 +116,12 @@ const HeroBanner = () => {
             <div className="grid grid-cols-2 gap-4">
               {features.map((feature, index) => {
                 const Icon = feature.icon;
+                const isClickable = feature.link !== null;
                 return (
                   <div
                     key={feature.id}
-                    className="group relative bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 transition-all duration-300 hover:bg-slate-800/80 hover:border-slate-600/50 hover:-translate-y-1"
+                    onClick={() => handleCardClick(feature.link)}
+                    className={`group relative bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 transition-all duration-300 hover:bg-slate-800/80 hover:border-slate-600/50 hover:-translate-y-1 ${isClickable ? 'cursor-pointer' : ''}`}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     {/* Icon */}
@@ -132,15 +147,15 @@ const HeroBanner = () => {
         </div>
       </div>
 
-      {/* Welcome Banner - Compact One-Liner */}
-      <div className="bg-gradient-to-r from-teal-700 via-teal-600 to-teal-700 py-4">
+      {/* Welcome Banner - Compact One-Liner with Better Colors */}
+      <div className="bg-slate-900 border-y border-slate-800 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-teal-50 text-sm md:text-base">
-            <span className="font-bold text-white">Welcome to the Future of Learning!</span>
-            <span className="mx-2 text-teal-300">•</span>
-            <span>We're excited to welcome you to </span>
+          <p className="text-center text-slate-300 text-sm md:text-base">
+            <span className="font-bold text-teal-400">Welcome to the Future of Learning!</span>
+            <span className="mx-2 text-slate-600">•</span>
+            <span className="text-slate-400">We're excited to welcome you to </span>
             <span className="font-semibold text-white">Ceibaa.in</span>
-            <span>—India's first Social Learning App for students! 🇮🇳</span>
+            <span className="text-slate-400">—India's first Social Learning App for students! 🇮🇳</span>
           </p>
         </div>
       </div>
