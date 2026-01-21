@@ -32,11 +32,26 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 
 ## Recent Implementations (January 2025)
 
+### Homepage 3D Hero Banner (Jan 21, 2025) - COMPLETED
+- Removed NTPC and AFCAT exam banners from homepage
+- Created modern 3D hero banner with 4 gaming-style feature cards:
+  - Solo Practice (User icon) - Links to /skill-drills
+  - Join Rooms (Users icon) - Links to /join-room
+  - Victory Lane (Trophy icon) - Links to /victory-lane
+  - 1v1 Matchmaking (Swords icon) - Links to /matchmaking
+- Features animated gradients, glassmorphism, 3D hover effects
+- Dark theme with cyan/purple/pink accent colors
+
 ### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
 - Fixed UX issue: reposts now show "Undo" button instead of "Delete"
 - For reposts (`is_retweet === true`): Shows Undo icon (orange) that calls `/api/social/posts/{id}/unshare`
 - For original posts: Shows Delete icon (red) that deletes the post
 - Added `handleUndoRepost` function to Dashboard.js
+
+### SinglePost Undo/Delete Fix (Jan 9, 2025) - COMPLETED
+- Added Undo functionality for reposts on SinglePost page
+- Shows Undo button for reposts, Delete button for own posts
+- Uses original_post_id for unshare API call
 
 ### Profile Posts UI Redesign (Jan 9, 2025) - COMPLETED
 - Updated profile page post cards to match Victory Lane modern design
