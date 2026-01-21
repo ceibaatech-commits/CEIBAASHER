@@ -4,7 +4,7 @@ import { Trophy, Zap, Users, TrendingUp, BookOpen, Brain, Target, Award, ArrowRi
 import axios from 'axios';
 import StunningCeibaaLogo from '../components/StunningCeibaaLogo';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const NewHome = () => {
   const navigate = useNavigate();

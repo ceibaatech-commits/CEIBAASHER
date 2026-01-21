@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FileSpreadsheet, Plus, Trash2, Check, X, ExternalLink } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const SheetManager = () => {
   const navigate = useNavigate();

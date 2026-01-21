@@ -8,7 +8,7 @@ import 'katex/dist/katex.min.css';
 import { renderMathText } from '../utils/renderMath';
 import LanguageSelector, { useTranslation } from '../components/LanguageSelector';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const QuizRoom = () => {
   const { roomCode } = useParams();

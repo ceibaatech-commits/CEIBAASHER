@@ -10,7 +10,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const Profile = () => {
   const { userId } = useParams();

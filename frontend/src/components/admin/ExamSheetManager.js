@@ -6,7 +6,7 @@ import {
   ChevronDown, AlertCircle, RefreshCw, Save, Link as LinkIcon
 } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const ExamSheetManager = () => {
   const [selectedOption, setSelectedOption] = useState('exam'); // 'exam', 'class', or 'book'

@@ -4,7 +4,7 @@ import { ArrowLeft, Users, Lock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
+const BATTLE_URL = window.location.origin;
 
 const JoinRoom = () => {
   const navigate = useNavigate();

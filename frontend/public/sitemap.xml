@@ -6,279 +6,279 @@
   
   <!-- Main Pages -->
   <url>
-    <loc>https://ceibaa.com/</loc>
+    <loc>https://ceibaa.in/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/victory-lane</loc>
+    <loc>https://ceibaa.in/victory-lane</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/earn</loc>
+    <loc>https://ceibaa.in/earn</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests</loc>
+    <loc>https://ceibaa.in/chapter-tests</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/courses</loc>
+    <loc>https://ceibaa.in/courses</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/join-room</loc>
+    <loc>https://ceibaa.in/join-room</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/board</loc>
+    <loc>https://ceibaa.in/board</loc>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/leaderboard</loc>
+    <loc>https://ceibaa.in/leaderboard</loc>
     <changefreq>hourly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <!-- Auth Pages -->
   <url>
-    <loc>https://ceibaa.com/login</loc>
+    <loc>https://ceibaa.in/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/signup</loc>
+    <loc>https://ceibaa.in/signup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   
   <!-- Information Pages -->
   <url>
-    <loc>https://ceibaa.com/about</loc>
+    <loc>https://ceibaa.in/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/contact</loc>
+    <loc>https://ceibaa.in/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/faq</loc>
+    <loc>https://ceibaa.in/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/terms</loc>
+    <loc>https://ceibaa.in/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/privacy</loc>
+    <loc>https://ceibaa.in/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   
   <!-- Exam Pages - Admission Tests -->
   <url>
-    <loc>https://ceibaa.com/exam/jee-main</loc>
+    <loc>https://ceibaa.in/exam/jee-main</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/jee-advanced</loc>
+    <loc>https://ceibaa.in/exam/jee-advanced</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/cuet</loc>
+    <loc>https://ceibaa.in/exam/cuet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/gate</loc>
+    <loc>https://ceibaa.in/exam/gate</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/cat</loc>
+    <loc>https://ceibaa.in/exam/cat</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - Medical -->
   <url>
-    <loc>https://ceibaa.com/exam/neet-ug</loc>
+    <loc>https://ceibaa.in/exam/neet-ug</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/neet-pg</loc>
+    <loc>https://ceibaa.in/exam/neet-pg</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/aiims</loc>
+    <loc>https://ceibaa.in/exam/aiims</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - Defence -->
   <url>
-    <loc>https://ceibaa.com/exam/nda</loc>
+    <loc>https://ceibaa.in/exam/nda</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/cds</loc>
+    <loc>https://ceibaa.in/exam/cds</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/afcat</loc>
+    <loc>https://ceibaa.in/exam/afcat</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - Banking -->
   <url>
-    <loc>https://ceibaa.com/exam/ibps-po</loc>
+    <loc>https://ceibaa.in/exam/ibps-po</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/ibps-clerk</loc>
+    <loc>https://ceibaa.in/exam/ibps-clerk</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/sbi-po</loc>
+    <loc>https://ceibaa.in/exam/sbi-po</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/sbi-clerk</loc>
+    <loc>https://ceibaa.in/exam/sbi-clerk</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/rrb-ntpc</loc>
+    <loc>https://ceibaa.in/exam/rrb-ntpc</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - SSC -->
   <url>
-    <loc>https://ceibaa.com/exam/ssc-cgl</loc>
+    <loc>https://ceibaa.in/exam/ssc-cgl</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/ssc-chsl</loc>
+    <loc>https://ceibaa.in/exam/ssc-chsl</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/ssc-mts</loc>
+    <loc>https://ceibaa.in/exam/ssc-mts</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/ssc-gd</loc>
+    <loc>https://ceibaa.in/exam/ssc-gd</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - UPSC -->
   <url>
-    <loc>https://ceibaa.com/exam/upsc-cse</loc>
+    <loc>https://ceibaa.in/exam/upsc-cse</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/upsc-capf</loc>
+    <loc>https://ceibaa.in/exam/upsc-capf</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - Teaching -->
   <url>
-    <loc>https://ceibaa.com/exam/ctet</loc>
+    <loc>https://ceibaa.in/exam/ctet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/reet</loc>
+    <loc>https://ceibaa.in/exam/reet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/uptet</loc>
+    <loc>https://ceibaa.in/exam/uptet</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Exam Pages - State PSC -->
   <url>
-    <loc>https://ceibaa.com/exam/rsmssb-patwari</loc>
+    <loc>https://ceibaa.in/exam/rsmssb-patwari</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/rajasthan-police</loc>
+    <loc>https://ceibaa.in/exam/rajasthan-police</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/up-police</loc>
+    <loc>https://ceibaa.in/exam/up-police</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/exam/bihar-police</loc>
+    <loc>https://ceibaa.in/exam/bihar-police</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <!-- Chapter Tests -->
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-6</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-6</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-7</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-7</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-8</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-8</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-9</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-9</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-10</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-10</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-11/select-stream</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-11/select-stream</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://ceibaa.com/chapter-tests/class-12/select-stream</loc>
+    <loc>https://ceibaa.in/chapter-tests/class-12/select-stream</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

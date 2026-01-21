@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import Peer from 'simple-peer';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = window.location.origin || 'http://localhost:8001';
 const API_URL = BACKEND_URL;
 const QUIZ_API_URL = BACKEND_URL;
 const SOCKET_URL = BACKEND_URL; // Socket.IO integrated with FastAPI on port 8001

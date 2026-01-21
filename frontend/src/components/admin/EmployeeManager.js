@@ -6,7 +6,7 @@ import {
   Save, X, User, Lock, Briefcase, Calendar
 } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const EmployeeManager = () => {
   const [employees, setEmployees] = useState([]);

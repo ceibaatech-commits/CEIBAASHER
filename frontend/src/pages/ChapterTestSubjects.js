@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import { useAuth } from '../hooks/useAuth';
 import { CLASS_COLORS } from '../config/constants';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 // Icon mapping for subjects
 const ICON_MAP = {

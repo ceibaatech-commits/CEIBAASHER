@@ -7,7 +7,7 @@ import {
   User, Clock, BarChart3, Link as LinkIcon, Save, ChevronDown
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const EmployeeDashboard = () => {
   const navigate = useNavigate();

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Globe, ChevronDown, Check, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const LANGUAGES = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },

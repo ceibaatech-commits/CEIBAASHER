@@ -9,7 +9,7 @@ import SEO from '../components/SEO';
 import '../components/LanguageGameCard.css';
 import '../styles/exam-detail-mobile.css';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const ModernExamSyllabus = () => {
   const { examId } = useParams();

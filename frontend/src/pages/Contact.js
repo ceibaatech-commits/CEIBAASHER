@@ -6,7 +6,7 @@ import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const Contact = () => {
   const navigate = useNavigate();

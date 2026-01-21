@@ -5,7 +5,7 @@ import axios from 'axios';
 import { BookOpen, ArrowLeft, PlayCircle, FileText, User, Building2 } from 'lucide-react';
 import Header from '../components/Header';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const BookDetails = () => {
   const { bookId } = useParams();

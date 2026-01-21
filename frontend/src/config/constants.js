@@ -1,4 +1,4 @@
-export const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+export const API_URL = window.location.origin || 'http://localhost:8001';
 
 export const CLASS_COLORS = {
   '6': 'from-blue-500 to-blue-600',

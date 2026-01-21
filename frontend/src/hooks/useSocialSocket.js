@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io } from 'socket.io-client';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, onNewComment, onNotification) => {
   const socketRef = useRef(null);
@@ -10,7 +10,7 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
   useEffect(() => {
     // Create socket connection - connect to /api/socialws endpoint
     socketRef.current = io(BACKEND_URL, {
-      path: '/api/socialws/socket.io',
+      path: '/api/socialws/socket.io/',
       transports: ['polling', 'websocket'],
       reconnection: true,
       reconnectionAttempts: 5,

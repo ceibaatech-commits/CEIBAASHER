@@ -7,8 +7,8 @@ import PassageQuizLayout from '../components/PassageQuizLayout';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
-const QUIZ_API_URL = process.env.REACT_APP_BACKEND_URL; // Use main backend
+const API_URL = window.location.origin;
+const QUIZ_API_URL = window.location.origin; // Use main backend
 
 const SoloPractice = () => {
   const { examName, subjectName, examId, topicName } = useParams();
@@ -910,7 +910,7 @@ const SoloPractice = () => {
               <div className="mt-4">
                 <img 
                   src={currentQuestion.question_image.startsWith('/api') 
-                    ? `${process.env.REACT_APP_BACKEND_URL}${currentQuestion.question_image}`
+                    ? `${window.location.origin}${currentQuestion.question_image}`
                     : currentQuestion.question_image
                   }
                   alt="Question diagram"
@@ -977,7 +977,7 @@ const SoloPractice = () => {
                       {optionImage && (
                         <img 
                           src={optionImage.startsWith('/api') 
-                            ? `${process.env.REACT_APP_BACKEND_URL}${optionImage}`
+                            ? `${window.location.origin}${optionImage}`
                             : optionImage
                           }
                           alt={`Option ${String.fromCharCode(65 + index)}`}

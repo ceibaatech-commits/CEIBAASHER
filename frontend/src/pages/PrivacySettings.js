@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { Lock, Unlock, Users, Check, X, ChevronRight } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const PrivacySettings = () => {
   const { user, loading: authLoading } = useAuth();

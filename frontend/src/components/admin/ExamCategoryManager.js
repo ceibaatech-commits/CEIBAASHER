@@ -5,7 +5,7 @@ import {
   AlertCircle, CheckCircle, Loader2, Filter, GraduationCap
 } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 // Excluded IDs and Categories for "Other Competitive Exams"
 const EXCLUDED_EXAM_IDS = ['NDA', 'Agniveer', 'CDS', 'CAPF'];

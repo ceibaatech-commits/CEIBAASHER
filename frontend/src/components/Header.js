@@ -6,7 +6,7 @@ import NotificationBell from './NotificationBell';
 import NavbarSearch from './NavbarSearch';
 import '../styles/navbar-search.css';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
   const navigate = useNavigate();

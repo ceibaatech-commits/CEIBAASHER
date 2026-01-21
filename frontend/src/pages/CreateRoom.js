@@ -3,7 +3,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users, Clock, Trophy, Copy, Check } from 'lucide-react';
 import axios from 'axios';
 
-const BATTLE_URL = process.env.REACT_APP_BACKEND_URL;
+const BATTLE_URL = window.location.origin;
 
 const CreateRoom = () => {
   const { examId, subject, topic } = useParams();

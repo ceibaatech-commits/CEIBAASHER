@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import HomeBannerCarousel from '../components/HomeBannerCarousel';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const Home = () => {
   const navigate = useNavigate();

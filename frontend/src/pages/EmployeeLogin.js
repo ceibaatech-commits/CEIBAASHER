@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, User, AlertCircle, Briefcase } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const EmployeeLogin = () => {
   const navigate = useNavigate();

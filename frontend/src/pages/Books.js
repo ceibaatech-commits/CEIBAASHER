@@ -5,7 +5,7 @@ import { BookOpen, ChevronRight, Search, Filter } from 'lucide-react';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const Books = () => {
   const navigate = useNavigate();

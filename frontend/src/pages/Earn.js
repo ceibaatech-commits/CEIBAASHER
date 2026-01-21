@@ -12,7 +12,7 @@ import {
   GraduationCap, Building2, BookOpen, Sparkles, ArrowRight, Info, TreePine
 } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const Earn = () => {
   const { user, isAuthenticated, logout } = useAuth();

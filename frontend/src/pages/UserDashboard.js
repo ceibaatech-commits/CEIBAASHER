@@ -10,7 +10,7 @@ import {
 import axios from 'axios';
 import Header from '../components/Header';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = window.location.origin;
 
 const UserDashboard = () => {
   const navigate = useNavigate();

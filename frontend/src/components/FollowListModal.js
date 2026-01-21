@@ -3,7 +3,7 @@ import axios from 'axios';
 import { X, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const FollowListModal = ({ isOpen, onClose, userId, type }) => {
   const [users, setUsers] = useState([]);

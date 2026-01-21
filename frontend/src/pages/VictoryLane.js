@@ -19,7 +19,7 @@ import {
   PostComposer
 } from '../components/VictoryLane';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const VictoryLane = () => {
   const { user, isAuthenticated, logout } = useAuth();

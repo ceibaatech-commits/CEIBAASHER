@@ -9,7 +9,7 @@ import Header from '../components/Header';
 import MathText from '../components/MathText';
 import { toast } from 'sonner';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const Dashboard = () => {
   const { user, updateUser } = useAuth();

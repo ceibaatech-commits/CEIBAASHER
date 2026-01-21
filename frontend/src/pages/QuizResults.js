@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Trophy, Medal, Award, Clock, Target, TrendingUp, Home, Share2, Download, Users } from 'lucide-react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = window.location.origin;
 
 const QuizResults = () => {
   const { pin } = useParams();
