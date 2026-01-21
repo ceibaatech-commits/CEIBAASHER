@@ -431,7 +431,7 @@ const ModernExamSyllabus = () => {
                       <span>{examData?.game_mode ? 'Team' : 'Room'}</span>
                     </button>
                     <button 
-                      onClick={() => navigate(`/live-battle-1v1/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
+                      onClick={() => navigate(`/matchmaking/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
                       className={`${examData?.game_mode ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-orange-600'} text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-1`}
                       style={{ minHeight: '40px' }}
                     >
