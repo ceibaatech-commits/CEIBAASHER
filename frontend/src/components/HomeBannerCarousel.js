@@ -132,35 +132,17 @@ const HeroBanner = () => {
         </div>
       </div>
 
-      {/* Welcome Section */}
-      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #134e4a 0%, #115e59 50%, #0f766e 100%)' }}>
-        {/* Decorative line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-400/30 to-transparent"></div>
-        
-        {/* Content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur mb-5">
-            <span className="text-3xl">🎓</span>
-          </div>
-          
-          <h2 className="text-2xl md:text-3xl font-black text-white mb-4">
-            Welcome to the Future of Learning!
-          </h2>
-          
-          <p className="text-teal-100/90 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-            We are beyond excited to welcome you to <span className="font-bold text-white">Ceibaa.in</span>—India's very first Social Learning App designed exclusively for students! 🇮🇳
+      {/* Welcome Banner - Compact One-Liner */}
+      <div className="bg-gradient-to-r from-teal-700 via-teal-600 to-teal-700 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-center text-teal-50 text-sm md:text-base">
+            <span className="font-bold text-white">Welcome to the Future of Learning!</span>
+            <span className="mx-2 text-teal-300">•</span>
+            <span>We're excited to welcome you to </span>
+            <span className="font-semibold text-white">Ceibaa.in</span>
+            <span>—India's first Social Learning App for students! 🇮🇳</span>
           </p>
-          
-          {/* Decorative dots */}
-          <div className="flex items-center justify-center gap-2 mt-6">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-300/50"></div>
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-300/30"></div>
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-300/50"></div>
-          </div>
         </div>
-        
-        {/* Bottom decorative line */}
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-400/20 to-transparent"></div>
       </div>
     </div>
   );
