@@ -46,6 +46,9 @@ import RoomDetail from "@/pages/RoomDetail";
 // 1v1 Live Battle with video (Original matchmaking)
 import LiveBattleMode from "@/pages/LiveBattleMode";
 
+// 1v1 Matchmaking without audio/video (New simplified version)
+import Matchmaking1v1 from "@/pages/Matchmaking1v1";
+
 // Admin Panel
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
