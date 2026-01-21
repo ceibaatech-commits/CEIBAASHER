@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Users, Trophy, Swords } from 'lucide-react';
+import { User, Users, Trophy, Swords, Sparkles } from 'lucide-react';
 
 const HeroBanner = () => {
   const features = [
@@ -8,109 +8,159 @@ const HeroBanner = () => {
       title: 'Solo Practice',
       desc: 'Unlimited MCQs & mock tests',
       icon: User,
-      bg: 'from-cyan-500 to-cyan-600'
+      iconBg: '#0891b2'
     },
     {
       id: 'rooms',
       title: 'Join Rooms',
       desc: 'Multiplayer quiz battles',
       icon: Users,
-      bg: 'from-violet-500 to-purple-600'
+      iconBg: '#7c3aed'
     },
     {
       id: 'victory',
       title: 'Victory Lane',
       desc: 'Leaderboards & glory',
       icon: Trophy,
-      bg: 'from-amber-500 to-orange-500'
+      iconBg: '#ea580c'
     },
     {
       id: 'duel',
       title: '1v1 Duels',
       desc: 'Real-time matchmaking',
       icon: Swords,
-      bg: 'from-rose-500 to-red-500'
+      iconBg: '#dc2626'
     }
   ];
 
   return (
-    <div className="w-full relative">
-      {/* Teal/Cyan Gradient Background - Matching Ceibaa Logo */}
-      <div className="absolute inset-0">
-        {/* Base gradient - teal to dark */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-teal-700 to-slate-900"></div>
-        
-        {/* 3D depth layers */}
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[60%] bg-gradient-to-br from-cyan-400/30 via-teal-500/20 to-transparent rounded-full blur-3xl"></div>
-          <div className="absolute bottom-[-20%] right-[-5%] w-[35%] h-[70%] bg-gradient-to-tl from-emerald-600/25 via-teal-600/15 to-transparent rounded-full blur-3xl"></div>
-          <div className="absolute top-[30%] right-[15%] w-[25%] h-[35%] bg-gradient-to-b from-cyan-300/15 to-transparent rounded-full blur-2xl"></div>
+    <div className="w-full">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)' }}>
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Gradient orbs */}
+          <div className="absolute top-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #14b8a6 0%, transparent 70%)' }}></div>
+          <div className="absolute bottom-[-150px] left-[-100px] w-[500px] h-[500px] rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #0891b2 0%, transparent 70%)' }}></div>
+          
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{
+            backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+            backgroundSize: '60px 60px'
+          }}></div>
+          
+          {/* Floating geometric shapes */}
+          <div className="absolute top-20 left-[15%] w-3 h-3 bg-teal-400/30 rounded-full animate-pulse"></div>
+          <div className="absolute top-40 right-[20%] w-2 h-2 bg-cyan-400/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute bottom-32 left-[25%] w-4 h-4 border border-teal-400/20 rounded rotate-45"></div>
+          <div className="absolute top-28 right-[35%] w-6 h-6 border border-cyan-400/15 rounded-full"></div>
         </div>
-        
-        {/* Mesh gradient overlay for depth */}
-        <div className="absolute inset-0 opacity-40" style={{
-          background: `radial-gradient(ellipse at 15% 30%, rgba(34, 211, 238, 0.2) 0%, transparent 50%),
-                       radial-gradient(ellipse at 85% 70%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
-                       radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 60%)`
-        }}></div>
-      </div>
 
-      {/* Banner Content - Same height as old banners */}
-      <div className="relative z-10 h-64 sm:h-72 md:h-80 lg:h-96">
-        <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-          <div className="w-full grid lg:grid-cols-2 gap-8 items-center">
+        {/* Content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
             
-            {/* Left: Title Section */}
-            <div className="text-left">
-              <div className="inline-flex items-center gap-2 text-cyan-300 text-xs font-bold tracking-widest uppercase mb-4">
-                <span className="w-8 h-[2px] bg-gradient-to-r from-cyan-300 to-teal-300"></span>
-                <span>Game Mode</span>
+            {/* Left Content */}
+            <div>
+              <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 rounded-full px-4 py-1.5 mb-6">
+                <Sparkles className="w-4 h-4 text-teal-400" />
+                <span className="text-teal-300 text-sm font-medium">India's #1 Social Learning Platform</span>
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-3">
-                Choose Your
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-teal-200 to-emerald-300">
-                  Battle Arena
+              
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-4">
+                Learn.
+                <span className="text-teal-400"> Compete.</span>
+                <br />
+                <span className="text-transparent bg-clip-text" style={{ backgroundImage: 'linear-gradient(135deg, #2dd4bf 0%, #22d3ee 100%)' }}>
+                  Conquer.
                 </span>
               </h1>
-              <p className="text-teal-100/80 text-sm lg:text-base">
-                4 ways to master your comprehensive exams
+              
+              <p className="text-slate-400 text-lg mb-8 max-w-md">
+                Master your exams with unlimited practice, live battles, and a community of 50,000+ students.
               </p>
+              
+              {/* Stats */}
+              <div className="flex items-center gap-8">
+                <div>
+                  <div className="text-3xl font-black text-white">38+</div>
+                  <div className="text-slate-500 text-sm">Exams</div>
+                </div>
+                <div className="w-px h-12 bg-slate-700"></div>
+                <div>
+                  <div className="text-3xl font-black text-white">50K+</div>
+                  <div className="text-slate-500 text-sm">Students</div>
+                </div>
+                <div className="w-px h-12 bg-slate-700"></div>
+                <div>
+                  <div className="text-3xl font-black text-white">1M+</div>
+                  <div className="text-slate-500 text-sm">Questions</div>
+                </div>
+              </div>
             </div>
 
-            {/* Right: Feature Cards - 2x2 Grid - Static (No Links) */}
-            <div className="grid grid-cols-2 gap-3">
-              {features.map((feature) => {
+            {/* Right - Feature Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              {features.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
                   <div
                     key={feature.id}
-                    className="group"
+                    className="group relative bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-5 transition-all duration-300 hover:bg-slate-800/80 hover:border-slate-600/50 hover:-translate-y-1"
+                    style={{ animationDelay: `${index * 100}ms` }}
                   >
-                    <div className="relative bg-white/[0.08] backdrop-blur-sm border border-white/[0.12] rounded-xl p-3 sm:p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]">
-                      {/* Icon */}
-                      <div 
-                        className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br ${feature.bg} flex items-center justify-center mb-2 sm:mb-3 shadow-lg`}
-                      >
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" strokeWidth={2.5} />
-                      </div>
-                      
-                      {/* Text */}
-                      <h3 className="text-white font-bold text-sm sm:text-base mb-0.5">
-                        {feature.title}
-                      </h3>
-                      <p className="text-teal-100/60 text-xs leading-snug">
-                        {feature.desc}
-                      </p>
+                    {/* Icon */}
+                    <div 
+                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-lg transition-transform duration-300 group-hover:scale-110"
+                      style={{ backgroundColor: feature.iconBg }}
+                    >
+                      <Icon className="w-6 h-6 text-white" strokeWidth={2} />
                     </div>
+                    
+                    {/* Text */}
+                    <h3 className="text-white font-bold text-lg mb-1">
+                      {feature.title}
+                    </h3>
+                    <p className="text-slate-400 text-sm">
+                      {feature.desc}
+                    </p>
                   </div>
                 );
               })}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom accent line */}
-        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+      {/* Welcome Section */}
+      <div className="relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #134e4a 0%, #115e59 50%, #0f766e 100%)' }}>
+        {/* Decorative line */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-400/30 to-transparent"></div>
+        
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 backdrop-blur mb-5">
+            <span className="text-3xl">🎓</span>
+          </div>
+          
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-4">
+            Welcome to the Future of Learning!
+          </h2>
+          
+          <p className="text-teal-100/90 text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
+            We are beyond excited to welcome you to <span className="font-bold text-white">Ceibaa.in</span>—India's very first Social Learning App designed exclusively for students! 🇮🇳
+          </p>
+          
+          {/* Decorative dots */}
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-300/50"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-300/30"></div>
+            <div className="w-1.5 h-1.5 rounded-full bg-teal-300/50"></div>
+          </div>
+        </div>
+        
+        {/* Bottom decorative line */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-400/20 to-transparent"></div>
       </div>
     </div>
   );
