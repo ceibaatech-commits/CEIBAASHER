@@ -281,7 +281,7 @@ const ExamSyllabus = () => {
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/live-battle-1v1/${examId}/${topicData.subject}/${topicData.topic}`);
+                        navigate(`/matchmaking/${examId}/${topicData.subject}/${topicData.topic}`);
                       }}
                       className="flex-1 bg-orange-600 text-white py-1.5 px-1 rounded text-[10px] font-medium flex items-center justify-center space-x-0.5"
                     >
