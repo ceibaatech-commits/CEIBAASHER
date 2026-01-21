@@ -440,17 +440,7 @@ const Home = () => {
         <HomeBannerCarousel />
       </div>
       
-      {/* Welcome Message - Desktop Only */}
-      <div className="hidden md:block bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-700 text-white py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl md:text-3xl font-black mb-3 text-white">
-            Welcome to the Future of Learning!
-          </h2>
-          <p className="text-teal-100 text-base md:text-lg leading-relaxed">
-            We are beyond excited to welcome you to <span className="font-bold text-white">Ceibaa.in</span>—India's very first Social Learning App designed exclusively for students! 🇮🇳
-          </p>
-        </div>
-      </div>
+      {/* Welcome section is now integrated into HomeBannerCarousel */}
 
       {/* The Canopy Banner - Desktop Only */}
       <div className="hidden md:block bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white">
