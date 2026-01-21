@@ -870,7 +870,7 @@ async def find_match(sid, data):
         await sio.emit('error', {'message': str(e)}, room=sid)
 
 
-@sio.event
+@sio.on('cancel-match')
 async def cancel_match(sid, data=None):
     """Cancel matchmaking"""
     try:
@@ -882,7 +882,7 @@ async def cancel_match(sid, data=None):
         print(f"[ERROR] cancel_match: {str(e)}")
 
 
-@sio.event
+@sio.on('battle-answer')
 async def battle_answer(sid, data):
     """Submit answer in matched battle"""
     try:
