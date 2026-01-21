@@ -946,7 +946,7 @@ async def battle_chat(sid, data):
         print(f"[ERROR] battle_chat: {str(e)}")
 
 
-@sio.event
+@sio.on('battle-complete')
 async def battle_complete(sid, data):
     """Handle battle completion"""
     try:
