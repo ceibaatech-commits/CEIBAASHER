@@ -813,6 +813,8 @@ async def leave_room(sid, data):
 @sio.on('find-match')
 async def find_match(sid, data):
     """Find a match for quiz battle"""
+    print(f"[MATCHMAKING] 🔥 find-match event received from {sid}")
+    print(f"[MATCHMAKING] Data: {data}")
     try:
         player_name = data.get('playerName', 'Player')
         exam = data.get('exam', '')
