@@ -440,25 +440,15 @@ const Home = () => {
         <HomeBannerCarousel />
       </div>
       
-      {/* Quick Access Buttons - Desktop Only */}
-      <div className="hidden md:block bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center gap-4 flex-wrap">
-            <button
-              onClick={() => navigate('/victory-lane')}
-              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
-            >
-              <Users className="w-5 h-5" />
-              <span>Victory Lane</span>
-            </button>
-            <button
-              onClick={() => navigate('/join-room')}
-              className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700 px-8 py-4 rounded-lg font-bold text-lg hover:shadow-2xl transition-all inline-flex items-center space-x-2"
-            >
-              <Users className="w-5 h-5" />
-              <span>Join Battle Room</span>
-            </button>
-          </div>
+      {/* Welcome Message - Desktop Only */}
+      <div className="hidden md:block bg-gradient-to-r from-teal-700 via-teal-600 to-cyan-700 text-white py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-2xl md:text-3xl font-black mb-3 text-white">
+            Welcome to the Future of Learning!
+          </h2>
+          <p className="text-teal-100 text-base md:text-lg leading-relaxed">
+            We are beyond excited to welcome you to <span className="font-bold text-white">Ceibaa.in</span>—India's very first Social Learning App designed exclusively for students! 🇮🇳
+          </p>
         </div>
       </div>
 
