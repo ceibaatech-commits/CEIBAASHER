@@ -1568,6 +1568,7 @@ const VictoryLane = () => {
                     onToggleComments={toggleComments}
                     onOpenMenu={setOpenMenuId}
                     onDeletePost={handleDeleteClick}
+                    onPostClick={(postId) => navigate(`/post/${postId}`)}
                     onTagClick={(tag) => {
                         setSelectedTag(selectedTag === tag ? null : tag);
                         setShowFilters(true);
