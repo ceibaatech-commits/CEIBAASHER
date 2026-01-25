@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Heart, MessageCircle, Share2, MoreHorizontal, CheckCircle, GraduationCap, Send, Trash2, Undo2 } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Heart, MessageCircle, Repeat2, CheckCircle, GraduationCap, Send, Trash2, Undo2, BookOpen, MoreHorizontal } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -24,6 +24,8 @@ const SinglePost = () => {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [shared, setShared] = useState(false);
+  const [shareCount, setShareCount] = useState(0);
 
   useEffect(() => {
     fetchPost();
@@ -41,7 +43,9 @@ const SinglePost = () => {
         setPost(response.data.post);
         setComments(response.data.post.comments || []);
         setLiked(response.data.post.liked_by_user || false);
-        setLikesCount(response.data.post.likes_count || 0);
+        setLikesCount(response.data.post.likes_count || response.data.post.like_count || 0);
+        setShared(response.data.post.shared_by_user || false);
+        setShareCount(response.data.post.share_count || 0);
       }
     } catch (err) {
       console.error('Error fetching post:', err);
@@ -54,56 +58,80 @@ const SinglePost = () => {
   const handleLike = async () => {
     if (!isAuthenticated) {
       toast.error('Please login to like posts');
-      navigate('/login');
       return;
     }
-
+    
+    const wasLiked = liked;
+    setLiked(!liked);
+    setLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
+    
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      setLiked(!liked);
-      setLikesCount(prev => liked ? prev - 1 : prev + 1);
     } catch (err) {
-      console.error('Error liking post:', err);
+      setLiked(wasLiked);
+      setLikesCount(prev => wasLiked ? prev + 1 : prev - 1);
+      toast.error('Failed to like post');
+    }
+  };
+
+  const handleShare = async () => {
+    if (!isAuthenticated) {
+      toast.error('Please login to repost');
+      return;
+    }
+    
+    const wasShared = shared;
+    setShared(!shared);
+    setShareCount(prev => wasShared ? prev - 1 : prev + 1);
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (wasShared) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Repost removed');
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Reposted!');
+      }
+    } catch (err) {
+      setShared(wasShared);
+      setShareCount(prev => wasShared ? prev + 1 : prev - 1);
+      toast.error('Failed to update repost');
     }
   };
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
-    if (!newComment.trim() || !isAuthenticated) {
-      if (!isAuthenticated) {
-        toast.error('Please login to comment');
-        navigate('/login');
-      }
-      return;
-    }
-
+    if (!newComment.trim() || submittingComment) return;
+    
     setSubmittingComment(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/comment`, {
-        content: newComment.trim()
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/comments`, {
+        content: newComment
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
+      
       if (response.data.success) {
-        setComments(prev => [response.data.comment, ...prev]);
+        setComments(prev => [...prev, response.data.comment]);
         setNewComment('');
-        toast.success('Comment added!');
+        toast.success('Comment posted!');
       }
     } catch (err) {
-      console.error('Error adding comment:', err);
-      toast.error('Failed to add comment');
+      toast.error('Failed to post comment');
     } finally {
       setSubmittingComment(false);
     }
   };
 
-  // Delete post
   const handleDeletePost = async () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     
@@ -119,13 +147,11 @@ const SinglePost = () => {
     }
   };
 
-  // Undo repost (for when viewing a repost)
   const handleUndoRepost = async () => {
     if (!window.confirm('Are you sure you want to undo this repost?')) return;
     
     try {
       const token = localStorage.getItem('token');
-      // Use the original_post_id for the unshare endpoint
       await axios.delete(`${BACKEND_URL}/api/social/posts/${post.original_post_id}/unshare`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -136,9 +162,8 @@ const SinglePost = () => {
     }
   };
 
-  // Delete comment
   const handleDeleteComment = async (commentId) => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+    if (!window.confirm('Delete this comment?')) return;
     
     try {
       const token = localStorage.getItem('token');
@@ -155,20 +180,49 @@ const SinglePost = () => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
       day: 'numeric',
       month: 'short',
-      year: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-IN', {
       hour: '2-digit',
       minute: '2-digit'
     });
   };
 
+  // Get post type badge
+  const getPostTypeBadge = () => {
+    if (post?.post_type === 'academic_question') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+          <GraduationCap className="w-3.5 h-3.5" />
+          Academic Question
+        </span>
+      );
+    }
+    if (post?.post_type === 'question') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+          <BookOpen className="w-3.5 h-3.5" />
+          Question
+        </span>
+      );
+    }
+    return null;
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         <Header />
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
         </div>
       </div>
     );
@@ -176,15 +230,15 @@ const SinglePost = () => {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         <Header />
-        <div className="max-w-2xl mx-auto px-4 py-12 text-center">
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h2>
-            <p className="text-gray-600 mb-6">{error || 'This post may have been deleted or is no longer available.'}</p>
+        <div className="max-w-xl mx-auto px-4 py-12 text-center">
+          <div className="py-12">
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Post Not Found</h2>
+            <p className="text-gray-500 mb-6">{error || 'This post may have been deleted.'}</p>
             <button
               onClick={() => navigate(-1)}
-              className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition"
+              className="px-6 py-2.5 bg-gray-900 text-white rounded-full font-bold hover:bg-gray-800 transition"
             >
               Go Back
             </button>
@@ -196,65 +250,73 @@ const SinglePost = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Header />
       
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="font-medium">Back</span>
-        </button>
+      <div className="max-w-xl mx-auto border-x border-gray-200 min-h-screen">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
+          <div className="flex items-center gap-6 px-4 py-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-bold">Post</h1>
+          </div>
+        </div>
 
-        {/* Main Post Card */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          {/* Post Header */}
-          <div className="p-5 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <UserAvatar
-                profilePicture={post.user_avatar || post.user_profile_picture}
-                name={post.user_name}
-                size="lg"
-              />
-              <div className="flex-1">
-                <div className="flex items-center flex-wrap gap-x-2 gap-y-1">
-                  <span className="font-bold text-gray-900">{post.user_name}</span>
-                  {post.is_verified && (
-                    <CheckCircle className="w-5 h-5 text-blue-500 fill-blue-500" />
-                  )}
-                  {post.isTeacher && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-500 text-white">
-                      Teacher
-                    </span>
-                  )}
-                  {post.isProfessor && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-600 text-white">
-                      Professor
-                    </span>
-                  )}
-                  {post.isInstitute && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-600 text-white">
-                      Institute
-                    </span>
-                  )}
-                  {post.isOfficial && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-800 text-white">
-                      Official
-                    </span>
-                  )}
+        {/* Main Post */}
+        <article className="border-b border-gray-200">
+          {/* Author info */}
+          <div className="px-4 pt-4 pb-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div 
+                  className="cursor-pointer"
+                  onClick={() => navigate(`/profile/${post.user_id}`)}
+                >
+                  <UserAvatar
+                    profilePicture={post.user_avatar || post.user_profile_picture}
+                    name={post.user_name}
+                    size="lg"
+                  />
                 </div>
-                <p className="text-sm text-gray-500">{formatDate(post.created_at)}</p>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span 
+                      className="font-bold text-[15px] hover:underline cursor-pointer"
+                      onClick={() => navigate(`/profile/${post.user_id}`)}
+                    >
+                      {post.user_name}
+                    </span>
+                    {post.is_verified && (
+                      <CheckCircle className="w-4 h-4 text-blue-500 fill-blue-500" />
+                    )}
+                    {post.isTeacher && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-500 text-white rounded">Teacher</span>
+                    )}
+                    {post.isProfessor && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-purple-600 text-white rounded">Professor</span>
+                    )}
+                    {post.isInstitute && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-600 text-white rounded">Institute</span>
+                    )}
+                    {post.isOfficial && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-800 text-white rounded">Official</span>
+                    )}
+                  </div>
+                  <span className="text-gray-500 text-[15px]">@{post.username}</span>
+                </div>
               </div>
               
-              {/* Delete or Undo Button - only for own posts/reposts */}
+              {/* Actions */}
               {user && user.id === post.user_id && (
                 post.is_retweet ? (
                   <button
                     onClick={handleUndoRepost}
-                    className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
+                    className="p-2 text-gray-500 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
                     title="Undo repost"
                   >
                     <Undo2 className="w-5 h-5" />
@@ -262,7 +324,7 @@ const SinglePost = () => {
                 ) : (
                   <button
                     onClick={handleDeletePost}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                    className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                     title="Delete post"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -272,175 +334,206 @@ const SinglePost = () => {
             </div>
           </div>
 
-          {/* Academic Question Badge */}
-          {post.post_type === 'academic_question' && (
-            <div className="px-5 pt-4">
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <GraduationCap className="w-5 h-5 text-purple-600" />
-                  <span className="text-sm text-purple-800 font-semibold">Academic Question</span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {post.academic_class && (
-                    <span className="inline-flex items-center px-3 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-                      📚 {post.academic_class}
-                    </span>
-                  )}
-                  {post.academic_subject && (
-                    <span className="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
-                      📖 {post.academic_subject}
-                    </span>
-                  )}
-                  {post.academic_chapter && (
-                    <span className="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                      📝 {post.academic_chapter}
-                    </span>
-                  )}
-                </div>
-              </div>
+          {/* Post type badge */}
+          {getPostTypeBadge() && (
+            <div className="px-4 pb-2">
+              {getPostTypeBadge()}
             </div>
           )}
 
-          {/* Post Content */}
-          <div className="p-5">
-            <div className="text-gray-900 text-lg leading-relaxed">
+          {/* Post content */}
+          <div className="px-4 pb-3">
+            <div className="text-[17px] leading-relaxed text-gray-900 whitespace-pre-wrap">
               <MathText text={post.content} />
             </div>
           </div>
 
-          {/* Post Actions */}
-          <div className="px-5 py-4 border-t border-gray-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <button
-                  onClick={handleLike}
-                  className={`flex items-center gap-2 transition ${liked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
-                >
-                  <Heart className={`w-6 h-6 ${liked ? 'fill-red-500' : ''}`} />
-                  <span className="font-medium">{likesCount}</span>
-                </button>
-                <div className="flex items-center gap-2 text-gray-500">
-                  <MessageCircle className="w-6 h-6" />
-                  <span className="font-medium">{comments.length}</span>
-                </div>
-              </div>
-              <Link
-                to="/victory-lane"
-                className="text-purple-600 hover:text-purple-700 font-medium text-sm"
-              >
-                View on Victory Lane →
-              </Link>
+          {/* Academic question details */}
+          {post.post_type === 'academic_question' && (post.exam_category || post.subject || post.topic) && (
+            <div className="px-4 pb-3 flex flex-wrap gap-2">
+              {post.exam_category && (
+                <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                  {post.exam_category}
+                </span>
+              )}
+              {post.subject && (
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                  {post.subject}
+                </span>
+              )}
+              {post.topic && (
+                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                  {post.topic}
+                </span>
+              )}
             </div>
+          )}
+
+          {/* Media */}
+          {post.media_urls && post.media_urls.length > 0 && (
+            <div className="px-4 pb-3">
+              <div className="rounded-2xl overflow-hidden border border-gray-200">
+                {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') ? (
+                  <video 
+                    src={post.media_urls[0]} 
+                    controls 
+                    className="w-full max-h-[512px] object-contain bg-black"
+                  />
+                ) : (
+                  <img 
+                    src={post.media_urls[0]} 
+                    alt="" 
+                    className="w-full"
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Timestamp */}
+          <div className="px-4 py-3 border-b border-gray-200">
+            <span className="text-gray-500 text-[15px]">
+              {formatTime(post.created_at)} · {formatDate(post.created_at).split(',')[0]}
+            </span>
           </div>
 
-          {/* Comments Section */}
-          <div className="border-t border-gray-100">
-            <div className="p-5">
-              <h3 className="font-bold text-gray-900 mb-4">
-                {comments.length > 0 ? `${comments.length} Answer${comments.length > 1 ? 's' : ''}` : 'No answers yet'}
-              </h3>
+          {/* Stats */}
+          <div className="px-4 py-3 flex items-center gap-5 border-b border-gray-200 text-[15px]">
+            <span><strong>{shareCount}</strong> <span className="text-gray-500">Reposts</span></span>
+            <span><strong>{likesCount}</strong> <span className="text-gray-500">Likes</span></span>
+            <span><strong>{post.views || 0}</strong> <span className="text-gray-500">Views</span></span>
+          </div>
 
-              {/* Add Comment Form */}
-              {isAuthenticated ? (
-                <form onSubmit={handleSubmitComment} className="mb-6">
-                  <div className="flex gap-3">
-                    <UserAvatar
-                      profilePicture={user?.profile_picture}
-                      name={user?.name}
-                      size="sm"
-                    />
-                    <div className="flex-1">
-                      <textarea
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        placeholder="Write your answer..."
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                        rows={3}
-                      />
-                      <div className="flex justify-end mt-2">
-                        <button
-                          type="submit"
-                          disabled={!newComment.trim() || submittingComment}
-                          className="flex items-center gap-2 px-5 py-2 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {submittingComment ? (
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          ) : (
-                            <Send className="w-4 h-4" />
-                          )}
-                          <span>Post Answer</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              ) : (
-                <div className="bg-gray-50 rounded-xl p-4 mb-6 text-center">
-                  <p className="text-gray-600 mb-3">Login to answer this question</p>
+          {/* Action buttons */}
+          <div className="flex items-center justify-around py-2 border-b border-gray-200">
+            <button
+              onClick={() => document.getElementById('comment-input')?.focus()}
+              className="p-3 text-gray-500 hover:text-blue-500 hover:bg-blue-50 rounded-full transition-colors"
+            >
+              <MessageCircle className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleShare}
+              className={`p-3 rounded-full transition-colors ${
+                shared 
+                  ? 'text-green-500 hover:bg-green-50' 
+                  : 'text-gray-500 hover:text-green-500 hover:bg-green-50'
+              }`}
+            >
+              <Repeat2 className={`w-5 h-5 ${shared ? 'stroke-[2.5px]' : ''}`} />
+            </button>
+            <button
+              onClick={handleLike}
+              className={`p-3 rounded-full transition-colors ${
+                liked 
+                  ? 'text-rose-500 hover:bg-rose-50' 
+                  : 'text-gray-500 hover:text-rose-500 hover:bg-rose-50'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
+            </button>
+          </div>
+        </article>
+
+        {/* Reply Section */}
+        {isAuthenticated ? (
+          <div className="px-4 py-3 border-b border-gray-200">
+            <form onSubmit={handleSubmitComment} className="flex gap-3">
+              <UserAvatar
+                profilePicture={user?.profile_picture}
+                name={user?.name}
+                size="md"
+              />
+              <div className="flex-1">
+                <input
+                  id="comment-input"
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Post your reply"
+                  className="w-full py-2 text-[17px] placeholder-gray-500 bg-transparent border-none outline-none"
+                />
+                <div className="flex justify-end mt-2">
                   <button
-                    onClick={() => navigate('/login')}
-                    className="px-5 py-2 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition"
+                    type="submit"
+                    disabled={!newComment.trim() || submittingComment}
+                    className="px-4 py-1.5 bg-blue-500 text-white rounded-full font-bold text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Login
+                    {submittingComment ? 'Posting...' : 'Reply'}
                   </button>
                 </div>
-              )}
+              </div>
+            </form>
+          </div>
+        ) : (
+          <div className="px-4 py-4 border-b border-gray-200 bg-gray-50">
+            <p className="text-center text-gray-600 mb-3">
+              <span 
+                onClick={() => navigate('/login')}
+                className="text-blue-500 font-bold hover:underline cursor-pointer"
+              >
+                Log in
+              </span>
+              {' '}to reply to this post
+            </p>
+          </div>
+        )}
 
-              {/* Comments List */}
-              <div className="space-y-4">
-                {comments.map((comment) => (
-                  <div key={comment.id} className="flex gap-3 p-4 bg-gray-50 rounded-xl">
+        {/* Comments */}
+        <div>
+          {comments.length === 0 ? (
+            <div className="py-12 text-center text-gray-500">
+              No replies yet. Be the first to reply!
+            </div>
+          ) : (
+            comments.map((comment) => (
+              <article key={comment.id} className="px-4 py-3 border-b border-gray-200 hover:bg-gray-50/50 transition-colors">
+                <div className="flex gap-3">
+                  <div 
+                    className="flex-shrink-0 cursor-pointer"
+                    onClick={() => navigate(`/profile/${comment.user_id}`)}
+                  >
                     <UserAvatar
                       profilePicture={comment.user_avatar || comment.user_profile_picture}
                       name={comment.user_name}
-                      size="sm"
+                      size="md"
                     />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900">{comment.user_name}</span>
-                          {comment.isTeacher && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500 text-white">
-                              Teacher
-                            </span>
-                          )}
-                          {comment.isProfessor && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-600 text-white">
-                              Professor
-                            </span>
-                          )}
-                          <span className="text-xs text-gray-500">{formatDate(comment.created_at)}</span>
-                        </div>
-                        {/* Delete comment button - only for own comments */}
-                        {user && user.id === comment.user_id && (
-                          <button
-                            onClick={() => handleDeleteComment(comment.id)}
-                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
-                            title="Delete comment"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="font-bold text-[15px] hover:underline cursor-pointer" onClick={() => navigate(`/profile/${comment.user_id}`)}>
+                          {comment.user_name}
+                        </span>
+                        {comment.isTeacher && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-blue-500 text-white rounded">Teacher</span>
                         )}
+                        {comment.isProfessor && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-purple-600 text-white rounded">Professor</span>
+                        )}
+                        <span className="text-gray-500">·</span>
+                        <span className="text-gray-500 text-sm">{formatDate(comment.created_at)}</span>
                       </div>
-                      <div className="text-gray-700">
-                        <MathText text={comment.content} />
-                      </div>
+                      {user && user.id === comment.user_id && (
+                        <button
+                          onClick={() => handleDeleteComment(comment.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="text-[15px] text-gray-900 mt-1 whitespace-pre-wrap">
+                      <MathText text={comment.content} />
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {comments.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p>Be the first to answer this question!</p>
                 </div>
-              )}
-            </div>
-          </div>
+              </article>
+            ))
+          )}
         </div>
       </div>
-
+      
       <Footer />
     </div>
   );
