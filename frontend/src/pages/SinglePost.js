@@ -29,10 +29,30 @@ const SinglePost = () => {
   const [likesCount, setLikesCount] = useState(0);
   const [shared, setShared] = useState(false);
   const [shareCount, setShareCount] = useState(0);
+  const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
     fetchPost();
   }, [postId]);
+
+  // Increment view count when page loads
+  useEffect(() => {
+    const incrementView = async () => {
+      try {
+        const response = await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/view`);
+        if (response.data.success) {
+          setViewsCount(response.data.views);
+        }
+      } catch (err) {
+        console.log('View count update failed:', err);
+      }
+    };
+    
+    // Only increment view after post is loaded
+    if (post && postId) {
+      incrementView();
+    }
+  }, [post, postId]);
 
   const fetchPost = async () => {
     try {
@@ -49,6 +69,7 @@ const SinglePost = () => {
         setLikesCount(response.data.post.likes_count || response.data.post.like_count || 0);
         setShared(response.data.post.shared_by_user || false);
         setShareCount(response.data.post.share_count || 0);
+        setViewsCount(response.data.post.views || 0);
       }
     } catch (err) {
       console.error('Error fetching post:', err);
