@@ -3,7 +3,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://feed-interact.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://quiz-navigation.preview.emergentagent.com")
 
 class MediaControlsTester:
     def __init__(self):
