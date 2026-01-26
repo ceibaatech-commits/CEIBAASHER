@@ -16,6 +16,9 @@ const SinglePost = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   
+  // isAuthenticated is a function, so we need to call it or check user directly
+  const isLoggedIn = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
+  
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
