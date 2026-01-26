@@ -167,8 +167,8 @@ const PostCard = ({
                     className="fixed inset-0 z-40" 
                     onClick={(e) => { e.stopPropagation(); onOpenMenu(null); }}
                   />
-                  {/* Menu - opens to the left on all screens to avoid cutoff */}
-                  <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  {/* Menu - positioned to avoid cutoff on mobile */}
+                  <div className="absolute right-0 sm:right-0 top-full mt-1 w-56 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50" style={{ right: '0', transform: 'translateX(0)' }}>
                     {/* Copy Link - always available */}
                     <button
                       onClick={(e) => { 
