@@ -168,23 +168,28 @@ const PostCard = ({
                     onClick={(e) => { e.stopPropagation(); onOpenMenu(null); }}
                   />
                   {/* Menu - opens to the left on all screens to avoid cutoff */}
-                  <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50 transform origin-top-right animate-in fade-in zoom-in-95 duration-100">
-                    {isOwnPost && (
-                      <button
-                        onClick={(e) => { e.stopPropagation(); onDeletePost(post); onOpenMenu(null); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                        <span className="font-semibold">Delete Post</span>
-                      </button>
-                    )}
+                  <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                    {/* Copy Link - always available */}
+                    <button
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
+                        onOpenMenu(null);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <Link2 className="w-5 h-5" />
+                      <span className="font-medium">Copy link</span>
+                    </button>
+                    
+                    {/* Follow/Unfollow - for other users' posts */}
                     {!isOwnPost && user && !isFollowing && (
                       <button
                         onClick={(e) => { e.stopPropagation(); onToggleFollow(displayUserId); onOpenMenu(null); }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Users className="w-5 h-5" />
-                        <span className="font-semibold">Follow @{displayUsername}</span>
+                        <span className="font-medium">Follow @{displayUsername}</span>
                       </button>
                     )}
                     {!isOwnPost && user && isFollowing && (
@@ -193,8 +198,22 @@ const PostCard = ({
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Users className="w-5 h-5" />
-                        <span className="font-semibold">Unfollow @{displayUsername}</span>
+                        <span className="font-medium">Unfollow @{displayUsername}</span>
                       </button>
+                    )}
+                    
+                    {/* Delete - only for own posts */}
+                    {isOwnPost && (
+                      <>
+                        <div className="my-1 border-t border-gray-100"></div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onDeletePost(post); onOpenMenu(null); }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                          <span className="font-medium">Delete post</span>
+                        </button>
+                      </>
                     )}
                   </div>
                 </>
