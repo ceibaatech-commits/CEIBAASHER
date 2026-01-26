@@ -145,8 +145,6 @@ const PostCard = ({
               {post.isOfficial === true && (
                 <span className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-800 text-white rounded">Official</span>
               )}
-                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-600 text-white rounded">Institute</span>
-              )}
               
               <span className="text-gray-500 text-[15px]">@{displayUsername}</span>
               <span className="text-gray-500">·</span>
