@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Heart, MessageCircle, Repeat2, MoreHorizontal,
-  Trash2, Trophy, Play, Users, Clock, GraduationCap, BookOpen
+  Trash2, Trophy, Play, Users, Clock, GraduationCap, BookOpen, Link2, Share
 } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 import MathText from '../MathText';
