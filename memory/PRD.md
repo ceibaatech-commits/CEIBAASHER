@@ -69,6 +69,15 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
   - Clean "Log in to reply" prompt for guests
   - Threaded comments display
 
+### Quiz Room UI/UX Fix (Jan 26, 2025) - COMPLETED
+- Added main site Header component to QuizRoom.js on all return states:
+  - Loading state, No questions state, Quiz completed state, Active quiz state
+- Added Header to QuizResults.js page
+- Fixed Exit Quiz button functionality - now properly navigates to /victory-lane after confirmation
+- Added proper padding (pt-20) to account for fixed header
+- Mobile hamburger menu now works on Quiz Room page
+- All auth props properly passed to Header (isLoggedIn, user, onLogout)
+
 ### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
 - Fixed UX issue: reposts now show "Undo" button instead of "Delete"
 - For reposts (`is_retweet === true`): Shows Undo icon (orange) that calls `/api/social/posts/{id}/unshare`
