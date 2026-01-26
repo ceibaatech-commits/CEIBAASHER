@@ -519,6 +519,36 @@ async def get_for_you_feed(
             if "is_retweet" not in post:
                 post["is_retweet"] = False
         
+        # Enrich quiz_room posts with actual room data
+        for post in paginated:
+            if post.get("post_type") == "quiz_room":
+                room_code = post.get("room_code")
+                if not room_code and post.get("quiz_details"):
+                    room_code = post.get("quiz_details", {}).get("room_code")
+                
+                if room_code:
+                    # Try to find the room in quiz_rooms or battle_rooms
+                    room = await db.quiz_rooms.find_one({"room_code": str(room_code).upper()}, {"_id": 0})
+                    if not room:
+                        room = await db.battle_rooms.find_one({"roomId": str(room_code)}, {"_id": 0})
+                    
+                    if room:
+                        post["quiz_room"] = {
+                            "room_code": room_code.upper() if room_code else None,
+                            "title": room.get("title") or room.get("quizTitle") or "Quiz Room",
+                            "category": room.get("category") or room.get("subject") or "General",
+                            "subject": room.get("subject") or room.get("category"),
+                            "difficulty": room.get("difficulty") or "Medium",
+                            "num_questions": room.get("num_questions") or room.get("questionCount") or len(room.get("questions", [])),
+                            "time_limit": room.get("time_limit") or room.get("timeLimit") or 15,
+                            "max_participants": room.get("max_participants") or room.get("maxParticipants") or 10,
+                            "participants": room.get("participants") or 0,
+                            "privacy": room.get("privacy") or "public",
+                            "status": room.get("status") or "waiting",
+                            "created_by": room.get("created_by") or room.get("hostId"),
+                            "host_name": room.get("host_name") or room.get("hostName")
+                        }
+        
         return {
             "success": True, 
             "posts": paginated, 
