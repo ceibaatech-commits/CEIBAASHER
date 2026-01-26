@@ -52,6 +52,22 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
   - Results screen with winner/loser display
 - Added backend handlers for `battle-chat` and `battle_complete` events
 - Updated ExamSyllabus.js and ModernExamSyllabus.js to use new matchmaking route
+- Fixed matchmaking subject normalization (removes marks info like "(300 Marks)")
+
+### Twitter/X-Style UI Redesign for Victory Lane (Jan 26, 2025) - COMPLETED
+- Redesigned PostCard.js with Twitter-inspired layout:
+  - Clean horizontal header with avatar, name, @username, timestamp
+  - Verified badges and role badges (Teacher, Professor, Institute, Official)
+  - Post type badges (Academic, Question, Quiz Room)
+  - Twitter-style action buttons (Comment, Repost, Like, Views)
+  - Clickable posts navigate to single post view
+- Redesigned SinglePost.js with Twitter-style layout:
+  - Sticky header with back button
+  - Clean author info section with badges
+  - Stats row (Reposts, Likes, Views)
+  - Inline reply input for logged-in users
+  - Clean "Log in to reply" prompt for guests
+  - Threaded comments display
 
 ### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
 - Fixed UX issue: reposts now show "Undo" button instead of "Delete"
