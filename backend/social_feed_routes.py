@@ -542,7 +542,7 @@ async def get_for_you_feed(
                             "num_questions": room.get("num_questions") or room.get("questionCount") or len(room.get("questions", [])),
                             "time_limit": room.get("time_limit") or room.get("timeLimit") or 15,
                             "max_participants": room.get("max_participants") or room.get("maxParticipants") or 10,
-                            "participants": room.get("participants") or 0,
+                            "participants": len(room.get("participants", [])) if isinstance(room.get("participants"), list) else (room.get("participants") or 0),
                             "privacy": room.get("privacy") or "public",
                             "status": room.get("status") or "waiting",
                             "created_by": room.get("created_by") or room.get("hostId"),
