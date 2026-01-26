@@ -405,7 +405,7 @@ const SinglePost = () => {
           {/* Timestamp */}
           <div className="px-4 py-3 border-b border-gray-200">
             <span className="text-gray-500 text-[15px]">
-              {formatTime(post.created_at)} · {formatDate(post.created_at).split(',')[0]}
+              {formatDate(post.created_at)}
             </span>
           </div>
 
