@@ -59,7 +59,7 @@ const SinglePost = () => {
   };
 
   const handleLike = async () => {
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       toast.error('Please login to like posts');
       return;
     }
@@ -81,7 +81,7 @@ const SinglePost = () => {
   };
 
   const handleShare = async () => {
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       toast.error('Please login to repost');
       return;
     }
