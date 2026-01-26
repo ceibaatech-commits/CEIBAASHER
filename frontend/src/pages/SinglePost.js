@@ -439,7 +439,7 @@ const SinglePost = () => {
         </article>
 
         {/* Reply Section */}
-        {isAuthenticated ? (
+        {isLoggedIn ? (
           <div className="px-4 py-3 border-b border-gray-200">
             <form onSubmit={handleSubmitComment} className="flex gap-3">
               <UserAvatar
