@@ -167,8 +167,11 @@ const PostCard = ({
                     className="fixed inset-0 z-40" 
                     onClick={(e) => { e.stopPropagation(); onOpenMenu(null); }}
                   />
-                  {/* Menu - positioned to open LEFT on mobile to avoid cutoff */}
-                  <div className="absolute right-full mr-2 sm:right-0 sm:mr-0 sm:left-auto top-0 sm:top-full sm:mt-1 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+                  {/* Menu - Twitter style, opens to the LEFT of the button */}
+                  <div 
+                    className="absolute right-full top-0 mr-1 min-w-[200px] bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden"
+                    style={{ boxShadow: 'rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px' }}
+                  >
                     {/* Copy Link - always available */}
                     <button
                       onClick={(e) => { 
@@ -176,44 +179,41 @@ const PostCard = ({
                         navigator.clipboard.writeText(`${window.location.origin}/post/${post.id}`);
                         onOpenMenu(null);
                       }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                     >
-                      <Link2 className="w-5 h-5" />
-                      <span className="font-medium">Copy link</span>
+                      <Link2 className="w-[18px] h-[18px]" />
+                      <span>Copy link</span>
                     </button>
                     
                     {/* Follow/Unfollow - for other users' posts */}
                     {!isOwnPost && user && !isFollowing && (
                       <button
                         onClick={(e) => { e.stopPropagation(); onToggleFollow(displayUserId); onOpenMenu(null); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                       >
-                        <Users className="w-5 h-5" />
-                        <span className="font-medium">Follow @{displayUsername?.slice(0, 12)}</span>
+                        <Users className="w-[18px] h-[18px]" />
+                        <span>Follow @{displayUsername}</span>
                       </button>
                     )}
                     {!isOwnPost && user && isFollowing && (
                       <button
                         onClick={(e) => { e.stopPropagation(); onToggleFollow(displayUserId); onOpenMenu(null); }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                       >
-                        <Users className="w-5 h-5" />
-                        <span className="font-medium">Unfollow</span>
+                        <Users className="w-[18px] h-[18px]" />
+                        <span>Unfollow @{displayUsername}</span>
                       </button>
                     )}
                     
                     {/* Delete - only for own posts */}
                     {isOwnPost && (
-                      <>
-                        <div className="my-1 border-t border-gray-100"></div>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onDeletePost(post); onOpenMenu(null); }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                          <span className="font-medium">Delete post</span>
-                        </button>
-                      </>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDeletePost(post); onOpenMenu(null); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="w-[18px] h-[18px]" />
+                        <span>Delete post</span>
+                      </button>
                     )}
                   </div>
                 </>
