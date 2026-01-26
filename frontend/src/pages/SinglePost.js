@@ -524,7 +524,7 @@ const SinglePost = () => {
                           <span className="px-1.5 py-0.5 text-[10px] font-bold bg-purple-600 text-white rounded">Professor</span>
                         )}
                         <span className="text-gray-500">·</span>
-                        <span className="text-gray-500 text-sm">{formatDate(comment.created_at)}</span>
+                        <span className="text-gray-500 text-sm">{formatCommentDate(comment.created_at)}</span>
                       </div>
                       {user && user.id === comment.user_id && (
                         <button
