@@ -14,7 +14,7 @@ const BACKEND_URL = window.location.origin;
 const SinglePost = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   
   // isAuthenticated is a function, so we need to call it or check user directly
   const isLoggedIn = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
