@@ -30,6 +30,14 @@ if (config.enableHealthCheck) {
 }
 
 const webpackConfig = {
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+      },
+    },
+  },
   webpack: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
