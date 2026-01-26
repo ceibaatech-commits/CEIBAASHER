@@ -223,7 +223,7 @@ const SinglePost = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        <Header isLoggedIn={isLoggedIn} user={user} onLogout={logout} />
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
         </div>
@@ -234,7 +234,7 @@ const SinglePost = () => {
   if (error || !post) {
     return (
       <div className="min-h-screen bg-white">
-        <Header />
+        <Header isLoggedIn={isLoggedIn} user={user} onLogout={logout} />
         <div className="max-w-xl mx-auto px-4 py-12 text-center">
           <div className="py-12">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Post Not Found</h2>
