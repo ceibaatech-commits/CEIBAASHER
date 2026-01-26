@@ -182,21 +182,30 @@ const SinglePost = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
+    const day = date.getDate();
+    const month = date.toLocaleDateString('en-IN', { month: 'short' });
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString('en-IN', {
       hour: '2-digit',
       minute: '2-digit',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
+      hour12: true
     });
+    return `${day} ${month} ${year} at ${time}`;
   };
 
-  const formatTime = (dateString) => {
+  const formatCommentDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    if (diffDays < 7) return `${diffDays}d`;
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
   };
 
   // Get post type badge
