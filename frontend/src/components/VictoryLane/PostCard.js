@@ -167,8 +167,8 @@ const PostCard = ({
                     className="fixed inset-0 z-40" 
                     onClick={(e) => { e.stopPropagation(); onOpenMenu(null); }}
                   />
-                  {/* Menu - positioned to avoid cutoff on mobile */}
-                  <div className="absolute right-0 sm:right-0 top-full mt-1 w-56 max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50" style={{ right: '0', transform: 'translateX(0)' }}>
+                  {/* Menu - positioned to open LEFT on mobile to avoid cutoff */}
+                  <div className="absolute right-full mr-2 sm:right-0 sm:mr-0 sm:left-auto top-0 sm:top-full sm:mt-1 w-52 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
                     {/* Copy Link - always available */}
                     <button
                       onClick={(e) => { 
@@ -189,7 +189,7 @@ const PostCard = ({
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Users className="w-5 h-5" />
-                        <span className="font-medium">Follow @{displayUsername}</span>
+                        <span className="font-medium">Follow @{displayUsername?.slice(0, 12)}</span>
                       </button>
                     )}
                     {!isOwnPost && user && isFollowing && (
@@ -198,7 +198,7 @@ const PostCard = ({
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <Users className="w-5 h-5" />
-                        <span className="font-medium">Unfollow @{displayUsername}</span>
+                        <span className="font-medium">Unfollow</span>
                       </button>
                     )}
                     
