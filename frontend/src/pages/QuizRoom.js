@@ -15,7 +15,7 @@ const QuizRoom = () => {
   const { roomCode } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading, isAuthenticated, logout } = useAuth();
   const { language, setLanguage, translateQuestionObject, isTranslating } = useTranslation();
 
   const [questions, setQuestions] = useState(location.state?.questions || []);
@@ -308,30 +308,36 @@ const QuizRoom = () => {
 
   if (loading || loadingQuiz) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading quiz...</p>
+      <>
+        <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center pt-16">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading quiz...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!questions.length) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
-          <X className="w-10 h-10 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No questions found</h2>
-          <p className="text-gray-600 mb-6">This quiz room does not have any questions configured.</p>
-          <button
-            onClick={() => navigate('/victory-lane')}
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-          >
-            Back to Feed
-          </button>
+      <>
+        <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center pt-16">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
+            <X className="w-10 h-10 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">No questions found</h2>
+            <p className="text-gray-600 mb-6">This quiz room does not have any questions configured.</p>
+            <button
+              onClick={() => navigate('/victory-lane')}
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+            >
+              Back to Feed
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -341,8 +347,10 @@ const QuizRoom = () => {
     const percentage = (finalScore / (questions.length * perQuestionPoints)) * 100;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
-        <div className="max-w-4xl mx-auto">
+      <>
+        <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4 pt-20">
+          <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4">
@@ -456,16 +464,18 @@ const QuizRoom = () => {
             )}
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   const currentQuestion = displayQuestion || questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header with Back, Timer, Language */}
+    <>
+      <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4 pt-20">
+        <div className="max-w-4xl mx-auto">
+          {/* Header with Back, Timer, Language */}
         <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <button
             onClick={() => {
@@ -582,8 +592,9 @@ const QuizRoom = () => {
             {currentQuestionIndex < questions.length - 1 ? 'Next Question →' : 'Finish Quiz 🏁'}
           </button>
         )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
