@@ -351,7 +351,7 @@ const QuizRoom = () => {
         <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
         <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4 pt-20">
           <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6">
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4">
                 <Trophy className="w-10 h-10 text-white" />
@@ -462,6 +462,7 @@ const QuizRoom = () => {
             ) : (
               <p className="text-center text-gray-500 py-8">Be the first to complete this quiz!</p>
             )}
+            </div>
           </div>
         </div>
       </>
