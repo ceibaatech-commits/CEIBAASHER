@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Trophy, Medal, Award, Clock, Target, TrendingUp, Home, Share2, Download, Users } from 'lucide-react';
 import axios from 'axios';
+import Header from '../components/Header';
+import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = window.location.origin;
 
@@ -9,6 +11,7 @@ const QuizResults = () => {
   const { pin } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuth();
   const { playerName, finalScore, totalTime, rank, totalQuestions } = location.state || {};
   
   const [leaderboard, setLeaderboard] = useState([]);
@@ -91,14 +94,19 @@ const QuizResults = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
-      </div>
+      <>
+        <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center pt-16">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4">
+    <>
+      <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4 pt-20">
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50">
           {[...Array(50)].map((_, i) => (
@@ -231,7 +239,8 @@ const QuizResults = () => {
           animation: fall 3s linear infinite;
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 };
 
