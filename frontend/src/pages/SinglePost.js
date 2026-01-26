@@ -254,7 +254,7 @@ const SinglePost = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
+      <Header isLoggedIn={isLoggedIn} user={user} onLogout={logout} />
       
       <div className="max-w-xl mx-auto border-x border-gray-200 min-h-screen">
         {/* Sticky Header */}
