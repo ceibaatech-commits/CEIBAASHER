@@ -771,6 +771,31 @@ async def unlike_post(post_id: str, request: Request, authorization: Optional[st
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error unliking post: {str(e)}")
 
+
+@router.post("/posts/{post_id}/view")
+async def increment_post_view(post_id: str):
+    """Increment view count for a post"""
+    try:
+        # Increment the views count
+        result = await db.social_posts.update_one(
+            {"id": post_id},
+            {"$inc": {"views": 1}}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Get updated view count
+        post = await db.social_posts.find_one({"id": post_id}, {"_id": 0, "views": 1})
+        views = post.get("views", 1) if post else 1
+        
+        return {"success": True, "views": views}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error incrementing view: {str(e)}")
+
+
 @router.get("/posts/{post_id}/comments")
 async def get_comments(post_id: str):
     """Get comments for a post with updated user isTeacher status"""
