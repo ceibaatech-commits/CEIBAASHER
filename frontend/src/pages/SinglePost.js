@@ -434,7 +434,7 @@ const SinglePost = () => {
           <div className="px-4 py-3 flex items-center gap-5 border-b border-gray-200 text-[15px]">
             <span><strong>{shareCount}</strong> <span className="text-gray-500">Reposts</span></span>
             <span><strong>{likesCount}</strong> <span className="text-gray-500">Likes</span></span>
-            <span><strong>{post.views || 0}</strong> <span className="text-gray-500">Views</span></span>
+            <span><strong>{viewsCount}</strong> <span className="text-gray-500">Views</span></span>
           </div>
 
           {/* Action buttons */}
