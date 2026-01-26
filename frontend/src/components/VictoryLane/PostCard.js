@@ -277,45 +277,88 @@ const PostCard = ({
             </div>
           )}
 
-          {/* Quiz Room Card */}
+          {/* Quiz Room Card - Enhanced UI */}
           {post.post_type === 'quiz_room' && post.quiz_room && (
             <div 
-              className="mt-3 rounded-2xl border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors"
+              className="mt-3 rounded-2xl border border-gray-200 bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-lg">{post.quiz_room.title}</h3>
-                    <p className="text-gray-500 text-sm">{post.quiz_room.category}</p>
+              {/* Header with Trophy Icon */}
+              <div className="px-4 pt-4 pb-3 border-b border-amber-200/50">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900 text-lg leading-tight">{post.quiz_room.title}</h3>
+                    <p className="text-gray-600 text-sm mt-0.5">{post.quiz_room.category}</p>
                   </div>
-                  <Trophy className="w-8 h-8 text-amber-500" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg ml-3">
+                    <Trophy className="w-6 h-6 text-white" />
+                  </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4" />
-                    {post.quiz_room.participants || 0}/{post.quiz_room.max_participants || 10}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4" />
-                    {post.quiz_room.time_limit || 15}s/Q
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getDifficultyColor(post.quiz_room.difficulty)}`}>
-                    {post.quiz_room.difficulty || 'Medium'}
-                  </span>
+              </div>
+              
+              {/* Room Code Box */}
+              <div className="px-4 py-3 bg-white/50">
+                <div className="flex items-center justify-between bg-white rounded-xl border-2 border-dashed border-amber-300 px-4 py-3">
+                  <div>
+                    <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Room Code</span>
+                    <p className="text-2xl font-black text-amber-600 tracking-wider">{post.quiz_room.room_code}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(post.quiz_room.room_code);
+                    }}
+                    className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Copy
+                  </button>
                 </div>
-                {post.quiz_room.status === 'waiting' && (
+              </div>
+              
+              {/* Metadata Tags */}
+              <div className="px-4 py-3 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                  <BookOpen className="w-4 h-4 text-amber-500" />
+                  {post.quiz_room.num_questions || '?'} Questions
+                </span>
+                {post.quiz_room.subject && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                    <GraduationCap className="w-4 h-4 text-blue-500" />
+                    {post.quiz_room.subject}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                  {post.quiz_room.privacy === 'private' ? '🔒' : '🌐'} {post.quiz_room.privacy === 'private' ? 'Private' : 'Public'}
+                </span>
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${getDifficultyColor(post.quiz_room.difficulty)}`}>
+                  {post.quiz_room.difficulty || 'Medium'}
+                </span>
+              </div>
+              
+              {/* Stats Row */}
+              <div className="px-4 py-2 flex items-center gap-4 text-sm text-gray-600 border-t border-amber-100">
+                <span className="flex items-center gap-1.5">
+                  <Users className="w-4 h-4" />
+                  {post.quiz_room.participants || 0}/{post.quiz_room.max_participants || 10} joined
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" />
+                  {post.quiz_room.time_limit || 15}s per question
+                </span>
+              </div>
+              
+              {/* Action Button */}
+              <div className="p-4 pt-2">
+                {post.quiz_room.status === 'waiting' ? (
                   <button
                     onClick={() => handleJoinRoom(post.quiz_room.room_code)}
-                    className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                   >
-                    <Play className="w-4 h-4" />
-                    Join Quiz Room
+                    <Play className="w-5 h-5" />
+                    View Quiz
                   </button>
-                )}
-                {post.quiz_room.status !== 'waiting' && (
-                  <div className="w-full py-2.5 bg-gray-100 text-gray-500 rounded-xl font-medium text-center">
-                    {post.quiz_room.status === 'active' ? 'In Progress' : 'Ended'}
+                ) : (
+                  <div className="w-full py-3 bg-gray-100 text-gray-500 rounded-xl font-medium text-center text-base">
+                    {post.quiz_room.status === 'active' ? '🔴 In Progress' : '✅ Ended'}
                   </div>
                 )}
               </div>
