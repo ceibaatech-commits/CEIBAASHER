@@ -31,6 +31,7 @@ if (config.enableHealthCheck) {
 
 const webpackConfig = {
   devServer: {
+    allowedHosts: 'all',
     proxy: {
       '/api': {
         target: 'http://localhost:8001',
