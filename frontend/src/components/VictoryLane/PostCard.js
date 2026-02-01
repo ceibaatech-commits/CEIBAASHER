@@ -333,15 +333,19 @@ const PostCard = ({
               className="mt-3 rounded-2xl border border-gray-200 bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header with Trophy Icon */}
+              {/* Header with Animated Quiz Icon */}
               <div className="px-4 pt-4 pb-3 border-b border-amber-200/50">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-900 text-lg leading-tight">{quizRoom.title}</h3>
                     <p className="text-gray-600 text-sm mt-0.5">{quizRoom.category}</p>
                   </div>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg ml-3">
-                    <Trophy className="w-6 h-6 text-white" />
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center shadow-lg ml-3 overflow-hidden">
+                    <img 
+                      src="/images/quiz-animated.gif" 
+                      alt="Quiz" 
+                      className="w-12 h-12 object-contain"
+                    />
                   </div>
                 </div>
               </div>
