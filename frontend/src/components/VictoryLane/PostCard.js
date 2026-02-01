@@ -1,20 +1,10 @@
-/**
- * Enhanced PostCard Component - X Algorithm Inspired
- * 
- * Features:
- * - Reactive engagement updates via engagement store
- * - Proper Quiz Room code display with hydrated data
- * - Real-time like/share counts without page refresh
- */
-
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { 
   Heart, MessageCircle, Repeat2, MoreHorizontal,
   Trash2, Trophy, Play, Users, Clock, GraduationCap, BookOpen, Link2, Copy, Check
 } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 import MathText from '../MathText';
-import { useEngagement } from '../../stores/engagementStore';
 
 const PostCard = ({
   post,
