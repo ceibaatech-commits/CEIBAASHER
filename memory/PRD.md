@@ -78,6 +78,22 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 - Mobile hamburger menu now works on Quiz Room page
 - All auth props properly passed to Header (isLoggedIn, user, onLogout)
 
+### Victory Lane Quiz Room Cards Fix (Feb 1, 2025) - COMPLETED
+- Fixed Quiz Room posts to properly display room code in the feed
+- Enhanced PostCard component with dedicated Quiz Room card UI:
+  - Prominent room code display in large amber text
+  - Copy button to copy room code to clipboard
+  - Quiz metadata (questions count, category, privacy, difficulty)
+  - Participant stats and time limit info
+  - View Quiz action button
+- Real-time like updates working via WebSocket events
+- Socket handlers properly updating post counts on like/unlike
+
+### Mobile Menu Compact Fix (Jan 26, 2025) - COMPLETED
+- Removed rating and streak stats from mobile menu profile section
+- Reduced text size and padding for compact display
+- Logout button now visible without scrolling
+
 ### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
 - Fixed UX issue: reposts now show "Undo" button instead of "Delete"
 - For reposts (`is_retweet === true`): Shows Undo icon (orange) that calls `/api/social/posts/{id}/unshare`
