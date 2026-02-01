@@ -1,25 +1,9 @@
 /**
- * Enhanced Social Socket Hook - X Algorithm Inspired Event System
- * 
- * Similar to X's unified-user-actions event stream, this hook provides
- * real-time updates for engagement actions (likes, comments, shares).
- * 
- * Event Types:
- * - post_liked / post_unliked: Like engagement events
- * - new_comment: Comment added
- * - post_shared: Repost event
- * - new_post: New content in feed
- * - engagement_update: Batch engagement update
+ * Social Socket Hook - Real-time updates for Victory Lane
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { io } from 'socket.io-client';
-import { 
-  handleLikeEvent, 
-  handleCommentEvent, 
-  handleShareEvent,
-  updateEngagement 
-} from '../stores/engagementStore';
 
 const BACKEND_URL = window.location.origin;
 
@@ -78,7 +62,7 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
       console.log('[Social Socket] Authenticated:', data);
     };
 
-    // Real-time event handlers - update both engagement store and local callbacks
+    // Real-time event handlers
     const handleNewPostEvent = (post) => {
       console.log('[Social Socket] New post:', post.id);
       if (handlersRef.current.onNewPost) {
@@ -88,11 +72,6 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
 
     const handlePostLikedEvent = (data) => {
       console.log('[Social Socket] Post liked:', data.post_id, 'count:', data.likes_count);
-      
-      // Update engagement store for reactive UI updates
-      handleLikeEvent(data);
-      
-      // Also call the legacy handler for backward compatibility
       if (handlersRef.current.onPostLiked) {
         handlersRef.current.onPostLiked(data);
       }
@@ -100,10 +79,6 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
 
     const handlePostUnlikedEvent = (data) => {
       console.log('[Social Socket] Post unliked:', data.post_id, 'count:', data.likes_count);
-      
-      // Update engagement store
-      handleLikeEvent(data);
-      
       if (handlersRef.current.onPostUnliked) {
         handlersRef.current.onPostUnliked(data);
       }
@@ -111,26 +86,9 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
 
     const handleNewCommentEvent = (data) => {
       console.log('[Social Socket] New comment on:', data.post_id);
-      
-      // Update engagement store
-      handleCommentEvent(data);
-      
       if (handlersRef.current.onNewComment) {
         handlersRef.current.onNewComment(data);
       }
-    };
-
-    const handlePostSharedEvent = (data) => {
-      console.log('[Social Socket] Post shared:', data.post_id);
-      
-      // Update engagement store
-      handleShareEvent(data);
-    };
-
-    const handleEngagementUpdate = (data) => {
-      // Batch engagement update - data format: { post_id, likes_count, views, share_count, comment_count }
-      console.log('[Social Socket] Engagement update:', data.post_id);
-      updateEngagement(data.post_id, data);
     };
 
     const handleNotificationEvent = (notification) => {
@@ -138,10 +96,6 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
       if (handlersRef.current.onNotification) {
         handlersRef.current.onNotification(notification);
       }
-    };
-
-    const handlePostDeleted = (data) => {
-      console.log('[Social Socket] Post deleted:', data.post_id);
     };
 
     const handleConnectError = (error) => {
@@ -156,10 +110,7 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
     socket.on('post_liked', handlePostLikedEvent);
     socket.on('post_unliked', handlePostUnlikedEvent);
     socket.on('new_comment', handleNewCommentEvent);
-    socket.on('post_shared', handlePostSharedEvent);
-    socket.on('engagement_update', handleEngagementUpdate);
     socket.on('notification', handleNotificationEvent);
-    socket.on('post_deleted', handlePostDeleted);
     socket.on('connect_error', handleConnectError);
 
     // Check if already connected
@@ -181,10 +132,7 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
       socket.off('post_liked', handlePostLikedEvent);
       socket.off('post_unliked', handlePostUnlikedEvent);
       socket.off('new_comment', handleNewCommentEvent);
-      socket.off('post_shared', handlePostSharedEvent);
-      socket.off('engagement_update', handleEngagementUpdate);
       socket.off('notification', handleNotificationEvent);
-      socket.off('post_deleted', handlePostDeleted);
       socket.off('connect_error', handleConnectError);
       
       // Only disconnect if no more connections
@@ -217,28 +165,10 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
     }
   }, []);
 
-  // Subscribe to specific post's engagement updates
-  const subscribeToPost = useCallback((postId) => {
-    const socket = getSocket();
-    if (socket.connected) {
-      socket.emit('subscribe_post', { post_id: postId });
-    }
-  }, []);
-
-  // Unsubscribe from post updates
-  const unsubscribeFromPost = useCallback((postId) => {
-    const socket = getSocket();
-    if (socket.connected) {
-      socket.emit('unsubscribe_post', { post_id: postId });
-    }
-  }, []);
-
   return {
     isConnected,
     joinFeed,
     leaveFeed,
-    subscribeToPost,
-    unsubscribeFromPost,
     socket: getSocket(),
   };
 };
