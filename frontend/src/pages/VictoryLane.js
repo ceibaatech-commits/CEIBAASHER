@@ -18,14 +18,6 @@ import {
   CommentsSection,
   PostComposer
 } from '../components/VictoryLane';
-// X Algorithm Inspired - Engagement Store & Hydration
-import { 
-  hydrateEngagement, 
-  optimisticLike, 
-  optimisticShare,
-  updateEngagement 
-} from '../stores/engagementStore';
-import { hydratePostEngagement } from '../services/hydrationService';
 
 const BACKEND_URL = window.location.origin;
 
