@@ -485,7 +485,7 @@ const SinglePost = () => {
                 <div className="px-4 py-3 flex flex-wrap gap-2">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
                     <BookOpen className="w-4 h-4 text-amber-500" />
-                    {post.quiz_room?.num_questions || post.quiz_details?.total_questions || '?'} Questions
+                    {post.quiz_room?.num_questions || post.quiz_details?.total_questions || post.quiz_room?.questions?.length || post.quiz_details?.questions?.length || 5} Questions
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
                     {(post.quiz_room?.privacy || post.quiz_details?.privacy) === 'private' ? '🔒 Private' : '🌐 Public'}
