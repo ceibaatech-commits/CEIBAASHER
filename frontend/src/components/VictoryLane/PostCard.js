@@ -125,17 +125,13 @@ const PostCard = ({
     }
   };
 
-  // Store ref in parent's postRefs map
-  const setPostRef = React.useCallback((el) => {
-    if (postRefs?.current) {
-      // eslint-disable-next-line react-hooks/immutability
-      postRefs.current[post.id] = el;
-    }
-  }, [post.id, postRefs]);
-
   return (
     <article 
-      ref={setPostRef}
+      ref={(el) => {
+        if (postRefs?.current && el) {
+          postRefs.current[post.id] = el;
+        }
+      }}
       data-testid={`post-card-${post.id}`}
       data-post-id={post.id}
       className="border-b border-gray-200 bg-white hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer"
