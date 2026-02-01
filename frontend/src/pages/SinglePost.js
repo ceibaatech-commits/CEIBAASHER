@@ -448,10 +448,12 @@ const SinglePost = () => {
                         {post.quiz_room?.category || post.quiz_details?.category || 'General Knowledge'}
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg ml-3">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                      </svg>
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center shadow-lg ml-3 overflow-hidden">
+                      <img 
+                        src="/images/quiz-animated.gif" 
+                        alt="Quiz" 
+                        className="w-12 h-12 object-contain"
+                      />
                     </div>
                   </div>
                 </div>
