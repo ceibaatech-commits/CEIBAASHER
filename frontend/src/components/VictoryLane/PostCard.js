@@ -125,12 +125,12 @@ const PostCard = ({
     }
   };
 
-  // Store ref in parent's postRefs map
-  const setPostRef = (el) => {
-    if (postRefs && postRefs.current) {
+  // Store ref in parent's postRefs map using useCallback
+  const setPostRef = React.useCallback((el) => {
+    if (postRefs?.current) {
       postRefs.current[post.id] = el;
     }
-  };
+  }, [post.id, postRefs]);
 
   return (
     <article 
