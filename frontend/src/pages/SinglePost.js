@@ -247,6 +247,16 @@ const SinglePost = () => {
         </span>
       );
     }
+    if (post?.post_type === 'quiz_room') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+          <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+          Quiz Room
+        </span>
+      );
+    }
     return null;
   };
 
