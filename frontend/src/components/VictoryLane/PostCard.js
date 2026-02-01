@@ -126,6 +126,7 @@ const PostCard = ({
   };
 
   // Store ref in parent's postRefs map using useCallback
+  // eslint-disable-next-line react-hooks/immutability
   const setPostRef = React.useCallback((el) => {
     if (postRefs?.current) {
       postRefs.current[post.id] = el;
