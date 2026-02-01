@@ -404,6 +404,194 @@ async def delete_post(post_id: str, request: Request, authorization: Optional[st
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting post: {str(e)}")
 
+# ==================== HYDRATION ENDPOINTS (X Algorithm Inspired) ====================
+
+class HydrationRequest(BaseModel):
+    """Request body for batch engagement hydration"""
+    post_ids: List[str]
+    user_id: Optional[str] = None
+
+@router.post("/posts/hydrate")
+async def hydrate_posts_engagement(
+    request_data: HydrationRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Hydrate engagement metrics for multiple posts.
+    Similar to X's candidate hydration layer - fetches fresh engagement data
+    independently from post content for real-time accuracy.
+    """
+    try:
+        user_id = get_optional_user_id(authorization) or request_data.user_id
+        post_ids = request_data.post_ids
+        
+        if not post_ids or len(post_ids) == 0:
+            return {"success": True, "engagement": {}}
+        
+        # Limit batch size to prevent abuse
+        if len(post_ids) > 100:
+            post_ids = post_ids[:100]
+        
+        engagement_data = {}
+        
+        # Fetch posts in batch
+        posts = await db.social_posts.find(
+            {"id": {"$in": post_ids}},
+            {
+                "_id": 0,
+                "id": 1,
+                "likes_count": 1,
+                "comments_count": 1,
+                "shares_count": 1,
+                "views": 1,
+                "share_count": 1,
+                "comment_count": 1,
+                "like_count": 1,
+            }
+        ).to_list(None)
+        
+        # Build engagement map
+        for post in posts:
+            post_id = post["id"]
+            engagement_data[post_id] = {
+                "likes_count": post.get("likes_count") or post.get("like_count") or 0,
+                "comment_count": post.get("comments_count") or post.get("comment_count") or 0,
+                "share_count": post.get("shares_count") or post.get("share_count") or 0,
+                "views": post.get("views") or 0,
+            }
+        
+        # Check if user has liked/shared these posts
+        if user_id:
+            # Get user's likes
+            user_likes = await db.post_likes.find(
+                {"user_id": user_id, "post_id": {"$in": post_ids}},
+                {"_id": 0, "post_id": 1}
+            ).to_list(None)
+            liked_post_ids = {like["post_id"] for like in user_likes}
+            
+            # Get user's shares/reposts
+            user_shares = await db.social_posts.find(
+                {
+                    "user_id": user_id,
+                    "is_retweet": True,
+                    "original_post_id": {"$in": post_ids}
+                },
+                {"_id": 0, "original_post_id": 1}
+            ).to_list(None)
+            shared_post_ids = {share["original_post_id"] for share in user_shares}
+            
+            # Update engagement data with user state
+            for post_id in engagement_data:
+                engagement_data[post_id]["liked_by_user"] = post_id in liked_post_ids
+                engagement_data[post_id]["shared_by_user"] = post_id in shared_post_ids
+        
+        return {"success": True, "engagement": engagement_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error hydrating engagement: {str(e)}")
+
+@router.get("/posts/{post_id}/engagement")
+async def get_post_engagement(
+    post_id: str,
+    user_id: Optional[str] = Query(None),
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get fresh engagement metrics for a single post.
+    Used for real-time updates on single post views.
+    """
+    try:
+        current_user = get_optional_user_id(authorization) or user_id
+        
+        post = await db.social_posts.find_one(
+            {"id": post_id},
+            {
+                "_id": 0,
+                "likes_count": 1,
+                "comments_count": 1,
+                "shares_count": 1,
+                "views": 1,
+                "share_count": 1,
+                "comment_count": 1,
+                "like_count": 1,
+            }
+        )
+        
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        engagement = {
+            "likes_count": post.get("likes_count") or post.get("like_count") or 0,
+            "comment_count": post.get("comments_count") or post.get("comment_count") or 0,
+            "share_count": post.get("shares_count") or post.get("share_count") or 0,
+            "views": post.get("views") or 0,
+            "liked_by_user": False,
+            "shared_by_user": False,
+        }
+        
+        if current_user:
+            # Check if user liked
+            liked = await db.post_likes.find_one({"user_id": current_user, "post_id": post_id})
+            engagement["liked_by_user"] = liked is not None
+            
+            # Check if user shared
+            shared = await db.social_posts.find_one({
+                "user_id": current_user,
+                "is_retweet": True,
+                "original_post_id": post_id
+            })
+            engagement["shared_by_user"] = shared is not None
+        
+        return {"success": True, "engagement": engagement}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching engagement: {str(e)}")
+
+class BatchQuizRoomRequest(BaseModel):
+    room_codes: List[str]
+
+@router.post("/quiz-rooms/batch")
+async def batch_get_quiz_rooms(request_data: BatchQuizRoomRequest):
+    """
+    Batch hydrate quiz room data for multiple posts.
+    Fetches fresh room_code, status, participants for Quiz Room cards.
+    """
+    try:
+        room_codes = request_data.room_codes
+        
+        if not room_codes or len(room_codes) == 0:
+            return {"success": True, "rooms": {}}
+        
+        # Limit batch size
+        if len(room_codes) > 50:
+            room_codes = room_codes[:50]
+        
+        rooms_data = {}
+        
+        # Fetch from quiz_rooms collection
+        rooms = await db.quiz_rooms.find(
+            {"room_code": {"$in": [code.upper() for code in room_codes]}},
+            {"_id": 0}
+        ).to_list(None)
+        
+        for room in rooms:
+            rooms_data[room["room_code"]] = {
+                "room_code": room.get("room_code"),
+                "title": room.get("title"),
+                "category": room.get("category"),
+                "status": room.get("status", "waiting"),
+                "participants": room.get("participants", 0),
+                "max_participants": room.get("max_participants", 10),
+                "num_questions": len(room.get("questions", [])),
+                "time_limit": room.get("questions", [{}])[0].get("time_limit", 15) if room.get("questions") else 15,
+                "privacy": room.get("privacy", "public"),
+                "difficulty": room.get("difficulty", "Medium"),
+            }
+        
+        return {"success": True, "rooms": rooms_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error batch fetching quiz rooms: {str(e)}")
+
 # ==================== FEED ENDPOINTS ====================
 
 @router.get("/feed/for-you")
