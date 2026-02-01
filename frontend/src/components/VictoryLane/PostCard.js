@@ -138,9 +138,16 @@ const PostCard = ({
     }
   };
 
+  // Store ref in parent's postRefs map
+  const setPostRef = (el) => {
+    if (postRefs && postRefs.current) {
+      postRefs.current[post.id] = el;
+    }
+  };
+
   return (
     <article 
-      ref={(el) => postRefs.current[post.id] = el}
+      ref={setPostRef}
       data-testid={`post-card-${post.id}`}
       data-post-id={post.id}
       className="border-b border-gray-200 bg-white hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer"
