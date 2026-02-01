@@ -30,24 +30,21 @@ const PostCard = ({
   getDifficultyColor,
   handleJoinRoom
 }) => {
-  // Use engagement store for reactive updates
-  const engagement = useEngagement(post.id);
-  
   // State for copy feedback
   const [copied, setCopied] = React.useState(false);
   
   const isOwnPost = user && post.user_id === user.id;
   const isFollowing = followingList.has(post.user_id);
   
-  // Use engagement store for like/share state, fallback to props
-  const isLiked = engagement.liked_by_user || likedPosts.has(post.id);
-  const isShared = engagement.shared_by_user || sharedPosts.has(post.is_retweet ? post.original_post_id : post.id);
+  // Use props for like/share state
+  const isLiked = likedPosts.has(post.id);
+  const isShared = sharedPosts.has(post.is_retweet ? post.original_post_id : post.id);
   
-  // Get reactive counts from engagement store
-  const likesCount = engagement.likes_count || post.likes_count || post.like_count || 0;
-  const shareCount = engagement.share_count || post.share_count || 0;
-  const commentCount = engagement.comment_count || post.comment_count || 0;
-  const viewsCount = engagement.views || post.views || 0;
+  // Get counts from post data
+  const likesCount = post.likes_count || post.like_count || 0;
+  const shareCount = post.share_count || post.shares_count || 0;
+  const commentCount = post.comment_count || post.comments_count || 0;
+  const viewsCount = post.views || 0;
   
   // Get display info
   const displayName = post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username);
