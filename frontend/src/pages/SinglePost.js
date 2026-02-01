@@ -423,6 +423,81 @@ const SinglePost = () => {
             </div>
           )}
 
+          {/* Quiz Room Card - Call to Action */}
+          {post.post_type === 'quiz_room' && (post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code) && (
+            <div className="px-4 pb-3">
+              <div className="rounded-2xl border border-gray-200 bg-gradient-to-br from-amber-50 to-orange-50 overflow-hidden">
+                {/* Header */}
+                <div className="px-4 pt-4 pb-3 border-b border-amber-200/50">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                        {post.quiz_room?.title || post.quiz_details?.title || 'Quiz Room'}
+                      </h3>
+                      <p className="text-gray-600 text-sm mt-0.5">
+                        {post.quiz_room?.category || post.quiz_details?.category || 'General Knowledge'}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg ml-3">
+                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Room Code Box */}
+                <div className="px-4 py-3 bg-white/50">
+                  <div className="flex items-center justify-between bg-white rounded-xl border-2 border-dashed border-amber-300 px-4 py-3">
+                    <div>
+                      <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">Room Code</span>
+                      <p className="text-2xl font-black text-amber-600 tracking-wider font-mono">
+                        {post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code);
+                        toast.success('Room code copied!');
+                      }}
+                      className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Metadata */}
+                <div className="px-4 py-3 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                    <BookOpen className="w-4 h-4 text-amber-500" />
+                    {post.quiz_room?.num_questions || post.quiz_details?.total_questions || '?'} Questions
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
+                    {(post.quiz_room?.privacy || post.quiz_details?.privacy) === 'private' ? '🔒 Private' : '🌐 Public'}
+                  </span>
+                </div>
+                
+                {/* Action Button */}
+                <div className="p-4 pt-2">
+                  <button
+                    onClick={() => navigate(`/quiz-room/${post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code}`)}
+                    className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                    Join Quiz Room
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Timestamp */}
           <div className="px-4 py-3 border-b border-gray-200">
             <span className="text-gray-500 text-[15px]">
