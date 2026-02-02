@@ -565,9 +565,16 @@ const VictoryLane = () => {
 
   // Filter posts based on search query and selected tag
   const filteredPosts = posts.filter(post => {
-    // Tag filter
-    if (selectedTag && (!post.tags || !post.tags.includes(selectedTag))) {
-      return false;
+    // Tag filter - check both tags array AND hashtags in content
+    if (selectedTag) {
+      const tagInArray = post.tags && post.tags.some(tag => 
+        tag.toLowerCase().replace('#', '') === selectedTag.toLowerCase().replace('#', '')
+      );
+      const tagInContent = post.content && post.content.toLowerCase().includes(`#${selectedTag.toLowerCase().replace('#', '')}`);
+      
+      if (!tagInArray && !tagInContent) {
+        return false;
+      }
     }
     
     // Search filter
