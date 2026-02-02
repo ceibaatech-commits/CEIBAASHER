@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserPlus, ArrowLeft } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import Header from '../components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
