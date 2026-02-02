@@ -845,11 +845,6 @@ const PublicProfile = () => {
                                 
                                 {/* Comment Button - navigates to single post */}
                                 <button 
-                                  onClick={(e) => { e.stopPropagation(); navigate(`/post/${post.id}`); }}
-                                  className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-blue-500 transition-all duration-200"
-                                
-                                {/* Comment Button - navigates to single post */}
-                                <button 
                                   onClick={() => navigate(`/post/${post.id}`)}
                                   className="group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 text-gray-500 hover:text-blue-500"
                                 >
