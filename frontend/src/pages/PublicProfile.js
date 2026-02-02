@@ -782,28 +782,25 @@ const PublicProfile = () => {
 
                             {/* Comment Content with Original Post Preview */}
                             {post.is_comment && (
-                              <div className="pl-[52px] mb-3">
-                                <div className="text-gray-900 mb-3">
+                              <div className="pl-[46px] md:pl-[52px] mb-2">
+                                <div className="text-gray-900 text-sm mb-2">
                                   <MathText text={post.comment_content || post.content} />
                                 </div>
                                 
                                 {/* Original Post Preview */}
                                 {post.original_post && (
-                                  <div className="pl-3 border-l-2 border-blue-200 bg-blue-50/50 p-3 rounded-r-lg">
-                                    <div className="flex items-center gap-2 mb-2">
+                                  <div className="pl-2 border-l-2 border-blue-200 bg-blue-50/50 p-2 rounded-r-lg">
+                                    <div className="flex items-center gap-1.5 mb-1">
                                       <img
                                         src={post.original_post.user_avatar || `https://ui-avatars.com/api/?name=${post.original_post.user_name}&background=random&size=24`}
                                         alt={post.original_post.user_name}
-                                        className="w-5 h-5 rounded-full"
+                                        className="w-4 h-4 rounded-full"
                                       />
-                                      <span className="text-sm font-medium text-gray-700">
+                                      <span className="text-xs font-medium text-gray-700">
                                         {post.original_post.user_name}
                                       </span>
-                                      <span className="text-xs text-gray-400">
-                                        @{post.original_post.username}
-                                      </span>
                                     </div>
-                                    <div className="text-sm text-gray-600 line-clamp-2">
+                                    <div className="text-xs text-gray-600 line-clamp-2">
                                       <MathText text={post.original_post.content} />
                                     </div>
                                   </div>
@@ -814,7 +811,7 @@ const PublicProfile = () => {
                             {/* Post Content (for regular posts and reposts) - Clickable to view single post */}
                             {!post.is_comment && (
                               <div 
-                                className="text-gray-800 text-[15px] leading-relaxed pl-[52px] cursor-pointer hover:bg-gray-50/50 -mx-4 px-4 py-2 transition-colors"
+                                className="text-gray-800 text-sm md:text-[15px] leading-relaxed pl-[46px] md:pl-[52px] cursor-pointer hover:bg-gray-50/50 -mx-3 md:-mx-4 px-3 md:px-4 py-1.5 transition-colors"
                                 onClick={() => navigate(`/post/${post.id}`)}
                               >
                                 <MathText text={post.content} />
@@ -823,27 +820,27 @@ const PublicProfile = () => {
                             
                             {/* Room Code */}
                             {post.room_code && (
-                              <div className="mt-3 ml-[52px] p-2 bg-green-50 border border-green-200 rounded-lg inline-block">
-                                <p className="text-xs text-green-700 font-medium">Room: {post.room_code}</p>
+                              <div className="mt-2 ml-[46px] md:ml-[52px] p-1.5 bg-green-50 border border-green-200 rounded-lg inline-block">
+                                <p className="text-[10px] text-green-700 font-medium">Room: {post.room_code}</p>
                               </div>
                             )}
                             
-                            {/* Modern Interaction Bar */}
-                            <div className="flex items-center justify-between pl-[52px] pt-2 mt-1">
+                            {/* Modern Interaction Bar - Higher contrast icons */}
+                            <div className="flex items-center justify-between pl-[46px] md:pl-[52px] pt-1 mt-1">
                               <div className="flex items-center -ml-2">
                                 {/* Like Button */}
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); handleLike(post.id); }}
-                                  className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
+                                  className={`group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 ${
                                     likedPosts.has(post.id) 
                                       ? 'text-rose-500' 
-                                      : 'text-gray-400 hover:text-rose-500'
+                                      : 'text-gray-500 hover:text-rose-500'
                                   }`}
                                 >
-                                  <div className={`p-1 rounded-full transition-all duration-200 group-hover:bg-rose-50 ${likedPosts.has(post.id) ? 'bg-rose-50' : ''}`}>
-                                    <Heart className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
+                                  <div className={`p-0.5 rounded-full transition-all duration-200 group-hover:bg-rose-50 ${likedPosts.has(post.id) ? 'bg-rose-50' : ''}`}>
+                                    <Heart className={`w-4 h-4 transition-transform group-hover:scale-110 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
                                   </div>
-                                  <span className="text-sm tabular-nums">{post.likes_count || 0}</span>
+                                  <span className="text-xs font-medium tabular-nums">{post.likes_count || 0}</span>
                                 </button>
                                 
                                 {/* Comment Button - navigates to single post */}
