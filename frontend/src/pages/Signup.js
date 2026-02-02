@@ -216,6 +216,7 @@ const Signup = () => {
             </p>
           </CardFooter>
         </Card>
+        </div>
       </div>
     </div>
   );
