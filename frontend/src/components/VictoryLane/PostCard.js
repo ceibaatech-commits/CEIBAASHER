@@ -276,7 +276,11 @@ const PostCard = ({
 
           {/* Post content */}
           <div className="text-[15px] text-gray-900 leading-normal whitespace-pre-wrap break-words mb-3">
-            <MathText text={post.content} />
+            <MathText 
+              text={post.content} 
+              onHashtagClick={(tag) => onTagClick && onTagClick(tag)}
+              onMentionClick={(username) => onOpenProfile && onOpenProfile(username)}
+            />
           </div>
 
           {/* Academic question details */}
