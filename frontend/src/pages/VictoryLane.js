@@ -330,6 +330,18 @@ const VictoryLane = () => {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [openMenuId]);
 
+  // Handle tag query parameter from URL (for hashtag navigation)
+  useEffect(() => {
+    const tagParam = searchParams.get('tag');
+    if (tagParam) {
+      setSelectedTag(tagParam);
+      setShowFilters(true);
+      // Clear the tag param from URL to avoid refresh issues
+      searchParams.delete('tag');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
+
 
   // Real-time socket handlers
   const handleNewPost = useCallback((newPostData) => {
