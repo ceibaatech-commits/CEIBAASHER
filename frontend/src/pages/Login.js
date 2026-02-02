@@ -203,6 +203,7 @@ const Login = () => {
             </p>
           </CardFooter>
         </Card>
+        </div>
       </div>
     </div>
   );
