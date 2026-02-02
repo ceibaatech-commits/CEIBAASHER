@@ -125,6 +125,9 @@ const Signup = () => {
                 <Input
                   id="name"
                   name="name"
+                  type="text"
+                  inputMode="text"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
@@ -141,6 +144,8 @@ const Signup = () => {
                   id="email"
                   name="email"
                   type="email"
+                  inputMode="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="your@email.com"
@@ -157,6 +162,8 @@ const Signup = () => {
                   id="password"
                   name="password"
                   type="password"
+                  inputMode="text"
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Min 6 characters"
@@ -173,6 +180,8 @@ const Signup = () => {
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
+                  inputMode="text"
+                  autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Re-enter password"
