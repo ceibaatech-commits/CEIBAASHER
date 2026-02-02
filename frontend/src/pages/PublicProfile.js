@@ -510,32 +510,32 @@ const PublicProfile = () => {
 
             {/* Bio */}
             {profile.bio && (
-              <p className="mt-4 text-gray-700">{profile.bio}</p>
+              <p className="mt-3 text-gray-700 text-sm leading-relaxed">{profile.bio}</p>
             )}
 
-            {/* Location & Joined Date */}
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-gray-600">
+            {/* Location & Joined Date - Inline on mobile */}
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
               {profile.location && (
                 <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
+                  <MapPin className="w-3.5 h-3.5" />
                   <span>{profile.location}</span>
                 </div>
               )}
               {profile.joined_at && (
                 <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-3.5 h-3.5" />
                   <span>Joined {new Date(profile.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                 </div>
               )}
             </div>
 
-            {/* Exam Focus Tags */}
+            {/* Exam Focus Tags - Smaller on mobile */}
             {profile.exam_focus && profile.exam_focus.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {profile.exam_focus.map(exam => (
                   <span
                     key={exam}
-                    className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold"
+                    className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium"
                   >
                     🎯 {exam}
                   </span>
@@ -543,71 +543,58 @@ const PublicProfile = () => {
               </div>
             )}
 
-            {/* Badges */}
+            {/* Badges - Compact on mobile */}
             {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute ||
               profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {(profile.badges?.isTeacher || profile.isTeacher) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm"
-                    title="Teacher Badge"
-                  >
-                    <Trophy className="w-4 h-4 mr-1.5" />
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                    <Trophy className="w-3 h-3 mr-1" />
                     Teacher
                   </span>
                 )}
                 {(profile.badges?.isProfessor || profile.isProfessor) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm"
-                    title="Professor Badge"
-                  >
-                    <Trophy className="w-4 h-4 mr-1.5" />
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">
+                    <Trophy className="w-3 h-3 mr-1" />
                     Professor
                   </span>
                 )}
                 {(profile.badges?.isOfficial || profile.isOfficial) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm"
-                    title="Official Badge"
-                  >
-                    <Award className="w-4 h-4 mr-1.5 fill-white" />
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-gray-600 text-white">
+                    <Award className="w-3 h-3 mr-1 fill-white" />
                     Official
                   </span>
                 )}
                 {(profile.badges?.isInstitute || profile.isInstitute) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm"
-                    style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
-                    title="Institute Badge"
-                  >
-                    <Trophy className="w-4 h-4 mr-1.5" />
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold text-white" style={{backgroundColor: '#8B2E2E'}}>
+                    <Trophy className="w-3 h-3 mr-1" />
                     Institute
                   </span>
                 )}
               </div>
             )}
 
-            {/* Stats Row - Properly Aligned */}
-            <div className="mt-6 flex items-center justify-start gap-8 border-t border-gray-200 pt-6">
-              <div className="flex flex-col items-center">
-                <p className="text-2xl font-bold text-gray-900">{profile.posts_count || 0}</p>
-                <p className="text-gray-600 text-sm">Posts</p>
+            {/* Stats Row - Horizontal, compact layout */}
+            <div className="mt-4 flex items-center gap-6 border-t border-gray-100 pt-3">
+              <div className="flex items-center gap-1.5">
+                <span className="text-base font-bold text-gray-900">{profile.posts_count || 0}</span>
+                <span className="text-gray-500 text-xs">Posts</span>
               </div>
               <button
                 onClick={handleFollowersClick}
-                className={`flex flex-col items-center hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
+                className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
                 disabled={!canView}
               >
-                <p className="text-2xl font-bold text-gray-900">{profile.followers_count || 0}</p>
-                <p className="text-gray-600 text-sm">Followers</p>
+                <span className="text-base font-bold text-gray-900">{profile.followers_count || 0}</span>
+                <span className="text-gray-500 text-xs">Followers</span>
               </button>
               <button
                 onClick={handleFollowingClick}
-                className={`flex flex-col items-center hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
+                className={`flex items-center gap-1.5 hover:opacity-70 transition-opacity ${!canView && 'cursor-not-allowed opacity-50'}`}
                 disabled={!canView}
               >
-                <p className="text-2xl font-bold text-gray-900">{profile.following_count || 0}</p>
-                <p className="text-gray-600 text-sm">Following</p>
+                <span className="text-base font-bold text-gray-900">{profile.following_count || 0}</span>
+                <span className="text-gray-500 text-xs">Following</span>
               </button>
             </div>
           </div>
