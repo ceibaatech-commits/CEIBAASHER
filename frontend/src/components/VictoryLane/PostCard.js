@@ -285,13 +285,24 @@ const PostCard = ({
             </div>
           )}
 
-          {/* Post content */}
+          {/* Post content with See more */}
           <div className="text-[15px] text-gray-900 leading-normal whitespace-pre-wrap break-words mb-3">
             <MathText 
-              text={post.content} 
+              text={truncatedContent} 
               onHashtagClick={(tag) => onTagClick && onTagClick(tag)}
               onMentionClick={(username) => onOpenProfile && onOpenProfile(username)}
             />
+            {isLongContent && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(!isExpanded);
+                }}
+                className="text-blue-500 hover:text-blue-600 font-medium ml-1 transition-colors"
+              >
+                {isExpanded ? 'See less' : 'See more'}
+              </button>
+            )}
           </div>
 
           {/* Academic question details */}
