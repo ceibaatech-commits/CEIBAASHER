@@ -452,51 +452,55 @@ const PublicProfile = () => {
         {/* Profile Card - No Banner */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           {/* Profile Info Section */}
-          <div className="px-6 py-6">
-            {/* Avatar, User Info & Follow Button */}
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-4">
+          <div className="px-4 py-4 md:px-6 md:py-6">
+            {/* Mobile: Stack layout, Desktop: Side by side */}
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              {/* Avatar and User Info Row */}
+              <div className="flex items-center gap-3">
                 {/* Profile Picture */}
                 <div className="relative flex-shrink-0">
                   <img
                     src={profile.profile_picture || `https://ui-avatars.com/api/?name=${profile.name}&background=random&size=200`}
                     alt={profile.name}
-                    className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-purple-100 shadow-lg object-cover"
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-full border-3 border-purple-100 shadow-md object-cover"
                   />
                   {profile.is_verified && (
-                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-purple-600 rounded-full flex items-center justify-center border-2 border-white">
-                      <span className="text-white text-xs">✓</span>
+                    <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 md:w-6 md:h-6 bg-purple-600 rounded-full flex items-center justify-center border-2 border-white">
+                      <span className="text-white text-[10px]">✓</span>
                     </div>
                   )}
                 </div>
 
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-900">{profile.name}</h1>
-                  <p className="text-gray-500">@{profile.username}</p>
+                  <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">{profile.name}</h1>
+                  <p className="text-gray-500 text-sm">@{profile.username}</p>
                 </div>
               </div>
 
-              {/* Follow/Edit Button */}
-              <div className="flex-shrink-0">
+              {/* Follow/Edit Button - Full width on mobile */}
+              <div className="w-full sm:w-auto sm:flex-shrink-0">
                 {user && user.id !== profile.id ? (
-                  <FollowButton
-                    targetUserId={profile.id}
-                    targetUsername={profile.username}
-                    initialStatus={followStatus}
-                    onFollowChange={handleFollowChange}
-                  />
+                  <div className="w-full sm:w-auto">
+                    <FollowButton
+                      targetUserId={profile.id}
+                      targetUsername={profile.username}
+                      initialStatus={followStatus}
+                      onFollowChange={handleFollowChange}
+                      className="w-full sm:w-auto"
+                    />
+                  </div>
                 ) : user && user.id === profile.id ? (
                   <button
                     onClick={() => navigate('/dashboard')}
-                    className="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold shadow-lg text-sm"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold shadow-md text-sm"
                   >
                     Edit Profile
                   </button>
                 ) : (
                   <button
                     onClick={() => navigate('/login')}
-                    className="px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold text-sm"
+                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold text-sm"
                   >
                     Login to Follow
                   </button>
