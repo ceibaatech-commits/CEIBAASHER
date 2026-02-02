@@ -677,9 +677,9 @@ const PublicProfile = () => {
                             </div>
                           )}
 
-                          <div className="px-4 py-4">
+                          <div className="px-3 py-3 md:px-4 md:py-4">
                             {/* Modern Header Row - Avatar, User Info, Date, Tags all inline */}
-                            <div className="flex items-start gap-3 mb-3">
+                            <div className="flex items-start gap-2.5 mb-2">
                               {/* Avatar */}
                               <div 
                                 className="cursor-pointer flex-shrink-0"
@@ -688,7 +688,7 @@ const PublicProfile = () => {
                                   : null
                                 }
                               >
-                                <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-100">
+                                <div className="w-9 h-9 md:w-10 md:h-10 rounded-full overflow-hidden ring-2 ring-gray-100">
                                   <img
                                     src={post.is_retweet 
                                       ? `https://ui-avatars.com/api/?name=${post.original_user_name || post.original_username}&background=random&size=40`
@@ -703,10 +703,10 @@ const PublicProfile = () => {
                               {/* Main Content Area */}
                               <div className="flex-1 min-w-0">
                                 {/* Top Row: Username, timestamp, post type - All inline */}
-                                <div className="flex items-center flex-wrap gap-x-1.5 gap-y-1">
+                                <div className="flex items-center flex-wrap gap-x-1.5 gap-y-0.5">
                                   {/* Username */}
                                   <span 
-                                    className="font-semibold text-gray-900 hover:text-blue-600 cursor-pointer text-[15px] transition-colors"
+                                    className="font-semibold text-gray-900 hover:text-blue-600 cursor-pointer text-sm md:text-[15px] transition-colors"
                                     onClick={() => post.is_retweet && post.original_username 
                                       ? handleProfileClick(post.original_username)
                                       : null
@@ -720,27 +720,27 @@ const PublicProfile = () => {
                                   
                                   {/* Verified Badge */}
                                   {(post.is_retweet ? false : profile.is_verified) && (
-                                    <span className="w-4 h-4 text-blue-500">✓</span>
+                                    <span className="w-3.5 h-3.5 text-blue-500">✓</span>
                                   )}
                                   
                                   {/* Role Badges */}
                                   {(profile.badges?.isTeacher || profile.isTeacher || post.isTeacher) && !post.is_retweet && (
-                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-500 text-white">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-blue-500 text-white">
                                       Teacher
                                     </span>
                                   )}
                                   {(profile.badges?.isProfessor || profile.isProfessor || post.isProfessor) && !post.is_retweet && (
-                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-600 text-white">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-purple-600 text-white">
                                       Professor
                                     </span>
                                   )}
                                   {(profile.badges?.isInstitute || profile.isInstitute || post.isInstitute) && !post.is_retweet && (
-                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-600 text-white">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-rose-600 text-white">
                                       Institute
                                     </span>
                                   )}
                                   {(profile.badges?.isOfficial || profile.isOfficial || post.isOfficial) && !post.is_retweet && (
-                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-800 text-white">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-gray-800 text-white">
                                       Official
                                     </span>
                                   )}
@@ -749,22 +749,19 @@ const PublicProfile = () => {
                                   <span className="text-gray-300 text-xs">·</span>
                                   
                                   {/* Timestamp */}
-                                  <span className="text-gray-400 text-xs">
+                                  <span className="text-gray-400 text-[11px]">
                                     {new Date(post.is_retweet ? (post.original_created_at || post.created_at) : post.created_at).toLocaleString('en-US', {
                                       month: 'short',
-                                      day: 'numeric',
-                                      year: 'numeric',
-                                      hour: '2-digit',
-                                      minute: '2-digit'
+                                      day: 'numeric'
                                     })}
                                   </span>
                                   
-                                  {/* Post Type Tag - Gradient Style */}
+                                  {/* Post Type Tag - Compact Style */}
                                   {post.post_type && post.post_type !== 'general' && (
-                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-sm">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
                                       {post.post_type === 'quiz_room' ? '🎯 Quiz' : 
-                                       post.post_type === 'question' ? '❓ Question' : 
-                                       post.post_type === 'academic_question' ? '📚 Academic' : 
+                                       post.post_type === 'question' ? '❓ Q' : 
+                                       post.post_type === 'academic_question' ? '📚 Acad' : 
                                        post.post_type}
                                     </span>
                                   )}
@@ -775,7 +772,7 @@ const PublicProfile = () => {
                               {user && (user.id === post.user_id || user.username === profile.username) && (
                                 <button
                                   onClick={(e) => { e.stopPropagation(); handleDeletePost(post.id); }}
-                                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
+                                  className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
                                   title="Delete post"
                                 >
                                   <Trash2 className="w-4 h-4" />
