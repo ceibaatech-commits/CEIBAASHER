@@ -53,11 +53,19 @@ const AuthCallback = () => {
           const userData = response.data.user;
           console.log('[AuthCallback] User authenticated:', userData.email);
           
+          // CRITICAL: Clear any existing tokens before setting new ones
+          localStorage.removeItem('token');
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('ceibaa_user');
+          
+          // Store new session token
+          const sessionToken = response.data.session_token;
+          if (sessionToken && sessionToken !== 'undefined') {
+            localStorage.setItem('token', sessionToken);
+            localStorage.setItem('auth_token', sessionToken);
+          }
+          
           setUserData(userData);
-
-          // Store session_token in localStorage as fallback
-          localStorage.setItem('token', response.data.session_token);
-          localStorage.setItem('auth_token', response.data.session_token);
 
           // Set flag to skip delay in ProtectedRoute
           sessionStorage.setItem('just_authenticated', 'true');
