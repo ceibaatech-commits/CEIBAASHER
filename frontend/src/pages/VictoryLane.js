@@ -1051,6 +1051,13 @@ const VictoryLane = () => {
   const handleCreatePost = async () => {
     if (!newPostContent.trim() || !user) return;
     
+    // Validate token exists
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      toast.error('Please log in again to create a post');
+      return;
+    }
+    
     try {
       let mediaUrls = [];
       
@@ -1062,7 +1069,7 @@ const VictoryLane = () => {
         const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
           headers: { 
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${token}`
           }
         });
         
@@ -1079,7 +1086,7 @@ const VictoryLane = () => {
         const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
           headers: { 
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            Authorization: `Bearer ${token}`
           }
         });
         
@@ -1091,10 +1098,9 @@ const VictoryLane = () => {
       const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
         post_type: 'general',
         content: newPostContent,
-        user_id: user.id,
         media_urls: mediaUrls.length > 0 ? mediaUrls : null
       }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data.success) {
