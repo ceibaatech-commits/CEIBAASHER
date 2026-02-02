@@ -601,44 +601,44 @@ const PublicProfile = () => {
         </div>
 
         {/* Tabs Section */}
-        <div className="mt-6 bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Tab Headers */}
+        <div className="mt-4 bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Tab Headers - Compact on mobile */}
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab('posts')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-6 font-medium text-sm md:text-base transition-colors ${
                 activeTab === 'posts'
                   ? 'border-b-2 border-purple-600 text-purple-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <div className="flex items-center justify-center gap-2">
-                <FileText className="w-5 h-5" />
-                Posts
+              <div className="flex items-center justify-center gap-1.5">
+                <FileText className="w-4 h-4" />
+                <span>Posts</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab('quizzes')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-6 font-medium text-sm md:text-base transition-colors ${
                 activeTab === 'quizzes'
                   ? 'border-b-2 border-purple-600 text-purple-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <div className="flex items-center justify-center gap-2">
-                <Trophy className="w-5 h-5" />
-                Quiz Rooms
+              <div className="flex items-center justify-center gap-1.5">
+                <Trophy className="w-4 h-4" />
+                <span>Quiz Rooms</span>
               </div>
             </button>
             <button
               onClick={() => setActiveTab('reposts')}
-              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+              className={`flex-1 py-2.5 md:py-3 px-2 md:px-6 font-medium text-sm md:text-base transition-colors ${
                 activeTab === 'reposts'
                   ? 'border-b-2 border-purple-600 text-purple-600'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-1.5">
                 <Repeat2 className="w-5 h-5" />
                 Reposts
               </div>
