@@ -265,27 +265,115 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Category Filter - Grid Layout (3 per row) - Teaching hidden on mobile */}
+      {/* Category Filter - Grid Layout with Drawer Effect - Teaching hidden on mobile */}
       <div className="md:hidden bg-white sticky top-16 z-30 shadow-md border-b border-gray-200">
-        <div className="grid grid-cols-3 gap-2 py-3 px-3">
-          {mobileCategories.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => setActiveCategory(activeCategory === cat.id ? '' : cat.id)}
-              className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl text-[10px] font-semibold transition-all h-20 w-full ${
-                activeCategory === cat.id
-                  ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {cat.image ? (
-                <img src={cat.image} alt={cat.label} className="w-7 h-7 object-contain" />
-              ) : (
-                <span className="text-xl leading-none">{cat.icon}</span>
-              )}
-              <span className="text-center leading-tight px-1 line-clamp-2">{cat.label}</span>
-            </button>
-          ))}
+        <div className="py-3 px-3">
+          {/* Group categories into rows of 3 */}
+          {(() => {
+            const rows = [];
+            for (let i = 0; i < mobileCategories.length; i += 3) {
+              rows.push(mobileCategories.slice(i, i + 3));
+            }
+            
+            // Find which row contains the active category
+            const activeRowIndex = activeCategory 
+              ? rows.findIndex(row => row.some(cat => cat.id === activeCategory))
+              : -1;
+            
+            return rows.map((row, rowIndex) => (
+              <React.Fragment key={rowIndex}>
+                {/* Category Row */}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  {row.map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveCategory(activeCategory === cat.id ? '' : cat.id)}
+                      className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl text-[10px] font-semibold transition-all h-20 w-full relative ${
+                        activeCategory === cat.id
+                          ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {cat.image ? (
+                        <img src={cat.image} alt={cat.label} className="w-7 h-7 object-contain" />
+                      ) : (
+                        <span className="text-xl leading-none">{cat.icon}</span>
+                      )}
+                      <span className="text-center leading-tight px-1 line-clamp-2">{cat.label}</span>
+                      {/* Indicator arrow when selected */}
+                      {activeCategory === cat.id && (
+                        <ChevronDown className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 text-white" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Drawer Panel - appears below the row containing active category */}
+                <AnimatePresence>
+                  {activeRowIndex === rowIndex && activeCategory && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="bg-gray-50 rounded-xl p-3 mb-2 border border-gray-200">
+                        {/* Category Header */}
+                        <div className={`bg-gradient-to-r ${categories.find(c => c.id === activeCategory)?.color} rounded-lg p-3 text-white mb-3`}>
+                          <div className="flex items-center gap-2">
+                            {categories.find(c => c.id === activeCategory)?.image ? (
+                              <img 
+                                src={categories.find(c => c.id === activeCategory)?.image} 
+                                alt={categories.find(c => c.id === activeCategory)?.label} 
+                                className="w-6 h-6 object-contain"
+                              />
+                            ) : (
+                              <span className="text-lg">{categories.find(c => c.id === activeCategory)?.icon}</span>
+                            )}
+                            <div>
+                              <h3 className="font-bold text-sm">{categories.find(c => c.id === activeCategory)?.label}</h3>
+                              <p className="text-white/90 text-xs">{filteredExams.length} exams available</p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Exam Cards */}
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {filteredExams.map((exam) => (
+                            <div
+                              key={exam.id}
+                              onClick={() => navigate(`/exam/${exam.id}`)}
+                              className="bg-white border border-gray-200 rounded-lg p-2.5 active:scale-98 transition-transform cursor-pointer flex items-center gap-2.5"
+                            >
+                              <div 
+                                className={`bg-gradient-to-br ${exam.color} rounded-lg flex items-center justify-center shadow-sm`}
+                                style={{ width: '2rem', height: '2rem', minWidth: '2rem' }}
+                              >
+                                {exam.icon?.startsWith('http') ? (
+                                  <img src={exam.icon} alt={exam.name} className="w-4 h-4 object-contain" />
+                                ) : (
+                                  <span className="text-sm">{exam.icon}</span>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-900 text-xs">{exam.name}</h4>
+                                <p className="text-gray-500 text-[10px] truncate">{exam.full_name}</p>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                            </div>
+                          ))}
+                          {filteredExams.length === 0 && (
+                            <p className="text-center text-gray-500 py-4 text-sm">No exams in this category</p>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </React.Fragment>
+            ));
+          })()}
         </div>
       </div>
 
