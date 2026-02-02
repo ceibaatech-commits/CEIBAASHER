@@ -1625,16 +1625,13 @@ const VictoryLane = () => {
             
             {/* Infinite Scroll Loader */}
             {!loading && filteredPosts.length > 0 && (
-              <div ref={observerTarget} className="py-8 flex justify-center">
+              <div ref={observerTarget} className="py-4">
                 {loadingMore ? (
-                  <div className="flex items-center gap-2 text-gray-500">
-                    <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    <span className="text-sm">Loading more posts...</span>
-                  </div>
+                  <FeedSkeleton count={2} />
                 ) : hasMore ? (
-                  <div className="text-sm text-gray-400">Scroll to load more</div>
+                  <div className="text-center text-sm text-gray-400 py-4">Scroll to load more</div>
                 ) : (
-                  <div className="text-sm text-gray-400">{"You've reached the end"}</div>
+                  <div className="text-center text-sm text-gray-400 py-4">{"You've reached the end"}</div>
                 )}
               </div>
             )}
