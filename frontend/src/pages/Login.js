@@ -42,6 +42,11 @@ const Login = () => {
     setError('');
 
     try {
+      // CRITICAL: Clear any existing tokens before login to prevent stale data
+      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('ceibaa_user');
+      
       let response;
       
       // Check if input is email format
@@ -61,16 +66,26 @@ const Login = () => {
         });
       }
 
-      localStorage.setItem('token', response.data.access_token || response.data.token);
-      localStorage.setItem('auth_token', response.data.access_token || response.data.token);
+      // Get the token from response - ensure it's a valid string
+      const token = response.data.access_token || response.data.token;
+      if (!token || token === 'undefined') {
+        throw new Error('No valid token received from server');
+      }
+      
+      // Store tokens
+      localStorage.setItem('token', token);
+      localStorage.setItem('auth_token', token);
+      
       const userData = response.data.user;
       setUserData(userData);
+      
+      console.log('[Login] Success - token stored for user:', userData?.name || userData?.email);
 
       const from = location.state?.from || '/victory-lane';
       navigate(from, { replace: true });
       
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed. Please try again.');
+      setError(err.response?.data?.detail || err.message || 'Login failed. Please try again.');
       setLoading(false);
     }
   };
