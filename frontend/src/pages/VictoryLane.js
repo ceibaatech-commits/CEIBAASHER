@@ -1156,13 +1156,18 @@ const VictoryLane = () => {
   const handleCreateQuestion = async (questionText) => {
     if (!questionText.trim() || !user) return;
     
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      toast.error('Please log in again to create a post');
+      return;
+    }
+    
     try {
       const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
         post_type: 'question',
-        content: questionText,
-        user_id: user.id
+        content: questionText
       }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data.success) {
