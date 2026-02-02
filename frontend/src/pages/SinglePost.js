@@ -387,7 +387,11 @@ const SinglePost = () => {
           {/* Post content */}
           <div className="px-4 pb-3">
             <div className="text-[17px] leading-relaxed text-gray-900 whitespace-pre-wrap">
-              <MathText text={post.content} />
+              <MathText 
+                text={post.content} 
+                onHashtagClick={(tag) => navigate(`/victory-lane?tag=${encodeURIComponent(tag)}`)}
+                onMentionClick={(username) => navigate(`/profile/${username}`)}
+              />
             </div>
           </div>
 
