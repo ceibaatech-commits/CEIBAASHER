@@ -75,10 +75,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setUser(null);
+    // Clear all auth-related data from localStorage
     localStorage.removeItem('ceibaa_user');
     localStorage.removeItem('token');
-    localStorage.removeItem('auth_token'); // Remove both tokens for backward compatibility
+    localStorage.removeItem('auth_token');
+    
+    // Clear React state
+    setUser(null);
+    
+    console.log('[AuthContext] Logout complete - all tokens cleared');
   };
 
   const updateUser = (userData) => {
