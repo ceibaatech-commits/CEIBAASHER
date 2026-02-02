@@ -11,6 +11,7 @@ import QuestionPostModal from '../components/QuestionPostModal';
 import AcademicQuestionModal from '../components/AcademicQuestionModal';
 import { useSocialSocket } from '../hooks/useSocialSocket';
 import { toast } from 'sonner';
+import { FeedSkeleton } from '../components/Skeleton';
 import { 
   PostCard, 
   VictoryLaneHeader, 
