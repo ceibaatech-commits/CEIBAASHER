@@ -1246,6 +1246,12 @@ const VictoryLane = () => {
       return;
     }
 
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      toast.error('Please log in again to create a quiz room');
+      return;
+    }
+
     try {
       const response = await axios.post(`${BACKEND_URL}/api/battle/create-room`, {
         hostName: user?.name || 'Quiz Host',
@@ -1267,7 +1273,6 @@ const VictoryLane = () => {
         const postResponse = await axios.post(`${BACKEND_URL}/api/social/posts`, {
           post_type: 'quiz_room',
           content: `🎯 Created a new quiz room: ${quizForm.title}`,
-          user_id: user.id,
           quiz_details: {
             title: quizForm.title,
             category: quizForm.category,
@@ -1281,7 +1286,7 @@ const VictoryLane = () => {
             host_id: user?.id
           }
         }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${token}` }
         });
 
         if (postResponse.data.success) {
