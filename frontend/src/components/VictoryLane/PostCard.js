@@ -1,10 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   Heart, MessageCircle, Repeat2, MoreHorizontal,
   Trash2, Trophy, Play, Users, Clock, GraduationCap, BookOpen, Link2, Copy, Check
 } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 import MathText from '../MathText';
+
+// Word count threshold for "See more"
+const WORD_LIMIT = 100;
 
 const PostCard = ({
   post,
@@ -30,8 +33,9 @@ const PostCard = ({
   getDifficultyColor,
   handleJoinRoom
 }) => {
-  // State for copy feedback
-  const [copied, setCopied] = React.useState(false);
+  // State for copy feedback and expanded content
+  const [copied, setCopied] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const isOwnPost = user && post.user_id === user.id;
   const isFollowing = followingList.has(post.user_id);
@@ -45,6 +49,13 @@ const PostCard = ({
   const shareCount = post.share_count || post.shares_count || 0;
   const commentCount = post.comment_count || post.comments_count || 0;
   const viewsCount = post.views || 0;
+  
+  // Check if content is long and needs truncation
+  const contentWords = (post.content || '').split(/\s+/).filter(w => w.length > 0);
+  const isLongContent = contentWords.length > WORD_LIMIT;
+  const truncatedContent = isLongContent && !isExpanded 
+    ? contentWords.slice(0, WORD_LIMIT).join(' ') + '...'
+    : post.content;
   
   // Get display info
   const displayName = post.is_retweet ? (post.original_user_name || post.original_username) : (post.user_name || post.username);
