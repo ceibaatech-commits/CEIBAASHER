@@ -847,26 +847,31 @@ const PublicProfile = () => {
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); navigate(`/post/${post.id}`); }}
                                   className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full text-gray-400 hover:text-blue-500 transition-all duration-200"
+                                
+                                {/* Comment Button - navigates to single post */}
+                                <button 
+                                  onClick={() => navigate(`/post/${post.id}`)}
+                                  className="group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 text-gray-500 hover:text-blue-500"
                                 >
-                                  <div className="p-1 rounded-full transition-all duration-200 group-hover:bg-blue-50">
-                                    <MessageCircle className="w-[16px] h-[16px] transition-transform group-hover:scale-110" />
+                                  <div className="p-0.5 rounded-full transition-all duration-200 group-hover:bg-blue-50">
+                                    <MessageCircle className="w-4 h-4 transition-transform group-hover:scale-110" />
                                   </div>
-                                  <span className="text-sm tabular-nums">{post.comments_count || 0}</span>
+                                  <span className="text-xs font-medium tabular-nums">{post.comments_count || 0}</span>
                                 </button>
                                 
                                 {/* Share/Repost Button */}
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); handleShare(post.id); }}
-                                  className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 ${
+                                  className={`group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 ${
                                     sharedPosts.has(post.id) 
                                       ? 'text-emerald-500' 
-                                      : 'text-gray-400 hover:text-emerald-500'
+                                      : 'text-gray-500 hover:text-emerald-500'
                                   }`}
                                 >
-                                  <div className={`p-1 rounded-full transition-all duration-200 group-hover:bg-emerald-50 ${sharedPosts.has(post.id) ? 'bg-emerald-50' : ''}`}>
-                                    <Repeat2 className={`w-[16px] h-[16px] transition-transform group-hover:scale-110 ${sharedPosts.has(post.id) ? 'rotate-180' : ''}`} />
+                                  <div className={`p-0.5 rounded-full transition-all duration-200 group-hover:bg-emerald-50 ${sharedPosts.has(post.id) ? 'bg-emerald-50' : ''}`}>
+                                    <Repeat2 className={`w-4 h-4 transition-transform group-hover:scale-110 ${sharedPosts.has(post.id) ? 'rotate-180' : ''}`} />
                                   </div>
-                                  <span className="text-sm tabular-nums">{post.shares_count || 0}</span>
+                                  <span className="text-xs font-medium tabular-nums">{post.shares_count || 0}</span>
                                 </button>
                               </div>
                             </div>
@@ -875,20 +880,20 @@ const PublicProfile = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12">
+                    <div className="text-center py-8">
                       {activeTab === 'posts' ? (
                         <>
-                          <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                          <p className="text-gray-600 text-lg">No posts yet</p>
-                          <p className="text-gray-500 text-sm mt-2">
+                          <FileText className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                          <p className="text-gray-600 text-base">No posts yet</p>
+                          <p className="text-gray-500 text-xs mt-1">
                             {profile.name} hasn&apos;t shared anything yet
                           </p>
                         </>
                       ) : (
                         <>
-                          <Repeat2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                          <p className="text-gray-600 text-lg">No reposts yet</p>
-                          <p className="text-gray-500 text-sm mt-2">
+                          <Repeat2 className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+                          <p className="text-gray-600 text-base">No reposts yet</p>
+                          <p className="text-gray-500 text-xs mt-1">
                             {profile.name} hasn&apos;t reposted anything yet
                           </p>
                         </>
@@ -898,26 +903,26 @@ const PublicProfile = () => {
                 )}
                 {activeTab === 'quizzes' && (
                   quizRooms.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {quizRooms.map(room => (
-                        <div key={room.room_code} className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-4 border-2 border-green-200">
+                        <div key={room.room_code} className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-3 border border-green-200">
                           <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <h3 className="font-bold text-lg text-gray-800">{room.title}</h3>
-                              <p className="text-sm text-gray-600 mt-1">{room.description}</p>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-bold text-base text-gray-800 truncate">{room.title}</h3>
+                              <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">{room.description}</p>
                             </div>
-                            <div className="ml-4">
-                              <div className="px-4 py-2 bg-green-500 text-white rounded-lg text-center">
-                                <div className="text-xs font-semibold">ROOM CODE</div>
-                                <div className="text-xl font-bold">{room.room_code}</div>
+                            <div className="ml-2 flex-shrink-0">
+                              <div className="px-2.5 py-1.5 bg-green-500 text-white rounded-lg text-center">
+                                <div className="text-[9px] font-semibold">CODE</div>
+                                <div className="text-sm font-bold">{room.room_code}</div>
                               </div>
                             </div>
                           </div>
-                          <div className="mt-3 flex flex-wrap gap-2 text-sm">
-                            <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
-                              📝 {room.question_count} Questions
+                          <div className="flex flex-wrap gap-1.5 text-xs">
+                            <span className="px-2 py-0.5 bg-white rounded-full text-gray-700 font-medium">
+                              📝 {room.question_count} Qs
                             </span>
-                            <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
+                            <span className="px-2 py-0.5 bg-white rounded-full text-gray-700 font-medium">
                               🏷️ {room.category}
                             </span>
                             <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
