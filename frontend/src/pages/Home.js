@@ -435,63 +435,6 @@ const Home = () => {
         </div>
       )}
 
-      {/* Mobile: Show Selected Category Exams - Only when a category is selected */}
-      {!searchQuery.trim() && activeCategory && (
-        <div className="md:hidden px-4 py-3 bg-white border-b">
-          <div className={`bg-gradient-to-r ${activeCateg?.color} rounded-xl p-3 text-white mb-3`}>
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{activeCateg?.icon}</span>
-              <div>
-                <h2 className="font-bold text-sm">{activeCateg?.label}</h2>
-                <p className="text-white/90 text-xs">{filteredExams.length} exams available</p>
-              </div>
-            </div>
-          </div>
-          {/* Exam Cards for Selected Category */}
-          <div className="space-y-2">
-            {filteredExams.map((exam) => (
-              <div
-                key={exam.id}
-                onClick={() => navigate(`/exam/${exam.id}`)}
-                style={{ padding: '0.75rem' }}
-                className="bg-white border border-gray-200 rounded-xl shadow-sm active:scale-98 transition-transform cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div 
-                    className={`bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-md`}
-                    style={{ width: '2.5rem', height: '2.5rem', minWidth: '2.5rem' }}
-                  >
-                    {exam.icon.startsWith('http') ? (
-                      <img src={exam.icon} alt={exam.name} style={{ width: '1.5rem', height: '1.5rem' }} className="object-contain" />
-                    ) : (
-                      <span style={{ fontSize: '1.25rem' }}>{exam.icon}</span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900" style={{ fontSize: '0.875rem' }}>{exam.name}</h3>
-                    <p className="text-gray-500 truncate" style={{ fontSize: '0.75rem' }}>{exam.full_name}</p>
-                    <div className="flex items-center gap-3 mt-1 text-gray-500" style={{ fontSize: '0.625rem' }}>
-                      <span className="flex items-center gap-1">
-                        <FileText style={{ width: '0.75rem', height: '0.75rem' }} />
-                        {exam.total_questions} Qs
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock style={{ width: '0.75rem', height: '0.75rem' }} />
-                        {exam.duration}
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronRight style={{ width: '1rem', height: '1rem' }} className="text-gray-400 flex-shrink-0" />
-                </div>
-              </div>
-            ))}
-            {filteredExams.length === 0 && (
-              <p className="text-center text-gray-500 py-8">No exams found in this category</p>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Mobile: Skill Drill - CBSE Classes Section */}
       {!searchQuery.trim() && !activeCategory && (
         <div className="md:hidden px-4 py-6 bg-gradient-to-br from-blue-50 to-purple-50">
