@@ -122,6 +122,10 @@ const Login = () => {
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
+                  name="username"
+                  type="text"
+                  inputMode="text"
+                  autoComplete="username"
                   value={demoUsername}
                   onChange={(e) => setDemoUsername(e.target.value)}
                   placeholder="Enter username (e.g., Sher ❤️)"
@@ -133,7 +137,10 @@ const Login = () => {
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
+                  inputMode="text"
+                  autoComplete="current-password"
                   value={demoPassword}
                   onChange={(e) => setDemoPassword(e.target.value)}
                   placeholder="Enter password"
