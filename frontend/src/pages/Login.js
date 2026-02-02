@@ -96,31 +96,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Home
-        </Button>
-
-        <Card className="shadow-2xl">
-          <CardHeader className="text-center space-y-4">
-            <div className="flex justify-center">
-              <img 
-                src="/ceibaa-logo.png" 
-                alt="Ceibaa Logo" 
-                className="h-24 w-auto object-contain"
-              />
-            </div>
-            <div>
-              <CardTitle className="text-3xl">Welcome Back</CardTitle>
-              <CardDescription className="text-base">Login to continue your learning journey</CardDescription>
-            </div>
-          </CardHeader>
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50">
+      <Header isLoggedIn={false} user={null} onLogin={() => {}} onLogout={() => {}} />
+      
+      <div className="flex items-center justify-center p-4 pt-24">
+        <div className="max-w-md w-full">
+          <Card className="shadow-2xl">
+            <CardHeader className="text-center space-y-4">
+              <div className="flex justify-center">
+                <img 
+                  src="/ceibaa-logo.png" 
+                  alt="Ceibaa Logo" 
+                  className="h-24 w-auto object-contain"
+                />
+              </div>
+              <div>
+                <CardTitle className="text-3xl">Welcome Back</CardTitle>
+                <CardDescription className="text-base">Login to continue your learning journey</CardDescription>
+              </div>
+            </CardHeader>
 
           <CardContent className="space-y-6">
             <form onSubmit={handleDemoLogin} className="space-y-4">
