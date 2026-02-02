@@ -11,7 +11,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 
 # Configuration
-BACKEND_URL = "https://quiz-navigation.preview.emergentagent.com"
+BACKEND_URL = "https://quizauth-pro.preview.emergentagent.com"
 MONGO_URL = "mongodb://localhost:27017"
 DB_NAME = "test_database"
 
