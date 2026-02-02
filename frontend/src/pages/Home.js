@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import CeibaaLogo from '../components/CeibaaLogo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import HomeBannerCarousel from '../components/HomeBannerCarousel';
+import { AnimatePresence } from 'framer-motion';
 
 const API_URL = window.location.origin;
 
