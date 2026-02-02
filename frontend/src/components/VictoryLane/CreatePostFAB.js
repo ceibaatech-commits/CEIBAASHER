@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Trophy, HelpCircle, MessageCircle, X, GraduationCap } from 'lucide-react';
+import { Trophy, HelpCircle, MessageCircle, X, GraduationCap } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 
 const CreatePostFAB = ({
@@ -136,14 +136,23 @@ const CreatePostFAB = ({
         </div>
       )}
 
-      {/* Main FAB Button - Mobile Only */}
+      {/* Main FAB Button - Mobile Only - Animated Icon */}
       <button
         onClick={() => setShowCreateMenu(!showCreateMenu)}
-        className={`md:hidden fixed bottom-6 left-4 sm:left-8 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center ${
-          showCreateMenu ? 'rotate-45' : 'rotate-0'
+        className={`md:hidden fixed bottom-6 left-4 sm:left-8 z-50 w-16 h-16 bg-white hover:bg-gray-50 rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center border-2 border-purple-200 ${
+          showCreateMenu ? 'scale-90' : 'scale-100'
         }`}
+        style={{ padding: 0 }}
       >
-        <Plus className="w-7 h-7" />
+        {showCreateMenu ? (
+          <X className="w-7 h-7 text-purple-600" />
+        ) : (
+          <img 
+            src="/images/create-animated.gif" 
+            alt="Create" 
+            className="w-12 h-12 object-contain"
+          />
+        )}
       </button>
     </>
   );
