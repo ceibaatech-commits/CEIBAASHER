@@ -1185,6 +1185,12 @@ const VictoryLane = () => {
   const handleCreateAcademicQuestion = async ({ class_name, subject, chapter, question }) => {
     if (!question.trim() || !user) return;
     
+    const token = localStorage.getItem('token');
+    if (!token || token === 'undefined' || token === 'null') {
+      toast.error('Please log in again to create a post');
+      return;
+    }
+    
     try {
       // Create hashtags from class, subject, and chapter
       const hashtags = [
@@ -1199,10 +1205,9 @@ const VictoryLane = () => {
         hashtags: hashtags,
         academic_class: class_name,
         academic_subject: subject,
-        academic_chapter: chapter,
-        user_id: user.id
+        academic_chapter: chapter
       }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data.success) {
