@@ -138,6 +138,20 @@ Ceibaa is a comprehensive educational quiz platform for Indian students preparin
 - Victory Lane commenting bug fix
 - Mobile menu scroll fix
 
+## Recent Bug Fixes (January 2025)
+
+### Authentication Token Attribution Bug Fix (Jan 27, 2025) - COMPLETED
+**Issue**: Posts were attributed to wrong user after logout and re-login with different account
+**Root Cause**: Old tokens not being properly cleared from localStorage during logout/login cycles
+**Fix Applied**:
+- `AuthContext.js`: logout() now explicitly clears all auth tokens (token, auth_token, ceibaa_user)
+- `Login.js`: handleDemoLogin() clears old tokens before setting new ones, validates new token
+- `AuthCallback.js`: Google auth callback clears old tokens before setting new session
+- `VictoryLane.js`: All post creation functions validate token before API calls
+- Removed `user_id` from request body - backend extracts from JWT token
+**Testing**: 16 backend tests pass, frontend Playwright tests verified
+**Test File**: `/app/backend/tests/test_auth_token_attribution.py`
+
 ## Pending Issues
 
 ### P2 - Back Button on Solo Practice Setup Page
