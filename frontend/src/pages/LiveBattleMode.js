@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Video, VideoOff, Mic, MicOff, Trophy, Clock } from 'lucide-react';
 import io from 'socket.io-client';
-import Peer from 'simple-peer';
 import axios from 'axios';
+import BattleVideoChat from '../components/BattleVideoChat';
 
 const BACKEND_URL = window.location.origin || 'http://localhost:8001';
 const API_URL = BACKEND_URL;
