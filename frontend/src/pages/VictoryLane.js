@@ -1549,13 +1549,10 @@ const VictoryLane = () => {
           newPostContent={newPostContent}
           setNewPostContent={setNewPostContent}
           mediaSettings={mediaSettings}
-          selectedPostImage={selectedPostImage}
-          postImagePreview={postImagePreview}
-          selectedPostVideo={selectedPostVideo}
-          postVideoPreview={postVideoPreview}
-          handlePostImageSelect={handlePostImageSelect}
-          handlePostVideoSelect={handlePostVideoSelect}
-          clearPostMedia={clearPostMedia}
+          selectedPostImages={selectedPostImages}
+          setSelectedPostImages={setSelectedPostImages}
+          selectedPostVideos={selectedPostVideos}
+          setSelectedPostVideos={setSelectedPostVideos}
           handleCreatePost={handleCreatePost}
           setShowAcademicModal={setShowAcademicModal}
           setShowQuizModal={setShowQuizModal}
