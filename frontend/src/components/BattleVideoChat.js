@@ -49,6 +49,7 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     if (!socket) return;
 
     const handleOffer = async (data) => {
+      console.log('[VIDEO] Received offer from:', data.from);
       if (callState === 'connected') return;
       try {
         setCallState('connecting');
@@ -62,6 +63,7 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
         pendingCandidates.current = [];
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
+        console.log('[VIDEO] Sending answer to room:', roomId);
         socket.emit('webrtc_answer', { roomId, answer });
       } catch (err) {
         console.error('WebRTC offer error:', err);
@@ -71,6 +73,7 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     };
 
     const handleAnswer = async (data) => {
+      console.log('[VIDEO] Received answer from:', data.from);
       try {
         if (peerRef.current && peerRef.current.signalingState !== 'stable') {
           await peerRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
@@ -78,6 +81,7 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
             await peerRef.current.addIceCandidate(new RTCIceCandidate(c));
           }
           pendingCandidates.current = [];
+          console.log('[VIDEO] Call connected!');
         }
       } catch (err) {
         console.error('WebRTC answer error:', err);
@@ -85,6 +89,7 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     };
 
     const handleICE = async (data) => {
+      console.log('[VIDEO] Received ICE candidate from:', data.from);
       try {
         if (peerRef.current && peerRef.current.remoteDescription) {
           await peerRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
