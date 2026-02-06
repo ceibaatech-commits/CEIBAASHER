@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import io from 'socket.io-client';
 import BattleVideoChat from '../components/BattleVideoChat';
+import Header from '../components/Header';
 
 // Connect to Socket.IO on main backend - Battle endpoint
 const BATTLE_SERVER_URL = window.location.origin || 'https://referral-verify-1.preview.emergentagent.com';
