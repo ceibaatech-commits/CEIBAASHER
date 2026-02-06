@@ -1247,7 +1247,7 @@ async def share_post(post_id: str, request: Request, authorization: Optional[str
 async def unshare_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Remove a repost/share of a post"""
     try:
-        user_id = get_optional_user_id(authorization)
+        user_id = await get_optional_user_id_async(authorization, request)
         if not user_id:
             raise HTTPException(status_code=401, detail="Authentication required")
         
