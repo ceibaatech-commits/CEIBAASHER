@@ -267,7 +267,7 @@ const LiveBattleMode = () => {
 
   // Setup Screen
   if (battleState === 'setup') {
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-8">
         <div className="max-w-2xl mx-auto px-4">
           <button
