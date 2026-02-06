@@ -316,7 +316,7 @@ const Matchmaking1v1 = () => {
 
   // Setup Screen
   if (battleState === 'setup') {
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8">
         <div className="max-w-lg mx-auto px-4">
           <button
