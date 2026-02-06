@@ -52,6 +52,8 @@ from question_image_routes import router as question_image_router
 from cbse_data_routes import router as cbse_data_router
 from referral_routes import router as referral_router
 import referral_routes
+from media_upload_routes import router as media_upload_router
+import media_upload_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
