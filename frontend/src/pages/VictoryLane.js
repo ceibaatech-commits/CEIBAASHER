@@ -95,16 +95,14 @@ const VictoryLane = () => {
   const [extractingQuestions, setExtractingQuestions] = useState(false);
   const [extractedQuestions, setExtractedQuestions] = useState([]);
   
-  // Media posting settings (controlled by admin per-user)
+  // Media posting settings (controlled by admin globally + per-user)
   const [mediaSettings, setMediaSettings] = useState({
-    allow_media_posts: false,
-    allow_image_posts: false,
-    allow_video_posts: false
+    allow_media: false,
+    can_post_images: false,
+    can_post_videos: false
   });
-  const [selectedPostImage, setSelectedPostImage] = useState(null);
-  const [postImagePreview, setPostImagePreview] = useState(null);
-  const [selectedPostVideo, setSelectedPostVideo] = useState(null);
-  const [postVideoPreview, setPostVideoPreview] = useState(null);
+  const [selectedPostImages, setSelectedPostImages] = useState([]);
+  const [selectedPostVideos, setSelectedPostVideos] = useState([]);
 
   // Comprehensive exam categories - All exams from backend
   const categories = [
