@@ -289,29 +289,32 @@ const Matchmaking1v1 = () => {
 
   if (!isUserAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Swords className="w-10 h-10 text-white" />
+      <>
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+            <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Swords className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">Login Required</h2>
+            <p className="text-gray-600 mb-6">
+              Please login to access 1v1 matchmaking battles.
+            </p>
+            <button
+              onClick={() => navigate('/login', { state: { from: location.pathname } })}
+              className="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white py-3 rounded-xl font-bold hover:shadow-lg transition-all"
+            >
+              Login to Battle
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full mt-3 text-gray-500 py-2 text-sm hover:text-gray-700"
+            >
+              ← Go Back
+            </button>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Login Required</h2>
-          <p className="text-gray-600 mb-6">
-            Please login to access 1v1 matchmaking battles.
-          </p>
-          <button
-            onClick={() => navigate('/login', { state: { from: location.pathname } })}
-            className="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white py-3 rounded-xl font-bold hover:shadow-lg transition-all"
-          >
-            Login to Battle
-          </button>
-          <button
-            onClick={() => navigate(-1)}
-            className="w-full mt-3 text-gray-500 py-2 text-sm hover:text-gray-700"
-          >
-            ← Go Back
-          </button>
         </div>
-      </div>
+      </>
     );
   }
 
