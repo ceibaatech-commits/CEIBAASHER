@@ -322,7 +322,7 @@ const Matchmaking1v1 = () => {
   // Setup Screen
   if (battleState === 'setup') {
     return withVideoChat(
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8 pt-20">
         <div className="max-w-lg mx-auto px-4">
           <button
             onClick={() => navigate(-1)}
@@ -636,7 +636,7 @@ const Matchmaking1v1 = () => {
     const isTie = myScore === opponentScore;
 
     return withVideoChat(
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8 pt-20">
         <div className="max-w-lg mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
             <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ${
