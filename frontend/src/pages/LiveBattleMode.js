@@ -329,7 +329,7 @@ const LiveBattleMode = () => {
 
   // Searching Screen
   if (battleState === 'searching') {
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-pulse bg-gradient-to-r from-purple-600 to-pink-600 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
