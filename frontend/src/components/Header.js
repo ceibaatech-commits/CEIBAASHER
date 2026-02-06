@@ -245,7 +245,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                         <button
                           onClick={() => {
                             setShowProfileDropdown(false);
-                            onLogout();
+                            handleLogout();
                             navigate('/');
                           }}
                           className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-red-50 transition-colors text-left text-red-600"
