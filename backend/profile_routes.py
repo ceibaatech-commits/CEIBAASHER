@@ -286,6 +286,7 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
             return {
                 "success": True,
                 "profile": {
+                    "id": user["id"],
                     "user_id": user["id"],
                     "username": user.get("username"),
                     "name": user.get("name"),
