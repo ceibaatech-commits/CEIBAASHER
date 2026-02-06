@@ -2056,6 +2056,11 @@ const VictoryLane = () => {
         setShowQuizModal={setShowQuizModal}
         setShowQuestionModal={setShowQuestionModal}
         setShowAcademicModal={setShowAcademicModal}
+        mediaSettings={mediaSettings}
+        selectedPostImages={selectedPostImages}
+        setSelectedPostImages={setSelectedPostImages}
+        selectedPostVideos={selectedPostVideos}
+        setSelectedPostVideos={setSelectedPostVideos}
       />
     </div>
   );
