@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import io from 'socket.io-client';
+import BattleVideoChat from '../components/BattleVideoChat';
 
 // Connect to Socket.IO on main backend - Battle endpoint
 const BATTLE_SERVER_URL = window.location.origin || 'https://post-animation-test.preview.emergentagent.com';
