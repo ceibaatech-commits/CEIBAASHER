@@ -438,6 +438,7 @@ class HydrationRequest(BaseModel):
 @router.post("/posts/hydrate")
 async def hydrate_posts_engagement(
     request_data: HydrationRequest,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
@@ -446,7 +447,7 @@ async def hydrate_posts_engagement(
     independently from post content for real-time accuracy.
     """
     try:
-        user_id = get_optional_user_id(authorization) or request_data.user_id
+        user_id = await get_optional_user_id_async(authorization, request) or request_data.user_id
         post_ids = request_data.post_ids
         
         if not post_ids or len(post_ids) == 0:
