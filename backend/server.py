@@ -195,9 +195,6 @@ fastapi_app.include_router(dashboard_router)  # AI-powered dashboard routes
 fastapi_app.include_router(question_image_router, prefix="/api")  # Question image upload routes
 fastapi_app.include_router(cbse_data_router, prefix="/api")  # CBSE data - single source of truth
 
-# Media upload routes for Victory Lane posts
-from media_upload_routes import router as media_upload_router
-import media_upload_routes
 fastapi_app.include_router(media_upload_router, prefix="/api")  # Media upload routes
 
 # Employee routes for employee portal
