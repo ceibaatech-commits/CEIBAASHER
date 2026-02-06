@@ -1036,6 +1036,15 @@ async def webrtc_answer(sid, data):
         answer = data.get('answer')
         
         print(f"[WEBRTC] 📹 Answer received from {sid} for room {room_id}")
+        
+        # Check which rooms this sender is in
+        sender_rooms = sio.rooms(sid)
+        print(f"[WEBRTC] 📋 Sender {sid} is in rooms: {sender_rooms}")
+        
+        # Ensure sender is in room
+        if room_id not in sender_rooms:
+            print(f"[WEBRTC] ⚠️ Warning: Sender not in room {room_id}, joining now...")
+            await sio.enter_room(sid, room_id)
 
         # Forward to other users in room
         await sio.emit('webrtc-answer', {
@@ -1047,6 +1056,8 @@ async def webrtc_answer(sid, data):
 
     except Exception as e:
         print(f"[ERROR] webrtc_answer: {str(e)}")
+        import traceback
+        traceback.print_exc()
 
 
 @sio.event
