@@ -38,8 +38,8 @@ const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal }) => {
         { id: "jee", name: "JEE (Engineering)", icon: "🎯" },
         { id: "neet", name: "NEET (Medical)", icon: "🏥" },
         { id: "upsc", name: "UPSC (Civil Services)", icon: "🏛️" },
-        { id: "defence", name: "Defence Exams", icon: "🎖️" },
-        { id: "banking", name: "Banking & SSC", icon: "🏦" },
+        { id: "defence", name: "Defence Exams", icon: "🎖️", image: "https://cdn-icons-png.flaticon.com/512/6142/6142033.png" },
+        { id: "banking", name: "Banking & SSC", icon: "🏦", image: "https://cdn-icons-png.flaticon.com/512/3696/3696141.png" },
         { id: "gate", name: "GATE", icon: "⚙️" },
         { id: "cat", name: "CAT (MBA)", icon: "📊" }
       ]
