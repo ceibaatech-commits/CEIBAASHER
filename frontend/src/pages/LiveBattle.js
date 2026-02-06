@@ -1504,8 +1504,14 @@ const LiveBattle = () => {
           </>
         )}
       </div>
+      
+      {/* WebRTC Video Chat - WhatsApp style PiP */}
+      <BattleVideoChat
+        socket={socket}
+        roomId={pin}
+        playerName={user?.name || 'Player'}
+        isActive={!!socket && !loading}
+      />
     </div>
-  );
-};
 
 export default LiveBattle;
