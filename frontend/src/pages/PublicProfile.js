@@ -968,6 +968,13 @@ const PublicProfile = () => {
         userId={profile.id}
         type={followModalType}
       />
+
+      {/* Share Referral Modal */}
+      <ShareReferralModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        user={user}
+      />
     </div>
   );
 };
