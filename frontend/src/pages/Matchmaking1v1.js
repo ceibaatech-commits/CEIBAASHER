@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
+import BattleVideoChat from '../components/BattleVideoChat';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
