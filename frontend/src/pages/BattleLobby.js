@@ -324,12 +324,13 @@ const BattleLobby = () => {
       </div>
     </div>
 
-      {/* Video Chat available in lobby */}
-      <BattleVideoChat
-        socket={socket}
-        roomId={pin}
-        playerName={playerName || 'Player'}
-      />
+    {/* Video Chat available in lobby */}
+    <BattleVideoChat
+      socket={socket}
+      roomId={pin}
+      playerName={playerName || 'Player'}
+    />
+    </>
   );
 };
 
