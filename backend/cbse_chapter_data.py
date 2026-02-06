@@ -451,14 +451,21 @@ CBSE_CHAPTER_DATA = {
             {"chapter_number": 12, "chapter_name": "Earth, Moon and the Sun", "total_questions": 50, "difficulty": "Medium", "duration": 35}
         ],
         "English - Poorvi": [
-            {"chapter_number": 1, "chapter_name": "Three Questions", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 2, "chapter_name": "A Gift of Chappals", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 3, "chapter_name": "Gopal and the Hilsa Fish", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 4, "chapter_name": "The Ashes That Made Trees Bloom", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 5, "chapter_name": "Quality", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 6, "chapter_name": "Expert Detectives", "total_questions": 50, "difficulty": "Medium", "duration": 35},
-            {"chapter_number": 7, "chapter_name": "The Invention of Vita-Wonk", "total_questions": 45, "difficulty": "Easy", "duration": 30},
-            {"chapter_number": 8, "chapter_name": "A Homage to our Brave Soldiers", "total_questions": 50, "difficulty": "Medium", "duration": 35}
+            {"chapter_number": 1, "chapter_name": "The Day the River Spoke", "total_questions": 150, "difficulty": "Easy", "duration": 45},
+            {"chapter_number": 2, "chapter_name": "Try Again", "total_questions": 150, "difficulty": "Easy", "duration": 45},
+            {"chapter_number": 3, "chapter_name": "Three Days to See", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 4, "chapter_name": "Animals, Birds, and Dr. Dolittle", "total_questions": 150, "difficulty": "Easy", "duration": 45},
+            {"chapter_number": 5, "chapter_name": "A Funny Man", "total_questions": 150, "difficulty": "Easy", "duration": 45},
+            {"chapter_number": 6, "chapter_name": "Say the Right Thing", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 7, "chapter_name": "My Brother's Great Invention", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 8, "chapter_name": "Paper Boats", "total_questions": 150, "difficulty": "Easy", "duration": 45},
+            {"chapter_number": 9, "chapter_name": "North, South, East, West", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 10, "chapter_name": "The Tunnel", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 11, "chapter_name": "Travel", "total_questions": 150, "difficulty": "Easy", "duration": 45},
+            {"chapter_number": 12, "chapter_name": "Conquering the Summit", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 13, "chapter_name": "A Homage to Our Brave Soldiers", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 14, "chapter_name": "My Dear Soldiers", "total_questions": 150, "difficulty": "Medium", "duration": 45},
+            {"chapter_number": 15, "chapter_name": "Rani Abbakka", "total_questions": 150, "difficulty": "Medium", "duration": 45}
         ],
         "Social Science - Exploring Society India and Beyond Part 2": [
             {"chapter_number": 1, "chapter_name": "Tracing Changes through a Thousand Years", "total_questions": 50, "difficulty": "Medium", "duration": 35},
