@@ -205,8 +205,8 @@ async def get_user_permissions(user_id: str):
 @router.get("/user/media-permissions")
 async def get_current_user_media_permissions(authorization: Optional[str] = Header(None)):
     """
-    Get current logged-in user's media posting permissions
-    Supports both session tokens (Emergent auth) and JWT tokens
+    Get current logged-in user's media posting permissions.
+    Checks global setting first, then per-user permissions.
     """
     from jose import jwt, JWTError
     import os
@@ -214,19 +214,28 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
     JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
     
+    disabled_response = {"can_post_images": False, "can_post_videos": False, "is_disabled": False, "media_disabled_globally": False}
+    
     try:
+        # Check global setting first
+        global_settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0})
+        global_media = global_settings.get("allow_media_posts", False) if global_settings else False
+        global_images = global_settings.get("allow_image_posts", False) if global_settings else False
+        global_videos = global_settings.get("allow_video_posts", False) if global_settings else False
+        
+        if not global_media:
+            return {**disabled_response, "media_disabled_globally": True}
+        
         if not authorization:
-            return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+            return disabled_response
         
         token = authorization.replace("Bearer ", "")
         user_id = None
         
-        # Try session token first (look in session_token field)
         session = await db.user_sessions.find_one({"session_token": token})
         if session:
             user_id = session.get("user_id")
         else:
-            # Try JWT token as fallback
             try:
                 payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
                 user_id = payload.get("sub")
@@ -234,7 +243,7 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
                 pass
         
         if not user_id:
-            return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+            return disabled_response
         
         user = await db.users.find_one(
             {"$or": [{"id": user_id}, {"user_id": user_id}]},
@@ -242,12 +251,14 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         )
         
         if not user:
-            return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+            return disabled_response
         
         return {
-            "can_post_images": user.get("can_post_images", False),
-            "can_post_videos": user.get("can_post_videos", False),
-            "is_disabled": user.get("is_disabled", False)
+            "can_post_images": global_images and user.get("can_post_images", False),
+            "can_post_videos": global_videos and user.get("can_post_videos", False),
+            "is_disabled": user.get("is_disabled", False),
+            "media_disabled_globally": False
+        }
         }
     except Exception as e:
         print(f"Error fetching media permissions: {e}")
