@@ -1,212 +1,62 @@
-# Ceibaa - Educational Quiz Platform PRD
+# Ceibaa - Educational Quiz & Social Platform
 
 ## Original Problem Statement
-Ceibaa is a comprehensive educational quiz platform for Indian students preparing for competitive exams. The platform includes solo practice quizzes, battle rooms for multiplayer competition, courses, a social "Victory Lane" feed for sharing achievements, and exam-specific syllabus pages.
+Full-stack educational quiz platform with social feed (Victory Lane), battle system, exam management, and user profiles.
 
-## Core Features
+## Core Architecture
+- **Frontend**: React + Shadcn UI + Framer Motion
+- **Backend**: FastAPI + MongoDB
+- **Auth**: JWT (email/password) + Emergent Auth (Google OAuth) with session tokens
+- **Real-time**: Socket.IO for social feed updates
 
-### 1. Solo Practice
-- Subject-based quizzes for various competitive exams (JEE, NEET, UPSC, Banking, SSC, etc.)
-- Chapter-wise practice with progress tracking
-- Support for Class 11/12 with streams (Science, Commerce, Arts)
+## What's Been Implemented
 
-### 2. Victory Lane (Social Feed)
-- Twitter-style feed for sharing achievements and asking academic questions
-- Post types: General, Question, Quiz Room
-- Like, comment, share, bookmark functionality
-- Follow/unfollow users
-- Real-time updates via WebSocket
+### Authentication
+- JWT-based login/signup
+- Emergent Google OAuth integration
+- Dual auth support (JWT + session tokens) across all social endpoints
 
-### 3. Battle Rooms
-- Multiplayer quiz competitions
-- Host-created rooms with custom questions
-- Public and followers-only access control
+### Social Feed (Victory Lane)
+- Post creation (general, quiz, academic, battle victory, etc.)
+- Like/unlike with real-time updates
+- Comments/replies system
+- Repost/share functionality
+- Engagement hydration (X-algorithm inspired)
+- For-you, Trending, Following feeds
 
-### 4. Exam Syllabus Pages
-- Dynamic exam pages with year-wise syllabus
-- Support for university exams (LLB, B.Com)
-- Chapter-based navigation
+### UI/UX
+- Homepage category drawer/accordion (framer-motion)
+- Slide-up post composer (X/Twitter style)
+- Header on auth pages
+- Mobile keyboard input fixes
 
-### 5. Courses
-- Educational course content
-
-## Recent Implementations (January 2025)
-
-### Homepage 3D Hero Banner (Jan 21, 2025) - COMPLETED
-- Removed NTPC and AFCAT exam banners from homepage
-- Created modern 3D hero banner with 4 gaming-style feature cards:
-  - Solo Practice (User icon) - Links to /skill-drills
-  - Join Rooms (Users icon) - Links to /join-room
-  - Victory Lane (Trophy icon) - Links to /victory-lane
-  - 1v1 Matchmaking (Swords icon) - Links to /matchmaking
-- Features animated gradients, glassmorphism, 3D hover effects
-- Dark theme with cyan/purple/pink accent colors
-
-### 1v1 Matchmaking System (Jan 21, 2025) - COMPLETED
-- Created new `/matchmaking/:examId/:subject/:topic` route
-- Built `Matchmaking1v1.js` page with:
-  - Setup screen with battle rules
-  - Real-time matchmaking via Socket.IO
-  - Live quiz battle interface (no audio/video)
-  - Live chat with opponent during battle
-  - Results screen with winner/loser display
-- Added backend handlers for `battle-chat` and `battle_complete` events
-- Updated ExamSyllabus.js and ModernExamSyllabus.js to use new matchmaking route
-- Fixed matchmaking subject normalization (removes marks info like "(300 Marks)")
-
-### Twitter/X-Style UI Redesign for Victory Lane (Jan 26, 2025) - COMPLETED
-- Redesigned PostCard.js with Twitter-inspired layout:
-  - Clean horizontal header with avatar, name, @username, timestamp
-  - Verified badges and role badges (Teacher, Professor, Institute, Official)
-  - Post type badges (Academic, Question, Quiz Room)
-  - Twitter-style action buttons (Comment, Repost, Like, Views)
-  - Clickable posts navigate to single post view
-- Redesigned SinglePost.js with Twitter-style layout:
-  - Sticky header with back button
-  - Clean author info section with badges
-  - Stats row (Reposts, Likes, Views)
-  - Inline reply input for logged-in users
-  - Clean "Log in to reply" prompt for guests
-  - Threaded comments display
-
-### Quiz Room UI/UX Fix (Jan 26, 2025) - COMPLETED
-- Added main site Header component to QuizRoom.js on all return states:
-  - Loading state, No questions state, Quiz completed state, Active quiz state
-- Added Header to QuizResults.js page
-- Fixed Exit Quiz button functionality - now properly navigates to /victory-lane after confirmation
-- Added proper padding (pt-20) to account for fixed header
-- Mobile hamburger menu now works on Quiz Room page
-- All auth props properly passed to Header (isLoggedIn, user, onLogout)
-
-### Victory Lane Quiz Room Cards Fix (Feb 1, 2025) - COMPLETED
-- Fixed Quiz Room posts to properly display room code in the feed
-- Enhanced PostCard component with dedicated Quiz Room card UI:
-  - Prominent room code display in large amber text
-  - Copy button to copy room code to clipboard
-  - Quiz metadata (questions count, category, privacy, difficulty)
-  - Participant stats and time limit info
-  - View Quiz action button
-- Real-time like updates working via WebSocket events
-- Socket handlers properly updating post counts on like/unlike
-
-### Mobile Menu Compact Fix (Jan 26, 2025) - COMPLETED
-- Removed rating and streak stats from mobile menu profile section
-- Reduced text size and padding for compact display
-- Logout button now visible without scrolling
-
-### Dashboard Repost Undo Button Fix (Jan 9, 2025) - COMPLETED
-- Fixed UX issue: reposts now show "Undo" button instead of "Delete"
-- For reposts (`is_retweet === true`): Shows Undo icon (orange) that calls `/api/social/posts/{id}/unshare`
-- For original posts: Shows Delete icon (red) that deletes the post
-- Added `handleUndoRepost` function to Dashboard.js
-
-### SinglePost Undo/Delete Fix (Jan 9, 2025) - COMPLETED
-- Added Undo functionality for reposts on SinglePost page
-- Shows Undo button for reposts, Delete button for own posts
-- Uses original_post_id for unshare API call
-
-### Profile Posts UI Redesign (Jan 9, 2025) - COMPLETED
-- Updated profile page post cards to match Victory Lane modern design
-- Avatar, username, badges, date all in one horizontal row
-- Content indented for visual hierarchy
-- Cleaner interaction buttons layout
-
-### Profile Posts Bug Fix (Jan 9, 2025) - COMPLETED
-- Fixed bug where clicking username on Victory Lane showed "No posts yet" on profile
-- Updated profile API endpoints to handle both username and user_id lookups
-- Fixed: `/api/profile/{username}/posts`, `/api/profile/{username}/quiz-rooms`, `/api/profile/{username}/liked-posts`, `/api/profile/{username}/reposts`
-
-### Repost Toggle Fix (Jan 9, 2025) - COMPLETED
-- Added unshare endpoint `/api/social/posts/{post_id}/unshare` to allow removing reposts
-- Fixed frontend to track shared state from API response (`shared_by_user` field)
-- Added auth header to feed API calls so backend can return user-specific shared state
-- Repost button now properly toggles: share → count increases, unshare → count decreases
-
-### Victory Lane Post UI Redesign (Jan 9, 2025) - COMPLETED
-- Redesigned PostCard component with modern, clean layout
-- Avatar, username, timestamp, and tags now inline in single row
-- Content indented 52px for visual hierarchy
-- Cleaner interaction buttons (like, comment, share, bookmark)
-- Improved mobile responsiveness
-- Added data-testid attributes for testing
-
-### Previous Session Completions
-- Teacher Earnings page (`/teachers`) - promotional landing page
-- University & Degree Exams (LLB, B.Com) with full year-wise syllabus
-- Mobile UI/UX overhaul with app-style bottom navigation
-- Multiple back button fixes in Solo Practice
-- Victory Lane commenting bug fix
-- Mobile menu scroll fix
-
-## Recent Bug Fixes (January 2025)
-
-### Authentication Token Attribution Bug Fix (Jan 27, 2025) - COMPLETED
-**Issue**: Posts were attributed to wrong user after logout and re-login with different account
-**Root Cause**: Old tokens not being properly cleared from localStorage during logout/login cycles
-**Fix Applied**:
-- `AuthContext.js`: logout() now explicitly clears all auth tokens (token, auth_token, ceibaa_user)
-- `Login.js`: handleDemoLogin() clears old tokens before setting new ones, validates new token
-- `AuthCallback.js`: Google auth callback clears old tokens before setting new session
-- `VictoryLane.js`: All post creation functions validate token before API calls
-- Removed `user_id` from request body - backend extracts from JWT token
-**Testing**: 16 backend tests pass, frontend Playwright tests verified
-**Test File**: `/app/backend/tests/test_auth_token_attribution.py`
+## Bug Fixes (December 2025)
+- **Critical auth bug**: Post misattribution after re-login (fixed token handling)
+- **Reply submission failing**: SinglePost.js called `/comments` (plural) but backend expected `/comment` (singular) - 405 error
+- **Like auto-revert**: SinglePost.js `handleLike()` always called POST even for unlike - fixed to use DELETE
+- **Like state not persisting**: `get_optional_user_id()` only decoded JWT, not session tokens - created async version supporting both
 
 ## Pending Issues
-
-### P2 - Back Button on Solo Practice Setup Page
-- Status: BLOCKED (waiting for user repro steps)
-- User reported back button not working on main solo practice setup page
-
-### P3 - Contact Form Email Delivery
-- Status: BLOCKED (waiting for domain verification)
-- Resend API in test mode, emails saved to DB as workaround
+- **P2**: Back button on solo practice page (BLOCKED - need repro steps)
+- **P3**: Contact form email delivery (BLOCKED - Resend domain verification)
+- **P3**: Pre-existing lint errors in Login.js, Signup.js, Home.js
 
 ## Upcoming Tasks
-
-### P1 - Database Indexes
-- Add indexes to `questions` collection for performance
-- Fields: `exam_name`, `chapter`
-
-### P1 - VictoryLane.js Refactor
-- Break down ~1900 line component into smaller child components
-- Improve maintainability
-
-### P2 - Additional Login Options
-- Facebook login
-- Mobile number login
+- **P1**: Add database indexes for performance
+- **P1**: Refactor VictoryLane.js (~1900 lines)
+- **P2**: Facebook & Mobile Number login
+- **P2**: Bookmarks page
+- **P2**: API response caching
 
 ## Future/Backlog
-
-### P2
-- API response caching with Redis
 - "Follows you" badge on profiles
-
-### P3
-- Consolidate static exam pages to dynamic system
+- Consolidate static exam pages
 - Follower notifications
-- Consolidate `cbse_chapter_data.py` and `cbse_master_data.py`
+- Consolidate cbse data files
 
-## Technical Architecture
-
-### Frontend
-- React with Tailwind CSS
-- Shadcn/UI components
-- Hot reload enabled
-
-### Backend
-- FastAPI (Python)
-- MongoDB
-- WebSocket for real-time features
-
-### Key Files
-- `/app/frontend/src/components/VictoryLane/PostCard.js` - Post UI component
-- `/app/frontend/src/pages/VictoryLane.js` - Main social feed page
-- `/app/frontend/src/components/MobileBottomNav.js` - App-style navigation
-- `/app/backend/profile_routes.py` - Profile API endpoints
-- `/app/backend/exam_data.py` - Exam syllabus data
-
-## Test Credentials
-- Student: `demo1` / `demo1` (demo login)
-- Admin: `admin` / `ceibaa@admin2025` (at `/admin`)
-- Employee: Create in admin panel, login at `/employee`
+## Key Files
+- `/app/backend/social_feed_routes.py` - Social feed API endpoints
+- `/app/frontend/src/pages/SinglePost.js` - Single post view
+- `/app/frontend/src/pages/VictoryLane.js` - Social feed page
+- `/app/frontend/src/context/AuthContext.js` - Auth state management
+- `/app/backend/tests/test_post_interactions.py` - Post interaction tests
