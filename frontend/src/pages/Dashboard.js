@@ -941,12 +941,11 @@ const Dashboard = () => {
       )}
 
       {/* Share & Earn Modal */}
-      {profile && (
+      {user && (
         <ShareReferralModal
           isOpen={showShareModal}
           onClose={() => setShowShareModal(false)}
-          userId={profile.id}
-          username={profile.username}
+          user={user}
         />
       )}
     </div>
