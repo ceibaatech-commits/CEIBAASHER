@@ -183,6 +183,7 @@ fastapi_app.include_router(x_auth_router, prefix="/api")
 fastapi_app.include_router(emergent_auth_router, prefix="/api")
 fastapi_app.include_router(exam_sync_router)  # Exam sync/management routes
 fastapi_app.include_router(exam_management_router, prefix="/api/admin/manage")  # Exam CRUD management
+fastapi_app.include_router(referral_router, prefix="/api")  # Referral system
 fastapi_app.include_router(admin_data_router, prefix="/api/admin")  # Admin data management (hardcoded exams, CBSE chapters)
 fastapi_app.include_router(user_management_router, prefix="/api")  # User management (teacher status)
 fastapi_app.include_router(dashboard_router)  # AI-powered dashboard routes
