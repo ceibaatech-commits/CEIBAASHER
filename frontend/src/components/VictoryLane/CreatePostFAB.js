@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy, HelpCircle, MessageCircle, X, GraduationCap, ArrowLeft, Image, Video } from 'lucide-react';
+import { Trophy, HelpCircle, MessageCircle, X, GraduationCap, ArrowLeft, Image, Video, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '../UserAvatar';
 
@@ -14,9 +14,29 @@ const CreatePostFAB = ({
   handleCreatePost,
   setShowQuizModal,
   setShowQuestionModal,
-  setShowAcademicModal
+  setShowAcademicModal,
+  mediaSettings = {},
+  selectedPostImages,
+  setSelectedPostImages,
+  selectedPostVideos,
+  setSelectedPostVideos,
 }) => {
   if (!user) return null;
+
+  const canPostImages = mediaSettings.allow_media && mediaSettings.can_post_images;
+  const canPostVideos = mediaSettings.allow_media && mediaSettings.can_post_videos;
+
+  const handleImageSelect = (e) => {
+    if (!canPostImages || !setSelectedPostImages) return;
+    const files = Array.from(e.target.files || []);
+    setSelectedPostImages(prev => [...(prev || []), ...files]);
+  };
+
+  const handleVideoSelect = (e) => {
+    if (!canPostVideos || !setSelectedPostVideos) return;
+    const files = Array.from(e.target.files || []);
+    setSelectedPostVideos(prev => [...(prev || []), ...files]);
+  };
 
   return (
     <>
@@ -50,12 +70,13 @@ const CreatePostFAB = ({
                 setShowAcademicModal(true);
                 setShowCreateMenu(false);
               }}
-              className="flex items-center gap-3 bg-white hover:bg-blue-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
+              data-testid="create-academic-btn"
             >
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full">
-                <GraduationCap className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <GraduationCap className="w-5 h-5 text-blue-600" />
               </div>
-              <span className="font-semibold text-sm pr-2">Ask Academic Question</span>
+              <span className="font-medium text-gray-800 text-sm">Academic Question</span>
             </button>
 
             {/* Quiz Room Button */}
@@ -64,78 +85,64 @@ const CreatePostFAB = ({
                 setShowQuizModal(true);
                 setShowCreateMenu(false);
               }}
-              className="flex items-center gap-3 bg-white hover:bg-purple-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
+              data-testid="create-quiz-btn"
             >
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
-                <Trophy className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <Trophy className="w-5 h-5 text-purple-600" />
               </div>
-              <span className="font-semibold text-sm pr-2">Create Quiz Room</span>
+              <span className="font-medium text-gray-800 text-sm">Quiz Room</span>
             </button>
 
-            {/* Question Button */}
-            <button
-              onClick={() => {
-                setShowQuestionModal(true);
-                setShowCreateMenu(false);
-              }}
-              className="flex items-center gap-3 bg-white hover:bg-green-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
-            >
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-full">
-                <HelpCircle className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-semibold text-sm pr-2">Ask General Question</span>
-            </button>
-
-            {/* General Post Button */}
+            {/* Quick Post Button */}
             <button
               onClick={() => {
                 setShowQuickPostModal(true);
                 setShowCreateMenu(false);
               }}
-              className="flex items-center gap-3 bg-white hover:bg-orange-50 text-gray-900 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all group"
+              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
+              data-testid="create-quick-post-btn"
             >
-              <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-full">
-                <MessageCircle className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-green-600" />
               </div>
-              <span className="font-semibold text-sm pr-2">Create Post</span>
+              <span className="font-medium text-gray-800 text-sm">Quick Post</span>
             </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Full Screen Post Composer - X/Twitter Style */}
+      {/* Full Screen Post Composer */}
       <AnimatePresence>
         {showQuickPostModal && (
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ 
-              type: 'spring',
-              damping: 30,
-              stiffness: 300
-            }}
-            className="fixed inset-0 bg-white z-[100] flex flex-col"
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed inset-0 z-[70] bg-white flex flex-col"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white sticky top-0">
+            {/* Composer Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white sticky top-0 z-10">
               <button
                 onClick={() => {
                   setShowQuickPostModal(false);
                   setNewPostContent('');
                 }}
-                className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition"
+                className="p-2 hover:bg-gray-100 rounded-full transition"
+                data-testid="close-composer-btn"
               >
-                <ArrowLeft className="w-6 h-6 text-gray-700" />
+                <ArrowLeft className="w-5 h-5 text-gray-700" />
               </button>
-              
               <button
-                onClick={() => {
-                  handleCreatePost();
-                  setShowQuickPostModal(false);
-                }}
+                onClick={handleCreatePost}
                 disabled={!newPostContent.trim()}
-                className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-bold text-sm hover:shadow-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className={`px-5 py-2 rounded-full font-semibold text-sm transition ${
+                  newPostContent.trim()
+                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                }`}
+                data-testid="submit-post-btn"
               >
                 Post
               </button>
@@ -166,18 +173,38 @@ const CreatePostFAB = ({
 
             {/* Bottom Toolbar */}
             <div className="border-t border-gray-200 px-4 py-3 bg-white sticky bottom-0">
-              <div className="flex items-center gap-4">
-                <button className="p-2 hover:bg-blue-50 rounded-full transition">
-                  <Image className="w-6 h-6 text-blue-500" />
-                </button>
-                <button className="p-2 hover:bg-blue-50 rounded-full transition">
-                  <Video className="w-6 h-6 text-blue-500" />
-                </button>
-                <div className="flex-1" />
-                <span className={`text-sm ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
-                  {newPostContent.length}/280
-                </span>
-              </div>
+              {canPostImages || canPostVideos ? (
+                <div className="flex items-center gap-4">
+                  {canPostImages && (
+                    <label className="p-2 hover:bg-blue-50 rounded-full transition cursor-pointer" data-testid="image-upload-btn">
+                      <Image className="w-6 h-6 text-blue-500" />
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} multiple />
+                    </label>
+                  )}
+                  {canPostVideos && (
+                    <label className="p-2 hover:bg-blue-50 rounded-full transition cursor-pointer" data-testid="video-upload-btn">
+                      <Video className="w-6 h-6 text-blue-500" />
+                      <input type="file" accept="video/*" className="hidden" onChange={handleVideoSelect} />
+                    </label>
+                  )}
+                  <div className="flex-1" />
+                  <span className={`text-sm ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
+                    {newPostContent.length}/280
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <Image className="w-5 h-5" />
+                    <Video className="w-5 h-5" />
+                    <span className="text-xs">Media uploads disabled by administrator</span>
+                  </div>
+                  <div className="flex-1" />
+                  <span className={`text-sm ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
+                    {newPostContent.length}/280
+                  </span>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
@@ -190,6 +217,7 @@ const CreatePostFAB = ({
           showCreateMenu ? 'scale-90' : 'scale-100'
         }`}
         style={{ padding: 0 }}
+        data-testid="create-post-fab"
       >
         {showCreateMenu ? (
           <X className="w-7 h-7 text-purple-600" />
