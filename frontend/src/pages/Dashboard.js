@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [followModalType, setFollowModalType] = useState('followers');
+  const [showShareModal, setShowShareModal] = useState(false);
   
   // Interaction states
   const [likedPosts, setLikedPosts] = useState(new Set());
