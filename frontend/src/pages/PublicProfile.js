@@ -408,12 +408,20 @@ const PublicProfile = () => {
 
             {/* Edit Profile Button - only show for own profile */}
             {user && user.id === profile.id && (
-              <div className="mt-6 flex justify-center">
+              <div className="mt-6 flex justify-center gap-3 flex-wrap">
                 <button
                   onClick={() => navigate('/dashboard')}
                   className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold transition-all shadow-lg"
                 >
                   Go to Dashboard
+                </button>
+                <button
+                  onClick={() => setShowShareModal(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 font-semibold transition-all shadow-lg flex items-center gap-2"
+                  data-testid="share-earn-button-card"
+                >
+                  <Gift className="w-4 h-4" />
+                  Share & Earn
                 </button>
               </div>
             )}
