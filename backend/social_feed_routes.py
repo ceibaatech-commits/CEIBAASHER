@@ -347,7 +347,7 @@ async def create_post(
         raise HTTPException(status_code=500, detail=f"Error creating post: {str(e)}")
 
 @router.get("/posts/{post_id}")
-async def get_post(post_id: str, authorization: Optional[str] = Header(None)):
+async def get_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Get single post with comments"""
     try:
         post = await db.social_posts.find_one({"id": post_id}, {"_id": 0})
@@ -357,7 +357,7 @@ async def get_post(post_id: str, authorization: Optional[str] = Header(None)):
         comments = await db.comments.find({"post_id": post_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
         post["comments"] = comments
         
-        user_id = get_optional_user_id(authorization)
+        user_id = await get_optional_user_id_async(authorization, request)
         if user_id:
             liked = await db.post_likes.find_one({"user_id": user_id, "post_id": post_id})
             post["liked_by_user"] = liked is not None
