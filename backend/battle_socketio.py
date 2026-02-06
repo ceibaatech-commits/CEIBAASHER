@@ -981,6 +981,22 @@ async def battle_complete(sid, data):
 # ==================== WEBRTC SIGNALING EVENTS ====================
 
 @sio.event
+async def join_video_room(sid, data):
+    """Explicitly join a video room for WebRTC signaling"""
+    try:
+        room_id = data.get('roomId')
+        if room_id:
+            await sio.enter_room(sid, room_id)
+            print(f"[WEBRTC] 🚪 {sid} joined video room: {room_id}")
+            
+            # Get list of participants in the room
+            rooms = sio.rooms(sid)
+            print(f"[WEBRTC] 📋 {sid} is now in rooms: {rooms}")
+    except Exception as e:
+        print(f"[ERROR] join_video_room: {str(e)}")
+
+
+@sio.event
 async def webrtc_offer(sid, data):
     """WebRTC offer signaling"""
     try:
