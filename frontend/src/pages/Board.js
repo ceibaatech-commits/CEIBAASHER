@@ -127,7 +127,11 @@ const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal }) => {
                       currentGoal?.goal_category === cat.id ? 'border-emerald-500 bg-emerald-50' : ''
                     } disabled:opacity-50`}
                   >
-                    <span className="text-2xl">{cat.icon}</span>
+                    {cat.image ? (
+                      <img src={cat.image} alt={cat.name} className="w-7 h-7 object-contain" />
+                    ) : (
+                      <span className="text-2xl">{cat.icon}</span>
+                    )}
                     <span className="font-semibold text-gray-800">{cat.name}</span>
                     {currentGoal?.goal_category === cat.id && (
                       <CheckCircle className="w-5 h-5 text-emerald-500 ml-auto" />
