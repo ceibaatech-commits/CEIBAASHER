@@ -971,7 +971,7 @@ const Home = () => {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_prepchamp/artifacts/dgbp1l60_Gemini_Generated_Image_be1xs8be1xs8be1x_2-removebg-preview.png" 
+                  src="https://cdn-icons-png.flaticon.com/512/3696/3696141.png" 
                   alt="Banking Examinations" 
                   className="w-10 h-10 object-contain"
                 />
