@@ -622,6 +622,7 @@ async def batch_get_quiz_rooms(request_data: BatchQuizRoomRequest):
 
 @router.get("/feed/for-you")
 async def get_for_you_feed(
+    request: Request,
     skip: int = 0,
     limit: int = 20,
     authorization: Optional[str] = Header(None)
@@ -636,7 +637,7 @@ async def get_for_you_feed(
         if limit > 100:
             limit = 100  # Cap at 100 for performance
         
-        user_id = get_optional_user_id(authorization)
+        user_id = await get_optional_user_id_async(authorization, request)
         mixed_posts = []
         
         # Fetch ALL posts first, then paginate after combining and deduplicating
