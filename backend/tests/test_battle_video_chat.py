@@ -9,6 +9,9 @@ import socketio
 import time
 from datetime import datetime
 
+# Configure pytest-asyncio
+pytestmark = pytest.mark.asyncio
+
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
 class TestBattleMatchmaking:
