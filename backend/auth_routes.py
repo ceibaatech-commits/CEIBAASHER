@@ -532,6 +532,14 @@ async def signup(request: SignupRequest):
         # Insert user
         await db.users.insert_one(user_doc.copy())
         
+        # Process referral if code provided
+        if request.referral_code:
+            try:
+                from referral_routes import process_referral
+                await process_referral(request.referral_code, user_id, email_lower)
+            except Exception as ref_err:
+                print(f"Referral processing error (non-blocking): {ref_err}")
+        
         # Generate JWT token
         token_data = {
             "sub": user_id,
