@@ -254,9 +254,10 @@ const LiveBattleMode = () => {
     }
   };
 
-  // Helper to wrap content with video chat
+  // Helper to wrap content with video chat and header
   const withVideoChat = (content) => (
     <>
+      <Header />
       {content}
       <BattleVideoChat
         socket={socket}
