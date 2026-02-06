@@ -122,6 +122,12 @@ const Signup = () => {
             </CardHeader>
 
           <CardContent>
+            {referralCode && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2" data-testid="referral-badge">
+                <span className="text-amber-600 text-lg">&#127873;</span>
+                <p className="text-sm text-amber-800 font-medium">Referred by a friend! Sign up to help them earn a coin.</p>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name *</Label>
