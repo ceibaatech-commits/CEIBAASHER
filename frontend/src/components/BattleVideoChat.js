@@ -189,6 +189,11 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
 
   // ===== RENDER =====
 
+  // Don't render anything if no socket or roomId
+  if (!socket || !roomId) {
+    return null;
+  }
+
   // Idle: show call button
   if (callState === 'idle' && showButton) {
     return (
