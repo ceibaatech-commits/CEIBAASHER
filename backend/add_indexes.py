@@ -1,127 +1,129 @@
 """
-Script to add recommended database indexes for improved performance
-Run this script to create indexes on frequently queried fields
+Ceibaa Database Index Script
+Adds indexes to all frequently queried collections for production performance.
+Safe to run multiple times - MongoDB silently skips existing indexes.
 """
 import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'test_database')
+
+async def create_index_safe(collection, keys, name, **kwargs):
+    try:
+        await collection.create_index(keys, name=name, **kwargs)
+        print(f"  + {name}")
+    except Exception as e:
+        print(f"  ~ {name} (skipped: {str(e)[:60]})")
 
 async def add_indexes():
-    print("Connecting to MongoDB...")
     client = AsyncIOMotorClient(MONGO_URL)
-    db = client['test_database']
-    
+    db = client[DB_NAME]
+
     try:
-        # ===== FOLLOWS COLLECTION =====
-        print("\n📊 Adding indexes for 'follows' collection...")
-        follows_collection = db['follows']
-        
-        # Index for finding followers of a user
-        await follows_collection.create_index([("following_id", 1), ("status", 1)])
-        print("✅ Created index: following_id + status")
-        
-        # Index for finding users that someone is following
-        await follows_collection.create_index([("follower_id", 1), ("status", 1)])
-        print("✅ Created index: follower_id + status")
-        
-        # Index for checking specific follow relationship
-        await follows_collection.create_index([("follower_id", 1), ("following_id", 1)])
-        print("✅ Created index: follower_id + following_id")
-        
-        # ===== SOCIAL_POSTS COLLECTION =====
-        print("\n📊 Adding indexes for 'social_posts' collection...")
-        social_posts_collection = db['social_posts']
-        
-        # Index for finding posts by user
-        await social_posts_collection.create_index([("user_id", 1), ("created_at", -1)])
-        print("✅ Created index: user_id + created_at (descending)")
-        
-        # Index for feed queries (for trending/for-you)
-        await social_posts_collection.create_index([("created_at", -1)])
-        print("✅ Created index: created_at (descending)")
-        
-        # Index for finding posts by type
-        await social_posts_collection.create_index([("post_type", 1), ("created_at", -1)])
-        print("✅ Created index: post_type + created_at")
-        
-        # Index for searching liked posts
-        await social_posts_collection.create_index([("likes", 1)])
-        print("✅ Created index: likes")
-        
-        # ===== EXAM_SHEETS COLLECTION =====
-        print("\n📊 Adding indexes for 'exam_sheets' collection...")
-        exam_sheets_collection = db['exam_sheets']
-        
-        # Compound index for efficient exam sheet queries
-        await exam_sheets_collection.create_index([
-            ("type", 1),
-            ("exam_name", 1),
-            ("syllabus_topic", 1),
-            ("subject", 1)
-        ])
-        print("✅ Created index: type + exam_name + syllabus_topic + subject")
-        
-        # ===== BATTLE_ROOMS COLLECTION =====
-        print("\n📊 Adding indexes for 'battle_rooms' collection...")
-        battle_rooms_collection = db['battle_rooms']
-        
-        # Index for finding rooms by PIN (skip unique constraint due to existing nulls)
-        try:
-            await battle_rooms_collection.create_index([("roomId", 1)])
-            print("✅ Created index: roomId")
-        except Exception as e:
-            print(f"⚠️  roomId index: {str(e)[:50]}... (skipped)")
-        
-        # Index for finding rooms by host
-        try:
-            await battle_rooms_collection.create_index([("host.userId", 1), ("createdAt", -1)])
-            print("✅ Created index: host.userId + createdAt")
-        except Exception as e:
-            print(f"⚠️  host index: {str(e)[:50]}... (skipped)")
-        
-        # Index for room status queries
-        try:
-            await battle_rooms_collection.create_index([("status", 1), ("createdAt", -1)])
-            print("✅ Created index: status + createdAt")
-        except Exception as e:
-            print(f"⚠️  status index: {str(e)[:50]}... (skipped)")
-        
-        # ===== USERS COLLECTION =====
-        print("\n📊 Adding indexes for 'users' collection...")
-        users_collection = db['users']
-        
-        # Index for email lookups (if not already unique)
-        try:
-            await users_collection.create_index([("email", 1)], unique=True, sparse=True)
-            print("✅ Created index: email (unique)")
-        except Exception as e:
-            print(f"⚠️  email index: Already exists (skipped)")
-        
-        # Index for username search
-        try:
-            await users_collection.create_index([("username", 1)])
-            print("✅ Created index: username")
-        except Exception as e:
-            print(f"⚠️  username index: Already exists (skipped)")
-        
-        print("\n✅ ALL INDEXES CREATED SUCCESSFULLY!")
-        print("\n📋 Summary:")
-        print("   - follows collection: 3 indexes")
-        print("   - social_posts collection: 4 indexes")
-        print("   - exam_sheets collection: 1 compound index")
-        print("   - battle_rooms collection: 3 indexes")
-        print("   - users collection: 2 indexes")
-        
+        # ===== USERS (87 queries) =====
+        print("users")
+        c = db['users']
+        await create_index_safe(c, [("id", 1)], "idx_id", unique=True)
+        await create_index_safe(c, [("email", 1)], "idx_email", unique=True, sparse=True)
+        await create_index_safe(c, [("username", 1)], "idx_username", unique=True, sparse=True)
+        await create_index_safe(c, [("referral_code", 1)], "idx_referral_code", sparse=True)
+        await create_index_safe(c, [("referral_coins", -1)], "idx_referral_coins")
+
+        # ===== SOCIAL_POSTS (47 queries) =====
+        print("social_posts")
+        c = db['social_posts']
+        await create_index_safe(c, [("id", 1)], "idx_id", unique=True)
+        await create_index_safe(c, [("user_id", 1), ("created_at", -1)], "idx_user_created")
+        await create_index_safe(c, [("created_at", -1)], "idx_created")
+        await create_index_safe(c, [("post_type", 1), ("created_at", -1)], "idx_type_created")
+        await create_index_safe(c, [("is_retweet", 1), ("original_post_id", 1)], "idx_retweet")
+        await create_index_safe(c, [("tags", 1)], "idx_tags")
+
+        # ===== FOLLOWS (28 queries) =====
+        print("follows")
+        c = db['follows']
+        await create_index_safe(c, [("follower_id", 1), ("following_id", 1)], "idx_pair", unique=True)
+        await create_index_safe(c, [("following_id", 1), ("status", 1)], "idx_following_status")
+        await create_index_safe(c, [("follower_id", 1), ("status", 1)], "idx_follower_status")
+
+        # ===== CEEPS (14 queries) =====
+        print("ceeps")
+        c = db['ceeps']
+        await create_index_safe(c, [("ceeper_user_id", 1), ("status", 1)], "idx_ceeper_status")
+        await create_index_safe(c, [("ceep_user_id", 1), ("status", 1)], "idx_ceep_status")
+        await create_index_safe(c, [("ceeper_user_id", 1), ("ceep_user_id", 1)], "idx_pair")
+
+        # ===== POST_LIKES (8 queries) =====
+        print("post_likes")
+        c = db['post_likes']
+        await create_index_safe(c, [("user_id", 1), ("post_id", 1)], "idx_user_post", unique=True)
+        await create_index_safe(c, [("post_id", 1)], "idx_post")
+
+        # ===== COMMENTS (7 queries) =====
+        print("comments")
+        c = db['comments']
+        await create_index_safe(c, [("post_id", 1), ("created_at", -1)], "idx_post_created")
+        await create_index_safe(c, [("id", 1)], "idx_id")
+        await create_index_safe(c, [("user_id", 1)], "idx_user")
+
+        # ===== USER_SESSIONS (7 queries) =====
+        print("user_sessions")
+        c = db['user_sessions']
+        await create_index_safe(c, [("session_token", 1)], "idx_token", unique=True)
+        await create_index_safe(c, [("user_id", 1)], "idx_user")
+
+        # ===== NOTIFICATIONS (6 queries) =====
+        print("notifications")
+        c = db['notifications']
+        await create_index_safe(c, [("user_id", 1), ("created_at", -1)], "idx_user_created")
+        await create_index_safe(c, [("user_id", 1), ("is_read", 1)], "idx_user_read")
+
+        # ===== QUIZ_ROOMS (10 queries) =====
+        print("quiz_rooms")
+        c = db['quiz_rooms']
+        await create_index_safe(c, [("room_code", 1)], "idx_room_code")
+        await create_index_safe(c, [("host_id", 1), ("created_at", -1)], "idx_host_created")
+        await create_index_safe(c, [("status", 1), ("created_at", -1)], "idx_status_created")
+
+        # ===== BATTLE_ROOMS (7 queries) =====
+        print("battle_rooms")
+        c = db['battle_rooms']
+        await create_index_safe(c, [("roomId", 1)], "idx_roomId")
+        await create_index_safe(c, [("host.userId", 1), ("createdAt", -1)], "idx_host_created")
+        await create_index_safe(c, [("status", 1), ("createdAt", -1)], "idx_status_created")
+
+        # ===== EXAM_SHEETS (28 queries) =====
+        print("exam_sheets")
+        c = db['exam_sheets']
+        await create_index_safe(c, [("type", 1), ("exam_name", 1), ("syllabus_topic", 1), ("subject", 1)], "idx_compound")
+        await create_index_safe(c, [("exam_name", 1)], "idx_exam_name")
+
+        # ===== REFERRALS =====
+        print("referrals")
+        c = db['referrals']
+        await create_index_safe(c, [("referrer_id", 1), ("status", 1)], "idx_referrer_status")
+        await create_index_safe(c, [("referred_user_id", 1)], "idx_referred", unique=True)
+        await create_index_safe(c, [("referred_email", 1)], "idx_referred_email")
+
+        # ===== QUESTIONS (15 queries) =====
+        print("questions")
+        c = db['questions']
+        await create_index_safe(c, [("sheet_id", 1)], "idx_sheet")
+        await create_index_safe(c, [("exam_name", 1), ("subject", 1)], "idx_exam_subject")
+
+        # ===== SUPPORT_TICKETS (8 queries) =====
+        print("support_tickets")
+        c = db['support_tickets']
+        await create_index_safe(c, [("user_id", 1), ("created_at", -1)], "idx_user_created")
+
+        print("\nDone. All indexes created.")
+
     except Exception as e:
-        print(f"❌ ERROR: {str(e)}")
+        print(f"Error: {e}")
     finally:
         client.close()
-        print("\n🔒 MongoDB connection closed")
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("DATABASE INDEX CREATION SCRIPT")
-    print("=" * 60)
     asyncio.run(add_indexes())
