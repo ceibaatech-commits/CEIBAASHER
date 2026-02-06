@@ -417,7 +417,7 @@ const Matchmaking1v1 = () => {
 
   // Matched Screen
   if (battleState === 'matched') {
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 flex items-center justify-center">
         <div className="text-center">
           <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce shadow-2xl">
