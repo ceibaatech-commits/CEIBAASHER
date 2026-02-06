@@ -306,6 +306,7 @@ async def create_post(
             "user_verified": user.get("verified", False) if user else False,
             "user_location": user.get("location") if user else None,
             "isTeacher": user.get("isTeacher", False) if user else False,
+            "isProfessor": user.get("isProfessor", False) if user else False,
             "isOfficial": user.get("isOfficial", False) if user else False,
             "isInstitute": user.get("isInstitute", False) if user else False,
             "post_type": post_data.post_type,
