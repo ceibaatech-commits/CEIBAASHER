@@ -36,7 +36,7 @@ async def upload_media(file: UploadFile = File(...)):
     """
     try:
         # Check global media permission
-        if db:
+        if db is not None:
             settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0})
             if not settings or not settings.get("allow_media_posts", False):
                 raise HTTPException(status_code=403, detail="Media uploads are currently disabled by administrator")
