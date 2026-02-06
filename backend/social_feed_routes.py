@@ -517,6 +517,7 @@ async def hydrate_posts_engagement(
 @router.get("/posts/{post_id}/engagement")
 async def get_post_engagement(
     post_id: str,
+    request: Request,
     user_id: Optional[str] = Query(None),
     authorization: Optional[str] = Header(None)
 ):
@@ -525,7 +526,7 @@ async def get_post_engagement(
     Used for real-time updates on single post views.
     """
     try:
-        current_user = get_optional_user_id(authorization) or user_id
+        current_user = await get_optional_user_id_async(authorization, request) or user_id
         
         post = await db.social_posts.find_one(
             {"id": post_id},
