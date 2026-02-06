@@ -1510,7 +1510,6 @@ const LiveBattle = () => {
         socket={socket}
         roomId={pin}
         playerName={user?.name || 'Player'}
-        isActive={!!socket && !loading}
       />
     </div>
   );
