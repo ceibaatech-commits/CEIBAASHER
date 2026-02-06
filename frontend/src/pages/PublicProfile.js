@@ -294,12 +294,9 @@ const PublicProfile = () => {
     }
   }, [activeTab, profile, canView]);
 
-  // Redirect to dashboard if viewing own profile
-  useEffect(() => {
-    if (profile && user && profile.username === user.username) {
-      navigate('/dashboard');
-    }
-  }, [profile, user]);
+  // Note: Removed redirect to dashboard for own profile
+  // Users can now view their own public profile with Share & Earn button
+  // Dashboard is still accessible via the Edit Profile button
 
   // Filter posts based on active tab
   const getFilteredPosts = () => {
