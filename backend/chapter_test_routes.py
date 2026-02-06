@@ -1,7 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
 from cbse_chapter_data import get_chapters_by_class_subject, get_all_subjects_for_class, get_chapter_details
+import os
+import random
+
+# Import MongoDB connection
+import motor.motor_asyncio
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'test_database')
+mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
+db = mongo_client[DB_NAME]
 
 router = APIRouter(prefix="/api/chapter-tests", tags=["chapter-tests"])
 
