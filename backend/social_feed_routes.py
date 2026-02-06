@@ -1133,10 +1133,10 @@ async def add_comment(
 
 
 @router.delete("/comments/{comment_id}")
-async def delete_comment(comment_id: str, authorization: Optional[str] = Header(None)):
+async def delete_comment(comment_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Delete a comment - only the comment author can delete"""
     try:
-        user_id = get_optional_user_id(authorization)
+        user_id = await get_optional_user_id_async(authorization, request)
         if not user_id:
             raise HTTPException(status_code=401, detail="Authentication required")
         
