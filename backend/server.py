@@ -78,6 +78,9 @@ battle_async_routes.init_db(db)
 # Initialize referral routes
 referral_routes.init_db(db)
 
+# Initialize media upload routes
+media_upload_routes.init_db(db)
+
 # Initialize social auto-post utilities
 import social_auto_post
 social_auto_post.init_db(db)
