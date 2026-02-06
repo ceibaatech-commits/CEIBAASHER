@@ -8,7 +8,7 @@ const ICE_SERVERS = {
     { urls: 'stun:stun2.l.google.com:19302' },
     { urls: 'stun:stun3.l.google.com:19302' },
     { urls: 'stun:stun4.l.google.com:19302' },
-    // Free TURN servers for testing (limited capacity)
+    // Free TURN servers for testing
     {
       urls: 'turn:openrelay.metered.ca:80',
       username: 'openrelayproject',
@@ -34,14 +34,22 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   const [minimized, setMinimized] = useState(false);
   const [remoteStream, setRemoteStream] = useState(null);
   const [showButton, setShowButton] = useState(true);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerRef = useRef(null);
   const localStreamRef = useRef(null);
   const pendingCandidates = useRef([]);
+  const makingOffer = useRef(false);
+
+  const log = (msg) => {
+    console.log(`[VIDEO] ${msg}`);
+    setDebugInfo(prev => `${msg}\n${prev}`.slice(0, 500));
+  };
 
   const cleanup = useCallback(() => {
+    log('Cleaning up...');
     if (peerRef.current) {
       peerRef.current.close();
       peerRef.current = null;
@@ -54,42 +62,57 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
     setRemoteStream(null);
     setCallState('idle');
-    setMinimized(false);
     pendingCandidates.current = [];
+    makingOffer.current = false;
   }, []);
 
-  useEffect(() => {
-    return () => cleanup();
-  }, [cleanup]);
-
+  // Set remote video when stream changes
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
+      log('Setting remote stream to video element');
       remoteVideoRef.current.srcObject = remoteStream;
     }
   }, [remoteStream]);
 
-  // Socket listeners for WebRTC signaling
+  // Socket event listeners
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      log('No socket available');
+      return;
+    }
+
+    log(`Socket connected: ${socket.connected}, roomId: ${roomId}`);
 
     const handleOffer = async (data) => {
-      console.log('[VIDEO] Received offer from:', data.from);
-      if (callState === 'connected') return;
+      log(`Received offer from: ${data.from}`);
+      if (callState === 'connected') {
+        log('Already connected, ignoring offer');
+        return;
+      }
       try {
         setCallState('connecting');
         setShowButton(false);
+        
         const stream = await getLocalStream();
         const pc = createPeer(stream);
+        
         await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+        log('Set remote description (offer)');
+        
+        // Add any pending ICE candidates
         for (const c of pendingCandidates.current) {
           await pc.addIceCandidate(new RTCIceCandidate(c));
         }
         pendingCandidates.current = [];
+        
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        console.log('[VIDEO] Sending answer to room:', roomId);
+        log('Created and set local description (answer)');
+        
         socket.emit('webrtc_answer', { roomId, answer });
+        log('Sent answer');
       } catch (err) {
+        log(`Offer handling error: ${err.message}`);
         console.error('WebRTC offer error:', err);
         cleanup();
         setShowButton(true);
@@ -97,30 +120,39 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     };
 
     const handleAnswer = async (data) => {
-      console.log('[VIDEO] Received answer from:', data.from);
+      log(`Received answer from: ${data.from}`);
       try {
         if (peerRef.current && peerRef.current.signalingState !== 'stable') {
           await peerRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+          log('Set remote description (answer)');
+          
+          // Add any pending ICE candidates
           for (const c of pendingCandidates.current) {
             await peerRef.current.addIceCandidate(new RTCIceCandidate(c));
           }
           pendingCandidates.current = [];
-          console.log('[VIDEO] Call connected!');
+          log('Call setup complete!');
+        } else {
+          log(`Ignoring answer - state: ${peerRef.current?.signalingState}`);
         }
       } catch (err) {
+        log(`Answer handling error: ${err.message}`);
         console.error('WebRTC answer error:', err);
       }
     };
 
     const handleICE = async (data) => {
-      console.log('[VIDEO] Received ICE candidate from:', data.from);
+      log(`Received ICE candidate`);
       try {
         if (peerRef.current && peerRef.current.remoteDescription) {
           await peerRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+          log('Added ICE candidate');
         } else {
+          log('Queuing ICE candidate (no remote description yet)');
           pendingCandidates.current.push(data.candidate);
         }
       } catch (err) {
+        log(`ICE handling error: ${err.message}`);
         console.error('WebRTC ICE error:', err);
       }
     };
@@ -138,37 +170,56 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
 
   const getLocalStream = async () => {
     if (localStreamRef.current) return localStreamRef.current;
+    log('Requesting camera/mic access...');
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: { width: 320, height: 240, frameRate: 15 }
     });
     localStreamRef.current = stream;
     if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+    log('Got local stream');
     return stream;
   };
 
   const createPeer = (stream) => {
+    log('Creating peer connection...');
     const pc = new RTCPeerConnection(ICE_SERVERS);
     peerRef.current = pc;
-    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+    
+    stream.getTracks().forEach(track => {
+      pc.addTrack(track, stream);
+      log(`Added ${track.kind} track`);
+    });
 
     pc.ontrack = (e) => {
-      setRemoteStream(e.streams[0]);
-      setCallState('connected');
+      log(`Received remote ${e.track.kind} track`);
+      if (e.streams && e.streams[0]) {
+        setRemoteStream(e.streams[0]);
+        setCallState('connected');
+        log('Remote stream connected!');
+      }
     };
 
     pc.onicecandidate = (e) => {
-      if (e.candidate && socket) {
+      if (e.candidate && socket && roomId) {
         socket.emit('webrtc_ice_candidate', { roomId, candidate: e.candidate });
+        log('Sent ICE candidate');
       }
     };
 
     pc.oniceconnectionstatechange = () => {
       const state = pc.iceConnectionState;
-      if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+      log(`ICE connection state: ${state}`);
+      if (state === 'connected' || state === 'completed') {
+        setCallState('connected');
+      } else if (state === 'disconnected' || state === 'failed' || state === 'closed') {
         cleanup();
         setShowButton(true);
       }
+    };
+
+    pc.onconnectionstatechange = () => {
+      log(`Connection state: ${pc.connectionState}`);
     };
 
     return pc;
@@ -176,29 +227,42 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
 
   const startCall = async () => {
     if (!socket) {
-      console.error('[VIDEO] No socket connection');
+      log('No socket connection');
       alert('Waiting for battle connection...');
       return;
     }
     if (!roomId) {
-      console.error('[VIDEO] No roomId available');
+      log('No roomId available');
       alert('Waiting for opponent match...');
       return;
     }
+    
+    if (makingOffer.current) {
+      log('Already making offer, skipping...');
+      return;
+    }
+    
     try {
-      console.log('[VIDEO] Starting call in room:', roomId);
+      makingOffer.current = true;
+      log(`Starting call in room: ${roomId}`);
       setCallState('connecting');
       setShowButton(false);
+      
       const stream = await getLocalStream();
       const pc = createPeer(stream);
+      
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      console.log('[VIDEO] Sending offer to room:', roomId);
+      log('Created and set local description (offer)');
+      
       socket.emit('webrtc_offer', { roomId, offer });
+      log('Sent offer');
     } catch (err) {
+      log(`Start call error: ${err.message}`);
       console.error('Start call error:', err);
       cleanup();
       setShowButton(true);
+      makingOffer.current = false;
       if (err.name === 'NotAllowedError') {
         alert('Camera/microphone access denied. Please allow access and try again.');
       }
@@ -206,27 +270,34 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   };
 
   const endCall = () => {
+    log('Ending call');
     cleanup();
     setShowButton(true);
   };
 
   const toggleAudio = () => {
     if (localStreamRef.current) {
-      const track = localStreamRef.current.getAudioTracks()[0];
-      if (track) { track.enabled = !track.enabled; setAudioEnabled(track.enabled); }
+      const audioTrack = localStreamRef.current.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setAudioEnabled(audioTrack.enabled);
+        log(`Audio ${audioTrack.enabled ? 'enabled' : 'disabled'}`);
+      }
     }
   };
 
   const toggleVideo = () => {
     if (localStreamRef.current) {
-      const track = localStreamRef.current.getVideoTracks()[0];
-      if (track) { track.enabled = !track.enabled; setVideoEnabled(track.enabled); }
+      const videoTrack = localStreamRef.current.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setVideoEnabled(videoTrack.enabled);
+        log(`Video ${videoTrack.enabled ? 'enabled' : 'disabled'}`);
+      }
     }
   };
 
-  // ===== RENDER =====
-
-  // Don't render anything if no socket or roomId
+  // Don't render if no socket or roomId
   if (!socket || !roomId) {
     return null;
   }
@@ -245,77 +316,98 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     );
   }
 
-  // Minimized PiP
-  if (minimized && (callState === 'connecting' || callState === 'connected')) {
+  // Connecting state
+  if (callState === 'connecting') {
     return (
-      <div
-        className="fixed bottom-6 right-4 z-[60] w-28 h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-white/30 cursor-pointer group"
-        onClick={() => setMinimized(false)}
-        data-testid="pip-minimized"
-      >
-        {callState === 'connected' && remoteStream ? (
-          <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-gray-900" />
-        ) : (
-          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+      <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-gray-700">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+            <Phone className="w-5 h-5 text-green-400 animate-pulse" />
           </div>
-        )}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition flex items-center justify-center">
-          <Maximize2 className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition" />
+          <div>
+            <p className="text-white font-medium">Connecting...</p>
+            <p className="text-gray-400 text-xs">Setting up video call</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Expanded PiP (WhatsApp style)
-  if (callState === 'connecting' || callState === 'connected') {
-    return (
-      <div className="fixed bottom-6 right-4 z-[60] w-48 rounded-2xl overflow-hidden shadow-2xl bg-gray-900 border border-white/20" data-testid="pip-expanded">
-        {/* Remote Video */}
-        <div className="relative w-full aspect-[3/4]">
-          {callState === 'connected' && remoteStream ? (
-            <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-800 gap-2">
-              <div className="w-8 h-8 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-              <span className="text-white/60 text-xs font-medium">Calling...</span>
-            </div>
-          )}
-
-          {/* Local video overlay */}
-          <div className="absolute top-2 right-2 w-16 h-20 rounded-xl overflow-hidden border-2 border-white/40 shadow-lg bg-gray-700">
-            <video ref={localVideoRef} autoPlay playsInline muted className={`w-full h-full object-cover ${!videoEnabled ? 'hidden' : ''}`} />
-            {!videoEnabled && (
-              <div className="w-full h-full flex items-center justify-center bg-gray-700">
-                <VideoOff className="w-4 h-4 text-white/50" />
+  // Connected: show video UI
+  if (callState === 'connected') {
+    if (minimized) {
+      return (
+        <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
+          <div className="relative w-32 h-24">
+            {remoteStream ? (
+              <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-gray-900" />
+            ) : (
+              <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                <Video className="w-6 h-6 text-gray-500" />
               </div>
             )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-1 left-1 right-1 flex justify-between items-center">
+              <button onClick={() => setMinimized(false)} className="p-1 bg-black/50 rounded">
+                <Maximize2 className="w-3 h-3 text-white" />
+              </button>
+              <button onClick={endCall} className="p-1 bg-red-500 rounded">
+                <PhoneOff className="w-3 h-3 text-white" />
+              </button>
+            </div>
           </div>
+        </div>
+      );
+    }
 
+    return (
+      <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-gray-700 w-72">
+        {/* Remote Video (Main) */}
+        <div className="relative aspect-[4/3] bg-gray-800">
+          {remoteStream ? (
+            <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-center">
+                <Video className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                <p className="text-gray-400 text-xs">Waiting for video...</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Local Video (PiP) */}
+          <div className="absolute top-2 right-2 w-20 h-16 rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+            <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover bg-gray-700" />
+          </div>
+          
           {/* Minimize button */}
-          <button onClick={() => setMinimized(true)} className="absolute top-2 left-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-full transition">
-            <Minimize2 className="w-3.5 h-3.5 text-white" />
-          </button>
+          <button 
+            onClick={() => setMinimized(true)} 
+            className="absolute top-2 left-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-lg transition"
+          >
+            <Minimize2 className="w-4 h-4 text-white/50" />
+          </div>
         </div>
 
-        {/* Controls bar */}
-        <div className="flex items-center justify-center gap-3 py-3 bg-gray-900/95">
+        {/* Controls */}
+        <div className="flex justify-center gap-3 p-3 bg-gray-800/50">
           <button
             onClick={toggleAudio}
-            className={`p-2.5 rounded-full transition ${audioEnabled ? 'bg-gray-700 text-white' : 'bg-red-500 text-white'}`}
-            data-testid="toggle-audio"
+            className={`p-2.5 rounded-full transition ${audioEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
           >
-            {audioEnabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+            {audioEnabled ? <Mic className="w-4 h-4 text-white" /> : <MicOff className="w-4 h-4 text-white" />}
           </button>
           <button
             onClick={toggleVideo}
-            className={`p-2.5 rounded-full transition ${videoEnabled ? 'bg-gray-700 text-white' : 'bg-red-500 text-white'}`}
-            data-testid="toggle-video"
+            className={`p-2.5 rounded-full transition ${videoEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
           >
-            {videoEnabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
+            {videoEnabled ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-white" />}
           </button>
-          <button onClick={endCall} className="p-2.5 bg-red-500 hover:bg-red-600 text-white rounded-full transition" data-testid="end-call">
-            <PhoneOff className="w-4 h-4" />
+          <button
+            onClick={endCall}
+            className="p-2.5 bg-red-500 hover:bg-red-600 rounded-full transition"
+          >
+            <PhoneOff className="w-4 h-4 text-white" />
           </button>
         </div>
       </div>
