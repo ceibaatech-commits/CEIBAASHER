@@ -31,6 +31,7 @@ const PublicProfile = () => {
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [sharedPosts, setSharedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     fetchProfile();
