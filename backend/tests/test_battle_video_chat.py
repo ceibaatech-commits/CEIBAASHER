@@ -22,7 +22,6 @@ class TestBattleMatchmaking:
         assert BASE_URL, "REACT_APP_BACKEND_URL must be set"
         print(f"✅ Backend URL configured: {BASE_URL}")
 
-    @pytest.mark.asyncio
     async def test_socket_connection(self):
         """Test Socket.IO connection to battle server"""
         sio = socketio.AsyncClient()
@@ -47,7 +46,6 @@ class TestBattleMatchmaking:
         finally:
             await sio.disconnect()
 
-    @pytest.mark.asyncio
     async def test_find_match_event(self):
         """Test that find-match event is accepted by server"""
         sio = socketio.AsyncClient()
@@ -101,7 +99,6 @@ class TestBattleMatchmaking:
 class TestMatchmakingFlow:
     """Test full matchmaking flow with two users"""
 
-    @pytest.mark.asyncio
     async def test_two_players_matchmaking(self):
         """Test that two players can match and get a roomId"""
         # Create two socket clients
@@ -200,7 +197,6 @@ class TestMatchmakingFlow:
 class TestWebRTCSignaling:
     """Test WebRTC signaling events through Socket.IO"""
 
-    @pytest.mark.asyncio 
     async def test_webrtc_offer_forwarding(self):
         """Test that WebRTC offer is forwarded to other player"""
         sio1 = socketio.AsyncClient()
@@ -301,7 +297,6 @@ class TestWebRTCSignaling:
             await sio1.disconnect()
             await sio2.disconnect()
 
-    @pytest.mark.asyncio
     async def test_webrtc_answer_forwarding(self):
         """Test that WebRTC answer is forwarded back to caller"""
         sio1 = socketio.AsyncClient()
@@ -366,7 +361,6 @@ class TestWebRTCSignaling:
             await sio1.disconnect()
             await sio2.disconnect()
 
-    @pytest.mark.asyncio
     async def test_webrtc_ice_candidate_forwarding(self):
         """Test that ICE candidates are forwarded between players"""
         sio1 = socketio.AsyncClient()
@@ -433,7 +427,6 @@ class TestWebRTCSignaling:
 class TestBattleChat:
     """Test battle chat functionality"""
 
-    @pytest.mark.asyncio
     async def test_battle_chat_message(self):
         """Test chat messages are delivered between matched players"""
         sio1 = socketio.AsyncClient()
