@@ -192,6 +192,7 @@ fastapi_app.include_router(cbse_data_router, prefix="/api")  # CBSE data - singl
 
 # Media upload routes for Victory Lane posts
 from media_upload_routes import router as media_upload_router
+import media_upload_routes
 fastapi_app.include_router(media_upload_router, prefix="/api")  # Media upload routes
 
 # Employee routes for employee portal
