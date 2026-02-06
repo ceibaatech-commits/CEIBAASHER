@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import BattleVideoChat from '../components/BattleVideoChat';
 
 // Connect to Socket.IO on main backend - Battle endpoint
-const BATTLE_SERVER_URL = window.location.origin || 'https://post-animation-test.preview.emergentagent.com';
+const BATTLE_SERVER_URL = window.location.origin || 'https://referral-verify-1.preview.emergentagent.com';
 const SOCKET_PATH = '/api/battlews/socket.io'; // Battle Socket.IO path
 
 const BattleLobby = () => {
