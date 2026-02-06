@@ -370,7 +370,7 @@ const LiveBattleMode = () => {
   if (battleState === 'playing' && questions.length > 0) {
     const currentQuestion = questions[currentQuestionIndex];
 
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header with Video Feeds */}
