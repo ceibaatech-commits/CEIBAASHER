@@ -73,7 +73,8 @@ const Signup = () => {
       const response = await axios.post(`${BACKEND_URL}/api/auth/signup`, {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
-        password: formData.password
+        password: formData.password,
+        referral_code: referralCode || undefined
       });
 
       localStorage.setItem('token', response.data.token);
