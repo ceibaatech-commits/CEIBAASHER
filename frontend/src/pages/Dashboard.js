@@ -939,6 +939,16 @@ const Dashboard = () => {
           type={followModalType}
         />
       )}
+
+      {/* Share & Earn Modal */}
+      {profile && (
+        <ShareReferralModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          userId={profile.id}
+          username={profile.username}
+        />
+      )}
     </div>
   );
 };
