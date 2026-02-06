@@ -96,7 +96,7 @@ const Home = () => {
   // Category filter buttons for mobile and desktop
   const categories = [
     { id: 'admission', label: 'Admission Tests', icon: '🎓', color: 'from-violet-600 to-purple-600' },
-    { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600' },
+    { id: 'medical', label: 'Medical', icon: '🏥', color: 'from-emerald-600 to-teal-600', image: 'https://cdn-icons-png.flaticon.com/512/5996/5996258.png' },
     { id: 'defence', label: 'Defence', icon: '🎖️', color: 'from-green-700 to-emerald-700', image: 'https://cdn-icons-png.flaticon.com/512/6142/6142033.png' },
     { id: 'banking', label: 'Banking', icon: '🏦', color: 'from-rose-600 to-red-600', image: 'https://cdn-icons-png.flaticon.com/512/3696/3696141.png' },
     { id: 'university', label: 'University & Degree', icon: '🎓', color: 'from-amber-600 to-yellow-600', image: 'https://customer-assets.emergentagent.com/job_quizmaster-299/artifacts/ndexgxo7_image.png' },
