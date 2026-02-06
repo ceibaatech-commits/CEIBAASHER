@@ -295,7 +295,7 @@ const VictoryLane = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          setMediaSettings({ allow_media_posts: false, allow_image_posts: false, allow_video_posts: false });
+          setMediaSettings({ allow_media: false, can_post_images: false, can_post_videos: false });
           return;
         }
         
@@ -303,15 +303,14 @@ const VictoryLane = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        // Map user permissions to media settings
         setMediaSettings({
-          allow_media_posts: response.data.can_post_images || response.data.can_post_videos,
-          allow_image_posts: response.data.can_post_images ?? false,
-          allow_video_posts: response.data.can_post_videos ?? false
+          allow_media: !response.data.media_disabled_globally,
+          can_post_images: response.data.can_post_images || false,
+          can_post_videos: response.data.can_post_videos || false
         });
       } catch (error) {
         console.error('Error fetching media permissions:', error);
-        setMediaSettings({ allow_media_posts: false, allow_image_posts: false, allow_video_posts: false });
+        setMediaSettings({ allow_media: false, can_post_images: false, can_post_videos: false });
       }
     };
     fetchMediaSettings();
