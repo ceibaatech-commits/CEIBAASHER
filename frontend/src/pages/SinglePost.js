@@ -91,9 +91,12 @@ const SinglePost = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const headers = { Authorization: `Bearer ${token}` };
+      if (wasLiked) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/like`, { headers });
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, { headers });
+      }
     } catch (err) {
       setLiked(wasLiked);
       setLikesCount(prev => wasLiked ? prev + 1 : prev - 1);
@@ -138,7 +141,7 @@ const SinglePost = () => {
     setSubmittingComment(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/comments`, {
+      const response = await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/comment`, {
         content: newComment
       }, {
         headers: { Authorization: `Bearer ${token}` }
