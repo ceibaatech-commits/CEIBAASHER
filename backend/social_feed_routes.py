@@ -812,22 +812,28 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
         paginated = posts[skip:skip + limit]
         has_more = (skip + limit) < total_posts
         
-        # Enrich posts with current user profile pictures
+        # Enrich posts with current user profile pictures and badges
         unique_user_ids = list(set(post.get("user_id") for post in paginated if post.get("user_id")))
         if unique_user_ids:
             users = await db.users.find(
                 {"id": {"$in": unique_user_ids}},
-                {"_id": 0, "id": 1, "profile_picture": 1, "is_disabled": 1}
+                {"_id": 0, "id": 1, "profile_picture": 1, "is_disabled": 1, "isTeacher": 1, "isProfessor": 1, "isOfficial": 1, "isInstitute": 1}
             ).to_list(1000)
-            user_profiles = {u["id"]: u.get("profile_picture") for u in users if u.get("profile_picture")}
+            user_map = {u["id"]: u for u in users}
             disabled_users = {u["id"] for u in users if u.get("is_disabled", False)}
             
             # Filter out posts from disabled users
             paginated = [p for p in paginated if p.get("user_id") not in disabled_users]
             
             for post in paginated:
-                if post.get("user_id") in user_profiles:
-                    post["user_avatar"] = user_profiles[post["user_id"]]
+                u = user_map.get(post.get("user_id"))
+                if u:
+                    if u.get("profile_picture"):
+                        post["user_avatar"] = u["profile_picture"]
+                    post["isTeacher"] = u.get("isTeacher", False)
+                    post["isProfessor"] = u.get("isProfessor", False)
+                    post["isOfficial"] = u.get("isOfficial", False)
+                    post["isInstitute"] = u.get("isInstitute", False)
         
         # Ensure is_retweet is explicitly false if not present
         for post in paginated:
