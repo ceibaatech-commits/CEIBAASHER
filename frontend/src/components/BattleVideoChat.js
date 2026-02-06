@@ -83,6 +83,12 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
 
     log(`Socket connected: ${socket.connected}, roomId: ${roomId}`);
 
+    // Explicitly join the room when roomId is set
+    if (roomId) {
+      log(`Joining room: ${roomId}`);
+      socket.emit('join-video-room', { roomId });
+    }
+
     const handleOffer = async (data) => {
       log(`Received offer from: ${data.from}`);
       if (callState === 'connected') {
