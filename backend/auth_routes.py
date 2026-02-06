@@ -105,6 +105,7 @@ class SignupRequest(BaseModel):
     name: str
     email: str
     password: str
+    referral_code: Optional[str] = None
 
 class EmailLoginRequest(BaseModel):
     email: str
