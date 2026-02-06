@@ -123,3 +123,107 @@ async def get_all_classes():
         "success": True,
         "classes": [6, 7, 8, 9, 10, 11, 12]
     }
+
+
+@router.get("/questions")
+async def get_chapter_questions(
+    class_param: str = Query(..., description="Class number e.g., class-7"),
+    subject: str = Query(..., description="Subject slug e.g., english---poorvi"),
+    chapter: int = Query(..., description="Chapter number"),
+    limit: int = Query(20, description="Number of questions to return"),
+    randomize: bool = Query(True, description="Whether to randomize questions")
+):
+    """Get questions for a specific chapter from the database"""
+    try:
+        # Extract class number
+        class_number = class_param.replace('class-', '').replace('Class ', '')
+        
+        # Normalize subject name
+        normalized_subject = subject.replace('---', '|||').replace('-', ' ').replace('|||', ' - ').title()
+        
+        # Build query
+        query = {
+            "class_name": f"Class {class_number}",
+            "chapter_number": chapter
+        }
+        
+        # Add subject filter - try different formats
+        if 'poorvi' in subject.lower():
+            query["subject"] = {"$regex": "poorvi", "$options": "i"}
+        else:
+            query["subject"] = {"$regex": normalized_subject, "$options": "i"}
+        
+        # Get questions from database
+        questions_cursor = db.questions.find(query, {"_id": 0})
+        questions = await questions_cursor.to_list(length=500)
+        
+        if not questions:
+            return {
+                "success": False,
+                "error": f"No questions found for Class {class_number}, {normalized_subject}, Chapter {chapter}",
+                "questions": []
+            }
+        
+        # Randomize if requested
+        if randomize and len(questions) > limit:
+            questions = random.sample(questions, limit)
+        else:
+            questions = questions[:limit]
+        
+        return {
+            "success": True,
+            "total_available": len(questions),
+            "questions": questions,
+            "class": class_number,
+            "subject": normalized_subject,
+            "chapter": chapter
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/start-test")
+async def start_chapter_test(
+    class_param: str = Query(...),
+    subject: str = Query(...),
+    chapter: int = Query(...),
+    num_questions: int = Query(20, description="Number of questions for the test")
+):
+    """Start a chapter test with randomized questions"""
+    try:
+        class_number = class_param.replace('class-', '').replace('Class ', '')
+        
+        # Build query
+        query = {
+            "class_name": f"Class {class_number}",
+            "chapter_number": chapter
+        }
+        
+        if 'poorvi' in subject.lower():
+            query["subject"] = {"$regex": "poorvi", "$options": "i"}
+        
+        # Get all questions
+        questions_cursor = db.questions.find(query, {"_id": 0})
+        all_questions = await questions_cursor.to_list(length=500)
+        
+        if not all_questions:
+            return {"success": False, "error": "No questions found"}
+        
+        # Randomize and limit
+        test_questions = random.sample(all_questions, min(num_questions, len(all_questions)))
+        
+        # Remove explanation for test mode (don't show until submitted)
+        for q in test_questions:
+            q.pop('explanation', None)
+        
+        return {
+            "success": True,
+            "test_id": f"test-{class_number}-{chapter}-{random.randint(1000,9999)}",
+            "total_questions": len(test_questions),
+            "duration_minutes": max(30, len(test_questions) * 1.5),
+            "questions": test_questions
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
