@@ -142,7 +142,7 @@ const LiveBattleMode = () => {
       });
 
       newPeer.on('signal', (data) => {
-        socketConnection.emit('webrtc-offer', { roomId: room, offer: data });
+        socketConnection.emit('webrtc_offer', { roomId: room, offer: data });
       });
 
       newPeer.on('stream', (remoteStream) => {
