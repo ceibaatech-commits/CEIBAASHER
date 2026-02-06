@@ -19,10 +19,26 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
   const auth = useAuth();
   const contextUser = auth?.user;
   const contextIsLoggedIn = auth?.isAuthenticated ? auth.isAuthenticated() : !!contextUser;
+  const contextLogout = auth?.logout;
   
   // Prefer context over props
   const user = contextUser || propUser;
   const isLoggedIn = contextIsLoggedIn || propIsLoggedIn || false;
+  
+  // Handle logout - use context logout or prop callback
+  const handleLogout = () => {
+    if (contextLogout) {
+      contextLogout();
+    } else if (onLogout) {
+      onLogout();
+    } else {
+      // Fallback: clear localStorage manually
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('ceibaa_user');
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    }
+  };
   
   // Close dropdown when clicking outside
   React.useEffect(() => {
