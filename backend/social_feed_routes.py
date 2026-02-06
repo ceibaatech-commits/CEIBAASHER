@@ -130,6 +130,30 @@ def get_optional_user_id(authorization: Optional[str]) -> Optional[str]:
     except HTTPException:
         return None
 
+async def get_optional_user_id_async(authorization: Optional[str], request=None) -> Optional[str]:
+    """Get user_id optionally from session token or JWT (supports both auth methods)"""
+    # Try session cookie first
+    if request and hasattr(request, 'cookies'):
+        session_token = request.cookies.get("session_token")
+        if session_token:
+            user_id = await get_user_from_session(session_token)
+            if user_id:
+                return user_id
+    # Try Authorization header
+    if not authorization:
+        return None
+    if authorization.startswith("Bearer "):
+        token = authorization.replace("Bearer ", "")
+        # Try as session token first
+        user_id = await get_user_from_session(token)
+        if user_id:
+            return user_id
+    # Fall back to JWT
+    try:
+        return decode_jwt_token(authorization)
+    except HTTPException:
+        return None
+
 async def filter_expired_quiz_posts(posts: list) -> list:
     """Filter out expired quiz room posts (>24 hours)"""
     filtered = []
