@@ -274,6 +274,18 @@ const Matchmaking1v1 = () => {
   // Check if user is authenticated
   const isUserAuthenticated = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
 
+  // Helper to wrap content with video chat component
+  const withVideoChat = (content) => (
+    <>
+      {content}
+      <BattleVideoChat
+        socket={socket}
+        roomId={roomId}
+        playerName={playerName || 'Player'}
+      />
+    </>
+  );
+
   if (!isUserAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center p-4">
