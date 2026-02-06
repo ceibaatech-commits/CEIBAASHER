@@ -1690,7 +1690,7 @@ async def get_quiz_room(room_code: str, authorization: Optional[str] = Header(No
                 raise HTTPException(status_code=410, detail="Quiz expired")
         
         # Privacy check
-        user_id = get_optional_user_id(authorization)
+        user_id = await get_optional_user_id_async(authorization)
         if user_id and room.get("privacy") == "private" and user_id != room.get("host_id"):
             raise HTTPException(status_code=403, detail="Private quiz")
         
