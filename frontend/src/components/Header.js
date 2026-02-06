@@ -5,14 +5,24 @@ import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import NavbarSearch from './NavbarSearch';
 import '../styles/navbar-search.css';
+import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = window.location.origin;
 
-const Header = ({ isLoggedIn = false, user = null, onLogin, onLogout }) => {
+const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
   const mobileMenuRef = React.useRef(null);
+  
+  // Use auth context as primary source, fall back to props
+  const auth = useAuth();
+  const contextUser = auth?.user;
+  const contextIsLoggedIn = auth?.isAuthenticated ? auth.isAuthenticated() : !!contextUser;
+  
+  // Prefer context over props
+  const user = contextUser || propUser;
+  const isLoggedIn = contextIsLoggedIn || propIsLoggedIn || false;
   
   // Close dropdown when clicking outside
   React.useEffect(() => {
