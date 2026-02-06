@@ -1058,37 +1058,31 @@ const VictoryLane = () => {
     try {
       let mediaUrls = [];
       
-      // Upload image if selected and allowed
-      if (selectedPostImage && mediaSettings.allow_image_posts) {
-        const formData = new FormData();
-        formData.append('file', selectedPostImage);
-        
-        const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
-          headers: { 
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
+      // Upload images if selected and allowed
+      if (selectedPostImages.length > 0 && mediaSettings.can_post_images) {
+        for (const img of selectedPostImages) {
+          const formData = new FormData();
+          formData.append('file', img);
+          const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+          });
+          if (uploadResponse.data.url) {
+            mediaUrls.push(uploadResponse.data.url);
           }
-        });
-        
-        if (uploadResponse.data.url) {
-          mediaUrls.push(uploadResponse.data.url);
         }
       }
       
-      // Upload video if selected and allowed
-      if (selectedPostVideo && mediaSettings.allow_video_posts) {
-        const formData = new FormData();
-        formData.append('file', selectedPostVideo);
-        
-        const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
-          headers: { 
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
+      // Upload videos if selected and allowed
+      if (selectedPostVideos.length > 0 && mediaSettings.can_post_videos) {
+        for (const vid of selectedPostVideos) {
+          const formData = new FormData();
+          formData.append('file', vid);
+          const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
+          });
+          if (uploadResponse.data.url) {
+            mediaUrls.push(uploadResponse.data.url);
           }
-        });
-        
-        if (uploadResponse.data.url) {
-          mediaUrls.push(uploadResponse.data.url);
         }
       }
       
