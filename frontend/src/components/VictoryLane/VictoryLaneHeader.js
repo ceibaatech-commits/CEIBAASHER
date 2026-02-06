@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, TrendingUp, Search, Filter, X, Tag, Wifi, WifiOff } from 'lucide-react';
+import { Sparkles, TrendingUp, Search, Hash, X, Tag, Wifi, WifiOff } from 'lucide-react';
 
 const VictoryLaneHeader = ({
   activeTab,
@@ -67,7 +67,7 @@ const VictoryLaneHeader = ({
                 showFilters || selectedTag ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
               }`}
             >
-              <Filter className="w-4 h-4" />
+              <Hash className="w-4 h-4" />
             </button>
           </div>
         ) : (
@@ -98,7 +98,7 @@ const VictoryLaneHeader = ({
                 showFilters || selectedTag ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              <Filter className="w-4 h-4" />
+              <Hash className="w-4 h-4" />
             </button>
           </div>
         )}
