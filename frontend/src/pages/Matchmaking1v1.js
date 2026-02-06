@@ -451,7 +451,7 @@ const Matchmaking1v1 = () => {
   if (battleState === 'playing' && questions.length > 0) {
     const currentQuestion = questions[currentQuestionIndex];
 
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 py-4">
         <div className="max-w-6xl mx-auto px-4">
           {/* Header */}
