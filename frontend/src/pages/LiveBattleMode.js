@@ -499,6 +499,11 @@ const LiveBattleMode = () => {
     const isWinner = myScore > opponentScore;
 
     return withVideoChat(
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-8">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className={`${isWinner ? 'bg-yellow-400' : 'bg-gray-400'} text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6`}>
+              <Trophy className="w-12 h-12" />
             </div>
             
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
