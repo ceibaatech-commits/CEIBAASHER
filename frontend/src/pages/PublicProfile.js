@@ -481,7 +481,7 @@ const PublicProfile = () => {
               </div>
 
               {/* Follow/Edit Button - Full width on mobile */}
-              <div className="w-full sm:w-auto sm:flex-shrink-0">
+              <div className="w-full sm:w-auto sm:flex-shrink-0 flex flex-col gap-2">
                 {user && user.id !== profile.id ? (
                   <div className="w-full sm:w-auto">
                     <FollowButton
@@ -493,12 +493,22 @@ const PublicProfile = () => {
                     />
                   </div>
                 ) : user && user.id === profile.id ? (
-                  <button
-                    onClick={() => navigate('/dashboard')}
-                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold shadow-md text-sm"
-                  >
-                    Edit Profile
-                  </button>
+                  <>
+                    <button
+                      onClick={() => navigate('/dashboard')}
+                      className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold shadow-md text-sm"
+                    >
+                      Edit Profile
+                    </button>
+                    <button
+                      onClick={() => setShowShareModal(true)}
+                      className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:from-amber-600 hover:to-orange-600 font-semibold shadow-md text-sm flex items-center justify-center gap-1.5"
+                      data-testid="share-earn-button"
+                    >
+                      <Gift className="w-4 h-4" />
+                      Share & Earn
+                    </button>
+                  </>
                 ) : (
                   <button
                     onClick={() => navigate('/login')}
