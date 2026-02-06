@@ -259,7 +259,6 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
             "is_disabled": user.get("is_disabled", False),
             "media_disabled_globally": False
         }
-        }
     except Exception as e:
         print(f"Error fetching media permissions: {e}")
         return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
