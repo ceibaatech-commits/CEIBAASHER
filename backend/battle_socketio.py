@@ -986,12 +986,16 @@ async def webrtc_offer(sid, data):
     try:
         room_id = data.get('roomId')
         offer = data.get('offer')
+        
+        print(f"[WEBRTC] 📹 Offer received from {sid} for room {room_id}")
 
         # Forward to other users in room
         await sio.emit('webrtc-offer', {
             'offer': offer,
             'from': sid
         }, room=room_id, skip_sid=sid)
+        
+        print(f"[WEBRTC] ✅ Offer forwarded to room {room_id}")
 
     except Exception as e:
         print(f"[ERROR] webrtc_offer: {str(e)}")
@@ -1003,12 +1007,16 @@ async def webrtc_answer(sid, data):
     try:
         room_id = data.get('roomId')
         answer = data.get('answer')
+        
+        print(f"[WEBRTC] 📹 Answer received from {sid} for room {room_id}")
 
         # Forward to other users in room
         await sio.emit('webrtc-answer', {
             'answer': answer,
             'from': sid
         }, room=room_id, skip_sid=sid)
+        
+        print(f"[WEBRTC] ✅ Answer forwarded to room {room_id}")
 
     except Exception as e:
         print(f"[ERROR] webrtc_answer: {str(e)}")
@@ -1020,6 +1028,8 @@ async def webrtc_ice_candidate(sid, data):
     try:
         room_id = data.get('roomId')
         candidate = data.get('candidate')
+        
+        print(f"[WEBRTC] 🧊 ICE candidate from {sid} for room {room_id}")
 
         # Forward to other users in room
         await sio.emit('webrtc-ice-candidate', {
