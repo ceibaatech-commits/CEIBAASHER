@@ -8,8 +8,14 @@ from fastapi.responses import FileResponse
 import os
 import uuid
 from pathlib import Path
+from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter(prefix="/media", tags=["Media Upload"])
+db = None
+
+def init_db(database):
+    global db
+    db = database
 
 # Upload directory for post media
 UPLOAD_DIR = Path(__file__).parent / "uploads" / "media"
@@ -26,15 +32,27 @@ MAX_VIDEO_SIZE = 50 * 1024 * 1024  # 50MB
 async def upload_media(file: UploadFile = File(...)):
     """
     Upload an image or video for a Victory Lane post.
-    Returns the media URL that can be stored in the post document.
+    Checks global media setting before allowing upload.
     """
     try:
-        # Get file extension
-        file_ext = Path(file.filename).suffix.lower()
-        
-        # Determine file type
-        is_image = file_ext in ALLOWED_IMAGE_EXTENSIONS
-        is_video = file_ext in ALLOWED_VIDEO_EXTENSIONS
+        # Check global media permission
+        if db:
+            settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0})
+            if not settings or not settings.get("allow_media_posts", False):
+                raise HTTPException(status_code=403, detail="Media uploads are currently disabled by administrator")
+            
+            file_ext = Path(file.filename).suffix.lower()
+            is_image = file_ext in ALLOWED_IMAGE_EXTENSIONS
+            is_video = file_ext in ALLOWED_VIDEO_EXTENSIONS
+            
+            if is_image and not settings.get("allow_image_posts", False):
+                raise HTTPException(status_code=403, detail="Image uploads are currently disabled by administrator")
+            if is_video and not settings.get("allow_video_posts", False):
+                raise HTTPException(status_code=403, detail="Video uploads are currently disabled by administrator")
+        else:
+            file_ext = Path(file.filename).suffix.lower()
+            is_image = file_ext in ALLOWED_IMAGE_EXTENSIONS
+            is_video = file_ext in ALLOWED_VIDEO_EXTENSIONS
         
         if not is_image and not is_video:
             raise HTTPException(
