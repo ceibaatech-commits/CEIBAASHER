@@ -4,6 +4,7 @@ import { Trophy, Clock, Zap, Star, Pause, Play, SkipForward, X, AlertCircle, Mes
 import io from 'socket.io-client';
 import axios from 'axios';
 import MathText from '../components/MathText';
+import BattleVideoChat from '../components/BattleVideoChat';
 import { useAuth } from '../context/AuthContext';
 
 // Connect to battle server through the backend domain
