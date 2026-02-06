@@ -525,6 +525,7 @@ async def signup(request: SignupRequest):
             "posts_count": 0,
             "ceeping_count": 0,
             "ceepers_count": 0,
+            "referral_coins": 0,
             "created_at": datetime.utcnow().isoformat(),
             "last_login": datetime.utcnow().isoformat()
         }
