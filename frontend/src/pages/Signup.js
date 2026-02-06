@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
