@@ -1513,5 +1513,7 @@ const LiveBattle = () => {
         isActive={!!socket && !loading}
       />
     </div>
+  );
+};
 
 export default LiveBattle;
