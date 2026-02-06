@@ -36,11 +36,23 @@
 - Profile ID mismatch for disabled users
 - Media permission chain (global + per-user + upload endpoint)
 
+## Bug Fixes (Feb 2026)
+- ✅ "Share & Earn" button visibility - Fixed profile ID in API response + useEffect dependency
+- ✅ 1v1 Battle Video Chat rendering - Fixed by wrapping all battle states with `withVideoChat()` in `LiveBattleMode.js`
+
+## Verified Features (Feb 6, 2026)
+- ✅ "Share & Earn" button - Visible on user's own profile with Edit Profile button
+- ✅ 1v1 Battle Video Chat - "Video Call" button appears on all battle states (setup, searching)
+- ✅ Demo users (demo1/demo1, demo2/demo2) - Working with database persistence
+
 ## Pending
 - P2: Back button on solo practice (BLOCKED)
 - P3: Contact form email (BLOCKED)
 
 ## Upcoming
 - P1: Refactor VictoryLane.js (~1900 lines)
+- P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
+- P2: Facebook Login via OAuth
+- P2: Dedicated Referral Dashboard for tracking stats
 - P2: Bookmarks page, API caching
 - P3: "Follows you" badge, follower notifications
