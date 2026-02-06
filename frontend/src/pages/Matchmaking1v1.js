@@ -384,7 +384,7 @@ const Matchmaking1v1 = () => {
 
   // Searching Screen
   if (battleState === 'searching') {
-    return (
+    return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 flex items-center justify-center">
         <div className="text-center">
           <div className="relative mb-8">
