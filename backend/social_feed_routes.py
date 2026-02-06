@@ -841,6 +841,7 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
 
 @router.get("/feed/following")
 async def get_following_feed(
+    request: Request,
     skip: int = 0,
     limit: int = 10,
     authorization: Optional[str] = Header(None)
@@ -858,7 +859,9 @@ async def get_following_feed(
         if not authorization:
             return {"success": True, "posts": [], "count": 0, "has_more": False}
         
-        user_id = decode_jwt_token(authorization)
+        user_id = await get_optional_user_id_async(authorization, request)
+        if not user_id:
+            return {"success": True, "posts": [], "count": 0, "has_more": False}
         
         # Get approved following relationships (only from follows collection - single source of truth)
         # Use aggregation pipeline for better performance with large datasets
