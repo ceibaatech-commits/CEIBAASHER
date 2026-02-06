@@ -35,7 +35,7 @@ const PublicProfile = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, [username]);
+  }, [username, user?.id]);
 
   const fetchProfile = async () => {
     setLoading(true);
