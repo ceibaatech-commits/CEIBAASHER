@@ -392,7 +392,7 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
             className="absolute top-2 left-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-lg transition"
           >
             <Minimize2 className="w-4 h-4 text-white/50" />
-          </div>
+          </button>
         </div>
 
         {/* Controls */}
