@@ -147,16 +147,24 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
 
   const startCall = async () => {
     if (!socket) {
+      console.error('[VIDEO] No socket connection');
       alert('Waiting for battle connection...');
       return;
     }
+    if (!roomId) {
+      console.error('[VIDEO] No roomId available');
+      alert('Waiting for opponent match...');
+      return;
+    }
     try {
+      console.log('[VIDEO] Starting call in room:', roomId);
       setCallState('connecting');
       setShowButton(false);
       const stream = await getLocalStream();
       const pc = createPeer(stream);
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      console.log('[VIDEO] Sending offer to room:', roomId);
       socket.emit('webrtc_offer', { roomId, offer });
     } catch (err) {
       console.error('Start call error:', err);
