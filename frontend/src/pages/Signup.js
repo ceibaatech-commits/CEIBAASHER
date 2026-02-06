@@ -14,6 +14,8 @@ const BACKEND_URL = window.location.origin || 'http://localhost:8001';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralCode = searchParams.get('ref') || '';
   const { setUserData } = useAuth();
   
   const [formData, setFormData] = useState({
