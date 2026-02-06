@@ -253,6 +253,18 @@ const LiveBattleMode = () => {
     }
   };
 
+  // Helper to wrap content with video chat
+  const withVideoChat = (content) => (
+    <>
+      {content}
+      <BattleVideoChat
+        socket={socket}
+        roomId={roomId}
+        playerName={playerName || 'Player'}
+      />
+    </>
+  );
+
   // Setup Screen
   if (battleState === 'setup') {
     return (
