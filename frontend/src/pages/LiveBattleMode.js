@@ -4,6 +4,7 @@ import { ArrowLeft, Users, Video, VideoOff, Mic, MicOff, Trophy, Clock } from 'l
 import io from 'socket.io-client';
 import axios from 'axios';
 import BattleVideoChat from '../components/BattleVideoChat';
+import Header from '../components/Header';
 
 const BACKEND_URL = window.location.origin || 'http://localhost:8001';
 const API_URL = BACKEND_URL;
