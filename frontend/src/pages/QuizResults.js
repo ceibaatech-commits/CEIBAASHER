@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Trophy, Medal, Award, Clock, Target, TrendingUp, Home, Share2, Download, Users } from 'lucide-react';
+import { Trophy, Medal, Award, Clock, Target, TrendingUp, Home, Share2, Users } from 'lucide-react';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import axios from 'axios';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
@@ -106,30 +107,37 @@ const QuizResults = () => {
   return (
     <>
       <Header isLoggedIn={isAuthenticated()} user={user} onLogout={logout} />
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4 pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 py-8 px-4 pt-20">
       {showConfetti && (
-        <div className="fixed inset-0 pointer-events-none z-50">
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-fall text-2xl"
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 2}s`
-              }}
-            >
-              🎉
-            </div>
-          ))}
+        <div className="fixed inset-0 pointer-events-none z-50 flex items-start justify-center pt-8">
+          <div className="w-64 h-64">
+            <DotLottiePlayer
+              src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie"
+              loop
+              autoplay
+              style={{ width: '100%', height: '100%' }}
+            />
+          </div>
         </div>
       )}
 
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden mb-6">
           <div className={`bg-gradient-to-r ${getRankColor(rank)} p-8 text-white text-center`}>
-            <div className="flex justify-center mb-4 animate-bounce">
-              {getRankIcon(rank)}
-            </div>
+            {rank <= 3 ? (
+              <div className="w-24 h-24 mx-auto mb-2">
+                <DotLottiePlayer
+                  src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
+            ) : (
+              <div className="flex justify-center mb-4">
+                {getRankIcon(rank)}
+              </div>
+            )}
             <h1 className="text-4xl font-bold mb-2">Quiz Complete!</h1>
             <p className="text-xl opacity-90">You ranked #{rank}</p>
           </div>
