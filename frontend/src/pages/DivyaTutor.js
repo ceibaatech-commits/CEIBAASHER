@@ -296,8 +296,37 @@ const DivyaTutor = () => {
           </div>
         </div>
 
-        {/* Upload Section */}
-        {!dialogue.length && (
+        {/* Login Required Message */}
+        {!isLoggedIn && (
+          <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-5 text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-teal-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <LogIn className="w-8 h-8 text-teal-600" />
+            </div>
+            <h2 className="text-lg font-bold text-gray-800 mb-2">Login Required</h2>
+            <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto">
+              Please login to access Divya & Sher AI Tutor. Upload your study materials and get personalized podcast explanations!
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => navigate('/login')}
+                className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition"
+                data-testid="login-btn"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => navigate('/signup')}
+                className="border-2 border-teal-500 text-teal-600 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-50 transition"
+                data-testid="signup-btn"
+              >
+                Sign Up Free
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Upload Section - Only show when logged in */}
+        {isLoggedIn && !dialogue.length && (
           <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
             <h2 className="text-sm font-bold text-gray-800 mb-2">Upload your study material</h2>
             <p className="text-xs text-gray-400 mb-3">1 PDF (max 30 pages) + up to 5 images</p>
