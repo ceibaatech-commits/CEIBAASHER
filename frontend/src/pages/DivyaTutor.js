@@ -397,7 +397,7 @@ const DivyaTutor = () => {
                   onClick={handleJoin}
                   className="flex-1 bg-amber-50 border border-amber-200 text-amber-700 py-2.5 rounded-xl font-semibold text-xs hover:bg-amber-100 transition flex items-center justify-center gap-1.5"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />Join Conversation
+                  <MessageCircle className="w-3.5 h-3.5" />Ask Divya
                 </button>
               )}
               <button onClick={resetAll} className="flex-1 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-xl font-semibold text-xs hover:bg-gray-50 transition">
@@ -405,30 +405,66 @@ const DivyaTutor = () => {
               </button>
             </div>
 
-            {/* Mind Map */}
+            {/* Improved Mind Map UI */}
             {mindMap && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 mb-4" data-testid="mind-map-section">
-                <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <Network className="w-4 h-4 text-teal-600" />Mind Map
-                </h3>
-                <div className="space-y-3">
-                  <div className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-xl px-4 py-3 text-center font-bold text-sm">
-                    {mindMap.title}
+              <div className="bg-gradient-to-br from-slate-50 to-teal-50 rounded-2xl border border-teal-100 p-5 sm:p-6 mb-4 relative overflow-hidden" data-testid="mind-map-section">
+                {/* Background decoration */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-200/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-200/20 rounded-full blur-2xl" />
+                
+                <div className="relative z-10">
+                  <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <div className="w-6 h-6 bg-teal-500 rounded-lg flex items-center justify-center">
+                      <Network className="w-3.5 h-3.5 text-white" />
+                    </div>
+                    Mind Map
+                  </h3>
+                  
+                  {/* Central Topic */}
+                  <div className="flex justify-center mb-5">
+                    <div className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-2xl px-6 py-3 text-center font-bold text-sm shadow-lg shadow-teal-200 max-w-xs">
+                      {mindMap.title}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {mindMap.branches?.map((branch, i) => (
-                      <div key={i} className="border border-gray-200 rounded-xl p-3">
-                        <h4 className="text-xs font-bold text-gray-800 mb-1.5">{branch.label}</h4>
-                        <ul className="space-y-0.5">
-                          {branch.children?.map((child, j) => (
-                            <li key={j} className="text-[11px] text-gray-500 pl-2 border-l-2 border-teal-200">{child}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                  
+                  {/* Branches - Radial Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {mindMap.branches?.map((branch, i) => {
+                      const colors = [
+                        { bg: 'bg-purple-50', border: 'border-purple-200', accent: 'bg-purple-500', text: 'text-purple-700', line: 'border-purple-300' },
+                        { bg: 'bg-blue-50', border: 'border-blue-200', accent: 'bg-blue-500', text: 'text-blue-700', line: 'border-blue-300' },
+                        { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'bg-amber-500', text: 'text-amber-700', line: 'border-amber-300' },
+                        { bg: 'bg-rose-50', border: 'border-rose-200', accent: 'bg-rose-500', text: 'text-rose-700', line: 'border-rose-300' },
+                        { bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'bg-emerald-500', text: 'text-emerald-700', line: 'border-emerald-300' },
+                        { bg: 'bg-indigo-50', border: 'border-indigo-200', accent: 'bg-indigo-500', text: 'text-indigo-700', line: 'border-indigo-300' },
+                      ];
+                      const c = colors[i % colors.length];
+                      return (
+                        <div key={i} className={`${c.bg} ${c.border} border rounded-xl p-3 transition-all hover:shadow-md`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className={`w-2 h-2 ${c.accent} rounded-full`} />
+                            <h4 className={`text-xs font-bold ${c.text}`}>{branch.label}</h4>
+                          </div>
+                          <ul className="space-y-1 ml-4">
+                            {branch.children?.map((child, j) => (
+                              <li key={j} className={`text-[11px] text-gray-600 pl-2.5 border-l-2 ${c.line} relative`}>
+                                <span className={`absolute -left-[5px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 ${c.accent} rounded-full opacity-60`} />
+                                {child}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })}
                   </div>
+                  
+                  {/* Summary */}
                   {mindMap.summary && (
-                    <p className="text-xs text-gray-500 bg-gray-50 rounded-lg p-3 italic">{mindMap.summary}</p>
+                    <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-100">
+                      <p className="text-xs text-gray-600 italic leading-relaxed">
+                        <span className="font-semibold text-teal-600">Summary:</span> {mindMap.summary}
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
