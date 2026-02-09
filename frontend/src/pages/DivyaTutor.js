@@ -117,7 +117,12 @@ const DivyaTutor = () => {
 
       if (res.data.success) {
         setDialogue(res.data.dialogue);
-        setAudioUrl(`${BACKEND_URL}${res.data.audio_url}`);
+        // Convert base64 audio to blob URL (no server storage)
+        const audioBlob = new Blob(
+          [Uint8Array.from(atob(res.data.audio_base64), c => c.charCodeAt(0))],
+          { type: 'audio/mpeg' }
+        );
+        setAudioUrl(URL.createObjectURL(audioBlob));
         setSourceContent(res.data.dialogue.map(d => `${d.speaker}: ${d.text}`).join('\n'));
         toast.success('Podcast ready!');
       }
