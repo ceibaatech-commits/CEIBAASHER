@@ -1,352 +1,314 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GraduationCap, BookOpen, Award } from 'lucide-react';
+import { BookOpen, Award, GraduationCap, ArrowRight, Sparkles, Zap, Target, BarChart3, Smartphone, Users } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../hooks/useAuth';
-import { CLASS_COLORS } from '../config/constants';
+
+const CLASS_DATA = [
+  { num: 6, label: 'Class 6', gradient: 'from-sky-400 to-blue-600', shadow: 'shadow-blue-200', ring: 'ring-blue-300' },
+  { num: 7, label: 'Class 7', gradient: 'from-violet-400 to-purple-600', shadow: 'shadow-purple-200', ring: 'ring-purple-300' },
+  { num: 8, label: 'Class 8', gradient: 'from-fuchsia-400 to-pink-600', shadow: 'shadow-pink-200', ring: 'ring-pink-300' },
+  { num: 9, label: 'Class 9', gradient: 'from-amber-400 to-orange-600', shadow: 'shadow-orange-200', ring: 'ring-orange-300' },
+  { num: 10, label: 'Class 10', gradient: 'from-rose-400 to-red-600', shadow: 'shadow-red-200', ring: 'ring-red-300' },
+  { num: 11, label: 'Class 11', gradient: 'from-teal-400 to-emerald-600', shadow: 'shadow-emerald-200', ring: 'ring-emerald-300' },
+  { num: 12, label: 'Class 12', gradient: 'from-indigo-400 to-blue-700', shadow: 'shadow-indigo-200', ring: 'ring-indigo-300' },
+];
+
+const FEATURES = [
+  { icon: Target, title: 'Chapter-wise Practice', desc: 'Master one chapter at a time with focused tests mapped to your textbook', color: 'from-orange-500 to-rose-500', bg: 'bg-orange-50' },
+  { icon: BarChart3, title: 'Track Your Growth', desc: 'Detailed analytics and progress reports to identify weak areas', color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
+  { icon: Zap, title: 'Instant Feedback', desc: 'Get results immediately with detailed explanations for every question', color: 'from-amber-500 to-yellow-500', bg: 'bg-amber-50' },
+  { icon: Users, title: 'Live Competitions', desc: 'Real-time battles with students across India on leaderboards', color: 'from-purple-500 to-violet-500', bg: 'bg-purple-50' },
+  { icon: Smartphone, title: 'Study Anywhere', desc: 'Mobile, tablet, or desktop — works everywhere, learn on the go', color: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50' },
+  { icon: Sparkles, title: '100% Free Forever', desc: 'No hidden charges, no subscriptions — quality education for all', color: 'from-pink-500 to-rose-500', bg: 'bg-pink-50' },
+];
+
+const STATS = [
+  { value: '500+', label: 'Chapter Tests', icon: BookOpen, gradient: 'from-blue-500 to-indigo-600' },
+  { value: '10,000+', label: 'Practice Questions', icon: Award, gradient: 'from-purple-500 to-violet-600' },
+  { value: '7 Classes', label: '6th to 12th', icon: GraduationCap, gradient: 'from-rose-500 to-pink-600' },
+];
 
 const ChapterTestHome = () => {
   const navigate = useNavigate();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
 
-  const classes = [
-    { class: 6, color: CLASS_COLORS['6'], icon: '📚' },
-    { class: 7, color: CLASS_COLORS['7'], icon: '📖' },
-    { class: 8, color: CLASS_COLORS['8'], icon: '✏️' },
-    { class: 9, color: CLASS_COLORS['9'], icon: '📝' },
-    { class: 10, color: CLASS_COLORS['10'], icon: '🎓' },
-    { class: 11, color: CLASS_COLORS['11'], icon: '📊' },
-    { class: 12, color: CLASS_COLORS['12'], icon: '🏆' }
-  ];
+  const handleClassClick = (classNum) => {
+    if (classNum === 11 || classNum === 12) {
+      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+    } else {
+      navigate(`/chapter-tests/class-${classNum}`);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
-      {/* Decorative Background Shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-80 h-80 bg-purple-200 rounded-full opacity-20 blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-20 left-1/4 w-72 h-72 bg-pink-200 rounded-full opacity-20 blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-40 right-1/3 w-56 h-56 bg-yellow-200 rounded-full opacity-20 blur-3xl animate-pulse" style={{animationDelay: '1.5s'}}></div>
-        
-        {/* Geometric Shapes */}
-        <div className="absolute top-32 right-16 w-0 h-0 border-l-[80px] border-l-transparent border-r-[80px] border-r-transparent border-b-[120px] border-b-purple-200 opacity-10 rotate-12"></div>
-        <div className="absolute bottom-48 left-32 w-0 h-0 border-l-[60px] border-l-transparent border-r-[60px] border-r-transparent border-b-[100px] border-b-blue-200 opacity-10 -rotate-45"></div>
-        <div className="absolute top-64 left-1/2 w-32 h-32 bg-pink-200 opacity-10 rotate-45 rounded-lg"></div>
-      </div>
+    <div className="min-h-screen flex flex-col bg-[#f8f9fc]">
+      <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
 
-      <Header 
-        isLoggedIn={isLoggedIn}
-        user={user}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
-      
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 relative z-10">
-        {/* Hero Section - Mobile Optimized */}
-        <div className="text-center mb-8 sm:mb-12 relative">
-          <div className="flex justify-center mb-4 sm:mb-6">
-            <div className="relative">
-              <div className="bg-gradient-to-r from-cyan-500 to-purple-600 p-4 sm:p-6 rounded-full shadow-2xl animate-bounce">
-                <GraduationCap className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 text-white" />
-              </div>
-              {/* Decorative rings around icon */}
-              <div className="absolute inset-0 rounded-full border-2 sm:border-4 border-cyan-300 opacity-20 animate-ping"></div>
-              <div className="absolute inset-0 rounded-full border-2 border-purple-300 opacity-30 scale-125"></div>
-            </div>
+      <main className="flex-1">
+        {/* ── HERO ── */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 pb-20 pt-10 sm:pt-16">
+          {/* Mesh-gradient blobs */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-pink-300/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-1/3 w-[350px] h-[350px] bg-indigo-300/20 rounded-full blur-3xl" />
+            {/* Floating dots grid */}
+            <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 px-2 leading-none sm:leading-tight md:leading-normal">
-            CBSE Chapter Tests
-          </h1>
-          <p className="text-base sm:text-xl md:text-2xl text-gray-700 max-w-3xl mx-auto font-semibold px-4 -mt-4 sm:-mt-2 md:mt-0 lg:mb-4">
-            Master every chapter with focused practice tests ✨
-          </p>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto mt-2 sm:mt-3 px-4">
-            Select your class to get started on your learning journey!
-          </p>
-          
-          {/* Floating badges - Mobile Friendly */}
-          <div className="flex justify-center gap-2 sm:gap-4 mt-6 sm:mt-8 flex-wrap px-4">
-            <span className="bg-white/80 backdrop-blur-sm px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-blue-600 shadow-lg border border-blue-200">
-              🎯 Chapter-wise
-            </span>
-            <span className="bg-white/80 backdrop-blur-sm px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-purple-600 shadow-lg border border-purple-200">
-              📚 NCERT
-            </span>
-            <span className="bg-white/80 backdrop-blur-sm px-3 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold text-pink-600 shadow-lg border border-pink-200">
-              ⚡ Instant
-            </span>
-          </div>
-        </div>
 
-        {/* Stats Section - Mobile Optimized */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-4 rounded-lg sm:rounded-xl">
-                <BookOpen className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl sm:text-4xl font-black text-white">500+</p>
-                <p className="text-white/90 font-semibold text-xs sm:text-base">Chapter Tests</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-4 rounded-lg sm:rounded-xl">
-                <Award className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl sm:text-4xl font-black text-white">10,000+</p>
-                <p className="text-white/90 font-semibold text-xs sm:text-base">Practice Questions</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl transform hover:scale-105 transition-all duration-300">
-            <div className="flex items-center space-x-3 sm:space-x-4">
-              <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-4 rounded-lg sm:rounded-xl">
-                <GraduationCap className="w-6 h-6 sm:w-10 sm:h-10 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl sm:text-4xl font-black text-white">7 Classes</p>
-                <p className="text-white/90 font-semibold text-xs sm:text-base">6th to 12th</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+              {/* Text */}
+              <div className="flex-1 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full mb-6 border border-white/20">
+                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-white/90 text-sm font-semibold tracking-wide">NCERT Aligned</span>
+                </div>
 
-        {/* Motivational Banner */}
-        <div className="bg-gradient-to-r from-orange-400 via-pink-500 to-purple-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-8 sm:mb-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-black/10"></div>
-          <div className="relative z-10 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-2 sm:mb-3">
-              🚀 Ready to Excel in Your Exams?
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-5" data-testid="hero-title">
+                  CBSE Chapter
+                  <span className="block bg-gradient-to-r from-amber-300 to-yellow-200 bg-clip-text text-transparent">Tests</span>
+                </h1>
+
+                <p className="text-lg text-white/80 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
+                  Master every chapter with focused practice tests. Select your class and start your journey to exam success.
+                </p>
+
+                <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                  <span className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-bold text-white/90">
+                    <Target className="w-4 h-4 inline mr-1.5 -mt-0.5" />Chapter-wise
+                  </span>
+                  <span className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-bold text-white/90">
+                    <BookOpen className="w-4 h-4 inline mr-1.5 -mt-0.5" />NCERT Based
+                  </span>
+                  <span className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-bold text-white/90">
+                    <Zap className="w-4 h-4 inline mr-1.5 -mt-0.5" />Instant Results
+                  </span>
+                </div>
+              </div>
+
+              {/* 3D Hero Image */}
+              <div className="flex-shrink-0 relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+                <div className="absolute inset-0 bg-white/10 rounded-full blur-2xl scale-90" />
+                <img
+                  src="/images/hero_3d_books.png"
+                  alt="3D Books"
+                  className="relative w-full h-full object-contain drop-shadow-2xl animate-float"
+                  data-testid="hero-3d-image"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom wave */}
+          <div className="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 80" fill="none" className="w-full" preserveAspectRatio="none">
+              <path d="M0 40C360 80 720 0 1080 40C1260 60 1380 60 1440 40V80H0V40Z" fill="#f8f9fc" />
+            </svg>
+          </div>
+        </section>
+
+        {/* ── STATS ── */}
+        <section className="max-w-5xl mx-auto px-4 -mt-10 relative z-20 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" data-testid="stats-section">
+            {STATS.map(({ value, label, icon: Icon, gradient }) => (
+              <div key={label} className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 sm:p-6 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1`}>
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl sm:text-3xl font-black text-white">{value}</p>
+                    <p className="text-white/85 text-sm font-semibold">{label}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── CLASS SELECTION ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 mb-2" data-testid="class-selection-title">
+              Select Your Class
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-white/90 font-semibold max-w-2xl mx-auto px-2">
-              Practice chapter-wise tests and track your progress across all subjects!
-            </p>
+            <p className="text-gray-500 text-base sm:text-lg">Choose your class to start practicing</p>
           </div>
-          {/* Decorative elements */}
-          <div className="absolute top-2 right-4 sm:top-4 sm:right-8 text-3xl sm:text-6xl opacity-20">🎯</div>
-          <div className="absolute bottom-2 left-4 sm:bottom-4 sm:left-8 text-3xl sm:text-6xl opacity-20">📚</div>
-        </div>
 
-        {/* Class Selection Grid */}
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-2 sm:mb-3 text-center px-2">
-            Select Your Class
-          </h2>
-          <p className="text-center text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 px-2">
-            Choose your class to start practicing 👇
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {classes.map((item) => (
-            <button
-              key={item.class}
-              onClick={() => {
-                // Classes 11 and 12 go to stream selection
-                if (item.class === 11 || item.class === 12) {
-                  navigate(`/chapter-tests/class-${item.class}/select-stream`);
-                } else {
-                  navigate(`/chapter-tests/class-${item.class}`);
-                }
-              }}
-              className="group relative bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent overflow-hidden min-h-[140px] sm:min-h-[160px]"
-            >
-              <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-              
-              <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                <div className="text-4xl sm:text-5xl md:text-6xl mb-2 sm:mb-3 md:mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                  {item.icon}
-                </div>
-                <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 group-hover:text-white transition-colors duration-300">
-                  Class {item.class}
-                </h3>
-                <p className="text-xs sm:text-sm md:text-base text-gray-600 group-hover:text-white/90 transition-colors duration-300 mt-1 sm:mt-2">
-                  CBSE Curriculum
-                </p>
-              </div>
-              
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${item.color}"></div>
-            </button>
-          ))}
-        </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+            {CLASS_DATA.map(({ num, label, gradient, shadow, ring }) => (
+              <button
+                key={num}
+                onClick={() => handleClassClick(num)}
+                data-testid={`class-card-${num}`}
+                className={`group relative bg-white rounded-2xl p-5 sm:p-7 ${shadow} shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden`}
+              >
+                {/* Hover gradient overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
 
-        {/* Features Section */}
-        <div className="mt-12 sm:mt-16 bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-200">
-          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
-            Why Choose Chapter Tests?
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            <div className="text-center">
-              <div className="bg-blue-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-2xl sm:text-3xl">🎯</span>
-              </div>
-              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Focused Practice</h4>
-              <p className="text-gray-600 text-xs sm:text-sm">Chapter-wise tests for targeted learning</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-purple-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-2xl sm:text-3xl">📊</span>
-              </div>
-              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Track Progress</h4>
-              <p className="text-gray-600 text-xs sm:text-sm">Monitor your performance over time</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-pink-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-2xl sm:text-3xl">💡</span>
-              </div>
-              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">NCERT Aligned</h4>
-              <p className="text-gray-600 text-xs sm:text-sm">Based on latest NCERT curriculum</p>
-            </div>
-            <div className="text-center">
-              <div className="bg-orange-100 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                <span className="text-2xl sm:text-3xl">⚡</span>
-              </div>
-              <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">Instant Results</h4>
-              <p className="text-gray-600 text-xs sm:text-sm">Get immediate feedback and scores</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Why Ceibaa is Best for India Section - Kahoot-Inspired */}
-        <div className="mt-12 sm:mt-16 relative">
-          <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden border-2 sm:border-4 border-gray-100">
-            {/* Subtle background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 opacity-50"></div>
-            
-            <div className="relative z-10">
-              <div className="text-center mb-8 sm:mb-12">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-600 px-4 sm:px-6 py-2 sm:py-3 rounded-full mb-4 sm:mb-6 shadow-lg animate-pulse">
-                  <span className="text-xl sm:text-2xl">🇮🇳</span>
-                  <span className="text-white font-black text-xs sm:text-sm tracking-wider">MADE FOR INDIA</span>
-                </div>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black mb-3 sm:mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 px-2">
-                  Why Ceibaa is Perfect for Indian Students
-                </h2>
-                <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-3xl mx-auto font-bold px-4">
-                  India's first gamified learning platform designed specifically for CBSE curriculum 🎯
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                {/* Feature 1 - Gamified Learning */}
-                <div className="group bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">🎮</span>
+                <div className="relative z-10 flex flex-col items-center gap-3">
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 shadow-lg group-hover:scale-110 group-hover:rotate-3`}>
+                    <span className="text-2xl sm:text-3xl font-black text-white">{num}</span>
                   </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Gamified Learning</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Turn boring studies into exciting games. Battle with friends, earn rewards, and compete on India-wide leaderboards!</p>
-                </div>
-
-                {/* Feature 2 - NCERT Aligned */}
-                <div className="group bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">📚</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">100% NCERT Aligned</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Every question mapped to NCERT chapters. Perfect match with your textbooks and CBSE board exam pattern!</p>
-                </div>
-
-                {/* Feature 3 - Live Competitions */}
-                <div className="group bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">🏆</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Live Competitions</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Real-time battles with students across India. Climb rankings, earn badges, and become a champion!</p>
-                </div>
-
-                {/* Feature 4 - Completely Free */}
-                <div className="group bg-gradient-to-br from-green-500 to-emerald-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">💰</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">100% Free Forever</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">No hidden charges, no subscriptions, no trials. Quality education accessible to every Indian student!</p>
-                </div>
-
-                {/* Feature 5 - Learn Anywhere */}
-                <div className="group bg-gradient-to-br from-pink-500 to-rose-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">📱</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Study Anywhere</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Mobile, tablet, or computer - works everywhere! Learn from home, school, or anywhere in India!</p>
-                </div>
-
-                {/* Feature 6 - Instant Results */}
-                <div className="group bg-gradient-to-br from-indigo-500 to-purple-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">⚡</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Instant Feedback</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Get results immediately with detailed explanations. Learn from mistakes and improve faster than ever!</p>
-                </div>
-
-                {/* Feature 7 - Chapter-wise Tests */}
-                <div className="group bg-gradient-to-br from-red-500 to-pink-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">🎯</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Chapter-wise Practice</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Master one chapter at a time. Focused tests help you build strong fundamentals step by step!</p>
-                </div>
-
-                {/* Feature 8 - Performance Tracking */}
-                <div className="group bg-gradient-to-br from-teal-500 to-cyan-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">📊</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Track Your Growth</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">Detailed analytics and progress reports. See your improvement over time and identify weak areas!</p>
-                </div>
-
-                {/* Feature 9 - All Classes */}
-                <div className="group bg-gradient-to-br from-orange-500 to-red-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:-rotate-1">
-                  <div className="bg-white rounded-xl sm:rounded-2xl w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                    <span className="text-3xl sm:text-4xl md:text-5xl">🎓</span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2 sm:mb-3 md:mb-4">Complete Coverage</h4>
-                  <p className="text-white/95 text-sm sm:text-base leading-relaxed">From Class 6 to 12, all subjects covered. Your complete exam preparation solution in one place!</p>
-                </div>
-              </div>
-
-              {/* CTA Section */}
-              <div className="mt-12 sm:mt-16 text-center">
-                <div className="bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl relative overflow-hidden">
-                  <div className="absolute inset-0 bg-black/10"></div>
-                  {/* Decorative floating elements */}
-                  <div className="absolute top-4 left-4 sm:top-8 sm:left-12 text-4xl sm:text-5xl md:text-7xl opacity-20 animate-bounce">🚀</div>
-                  <div className="absolute bottom-4 right-4 sm:bottom-8 sm:right-12 text-4xl sm:text-5xl md:text-7xl opacity-20 animate-bounce" style={{animationDelay: '0.5s'}}>⭐</div>
-                  
-                  <div className="relative z-10">
-                    <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4 px-2">
-                      Join 50,000+ Students Across India!
+                  <div className="text-center">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-gray-900 group-hover:text-white transition-colors">
+                      {label}
                     </h3>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/95 mb-6 sm:mb-8 max-w-2xl mx-auto font-semibold px-4">
-                      Start your journey to exam success with India's most engaging and effective learning platform
+                    <p className="text-xs sm:text-sm text-gray-400 group-hover:text-white/80 transition-colors mt-0.5">
+                      CBSE Curriculum
                     </p>
-                    <button 
-                      onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-                      className="bg-white text-purple-600 px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-black text-base sm:text-lg md:text-xl hover:scale-110 transform transition-all shadow-2xl hover:shadow-white/50 inline-flex items-center gap-2 sm:gap-3"
-                    >
-                      <span className="text-sm sm:text-base md:text-xl">Start Learning Now - It's Free!</span>
-                      <span className="text-xl sm:text-2xl">🎉</span>
-                    </button>
-                    <p className="text-white/80 mt-3 sm:mt-4 text-xs sm:text-sm">No credit card required • Start in 30 seconds</p>
                   </div>
+                  <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-white group-hover:translate-x-1 transition-all" />
                 </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* ── CTA BANNER with 3D ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
+          <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 sm:p-12 overflow-hidden">
+            {/* Noise overlay */}
+            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+
+            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-3">
+                  Ready to Excel in Your Exams?
+                </h2>
+                <p className="text-white/80 text-base sm:text-lg max-w-lg">
+                  Practice chapter-wise tests and track your progress across all subjects!
+                </p>
+              </div>
+              <img
+                src="/images/3d_rocket.png"
+                alt="Rocket"
+                className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl animate-float-slow hidden sm:block"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── WHY CHOOSE ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-sm font-bold mb-4">
+              <Sparkles className="w-4 h-4" />Why Chapter Tests?
+            </div>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900">
+              Everything You Need to Succeed
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {FEATURES.map(({ icon: Icon, title, desc, color, bg }, idx) => (
+              <div
+                key={title}
+                className={`group ${bg} rounded-2xl p-6 sm:p-7 border border-gray-100 hover:border-transparent hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                data-testid={`feature-card-${idx}`}
+              >
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="text-lg font-bold text-gray-900 mb-2">{title}</h4>
+                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── MADE FOR INDIA ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-lg border border-gray-100 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-orange-100 to-transparent rounded-bl-full pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
+                <div className="flex-1 text-center md:text-left">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-600 px-4 py-1.5 rounded-full mb-4 shadow-md">
+                    <span className="text-white text-xs font-black tracking-wider">MADE FOR INDIA</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 mb-3">
+                    Why Ceibaa is Perfect for Indian Students
+                  </h2>
+                  <p className="text-gray-500 text-base sm:text-lg max-w-xl">
+                    India's first gamified learning platform designed specifically for CBSE curriculum
+                  </p>
+                </div>
+                <img
+                  src="/images/3d_target.png"
+                  alt="Target"
+                  className="w-36 h-36 sm:w-44 sm:h-44 object-contain drop-shadow-xl hidden md:block"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                {[
+                  { icon: '🎮', title: 'Gamified Learning', desc: 'Turn studies into exciting games. Battle with friends and compete on leaderboards!', gradient: 'from-purple-500 to-purple-700' },
+                  { icon: '📚', title: '100% NCERT Aligned', desc: 'Every question mapped to NCERT chapters, matching CBSE board exam pattern.', gradient: 'from-blue-500 to-blue-700' },
+                  { icon: '🏆', title: 'Live Competitions', desc: 'Real-time battles with students across India. Earn badges and climb rankings!', gradient: 'from-amber-500 to-orange-600' },
+                  { icon: '💰', title: '100% Free Forever', desc: 'No charges, no subscriptions. Quality education accessible to every student.', gradient: 'from-emerald-500 to-emerald-700' },
+                  { icon: '📱', title: 'Study Anywhere', desc: 'Mobile, tablet, or computer — works everywhere! Learn from home or on the go.', gradient: 'from-pink-500 to-rose-700' },
+                  { icon: '⚡', title: 'Instant Feedback', desc: 'Get results immediately with detailed explanations. Learn from your mistakes fast!', gradient: 'from-indigo-500 to-purple-700' },
+                ].map(({ icon, title, desc, gradient }) => (
+                  <div key={title} className={`bg-gradient-to-br ${gradient} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 hover:scale-[1.02]`}>
+                    <div className="bg-white rounded-xl w-12 h-12 flex items-center justify-center mb-4 shadow-md text-2xl">
+                      {icon}
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">{title}</h4>
+                    <p className="text-white/90 text-sm leading-relaxed">{desc}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* ── FINAL CTA ── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-20">
+          <div className="relative bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 rounded-3xl p-8 sm:p-12 text-center overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+            <div className="relative z-10 flex flex-col items-center">
+              <img src="/images/3d_trophy.png" alt="Trophy" className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl mb-6 animate-float" />
+
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-3">
+                Join 50,000+ Students Across India!
+              </h2>
+              <p className="text-white/85 text-base sm:text-lg max-w-xl mb-8">
+                Start your journey to exam success with India's most engaging learning platform
+              </p>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="bg-white text-purple-700 px-8 py-4 rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-all shadow-xl hover:shadow-2xl inline-flex items-center gap-2"
+                data-testid="cta-start-learning"
+              >
+                Start Learning Now — It's Free!
+                <ArrowRight className="w-5 h-5" />
+              </button>
+              <p className="text-white/60 mt-4 text-sm">No credit card required</p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
+
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-14px); }
+        }
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(3deg); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+      `}</style>
     </div>
   );
 };
