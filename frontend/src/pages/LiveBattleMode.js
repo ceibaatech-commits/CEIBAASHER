@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Video, VideoOff, Mic, MicOff, Trophy, Clock } from 'lucide-react';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
 import BattleVideoChat from '../components/BattleVideoChat';
@@ -504,12 +505,21 @@ const LiveBattleMode = () => {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-8">
         <div className="max-w-2xl mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-            <div className={`${isWinner ? 'bg-yellow-400' : 'bg-gray-400'} text-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6`}>
-              <Trophy className="w-12 h-12" />
-            </div>
+            {isWinner ? (
+              <div className="w-28 h-28 mx-auto mb-2">
+                <DotLottiePlayer
+                  src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
+            ) : (
+              <img src="/images/defeat_books.png" alt="Defeat" className="w-28 h-28 mx-auto mb-4 object-contain" />
+            )}
             
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {isWinner ? '🎉 You Won!' : '😔 You Lost'}
+              {isWinner ? 'You Won!' : 'You Lost'}
             </h1>
             
             <div className="grid grid-cols-2 gap-6 mb-8">
