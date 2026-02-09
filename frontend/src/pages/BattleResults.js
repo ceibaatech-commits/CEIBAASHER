@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Trophy, Medal, Award, Star, Home } from 'lucide-react';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 
 const BattleResults = () => {
   const { pin } = useParams();
@@ -23,24 +24,38 @@ const BattleResults = () => {
         {/* Winner Announcement */}
         <div className="text-center mb-8">
           {isWinner ? (
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white rounded-2xl p-8 shadow-2xl">
-              <Trophy className="w-24 h-24 mx-auto mb-4" />
-              <h1 className="text-5xl font-black mb-2">🎉 YOU WON! 🎉</h1>
-              <p className="text-2xl font-bold">Congratulations {playerName}!</p>
+            <div className="bg-gradient-to-r from-yellow-400 to-amber-500 text-white rounded-2xl p-8 shadow-2xl">
+              <div className="w-28 h-28 mx-auto mb-2">
+                <DotLottiePlayer
+                  src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
+              <h1 className="text-4xl font-black mb-2">Victory!</h1>
+              <p className="text-xl font-bold">Congratulations {playerName}!</p>
             </div>
           ) : isTopThree ? (
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-8 shadow-2xl">
-              <Award className="w-20 h-20 mx-auto mb-4" />
+            <div className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white rounded-2xl p-8 shadow-2xl">
+              <div className="w-24 h-24 mx-auto mb-2">
+                <DotLottiePlayer
+                  src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
               <h1 className="text-4xl font-black mb-2">Top 3 Finish!</h1>
               <p className="text-xl">Great performance {playerName}!</p>
             </div>
           ) : (
             <div className="bg-white rounded-2xl p-8 shadow-xl">
-              <Star className="w-20 h-20 mx-auto mb-4 text-purple-600" />
+              <img src="/images/defeat_books.png" alt="Better luck next time" className="w-28 h-28 mx-auto mb-4 object-contain" />
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Quiz Complete!</h1>
               <p className="text-gray-600">Nice effort {playerName}!</p>
             </div>
-          )}
+          )}}
         </div>
 
         {/* Your Stats */}
