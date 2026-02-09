@@ -372,8 +372,8 @@ const DivyaTutor = () => {
           </div>
         )}
 
-        {/* Results */}
-        {dialogue.length > 0 && (
+        {/* Results - Only show when logged in */}
+        {isLoggedIn && dialogue.length > 0 && (
           <>
             {/* Audio Player — sticky */}
             {audioUrl && (
