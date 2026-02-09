@@ -57,6 +57,15 @@ const DivyaTutor = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [conversationHistory]);
 
+  // Cleanup blob URL on unmount to free memory
+  useEffect(() => {
+    return () => {
+      if (audioUrl && audioUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(audioUrl);
+      }
+    };
+  }, [audioUrl]);
+
   // Estimate current line from audio time
   useEffect(() => {
     if (!dialogue.length || !audioDuration) return;
