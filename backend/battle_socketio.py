@@ -1133,3 +1133,55 @@ async def handle_user_leave(sid, room_id):
 # Create ASGI application
 # Empty socketio_path because the path is defined in the mount point (/api/battlews)
 socket_app = socketio.ASGIApp(sio, socketio_path='')
+
+
+# ── Background: sweep timed-out players every 5s ──
+async def _matchmaking_timeout_sweep():
+    """Notify players who waited too long and remove them from queue."""
+    while True:
+        try:
+            timed_out = matchmaking_manager.get_timed_out_players()
+            for player in timed_out:
+                await sio.emit('match-timeout', {
+                    'message': 'No opponent found. Please try again.',
+                    'playerName': player.player_name
+                }, room=player.socket_id)
+                print(f"[MATCHMAKING] Timeout: {player.player_name} ({player.socket_id})")
+        except Exception as e:
+            print(f"[ERROR] timeout_sweep: {e}")
+        await asyncio.sleep(5)
+
+
+@sio.event
+async def connect(sid, environ):
+    """Handle client connection with enhanced logging"""
+    try:
+        print(f"[CONNECT] Client connected: {sid}")
+        user_activity[sid] = datetime.now(timezone.utc).timestamp()
+        return True
+    except Exception as e:
+        print(f"[CONNECT] Connection error for {sid}: {e}")
+        return False
+
+
+# Start sweep on first connection
+_sweep_started = False
+
+@sio.event
+async def _ensure_sweep(sid, data=None):
+    pass
+
+# We'll start the sweep from the connect handler
+_original_connect = connect
+
+async def _connect_with_sweep(sid, environ):
+    global _sweep_started
+    if not _sweep_started:
+        _sweep_started = True
+        asyncio.create_task(_matchmaking_timeout_sweep())
+        print("[MATCHMAKING] Timeout sweep task started")
+    return await _original_connect(sid, environ)
+
+# Replace connect handler
+sio.handlers['/'] = {k: v for k, v in sio.handlers.get('/', {}).items() if k != 'connect'}
+sio.on('connect', handler=_connect_with_sweep)
