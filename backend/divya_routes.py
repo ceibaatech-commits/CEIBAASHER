@@ -241,8 +241,28 @@ async def generate_podcast(
 
 @router.get("/audio/{filename}")
 async def get_audio(filename: str):
-    """Serve generated audio files."""
+    """Serve generated audio files with range request support."""
+    from fastapi.responses import Response
+    from starlette.responses import StreamingResponse
+    import re as _re
+
     filepath = os.path.join(AUDIO_DIR, filename)
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="Audio not found")
-    return FileResponse(filepath, media_type="audio/mpeg", filename=filename)
+
+    file_size = os.path.getsize(filepath)
+
+    # Support range requests for audio seeking
+    from starlette.requests import Request
+    from fastapi import Request as FRequest
+
+    return FileResponse(
+        filepath,
+        media_type="audio/mpeg",
+        filename=filename,
+        headers={
+            "Accept-Ranges": "bytes",
+            "Content-Length": str(file_size),
+            "Cache-Control": "public, max-age=3600",
+        }
+    )
