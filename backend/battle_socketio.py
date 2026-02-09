@@ -812,44 +812,29 @@ async def leave_room(sid, data):
 
 @sio.on('find-match')
 async def find_match(sid, data):
-    """Find a match for quiz battle"""
-    print(f"[MATCHMAKING] 🔥 find-match event received from {sid}")
-    print(f"[MATCHMAKING] Data: {data}")
+    """Find a match for quiz battle — optimized with bucket queues"""
+    print(f"[MATCHMAKING] find-match from {sid}")
     try:
         player_name = data.get('playerName', 'Player')
         exam = data.get('exam', '')
         subject = data.get('subject', '')
         topic = data.get('topic', '')
 
-        print(f"[MATCHMAKING] {player_name} looking for match in {exam} - {subject} - {topic}")
-
-        # Try to find a match (match on exam + subject for now)
+        # O(1) match lookup via bucket queue
         opponent = matchmaking_manager.add_to_queue(sid, player_name, exam, subject)
 
         if opponent:
-            # Match found! Create battle room
+            # Instant match — create room immediately
             room_id = f"room_{int(datetime.now(timezone.utc).timestamp())}_{generate_random_id()}"
 
-            player1_data = {
-                'socketId': sid,
-                'playerName': player_name,
-                'score': 0
-            }
+            player1_data = {'socketId': sid, 'playerName': player_name, 'score': 0}
+            player2_data = {'socketId': opponent.socket_id, 'playerName': opponent.player_name, 'score': 0}
 
-            player2_data = {
-                'socketId': opponent.socket_id,
-                'playerName': opponent.player_name,
-                'score': 0
-            }
-
-            # Register battle
             matchmaking_manager.create_battle(room_id, player1_data, player2_data, exam, subject)
 
-            # Join both players to Socket.IO room
             await sio.enter_room(sid, room_id)
             await sio.enter_room(opponent.socket_id, room_id)
 
-            # Notify both players
             await sio.emit('match-found', {
                 'roomId': room_id,
                 'players': [
@@ -860,12 +845,15 @@ async def find_match(sid, data):
                 'subject': subject
             }, room=room_id)
 
-            print(f"[MATCHMAKING] Match created: Room {room_id}")
-
+            print(f"[MATCHMAKING] Instant match: Room {room_id}")
         else:
-            # Added to waiting list
-            await sio.emit('waiting', {'message': 'Looking for opponent...'}, room=sid)
-            print(f"[MATCHMAKING] {player_name} added to waiting list")
+            # Send queue info so frontend can show position
+            queue_size = matchmaking_manager.get_queue_size(exam, subject)
+            await sio.emit('waiting', {
+                'message': 'Looking for opponent...',
+                'queueSize': queue_size,
+                'timeout': 30
+            }, room=sid)
 
     except Exception as e:
         print(f"[ERROR] find_match: {str(e)}")
