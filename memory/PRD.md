@@ -16,7 +16,11 @@
   - `VictoryLane.js` (274 lines) - slim page orchestrator
   - `useVictoryLane` hook - feed, social, comments logic
   - `usePostCreation` hook - post/question creation + media
-  - Extracted components: PostCard, VictoryLaneHeader, PostComposer, CommentsSection, CreatePostFAB, QuizRoomModal
+  - Extracted components: VictoryLaneHeader, PostComposer, CommentsSection, CreatePostFAB, QuizRoomModal
+  - `PostCard.js` (242 lines) - post card orchestrator
+  - `PostCardMenu.js` (72 lines) - dropdown menu
+  - `PostActions.js` (52 lines) - like/comment/share/views bar
+  - `QuizRoomCard.js` (101 lines) - quiz room embed card
   - Shared utilities in constants.js
 
 ### Referral System
@@ -47,18 +51,19 @@
 
 ## Completed Tasks (Feb 2026)
 - VictoryLane.js refactored from 1885→274 lines (85% reduction)
+- PostCard.js refactored from 520→242 lines (54% reduction) into PostCardMenu, PostActions, QuizRoomCard
 - QuizRoomModal extracted with full original API behavior
 - Custom hooks: useVictoryLane (607 lines), usePostCreation (188 lines)
 - Class 7 English content updated
 - Mobile category icons updated
 - Header added to all battle pages
+- Badge visibility fixed on single post page and comments
 
 ## Pending Issues
 - P0: 1v1 Battle Video Chat - Opponent video/audio not working (WebRTC)
 - P1: Mobile category filter visual verification
 
 ## Upcoming Tasks
-- P1: PostCard.js refactoring (~520 lines)
 - P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
 - P2: Facebook Login via OAuth
 - P2: Dedicated Referral Dashboard for tracking stats
