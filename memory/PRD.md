@@ -60,6 +60,7 @@
 - Badge visibility fixed on single post page and comments
 
 ## Pending Issues
+- P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
 - P0: 1v1 Battle Video Chat - Opponent video/audio not working (WebRTC)
 
 ## Completed (Feb 2026 - Latest)
