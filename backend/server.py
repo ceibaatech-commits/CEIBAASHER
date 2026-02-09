@@ -103,7 +103,7 @@ fastapi_app.add_middleware(
 fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
 
 # Import and mount Battle Socket.IO (Python-based real-time battle server)
-from battle_socketio import socket_app as battle_socket_app, init_socketio_db
+from battle_socketio import socket_app as battle_socket_app, init_socketio_db, start_matchmaking_sweep
 # Initialize battle Socket.IO with database (battle rooms stored in MongoDB)
 init_socketio_db(db)
 # Mount at /api/battlews so frontend connects via `${REACT_APP_BACKEND_URL}/api/battlews/socket.io`
