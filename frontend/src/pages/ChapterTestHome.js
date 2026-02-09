@@ -6,28 +6,22 @@ import Footer from '../components/Footer';
 import { useAuth } from '../hooks/useAuth';
 
 const CLASS_DATA = [
-  { num: 6, label: 'Class 6', gradient: 'from-sky-400 to-blue-600', shadow: 'shadow-blue-200', ring: 'ring-blue-300' },
-  { num: 7, label: 'Class 7', gradient: 'from-violet-400 to-purple-600', shadow: 'shadow-purple-200', ring: 'ring-purple-300' },
-  { num: 8, label: 'Class 8', gradient: 'from-fuchsia-400 to-pink-600', shadow: 'shadow-pink-200', ring: 'ring-pink-300' },
-  { num: 9, label: 'Class 9', gradient: 'from-amber-400 to-orange-600', shadow: 'shadow-orange-200', ring: 'ring-orange-300' },
-  { num: 10, label: 'Class 10', gradient: 'from-rose-400 to-red-600', shadow: 'shadow-red-200', ring: 'ring-red-300' },
-  { num: 11, label: 'Class 11', gradient: 'from-teal-400 to-emerald-600', shadow: 'shadow-emerald-200', ring: 'ring-emerald-300' },
-  { num: 12, label: 'Class 12', gradient: 'from-indigo-400 to-blue-700', shadow: 'shadow-indigo-200', ring: 'ring-indigo-300' },
+  { num: 6, label: 'Class 6', gradient: 'from-teal-500 to-emerald-600', shadow: 'shadow-teal-100' },
+  { num: 7, label: 'Class 7', gradient: 'from-cyan-500 to-teal-600', shadow: 'shadow-cyan-100' },
+  { num: 8, label: 'Class 8', gradient: 'from-emerald-500 to-green-600', shadow: 'shadow-emerald-100' },
+  { num: 9, label: 'Class 9', gradient: 'from-blue-500 to-cyan-600', shadow: 'shadow-blue-100' },
+  { num: 10, label: 'Class 10', gradient: 'from-slate-600 to-slate-800', shadow: 'shadow-slate-100' },
+  { num: 11, label: 'Class 11', gradient: 'from-teal-600 to-cyan-700', shadow: 'shadow-teal-100' },
+  { num: 12, label: 'Class 12', gradient: 'from-slate-700 to-gray-900', shadow: 'shadow-gray-200' },
 ];
 
 const FEATURES = [
-  { icon: Target, title: 'Chapter-wise Practice', desc: 'Master one chapter at a time with focused tests mapped to your textbook', color: 'from-orange-500 to-rose-500', bg: 'bg-orange-50' },
-  { icon: BarChart3, title: 'Track Your Growth', desc: 'Detailed analytics and progress reports to identify weak areas', color: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50' },
-  { icon: Zap, title: 'Instant Feedback', desc: 'Get results immediately with detailed explanations for every question', color: 'from-amber-500 to-yellow-500', bg: 'bg-amber-50' },
-  { icon: Users, title: 'Live Competitions', desc: 'Real-time battles with students across India on leaderboards', color: 'from-purple-500 to-violet-500', bg: 'bg-purple-50' },
-  { icon: Smartphone, title: 'Study Anywhere', desc: 'Mobile, tablet, or desktop — works everywhere, learn on the go', color: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50' },
-  { icon: Sparkles, title: '100% Free Forever', desc: 'No hidden charges, no subscriptions — quality education for all', color: 'from-pink-500 to-rose-500', bg: 'bg-pink-50' },
-];
-
-const STATS = [
-  { value: '500+', label: 'Chapter Tests', icon: BookOpen, gradient: 'from-blue-500 to-indigo-600' },
-  { value: '10,000+', label: 'Practice Questions', icon: Award, gradient: 'from-purple-500 to-violet-600' },
-  { value: '7 Classes', label: '6th to 12th', icon: GraduationCap, gradient: 'from-rose-500 to-pink-600' },
+  { icon: Target, title: 'Chapter-wise Practice', desc: 'Focused tests mapped to your textbook chapters', color: 'bg-teal-500' },
+  { icon: BarChart3, title: 'Track Your Growth', desc: 'Detailed analytics to identify weak areas', color: 'bg-cyan-500' },
+  { icon: Zap, title: 'Instant Feedback', desc: 'Immediate results with detailed explanations', color: 'bg-emerald-500' },
+  { icon: Users, title: 'Live Competitions', desc: 'Real-time battles with students across India', color: 'bg-blue-500' },
+  { icon: Smartphone, title: 'Study Anywhere', desc: 'Works on mobile, tablet, and desktop', color: 'bg-slate-600' },
+  { icon: Sparkles, title: '100% Free Forever', desc: 'No charges, no subscriptions ever', color: 'bg-teal-600' },
 ];
 
 const ChapterTestHome = () => {
@@ -43,253 +37,211 @@ const ChapterTestHome = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f9fc]">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
 
       <main className="flex-1">
         {/* ── HERO ── */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 pb-20 pt-10 sm:pt-16">
-          {/* Mesh-gradient blobs */}
+        <section className="relative overflow-hidden bg-[#0f1729] pt-8 sm:pt-12 pb-16 sm:pb-20">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-pink-300/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-1/3 w-[350px] h-[350px] bg-indigo-300/20 rounded-full blur-3xl" />
-            {/* Floating dots grid */}
-            <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+            <div className="absolute -top-32 -right-32 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/8 rounded-full blur-3xl" />
           </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-              {/* Text */}
+          <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
               <div className="flex-1 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-4 py-1.5 rounded-full mb-6 border border-white/20">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="text-white/90 text-sm font-semibold tracking-wide">NCERT Aligned</span>
+                <div className="inline-flex items-center gap-2 bg-teal-500/15 border border-teal-500/25 px-3 py-1 rounded-full mb-4">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                  <span className="text-teal-300 text-xs font-semibold tracking-wide">NCERT Aligned</span>
                 </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-5" data-testid="hero-title">
-                  CBSE Chapter
-                  <span className="block bg-gradient-to-r from-amber-300 to-yellow-200 bg-clip-text text-transparent">Tests</span>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-3" data-testid="hero-title">
+                  CBSE Chapter{' '}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-300">Tests</span>
                 </h1>
 
-                <p className="text-lg text-white/80 max-w-lg mx-auto lg:mx-0 mb-8 leading-relaxed">
+                <p className="text-sm sm:text-base text-gray-400 max-w-md mx-auto lg:mx-0 mb-5 leading-relaxed">
                   Master every chapter with focused practice tests. Select your class and start your journey to exam success.
                 </p>
 
-                <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                  <span className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-bold text-white/90">
-                    <Target className="w-4 h-4 inline mr-1.5 -mt-0.5" />Chapter-wise
-                  </span>
-                  <span className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-bold text-white/90">
-                    <BookOpen className="w-4 h-4 inline mr-1.5 -mt-0.5" />NCERT Based
-                  </span>
-                  <span className="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full text-sm font-bold text-white/90">
-                    <Zap className="w-4 h-4 inline mr-1.5 -mt-0.5" />Instant Results
-                  </span>
+                <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                  {['Chapter-wise', 'NCERT Based', 'Instant Results'].map(tag => (
+                    <span key={tag} className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-300">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* 3D Hero Image */}
-              <div className="flex-shrink-0 relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
-                <div className="absolute inset-0 bg-white/10 rounded-full blur-2xl scale-90" />
+              <div className="flex-shrink-0 relative w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72">
                 <img
                   src="/images/hero_3d_books.png"
                   alt="3D Books"
-                  className="relative w-full h-full object-contain drop-shadow-2xl animate-float"
+                  className="w-full h-full object-contain drop-shadow-2xl animate-float"
                   data-testid="hero-3d-image"
                 />
               </div>
             </div>
           </div>
-
-          {/* Bottom wave */}
-          <div className="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 80" fill="none" className="w-full" preserveAspectRatio="none">
-              <path d="M0 40C360 80 720 0 1080 40C1260 60 1380 60 1440 40V80H0V40Z" fill="#f8f9fc" />
-            </svg>
-          </div>
         </section>
 
         {/* ── STATS ── */}
-        <section className="max-w-5xl mx-auto px-4 -mt-10 relative z-20 mb-16">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4" data-testid="stats-section">
-            {STATS.map(({ value, label, icon: Icon, gradient }) => (
-              <div key={label} className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 sm:p-6 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1`}>
-                <div className="flex items-center gap-4">
-                  <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-2xl sm:text-3xl font-black text-white">{value}</p>
-                    <p className="text-white/85 text-sm font-semibold">{label}</p>
-                  </div>
+        <section className="max-w-4xl mx-auto px-4 -mt-8 relative z-20 mb-10 sm:mb-14">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4" data-testid="stats-section">
+            {[
+              { val: '500+', label: 'Chapter Tests', Icon: BookOpen },
+              { val: '10,000+', label: 'Questions', Icon: Award },
+              { val: '7 Classes', label: '6th to 12th', Icon: GraduationCap },
+            ].map(({ val, label, Icon }) => (
+              <div key={label} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-md border border-gray-100 text-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-teal-50 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-1.5 sm:mb-3">
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
                 </div>
+                <p className="text-lg sm:text-2xl font-black text-gray-900">{val}</p>
+                <p className="text-[10px] sm:text-xs text-gray-400 font-medium">{label}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* ── CLASS SELECTION ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 mb-2" data-testid="class-selection-title">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 mb-1" data-testid="class-selection-title">
               Select Your Class
             </h2>
-            <p className="text-gray-500 text-base sm:text-lg">Choose your class to start practicing</p>
+            <p className="text-gray-400 text-xs sm:text-sm">Choose your class to start practicing</p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-            {CLASS_DATA.map(({ num, label, gradient, shadow, ring }) => (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-4">
+            {CLASS_DATA.map(({ num, label, gradient, shadow }) => (
               <button
                 key={num}
                 onClick={() => handleClassClick(num)}
                 data-testid={`class-card-${num}`}
-                className={`group relative bg-white rounded-2xl p-5 sm:p-7 ${shadow} shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 overflow-hidden`}
+                className={`group bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 ${shadow} shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-gray-100`}
               >
-                {/* Hover gradient overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-
-                <div className="relative z-10 flex flex-col items-center gap-3">
-                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:bg-white/20 transition-all duration-300 shadow-lg group-hover:scale-110 group-hover:rotate-3`}>
-                    <span className="text-2xl sm:text-3xl font-black text-white">{num}</span>
+                <div className="flex flex-col items-center gap-1.5 sm:gap-2.5">
+                  <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center group-hover:scale-105 transition-transform shadow-md`}>
+                    <span className="text-base sm:text-xl font-black text-white">{num}</span>
                   </div>
                   <div className="text-center">
-                    <h3 className="text-lg sm:text-xl font-extrabold text-gray-900 group-hover:text-white transition-colors">
-                      {label}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-400 group-hover:text-white/80 transition-colors mt-0.5">
-                      CBSE Curriculum
-                    </p>
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-800">{label}</h3>
+                    <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 hidden sm:block">CBSE</p>
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-white group-hover:translate-x-1 transition-all" />
                 </div>
               </button>
             ))}
           </div>
         </section>
 
-        {/* ── CTA BANNER with 3D ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
-          <div className="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-8 sm:p-12 overflow-hidden">
-            {/* Noise overlay */}
-            <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
-            <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-3">
+        {/* ── CTA BANNER ── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
+          <div className="relative bg-[#0f1729] rounded-2xl p-5 sm:p-8 overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl" />
+            <div className="relative z-10 flex items-center gap-4 sm:gap-6">
+              <div className="flex-1">
+                <h3 className="text-base sm:text-xl lg:text-2xl font-bold text-white mb-1.5">
                   Ready to Excel in Your Exams?
-                </h2>
-                <p className="text-white/80 text-base sm:text-lg max-w-lg">
+                </h3>
+                <p className="text-gray-400 text-xs sm:text-sm">
                   Practice chapter-wise tests and track your progress across all subjects!
                 </p>
               </div>
               <img
                 src="/images/3d_rocket.png"
                 alt="Rocket"
-                className="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-2xl animate-float-slow hidden sm:block"
+                className="w-14 h-14 sm:w-24 sm:h-24 object-contain drop-shadow-lg flex-shrink-0"
               />
             </div>
           </div>
         </section>
 
-        {/* ── WHY CHOOSE ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-sm font-bold mb-4">
-              <Sparkles className="w-4 h-4" />Why Chapter Tests?
-            </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900">
+        {/* ── FEATURES ── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900">
               Everything You Need to Succeed
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {FEATURES.map(({ icon: Icon, title, desc, color, bg }, idx) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
+            {FEATURES.map(({ icon: Icon, title, desc, color }, idx) => (
               <div
                 key={title}
-                className={`group ${bg} rounded-2xl p-6 sm:p-7 border border-gray-100 hover:border-transparent hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+                className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-gray-100 hover:shadow-md transition-shadow"
                 data-testid={`feature-card-${idx}`}
               >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}>
-                  <Icon className="w-6 h-6 text-white" />
+                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl ${color} flex items-center justify-center mb-2 sm:mb-3`}>
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{title}</h4>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                <h4 className="text-xs sm:text-sm font-bold text-gray-800 mb-0.5 sm:mb-1">{title}</h4>
+                <p className="text-[10px] sm:text-xs text-gray-400 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── MADE FOR INDIA ── */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-lg border border-gray-100 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-orange-100 to-transparent rounded-bl-full pointer-events-none" />
+        {/* ── WHY CEIBAA ── */}
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
+          <div className="bg-white rounded-2xl p-4 sm:p-8 border border-gray-100 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-6 mb-5 sm:mb-8">
+              <div className="flex-1 text-center sm:text-left">
+                <span className="inline-block bg-[#0f1729] text-teal-300 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold mb-2 sm:mb-3">
+                  MADE FOR INDIA
+                </span>
+                <h2 className="text-lg sm:text-2xl font-black text-gray-900">
+                  Why Ceibaa is Perfect for Indian Students
+                </h2>
+              </div>
+              <img
+                src="/images/3d_target.png"
+                alt="Target"
+                className="w-16 h-16 sm:w-28 sm:h-28 object-contain hidden sm:block"
+              />
+            </div>
 
-            <div className="relative z-10">
-              <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
-                <div className="flex-1 text-center md:text-left">
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-pink-600 px-4 py-1.5 rounded-full mb-4 shadow-md">
-                    <span className="text-white text-xs font-black tracking-wider">MADE FOR INDIA</span>
-                  </div>
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 mb-3">
-                    Why Ceibaa is Perfect for Indian Students
-                  </h2>
-                  <p className="text-gray-500 text-base sm:text-lg max-w-xl">
-                    India's first gamified learning platform designed specifically for CBSE curriculum
-                  </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
+              {[
+                { title: 'Gamified Learning', desc: 'Battle with friends, compete on leaderboards', color: 'bg-[#0f1729]' },
+                { title: '100% NCERT Aligned', desc: 'Mapped to CBSE board exam pattern', color: 'bg-slate-700' },
+                { title: 'Live Competitions', desc: 'Earn badges and climb rankings', color: 'bg-teal-700' },
+                { title: '100% Free Forever', desc: 'Quality education for every student', color: 'bg-emerald-700' },
+                { title: 'Study Anywhere', desc: 'Mobile, tablet, or computer', color: 'bg-cyan-700' },
+                { title: 'Instant Feedback', desc: 'Learn from your mistakes fast', color: 'bg-slate-800' },
+              ].map(({ title, desc, color }) => (
+                <div key={title} className={`${color} rounded-xl p-3 sm:p-4`}>
+                  <h4 className="text-xs sm:text-sm font-bold text-white mb-0.5">{title}</h4>
+                  <p className="text-[9px] sm:text-xs text-gray-300 leading-relaxed">{desc}</p>
                 </div>
-                <img
-                  src="/images/3d_target.png"
-                  alt="Target"
-                  className="w-36 h-36 sm:w-44 sm:h-44 object-contain drop-shadow-xl hidden md:block"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                {[
-                  { icon: '🎮', title: 'Gamified Learning', desc: 'Turn studies into exciting games. Battle with friends and compete on leaderboards!', gradient: 'from-purple-500 to-purple-700' },
-                  { icon: '📚', title: '100% NCERT Aligned', desc: 'Every question mapped to NCERT chapters, matching CBSE board exam pattern.', gradient: 'from-blue-500 to-blue-700' },
-                  { icon: '🏆', title: 'Live Competitions', desc: 'Real-time battles with students across India. Earn badges and climb rankings!', gradient: 'from-amber-500 to-orange-600' },
-                  { icon: '💰', title: '100% Free Forever', desc: 'No charges, no subscriptions. Quality education accessible to every student.', gradient: 'from-emerald-500 to-emerald-700' },
-                  { icon: '📱', title: 'Study Anywhere', desc: 'Mobile, tablet, or computer — works everywhere! Learn from home or on the go.', gradient: 'from-pink-500 to-rose-700' },
-                  { icon: '⚡', title: 'Instant Feedback', desc: 'Get results immediately with detailed explanations. Learn from your mistakes fast!', gradient: 'from-indigo-500 to-purple-700' },
-                ].map(({ icon, title, desc, gradient }) => (
-                  <div key={title} className={`bg-gradient-to-br ${gradient} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 hover:scale-[1.02]`}>
-                    <div className="bg-white rounded-xl w-12 h-12 flex items-center justify-center mb-4 shadow-md text-2xl">
-                      {icon}
-                    </div>
-                    <h4 className="text-lg font-bold text-white mb-2">{title}</h4>
-                    <p className="text-white/90 text-sm leading-relaxed">{desc}</p>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* ── FINAL CTA ── */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-20">
-          <div className="relative bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 rounded-3xl p-8 sm:p-12 text-center overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
+          <div className="bg-[#0f1729] rounded-2xl p-5 sm:p-10 text-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl" />
 
-            <div className="relative z-10 flex flex-col items-center">
-              <img src="/images/3d_trophy.png" alt="Trophy" className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-2xl mb-6 animate-float" />
+            <div className="relative z-10">
+              <img src="/images/3d_trophy.png" alt="Trophy" className="w-14 h-14 sm:w-20 sm:h-20 object-contain mx-auto mb-3 sm:mb-5" />
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-3">
+              <h2 className="text-lg sm:text-2xl lg:text-3xl font-black text-white mb-2">
                 Join 50,000+ Students Across India!
               </h2>
-              <p className="text-white/85 text-base sm:text-lg max-w-xl mb-8">
+              <p className="text-gray-400 text-xs sm:text-sm max-w-md mx-auto mb-4 sm:mb-6">
                 Start your journey to exam success with India's most engaging learning platform
               </p>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="bg-white text-purple-700 px-8 py-4 rounded-2xl font-black text-base sm:text-lg hover:scale-105 transition-all shadow-xl hover:shadow-2xl inline-flex items-center gap-2"
+                className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-5 sm:px-7 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-lg"
                 data-testid="cta-start-learning"
               >
                 Start Learning Now — It's Free!
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4" />
               </button>
-              <p className="text-white/60 mt-4 text-sm">No credit card required</p>
             </div>
           </div>
         </section>
@@ -300,14 +252,9 @@ const ChapterTestHome = () => {
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-14px); }
-        }
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(3deg); }
+          50% { transform: translateY(-8px); }
         }
         .animate-float { animation: float 4s ease-in-out infinite; }
-        .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
       `}</style>
     </div>
   );
