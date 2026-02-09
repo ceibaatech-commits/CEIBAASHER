@@ -17,7 +17,8 @@ const UserManagement = () => {
   const [sortBy, setSortBy] = useState('registration_date'); // registration_date, name, email
   const [sortOrder, setSortOrder] = useState('desc'); // asc, desc
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(10);
+  const [usersPerPage] = useState(100); // 100 users per page
+  const [goToPage, setGoToPage] = useState(''); // For direct page navigation
   const [stats, setStats] = useState({
     total: 0,
     online: 0,
