@@ -180,6 +180,9 @@ function App() {
           
           {/* 1v1 Matchmaking without audio/video */}
           <Route path="/matchmaking/:examId/:subject/:topic" element={<Matchmaking1v1 />} />
+          
+          {/* Divya AI Tutor */}
+          <Route path="/divya" element={<DivyaTutor />} />
         </Routes>
             </div>
             <MobileBottomNav />
