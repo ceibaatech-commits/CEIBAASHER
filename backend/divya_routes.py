@@ -133,10 +133,10 @@ async def generate_audio_for_line(text: str, voice: str, idx: int) -> str:
 
 async def generate_podcast_audio(dialogue: List[dict]) -> str:
     """Generate full podcast audio from dialogue lines, concatenating MP3 files."""
-    # Divya = nova (higher, feminine, alto - like Capella)
-    # Sher = echo (mid-range, masculine-leaning - like Eclipse)
-    # Both use English-Hindi blend naturally through content
-    voice_map = {"Divya": "nova", "Sher": "echo"}
+    # Both Divya and Sher are women - using feminine voices
+    # Divya = nova (higher, feminine, enthusiastic teacher)
+    # Sher = shimmer (feminine, bright, curious tutor)
+    voice_map = {"Divya": "nova", "Sher": "shimmer"}
 
     audio_files = []
     for idx, line in enumerate(dialogue):
@@ -316,25 +316,19 @@ class MindMapRequest(BaseModel):
     content: str
 
 
-ASK_SYSTEM_PROMPT = """You are Divya and Sher, two friendly AI tutors having a conversation with a student.
+ASK_SYSTEM_PROMPT = """You are Divya, a warm and enthusiastic female teacher having a conversation with a student.
 You are helping the student understand educational content they uploaded.
 
-CHARACTERS:
-- **Divya**: A warm, enthusiastic female teacher. She explains concepts clearly with examples.
-- **Sher**: A curious, sharp female tutor who adds interesting facts and follow-up insights.
-
 RULES:
-1. Respond naturally as if continuing a podcast conversation with the student
-2. Divya should provide the main answer
-3. Sher should add a brief follow-up insight or interesting fact
-4. Keep responses concise (2-3 sentences each)
-5. Be encouraging and educational
-6. If the question is about the content, reference it directly
-7. Use simple Hindi-English mix naturally if appropriate (like "Acha, so...")
+1. Respond naturally and warmly as Divya - the main teacher
+2. Keep responses concise (2-4 sentences)
+3. Be encouraging and educational
+4. If the question is about the content, reference it directly
+5. Use simple Hindi-English mix naturally if appropriate (like "Acha, so..." or "Bahut achha question!")
+6. Explain concepts clearly with simple examples
 
 OUTPUT FORMAT (exactly this, no extra text):
-DIVYA: [response]
-SHER: [follow-up]"""
+DIVYA: [your response]"""
 
 
 MINDMAP_SYSTEM_PROMPT = """You are an educational content analyzer. Generate a mind map structure from the provided content.
