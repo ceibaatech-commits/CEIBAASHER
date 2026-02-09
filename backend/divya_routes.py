@@ -199,14 +199,15 @@ async def generate_podcast(
         if len(dialogue) < 4:
             raise HTTPException(status_code=500, detail="Could not generate enough dialogue from the content. Please try with different content.")
 
-        # Step 2: Generate podcast audio
-        audio_path = await generate_podcast_audio(dialogue)
-        audio_filename = os.path.basename(audio_path)
+        # Step 2: Generate podcast audio (returns bytes, not saved to server)
+        import base64
+        audio_bytes = await generate_podcast_audio(dialogue)
+        audio_base64 = base64.b64encode(audio_bytes).decode('utf-8')
 
         return {
             "success": True,
             "dialogue": dialogue,
-            "audio_url": f"/api/divya/audio/{audio_filename}",
+            "audio_base64": audio_base64,  # Base64 encoded MP3 - no server storage
             "total_lines": len(dialogue),
             "generated_at": datetime.now(timezone.utc).isoformat()
         }
