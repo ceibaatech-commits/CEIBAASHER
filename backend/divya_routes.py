@@ -301,3 +301,172 @@ async def get_audio(filename: str, request: "Request"):
             "Cache-Control": "public, max-age=3600",
         }
     )
+
+
+
+# Pydantic models for request bodies
+from pydantic import BaseModel
+
+class AskRequest(BaseModel):
+    question: str
+    context: str = ""
+    recent_chat: str = ""
+
+class MindMapRequest(BaseModel):
+    content: str
+
+
+ASK_SYSTEM_PROMPT = """You are Divya and Sher, two friendly AI tutors having a conversation with a student.
+You are helping the student understand educational content they uploaded.
+
+CHARACTERS:
+- **Divya**: A warm, enthusiastic female teacher. She explains concepts clearly with examples.
+- **Sher**: A curious, sharp female tutor who adds interesting facts and follow-up insights.
+
+RULES:
+1. Respond naturally as if continuing a podcast conversation with the student
+2. Divya should provide the main answer
+3. Sher should add a brief follow-up insight or interesting fact
+4. Keep responses concise (2-3 sentences each)
+5. Be encouraging and educational
+6. If the question is about the content, reference it directly
+7. Use simple Hindi-English mix naturally if appropriate (like "Acha, so...")
+
+OUTPUT FORMAT (exactly this, no extra text):
+DIVYA: [response]
+SHER: [follow-up]"""
+
+
+MINDMAP_SYSTEM_PROMPT = """You are an educational content analyzer. Generate a mind map structure from the provided content.
+
+OUTPUT ONLY valid JSON in this exact format:
+{
+  "title": "Main Topic Title",
+  "branches": [
+    {
+      "label": "Branch 1 Name",
+      "children": ["Sub-point 1", "Sub-point 2", "Sub-point 3"]
+    },
+    {
+      "label": "Branch 2 Name", 
+      "children": ["Sub-point 1", "Sub-point 2"]
+    }
+  ],
+  "summary": "A one-sentence summary of the entire content"
+}
+
+RULES:
+- Create 4-6 main branches covering key topics
+- Each branch should have 2-4 children points
+- Keep labels concise (2-5 words)
+- Keep children points brief (3-8 words each)
+- The summary should be clear and educational
+- Output ONLY the JSON, no other text"""
+
+
+@router.post("/ask")
+async def ask_question(req: AskRequest):
+    """Handle user questions during the 'Join Conversation' feature."""
+    if not EMERGENT_KEY:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        chat = LlmChat(
+            api_key=EMERGENT_KEY,
+            session_id=f"divya-ask-{uuid.uuid4().hex[:8]}",
+            system_message=ASK_SYSTEM_PROMPT
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        # Build context-aware prompt
+        prompt = f"Student's question: {req.question}"
+        if req.context:
+            prompt = f"Content context:\n{req.context[:2000]}\n\n{prompt}"
+        if req.recent_chat:
+            prompt = f"Recent conversation:\n{req.recent_chat}\n\n{prompt}"
+        
+        response = await chat.send_message(UserMessage(text=prompt))
+        
+        # Parse the response into Divya and Sher lines
+        responses = []
+        for line in response.strip().split('\n'):
+            line = line.strip()
+            if line.startswith('DIVYA:'):
+                responses.append({"speaker": "Divya", "text": line[6:].strip()})
+            elif line.startswith('SHER:'):
+                responses.append({"speaker": "Sher", "text": line[5:].strip()})
+        
+        if not responses:
+            responses = [{"speaker": "Divya", "text": response.strip()}]
+        
+        return {"success": True, "responses": responses}
+        
+    except Exception as e:
+        print(f"[DIVYA] Ask error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to process question: {str(e)}")
+
+
+@router.post("/mind-map")
+async def generate_mind_map(req: MindMapRequest):
+    """Generate a mind map structure from the content."""
+    if not EMERGENT_KEY:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+    
+    if not req.content.strip():
+        raise HTTPException(status_code=400, detail="Content is required")
+    
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        import json
+        
+        chat = LlmChat(
+            api_key=EMERGENT_KEY,
+            session_id=f"divya-map-{uuid.uuid4().hex[:8]}",
+            system_message=MINDMAP_SYSTEM_PROMPT
+        ).with_model("gemini", "gemini-2.5-flash")
+        
+        response = await chat.send_message(UserMessage(
+            text=f"Create a mind map from this educational content:\n\n{req.content[:4000]}"
+        ))
+        
+        # Extract JSON from response
+        response_text = response.strip()
+        # Try to find JSON in the response
+        if response_text.startswith('{'):
+            json_str = response_text
+        else:
+            # Find JSON block
+            start = response_text.find('{')
+            end = response_text.rfind('}') + 1
+            if start != -1 and end > start:
+                json_str = response_text[start:end]
+            else:
+                raise ValueError("No valid JSON found in response")
+        
+        mind_map = json.loads(json_str)
+        
+        # Validate structure
+        if not isinstance(mind_map.get('branches'), list):
+            mind_map['branches'] = []
+        if not mind_map.get('title'):
+            mind_map['title'] = "Content Overview"
+        
+        return {"success": True, "mind_map": mind_map}
+        
+    except json.JSONDecodeError as e:
+        print(f"[DIVYA] Mind map JSON error: {e}")
+        # Return a basic fallback structure
+        return {
+            "success": True,
+            "mind_map": {
+                "title": "Content Summary",
+                "branches": [
+                    {"label": "Key Points", "children": ["See transcript for details"]}
+                ],
+                "summary": "Could not generate detailed mind map. Please review the transcript."
+            }
+        }
+    except Exception as e:
+        print(f"[DIVYA] Mind map error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate mind map: {str(e)}")
