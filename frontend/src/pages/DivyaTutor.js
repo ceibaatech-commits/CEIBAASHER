@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Upload, Mic, MicOff, FileText, Image, X, Play, Pause, Loader2, Volume2, SkipBack, SkipForward, MessageCircle, Send, Network, Hand } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Upload, Mic, MicOff, FileText, Image, X, Play, Pause, Loader2, Volume2, SkipBack, SkipForward, MessageCircle, Send, Network, Hand, LogIn } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import Header from '../components/Header';
@@ -8,7 +9,9 @@ import { useAuth } from '../context/AuthContext';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const DivyaTutor = () => {
-  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout, isAuthenticated } = useAuth();
+  const isLoggedIn = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
 
   // Upload state
   const [files, setFiles] = useState([]);
