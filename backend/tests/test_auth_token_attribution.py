@@ -17,7 +17,7 @@ import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://referral-verify-1.preview.emergentagent.com"
+    BASE_URL = "https://exam-chat-test.preview.emergentagent.com"
 
 
 class TestDemoLogin:

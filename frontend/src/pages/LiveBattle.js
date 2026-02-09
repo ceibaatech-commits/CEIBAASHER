@@ -8,7 +8,7 @@ import BattleVideoChat from '../components/BattleVideoChat';
 import { useAuth } from '../context/AuthContext';
 
 // Connect to battle server through the backend domain
-const BATTLE_SERVER_URL = window.location.origin || 'https://referral-verify-1.preview.emergentagent.com';
+const BATTLE_SERVER_URL = window.location.origin || 'https://exam-chat-test.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
