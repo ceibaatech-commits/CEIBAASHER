@@ -132,6 +132,23 @@ const Matchmaking1v1 = () => {
     return () => clearInterval(heartbeatInterval);
   }, [socket]);
 
+  // Search countdown timer
+  useEffect(() => {
+    if (battleState !== 'searching') return;
+    setSearchCountdown(30);
+    setSearchTimedOut(false);
+    const interval = setInterval(() => {
+      setSearchCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [battleState]);
+
   // Timer countdown
   useEffect(() => {
     if (battleState === 'playing' && timeLeft > 0 && selectedAnswer === null) {
