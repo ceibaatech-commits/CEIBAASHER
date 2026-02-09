@@ -1,0 +1,248 @@
+"""
+Divya AI Tutor — Podcast-style PDF/Image summarizer
+Two AI characters (Divya + Sher) discuss uploaded content as a podcast.
+"""
+import os
+import uuid
+import asyncio
+import tempfile
+from datetime import datetime, timezone
+from typing import List, Optional
+
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi.responses import FileResponse
+from dotenv import load_dotenv
+
+load_dotenv()
+
+router = APIRouter(prefix="/divya", tags=["divya"])
+
+EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
+UPLOAD_DIR = "/tmp/divya_uploads"
+AUDIO_DIR = "/tmp/divya_audio"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(AUDIO_DIR, exist_ok=True)
+
+MAX_PDF_PAGES = 30
+MAX_IMAGES = 5
+MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
+
+SYSTEM_PROMPT = """You are a scriptwriter for an educational podcast called "Divya & Sher Explain".
+
+CHARACTERS:
+- **Divya**: A warm, enthusiastic female teacher who explains concepts clearly with examples and analogies. She leads the discussion.
+- **Sher**: A curious, sharp female AI tutor who asks insightful questions, adds interesting facts, and keeps the conversation engaging.
+
+RULES:
+1. Write a natural, engaging conversation between Divya and Sher that summarizes and explains the uploaded content.
+2. Start with Divya greeting listeners and introducing the topic.
+3. Sher should ask questions that a student would ask, and Divya should answer them.
+4. Keep it educational but fun — like two friends discussing what they learned.
+5. Cover ALL key points from the content — don't skip important details.
+6. End with a brief recap by Sher and a motivational closing by Divya.
+7. Each dialogue line should be 1-3 sentences max for natural speech.
+8. Output ONLY the dialogue in this exact format (no other text):
+
+DIVYA: [dialogue text]
+SHER: [dialogue text]
+DIVYA: [dialogue text]
+...
+
+Do NOT include any stage directions, descriptions, or formatting other than DIVYA: and SHER: prefixes.
+Generate at least 20 exchanges (40+ lines) for thorough coverage."""
+
+
+def parse_dialogue(text: str) -> List[dict]:
+    """Parse DIVYA:/SHER: dialogue into structured list."""
+    lines = []
+    current_speaker = None
+    current_text = []
+
+    for line in text.strip().split('\n'):
+        line = line.strip()
+        if not line:
+            continue
+
+        if line.startswith('DIVYA:'):
+            if current_speaker and current_text:
+                lines.append({"speaker": current_speaker, "text": ' '.join(current_text).strip()})
+            current_speaker = "Divya"
+            current_text = [line[6:].strip()]
+        elif line.startswith('SHER:'):
+            if current_speaker and current_text:
+                lines.append({"speaker": current_speaker, "text": ' '.join(current_text).strip()})
+            current_speaker = "Sher"
+            current_text = [line[5:].strip()]
+        elif current_speaker:
+            current_text.append(line)
+
+    if current_speaker and current_text:
+        lines.append({"speaker": current_speaker, "text": ' '.join(current_text).strip()})
+
+    return lines
+
+
+async def generate_dialogue(file_paths: List[str], mime_types: List[str], user_prompt: str = "") -> str:
+    """Use Gemini to generate a podcast dialogue from uploaded files."""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContentWithMimeType
+
+    chat = LlmChat(
+        api_key=EMERGENT_KEY,
+        session_id=f"divya-{uuid.uuid4().hex[:8]}",
+        system_message=SYSTEM_PROMPT
+    ).with_model("gemini", "gemini-2.5-flash")
+
+    file_contents = []
+    for fpath, mime in zip(file_paths, mime_types):
+        file_contents.append(FileContentWithMimeType(file_path=fpath, mime_type=mime))
+
+    prompt = "Summarize and explain the content from the uploaded files as a podcast dialogue between Divya and Sher."
+    if user_prompt:
+        prompt += f"\n\nUser's specific request: {user_prompt}"
+
+    msg = UserMessage(text=prompt, file_contents=file_contents)
+    response = await chat.send_message(msg)
+    return response
+
+
+async def generate_audio_for_line(text: str, voice: str, idx: int) -> str:
+    """Generate TTS audio for a single dialogue line."""
+    from emergentintegrations.llm.openai import OpenAITextToSpeech
+
+    tts = OpenAITextToSpeech(api_key=EMERGENT_KEY)
+
+    # Chunk if > 4000 chars
+    chunks = [text[i:i+4000] for i in range(0, len(text), 4000)]
+    audio_parts = []
+    for chunk in chunks:
+        audio_bytes = await tts.generate_speech(
+            text=chunk,
+            model="tts-1",
+            voice=voice,
+            response_format="mp3",
+            speed=1.05
+        )
+        audio_parts.append(audio_bytes)
+
+    out_path = os.path.join(AUDIO_DIR, f"line_{idx}_{uuid.uuid4().hex[:6]}.mp3")
+    with open(out_path, 'wb') as f:
+        for part in audio_parts:
+            f.write(part)
+    return out_path
+
+
+async def generate_podcast_audio(dialogue: List[dict]) -> str:
+    """Generate full podcast audio from dialogue lines, concatenating MP3 files."""
+    # Divya = nova (energetic, upbeat), Sher = shimmer (bright, cheerful)
+    voice_map = {"Divya": "nova", "Sher": "shimmer"}
+
+    audio_files = []
+    for idx, line in enumerate(dialogue):
+        voice = voice_map.get(line["speaker"], "nova")
+        audio_path = await generate_audio_for_line(line["text"], voice, idx)
+        audio_files.append(audio_path)
+
+    # Concatenate MP3 files
+    output_path = os.path.join(AUDIO_DIR, f"podcast_{uuid.uuid4().hex[:8]}.mp3")
+    with open(output_path, 'wb') as out:
+        for af in audio_files:
+            with open(af, 'rb') as inp:
+                out.write(inp.read())
+
+    # Cleanup individual files
+    for af in audio_files:
+        try:
+            os.remove(af)
+        except OSError:
+            pass
+
+    return output_path
+
+
+@router.post("/generate-podcast")
+async def generate_podcast(
+    files: List[UploadFile] = File(...),
+    prompt: Optional[str] = Form("")
+):
+    """
+    Upload PDF(s) and/or images (up to 5). Returns a podcast-style dialogue + audio.
+    """
+    if not EMERGENT_KEY:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+
+    if len(files) > MAX_IMAGES + 1:
+        raise HTTPException(status_code=400, detail=f"Maximum {MAX_IMAGES + 1} files allowed")
+
+    # Save and validate files
+    saved_paths = []
+    mime_types = []
+    has_pdf = False
+
+    for f in files:
+        if f.size and f.size > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail=f"File {f.filename} exceeds 20MB limit")
+
+        content = await f.read()
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=400, detail=f"File {f.filename} exceeds 20MB limit")
+
+        ext = f.filename.rsplit('.', 1)[-1].lower() if '.' in f.filename else ''
+        content_type = f.content_type or ''
+
+        if ext == 'pdf' or 'pdf' in content_type:
+            if has_pdf:
+                raise HTTPException(status_code=400, detail="Only 1 PDF allowed per request")
+            has_pdf = True
+            mime = "application/pdf"
+        elif ext in ('png', 'jpg', 'jpeg', 'webp') or 'image' in content_type:
+            mime = f"image/{ext}" if ext in ('png', 'jpeg', 'webp') else "image/jpeg"
+        else:
+            raise HTTPException(status_code=400, detail=f"Unsupported file type: {f.filename}. Use PDF or images (PNG/JPG/WEBP)")
+
+        fpath = os.path.join(UPLOAD_DIR, f"{uuid.uuid4().hex[:10]}_{f.filename}")
+        with open(fpath, 'wb') as out:
+            out.write(content)
+        saved_paths.append(fpath)
+        mime_types.append(mime)
+
+    try:
+        # Step 1: Generate dialogue script
+        raw_dialogue = await generate_dialogue(saved_paths, mime_types, prompt or "")
+        dialogue = parse_dialogue(raw_dialogue)
+
+        if len(dialogue) < 4:
+            raise HTTPException(status_code=500, detail="Could not generate enough dialogue from the content. Please try with different content.")
+
+        # Step 2: Generate podcast audio
+        audio_path = await generate_podcast_audio(dialogue)
+        audio_filename = os.path.basename(audio_path)
+
+        return {
+            "success": True,
+            "dialogue": dialogue,
+            "audio_url": f"/api/divya/audio/{audio_filename}",
+            "total_lines": len(dialogue),
+            "generated_at": datetime.now(timezone.utc).isoformat()
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[DIVYA] Error generating podcast: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate podcast: {str(e)}")
+    finally:
+        # Cleanup uploaded files
+        for fp in saved_paths:
+            try:
+                os.remove(fp)
+            except OSError:
+                pass
+
+
+@router.get("/audio/{filename}")
+async def get_audio(filename: str):
+    """Serve generated audio files."""
+    filepath = os.path.join(AUDIO_DIR, filename)
+    if not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail="Audio not found")
+    return FileResponse(filepath, media_type="audio/mpeg", filename=filename)
