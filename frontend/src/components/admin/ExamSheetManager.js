@@ -1193,6 +1193,17 @@ const ExamSheetManager = () => {
     );
   });
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredSheets.length / sheetsPerPage);
+  const indexOfLastSheet = currentPage * sheetsPerPage;
+  const indexOfFirstSheet = indexOfLastSheet - sheetsPerPage;
+  const currentSheets = filteredSheets.slice(indexOfFirstSheet, indexOfLastSheet);
+
+  // Reset to page 1 when search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
