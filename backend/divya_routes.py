@@ -224,69 +224,6 @@ async def generate_podcast(
                 pass
 
 
-@router.get("/audio/{filename}")
-async def get_audio(filename: str, request: "Request"):
-    """Serve generated audio files with proper Range request support for browser audio players."""
-    from fastapi.responses import Response
-    from fastapi import Request
-    
-    filepath = os.path.join(AUDIO_DIR, filename)
-    if not os.path.exists(filepath):
-        raise HTTPException(status_code=404, detail="Audio not found")
-
-    file_size = os.path.getsize(filepath)
-    
-    # Check for Range header (required for audio seeking in browsers)
-    range_header = request.headers.get("range")
-    
-    if range_header:
-        # Parse Range header: "bytes=start-end" or "bytes=start-"
-        try:
-            range_match = range_header.replace("bytes=", "").split("-")
-            start = int(range_match[0]) if range_match[0] else 0
-            end = int(range_match[1]) if range_match[1] else file_size - 1
-            
-            # Clamp values
-            start = max(0, min(start, file_size - 1))
-            end = max(start, min(end, file_size - 1))
-            content_length = end - start + 1
-            
-            # Read the requested range
-            with open(filepath, "rb") as f:
-                f.seek(start)
-                data = f.read(content_length)
-            
-            return Response(
-                content=data,
-                status_code=206,  # Partial Content
-                media_type="audio/mpeg",
-                headers={
-                    "Accept-Ranges": "bytes",
-                    "Content-Range": f"bytes {start}-{end}/{file_size}",
-                    "Content-Length": str(content_length),
-                    "Cache-Control": "public, max-age=3600",
-                }
-            )
-        except (ValueError, IndexError):
-            pass  # Fall through to full file response
-    
-    # No Range header or invalid range - return full file
-    with open(filepath, "rb") as f:
-        data = f.read()
-    
-    return Response(
-        content=data,
-        status_code=200,
-        media_type="audio/mpeg",
-        headers={
-            "Accept-Ranges": "bytes",
-            "Content-Length": str(file_size),
-            "Cache-Control": "public, max-age=3600",
-        }
-    )
-
-
-
 # Pydantic models for request bodies
 from pydantic import BaseModel
 
