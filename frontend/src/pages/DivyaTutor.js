@@ -278,7 +278,7 @@ const DivyaTutor = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header isLoggedIn={!!user} user={user} onLogout={logout} />
+      <Header isLoggedIn={isLoggedIn} user={user} onLogout={logout} />
 
       <div className="max-w-4xl mx-auto px-4 py-6 pt-20">
         {/* Hero */}
