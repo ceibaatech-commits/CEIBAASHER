@@ -232,6 +232,28 @@ const Signup = () => {
                 {loading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </form>
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Sign Up Button */}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogleSignup}
+              className="w-full flex items-center justify-center gap-3 py-5 border-2 hover:bg-gray-50 transition-all"
+              data-testid="google-signup-btn"
+            >
+              <GoogleIcon />
+              <span className="font-medium">Sign up with Google</span>
+            </Button>
           </CardContent>
 
           <CardFooter className="flex-col space-y-4">
