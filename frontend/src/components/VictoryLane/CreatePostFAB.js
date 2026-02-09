@@ -73,8 +73,8 @@ const CreatePostFAB = ({
               className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
               data-testid="create-academic-btn"
             >
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+                <img src="/images/icons/requirements.gif" alt="Academic" className="w-10 h-10 object-cover" />
               </div>
               <span className="font-medium text-gray-800 text-sm">Academic Question</span>
             </button>
@@ -88,8 +88,8 @@ const CreatePostFAB = ({
               className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
               data-testid="create-quiz-btn"
             >
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <Trophy className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+                <img src="/images/icons/integration.gif" alt="Quiz Room" className="w-10 h-10 object-cover" />
               </div>
               <span className="font-medium text-gray-800 text-sm">Quiz Room</span>
             </button>
@@ -103,8 +103,8 @@ const CreatePostFAB = ({
               className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
               data-testid="create-quick-post-btn"
             >
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <MessageCircle className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+                <img src="/images/icons/talk.gif" alt="Quick Post" className="w-10 h-10 object-cover" />
               </div>
               <span className="font-medium text-gray-800 text-sm">Quick Post</span>
             </button>
