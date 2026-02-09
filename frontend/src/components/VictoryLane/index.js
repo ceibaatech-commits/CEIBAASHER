@@ -5,3 +5,4 @@ export { default as CommentsSection } from './CommentsSection';
 export { default as PostComposer } from './PostComposer';
 export { default as QuizRoomModal } from './QuizRoomModal';
 export * from './constants';
+export { useVictoryLane, usePostCreation } from './hooks';
