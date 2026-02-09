@@ -55,7 +55,7 @@ const BattleResults = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Quiz Complete!</h1>
               <p className="text-gray-600">Nice effort {playerName}!</p>
             </div>
-          )}}
+          )}
         </div>
 
         {/* Your Stats */}
