@@ -1795,7 +1795,7 @@ const ExamSheetManager = () => {
                   </td>
                 </tr>
               ) : (
-                filteredSheets.map((sheet, index) => (
+                currentSheets.map((sheet, index) => (
                   <tr key={sheet.id || index} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
