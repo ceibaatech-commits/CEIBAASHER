@@ -245,6 +245,11 @@ logger = logging.getLogger(__name__)
 @fastapi_app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+@fastapi_app.on_event("startup")
+async def startup_matchmaking():
+    start_matchmaking_sweep()
+
 # Export the FastAPI app directly; battle Socket.IO is mounted at /api/battlews
 app = fastapi_app
 
