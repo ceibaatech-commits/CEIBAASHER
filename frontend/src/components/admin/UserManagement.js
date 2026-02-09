@@ -555,42 +555,137 @@ const UserManagement = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Previous
-              </button>
-              
-              <div className="flex items-center space-x-1">
-                {[...Array(totalPages)].map((_, index) => (
-                  <button
-                    key={index + 1}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={`px-3 py-2 rounded-lg transition-colors ${
-                      currentPage === index + 1
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+          <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-gray-600">
+                Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
+                <span className="ml-2 text-gray-400">({totalPages} pages)</span>
               </div>
+              
+              <div className="flex items-center gap-2 flex-wrap justify-center">
+                {/* First Page */}
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  First
+                </button>
+                
+                {/* Previous */}
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  Prev
+                </button>
+                
+                {/* Page Numbers - Show smart range */}
+                <div className="flex items-center gap-1">
+                  {(() => {
+                    const pages = [];
+                    const maxVisible = 5;
+                    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                    let end = Math.min(totalPages, start + maxVisible - 1);
+                    
+                    if (end - start + 1 < maxVisible) {
+                      start = Math.max(1, end - maxVisible + 1);
+                    }
+                    
+                    if (start > 1) {
+                      pages.push(
+                        <button key={1} onClick={() => setCurrentPage(1)}
+                          className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">1</button>
+                      );
+                      if (start > 2) {
+                        pages.push(<span key="dots1" className="px-2 text-gray-400">...</span>);
+                      }
+                    }
+                    
+                    for (let i = start; i <= end; i++) {
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => setCurrentPage(i)}
+                          className={`px-3 py-2 rounded-lg transition-colors text-sm ${
+                            currentPage === i
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      );
+                    }
+                    
+                    if (end < totalPages) {
+                      if (end < totalPages - 1) {
+                        pages.push(<span key="dots2" className="px-2 text-gray-400">...</span>);
+                      }
+                      pages.push(
+                        <button key={totalPages} onClick={() => setCurrentPage(totalPages)}
+                          className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm">{totalPages}</button>
+                      );
+                    }
+                    
+                    return pages;
+                  })()}
+                </div>
 
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Next
-              </button>
+                {/* Next */}
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  Next
+                </button>
+                
+                {/* Last Page */}
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                >
+                  Last
+                </button>
+                
+                {/* Go to Page */}
+                <div className="flex items-center gap-2 ml-4">
+                  <span className="text-sm text-gray-500">Go to:</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={totalPages}
+                    value={goToPage}
+                    onChange={(e) => setGoToPage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const page = parseInt(goToPage);
+                        if (page >= 1 && page <= totalPages) {
+                          setCurrentPage(page);
+                          setGoToPage('');
+                        }
+                      }
+                    }}
+                    placeholder={currentPage.toString()}
+                    className="w-16 px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <button
+                    onClick={() => {
+                      const page = parseInt(goToPage);
+                      if (page >= 1 && page <= totalPages) {
+                        setCurrentPage(page);
+                        setGoToPage('');
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                  >
+                    Go
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
