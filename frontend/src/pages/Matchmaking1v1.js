@@ -355,9 +355,17 @@ const Matchmaking1v1 = () => {
               <h1 className="text-3xl font-black text-gray-900 mb-2">1v1 Battle</h1>
               <div className="text-gray-600">
                 <p className="font-semibold text-lg text-red-600">{decodeURIComponent(examId)}</p>
-                <p>{decodeURIComponent(subject)} • {decodeURIComponent(topic)}</p>
+                <p>{decodeURIComponent(subject)} {topic ? `• ${decodeURIComponent(topic)}` : ''}</p>
               </div>
             </div>
+
+            {/* Timeout message */}
+            {searchTimedOut && (
+              <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-4 text-center" data-testid="timeout-message">
+                <p className="font-bold mb-1">No opponent found</p>
+                <p className="text-sm">No one is searching for this topic right now. Try again or pick a different subject!</p>
+              </div>
+            )}
 
             <div className="space-y-6">
               <div>
@@ -370,6 +378,7 @@ const Matchmaking1v1 = () => {
                   onChange={(e) => setPlayerName(e.target.value)}
                   placeholder="Enter your name"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-red-500 focus:outline-none font-medium"
+                  data-testid="player-name-input"
                 />
               </div>
 
@@ -379,11 +388,10 @@ const Matchmaking1v1 = () => {
                   Battle Rules
                 </h3>
                 <ul className="space-y-1 text-sm text-red-800">
-                  <li>• Real-time 1v1 quiz duel</li>
-                  <li>• 10 questions, 30 seconds each</li>
-                  <li>• Faster answers = More points</li>
-                  <li>• Live chat with opponent</li>
-                  <li>• Winner takes the glory! 🏆</li>
+                  <li>Real-time 1v1 quiz duel</li>
+                  <li>10 questions, 30 seconds each</li>
+                  <li>Faster answers = More points</li>
+                  <li>Live chat with opponent</li>
                 </ul>
               </div>
 
@@ -391,9 +399,10 @@ const Matchmaking1v1 = () => {
                 onClick={startMatchmaking}
                 disabled={!playerName.trim()}
                 className="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white py-4 rounded-xl font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                data-testid="find-opponent-btn"
               >
                 <Swords className="w-5 h-5" />
-                Find Opponent
+                {searchTimedOut ? 'Try Again' : 'Find Opponent'}
               </button>
             </div>
           </div>
@@ -406,27 +415,46 @@ const Matchmaking1v1 = () => {
   if (battleState === 'searching') {
     return withVideoChat(
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative mb-8">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center mx-auto animate-pulse">
-              <Swords className="w-16 h-16 text-white" />
+        <div className="text-center max-w-sm mx-auto px-4">
+          {/* Animated search indicator */}
+          <div className="relative mb-6">
+            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center mx-auto">
+              <Swords className="w-14 h-14 text-white" />
             </div>
-            <div className="absolute inset-0 w-32 h-32 mx-auto rounded-full border-4 border-red-400 animate-ping opacity-30"></div>
+            <div className="absolute inset-0 w-28 h-28 mx-auto rounded-full border-4 border-red-400 animate-ping opacity-20"></div>
+
+            {/* Countdown ring */}
+            <div className="absolute -top-2 -right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg">
+              <span className="text-sm font-black text-red-600" data-testid="search-countdown">{searchCountdown}</span>
+            </div>
           </div>
-          <h2 className="text-3xl font-black text-white mb-3">Finding Opponent...</h2>
-          <p className="text-gray-300 mb-2">
-            {decodeURIComponent(examId)} • {decodeURIComponent(topic)}
+
+          <h2 className="text-2xl font-black text-white mb-2">Finding Opponent</h2>
+          <p className="text-gray-400 text-sm mb-1">
+            {decodeURIComponent(examId)} {topic ? `• ${decodeURIComponent(topic)}` : ''}
           </p>
-          <p className="text-gray-400 text-sm mb-8">Matching you with a worthy challenger</p>
-          
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <Loader2 className="w-5 h-5 text-red-400 animate-spin" />
-            <span className="text-gray-400">Searching...</span>
+
+          {/* Progress bar */}
+          <div className="w-full bg-slate-700 rounded-full h-1.5 mb-6 mt-4 overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-red-500 to-rose-500 h-1.5 rounded-full transition-all duration-1000 ease-linear"
+              style={{ width: `${(searchCountdown / 30) * 100}%` }}
+            />
+          </div>
+
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Loader2 className="w-4 h-4 text-red-400 animate-spin" />
+            <span className="text-gray-400 text-sm">
+              {searchCountdown > 20 ? 'Searching for opponents...' :
+               searchCountdown > 10 ? 'Still looking...' :
+               'Expanding search...'}
+            </span>
           </div>
           
           <button
             onClick={cancelMatchmaking}
-            className="px-8 py-3 bg-slate-700 text-white rounded-xl hover:bg-slate-600 transition-all font-semibold"
+            className="px-6 py-2.5 bg-slate-700 text-gray-300 rounded-xl hover:bg-slate-600 transition-all font-semibold text-sm"
+            data-testid="cancel-search-btn"
           >
             Cancel
           </button>
