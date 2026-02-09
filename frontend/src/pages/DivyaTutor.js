@@ -470,17 +470,16 @@ const DivyaTutor = () => {
               </div>
             )}
 
-            {/* Live Conversation (when joined) */}
+            {/* Live Conversation with Divya (when joined) */}
             {joined && (
               <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 mb-4" data-testid="conversation-section">
                 <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-amber-500" />Live Conversation
+                  <MessageCircle className="w-4 h-4 text-purple-500" />Ask Divya
                 </h3>
 
                 <div className="max-h-80 overflow-y-auto space-y-2.5 mb-3 pr-1">
                   {conversationHistory.map((msg, idx) => {
                     const isDivya = msg.speaker === 'Divya';
-                    const isSher = msg.speaker === 'Sher';
                     const isUser = msg.speaker === 'You';
                     return (
                       <div key={idx} className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
@@ -488,16 +487,15 @@ const DivyaTutor = () => {
                           <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-[10px] font-bold">U</div>
                         ) : (
                           <img
-                            src={isDivya ? '/images/divya_avatar.png' : '/images/sher_avatar.png'}
-                            alt={msg.speaker} className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
-                            style={{ backgroundColor: isDivya ? '#e9d5ff' : '#ccfbf1' }}
+                            src="/images/divya_avatar.png"
+                            alt="Divya" className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
+                            style={{ backgroundColor: '#e9d5ff' }}
                           />
                         )}
                         <div className={`max-w-[80%] rounded-xl px-3 py-2 ${
-                          isUser ? 'bg-blue-500 text-white' :
-                          isDivya ? 'bg-purple-50' : 'bg-teal-50'
+                          isUser ? 'bg-blue-500 text-white' : 'bg-purple-50'
                         }`}>
-                          <span className={`text-[10px] font-bold ${isUser ? 'text-blue-100' : isDivya ? 'text-purple-600' : 'text-teal-600'}`}>
+                          <span className={`text-[10px] font-bold ${isUser ? 'text-blue-100' : 'text-purple-600'}`}>
                             {msg.speaker}
                           </span>
                           <p className={`text-xs leading-relaxed ${isUser ? 'text-white' : 'text-gray-700'}`}>{msg.text}</p>
@@ -508,8 +506,9 @@ const DivyaTutor = () => {
                   {answering && (
                     <div className="flex gap-2.5">
                       <img src="/images/divya_avatar.png" alt="Divya" className="w-7 h-7 rounded-full flex-shrink-0 object-cover bg-purple-200" />
-                      <div className="bg-purple-50 rounded-xl px-3 py-2">
+                      <div className="bg-purple-50 rounded-xl px-3 py-2 flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+                        <span className="text-[10px] text-purple-400">Divya is thinking...</span>
                       </div>
                     </div>
                   )}
