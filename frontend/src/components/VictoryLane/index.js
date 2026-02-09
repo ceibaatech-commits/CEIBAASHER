@@ -1,4 +1,7 @@
 export { default as PostCard } from './PostCard';
+export { default as PostCardMenu } from './PostCardMenu';
+export { default as PostActions } from './PostActions';
+export { default as QuizRoomCard } from './QuizRoomCard';
 export { default as VictoryLaneHeader } from './VictoryLaneHeader';
 export { default as CreatePostFAB } from './CreatePostFAB';
 export { default as CommentsSection } from './CommentsSection';
