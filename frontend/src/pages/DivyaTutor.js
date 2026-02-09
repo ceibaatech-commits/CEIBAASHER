@@ -355,16 +355,30 @@ const DivyaTutor = () => {
                     <span className="text-[10px] text-gray-500 font-mono">{formatTime(audioTime)} / {formatTime(audioDuration)}</span>
                   </div>
 
+                  {/* Raise Hand button - always visible during audio, pulses when playing */}
                   {!joined && (
                     <button
-                      onClick={handleJoin}
-                      className="bg-amber-500 hover:bg-amber-400 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition flex-shrink-0"
-                      data-testid="join-conversation-btn"
+                      onClick={handleRaiseHand}
+                      className={`text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition flex-shrink-0 ${
+                        isPlaying 
+                          ? 'bg-amber-500 hover:bg-amber-400 animate-pulse shadow-lg shadow-amber-500/30' 
+                          : 'bg-amber-600 hover:bg-amber-500'
+                      }`}
+                      data-testid="raise-hand-btn"
+                      title="Raise your hand to ask a question"
                     >
-                      <Hand className="w-3.5 h-3.5" />Join
+                      <Hand className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{isPlaying ? 'Ask Now' : 'Ask'}</span>
                     </button>
                   )}
                 </div>
+                
+                {/* Hint text when playing */}
+                {isPlaying && !joined && (
+                  <p className="text-[10px] text-gray-500 mt-2 text-center">
+                    💡 Tap "Ask Now" anytime to pause and ask Divya a question
+                  </p>
+                )}
               </div>
             )}
 
