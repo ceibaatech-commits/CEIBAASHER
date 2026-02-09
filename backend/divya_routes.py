@@ -19,9 +19,7 @@ router = APIRouter(prefix="/divya", tags=["divya"])
 
 EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
 UPLOAD_DIR = "/tmp/divya_uploads"
-AUDIO_DIR = "/tmp/divya_audio"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(AUDIO_DIR, exist_ok=True)
 
 MAX_PDF_PAGES = 30
 MAX_IMAGES = 5
