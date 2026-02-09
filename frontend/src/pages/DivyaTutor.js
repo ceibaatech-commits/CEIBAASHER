@@ -528,13 +528,13 @@ const DivyaTutor = () => {
                     type="text" value={userQuestion}
                     onChange={(e) => setUserQuestion(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && sendQuestion()}
-                    placeholder="Ask Divya & Sher anything..."
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    placeholder="Ask Divya anything..."
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     data-testid="chat-input"
                   />
                   <button
                     onClick={sendQuestion} disabled={!userQuestion.trim() || answering}
-                    className="p-2.5 bg-teal-500 text-white rounded-xl hover:bg-teal-400 transition disabled:opacity-50 flex-shrink-0"
+                    className="p-2.5 bg-purple-500 text-white rounded-xl hover:bg-purple-400 transition disabled:opacity-50 flex-shrink-0"
                     data-testid="send-btn"
                   >
                     <Send className="w-4 h-4" />
