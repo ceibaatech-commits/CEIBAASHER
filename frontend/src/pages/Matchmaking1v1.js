@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2 } from 'lucide-react';
+import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
 import MathText from '../components/MathText';
@@ -639,16 +640,25 @@ const Matchmaking1v1 = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8 pt-20">
         <div className="max-w-lg mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ${
-              isWinner ? 'bg-gradient-to-br from-yellow-400 to-amber-500' : 
-              isTie ? 'bg-gradient-to-br from-blue-400 to-blue-500' :
-              'bg-gradient-to-br from-gray-400 to-gray-500'
-            }`}>
-              <Trophy className="w-12 h-12 text-white" />
-            </div>
+            {isWinner ? (
+              <div className="w-28 h-28 mx-auto mb-2">
+                <DotLottiePlayer
+                  src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '100%', height: '100%' }}
+                />
+              </div>
+            ) : isTie ? (
+              <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 bg-gradient-to-br from-blue-400 to-blue-500">
+                <Trophy className="w-12 h-12 text-white" />
+              </div>
+            ) : (
+              <img src="/images/defeat_books.png" alt="Defeat" className="w-28 h-28 mx-auto mb-4 object-contain" />
+            )}
             
             <h1 className="text-4xl font-black text-gray-900 mb-2">
-              {isWinner ? '🎉 Victory!' : isTie ? '🤝 Tie Game!' : '😔 Defeat'}
+              {isWinner ? 'Victory!' : isTie ? 'Tie Game!' : 'Defeat'}
             </h1>
             <p className="text-gray-600 mb-8">
               {isWinner ? 'You dominated the battlefield!' : 
