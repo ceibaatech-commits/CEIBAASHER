@@ -143,17 +143,26 @@ const DivyaTutor = () => {
 
   const formatTime = (s) => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
 
-  // Join conversation
+  // Join conversation - Raise hand during audio
+  const handleRaiseHand = () => {
+    if (audioRef.current) audioRef.current.pause();
+    setIsPlaying(false);
+    setJoined(true);
+    // Only Divya welcomes the student
+    setConversationHistory(prev => [...prev, {
+      speaker: 'Divya',
+      text: "Haan, bolo! I paused for you. What would you like to know about what we just discussed? Feel free to ask anything!"
+    }]);
+  };
+
+  // Full join conversation (from button)
   const handleJoin = () => {
     if (audioRef.current) audioRef.current.pause();
     setIsPlaying(false);
     setJoined(true);
     setConversationHistory(prev => [...prev, {
       speaker: 'Divya',
-      text: "Welcome! You've joined our discussion. Feel free to ask any question about what we've covered, or tell us to focus on a specific topic!"
-    }, {
-      speaker: 'Sher',
-      text: "Yes! Don't be shy. You can ask us to explain something differently, give examples, or even skip ahead. We're here for you!"
+      text: "Welcome! You've joined our discussion. Feel free to ask any question about what we've covered, and I'll explain it to you!"
     }]);
   };
 
