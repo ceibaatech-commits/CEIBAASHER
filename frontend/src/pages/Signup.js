@@ -38,6 +38,12 @@ const Signup = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  // Google Sign Up using Emergent Auth
+  const handleGoogleSignup = () => {
+    const redirectUrl = `${window.location.origin}/auth-callback`;
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
