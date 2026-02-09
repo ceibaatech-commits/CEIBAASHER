@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Award, GraduationCap, ArrowRight, Sparkles, Zap, Target, BarChart3, Smartphone, Users } from 'lucide-react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useAuth } from '../hooks/useAuth';
@@ -74,11 +75,20 @@ const ChapterTestHome = () => {
                 </div>
               </div>
 
-              <div className="flex-shrink-0 relative w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72">
+              {/* Lottie on desktop, image on mobile */}
+              <div className="flex-shrink-0 relative w-44 h-44 sm:w-64 sm:h-64 lg:w-[340px] lg:h-[340px]">
+                <div className="hidden lg:block w-full h-full">
+                  <DotLottieReact
+                    src="https://assets-v2.lottiefiles.com/a/6dcb9f7c-1172-11ee-8f3a-7f6ccb9677cf/Tu534yUIU1.lottie"
+                    loop
+                    autoplay
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </div>
                 <img
-                  src="/images/hero_3d_books.png"
-                  alt="3D Books"
-                  className="w-full h-full object-contain drop-shadow-2xl animate-float"
+                  src="/images/books_stack.png"
+                  alt="Books"
+                  className="lg:hidden w-full h-full object-contain drop-shadow-2xl"
                   data-testid="hero-3d-image"
                 />
               </div>
