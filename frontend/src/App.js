@@ -73,6 +73,7 @@ import ChapterTestChapters from "@/pages/ChapterTestChapters";
 
 // Single Post View
 import SinglePost from "@/pages/SinglePost";
+import DivyaTutor from "@/pages/DivyaTutor";
 
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
