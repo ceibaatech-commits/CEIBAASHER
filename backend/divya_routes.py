@@ -105,8 +105,8 @@ async def generate_dialogue(file_paths: List[str], mime_types: List[str], user_p
     return response
 
 
-async def generate_audio_for_line(text: str, voice: str, idx: int) -> str:
-    """Generate TTS audio for a single dialogue line."""
+async def generate_audio_for_line(text: str, voice: str) -> bytes:
+    """Generate TTS audio for a single dialogue line, returns bytes directly."""
     from emergentintegrations.llm.openai import OpenAITextToSpeech
 
     tts = OpenAITextToSpeech(api_key=EMERGENT_KEY)
@@ -124,41 +124,25 @@ async def generate_audio_for_line(text: str, voice: str, idx: int) -> str:
         )
         audio_parts.append(audio_bytes)
 
-    out_path = os.path.join(AUDIO_DIR, f"line_{idx}_{uuid.uuid4().hex[:6]}.mp3")
-    with open(out_path, 'wb') as f:
-        for part in audio_parts:
-            f.write(part)
-    return out_path
+    # Return concatenated bytes directly (no file storage)
+    return b''.join(audio_parts)
 
 
-async def generate_podcast_audio(dialogue: List[dict]) -> str:
-    """Generate full podcast audio from dialogue lines, concatenating MP3 files."""
+async def generate_podcast_audio(dialogue: List[dict]) -> bytes:
+    """Generate full podcast audio from dialogue lines, returns bytes directly (no server storage)."""
     # Both Divya and Sher are women - using feminine voices
     # Divya = nova (higher, feminine, enthusiastic teacher)
     # Sher = shimmer (feminine, bright, curious tutor)
     voice_map = {"Divya": "nova", "Sher": "shimmer"}
 
-    audio_files = []
-    for idx, line in enumerate(dialogue):
+    audio_parts = []
+    for line in dialogue:
         voice = voice_map.get(line["speaker"], "nova")
-        audio_path = await generate_audio_for_line(line["text"], voice, idx)
-        audio_files.append(audio_path)
+        audio_bytes = await generate_audio_for_line(line["text"], voice)
+        audio_parts.append(audio_bytes)
 
-    # Concatenate MP3 files
-    output_path = os.path.join(AUDIO_DIR, f"podcast_{uuid.uuid4().hex[:8]}.mp3")
-    with open(output_path, 'wb') as out:
-        for af in audio_files:
-            with open(af, 'rb') as inp:
-                out.write(inp.read())
-
-    # Cleanup individual files
-    for af in audio_files:
-        try:
-            os.remove(af)
-        except OSError:
-            pass
-
-    return output_path
+    # Return concatenated audio bytes (no file saved to server)
+    return b''.join(audio_parts)
 
 
 @router.post("/generate-podcast")
