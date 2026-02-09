@@ -227,6 +227,9 @@ fastapi_app.include_router(translation_router, prefix="/api/translate")  # Trans
 from test_routes import router as test_router
 fastapi_app.include_router(test_router, prefix="/api")
 
+from divya_routes import router as divya_router
+fastapi_app.include_router(divya_router, prefix="/api")  # Divya AI Tutor routes
+
 # fastapi_app.add_middleware(
 #     CORSMiddleware,
 #     allow_credentials=True,
