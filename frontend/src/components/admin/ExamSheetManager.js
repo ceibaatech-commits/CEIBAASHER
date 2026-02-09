@@ -14,6 +14,11 @@ const ExamSheetManager = () => {
   const [sheets, setSheets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sheetsPerPage] = useState(100); // 100 sheets per page
+  const [goToPage, setGoToPage] = useState('');
 
   // Form data for Option 1: Exam-based
   const [examForm, setExamForm] = useState({
