@@ -15,7 +15,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://exam-chat-test.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://podcast-tutor-1.preview.emergentagent.com').rstrip('/')
 
 # Test credentials from main agent
 TEST_USER_EMAIL = "testbug@test.com"
