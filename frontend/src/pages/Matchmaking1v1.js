@@ -21,6 +21,8 @@ const Matchmaking1v1 = () => {
   const [socket, setSocket] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [opponent, setOpponent] = useState(null);
+  const [searchCountdown, setSearchCountdown] = useState(30);
+  const [searchTimedOut, setSearchTimedOut] = useState(false);
   
   // Quiz state
   const [questions, setQuestions] = useState([]);
@@ -46,47 +48,47 @@ const Matchmaking1v1 = () => {
 
   // Initialize socket connection
   useEffect(() => {
-    console.log('🔗 Connecting to matchmaking server:', BACKEND_URL);
     const newSocket = io(BACKEND_URL, {
       path: '/api/battlews/socket.io',
       transports: ['websocket', 'polling'],
       reconnection: true,
-      timeout: 10000
+      reconnectionAttempts: 5,
+      timeout: 20000
     });
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
-      console.log('✅ Connected to matchmaking server');
+      console.log('Connected to matchmaking server');
     });
 
     newSocket.on('waiting', (data) => {
-      console.log('⏳ Waiting for opponent:', data.message);
+      console.log('Waiting for opponent:', data);
+      if (data.timeout) setSearchCountdown(data.timeout);
     });
 
     newSocket.on('match-found', async (data) => {
-      console.log('🎯 Match found!', data);
+      console.log('Match found!', data);
+      setSearchTimedOut(false);
       setRoomId(data.roomId);
       const opp = data.players.find(p => p.playerName !== playerName);
       setOpponent(opp);
       setBattleState('matched');
-      
-      // Fetch questions for the battle
       await fetchBattleQuestions();
     });
 
+    newSocket.on('match-timeout', (data) => {
+      console.log('Match timeout:', data);
+      setSearchTimedOut(true);
+      setBattleState('setup');
+    });
+
     newSocket.on('battle-start', (data) => {
-      console.log('🚀 Battle starting!', data);
-      if (data.questions) {
-        setQuestions(data.questions);
-      }
+      if (data.questions) setQuestions(data.questions);
       setBattleState('playing');
     });
 
     newSocket.on('opponent-answered', (data) => {
-      console.log('👤 Opponent answered:', data);
-      if (data.score !== undefined) {
-        setOpponentScore(data.score);
-      }
+      if (data.score !== undefined) setOpponentScore(data.score);
     });
 
     newSocket.on('opponent-score-update', (data) => {
@@ -107,19 +109,14 @@ const Matchmaking1v1 = () => {
     });
 
     newSocket.on('battle-ended', (data) => {
-      console.log('🏁 Battle ended:', data);
       setBattleState('results');
     });
 
     newSocket.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error);
+      console.error('Socket connection error:', error);
     });
 
-    return () => {
-      if (newSocket) {
-        newSocket.close();
-      }
-    };
+    return () => { if (newSocket) newSocket.close(); };
   }, [playerName]);
 
   // Heartbeat to keep connection alive
