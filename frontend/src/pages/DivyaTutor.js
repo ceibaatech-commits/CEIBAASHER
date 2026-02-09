@@ -254,8 +254,11 @@ const DivyaTutor = () => {
     }
   };
 
-  // Reset
+  // Reset - also revoke blob URL to free memory
   const resetAll = () => {
+    if (audioUrl && audioUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(audioUrl);
+    }
     setDialogue([]); setAudioUrl(''); setFiles([]); setPrompt('');
     setCurrentLine(-1); setMindMap(null); setConversationHistory([]);
     setJoined(false); setSourceContent('');
