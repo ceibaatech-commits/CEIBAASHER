@@ -68,10 +68,11 @@
 - Matchmaking optimized: O(1) bucket queues, 30s timeout, odd-player-out messaging
 - **Divya Tutor Audio Fix (Feb 9, 2026):** Fixed audio playback by implementing proper HTTP Range request support (206 Partial Content)
 - **Divya Tutor Interactive Features (Feb 9, 2026):**
-  - Added `/api/divya/ask` endpoint for "Join Conversation" real-time Q&A
-  - Added `/api/divya/mind-map` endpoint for content mind map generation
-  - Voice preferences: Divya=nova (higher voice), Sher=echo (mid-range voice)
+  - Added `/api/divya/ask` endpoint - Only Divya responds to user questions (not Sher)
+  - Added `/api/divya/mind-map` endpoint with improved colorful UI design
+  - Voice preferences: Both feminine voices - Divya=nova (higher), Sher=shimmer (bright)
   - Added "Divya Tutor" link to mobile navigation menu with Mic icon
+  - **Raise Hand Feature:** NotebookLM-style "Ask Now" button during audio playback - pauses audio and lets user ask Divya questions inline
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
