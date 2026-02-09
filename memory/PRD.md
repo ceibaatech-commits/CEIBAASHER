@@ -61,7 +61,10 @@
 
 ## Pending Issues
 - P0: 1v1 Battle Video Chat - Opponent video/audio not working (WebRTC)
-- P1: Mobile category filter visual verification
+
+## Completed (Feb 2026 - Latest)
+- Divya & Sher AI Tutor: PDF/image upload → Gemini dialogue generation → OpenAI TTS podcast audio
+- Matchmaking optimized: O(1) bucket queues, 30s timeout, odd-player-out messaging
 
 ## Upcoming Tasks
 - P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
