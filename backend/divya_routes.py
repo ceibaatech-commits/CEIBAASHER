@@ -382,19 +382,17 @@ async def ask_question(req: AskRequest):
         
         response = await chat.send_message(UserMessage(text=prompt))
         
-        # Parse the response into Divya and Sher lines
-        responses = []
-        for line in response.strip().split('\n'):
-            line = line.strip()
-            if line.startswith('DIVYA:'):
-                responses.append({"speaker": "Divya", "text": line[6:].strip()})
-            elif line.startswith('SHER:'):
-                responses.append({"speaker": "Sher", "text": line[5:].strip()})
+        # Parse the response - only Divya responds to user questions
+        response_text = response.strip()
         
-        if not responses:
-            responses = [{"speaker": "Divya", "text": response.strip()}]
+        # Extract Divya's response
+        if response_text.startswith('DIVYA:'):
+            response_text = response_text[6:].strip()
         
-        return {"success": True, "responses": responses}
+        # Clean up any accidental multi-line or extra formatting
+        response_text = ' '.join(response_text.split('\n')).strip()
+        
+        return {"success": True, "responses": [{"speaker": "Divya", "text": response_text}]}
         
     except Exception as e:
         print(f"[DIVYA] Ask error: {e}")
