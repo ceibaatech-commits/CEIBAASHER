@@ -1136,6 +1136,8 @@ socket_app = socketio.ASGIApp(sio, socketio_path='')
 
 
 # ── Background: sweep timed-out players every 5s ──
+_sweep_started = False
+
 async def _matchmaking_timeout_sweep():
     """Notify players who waited too long and remove them from queue."""
     while True:
@@ -1152,36 +1154,10 @@ async def _matchmaking_timeout_sweep():
         await asyncio.sleep(5)
 
 
-@sio.event
-async def connect(sid, environ):
-    """Handle client connection with enhanced logging"""
-    try:
-        print(f"[CONNECT] Client connected: {sid}")
-        user_activity[sid] = datetime.now(timezone.utc).timestamp()
-        return True
-    except Exception as e:
-        print(f"[CONNECT] Connection error for {sid}: {e}")
-        return False
-
-
-# Start sweep on first connection
-_sweep_started = False
-
-@sio.event
-async def _ensure_sweep(sid, data=None):
-    pass
-
-# We'll start the sweep from the connect handler
-_original_connect = connect
-
-async def _connect_with_sweep(sid, environ):
+def start_matchmaking_sweep():
+    """Call once from server startup to begin the background sweep."""
     global _sweep_started
     if not _sweep_started:
         _sweep_started = True
         asyncio.create_task(_matchmaking_timeout_sweep())
         print("[MATCHMAKING] Timeout sweep task started")
-    return await _original_connect(sid, environ)
-
-# Replace connect handler
-sio.handlers['/'] = {k: v for k, v in sio.handlers.get('/', {}).items() if k != 'connect'}
-sio.on('connect', handler=_connect_with_sweep)
