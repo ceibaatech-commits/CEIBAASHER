@@ -43,53 +43,45 @@ const ChapterTestHome = () => {
 
       <main className="flex-1">
         {/* ── HERO ── */}
-        <section className="relative overflow-hidden bg-[#0f1729] pt-8 sm:pt-12 pb-16 sm:pb-20">
+        <section className="relative overflow-hidden bg-[#0f1729] pt-4 sm:pt-6 pb-12 sm:pb-14">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-32 -right-32 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/8 rounded-full blur-3xl" />
           </div>
 
           <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-12">
+            <div className="flex flex-col-reverse lg:flex-row items-center gap-2 lg:gap-8">
               <div className="flex-1 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 bg-teal-500/15 border border-teal-500/25 px-3 py-1 rounded-full mb-4">
+                <div className="inline-flex items-center gap-2 bg-teal-500/15 border border-teal-500/25 px-3 py-1 rounded-full mb-2 sm:mb-3">
                   <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                   <span className="text-teal-300 text-xs font-semibold tracking-wide">NCERT Aligned</span>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight mb-3" data-testid="hero-title">
+                <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black text-white leading-[1.15] mb-1.5 sm:mb-2" data-testid="hero-title">
                   CBSE Chapter{' '}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-300">Tests</span>
                 </h1>
 
-                <p className="text-sm sm:text-base text-gray-400 max-w-md mx-auto lg:mx-0 mb-5 leading-relaxed">
+                <p className="text-xs sm:text-sm text-gray-400 max-w-md mx-auto lg:mx-0 mb-3 leading-relaxed">
                   Master every chapter with focused practice tests. Select your class and start your journey to exam success.
                 </p>
 
-                <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 justify-center lg:justify-start">
                   {['Chapter-wise', 'NCERT Based', 'Instant Results'].map(tag => (
-                    <span key={tag} className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-xs font-semibold text-gray-300">
+                    <span key={tag} className="bg-white/5 border border-white/10 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold text-gray-300">
                       {tag}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Lottie on desktop, image on mobile */}
-              <div className="flex-shrink-0 relative w-44 h-44 sm:w-64 sm:h-64 lg:w-[340px] lg:h-[340px]">
-                <div className="hidden lg:block w-full h-full">
-                  <DotLottiePlayer
-                    src="https://assets-v2.lottiefiles.com/a/6dcb9f7c-1172-11ee-8f3a-7f6ccb9677cf/Tu534yUIU1.lottie"
-                    loop
-                    autoplay
-                    style={{ width: '100%', height: '100%' }}
-                  />
-                </div>
-                <img
-                  src="/images/books_stack.png"
-                  alt="Books"
-                  className="lg:hidden w-full h-full object-contain drop-shadow-2xl"
-                  data-testid="hero-3d-image"
+              {/* Lottie animation on all screens */}
+              <div className="flex-shrink-0 w-36 h-36 sm:w-48 sm:h-48 lg:w-[280px] lg:h-[280px] -mb-2 lg:mb-0">
+                <DotLottiePlayer
+                  src="https://assets-v2.lottiefiles.com/a/6dcb9f7c-1172-11ee-8f3a-7f6ccb9677cf/Tu534yUIU1.lottie"
+                  loop
+                  autoplay
+                  style={{ width: '100%', height: '100%' }}
                 />
               </div>
             </div>
@@ -97,7 +89,7 @@ const ChapterTestHome = () => {
         </section>
 
         {/* ── STATS ── */}
-        <section className="max-w-4xl mx-auto px-4 -mt-8 relative z-20 mb-10 sm:mb-14">
+        <section className="max-w-4xl mx-auto px-4 -mt-10 sm:-mt-12 relative z-20 mb-8 sm:mb-12">
           <div className="grid grid-cols-3 gap-2 sm:gap-4" data-testid="stats-section">
             {[
               { val: '500+', label: 'Chapter Tests', Icon: BookOpen },
