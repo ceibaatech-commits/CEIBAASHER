@@ -380,6 +380,15 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                 <Users className="w-4 h-4" />
                 <span className="font-medium text-sm">Join Battle Room</span>
               </button>
+              
+              <button 
+                onClick={() => { navigate('/divya'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-800 hover:bg-purple-50 hover:text-purple-600 transition-all"
+                data-testid="mobile-divya-tutor-link"
+              >
+                <Mic className="w-4 h-4" />
+                <span className="font-medium text-sm">Divya Tutor</span>
+              </button>
 
               {/* Guest Auth Buttons */}
               {!isLoggedIn && (
