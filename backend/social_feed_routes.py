@@ -355,7 +355,40 @@ async def get_post(post_id: str, request: Request, authorization: Optional[str] 
         if not post:
             raise HTTPException(status_code=404, detail="Post not found")
         
+        # Enrich post with current badge data from user
+        if post.get("user_id"):
+            post_author = await db.users.find_one(
+                {"id": post["user_id"]},
+                {"_id": 0, "id": 1, "profile_picture": 1, "isTeacher": 1, "isProfessor": 1, "isOfficial": 1, "isInstitute": 1, "is_verified": 1}
+            )
+            if post_author:
+                post["user_avatar"] = post_author.get("profile_picture") or post.get("user_avatar")
+                post["isTeacher"] = post_author.get("isTeacher", False)
+                post["isProfessor"] = post_author.get("isProfessor", False)
+                post["isOfficial"] = post_author.get("isOfficial", False)
+                post["isInstitute"] = post_author.get("isInstitute", False)
+                post["is_verified"] = post_author.get("is_verified", False)
+        
         comments = await db.comments.find({"post_id": post_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+        
+        # Enrich comments with current badge data
+        comment_user_ids = list(set(c.get("user_id") for c in comments if c.get("user_id")))
+        if comment_user_ids:
+            comment_users = await db.users.find(
+                {"id": {"$in": comment_user_ids}},
+                {"_id": 0, "id": 1, "username": 1, "profile_picture": 1, "isTeacher": 1, "isProfessor": 1, "isOfficial": 1, "isInstitute": 1}
+            ).to_list(1000)
+            comment_user_map = {u["id"]: u for u in comment_users}
+            for comment in comments:
+                u = comment_user_map.get(comment.get("user_id"))
+                if u:
+                    comment["isTeacher"] = u.get("isTeacher", False)
+                    comment["isProfessor"] = u.get("isProfessor", False)
+                    comment["isOfficial"] = u.get("isOfficial", False)
+                    comment["isInstitute"] = u.get("isInstitute", False)
+                    if not comment.get("username"):
+                        comment["username"] = u.get("username")
+        
         post["comments"] = comments
         
         user_id = await get_optional_user_id_async(authorization, request)
@@ -1071,19 +1104,21 @@ async def get_comments(post_id: str):
             {"post_id": post_id, "parent_comment_id": None}, {"_id": 0}
         ).sort("created_at", -1).to_list(None)
         
-        # Enrich comments with current isTeacher status from users collection
+        # Enrich comments with current badge data from users collection
         unique_user_ids = list(set(comment.get("user_id") for comment in comments if comment.get("user_id")))
         if unique_user_ids:
             users = await db.users.find(
                 {"id": {"$in": unique_user_ids}},
-                {"_id": 0, "id": 1, "isTeacher": 1, "username": 1}
+                {"_id": 0, "id": 1, "isTeacher": 1, "isProfessor": 1, "isOfficial": 1, "isInstitute": 1, "username": 1}
             ).to_list(1000)
             user_data = {u["id"]: u for u in users}
             
             for comment in comments:
                 if comment.get("user_id") in user_data:
                     comment["isTeacher"] = user_data[comment["user_id"]].get("isTeacher", False)
-                    # Ensure username is present
+                    comment["isProfessor"] = user_data[comment["user_id"]].get("isProfessor", False)
+                    comment["isOfficial"] = user_data[comment["user_id"]].get("isOfficial", False)
+                    comment["isInstitute"] = user_data[comment["user_id"]].get("isInstitute", False)
                     if not comment.get("username") and user_data[comment["user_id"]].get("username"):
                         comment["username"] = user_data[comment["user_id"]]["username"]
         

@@ -638,6 +638,12 @@ const SinglePost = () => {
                         {comment.isProfessor && (
                           <span className="px-1.5 py-0.5 text-[10px] font-bold bg-purple-600 text-white rounded">Professor</span>
                         )}
+                        {comment.isOfficial && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-800 text-white rounded">Official</span>
+                        )}
+                        {comment.isInstitute && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-600 text-white rounded">Institute</span>
+                        )}
                         <span className="text-gray-500">·</span>
                         <span className="text-gray-500 text-sm">{formatCommentDate(comment.created_at)}</span>
                       </div>
