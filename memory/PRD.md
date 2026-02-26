@@ -65,10 +65,17 @@
 
 ## Completed (Feb 2026 - Latest)
 - Divya & Sher AI Tutor: PDF/image upload → Gemini dialogue generation → OpenAI TTS podcast audio
-- Matchmaking optimized: O(1) bucket queues, 30s timeout, odd-player-out messaging
+- **Matchmaking Improvements (Feb 26, 2026):**
+  - Changed from exact topic matching to exam-based matching (cross-topic battles)
+  - NDA Economics can now match with NDA History (same exam, any subject)
+  - Faster matchmaking due to larger player pools per exam
+- **UI Fixes (Feb 26, 2026):**
+  - Added "Divya Tutor" to desktop navigation menu with mic icon
+  - Added "Sign Up with Google" button using Emergent Auth
+  - Added pagination (100 items/page) to Admin User Management & Exam Sheet Manager
 - **Divya Tutor Updates (Feb 9, 2026):**
   - Audio now returned as base64 (no server storage - reduces server burden)
-  - Page accessible without login
+  - Login required to access
   - Only Divya responds to user questions (not Sher)
   - Both feminine voices: Divya=nova (higher), Sher=shimmer (bright)
   - Improved colorful Mind Map UI design
