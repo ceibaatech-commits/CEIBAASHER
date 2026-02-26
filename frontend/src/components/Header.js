@@ -135,6 +135,12 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
               Join Battle Room
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
             </button>
+            {/* Divya Tutor - AI Learning */}
+            <button onClick={() => navigate('/divya')} className="text-gray-700 hover:text-purple-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1">
+              <Mic className="w-4 h-4" />
+              Divya Tutor
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 transition-all duration-200 group-hover:w-full"></span>
+            </button>
           </nav>
 
           {/* User Section */}
