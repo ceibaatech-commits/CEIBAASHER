@@ -1,7 +1,7 @@
 """
 Quiz Matchmaking System — Optimized for Scale
 Handles automatic player pairing for quiz battles.
-Uses dict-based queues keyed by (exam, subject) for O(1) match lookups.
+Uses dict-based queues keyed by exam for cross-topic matching within same exam.
 Supports timeout for odd-player-out and queue size reporting.
 """
 from typing import Dict, List, Optional, Any
@@ -19,7 +19,7 @@ class WaitingPlayer:
     socket_id: str
     player_name: str
     exam: str
-    subject: str
+    subject: str  # Keep for display, but match by exam only
     joined_at: float = field(default_factory=lambda: datetime.now(timezone.utc).timestamp())
 
 
@@ -30,42 +30,42 @@ class MatchedBattle:
     player1: Dict[str, Any]
     player2: Dict[str, Any]
     exam: str
-    subject: str
+    subject: str  # Combined subjects for display
     created_at: float = field(default_factory=lambda: datetime.now(timezone.utc).timestamp())
 
 
 class MatchmakingManager:
     """
     Manages automatic matchmaking for quiz battles.
-    Uses bucket queues keyed by normalized (exam, subject) for O(1) matching.
+    Uses bucket queues keyed by normalized exam for cross-topic matching.
+    Example: NDA Economics can match with NDA History (same exam, different subject)
     """
 
     def __init__(self):
-        # Bucket queue: {(exam, subject): [WaitingPlayer, ...]}
-        self._queues: Dict[tuple, List[WaitingPlayer]] = defaultdict(list)
-        # Quick lookup: socket_id -> bucket key
-        self._player_keys: Dict[str, tuple] = {}
+        # Bucket queue: {exam: [WaitingPlayer, ...]} - match by EXAM only
+        self._queues: Dict[str, List[WaitingPlayer]] = defaultdict(list)
+        # Quick lookup: socket_id -> exam key
+        self._player_keys: Dict[str, str] = {}
         self.active_battles: Dict[str, MatchedBattle] = {}
 
     @staticmethod
-    def _normalize(exam: str, subject: str) -> tuple:
-        import re
-        norm_exam = exam.lower().strip()
-        norm_subject = re.sub(r'\s*\([^)]*\)\s*', '', subject).lower().strip()
-        return (norm_exam, norm_subject)
+    def _normalize_exam(exam: str) -> str:
+        """Normalize exam name for matching - ignore subject for broader matching"""
+        return exam.lower().strip()
 
     # ── Queue operations ──
 
     def add_to_queue(self, socket_id: str, player_name: str, exam: str, subject: str) -> Optional[WaitingPlayer]:
         """
         Add player to queue. Returns opponent if instant match found, else None.
-        O(1) lookup by bucket key.
+        Matches by EXAM only, not subject - enabling cross-topic battles.
+        Example: NDA Economics vs NDA History
         """
         # Already queued?
         if socket_id in self._player_keys:
             return None
 
-        key = self._normalize(exam, subject)
+        key = self._normalize_exam(exam)  # Match by exam only!
         bucket = self._queues[key]
 
         # Scan for first valid opponent (skip self, skip stale entries)
@@ -81,17 +81,17 @@ class MatchmakingManager:
                 bucket.pop(0)
                 self._player_keys.pop(candidate.socket_id, None)
                 continue
-            # Match found — pop and return
+            # Match found — pop and return (cross-topic match allowed!)
             opponent = bucket.pop(0)
             self._player_keys.pop(opponent.socket_id, None)
-            print(f"[MATCHMAKING] Instant match: {player_name} <-> {opponent.player_name} on {key}")
+            print(f"[MATCHMAKING] Match found: {player_name} ({subject}) <-> {opponent.player_name} ({opponent.subject}) on exam={key}")
             return opponent
 
         # No match — enqueue
         player = WaitingPlayer(socket_id=socket_id, player_name=player_name, exam=exam, subject=subject)
         bucket.append(player)
         self._player_keys[socket_id] = key
-        print(f"[MATCHMAKING] Queued {player_name} in {key} (queue size: {len(bucket)})")
+        print(f"[MATCHMAKING] Queued {player_name} ({subject}) in exam={key} (queue size: {len(bucket)})")
         return None
 
     def remove_from_queue(self, socket_id: str) -> bool:
@@ -105,7 +105,8 @@ class MatchmakingManager:
         return True
 
     def get_queue_size(self, exam: str, subject: str) -> int:
-        key = self._normalize(exam, subject)
+        """Returns total players waiting for this exam (all subjects)"""
+        key = self._normalize_exam(exam)
         return len(self._queues.get(key, []))
 
     def get_total_searching(self) -> int:
