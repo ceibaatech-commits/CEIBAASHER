@@ -68,10 +68,15 @@
 - **Cloudinary Media Upload (Feb 27, 2026):**
   - Integrated Cloudinary CDN for Victory Lane media (offloads server)
   - Signed upload flow for secure direct-to-CDN uploads
-  - Supports images (10MB max) and videos (100MB max)
-  - Auto image optimization (responsive sizes, quality auto, format auto)
+  - Supports images (10MB max) and videos (100MB max, 90s duration limit)
+  - Auto image optimization with proper aspect ratios:
+    - 16:9 (1600x900) for professional content
+    - 4:5 (1080x1350) for engagement/vertical content
+    - Face detection for avatars
   - Video transcoding (720p, 480p adaptive streaming)
   - Upload progress tracking in UI
+  - Video player with 16:9 aspect ratio, controls, no download
+  - Media uploads ENABLED by administrator
 - **WebRTC Video Chat Fix (Feb 27, 2026):**
   - Implemented "perfect negotiation" pattern for reliable WebRTC signaling
   - Fixed ICE candidate queuing and timing issues
