@@ -227,28 +227,37 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         global_images = global_settings.get("allow_image_posts", False) if global_settings else False
         global_videos = global_settings.get("allow_video_posts", False) if global_settings else False
         
+        print(f"[MEDIA PERMS] Global: media={global_media}, images={global_images}, videos={global_videos}")
+        
         # If global is disabled, no one can post
         if not global_media:
             return {**disabled_response, "media_disabled_globally": True}
         
         # No auth token = can't post
         if not authorization:
+            print(f"[MEDIA PERMS] No authorization header")
             return disabled_response
         
         token = authorization.replace("Bearer ", "")
         user_id = None
         
+        # Try session token first
         session = await db.user_sessions.find_one({"session_token": token})
         if session:
             user_id = session.get("user_id")
+            print(f"[MEDIA PERMS] Found session for user_id: {user_id}")
         else:
+            # Try JWT decode
             try:
                 payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
                 user_id = payload.get("sub")
-            except JWTError:
+                print(f"[MEDIA PERMS] JWT decoded, user_id: {user_id}")
+            except JWTError as e:
+                print(f"[MEDIA PERMS] JWT decode failed: {e}")
                 pass
         
         if not user_id:
+            print(f"[MEDIA PERMS] No user_id found")
             return disabled_response
         
         user = await db.users.find_one(
@@ -257,7 +266,10 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         )
         
         if not user:
+            print(f"[MEDIA PERMS] User not found for id: {user_id}")
             return disabled_response
+        
+        print(f"[MEDIA PERMS] User found: {user}")
         
         # Check if user is specifically disabled
         if user.get("is_disabled", False) or user.get("media_disabled", False):
@@ -276,6 +288,8 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         can_images = global_images and (user_images is None or user_images is True)
         can_videos = global_videos and (user_videos is None or user_videos is True)
         
+        print(f"[MEDIA PERMS] Result: images={can_images}, videos={can_videos}")
+        
         return {
             "can_post_images": can_images,
             "can_post_videos": can_videos,
@@ -283,7 +297,7 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
             "media_disabled_globally": False
         }
     except Exception as e:
-        print(f"Error fetching media permissions: {e}")
+        print(f"[MEDIA PERMS] Error: {e}")
         return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
 
 @router.get("/admin/users/search")
