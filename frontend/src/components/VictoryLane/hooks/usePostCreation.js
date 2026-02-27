@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { uploadImage, uploadVideo, validateFile } from '../../../utils/cloudinaryUpload';
+import { uploadImage, uploadVideo, validateFile, validateVideoDuration, getVideoDuration } from '../../../utils/cloudinaryUpload';
 
 const BACKEND_URL = window.location.origin;
 
