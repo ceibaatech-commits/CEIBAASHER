@@ -96,11 +96,24 @@ const usePostCreation = (user, fetchFeed) => {
       if (selectedPostVideos.length > 0 && mediaSettings.can_post_videos) {
         setIsUploading(true);
         for (const vid of selectedPostVideos) {
-          // Validate file
+          // Validate file format and size
           const validation = validateFile(vid, 'video');
           if (!validation.valid) {
             toast.error(validation.error);
             continue;
+          }
+
+          // Validate video duration (max 1:30)
+          try {
+            const duration = await getVideoDuration(vid);
+            const durationValidation = validateVideoDuration(duration);
+            if (!durationValidation.valid) {
+              toast.error(durationValidation.error);
+              continue;
+            }
+          } catch (durationErr) {
+            console.error('Duration check error:', durationErr);
+            // Continue anyway if we can't check duration
           }
 
           try {
