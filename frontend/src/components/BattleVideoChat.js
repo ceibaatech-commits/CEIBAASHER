@@ -399,12 +399,12 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   const startCall = async () => {
     if (!socket) {
       log('No socket connection');
-      alert('Waiting for battle connection...');
+      setErrorMsg('Waiting for connection...');
       return;
     }
     if (!roomId) {
       log('No roomId available');
-      alert('Waiting for opponent match...');
+      setErrorMsg('Waiting for opponent match...');
       return;
     }
     
@@ -418,25 +418,54 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
       log(`Starting call in room: ${roomId}`);
       setCallState('connecting');
       setShowButton(false);
+      setErrorMsg('');
+      
+      // Ensure we're in the video room
+      if (!roomJoinedRef.current) {
+        socket.emit('join-video-room', { roomId });
+        roomJoinedRef.current = true;
+        // Small delay to ensure room join is processed
+        await new Promise(r => setTimeout(r, 200));
+      }
       
       const stream = await getLocalStream();
       const pc = createPeer(stream);
       
-      const offer = await pc.createOffer();
+      // Create and send offer
+      const offer = await pc.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
+      });
       await pc.setLocalDescription(offer);
       log('Created and set local description (offer)');
       
       socket.emit('webrtc_offer', { roomId, offer });
-      log('Sent offer');
+      log('Sent offer to room');
+      
+      // Set timeout for no response
+      setTimeout(() => {
+        if (callState === 'connecting' && !remoteStream) {
+          log('Connection timeout - no response from peer');
+          setErrorMsg('Opponent not responding. They may need to click "Video Call".');
+        }
+      }, 15000);
+      
     } catch (err) {
       log(`Start call error: ${err.message}`);
       console.error('Start call error:', err);
       cleanup();
       setShowButton(true);
       makingOffer.current = false;
+      
       if (err.name === 'NotAllowedError') {
-        alert('Camera/microphone access denied. Please allow access and try again.');
+        setErrorMsg('Camera/mic access denied. Please allow access.');
+      } else if (err.name === 'NotFoundError') {
+        setErrorMsg('No camera/microphone found.');
+      } else {
+        setErrorMsg('Failed to start call. Please retry.');
       }
+    } finally {
+      makingOffer.current = false;
     }
   };
 
