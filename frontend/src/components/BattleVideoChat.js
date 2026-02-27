@@ -35,13 +35,15 @@ const ICE_SERVERS = {
 };
 
 const BattleVideoChat = ({ socket, roomId, playerName }) => {
-  const [callState, setCallState] = useState('idle'); // idle | connecting | connected
+  const [callState, setCallState] = useState('idle'); // idle | connecting | connected | error
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [minimized, setMinimized] = useState(false);
   const [remoteStream, setRemoteStream] = useState(null);
   const [showButton, setShowButton] = useState(true);
   const [debugInfo, setDebugInfo] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [isPolite, setIsPolite] = useState(false); // For perfect negotiation
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -49,10 +51,13 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   const localStreamRef = useRef(null);
   const pendingCandidates = useRef([]);
   const makingOffer = useRef(false);
+  const ignoreOffer = useRef(false);
+  const roomJoinedRef = useRef(false);
 
   const log = (msg) => {
-    console.log(`[VIDEO] ${msg}`);
-    setDebugInfo(prev => `${msg}\n${prev}`.slice(0, 500));
+    const timestamp = new Date().toLocaleTimeString();
+    console.log(`[VIDEO ${timestamp}] ${msg}`);
+    setDebugInfo(prev => `${timestamp}: ${msg}\n${prev}`.slice(0, 800));
   };
 
   const cleanup = useCallback(() => {
