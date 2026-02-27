@@ -226,5 +226,7 @@ export default {
   getOptimizedImageUrl,
   getVideoThumbnailUrl,
   getVideoStreamUrl,
-  validateFile
+  validateFile,
+  validateVideoDuration,
+  getVideoDuration
 };
