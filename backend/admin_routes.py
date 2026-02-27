@@ -206,7 +206,11 @@ async def get_user_permissions(user_id: str):
 async def get_current_user_media_permissions(authorization: Optional[str] = Header(None)):
     """
     Get current logged-in user's media posting permissions.
-    Checks global setting first, then per-user permissions.
+    
+    Logic:
+    - If global media is DISABLED -> no one can post media
+    - If global media is ENABLED -> users can post unless they are specifically disabled
+    - Per-user settings (can_post_images/can_post_videos) only RESTRICT, not enable
     """
     from jose import jwt, JWTError
     import os
@@ -223,9 +227,11 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         global_images = global_settings.get("allow_image_posts", False) if global_settings else False
         global_videos = global_settings.get("allow_video_posts", False) if global_settings else False
         
+        # If global is disabled, no one can post
         if not global_media:
             return {**disabled_response, "media_disabled_globally": True}
         
+        # No auth token = can't post
         if not authorization:
             return disabled_response
         
@@ -247,16 +253,33 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         
         user = await db.users.find_one(
             {"$or": [{"id": user_id}, {"user_id": user_id}]},
-            {"_id": 0, "can_post_images": 1, "can_post_videos": 1, "is_disabled": 1}
+            {"_id": 0, "can_post_images": 1, "can_post_videos": 1, "is_disabled": 1, "media_disabled": 1}
         )
         
         if not user:
             return disabled_response
         
+        # Check if user is specifically disabled
+        if user.get("is_disabled", False) or user.get("media_disabled", False):
+            return {
+                "can_post_images": False,
+                "can_post_videos": False,
+                "is_disabled": True,
+                "media_disabled_globally": False
+            }
+        
+        # When global is enabled, users CAN post UNLESS explicitly set to False
+        # If field doesn't exist (None) or is True, allow posting
+        user_images = user.get("can_post_images")
+        user_videos = user.get("can_post_videos")
+        
+        can_images = global_images and (user_images is None or user_images is True)
+        can_videos = global_videos and (user_videos is None or user_videos is True)
+        
         return {
-            "can_post_images": global_images and user.get("can_post_images", False),
-            "can_post_videos": global_videos and user.get("can_post_videos", False),
-            "is_disabled": user.get("is_disabled", False),
+            "can_post_images": can_images,
+            "can_post_videos": can_videos,
+            "is_disabled": False,
             "media_disabled_globally": False
         }
     except Exception as e:
