@@ -43,9 +43,21 @@ ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
 ALLOWED_VIDEO_EXTENSIONS = {".mp4", ".webm", ".mov", ".avi", ".mkv"}
 MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB
 MAX_VIDEO_SIZE = 100 * 1024 * 1024  # 100MB
+MAX_VIDEO_DURATION = 90  # 1 minute 30 seconds
 
 # Allowed folders for Cloudinary
 ALLOWED_FOLDERS = ("posts/", "users/", "avatars/", "covers/")
+
+# Aspect ratio configurations
+# 16:9 for professional content (1600x900)
+# 4:5 for engagement/vertical (1080x1350)
+IMAGE_TRANSFORMATIONS = {
+    "feed": "c_fill,w_1200,ar_16:9,q_auto,f_auto|c_fill,w_600,ar_4:5,q_auto,f_auto|c_thumb,w_150,h_150,g_face,q_auto",
+    "profile": "c_fill,w_400,h_400,g_face,q_auto,f_auto",
+    "cover": "c_fill,w_1500,h_500,q_auto,f_auto"
+}
+
+VIDEO_TRANSFORMATIONS = "c_scale,w_1280,ar_16:9,q_auto|c_scale,w_720,ar_16:9,q_auto|c_scale,w_480,q_auto"
 
 
 class DeleteMediaRequest(BaseModel):
