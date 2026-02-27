@@ -155,6 +155,7 @@ export function getVideoStreamUrl(publicId) {
 export function validateFile(file, resourceType = 'image') {
   const maxImageSize = 10 * 1024 * 1024; // 10MB
   const maxVideoSize = 100 * 1024 * 1024; // 100MB
+  const maxVideoDuration = 90; // 1 minute 30 seconds
   
   const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
   const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo'];
@@ -175,7 +176,46 @@ export function validateFile(file, resourceType = 'image') {
     }
   }
   
+  return { valid: true, maxVideoDuration };
+}
+
+/**
+ * Validate video duration (must be called after getting video metadata)
+ * @param {number} duration - Video duration in seconds
+ * @returns {object} Validation result
+ */
+export function validateVideoDuration(duration) {
+  const maxDuration = 90; // 1 minute 30 seconds
+  if (duration > maxDuration) {
+    return { 
+      valid: false, 
+      error: `Video too long. Maximum duration: 1 minute 30 seconds (${maxDuration}s). Your video: ${Math.round(duration)}s` 
+    };
+  }
   return { valid: true };
+}
+
+/**
+ * Get video duration from file
+ * @param {File} file - Video file
+ * @returns {Promise<number>} Duration in seconds
+ */
+export function getVideoDuration(file) {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    
+    video.onloadedmetadata = () => {
+      window.URL.revokeObjectURL(video.src);
+      resolve(video.duration);
+    };
+    
+    video.onerror = () => {
+      reject(new Error('Failed to load video metadata'));
+    };
+    
+    video.src = URL.createObjectURL(file);
+  });
 }
 
 export default {
