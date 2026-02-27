@@ -244,55 +244,140 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   const getLocalStream = async () => {
     if (localStreamRef.current) return localStreamRef.current;
     log('Requesting camera/mic access...');
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: { width: 320, height: 240, frameRate: 15 }
-    });
-    localStreamRef.current = stream;
-    if (localVideoRef.current) localVideoRef.current.srcObject = stream;
-    log('Got local stream');
-    return stream;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        },
+        video: { 
+          width: { ideal: 320, max: 640 }, 
+          height: { ideal: 240, max: 480 }, 
+          frameRate: { ideal: 15, max: 24 }
+        }
+      });
+      localStreamRef.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        localVideoRef.current.play().catch(() => {});
+      }
+      log('Got local stream with ' + stream.getTracks().length + ' tracks');
+      return stream;
+    } catch (err) {
+      log(`Media access error: ${err.name} - ${err.message}`);
+      throw err;
+    }
   };
 
   const createPeer = (stream) => {
-    log('Creating peer connection...');
+    // Close existing peer if any
+    if (peerRef.current) {
+      peerRef.current.close();
+    }
+    
+    log('Creating new peer connection...');
     const pc = new RTCPeerConnection(ICE_SERVERS);
     peerRef.current = pc;
     
+    // Add all local tracks
     stream.getTracks().forEach(track => {
       pc.addTrack(track, stream);
-      log(`Added ${track.kind} track`);
+      log(`Added local ${track.kind} track`);
     });
 
+    // Handle incoming tracks (remote stream)
     pc.ontrack = (e) => {
-      log(`Received remote ${e.track.kind} track`);
+      log(`Received remote ${e.track.kind} track, streams: ${e.streams.length}`);
       if (e.streams && e.streams[0]) {
+        log(`Remote stream has ${e.streams[0].getTracks().length} tracks`);
         setRemoteStream(e.streams[0]);
         setCallState('connected');
         log('Remote stream connected!');
+      } else if (e.track) {
+        // Fallback: create stream from track
+        log('Creating stream from track...');
+        const newStream = new MediaStream([e.track]);
+        setRemoteStream(prev => {
+          if (prev) {
+            prev.addTrack(e.track);
+            return prev;
+          }
+          return newStream;
+        });
+        setCallState('connected');
       }
     };
 
+    // Send ICE candidates to peer
     pc.onicecandidate = (e) => {
       if (e.candidate && socket && roomId) {
         socket.emit('webrtc_ice_candidate', { roomId, candidate: e.candidate });
-        log('Sent ICE candidate');
+        log(`Sent ICE candidate (${e.candidate.type || 'unknown'})`);
+      } else if (!e.candidate) {
+        log('ICE gathering complete');
       }
     };
 
+    // Monitor ICE connection state
     pc.oniceconnectionstatechange = () => {
       const state = pc.iceConnectionState;
-      log(`ICE connection state: ${state}`);
-      if (state === 'connected' || state === 'completed') {
-        setCallState('connected');
-      } else if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+      log(`ICE connection: ${state}`);
+      
+      switch (state) {
+        case 'checking':
+          setCallState('connecting');
+          break;
+        case 'connected':
+        case 'completed':
+          setCallState('connected');
+          setErrorMsg('');
+          break;
+        case 'disconnected':
+          log('ICE disconnected - attempting reconnection...');
+          // Don't immediately cleanup, ICE may recover
+          break;
+        case 'failed':
+          log('ICE connection failed');
+          setErrorMsg('Connection failed. Please retry.');
+          setCallState('error');
+          break;
+        case 'closed':
+          cleanup();
+          setShowButton(true);
+          break;
+        default:
+          break;
+      }
+    };
+
+    // Monitor overall connection state
+    pc.onconnectionstatechange = () => {
+      log(`Connection state: ${pc.connectionState}`);
+      if (pc.connectionState === 'failed') {
+        setErrorMsg('Connection lost. Please retry.');
         cleanup();
         setShowButton(true);
       }
     };
 
-    pc.onconnectionstatechange = () => {
-      log(`Connection state: ${pc.connectionState}`);
+    // Handle negotiation needed (for renegotiation)
+    pc.onnegotiationneeded = async () => {
+      log('Negotiation needed');
+      // Only the impolite peer should initiate renegotiation
+      if (!isPolite && callState === 'connected') {
+        try {
+          makingOffer.current = true;
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          socket.emit('webrtc_offer', { roomId, offer });
+          log('Sent renegotiation offer');
+        } catch (err) {
+          log(`Renegotiation error: ${err.message}`);
+        } finally {
+          makingOffer.current = false;
+        }
+      }
     };
 
     return pc;
