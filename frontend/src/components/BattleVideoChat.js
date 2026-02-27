@@ -61,21 +61,34 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   };
 
   const cleanup = useCallback(() => {
-    log('Cleaning up...');
+    log('Cleaning up WebRTC...');
+    makingOffer.current = false;
+    ignoreOffer.current = false;
+    
     if (peerRef.current) {
+      peerRef.current.ontrack = null;
+      peerRef.current.onicecandidate = null;
+      peerRef.current.oniceconnectionstatechange = null;
+      peerRef.current.onconnectionstatechange = null;
+      peerRef.current.onnegotiationneeded = null;
       peerRef.current.close();
       peerRef.current = null;
     }
+    
     if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(t => t.stop());
+      localStreamRef.current.getTracks().forEach(t => {
+        t.stop();
+        log(`Stopped ${t.kind} track`);
+      });
       localStreamRef.current = null;
     }
+    
     if (localVideoRef.current) localVideoRef.current.srcObject = null;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    
     setRemoteStream(null);
     setCallState('idle');
     pendingCandidates.current = [];
-    makingOffer.current = false;
   }, []);
 
   // Set remote video when stream changes
