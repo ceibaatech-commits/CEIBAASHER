@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { uploadImage, uploadVideo, validateFile } from '../../../utils/cloudinaryUpload';
 
 const BACKEND_URL = window.location.origin;
 
@@ -11,6 +12,8 @@ const usePostCreation = (user, fetchFeed) => {
   const [showAcademicModal, setShowAcademicModal] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [showQuickPostModal, setShowQuickPostModal] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [mediaSettings, setMediaSettings] = useState({
     allow_media: false,
@@ -45,7 +48,7 @@ const usePostCreation = (user, fetchFeed) => {
     fetchMediaSettings();
   }, [user]);
 
-  // Create text post (with optional media)
+  // Create text post (with optional media via Cloudinary)
   const handleCreatePost = async () => {
     if (!newPostContent.trim() || !user) return;
 
@@ -57,28 +60,69 @@ const usePostCreation = (user, fetchFeed) => {
 
     try {
       let mediaUrls = [];
+      const totalFiles = selectedPostImages.length + selectedPostVideos.length;
+      let uploadedCount = 0;
 
+      // Upload images to Cloudinary
       if (selectedPostImages.length > 0 && mediaSettings.can_post_images) {
+        setIsUploading(true);
         for (const img of selectedPostImages) {
-          const formData = new FormData();
-          formData.append('file', img);
-          const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
-          });
-          if (uploadResponse.data.url) mediaUrls.push(uploadResponse.data.url);
+          // Validate file
+          const validation = validateFile(img, 'image');
+          if (!validation.valid) {
+            toast.error(validation.error);
+            continue;
+          }
+
+          try {
+            const result = await uploadImage(img, 'posts/', (progress) => {
+              const overallProgress = ((uploadedCount + progress / 100) / totalFiles) * 100;
+              setUploadProgress(Math.round(overallProgress));
+            });
+            
+            // Use the secure_url from Cloudinary
+            if (result.secure_url) {
+              mediaUrls.push(result.secure_url);
+            }
+            uploadedCount++;
+          } catch (uploadErr) {
+            console.error('Image upload error:', uploadErr);
+            toast.error(`Failed to upload image: ${uploadErr.message}`);
+          }
         }
       }
 
+      // Upload videos to Cloudinary
       if (selectedPostVideos.length > 0 && mediaSettings.can_post_videos) {
+        setIsUploading(true);
         for (const vid of selectedPostVideos) {
-          const formData = new FormData();
-          formData.append('file', vid);
-          const uploadResponse = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
-          });
-          if (uploadResponse.data.url) mediaUrls.push(uploadResponse.data.url);
+          // Validate file
+          const validation = validateFile(vid, 'video');
+          if (!validation.valid) {
+            toast.error(validation.error);
+            continue;
+          }
+
+          try {
+            const result = await uploadVideo(vid, 'posts/', (progress) => {
+              const overallProgress = ((uploadedCount + progress / 100) / totalFiles) * 100;
+              setUploadProgress(Math.round(overallProgress));
+            });
+            
+            // Use the secure_url from Cloudinary
+            if (result.secure_url) {
+              mediaUrls.push(result.secure_url);
+            }
+            uploadedCount++;
+          } catch (uploadErr) {
+            console.error('Video upload error:', uploadErr);
+            toast.error(`Failed to upload video: ${uploadErr.message}`);
+          }
         }
       }
+
+      setIsUploading(false);
+      setUploadProgress(0);
 
       const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
         post_type: 'general',
@@ -98,6 +142,8 @@ const usePostCreation = (user, fetchFeed) => {
     } catch (error) {
       console.error('Post error:', error);
       toast.error(error.response?.data?.detail || 'Failed to create post');
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
