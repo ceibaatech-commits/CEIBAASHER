@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Minimize2, Maximize2, Phone } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Minimize2, Maximize2, Phone, AlertCircle } from 'lucide-react';
 
+// Updated ICE servers with reliable STUN/TURN
 const ICE_SERVERS = { 
   iceServers: [
+    // Google STUN servers (free, reliable)
     { urls: 'stun:stun.l.google.com:19302' }, 
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
-    { urls: 'stun:stun3.l.google.com:19302' },
-    { urls: 'stun:stun4.l.google.com:19302' },
-    // Free TURN servers for testing
+    // Metered Open Relay TURN servers (free tier)
     {
       urls: 'turn:openrelay.metered.ca:80',
       username: 'openrelayproject',
@@ -23,8 +23,15 @@ const ICE_SERVERS = {
       urls: 'turn:openrelay.metered.ca:443?transport=tcp',
       username: 'openrelayproject',
       credential: 'openrelayproject'
+    },
+    // Additional backup TURN
+    {
+      urls: 'turns:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject'
     }
-  ] 
+  ],
+  iceCandidatePoolSize: 10
 };
 
 const BattleVideoChat = ({ socket, roomId, playerName }) => {
