@@ -193,13 +193,39 @@ const PostCard = ({
             </div>
           )}
 
-          {/* Media */}
+          {/* Media - Optimized aspect ratios */}
           {post.media_urls && post.media_urls.length > 0 && (
-            <div className="mt-3 rounded-2xl overflow-hidden border border-gray-200">
-              {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') ? (
-                <video src={post.media_urls[0]} controls className="w-full max-h-[512px] object-contain bg-black" onClick={(e) => e.stopPropagation()} />
+            <div className="mt-3 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
+              {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
+                /* Video Player - 16:9 aspect ratio for professional look */
+                <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
+                  <video 
+                    src={post.media_urls[0]} 
+                    controls 
+                    preload="metadata"
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-contain bg-black" 
+                    onClick={(e) => e.stopPropagation()}
+                    controlsList="nodownload"
+                  >
+                    Your browser does not support video playback.
+                  </video>
+                </div>
               ) : (
-                <img src={post.media_urls[0]} alt="" className="w-full max-h-[512px] object-cover" />
+                /* Image - Responsive with max 4:5 aspect ratio (engagement friendly) */
+                <div className="relative w-full" style={{ maxHeight: '600px' }}>
+                  <img 
+                    src={post.media_urls[0]} 
+                    alt="" 
+                    className="w-full h-auto object-cover"
+                    style={{ 
+                      maxHeight: '600px',
+                      // Cloudinary optimized URL if from cloudinary
+                      objectFit: 'cover'
+                    }}
+                    loading="lazy"
+                  />
+                </div>
               )}
             </div>
           )}
