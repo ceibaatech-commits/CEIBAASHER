@@ -138,8 +138,14 @@ async def get_cloudinary_config():
         "api_key": os.getenv("CLOUDINARY_API_KEY"),
         "max_image_size": MAX_IMAGE_SIZE,
         "max_video_size": MAX_VIDEO_SIZE,
+        "max_video_duration": MAX_VIDEO_DURATION,  # 90 seconds (1:30)
         "allowed_image_formats": ["jpg", "jpeg", "png", "gif", "webp"],
-        "allowed_video_formats": ["mp4", "mov", "avi", "webm", "mkv"]
+        "allowed_video_formats": ["mp4", "mov", "avi", "webm", "mkv"],
+        "aspect_ratios": {
+            "professional": "16:9",  # 1600x900 for links/graphics
+            "engagement": "4:5",     # 1080x1350 for vertical content
+            "max_vertical": "4:5"    # Don't go taller than this
+        }
     }
 
 
