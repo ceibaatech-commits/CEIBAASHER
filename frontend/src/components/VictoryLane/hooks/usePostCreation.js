@@ -225,6 +225,8 @@ const usePostCreation = (user, fetchFeed) => {
     mediaSettings,
     selectedPostImages, setSelectedPostImages,
     selectedPostVideos, setSelectedPostVideos,
+    uploadProgress,
+    isUploading,
     handleCreatePost,
     handleCreateQuestion,
     handleCreateAcademicQuestion,
