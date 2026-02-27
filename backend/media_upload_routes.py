@@ -70,11 +70,19 @@ class DeleteMediaRequest(BaseModel):
 @router.get("/cloudinary/signature")
 async def generate_cloudinary_signature(
     resource_type: str = Query("image", enum=["image", "video"]),
-    folder: str = Query("posts/", description="Upload folder path")
+    folder: str = Query("posts/", description="Upload folder path"),
+    use_case: str = Query("feed", enum=["feed", "profile", "cover"], description="Use case for transformations")
 ):
     """
     Generate a signed upload signature for Cloudinary.
     Frontend uses this to upload directly to Cloudinary CDN (offloads server).
+    
+    Aspect Ratios:
+    - 16:9 (1600x900) for professional content/links
+    - 4:5 (1080x1350) for engagement/vertical images (like Instagram)
+    - Avoids ultra-tall images (nothing taller than 4:5)
+    
+    Video: Max 90 seconds (1:30)
     """
     # Validate folder
     if not any(folder.startswith(f) for f in ALLOWED_FOLDERS):
@@ -88,15 +96,17 @@ async def generate_cloudinary_signature(
         "folder": folder,
     }
     
-    # Add transformation presets based on resource type
+    # Add transformation presets based on resource type and use case
     if resource_type == "image":
-        # Create responsive versions automatically
-        params["eager"] = "c_fill,w_1200,q_auto,f_auto|c_fill,w_600,q_auto,f_auto|c_thumb,w_150,h_150,g_face,q_auto"
+        # Use case-specific transformations with proper aspect ratios
+        eager_transform = IMAGE_TRANSFORMATIONS.get(use_case, IMAGE_TRANSFORMATIONS["feed"])
+        params["eager"] = eager_transform
     elif resource_type == "video":
-        # Video transcoding for streaming
-        params["eager"] = "c_scale,w_1280,q_auto|c_scale,w_720,q_auto|c_scale,w_480,q_auto"
+        # Video with duration limit and proper aspect ratio
+        params["eager"] = VIDEO_TRANSFORMATIONS
         params["eager_async"] = "true"
         params["resource_type"] = "video"
+        # Note: Duration validation happens on frontend before upload
     
     # Generate signature
     signature = cloudinary.utils.api_sign_request(
@@ -113,7 +123,8 @@ async def generate_cloudinary_signature(
         "resource_type": resource_type,
         "eager": params.get("eager"),
         "eager_async": params.get("eager_async", "false"),
-        "upload_url": f"https://api.cloudinary.com/v1_1/{os.getenv('CLOUDINARY_CLOUD_NAME')}/{resource_type}/upload"
+        "upload_url": f"https://api.cloudinary.com/v1_1/{os.getenv('CLOUDINARY_CLOUD_NAME')}/{resource_type}/upload",
+        "max_video_duration": MAX_VIDEO_DURATION if resource_type == "video" else None
     }
 
 
