@@ -502,12 +502,35 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     return null;
   }
 
+  // Error state
+  if (callState === 'error' || errorMsg) {
+    return (
+      <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-red-700 max-w-xs">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+            <AlertCircle className="w-5 h-5 text-red-400" />
+          </div>
+          <div>
+            <p className="text-white font-medium text-sm">Connection Issue</p>
+            <p className="text-red-400 text-xs">{errorMsg || 'Please retry'}</p>
+          </div>
+        </div>
+        <button
+          onClick={() => { setErrorMsg(''); setCallState('idle'); setShowButton(true); }}
+          className="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   // Idle: show call button
   if (callState === 'idle' && showButton) {
     return (
       <button
         onClick={startCall}
-        className="fixed bottom-6 right-4 z-[60] flex items-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 active:scale-95 text-white rounded-full shadow-2xl transition-all"
+        className="fixed bottom-6 right-4 z-[60] flex items-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 active:scale-95 text-white rounded-full shadow-2xl transition-all animate-pulse"
         data-testid="start-video-call"
       >
         <Video className="w-5 h-5" />
