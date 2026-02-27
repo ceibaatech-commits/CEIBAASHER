@@ -65,17 +65,20 @@
 
 ## Completed (Feb 2026 - Latest)
 - Divya & Sher AI Tutor: PDF/image upload → Gemini dialogue generation → OpenAI TTS podcast audio
+- **Cloudinary Media Upload (Feb 27, 2026):**
+  - Integrated Cloudinary CDN for Victory Lane media (offloads server)
+  - Signed upload flow for secure direct-to-CDN uploads
+  - Supports images (10MB max) and videos (100MB max)
+  - Auto image optimization (responsive sizes, quality auto, format auto)
+  - Video transcoding (720p, 480p adaptive streaming)
+  - Upload progress tracking in UI
 - **WebRTC Video Chat Fix (Feb 27, 2026):**
   - Implemented "perfect negotiation" pattern for reliable WebRTC signaling
   - Fixed ICE candidate queuing and timing issues
   - Added TURNS (TLS) support for better firewall traversal
-  - Improved error handling with user-friendly messages
-  - Added connection state monitoring and auto-recovery
-  - Fixed remote stream handling to properly display opponent video
 - **Matchmaking Improvements (Feb 26, 2026):**
   - Changed from exact topic matching to exam-based matching (cross-topic battles)
   - NDA Economics can now match with NDA History (same exam, any subject)
-  - Faster matchmaking due to larger player pools per exam
 - **UI Fixes (Feb 26, 2026):**
   - Added "Divya Tutor" to desktop navigation menu with mic icon
   - Added "Sign Up with Google" button using Emergent Auth
