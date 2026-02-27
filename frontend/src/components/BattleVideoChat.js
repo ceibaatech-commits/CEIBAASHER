@@ -83,55 +83,87 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     if (remoteVideoRef.current && remoteStream) {
       log('Setting remote stream to video element');
       remoteVideoRef.current.srcObject = remoteStream;
+      // Ensure video plays
+      remoteVideoRef.current.play().catch(e => log(`Video play error: ${e.message}`));
     }
   }, [remoteStream]);
 
-  // Socket event listeners
+  // Join video room when roomId is available
+  useEffect(() => {
+    if (!socket || !roomId || roomJoinedRef.current) return;
+    
+    log(`Joining video room: ${roomId}`);
+    socket.emit('join-video-room', { roomId });
+    roomJoinedRef.current = true;
+    
+    // Determine politeness based on socket ID (for perfect negotiation)
+    // The "impolite" peer creates offers, the "polite" peer yields to collision
+    setIsPolite(socket.id > roomId.split('_').pop());
+    log(`Role: ${socket.id > roomId.split('_').pop() ? 'polite' : 'impolite'}`);
+  }, [socket, roomId]);
+
+  // Socket event listeners with perfect negotiation pattern
   useEffect(() => {
     if (!socket) {
       log('No socket available');
       return;
     }
 
-    log(`Socket connected: ${socket.connected}, roomId: ${roomId}`);
-
-    // Explicitly join the room when roomId is set
-    if (roomId) {
-      log(`Joining room: ${roomId}`);
-      socket.emit('join-video-room', { roomId });
-    }
+    log(`Socket status: ${socket.connected ? 'connected' : 'disconnected'}, roomId: ${roomId}`);
 
     const handleOffer = async (data) => {
       log(`Received offer from: ${data.from}`);
-      if (callState === 'connected') {
-        log('Already connected, ignoring offer');
+      
+      // Perfect negotiation: handle offer collision
+      const offerCollision = makingOffer.current || 
+        (peerRef.current && peerRef.current.signalingState !== 'stable');
+      
+      ignoreOffer.current = !isPolite && offerCollision;
+      if (ignoreOffer.current) {
+        log('Ignoring offer due to collision (impolite peer)');
         return;
       }
+
       try {
         setCallState('connecting');
         setShowButton(false);
+        setErrorMsg('');
         
-        const stream = await getLocalStream();
-        const pc = createPeer(stream);
+        // Get or create peer connection
+        if (!peerRef.current) {
+          const stream = await getLocalStream();
+          createPeer(stream);
+        }
         
+        const pc = peerRef.current;
+        
+        // Set remote description (offer)
         await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
         log('Set remote description (offer)');
         
-        // Add any pending ICE candidates
-        for (const c of pendingCandidates.current) {
-          await pc.addIceCandidate(new RTCIceCandidate(c));
+        // Drain pending ICE candidates
+        while (pendingCandidates.current.length > 0) {
+          const candidate = pendingCandidates.current.shift();
+          try {
+            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            log('Added queued ICE candidate');
+          } catch (e) {
+            log(`Failed to add queued ICE: ${e.message}`);
+          }
         }
-        pendingCandidates.current = [];
         
+        // Create and send answer
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         log('Created and set local description (answer)');
         
         socket.emit('webrtc_answer', { roomId, answer });
-        log('Sent answer');
+        log('Sent answer to room');
+        
       } catch (err) {
         log(`Offer handling error: ${err.message}`);
         console.error('WebRTC offer error:', err);
+        setErrorMsg('Connection failed. Try again.');
         cleanup();
         setShowButton(true);
       }
@@ -140,18 +172,29 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     const handleAnswer = async (data) => {
       log(`Received answer from: ${data.from}`);
       try {
-        if (peerRef.current && peerRef.current.signalingState !== 'stable') {
-          await peerRef.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+        const pc = peerRef.current;
+        if (!pc) {
+          log('No peer connection for answer');
+          return;
+        }
+        
+        if (pc.signalingState === 'have-local-offer') {
+          await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
           log('Set remote description (answer)');
           
-          // Add any pending ICE candidates
-          for (const c of pendingCandidates.current) {
-            await peerRef.current.addIceCandidate(new RTCIceCandidate(c));
+          // Drain pending ICE candidates
+          while (pendingCandidates.current.length > 0) {
+            const candidate = pendingCandidates.current.shift();
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+              log('Added queued ICE candidate');
+            } catch (e) {
+              log(`Failed to add queued ICE: ${e.message}`);
+            }
           }
-          pendingCandidates.current = [];
           log('Call setup complete!');
         } else {
-          log(`Ignoring answer - state: ${peerRef.current?.signalingState}`);
+          log(`Ignoring answer - wrong state: ${pc.signalingState}`);
         }
       } catch (err) {
         log(`Answer handling error: ${err.message}`);
@@ -160,31 +203,43 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
     };
 
     const handleICE = async (data) => {
-      log(`Received ICE candidate`);
+      log(`Received ICE candidate from: ${data.from}`);
       try {
-        if (peerRef.current && peerRef.current.remoteDescription) {
-          await peerRef.current.addIceCandidate(new RTCIceCandidate(data.candidate));
-          log('Added ICE candidate');
+        const pc = peerRef.current;
+        if (pc && pc.remoteDescription && pc.remoteDescription.type) {
+          await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+          log('Added ICE candidate directly');
         } else {
-          log('Queuing ICE candidate (no remote description yet)');
+          log('Queuing ICE candidate (waiting for remote description)');
           pendingCandidates.current.push(data.candidate);
         }
       } catch (err) {
-        log(`ICE handling error: ${err.message}`);
-        console.error('WebRTC ICE error:', err);
+        // Ignore non-fatal ICE errors
+        if (!err.message.includes('location information')) {
+          log(`ICE handling error: ${err.message}`);
+        }
       }
+    };
+
+    // Listen for peer disconnection
+    const handlePeerLeft = (data) => {
+      log(`Peer left: ${data.reason || 'disconnected'}`);
+      cleanup();
+      setShowButton(true);
     };
 
     socket.on('webrtc-offer', handleOffer);
     socket.on('webrtc-answer', handleAnswer);
     socket.on('webrtc-ice-candidate', handleICE);
+    socket.on('peer-left', handlePeerLeft);
 
     return () => {
       socket.off('webrtc-offer', handleOffer);
       socket.off('webrtc-answer', handleAnswer);
       socket.off('webrtc-ice-candidate', handleICE);
+      socket.off('peer-left', handlePeerLeft);
     };
-  }, [socket, roomId, callState, cleanup]);
+  }, [socket, roomId, isPolite]);
 
   const getLocalStream = async () => {
     if (localStreamRef.current) return localStreamRef.current;
