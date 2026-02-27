@@ -261,15 +261,14 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
             return disabled_response
         
         user = await db.users.find_one(
-            {"$or": [{"id": user_id}, {"user_id": user_id}]},
-            {"_id": 0, "can_post_images": 1, "can_post_videos": 1, "is_disabled": 1, "media_disabled": 1}
+            {"$or": [{"id": user_id}, {"user_id": user_id}]}
         )
         
         if not user:
             print(f"[MEDIA PERMS] User not found for id: {user_id}")
             return disabled_response
         
-        print(f"[MEDIA PERMS] User found: {user}")
+        print(f"[MEDIA PERMS] User found: id={user.get('id')}, can_post_images={user.get('can_post_images')}, can_post_videos={user.get('can_post_videos')}")
         
         # Check if user is specifically disabled
         if user.get("is_disabled", False) or user.get("media_disabled", False):
