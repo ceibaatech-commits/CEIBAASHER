@@ -265,10 +265,14 @@ const VictoryLane = () => {
         setShowQuestionModal={creation.setShowQuestionModal}
         setShowAcademicModal={creation.setShowAcademicModal}
         mediaSettings={creation.mediaSettings}
-        selectedPostImages={creation.selectedPostImages}
-        setSelectedPostImages={creation.setSelectedPostImages}
-        selectedPostVideos={creation.selectedPostVideos}
-        setSelectedPostVideos={creation.setSelectedPostVideos}
+        mediaFiles={creation.mediaFiles}
+        removeMedia={creation.removeMedia}
+        handleImageSelect={creation.handleImageSelect}
+        handleVideoSelect={creation.handleVideoSelect}
+        isUploading={creation.isUploading}
+        uploadAllMedia={creation.uploadAllMedia}
+        getPostButtonState={creation.getPostButtonState}
+        clearMedia={creation.clearMedia}
       />
     </div>
   );
