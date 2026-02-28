@@ -118,10 +118,13 @@ const VictoryLane = () => {
           newPostContent={creation.newPostContent}
           setNewPostContent={creation.setNewPostContent}
           mediaSettings={creation.mediaSettings}
-          selectedPostImages={creation.selectedPostImages}
-          setSelectedPostImages={creation.setSelectedPostImages}
-          selectedPostVideos={creation.selectedPostVideos}
-          setSelectedPostVideos={creation.setSelectedPostVideos}
+          mediaFiles={creation.mediaFiles}
+          removeMedia={creation.removeMedia}
+          handleImageSelect={creation.handleImageSelect}
+          handleVideoSelect={creation.handleVideoSelect}
+          isUploading={creation.isUploading}
+          uploadAllMedia={creation.uploadAllMedia}
+          getPostButtonState={creation.getPostButtonState}
           handleCreatePost={creation.handleCreatePost}
           setShowAcademicModal={creation.setShowAcademicModal}
           setShowQuizModal={creation.setShowQuizModal}
