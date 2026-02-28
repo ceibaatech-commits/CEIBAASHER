@@ -56,13 +56,13 @@ const CreatePostFAB = ({
   return (
     <>
       {/* Backdrop when menu is open - Mobile Only */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showCreateMenu && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             className="md:hidden fixed inset-0 bg-black/30 z-40"
             onClick={() => setShowCreateMenu(false)}
           />
@@ -70,7 +70,7 @@ const CreatePostFAB = ({
       </AnimatePresence>
 
       {/* Quick Action Menu - Mobile Only */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showCreateMenu && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
