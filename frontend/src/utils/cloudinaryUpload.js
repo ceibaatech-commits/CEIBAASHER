@@ -34,6 +34,11 @@ export async function uploadToCloudinary(file, resourceType = 'image', folder = 
     formData.append('signature', sigData.signature);
     formData.append('folder', sigData.folder);
     
+    // For videos, we need to include resource_type in the upload
+    if (resourceType === 'video') {
+      formData.append('resource_type', 'video');
+    }
+    
     if (sigData.eager) {
       formData.append('eager', sigData.eager);
     }
