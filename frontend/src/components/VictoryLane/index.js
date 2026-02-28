@@ -7,5 +7,6 @@ export { default as CreatePostFAB } from './CreatePostFAB';
 export { default as CommentsSection } from './CommentsSection';
 export { default as PostComposer } from './PostComposer';
 export { default as QuizRoomModal } from './QuizRoomModal';
+export { default as MediaPreview } from './MediaPreview';
 export * from './constants';
 export { useVictoryLane, usePostCreation } from './hooks';
