@@ -1,7 +1,8 @@
 import React, { useCallback, memo } from 'react';
-import { Trophy, HelpCircle, MessageCircle, X, GraduationCap, ArrowLeft, Image, Video, AlertCircle } from 'lucide-react';
+import { X, ArrowLeft, Image, Video, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '../UserAvatar';
+import MediaPreview from './MediaPreview';
 
 // Memoized textarea to prevent flickering
 const PostTextarea = memo(({ value, onChange }) => (
@@ -9,8 +10,9 @@ const PostTextarea = memo(({ value, onChange }) => (
     value={value}
     onChange={onChange}
     placeholder="What's happening?"
-    className="w-full border-none outline-none resize-none min-h-[200px] text-lg placeholder-gray-400 focus:ring-0 bg-transparent"
+    className="w-full border-none outline-none resize-none min-h-[150px] text-lg placeholder-gray-400 focus:ring-0 bg-transparent"
     autoFocus
+    data-testid="mobile-post-content-input"
   />
 ));
 
@@ -27,31 +29,44 @@ const CreatePostFAB = ({
   setShowQuestionModal,
   setShowAcademicModal,
   mediaSettings = {},
-  selectedPostImages,
-  setSelectedPostImages,
-  selectedPostVideos,
-  setSelectedPostVideos,
+  mediaFiles = [],
+  removeMedia,
+  handleImageSelect,
+  handleVideoSelect,
+  isUploading = false,
+  uploadAllMedia,
+  getPostButtonState,
+  clearMedia,
 }) => {
   if (!user) return null;
 
   const canPostImages = mediaSettings.allow_media && mediaSettings.can_post_images;
   const canPostVideos = mediaSettings.allow_media && mediaSettings.can_post_videos;
 
-  const handleImageSelect = useCallback((e) => {
-    if (!canPostImages || !setSelectedPostImages) return;
-    const files = Array.from(e.target.files || []);
-    setSelectedPostImages(prev => [...(prev || []), ...files]);
-  }, [canPostImages, setSelectedPostImages]);
-
-  const handleVideoSelect = useCallback((e) => {
-    if (!canPostVideos || !setSelectedPostVideos) return;
-    const files = Array.from(e.target.files || []);
-    setSelectedPostVideos(prev => [...(prev || []), ...files]);
-  }, [canPostVideos, setSelectedPostVideos]);
-
   const handleContentChange = useCallback((e) => {
     setNewPostContent(e.target.value);
   }, [setNewPostContent]);
+
+  const handleClose = () => {
+    setShowQuickPostModal(false);
+    setNewPostContent('');
+    if (clearMedia) clearMedia();
+  };
+
+  // Get button state
+  const buttonState = getPostButtonState ? getPostButtonState() : { disabled: !newPostContent.trim(), text: 'Post' };
+
+  // Check for pending uploads
+  const pendingUploads = mediaFiles.filter(f => !f.uploaded && !f.error);
+  const showUploadFirst = pendingUploads.length > 0 && !isUploading;
+
+  // Handle post - uploads first if needed
+  const onPostClick = async () => {
+    if (pendingUploads.length > 0 && uploadAllMedia) {
+      await uploadAllMedia();
+    }
+    handleCreatePost();
+  };
 
   return (
     <>
@@ -127,7 +142,7 @@ const CreatePostFAB = ({
         )}
       </AnimatePresence>
 
-      {/* Full Screen Post Composer */}
+      {/* Full Screen Post Composer - Mobile */}
       <AnimatePresence>
         {showQuickPostModal && (
           <motion.div
@@ -136,31 +151,46 @@ const CreatePostFAB = ({
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed inset-0 z-[70] bg-white flex flex-col"
+            data-testid="mobile-post-composer"
           >
             {/* Composer Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white sticky top-0 z-10">
               <button
-                onClick={() => {
-                  setShowQuickPostModal(false);
-                  setNewPostContent('');
-                }}
+                onClick={handleClose}
                 className="p-2 hover:bg-gray-100 rounded-full transition"
                 data-testid="close-composer-btn"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-700" />
               </button>
-              <button
-                onClick={handleCreatePost}
-                disabled={!newPostContent.trim()}
-                className={`px-5 py-2 rounded-full font-semibold text-sm transition ${
-                  newPostContent.trim()
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                }`}
-                data-testid="submit-post-btn"
-              >
-                Post
-              </button>
+              
+              <div className="flex items-center gap-2">
+                {/* Upload button if media pending */}
+                {showUploadFirst && (
+                  <button
+                    onClick={uploadAllMedia}
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium flex items-center gap-1.5"
+                    data-testid="mobile-upload-btn"
+                  >
+                    <Image className="w-4 h-4" />
+                    Upload
+                  </button>
+                )}
+                
+                {/* Post button */}
+                <button
+                  onClick={onPostClick}
+                  disabled={buttonState.disabled || isUploading}
+                  className={`px-5 py-2 rounded-full font-semibold text-sm transition flex items-center gap-2 ${
+                    buttonState.disabled || isUploading
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                  }`}
+                  data-testid="submit-post-btn"
+                >
+                  {isUploading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {buttonState.text}
+                </button>
+              </div>
             </div>
 
             {/* Post Composer Content */}
@@ -178,6 +208,17 @@ const CreatePostFAB = ({
                       value={newPostContent}
                       onChange={handleContentChange}
                     />
+                    
+                    {/* Media Previews */}
+                    {mediaFiles.length > 0 && (
+                      <MediaPreview
+                        mediaFiles={mediaFiles}
+                        onRemove={removeMedia}
+                        isUploading={isUploading}
+                        maxImages={4}
+                        maxVideos={1}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -188,18 +229,47 @@ const CreatePostFAB = ({
               {canPostImages || canPostVideos ? (
                 <div className="flex items-center gap-4">
                   {canPostImages && (
-                    <label className="p-2 hover:bg-blue-50 rounded-full transition cursor-pointer" data-testid="image-upload-btn">
+                    <label 
+                      className={`p-2 hover:bg-blue-50 rounded-full transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`} 
+                      data-testid="image-upload-btn"
+                    >
                       <Image className="w-6 h-6 text-blue-500" />
-                      <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} multiple />
+                      <input 
+                        type="file" 
+                        accept="image/jpeg,image/png,image/gif,image/webp" 
+                        className="hidden" 
+                        onChange={handleImageSelect} 
+                        multiple 
+                        disabled={isUploading}
+                      />
                     </label>
                   )}
                   {canPostVideos && (
-                    <label className="p-2 hover:bg-blue-50 rounded-full transition cursor-pointer" data-testid="video-upload-btn">
+                    <label 
+                      className={`p-2 hover:bg-blue-50 rounded-full transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`} 
+                      data-testid="video-upload-btn"
+                    >
                       <Video className="w-6 h-6 text-blue-500" />
-                      <input type="file" accept="video/*" className="hidden" onChange={handleVideoSelect} />
+                      <input 
+                        type="file" 
+                        accept="video/mp4,video/webm,video/quicktime" 
+                        className="hidden" 
+                        onChange={handleVideoSelect} 
+                        disabled={isUploading}
+                      />
                     </label>
                   )}
                   <div className="flex-1" />
+                  
+                  {/* Upload status */}
+                  {isUploading && (
+                    <span className="text-xs text-blue-500 flex items-center gap-1">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Uploading...
+                    </span>
+                  )}
+                  
+                  {/* Character count */}
                   <span className={`text-sm ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
                     {newPostContent.length}/280
                   </span>
