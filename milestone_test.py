@@ -8,7 +8,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://podcast-tutor-1.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://battle-mode.preview.emergentagent.com")
 
 class MilestoneSystemTester:
     def __init__(self):

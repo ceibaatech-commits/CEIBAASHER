@@ -7,7 +7,7 @@ import asyncio
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://podcast-tutor-1.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://battle-mode.preview.emergentagent.com")
 SOCKET_URL = f"{BACKEND_URL}/api/battlews"
 
 class BackendTester:

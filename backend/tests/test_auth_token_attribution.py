@@ -17,7 +17,7 @@ import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://podcast-tutor-1.preview.emergentagent.com"
+    BASE_URL = "https://battle-mode.preview.emergentagent.com"
 
 
 class TestDemoLogin:

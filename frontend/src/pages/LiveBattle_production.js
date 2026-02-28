@@ -7,7 +7,7 @@ import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 
 // Production-grade Socket.IO configuration
-const BACKEND_URL = window.location.origin || 'https://podcast-tutor-1.preview.emergentagent.com';
+const BACKEND_URL = window.location.origin || 'https://battle-mode.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
