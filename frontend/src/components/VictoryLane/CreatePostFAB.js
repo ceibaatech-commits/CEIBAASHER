@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import { Trophy, HelpCircle, MessageCircle, X, GraduationCap, ArrowLeft, Image, Video, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '../UserAvatar';
+
+// Memoized textarea to prevent flickering
+const PostTextarea = memo(({ value, onChange }) => (
+  <textarea
+    value={value}
+    onChange={onChange}
+    placeholder="What's happening?"
+    className="w-full border-none outline-none resize-none min-h-[200px] text-lg placeholder-gray-400 focus:ring-0 bg-transparent"
+    autoFocus
+  />
+));
 
 const CreatePostFAB = ({
   user,
@@ -26,17 +37,21 @@ const CreatePostFAB = ({
   const canPostImages = mediaSettings.allow_media && mediaSettings.can_post_images;
   const canPostVideos = mediaSettings.allow_media && mediaSettings.can_post_videos;
 
-  const handleImageSelect = (e) => {
+  const handleImageSelect = useCallback((e) => {
     if (!canPostImages || !setSelectedPostImages) return;
     const files = Array.from(e.target.files || []);
     setSelectedPostImages(prev => [...(prev || []), ...files]);
-  };
+  }, [canPostImages, setSelectedPostImages]);
 
-  const handleVideoSelect = (e) => {
+  const handleVideoSelect = useCallback((e) => {
     if (!canPostVideos || !setSelectedPostVideos) return;
     const files = Array.from(e.target.files || []);
     setSelectedPostVideos(prev => [...(prev || []), ...files]);
-  };
+  }, [canPostVideos, setSelectedPostVideos]);
+
+  const handleContentChange = useCallback((e) => {
+    setNewPostContent(e.target.value);
+  }, [setNewPostContent]);
 
   return (
     <>
