@@ -174,12 +174,9 @@ const CreatePostFAB = ({
                   />
                   <div className="flex-1">
                     <p className="font-semibold text-gray-900 text-sm mb-2">{user.name}</p>
-                    <textarea
+                    <PostTextarea 
                       value={newPostContent}
-                      onChange={(e) => setNewPostContent(e.target.value)}
-                      placeholder="What's happening?"
-                      className="w-full border-none outline-none resize-none min-h-[200px] text-lg placeholder-gray-400 focus:ring-0 bg-transparent"
-                      autoFocus
+                      onChange={handleContentChange}
                     />
                   </div>
                 </div>
