@@ -1,6 +1,17 @@
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import { X, Trophy, HelpCircle, GraduationCap, Image, Video, AlertCircle } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
+
+// Memoized textarea to prevent flickering on typing
+const DesktopTextarea = memo(({ value, onChange }) => (
+  <textarea
+    value={value}
+    onChange={onChange}
+    placeholder="Share your study wins, tips, or thoughts..."
+    className="w-full border-none outline-none resize-none min-h-[80px] text-base placeholder-gray-400 focus:ring-0 bg-transparent"
+    rows={2}
+  />
+));
 
 const PostComposer = ({
   user,
@@ -21,37 +32,38 @@ const PostComposer = ({
   const canPostImages = mediaSettings.allow_media && mediaSettings.can_post_images;
   const canPostVideos = mediaSettings.allow_media && mediaSettings.can_post_videos;
 
-  const handleImageSelect = (e) => {
+  const handleContentChange = useCallback((e) => {
+    setNewPostContent(e.target.value);
+  }, [setNewPostContent]);
+
+  const handleImageSelect = useCallback((e) => {
     if (!setSelectedPostImages) return;
     const files = Array.from(e.target.files || []);
     setSelectedPostImages(prev => [...prev, ...files]);
-  };
+  }, [setSelectedPostImages]);
 
-  const handleVideoSelect = (e) => {
+  const handleVideoSelect = useCallback((e) => {
     if (!setSelectedPostVideos) return;
     const files = Array.from(e.target.files || []);
     setSelectedPostVideos(prev => [...prev, ...files]);
-  };
+  }, [setSelectedPostVideos]);
 
-  const removeImage = (idx) => {
+  const removeImage = useCallback((idx) => {
     if (setSelectedPostImages) setSelectedPostImages(prev => prev.filter((_, i) => i !== idx));
-  };
+  }, [setSelectedPostImages]);
 
-  const removeVideo = (idx) => {
+  const removeVideo = useCallback((idx) => {
     if (setSelectedPostVideos) setSelectedPostVideos(prev => prev.filter((_, i) => i !== idx));
-  };
+  }, [setSelectedPostVideos]);
 
   return (
     <div className="hidden md:block bg-white border-b border-gray-200 p-4">
       <div className="flex gap-3">
         <UserAvatar profilePicture={user.profile_picture} name={user.name} size="md" />
         <div className="flex-1">
-          <textarea
+          <DesktopTextarea 
             value={newPostContent}
-            onChange={(e) => setNewPostContent(e.target.value)}
-            placeholder="Share your study wins, tips, or thoughts..."
-            className="w-full border-none outline-none resize-none min-h-[80px] text-base placeholder-gray-400 focus:ring-0 bg-transparent"
-            rows={2}
+            onChange={handleContentChange}
           />
           
           {/* Media Previews */}
