@@ -347,6 +347,88 @@ const Board = () => {
     setFilteredRooms(filtered);
   };
 
+  // Fetch Parents Mode status
+  const fetchParentsModeStatus = async () => {
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
+      if (!token) return;
+
+      const response = await axios.get(`${BACKEND_URL}/api/user/parents-mode/status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        setParentsModeActive(response.data.parents_mode_active);
+        setParentsModeTimeRemaining(response.data.time_remaining_seconds || 0);
+        setParentsModeExpiresAt(response.data.expires_at);
+      }
+    } catch (error) {
+      console.error('Error fetching parents mode status:', error);
+    }
+  };
+
+  // Enable Parents Mode
+  const enableParentsMode = async () => {
+    setEnablingParentsMode(true);
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
+      if (!token) {
+        toast.error('Please log in to enable Parents Mode');
+        return;
+      }
+
+      const response = await axios.post(
+        `${BACKEND_URL}/api/user/parents-mode/enable`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        setParentsModeActive(true);
+        setParentsModeTimeRemaining(response.data.time_remaining_seconds);
+        setParentsModeExpiresAt(response.data.expires_at);
+        setShowParentsModeConfirm(false);
+        toast.success('Parents Mode enabled! 1v1 Battle Mode is now blocked for 12 hours.');
+      }
+    } catch (error) {
+      console.error('Error enabling parents mode:', error);
+      toast.error('Failed to enable Parents Mode');
+    } finally {
+      setEnablingParentsMode(false);
+    }
+  };
+
+  // Format time remaining
+  const formatTimeRemaining = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
+    }
+    return `${secs}s`;
+  };
+
+  // Countdown timer for Parents Mode
+  useEffect(() => {
+    if (!parentsModeActive || parentsModeTimeRemaining <= 0) return;
+
+    const interval = setInterval(() => {
+      setParentsModeTimeRemaining(prev => {
+        if (prev <= 1) {
+          setParentsModeActive(false);
+          toast.success('Parents Mode has expired. 1v1 Battle Mode is now available!');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [parentsModeActive, parentsModeTimeRemaining]);
+
   const getTimeRemaining = (expiresAt) => {
     const now = new Date();
     const expiry = new Date(expiresAt);
