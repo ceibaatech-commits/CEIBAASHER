@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { UserPlus, UserCheck, UserMinus, Clock, Loader2 } from 'lucide-react';
 
 const BACKEND_URL = window.location.origin;
 
@@ -122,32 +123,44 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
   };
 
   // Button styling based on state
-  const getButtonStyle = () => {
-    if (followStatus === 'approved') {
+  const getButtonConfig = () => {
+    if (showConfirm && followStatus === 'approved') {
       return {
-        bg: 'bg-blue-50 hover:bg-red-50',
-        border: 'border-2 border-blue-500 hover:border-red-500',
-        text: 'text-blue-600 hover:text-red-600',
-        hoverText: showConfirm ? 'Unfollow' : 'Following ✓'
-      };
-    } else if (followStatus === 'pending') {
-      return {
-        bg: 'bg-yellow-50 hover:bg-red-50',
-        border: 'border-2 border-yellow-500 hover:border-red-500',
-        text: 'text-yellow-700 hover:text-red-600',
-        hoverText: 'Cancel Request'
-      };
-    } else {
-      return {
-        bg: 'bg-white hover:bg-gray-50',
-        border: 'border-2 border-gray-300',
-        text: 'text-gray-800',
-        hoverText: 'Follow'
+        bg: 'bg-red-50 hover:bg-red-100',
+        border: 'border border-red-300',
+        text: 'text-red-600',
+        icon: <UserMinus className="w-4 h-4" />,
+        label: 'Unfollow'
       };
     }
+    if (followStatus === 'approved') {
+      return {
+        bg: 'bg-indigo-50 hover:bg-red-50',
+        border: 'border border-indigo-200 hover:border-red-300',
+        text: 'text-indigo-600 hover:text-red-600',
+        icon: <UserCheck className="w-4 h-4" />,
+        label: 'Following'
+      };
+    }
+    if (followStatus === 'pending') {
+      return {
+        bg: 'bg-amber-50 hover:bg-red-50',
+        border: 'border border-amber-200 hover:border-red-300',
+        text: 'text-amber-700 hover:text-red-600',
+        icon: <Clock className="w-4 h-4" />,
+        label: 'Requested'
+      };
+    }
+    return {
+      bg: 'bg-indigo-600 hover:bg-indigo-700',
+      border: 'border border-transparent',
+      text: 'text-white',
+      icon: <UserPlus className="w-4 h-4" />,
+      label: 'Follow'
+    };
   };
 
-  const buttonStyle = getButtonStyle();
+  const config = getButtonConfig();
 
   return (
     <div className="relative">
@@ -156,32 +169,34 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
         disabled={loading}
         onMouseEnter={() => followStatus === 'approved' && setShowConfirm(true)}
         onMouseLeave={() => setShowConfirm(false)}
+        data-testid="follow-button"
         className={`
-          px-6 py-2 rounded-lg font-semibold transition-all duration-200
-          ${buttonStyle.bg} ${buttonStyle.border} ${buttonStyle.text}
-          ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-          min-w-[120px]
+          inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm transition-all duration-200
+          ${config.bg} ${config.border} ${config.text}
+          ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-95'}
         `}
       >
-        {loading ? 'Loading...' : buttonStyle.hoverText}
+        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : config.icon}
+        <span>{loading ? '...' : config.label}</span>
       </button>
 
       {/* Unfollow confirmation dialog */}
       {showConfirm && followStatus === 'approved' && (
-        <div className="absolute top-full mt-2 left-0 bg-white border-2 border-gray-200 rounded-lg shadow-xl p-4 z-50 min-w-[250px]">
+        <div className="absolute top-full mt-2 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-4 z-50 min-w-[220px]">
           <p className="text-sm text-gray-700 mb-3">
-            Unfollow @{targetUsername}?
+            Unfollow <span className="font-semibold">@{targetUsername}</span>?
           </p>
           <div className="flex gap-2">
             <button
               onClick={handleUnfollow}
-              className="flex-1 px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold"
+              data-testid="confirm-unfollow-btn"
+              className="flex-1 h-9 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm font-semibold transition-colors"
             >
               Unfollow
             </button>
             <button
               onClick={() => setShowConfirm(false)}
-              className="flex-1 px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm font-semibold"
+              className="flex-1 h-9 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-semibold transition-colors"
             >
               Cancel
             </button>

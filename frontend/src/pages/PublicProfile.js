@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Trash2, MoreHorizontal, Gift } from 'lucide-react';
+import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Trash2, MoreHorizontal, Gift, UserPlus } from 'lucide-react';
 import FollowButton from '../components/FollowButton';
 import FollowListModal from '../components/FollowListModal';
 import ShareReferralModal from '../components/ShareReferralModal';
@@ -429,8 +429,9 @@ const PublicProfile = () => {
             {!user && (
               <button
                 onClick={() => navigate('/login')}
-                className="mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
+                className="mt-6 inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 font-semibold text-sm transition-all active:scale-95"
               >
+                <UserPlus className="w-4 h-4" />
                 Login to Follow
               </button>
             )}
@@ -517,8 +518,9 @@ const PublicProfile = () => {
                 ) : (
                   <button
                     onClick={() => navigate('/login')}
-                    className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white rounded-lg hover:from-teal-600 hover:to-cyan-600 font-semibold text-sm"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 font-semibold text-sm transition-all active:scale-95"
                   >
+                    <UserPlus className="w-4 h-4" />
                     Login to Follow
                   </button>
                 )}

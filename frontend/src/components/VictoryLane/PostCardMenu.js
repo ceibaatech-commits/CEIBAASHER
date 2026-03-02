@@ -1,5 +1,5 @@
 import React from 'react';
-import { MoreHorizontal, Link2, Users, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Link2, UserPlus, UserMinus, Trash2 } from 'lucide-react';
 
 const PostCardMenu = ({ post, isOwnPost, isFollowing, displayUserId, displayUsername, openMenuId, onOpenMenu, onToggleFollow, onDeletePost }) => {
   return (
@@ -39,16 +39,16 @@ const PostCardMenu = ({ post, isOwnPost, isFollowing, displayUserId, displayUser
                 onClick={(e) => { e.stopPropagation(); onToggleFollow(displayUserId); onOpenMenu(null); }}
                 className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-colors"
               >
-                <Users className="w-[18px] h-[18px]" />
+                <UserPlus className="w-[18px] h-[18px]" />
                 <span>Follow @{displayUsername}</span>
               </button>
             )}
             {!isOwnPost && isFollowing && (
               <button
                 onClick={(e) => { e.stopPropagation(); onToggleFollow(displayUserId); onOpenMenu(null); }}
-                className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 text-[14px] font-medium text-red-600 hover:bg-red-50 transition-colors"
               >
-                <Users className="w-[18px] h-[18px]" />
+                <UserMinus className="w-[18px] h-[18px]" />
                 <span>Unfollow @{displayUsername}</span>
               </button>
             )}
