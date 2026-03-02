@@ -112,6 +112,17 @@
   - Report handling: dismiss, warn user, 7-day ban, permanent ban
   - New collections: `live_battles`, `battle_reports`, `battle_session_logs`
   - API endpoints: `/api/admin/battles/*` (Super Admin only)
+- **User Report Feature in 1v1 Battle (Feb 28, 2026):**
+  - Added "Report User" button in video chat controls (orange flag icon)
+  - Report modal with predefined reasons:
+    - Nudity / Sexual Content
+    - Harassment / Bullying  
+    - Offensive Content
+    - Cheating
+    - Other Inappropriate Behavior
+  - Optional description field for additional context
+  - Reports automatically appear in Admin Panel under "Battle Reports"
+  - False report warning to prevent abuse
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
