@@ -497,7 +497,7 @@ async def create_battle_report(
             try:
                 payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
                 reporter_id = payload.get("sub")
-            except:
+            except Exception:
                 pass
         
         if reporter_id:
