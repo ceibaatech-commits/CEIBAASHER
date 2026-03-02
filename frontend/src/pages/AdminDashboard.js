@@ -78,6 +78,8 @@ const AdminDashboard = () => {
         return <ContentModeration />;
       case 'revenue':
         return <RevenueManagement />;
+      case 'battles':
+        return <LiveBattlesManager />;
       case 'support':
         return <SupportPanel />;
       case 'settings':
