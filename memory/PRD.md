@@ -123,6 +123,14 @@
   - Optional description field for additional context
   - Reports automatically appear in Admin Panel under "Battle Reports"
   - False report warning to prevent abuse
+- **Parents Mode Feature (Feb 28, 2026):**
+  - Located in My Board (`/profile/board`)
+  - Blocks 1v1 Battle Mode when enabled
+  - Cannot be manually disabled by the user
+  - Auto-disables after 12 hours with countdown timer
+  - Blocked users see a friendly screen explaining the restriction
+  - Solo practice and study materials remain accessible
+  - API: `/api/user/parents-mode/status`, `/enable`, `/check-battle-access`
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
