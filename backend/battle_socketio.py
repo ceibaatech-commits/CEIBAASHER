@@ -1161,3 +1161,115 @@ def start_matchmaking_sweep():
         _sweep_started = True
         asyncio.create_task(_matchmaking_timeout_sweep())
         print("[MATCHMAKING] Timeout sweep task started")
+
+
+
+# ==================== ADMIN REAL-TIME EVENTS ====================
+
+# Admin room for real-time battle updates
+ADMIN_ROOM = "admin_battle_monitor"
+
+@sio.event
+async def admin_join_monitor(sid, data):
+    """
+    Admin joins the battle monitoring room for real-time updates.
+    Requires super admin verification.
+    """
+    try:
+        token = data.get('token')
+        if not token:
+            await sio.emit('admin_error', {'error': 'Authentication required'}, room=sid)
+            return
+        
+        # Verify super admin
+        from jose import jwt
+        import os
+        JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+        JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+        
+        user_id = None
+        
+        # Try session first
+        session = await db.user_sessions.find_one({"session_token": token})
+        if session:
+            user_id = session.get("user_id")
+        
+        if not user_id:
+            try:
+                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                user_id = payload.get("sub")
+            except:
+                pass
+        
+        if not user_id:
+            await sio.emit('admin_error', {'error': 'Invalid token'}, room=sid)
+            return
+        
+        # Check super admin status
+        user = await db.users.find_one({
+            "$or": [{"id": user_id}, {"user_id": user_id}]
+        })
+        
+        if not user or (not user.get("is_super_admin") and user.get("role") != "super_admin"):
+            await sio.emit('admin_error', {'error': 'Super Admin access required'}, room=sid)
+            return
+        
+        # Join admin monitoring room
+        await sio.enter_room(sid, ADMIN_ROOM)
+        print(f"[ADMIN] Super Admin {user.get('name', user_id)} joined battle monitor")
+        
+        await sio.emit('admin_joined', {
+            'success': True,
+            'message': 'Connected to battle monitor'
+        }, room=sid)
+        
+    except Exception as e:
+        print(f"[ERROR] admin_join_monitor: {e}")
+        await sio.emit('admin_error', {'error': str(e)}, room=sid)
+
+
+@sio.event
+async def admin_leave_monitor(sid, data=None):
+    """Admin leaves the battle monitoring room."""
+    await sio.leave_room(sid, ADMIN_ROOM)
+    print(f"[ADMIN] Admin {sid} left battle monitor")
+
+
+async def notify_admins_battle_started(room_id: str, battle_data: dict):
+    """Notify admins when a new battle starts."""
+    try:
+        await sio.emit('admin_battle_started', {
+            'room_id': room_id,
+            'battle': battle_data,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        }, room=ADMIN_ROOM)
+    except Exception as e:
+        print(f"[ERROR] notify_admins_battle_started: {e}")
+
+
+async def notify_admins_battle_ended(room_id: str, result_data: dict):
+    """Notify admins when a battle ends."""
+    try:
+        await sio.emit('admin_battle_ended', {
+            'room_id': room_id,
+            'result': result_data,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        }, room=ADMIN_ROOM)
+    except Exception as e:
+        print(f"[ERROR] notify_admins_battle_ended: {e}")
+
+
+async def notify_admins_new_report(report_data: dict):
+    """Notify admins of a new battle report."""
+    try:
+        await sio.emit('admin_new_report', {
+            'report': report_data,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        }, room=ADMIN_ROOM)
+    except Exception as e:
+        print(f"[ERROR] notify_admins_new_report: {e}")
+
+
+# Export notification functions for use in routes
+__all__ = ['sio', 'socket_app', 'start_matchmaking_sweep', 'init_socketio_db',
+           'notify_admins_battle_started', 'notify_admins_battle_ended', 'notify_admins_new_report']
