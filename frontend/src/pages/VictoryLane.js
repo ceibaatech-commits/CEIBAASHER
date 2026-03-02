@@ -120,6 +120,7 @@ const VictoryLane = () => {
           mediaSettings={creation.mediaSettings}
           mediaFiles={creation.mediaFiles}
           removeMedia={creation.removeMedia}
+          retryUpload={creation.retryUpload}
           handleImageSelect={creation.handleImageSelect}
           handleVideoSelect={creation.handleVideoSelect}
           isUploading={creation.isUploading}
