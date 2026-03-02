@@ -292,7 +292,11 @@ const Matchmaking1v1 = () => {
           socket.emit('battle-complete', {
             roomId,
             playerName,
-            finalScore: myScore + pointsEarned
+            finalScore: myScore + pointsEarned,
+            userId: user?.id || user?.user_id,
+            totalQuestions: questions.length,
+            exam: examId,
+            subject: subject
           });
         }
         setBattleState('results');
