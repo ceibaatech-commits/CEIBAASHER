@@ -1,0 +1,76 @@
+{
+  "summary": "Follow button bug fix verification complete. Backend (11/11 tests pass) and Frontend (all flows working on desktop and mobile). Both reported bugs are FIXED: 1) notification_routes.py now uses 'type' instead of 'notification_type' in query filter (line 107), 2) FollowButton.js completely rewritten - removed hover events, now uses click-based confirm toggle for mobile compatibility.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_follow_notification.py",
+    "/app/test_reports/pytest/pytest_follow_notification.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "FollowButton.js - Line 12-13: justFollowed ref prevents immediate unfollow after follow - good UX for mobile",
+    "FollowButton.js - Line 103-114: handleButtonClick uses click-based approach instead of hover (fixes mobile issue)",
+    "FollowButton.js - Line 21-34: useEffect properly cleans up event listeners for outside click",
+    "notification_routes.py - Line 107: Fixed query to use 'type' field instead of 'notification_type'",
+    "profile_routes.py - Line 249: Notification stored with 'type' field correctly"
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_follow_notification.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% - Follow/Unfollow flows working on desktop and mobile"
+  },
+  "test_credentials": {
+    "test_user_1_id": "3deb5942-7fe2-46f7-8602-125426484b5e",
+    "test_user_1_username": "testuser",
+    "test_user_2_id": "80e98208-953b-484b-af3c-917265eeb871",
+    "test_user_2_username": "sher"
+  },
+  "seed_data_creation": "N/A - used existing test users",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Follow button fix verified. Key tests: POST /api/profile/follow returns success:true with status:approved for public accounts. GET /api/profile/follow-status/{user_id} returns current status. DELETE /api/profile/unfollow/{user_id} works. Notification filter with notification_type=follow now works (queries 'type' field). Frontend FollowButton shows Follow→Following state change and unfollow popup on click.",
+  "tests_performed": {
+    "backend_api_tests": {
+      "test_cleanup_existing_follow": "PASS - Cleans up any existing follow relationship",
+      "test_follow_status_not_following": "PASS - Returns status:null when not following",
+      "test_follow_user_success": "PASS - POST returns success:true and status:approved",
+      "test_follow_status_after_follow": "PASS - Returns status:approved after following",
+      "test_notifications_filter_by_type": "PASS - Filter by notification_type=follow works (fix verified)",
+      "test_unfollow_user_success": "PASS - DELETE returns success:true",
+      "test_follow_status_after_unfollow": "PASS - Returns status:null after unfollow",
+      "test_can_follow_again_after_unfollow": "PASS - Re-follow works correctly",
+      "test_notification_type_filter_uses_correct_field": "PASS - Queries 'type' field correctly",
+      "test_profile_endpoint_returns_follow_status": "PASS - Profile includes follow_status"
+    },
+    "frontend_ui_tests": {
+      "follow_button_shows_follow_state": "PASS - Button shows 'Follow' with UserPlus icon",
+      "follow_button_changes_to_following": "PASS - After clicking, button shows 'Following' with UserCheck icon",
+      "following_button_shows_unfollow_popup": "PASS - Clicking 'Following' shows confirmation popup",
+      "unfollow_popup_has_correct_buttons": "PASS - Shows Unfollow (red) and Cancel buttons",
+      "unfollow_changes_button_back_to_follow": "PASS - After unfollow, button returns to 'Follow' state",
+      "mobile_follow_button_works": "PASS - Button state changes work on mobile viewport (390x844)"
+    }
+  },
+  "bug_fix_verification": {
+    "original_issues": [
+      "Follow button not changing to 'Following' after tap on mobile (hover events issue)",
+      "Follow notifications not sent to target user (wrong field name in query)"
+    ],
+    "fixes_verified": [
+      "FollowButton.js rewritten - removed onMouseEnter/onMouseLeave hover events, uses click-based confirm toggle",
+      "notification_routes.py line 107 - changed query['notification_type'] to query['type']",
+      "justFollowed ref prevents immediate unfollow after follow for better mobile UX"
+    ],
+    "verification_method": "Backend pytest + Frontend Playwright tests on desktop and mobile viewports",
+    "status": "FIXED"
+  }
+}

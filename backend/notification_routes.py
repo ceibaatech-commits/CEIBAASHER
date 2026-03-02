@@ -104,7 +104,7 @@ async def get_notifications(
         # Build query
         query = {"user_id": user_id}
         if notification_type:
-            query["notification_type"] = notification_type
+            query["type"] = notification_type
         if unread_only:
             query["is_read"] = False
         
