@@ -832,7 +832,7 @@ async def generate_ai_insights(user_id: str) -> Dict:
                         time_distribution["evening"] += 1
                     else:
                         time_distribution["night"] += 1
-                except:
+                except Exception:
                     pass
         
         # Calculate averages
