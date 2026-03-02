@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
 import Header from '../components/Header';
-import { Bell, Heart, MessageCircle, Users, Trophy, Flame, Check, Trash2, ArrowLeft, CheckCheck } from 'lucide-react';
+import { Bell, Heart, MessageCircle, Users, Trophy, Flame, Check, Trash2, ArrowLeft, CheckCheck, Loader2 } from 'lucide-react';
 
 const Notifications = () => {
   const { user, loading: authLoading } = useAuth();
@@ -12,6 +12,8 @@ const Notifications = () => {
     notifications, 
     unreadCount, 
     loading, 
+    loadingMore,
+    hasMore,
     fetchNotifications, 
     markAsRead, 
     markAllAsRead, 
@@ -23,9 +25,9 @@ const Notifications = () => {
     if (!authLoading && !user) {
       navigate('/login');
     } else if (user) {
-      fetchNotifications(activeFilter);
+      fetchNotifications(activeFilter, true);
     }
-  }, [user, authLoading, activeFilter, fetchNotifications, navigate]);
+  }, [user, authLoading, activeFilter, navigate]);
 
   const handleNotificationClick = async (notification) => {
     if (!notification.is_read) {
@@ -277,6 +279,31 @@ const Notifications = () => {
                 </div>
               );
             })}
+
+            {/* Load More */}
+            {hasMore && (
+              <div className="pt-2 pb-4">
+                <button
+                  onClick={() => fetchNotifications(activeFilter, false)}
+                  disabled={loadingMore}
+                  data-testid="load-more-notifications"
+                  className="w-full h-11 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {loadingMore ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    'Load More'
+                  )}
+                </button>
+              </div>
+            )}
+
+            {!hasMore && notifications.length > 0 && (
+              <p className="text-center text-xs text-gray-400 py-4">You've seen all notifications</p>
+            )}
           </div>
         )}
       </div>

@@ -17,6 +17,10 @@ export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const PAGE_SIZE = 20;
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -39,13 +43,22 @@ export const NotificationProvider = ({ children }) => {
     }
   }, []);
 
-  const fetchNotifications = useCallback(async (filter = 'all') => {
-    setLoading(true);
+  const fetchNotifications = useCallback(async (filter = 'all', reset = true) => {
+    if (reset) {
+      setLoading(true);
+      setCurrentPage(0);
+    } else {
+      setLoadingMore(true);
+    }
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const params = {};
+      const page = reset ? 0 : currentPage;
+      const params = {
+        skip: page * PAGE_SIZE,
+        limit: PAGE_SIZE
+      };
       if (filter !== 'all') {
         params.notification_type = filter;
       }
@@ -56,15 +69,24 @@ export const NotificationProvider = ({ children }) => {
       );
 
       if (response.data.success) {
-        setNotifications(response.data.notifications || []);
+        const newNotifs = response.data.notifications || [];
+        if (reset) {
+          setNotifications(newNotifs);
+          setCurrentPage(1);
+        } else {
+          setNotifications(prev => [...prev, ...newNotifs]);
+          setCurrentPage(prev => prev + 1);
+        }
+        setHasMore(newNotifs.length >= PAGE_SIZE);
         setUnreadCount(response.data.unread_count || 0);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  }, []);
+  }, [currentPage]);
 
   const markAsRead = useCallback(async (notificationId) => {
     try {
@@ -162,6 +184,8 @@ export const NotificationProvider = ({ children }) => {
     unreadCount,
     notifications,
     loading,
+    loadingMore,
+    hasMore,
     fetchUnreadCount,
     fetchNotifications,
     markAsRead,

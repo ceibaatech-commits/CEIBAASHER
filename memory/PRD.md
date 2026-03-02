@@ -180,7 +180,11 @@
   - Created comprehensive build & publish guide at `frontend/ANDROID_BUILD_GUIDE.md`
   - Backend push notification APIs: register, unregister, send, list tokens
 
-- **UI Fixes: Headers & 404 Page (Mar 2, 2026):**
+- **Notifications Pagination (Mar 2, 2026):**
+  - Changed from loading all notifications to paginated fetch (20 per page)
+  - Added "Load More" button with loading spinner
+  - Shows "You've seen all notifications" when fully loaded
+  - Faster initial page load
   - Added Header to Notifications page and JoinRoom page (both authenticated & login-required states)
   - Created custom 404 NotFound page with dark theme, animated gradient, compass icon, "Back to Home" / "Go Back" buttons, and quick navigation links
   - Added catch-all `*` route in App.js for undefined URLs
