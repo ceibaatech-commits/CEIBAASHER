@@ -4,6 +4,7 @@ import { BookOpen, Award, GraduationCap, ArrowRight, Sparkles, Zap, Target, BarC
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import { useAuth } from '../hooks/useAuth';
 
 const CLASS_DATA = [
@@ -39,6 +40,12 @@ const ChapterTestHome = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <SEO
+        title="Free Chapter-wise MCQs & NCERT Solutions - CBSE Class 6 to 12"
+        description="Practice free chapter-wise MCQs, NCERT solutions, and interactive quizzes for CBSE Class 6, 7, 8, 9, 10, 11 & 12. All subjects covered with instant results."
+        keywords="chapter wise mcq, ncert solutions, cbse class 6 7 8 9 10 11 12, free mcq test, online quiz, ncert mcq"
+        canonical="https://ceibaa.in/chapter-tests"
+      />
       <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
 
       <main className="flex-1">

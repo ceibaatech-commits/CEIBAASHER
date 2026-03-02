@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, Clock, FileText, Trophy, ChevronDown, ChevronUp, U
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 
 const API_URL = window.location.origin;
 
@@ -76,6 +77,12 @@ const ExamSyllabus = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      <SEO
+        title={`${examData?.name || examId} - Free Mock Test & Practice Questions`}
+        description={`Practice free mock tests, topic-wise MCQs and previous year questions for ${examData?.name || examId}. Get instant results and detailed solutions on Ceibaa.`}
+        keywords={`${examData?.name || examId} mock test, ${examData?.name || examId} practice questions, ${examData?.name || examId} free mcq, ${examData?.name || examId} online test`}
+        canonical={`https://ceibaa.in/exam/${examId}`}
+      />
       <Header 
         isLoggedIn={isAuthenticated()}
         user={user}

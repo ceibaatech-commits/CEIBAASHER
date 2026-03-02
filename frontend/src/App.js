@@ -1,5 +1,6 @@
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/AuthContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import ScrollRestoration from "@/components/ScrollRestoration";
@@ -52,6 +53,9 @@ import Matchmaking1v1 from "@/pages/Matchmaking1v1";
 // 404 Page
 import NotFound from "@/pages/NotFound";
 
+// Sitemap
+import Sitemap from "@/pages/Sitemap";
+
 // Admin Panel
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -83,6 +87,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 
 function App() {
   return (
+    <HelmetProvider>
     <AuthProvider>
       <NotificationProvider>
         <div className="App" style={{ paddingTop: '64px' }}>
@@ -187,6 +192,9 @@ function App() {
           {/* Divya AI Tutor */}
           <Route path="/divya" element={<DivyaTutor />} />
           
+          {/* Sitemap */}
+          <Route path="/sitemap" element={<Sitemap />} />
+          
           {/* 404 Catch-All */}
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -196,6 +204,7 @@ function App() {
     </div>
       </NotificationProvider>
     </AuthProvider>
+    </HelmetProvider>
   );
 }
 

@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, Clock, Trophy, Users, Zap, CheckCircle, ChevronDow
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import SEO from '../components/SEO';
 import { useAuth } from '../hooks/useAuth';
 import { API_URL, CLASS_COLORS, DIFFICULTY_COLORS } from '../config/constants';
 import MathText from '../components/MathText';
@@ -187,8 +188,16 @@ const ChapterTestChapters = () => {
   const colorGradient = CLASS_COLORS[selectedClass] || 'from-blue-600 to-teal-600';
   const totalQuestions = chapters.reduce((acc, ch) => acc + ch.total_questions, 0);
 
+  const subjectDisplay = subject ? subject.replace(/---/g, ' - ').replace(/-/g, ' ') : '';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <SEO
+        title={`Class ${selectedClass} ${subjectDisplay} - Free Chapter-wise MCQs`}
+        description={`Practice free chapter-wise MCQs for CBSE Class ${selectedClass} ${subjectDisplay}. Solve NCERT-based questions with instant results and detailed solutions.`}
+        keywords={`class ${selectedClass} ${subjectDisplay} mcq, class ${selectedClass} ${subjectDisplay} ncert solutions, ${subjectDisplay} chapter wise test`}
+        canonical={`https://ceibaa.in/chapter-tests/${classNumber}/${subject}`}
+      />
       <Header 
         isLoggedIn={isLoggedIn}
         user={user}
