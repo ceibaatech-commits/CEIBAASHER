@@ -307,7 +307,7 @@ async def get_dashboard_stats(user_id: str):
                     else:
                         date_obj = date_str
                     activity_dates.add(date_obj.date())
-                except:
+                except Exception:
                     pass
         
         # Dates from battle submissions
@@ -320,7 +320,7 @@ async def get_dashboard_stats(user_id: str):
                     else:
                         date_obj = date_str
                     activity_dates.add(date_obj.date())
-                except:
+                except Exception:
                     pass
         
         # Dates from 1v1 battles
@@ -333,7 +333,7 @@ async def get_dashboard_stats(user_id: str):
                     else:
                         date_obj = date_str
                     activity_dates.add(date_obj.date())
-                except:
+                except Exception:
                     pass
         
         # Calculate streak (consecutive days including today or yesterday)
