@@ -1510,6 +1510,8 @@ const LiveBattle = () => {
         socket={socket}
         roomId={pin}
         playerName={user?.name || 'Player'}
+        opponentName={participants?.find(p => p.name !== user?.name)?.name || 'Opponent'}
+        opponentId={participants?.find(p => p.name !== user?.name)?.id}
       />
     </div>
   );
