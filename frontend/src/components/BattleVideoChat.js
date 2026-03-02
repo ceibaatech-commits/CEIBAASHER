@@ -516,6 +516,49 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
     }
   };
 
+  // Submit report for inappropriate behavior
+  const handleSubmitReport = async () => {
+    if (!selectedReason) {
+      toast.error('Please select a reason for reporting');
+      return;
+    }
+
+    setSubmittingReport(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please log in to submit a report');
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_URL}/api/admin/battles/report`,
+        {
+          battle_id: roomId,
+          room_id: roomId,
+          reported_user_id: opponentId || 'unknown',
+          reported_username: opponentName || 'Opponent',
+          reason: selectedReason,
+          description: reportDescription,
+          chat_messages: []
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        toast.success('Report submitted successfully. Our team will review it.');
+        setShowReportModal(false);
+        setSelectedReason('');
+        setReportDescription('');
+      }
+    } catch (error) {
+      console.error('Report submission error:', error);
+      toast.error('Failed to submit report. Please try again.');
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
+
   // Don't render if no socket or roomId
   if (!socket || !roomId) {
     return null;
