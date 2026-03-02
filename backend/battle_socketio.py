@@ -1243,7 +1243,7 @@ async def admin_join_monitor(sid, data):
             try:
                 payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
                 user_id = payload.get("sub")
-            except:
+            except Exception:
                 pass
         
         if not user_id:
