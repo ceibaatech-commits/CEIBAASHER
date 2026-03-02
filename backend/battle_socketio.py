@@ -959,11 +959,15 @@ async def battle_chat(sid, data):
 
 @sio.on('battle-complete')
 async def battle_complete(sid, data):
-    """Handle battle completion"""
+    """Handle battle completion for 1v1 matchmaking"""
     try:
         room_id = data.get('roomId')
         player_name = data.get('playerName', 'Player')
         final_score = data.get('finalScore', 0)
+        user_id = data.get('userId')
+        total_questions = data.get('totalQuestions', 10)
+        exam = data.get('exam', '')
+        subject = data.get('subject', '')
         
         battle = matchmaking_manager.get_battle(room_id)
         if not battle:
@@ -972,8 +976,28 @@ async def battle_complete(sid, data):
         # Update final score
         if battle.player1['socketId'] == sid:
             battle.player1['finalScore'] = final_score
+            user_id = user_id or battle.player1.get('userId')
         elif battle.player2['socketId'] == sid:
             battle.player2['finalScore'] = final_score
+            user_id = user_id or battle.player2.get('userId')
+        
+        # Save to user_battle_history for stats tracking
+        if user_id:
+            try:
+                await db.user_battle_history.insert_one({
+                    "user_id": user_id,
+                    "battle_type": "1v1",
+                    "room_id": room_id,
+                    "score": final_score,
+                    "total_questions": total_questions or 10,
+                    "exam": exam or battle.exam or "",
+                    "subject": subject or battle.subject or "",
+                    "opponent_name": battle.player2['playerName'] if battle.player1['socketId'] == sid else battle.player1['playerName'],
+                    "completed_at": datetime.now(timezone.utc).isoformat()
+                })
+                print(f"[BATTLE_COMPLETE] Saved history for {user_id}")
+            except Exception as e:
+                print(f"[BATTLE_COMPLETE] Failed to save history: {str(e)}")
             
         # Notify opponent
         await sio.emit('opponent-score-update', {
