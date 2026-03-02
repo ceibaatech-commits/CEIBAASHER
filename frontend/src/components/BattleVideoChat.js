@@ -646,56 +646,170 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
     }
 
     return (
-      <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-gray-700 w-72">
-        {/* Remote Video (Main) */}
-        <div className="relative aspect-[4/3] bg-gray-800">
-          {remoteStream ? (
-            <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <div className="text-center">
-                <Video className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-                <p className="text-gray-400 text-xs">Waiting for video...</p>
+      <>
+        {/* Report Modal */}
+        {showReportModal && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-red-100 rounded-full">
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Report User</h3>
+                </div>
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-4 space-y-4">
+                <p className="text-sm text-gray-600">
+                  Report <span className="font-semibold">{opponentName || 'this user'}</span> for inappropriate behavior during the battle.
+                </p>
+
+                {/* Reason Selection */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Select a reason *</label>
+                  {REPORT_REASONS.map((reason) => (
+                    <label
+                      key={reason.id}
+                      className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition ${
+                        selectedReason === reason.id
+                          ? 'border-red-500 bg-red-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="report_reason"
+                        value={reason.id}
+                        checked={selectedReason === reason.id}
+                        onChange={(e) => setSelectedReason(e.target.value)}
+                        className="mt-1 w-4 h-4 text-red-500 focus:ring-red-500"
+                      />
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">{reason.label}</p>
+                        <p className="text-xs text-gray-500">{reason.description}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+
+                {/* Additional Details */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Additional details (optional)</label>
+                  <textarea
+                    value={reportDescription}
+                    onChange={(e) => setReportDescription(e.target.value)}
+                    placeholder="Provide any additional context..."
+                    className="mt-1 w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Warning */}
+                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
+                  <p className="text-xs text-yellow-800">
+                    <strong>Note:</strong> False reports may result in action against your account. 
+                    Only report genuine violations.
+                  </p>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex gap-3 p-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmitReport}
+                  disabled={!selectedReason || submittingReport}
+                  className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submittingReport ? 'Submitting...' : 'Submit Report'}
+                </button>
               </div>
             </div>
-          )}
-          
-          {/* Local Video (PiP) */}
-          <div className="absolute top-2 right-2 w-20 h-16 rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
-            <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover bg-gray-700" />
           </div>
-          
-          {/* Minimize button */}
-          <button 
-            onClick={() => setMinimized(true)} 
-            className="absolute top-2 left-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-lg transition"
-          >
-            <Minimize2 className="w-4 h-4 text-white/50" />
-          </button>
-        </div>
+        )}
 
-        {/* Controls */}
-        <div className="flex justify-center gap-3 p-3 bg-gray-800/50">
-          <button
-            onClick={toggleAudio}
-            className={`p-2.5 rounded-full transition ${audioEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
-          >
-            {audioEnabled ? <Mic className="w-4 h-4 text-white" /> : <MicOff className="w-4 h-4 text-white" />}
-          </button>
-          <button
-            onClick={toggleVideo}
-            className={`p-2.5 rounded-full transition ${videoEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
-          >
-            {videoEnabled ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-white" />}
-          </button>
-          <button
-            onClick={endCall}
-            className="p-2.5 bg-red-500 hover:bg-red-600 rounded-full transition"
-          >
-            <PhoneOff className="w-4 h-4 text-white" />
-          </button>
+        {/* Video Chat UI */}
+        <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-gray-700 w-72">
+          {/* Remote Video (Main) */}
+          <div className="relative aspect-[4/3] bg-gray-800">
+            {remoteStream ? (
+              <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="text-center">
+                  <Video className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                  <p className="text-gray-400 text-xs">Waiting for video...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Local Video (PiP) */}
+            <div className="absolute top-2 right-2 w-20 h-16 rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+              <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover bg-gray-700" />
+            </div>
+            
+            {/* Minimize button */}
+            <button 
+              onClick={() => setMinimized(true)} 
+              className="absolute top-2 left-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-lg transition"
+            >
+              <Minimize2 className="w-4 h-4 text-white/50" />
+            </button>
+
+            {/* Report button */}
+            <button 
+              onClick={() => setShowReportModal(true)} 
+              className="absolute top-2 left-10 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-lg transition"
+              title="Report user"
+            >
+              <Flag className="w-4 h-4 text-white" />
+            </button>
+          </div>
+
+          {/* Controls */}
+          <div className="flex justify-center gap-3 p-3 bg-gray-800/50">
+            <button
+              onClick={toggleAudio}
+              className={`p-2.5 rounded-full transition ${audioEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
+            >
+              {audioEnabled ? <Mic className="w-4 h-4 text-white" /> : <MicOff className="w-4 h-4 text-white" />}
+            </button>
+            <button
+              onClick={toggleVideo}
+              className={`p-2.5 rounded-full transition ${videoEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
+            >
+              {videoEnabled ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-white" />}
+            </button>
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="p-2.5 bg-orange-500 hover:bg-orange-600 rounded-full transition"
+              title="Report inappropriate behavior"
+            >
+              <Flag className="w-4 h-4 text-white" />
+            </button>
+            <button
+              onClick={endCall}
+              className="p-2.5 bg-red-500 hover:bg-red-600 rounded-full transition"
+            >
+              <PhoneOff className="w-4 h-4 text-white" />
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
