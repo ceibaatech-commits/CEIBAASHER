@@ -332,6 +332,8 @@ const BattleLobby = () => {
       socket={socket}
       roomId={pin}
       playerName={playerName || 'Player'}
+      opponentName={players?.find(p => p.name !== playerName)?.name || 'Opponent'}
+      opponentId={players?.find(p => p.name !== playerName)?.id}
     />
     </>
   );
