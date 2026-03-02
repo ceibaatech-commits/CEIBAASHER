@@ -30,13 +30,17 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('ceibaa_admin_token');
     const user = localStorage.getItem('ceibaa_admin_user');
     
-    if (!token || token !== 'admin_authenticated') {
+    if (!token) {
       navigate('/admin');
       return;
     }
     
     if (user) {
-      setAdminUser(JSON.parse(user));
+      try {
+        setAdminUser(JSON.parse(user));
+      } catch(e) {
+        navigate('/admin');
+      }
     }
   }, [navigate]);
 

@@ -46,8 +46,6 @@ async def admin_login(request: Request, credentials: AdminLoginRequest):
         username = credentials.username.lower().strip()
         password = credentials.password
         
-        print(f"[ADMIN_LOGIN] Attempting login for: {username}")
-        
         # Find admin user by username or email
         user = await db.users.find_one({
             "$and": [
@@ -64,8 +62,6 @@ async def admin_login(request: Request, credentials: AdminLoginRequest):
                 ]}
             ]
         })
-        
-        print(f"[ADMIN_LOGIN] User found: {user is not None}")
         
         if not user:
             # Log failed attempt
