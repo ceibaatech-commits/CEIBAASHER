@@ -460,6 +460,7 @@ const usePostCreation = (user, fetchFeed) => {
     removeMedia,
     clearMedia,
     uploadAllMedia,
+    retryUpload,
     handleImageSelect,
     handleVideoSelect,
     
