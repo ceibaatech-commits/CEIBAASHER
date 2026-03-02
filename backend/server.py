@@ -236,6 +236,12 @@ import live_battles_admin_routes
 live_battles_admin_routes.init_db(db)
 fastapi_app.include_router(live_battles_admin_router, prefix="/api")  # Live Battles Admin
 
+# Parents Mode Routes
+from parents_mode_routes import router as parents_mode_router
+import parents_mode_routes
+parents_mode_routes.init_db(db)
+fastapi_app.include_router(parents_mode_router, prefix="/api")  # Parents Mode
+
 # fastapi_app.add_middleware(
 #     CORSMiddleware,
 #     allow_credentials=True,
