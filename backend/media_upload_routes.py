@@ -90,7 +90,7 @@ async def generate_cloudinary_signature(
     
     timestamp = int(time.time())
     
-    # Parameters to sign
+    # Parameters to sign - only include params that will be sent as form data
     params = {
         "timestamp": timestamp,
         "folder": folder,
@@ -105,7 +105,7 @@ async def generate_cloudinary_signature(
         # Video with duration limit and proper aspect ratio
         params["eager"] = VIDEO_TRANSFORMATIONS
         params["eager_async"] = "true"
-        params["resource_type"] = "video"
+        # Note: resource_type is NOT included in signature - it's in the URL path
         # Note: Duration validation happens on frontend before upload
     
     # Generate signature
