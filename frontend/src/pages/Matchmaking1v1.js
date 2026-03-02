@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2 } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -8,6 +8,7 @@ import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 import BattleVideoChat from '../components/BattleVideoChat';
 import Header from '../components/Header';
+import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
@@ -16,13 +17,17 @@ const Matchmaking1v1 = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   
-  const [battleState, setBattleState] = useState('setup'); // setup, searching, matched, playing, results
+  const [battleState, setBattleState] = useState('setup'); // setup, searching, matched, playing, results, blocked
   const [playerName, setPlayerName] = useState('');
   const [socket, setSocket] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [opponent, setOpponent] = useState(null);
   const [searchCountdown, setSearchCountdown] = useState(30);
   const [searchTimedOut, setSearchTimedOut] = useState(false);
+  
+  // Parents Mode state
+  const [parentsModeBlocked, setParentsModeBlocked] = useState(false);
+  const [parentsModeTimeRemaining, setParentsModeTimeRemaining] = useState(0);
   
   // Quiz state
   const [questions, setQuestions] = useState([]);
@@ -38,6 +43,31 @@ const Matchmaking1v1 = () => {
   const [chatInput, setChatInput] = useState('');
   const [showChat, setShowChat] = useState(true);
   const chatEndRef = useRef(null);
+
+  // Check Parents Mode on mount
+  useEffect(() => {
+    const checkParentsMode = async () => {
+      try {
+        const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
+        if (!token) return;
+        
+        const response = await axios.get(`${BACKEND_URL}/api/user/parents-mode/check-battle-access`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (response.data.success && !response.data.can_access_battle) {
+          setParentsModeBlocked(true);
+          setParentsModeTimeRemaining(response.data.time_remaining_seconds || 0);
+          setBattleState('blocked');
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        console.error('Error checking parents mode:', error);
+      }
+    };
+    
+    checkParentsMode();
+  }, []);
 
   // Pre-fill player name from user
   useEffect(() => {
