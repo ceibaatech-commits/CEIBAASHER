@@ -366,6 +366,67 @@ const Matchmaking1v1 = () => {
     );
   }
 
+  // Parents Mode Blocked Screen
+  if (battleState === 'blocked' || parentsModeBlocked) {
+    const formatTime = (seconds) => {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      return `${hours}h ${minutes}m`;
+    };
+
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-amber-900 to-orange-900 flex items-center justify-center p-4 pt-20">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <Shield className="w-12 h-12 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Parents Mode Active</h2>
+            <p className="text-gray-500 mb-6">
+              1v1 Battle Mode has been temporarily disabled by Parents Mode.
+            </p>
+            
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-6 mb-6">
+              <p className="text-amber-600 text-sm mb-2">Time remaining until access is restored:</p>
+              <p className="text-4xl font-bold text-amber-600 font-mono">
+                {formatTime(parentsModeTimeRemaining)}
+              </p>
+            </div>
+            
+            <div className="space-y-3 text-left text-sm text-gray-600 mb-6">
+              <p className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                Solo practice quizzes are still available
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                Study materials and Divya Tutor work normally
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                This mode cannot be manually disabled
+              </p>
+            </div>
+            
+            <button
+              onClick={() => navigate('/profile/board')}
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 rounded-xl font-bold hover:shadow-lg transition-all mb-3"
+            >
+              Go to My Board
+            </button>
+            <button
+              onClick={() => navigate(-1)}
+              className="w-full text-gray-500 py-2 text-sm hover:text-gray-700"
+            >
+              ← Go Back
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   // Setup Screen
   if (battleState === 'setup') {
     return withVideoChat(
