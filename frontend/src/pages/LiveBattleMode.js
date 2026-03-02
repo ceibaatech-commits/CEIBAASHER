@@ -264,6 +264,8 @@ const LiveBattleMode = () => {
         socket={socket}
         roomId={roomId}
         playerName={playerName || 'Player'}
+        opponentName={opponent?.playerName || opponent?.name || 'Opponent'}
+        opponentId={opponent?.socketId || opponent?.id}
       />
     </>
   );
