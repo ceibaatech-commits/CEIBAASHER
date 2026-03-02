@@ -102,6 +102,16 @@
   - Improved colorful Mind Map UI design
   - NotebookLM-style "Ask Now" raise hand feature during audio playback
   - Added "Divya Tutor" link to mobile navigation menu
+- **Live Battles Admin System (Feb 28, 2026):**
+  - Super Admin role with elevated access for battle management
+  - Real-time battle monitoring dashboard via WebSocket
+  - Battle reporting system for offensive content (harassment, cheating, etc.)
+  - IP address tracking with privacy masking (GDPR compliant)
+  - Battle session logging with duration, outcome, and user tracking
+  - Admin actions: view details, terminate battles, review reports
+  - Report handling: dismiss, warn user, 7-day ban, permanent ban
+  - New collections: `live_battles`, `battle_reports`, `battle_session_logs`
+  - API endpoints: `/api/admin/battles/*` (Super Admin only)
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
