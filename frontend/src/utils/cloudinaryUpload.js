@@ -34,16 +34,19 @@ export async function uploadToCloudinary(file, resourceType = 'image', folder = 
     formData.append('signature', sigData.signature);
     formData.append('folder', sigData.folder);
     
-    // For videos, we need to include resource_type in the upload
-    if (resourceType === 'video') {
-      formData.append('resource_type', 'video');
-    }
-    
+    // Add eager transformations if present (must match what was signed)
     if (sigData.eager) {
       formData.append('eager', sigData.eager);
     }
-    if (sigData.eager_async === 'true') {
-      formData.append('eager_async', 'true');
+    
+    // For videos, add video-specific signed params
+    if (resourceType === 'video') {
+      if (sigData.eager_async === 'true') {
+        formData.append('eager_async', 'true');
+      }
+      // resource_type is in the URL path, not form data, but we need to include it
+      // in the signature. The backend signs it, so we must send it too.
+      formData.append('resource_type', 'video');
     }
     
     // Use XMLHttpRequest for progress tracking
