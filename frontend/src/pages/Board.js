@@ -182,6 +182,13 @@ const Board = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0, created: 0 });
 
+  // Parents Mode state
+  const [parentsModeActive, setParentsModeActive] = useState(false);
+  const [parentsModeTimeRemaining, setParentsModeTimeRemaining] = useState(0);
+  const [parentsModeExpiresAt, setParentsModeExpiresAt] = useState(null);
+  const [showParentsModeConfirm, setShowParentsModeConfirm] = useState(false);
+  const [enablingParentsMode, setEnablingParentsMode] = useState(false);
+
   // Fetch user goal
   const fetchUserGoal = async (userId) => {
     try {
