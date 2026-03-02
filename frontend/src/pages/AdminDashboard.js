@@ -17,6 +17,7 @@ import ExamSheetManager from '../components/admin/ExamSheetManager';
 import ExamCategoryManager from '../components/admin/ExamCategoryManager';
 import SupportPanel from '../components/admin/SupportPanel';
 import EmployeeManager from '../components/admin/EmployeeManager';
+import LiveBattlesManager from '../components/admin/LiveBattlesManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
