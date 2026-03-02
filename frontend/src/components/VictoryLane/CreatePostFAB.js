@@ -31,6 +31,7 @@ const CreatePostFAB = ({
   mediaSettings = {},
   mediaFiles = [],
   removeMedia,
+  retryUpload,
   handleImageSelect,
   handleVideoSelect,
   isUploading = false,
