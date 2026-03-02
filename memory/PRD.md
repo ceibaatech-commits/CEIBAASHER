@@ -189,10 +189,11 @@
   - Created custom 404 NotFound page with dark theme, animated gradient, compass icon, "Back to Home" / "Go Back" buttons, and quick navigation links
   - Added catch-all `*` route in App.js for undefined URLs
 
-- **Follow Button UI Update (Mar 2, 2026):**
-  - Replaced text-only Follow button with icon-based pill button (UserPlus, UserCheck, UserMinus, Clock icons)
-  - Updated FollowButton.js, PostCardMenu.js, and PublicProfile.js "Login to Follow" buttons
-  - States: Follow (indigo+UserPlus), Following (indigo outline+UserCheck), Requested (amber+Clock), Unfollow hover (red+UserMinus)
+- **Follow Button Bug Fix (Mar 2, 2026):**
+  - Fixed: Button not changing to "Following" on mobile (removed hover events, uses click-based confirm)
+  - Fixed: Follow notifications not appearing (notification query used wrong field name 'notification_type' → 'type')
+  - Added justFollowed guard to prevent accidental immediate unfollow after tap
+  - Added outside-click dismiss for unfollow confirmation popup
 
 ## Pending Issues
 
