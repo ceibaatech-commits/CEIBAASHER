@@ -161,8 +161,16 @@
     - "What happens next?" info box explaining 24-48 hour review timeline
   - User knows their complaint was received and will be reviewed
 
+- **Fixed Secure Admin Login (Mar 2, 2026):**
+  - Created super_admin user in MongoDB (admin@ceibaa.in / SuperAdmin@123)
+  - Fixed AdminDashboard.js hardcoded token check (`token !== 'admin_authenticated'`)
+  - Now accepts real API tokens from /api/admin/auth/login endpoint
+  - Login works with both email (admin@ceibaa.in) and username (superadmin)
+  - 24-hour session expiry with token verification via /api/admin/auth/verify
+
 ## Pending Issues
-- P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
+- P1: Verify/Fix Admin Panel Pagination (user management & exam sheets)
+- P2: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
 
 ## Upcoming Tasks
 - P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
