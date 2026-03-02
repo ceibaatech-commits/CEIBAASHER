@@ -22,6 +22,7 @@ const PostComposer = ({
   mediaSettings = {},
   mediaFiles = [],
   removeMedia,
+  retryUpload,
   handleImageSelect,
   handleVideoSelect,
   isUploading = false,
