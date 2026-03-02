@@ -419,7 +419,7 @@ async def record_battle_completion(
                 if not user_id:
                     payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
                     user_id = payload.get("sub")
-            except:
+            except Exception:
                 pass
         
         # Update or create battle record
