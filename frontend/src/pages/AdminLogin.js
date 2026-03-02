@@ -16,9 +16,13 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      // For now, hardcoded admin credentials
-      // TODO: Replace with actual API call
-      if (credentials.username === 'admin' && credentials.password === 'ceibaa@admin2025') {
+      // Hardcoded admin credentials (backup)
+      const ADMIN_USERS = {
+        'admin': 'ceibaa@admin2025',
+        'super_admin': 'SuperAdmin@123'
+      };
+
+      if (ADMIN_USERS[credentials.username] === credentials.password) {
         // Store admin token
         localStorage.setItem('ceibaa_admin_token', 'admin_authenticated');
         localStorage.setItem('ceibaa_admin_user', JSON.stringify({
