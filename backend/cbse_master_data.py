@@ -156,9 +156,11 @@ CBSE_CHAPTERS = {
             "7. Varsha-Bahar", "8. Birajoo Maharaj Se Sakshatkar", "9. Chidiya", "10. Meera Ke Pad"
         ],
         "English - Poorvi": [
-            "1. Three Questions", "2. A Gift of Chappals", "3. Gopal and the Hilsa Fish",
-            "4. The Ashes That Made Trees Bloom", "5. Quality", "6. Expert Detectives",
-            "7. The Invention of Vita-Wonk", "8. A Homage to our Brave Soldiers"
+            "1. The Day the River Spoke", "2. Try Again", "3. Three Days to See",
+            "4. Animals, Birds, and Dr. Dolittle", "5. A Funny Man", "6. Say the Right Thing",
+            "7. My Brother's Great Invention", "8. Paper Boats", "9. North, South, East, West",
+            "10. The Tunnel", "11. Travel", "12. Conquering the Summit",
+            "13. A Homage to Our Brave Soldiers", "14. My Dear Soldiers", "15. Rani Abbakka"
         ],
         "Science - Curiosity": [
             "1. The Ever-Evolving World of Science", "2. Exploring Substances: Acidic, Basic and Neutral",

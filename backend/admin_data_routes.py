@@ -174,19 +174,28 @@ async def get_other_competitive_exams():
         ]
         
         filtered_exams = []
-        for exam in EXAM_DATA:
-            exam_id = exam.get('id', '').upper()
-            exam_category = exam.get('category', '')
+        for exam_id, exam_data in EXAM_DATA.items():
+            exam_category = exam_data.get('category', '')
             
             # Skip if ID is in excluded list
-            if exam_id in EXCLUDED_IDS:
+            if exam_id.upper() in EXCLUDED_IDS:
                 continue
             
             # Skip if category is in excluded list
             if exam_category in EXCLUDED_CATEGORIES:
                 continue
             
-            filtered_exams.append(exam)
+            filtered_exams.append({
+                "id": exam_id,
+                "name": exam_data.get('name', exam_id),
+                "full_name": exam_data.get('full_name', ''),
+                "description": exam_data.get('description', ''),
+                "icon": exam_data.get('icon', '📚'),
+                "color": exam_data.get('color', 'from-blue-500 to-purple-500'),
+                "category": exam_category,
+                "total_questions": exam_data.get('total_questions', 100),
+                "duration": exam_data.get('duration', '2 hours')
+            })
         
         return {
             "success": True,

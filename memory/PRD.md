@@ -139,6 +139,16 @@
   - API response includes breakdown: `{ quizzes, battle_rooms, matchmaking_battles }`
   - Study hours estimated at 2 min per question (more realistic)
   - Subject mastery aggregates all test sources
+- **Added BCA Exam (Feb 28, 2026):**
+  - Full 3-year BCA program under "University & Degree Exams" category
+  - 6 semesters with 27 subjects total
+  - Includes: Programming (C, C++, Java), Data Structures, DBMS, Computer Networks, OS, etc.
+  - Each subject has 4-6 units with specific topics
+- **Fixed Class 7 English - Poorvi Data (Feb 28, 2026):**
+  - Synced cbse_master_data.py with cbse_chapter_data.py
+  - Now shows correct 15 chapters matching frontend URL
+- **Fixed Admin Exam API (Feb 28, 2026):**
+  - Fixed EXAM_DATA iteration bug (was treating dict as list)
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)

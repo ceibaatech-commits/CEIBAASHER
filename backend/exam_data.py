@@ -3929,6 +3929,151 @@ EXAM_DATA = {
                 }
             }
         }
+    },
+
+    "BCA": {
+        "name": "BCA (3 Year)",
+        "full_name": "Bachelor of Computer Applications - 3 Year Degree Program",
+        "description": "Complete 3-year BCA degree program covering all 6 semesters with comprehensive computer science, programming, and IT subjects",
+        "icon": "💻",
+        "color": "from-cyan-500 to-blue-600",
+        "total_questions": 150,
+        "duration": "3 hours",
+        "category": "University & Degree Exams",
+        "syllabus_topics": {
+            "Semester I": {
+                "subjects": {
+                    "Mathematics-I": {
+                        "sub_topics": ["Determinants & Matrices", "Limits & Continuity", "Differentiation", "Integration", "Vector Algebra"],
+                        "questions": 10
+                    },
+                    "Programming Principle & Algorithm": {
+                        "sub_topics": ["Introduction to C", "Operators & I/O", "Control Structures", "Problem Solving & Algorithms", "Arithmetic Problems & Flowcharts", "Functions & Recursion"],
+                        "questions": 10
+                    },
+                    "Computer Fundamental & Office Automation": {
+                        "sub_topics": ["Computer Basics & Number System", "Algorithm & Flowcharts", "Operating System", "Windows Environment", "Word Processing", "Spreadsheets & Database"],
+                        "questions": 10
+                    },
+                    "Principle of Management": {
+                        "sub_topics": ["Nature of Management", "Evolution of Management Thought", "Functions of Management I", "Functions of Management II", "Management of Change", "Strategic Management"],
+                        "questions": 10
+                    },
+                    "Business Communication": {
+                        "sub_topics": ["Means of Communication", "Oral Communication", "Written Communication", "Business Letters & Reports", "Drafting Business Letters", "IT for Communication"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Semester II": {
+                "subjects": {
+                    "Mathematics-II": {
+                        "sub_topics": ["Sets", "Relations & Functions", "Lattices", "Functions of Several Variables", "3D Geometry", "Multiple Integration"],
+                        "questions": 10
+                    },
+                    "C Programming": {
+                        "sub_topics": ["Arrays", "Pointers", "Strings", "Structures & Union", "Preprocessor & Bitwise Operators", "File Handling"],
+                        "questions": 10
+                    },
+                    "Organization Behavior": {
+                        "sub_topics": ["OB Fundamentals", "Perception & Motivation", "Personality", "Work Stress", "Group Behaviour & Leadership", "Conflict in Organizations"],
+                        "questions": 10
+                    },
+                    "Digital Electronics & Computer Organisation": {
+                        "sub_topics": ["Logic Gates", "Combinational Circuits", "Memories", "Sequential Circuits", "Memory Organization"],
+                        "questions": 10
+                    },
+                    "Financial Accounting & Management": {
+                        "sub_topics": ["Financial Accounting Basics", "Double Entry & Final Accounts", "Financial Statement Analysis", "Financial Management", "Working Capital", "Cash & Inventory Management"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Semester III": {
+                "subjects": {
+                    "OOPS Using C++": {
+                        "sub_topics": ["OOP Concepts", "Classes & Objects", "Inheritance & Polymorphism", "Templates", "Files & Exception Handling"],
+                        "questions": 10
+                    },
+                    "Data Structure": {
+                        "sub_topics": ["Arrays", "Stacks & Queues", "Linked Lists", "Trees", "B-Trees", "Sorting & Searching"],
+                        "questions": 10
+                    },
+                    "Computer Architecture": {
+                        "sub_topics": ["Basic Organization", "CPU", "Computer Arithmetic", "I/O Organization", "Microprocessor", "Assembly Language"],
+                        "questions": 10
+                    },
+                    "Business Economics": {
+                        "sub_topics": ["Micro Economics", "Market Structure", "Macro Economics", "World Economy"],
+                        "questions": 10
+                    },
+                    "Elements of Statistics": {
+                        "sub_topics": ["Population & Sample", "Central Tendency", "Dispersion", "Permutations & Combinations", "Probability", "Statistical Quality Control"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Semester IV": {
+                "subjects": {
+                    "Computer Graphics": {
+                        "sub_topics": ["Introduction & Scan Conversion", "Display & Clipping", "2D & 3D Transformations", "Curves & Surfaces", "Multimedia Basics", "Multimedia Usage"],
+                        "questions": 10
+                    },
+                    "Operating System": {
+                        "sub_topics": ["Memory Management", "Process & Scheduling", "Deadlocks", "Device Management", "File Systems"],
+                        "questions": 10
+                    },
+                    "Software Engineering": {
+                        "sub_topics": ["Software Engineering Basics", "Requirements Analysis", "Design", "Implementation", "Maintenance", "Configuration Management"],
+                        "questions": 10
+                    },
+                    "Optimization Techniques": {
+                        "sub_topics": ["Linear Programming", "Queuing Theory", "Replacement Theory", "Inventory Theory", "Job Sequencing"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Semester V": {
+                "subjects": {
+                    "Introduction to DBMS": {
+                        "sub_topics": ["DBMS Concepts", "E-R Modeling", "File Organization", "Relational Model & SQL", "EER Mapping", "Normalization & Security"],
+                        "questions": 10
+                    },
+                    "Java Programming": {
+                        "sub_topics": ["Core Java", "Applets & AWT", "Networking & JDBC", "HTML", "Servlets", "JSP"],
+                        "questions": 10
+                    },
+                    "Computer Network": {
+                        "sub_topics": ["Basic Concepts & OSI", "Transmission Media", "Switching & Protocols", "Devices & Routing", "Transport & Upper Layers"],
+                        "questions": 10
+                    },
+                    "Numerical Methods": {
+                        "sub_topics": ["Roots of Equations", "Interpolation", "Numerical Differentiation & Integration", "Linear Equations", "Differential Equations"],
+                        "questions": 10
+                    }
+                }
+            },
+            "Semester VI": {
+                "subjects": {
+                    "Computer Network Security": {
+                        "sub_topics": ["Cryptography", "Authentication", "IP Security", "Web Security", "Network Management Security", "System Security"],
+                        "questions": 10
+                    },
+                    "Information System Analysis & Design": {
+                        "sub_topics": ["SDLC", "Requirement Analysis", "System Design", "Methodologies & CASE", "OO Design & Implementation", "Project Management"],
+                        "questions": 10
+                    },
+                    "E-Commerce": {
+                        "sub_topics": ["Introduction & Strategy", "B2B & EDI", "Internet & Payment Systems", "Public Policy", "Infrastructure for EC"],
+                        "questions": 10
+                    },
+                    "Knowledge Management": {
+                        "sub_topics": ["Business Intelligence", "Data Warehousing", "Data Mining", "KM Systems"],
+                        "questions": 10
+                    }
+                }
+            }
+        }
     }
 
 }
