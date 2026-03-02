@@ -63,6 +63,8 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
   const [selectedReason, setSelectedReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
   const [submittingReport, setSubmittingReport] = useState(false);
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportId, setReportId] = useState(null);
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -546,8 +548,8 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
       );
 
       if (response.data.success) {
-        toast.success('Report submitted successfully. Our team will review it.');
-        setShowReportModal(false);
+        setReportId(response.data.report_id);
+        setReportSubmitted(true);
         setSelectedReason('');
         setReportDescription('');
       }
@@ -557,6 +559,15 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
     } finally {
       setSubmittingReport(false);
     }
+  };
+
+  // Close report modal and reset state
+  const closeReportModal = () => {
+    setShowReportModal(false);
+    setReportSubmitted(false);
+    setReportId(null);
+    setSelectedReason('');
+    setReportDescription('');
   };
 
   // Don't render if no socket or roomId
@@ -651,93 +662,144 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
         {showReportModal && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] p-4">
             <div className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
-              {/* Modal Header */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-red-100 rounded-full">
-                    <AlertTriangle className="w-5 h-5 text-red-600" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900">Report User</h3>
-                </div>
-                <button
-                  onClick={() => setShowReportModal(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-4 space-y-4">
-                <p className="text-sm text-gray-600">
-                  Report <span className="font-semibold">{opponentName || 'this user'}</span> for inappropriate behavior during the battle.
-                </p>
-
-                {/* Reason Selection */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Select a reason *</label>
-                  {REPORT_REASONS.map((reason) => (
-                    <label
-                      key={reason.id}
-                      className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition ${
-                        selectedReason === reason.id
-                          ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="report_reason"
-                        value={reason.id}
-                        checked={selectedReason === reason.id}
-                        onChange={(e) => setSelectedReason(e.target.value)}
-                        className="mt-1 w-4 h-4 text-red-500 focus:ring-red-500"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900 text-sm">{reason.label}</p>
-                        <p className="text-xs text-gray-500">{reason.description}</p>
+              
+              {/* Report Submitted Confirmation */}
+              {reportSubmitted ? (
+                <>
+                  <div className="p-8 text-center">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
+                      <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Complaint Raised Successfully</h3>
+                    <p className="text-gray-600 mb-4">
+                      Your report against <span className="font-semibold">{opponentName || 'this user'}</span> has been submitted.
+                    </p>
+                    
+                    {reportId && (
+                      <div className="bg-gray-50 rounded-xl p-3 mb-4">
+                        <p className="text-xs text-gray-500">Reference ID</p>
+                        <p className="font-mono text-sm text-gray-800">{reportId.slice(0, 8).toUpperCase()}</p>
                       </div>
-                    </label>
-                  ))}
-                </div>
+                    )}
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-left">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="font-medium text-blue-900 text-sm">What happens next?</p>
+                          <p className="text-xs text-blue-700 mt-1">
+                            Our moderation team will review your complaint within 24-48 hours. 
+                            If action is taken, you will be notified. Thank you for helping keep our community safe.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={closeReportModal}
+                      className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Modal Header */}
+                  <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-red-100 rounded-full">
+                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900">Report User</h3>
+                    </div>
+                    <button
+                      onClick={closeReportModal}
+                      className="p-2 hover:bg-gray-100 rounded-full transition"
+                    >
+                      <X className="w-5 h-5 text-gray-500" />
+                    </button>
+                  </div>
 
-                {/* Additional Details */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Additional details (optional)</label>
-                  <textarea
-                    value={reportDescription}
-                    onChange={(e) => setReportDescription(e.target.value)}
-                    placeholder="Provide any additional context..."
-                    className="mt-1 w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
-                    rows={3}
-                  />
-                </div>
+                  {/* Modal Body */}
+                  <div className="p-4 space-y-4">
+                    <p className="text-sm text-gray-600">
+                      Report <span className="font-semibold">{opponentName || 'this user'}</span> for inappropriate behavior during the battle.
+                    </p>
 
-                {/* Warning */}
-                <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
-                  <p className="text-xs text-yellow-800">
-                    <strong>Note:</strong> False reports may result in action against your account. 
-                    Only report genuine violations.
-                  </p>
-                </div>
-              </div>
+                    {/* Reason Selection */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">Select a reason *</label>
+                      {REPORT_REASONS.map((reason) => (
+                        <label
+                          key={reason.id}
+                          className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition ${
+                            selectedReason === reason.id
+                              ? 'border-red-500 bg-red-50'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="report_reason"
+                            value={reason.id}
+                            checked={selectedReason === reason.id}
+                            onChange={(e) => setSelectedReason(e.target.value)}
+                            className="mt-1 w-4 h-4 text-red-500 focus:ring-red-500"
+                          />
+                          <div>
+                            <p className="font-medium text-gray-900 text-sm">{reason.label}</p>
+                            <p className="text-xs text-gray-500">{reason.description}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
 
-              {/* Modal Footer */}
-              <div className="flex gap-3 p-4 border-t border-gray-200">
-                <button
-                  onClick={() => setShowReportModal(false)}
-                  className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSubmitReport}
-                  disabled={!selectedReason || submittingReport}
-                  className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {submittingReport ? 'Submitting...' : 'Submit Report'}
-                </button>
-              </div>
+                    {/* Additional Details */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">Additional details (optional)</label>
+                      <textarea
+                        value={reportDescription}
+                        onChange={(e) => setReportDescription(e.target.value)}
+                        placeholder="Provide any additional context..."
+                        className="mt-1 w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Warning */}
+                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
+                      <p className="text-xs text-yellow-800">
+                        <strong>Note:</strong> False reports may result in action against your account. 
+                        Only report genuine violations.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="flex gap-3 p-4 border-t border-gray-200">
+                    <button
+                      onClick={closeReportModal}
+                      className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSubmitReport}
+                      disabled={!selectedReason || submittingReport}
+                      className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submittingReport ? 'Submitting...' : 'Submit Report'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

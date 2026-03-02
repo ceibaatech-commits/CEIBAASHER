@@ -124,7 +124,7 @@ def mask_ip_address(ip: str) -> str:
     return ip[:len(ip)//2] + "xxx"
 
 async def verify_super_admin(authorization: Optional[str] = Header(None)) -> dict:
-    """Verify user is a Super Admin"""
+    """Verify user is an Admin or Super Admin"""
     if not authorization:
         raise HTTPException(status_code=401, detail="Authentication required")
     
@@ -143,7 +143,7 @@ async def verify_super_admin(authorization: Optional[str] = Header(None)) -> dic
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
         
-        # Check if user is super admin
+        # Check if user is admin or super admin
         user = await db.users.find_one({
             "$or": [{"id": user_id}, {"user_id": user_id}, {"email": user_id}]
         })
@@ -151,8 +151,11 @@ async def verify_super_admin(authorization: Optional[str] = Header(None)) -> dic
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         
-        if not user.get("is_super_admin", False) and user.get("role") != "super_admin":
-            raise HTTPException(status_code=403, detail="Super Admin access required")
+        # Allow both admin and super_admin roles
+        is_admin = user.get("is_admin", False) or user.get("role") in ["admin", "super_admin"] or user.get("is_super_admin", False)
+        
+        if not is_admin:
+            raise HTTPException(status_code=403, detail="Admin access required")
         
         return user
         
@@ -199,46 +202,51 @@ async def get_live_battles(
 ):
     """
     Get all currently active battles (real-time).
-    Super Admin only.
+    Admin only.
     """
     await verify_super_admin(authorization)
     
     try:
-        # Get battles that are in progress or waiting
+        # Get battles that are in progress or waiting from database
         battles = await db.live_battles.find(
             {"status": {"$in": ["waiting", "in_progress"]}},
             {"_id": 0}
         ).sort("created_at", -1).to_list(100)
         
-        # Also get from matchmaking active battles (in-memory)
-        from matchmaking import matchmaking_manager
-        
         active_matches = []
-        for room_id, battle in matchmaking_manager.active_battles.items():
-            active_matches.append({
-                "id": room_id,
-                "room_id": room_id,
-                "type": "1v1",
-                "status": "in_progress",
-                "players": [
-                    {
-                        "user_id": battle.player1.get("socketId"),
-                        "username": battle.player1.get("playerName"),
-                        "score": battle.player1.get("score", 0)
-                    },
-                    {
-                        "user_id": battle.player2.get("socketId"),
-                        "username": battle.player2.get("playerName"),
-                        "score": battle.player2.get("score", 0)
-                    }
-                ],
-                "exam": battle.exam,
-                "subject": battle.subject,
-                "created_at": datetime.fromtimestamp(battle.created_at, tz=timezone.utc).isoformat()
-            })
+        waiting_count = 0
         
-        # Get waiting players
-        waiting_count = matchmaking_manager.get_total_searching()
+        # Try to get from matchmaking active battles (in-memory)
+        try:
+            from matchmaking import matchmaking_manager
+            
+            for room_id, battle in matchmaking_manager.active_battles.items():
+                active_matches.append({
+                    "id": room_id,
+                    "room_id": room_id,
+                    "type": "1v1",
+                    "status": "in_progress",
+                    "players": [
+                        {
+                            "user_id": battle.player1.get("socketId"),
+                            "username": battle.player1.get("playerName"),
+                            "score": battle.player1.get("score", 0)
+                        },
+                        {
+                            "user_id": battle.player2.get("socketId"),
+                            "username": battle.player2.get("playerName"),
+                            "score": battle.player2.get("score", 0)
+                        }
+                    ],
+                    "exam": battle.exam,
+                    "subject": battle.subject,
+                    "created_at": datetime.fromtimestamp(battle.created_at, tz=timezone.utc).isoformat()
+                })
+            
+            # Get waiting players
+            waiting_count = matchmaking_manager.get_total_searching()
+        except Exception as e:
+            print(f"[LIVE_BATTLES] Could not get matchmaking data: {e}")
         
         return {
             "success": True,

@@ -149,6 +149,17 @@
   - Now shows correct 15 chapters matching frontend URL
 - **Fixed Admin Exam API (Feb 28, 2026):**
   - Fixed EXAM_DATA iteration bug (was treating dict as list)
+- **Fixed Live Battles Admin Panel (Feb 28, 2026):**
+  - Changed admin verification from "super_admin only" to "admin or super_admin"
+  - Fixed matchmaking_manager import to handle missing module gracefully
+  - Live Battles, Reports, and History tabs now work for all admins
+- **Improved Report User Confirmation (Feb 28, 2026):**
+  - After submitting report, shows confirmation screen with:
+    - Green checkmark animation
+    - "Complaint Raised Successfully" message
+    - Reference ID for tracking
+    - "What happens next?" info box explaining 24-48 hour review timeline
+  - User knows their complaint was received and will be reviewed
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
