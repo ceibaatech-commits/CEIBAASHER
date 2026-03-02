@@ -423,17 +423,28 @@ const SinglePost = () => {
           {post.media_urls && post.media_urls.length > 0 && (
             <div className="px-4 pb-3">
               <div className="rounded-2xl overflow-hidden border border-gray-200">
-                {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') ? (
-                  <video 
-                    src={post.media_urls[0]} 
-                    controls 
-                    className="w-full max-h-[512px] object-contain bg-black"
-                  />
+                {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
+                  <div className="relative w-full bg-black" style={{ aspectRatio: '16/9' }}>
+                    <video 
+                      src={post.media_urls[0]} 
+                      controls 
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 w-full h-full object-contain"
+                      controlsList="nodownload"
+                      onError={(e) => {
+                        console.warn('Video playback error:', e);
+                      }}
+                    >
+                      Your browser does not support video playback.
+                    </video>
+                  </div>
                 ) : (
                   <img 
                     src={post.media_urls[0]} 
                     alt="" 
                     className="w-full"
+                    loading="lazy"
                   />
                 )}
               </div>
