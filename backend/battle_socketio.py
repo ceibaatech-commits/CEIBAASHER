@@ -426,6 +426,27 @@ async def complete_battle(sid, data):
 
         print(f"[COMPLETE] Battle completed in room {room_id}")
         
+        # Save battle history for all participants (for stats tracking)
+        try:
+            leaderboard = room.get_leaderboard()
+            for idx, participant in enumerate(leaderboard, 1):
+                user_id = participant.get('user_id') or participant.get('userId')
+                if user_id:
+                    await db.user_battle_history.insert_one({
+                        "user_id": user_id,
+                        "battle_type": "room",
+                        "room_id": room_id,
+                        "score": participant.get('score', 0),
+                        "total_questions": room.current_question,
+                        "rank": idx,
+                        "total_participants": len(room.participants),
+                        "exam": room.exam or "",
+                        "subject": room.subject or "",
+                        "completed_at": datetime.now(timezone.utc).isoformat()
+                    })
+        except Exception as e:
+            print(f"[COMPLETE] Failed to save battle history: {str(e)}")
+        
         # Auto-post battle results to social feed for all participants
         try:
             from social_auto_post import auto_post_battle_result
