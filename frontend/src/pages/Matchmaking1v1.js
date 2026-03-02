@@ -299,6 +299,8 @@ const Matchmaking1v1 = () => {
         socket={socket}
         roomId={roomId}
         playerName={playerName || 'Player'}
+        opponentName={opponent?.playerName || opponent?.name || 'Opponent'}
+        opponentId={opponent?.socketId || opponent?.userId || opponent?.id}
       />
     </>
   );
