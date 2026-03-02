@@ -77,6 +77,12 @@
   - Upload progress tracking in UI
   - Video player with 16:9 aspect ratio, controls, no download
   - Media uploads ENABLED by administrator
+- **Video Upload Signature Fix (Feb 28, 2026):**
+  - Fixed "Invalid Signature" error for video uploads to Cloudinary
+  - Root cause: `resource_type` was incorrectly included in signed params (should be URL path only)
+  - Improved MediaPreview UI with circular + linear progress indicators
+  - Added Retry button instead of error overlay for failed uploads
+  - Better Post button state management during uploads
 - **WebRTC Video Chat Fix (Feb 27, 2026):**
   - Implemented "perfect negotiation" pattern for reliable WebRTC signaling
   - Fixed ICE candidate queuing and timing issues
