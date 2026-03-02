@@ -47,7 +47,7 @@ const ICE_SERVERS = {
   iceCandidatePoolSize: 10
 };
 
-const BattleVideoChat = ({ socket, roomId, playerName }) => {
+const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId }) => {
   const [callState, setCallState] = useState('idle'); // idle | connecting | connected | error
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -57,6 +57,12 @@ const BattleVideoChat = ({ socket, roomId, playerName }) => {
   const [debugInfo, setDebugInfo] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isPolite, setIsPolite] = useState(false); // For perfect negotiation
+  
+  // Report modal state
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedReason, setSelectedReason] = useState('');
+  const [reportDescription, setReportDescription] = useState('');
+  const [submittingReport, setSubmittingReport] = useState(false);
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
