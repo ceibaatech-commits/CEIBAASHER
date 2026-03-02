@@ -198,15 +198,18 @@ const PostCard = ({
             <div className="mt-3 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
               {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
                 /* Video Player - 16:9 aspect ratio for professional look */
-                <div className="relative w-full" style={{ aspectRatio: '16/9' }}>
+                <div className="relative w-full bg-black" style={{ aspectRatio: '16/9' }}>
                   <video 
                     src={post.media_urls[0]} 
                     controls 
                     preload="metadata"
                     playsInline
-                    className="absolute inset-0 w-full h-full object-contain bg-black" 
+                    className="absolute inset-0 w-full h-full object-contain" 
                     onClick={(e) => e.stopPropagation()}
                     controlsList="nodownload"
+                    onError={(e) => {
+                      console.warn('Video playback error:', e);
+                    }}
                   >
                     Your browser does not support video playback.
                   </video>
@@ -220,7 +223,6 @@ const PostCard = ({
                     className="w-full h-auto object-cover"
                     style={{ 
                       maxHeight: '600px',
-                      // Cloudinary optimized URL if from cloudinary
                       objectFit: 'cover'
                     }}
                     loading="lazy"
