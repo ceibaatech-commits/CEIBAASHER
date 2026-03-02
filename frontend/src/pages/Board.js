@@ -542,6 +542,7 @@ const Board = () => {
       fetchUserGoal(user.id);
       fetchRooms();
       fetchDashboardData(user.id);
+      fetchParentsModeStatus();
     }
   }, [user?.id]);
 
