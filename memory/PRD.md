@@ -168,8 +168,12 @@
   - Login works with both email (admin@ceibaa.in) and username (superadmin)
   - 24-hour session expiry with token verification via /api/admin/auth/verify
 
+- **Verified Admin Panel Pagination (Mar 2, 2026):**
+  - User Management: 81 users displayed, stats cards, search, filters, badge toggles all working
+  - Exam Sheet Manager: 670 sheets with 7-page pagination (100/page), First/Prev/Next/Last/Go-to buttons working
+  - Both sections render correctly after admin login fix
+
 ## Pending Issues
-- P1: Verify/Fix Admin Panel Pagination (user management & exam sheets)
 - P2: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
 
 ## Upcoming Tasks
