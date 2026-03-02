@@ -839,7 +839,8 @@ async def find_match(sid, data):
         player_name = data.get('playerName', 'Player')
         exam = data.get('exam', '')
         subject = data.get('subject', '')
-        topic = data.get('topic', '')
+        # topic is available but not used for matching (we match on exam level)
+        _ = data.get('topic', '')
 
         # O(1) match lookup via bucket queue
         opponent = matchmaking_manager.add_to_queue(sid, player_name, exam, subject)
