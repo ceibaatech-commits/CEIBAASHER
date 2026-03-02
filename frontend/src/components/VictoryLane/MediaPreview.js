@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo } from 'react';
-import { X, Play, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { X, Play, CheckCircle2, Loader2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -9,6 +9,7 @@ const MediaItem = memo(({
   item, 
   index, 
   onRemove, 
+  onRetry,
   type,
   isUploading 
 }) => {
@@ -36,18 +37,8 @@ const MediaItem = memo(({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getStatusIcon = () => {
-    if (item.error) {
-      return <AlertCircle className="w-4 h-4 text-red-500" />;
-    }
-    if (item.uploaded) {
-      return <CheckCircle2 className="w-4 h-4 text-green-500" />;
-    }
-    if (item.uploading) {
-      return <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />;
-    }
-    return null;
-  };
+  // Progress percentage for display
+  const progressPercent = item.progress || 0;
 
   return (
     <motion.div
@@ -58,79 +49,120 @@ const MediaItem = memo(({
       className="relative group"
       data-testid={`media-preview-${type}-${index}`}
     >
-      {/* Media Thumbnail */}
-      <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+      {/* Media Thumbnail Container */}
+      <div className="relative rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 w-28 h-28 sm:w-32 sm:h-32">
         {type === 'image' ? (
           <img 
             src={item.previewUrl} 
             alt={`Preview ${index + 1}`} 
-            className="w-24 h-24 sm:w-28 sm:h-28 object-cover"
+            className="w-full h-full object-cover"
           />
         ) : (
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28">
+          <div className="relative w-full h-full">
             <video 
               src={item.previewUrl} 
               className="w-full h-full object-cover"
               muted
             />
-            {/* Play icon overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <Play className="w-8 h-8 text-white fill-white" />
-            </div>
+            {/* Play icon overlay (only when not uploading) */}
+            {!item.uploading && !item.error && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <Play className="w-8 h-8 text-white fill-white drop-shadow-lg" />
+              </div>
+            )}
             {/* Duration badge */}
             {videoMeta && (
-              <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 text-white text-xs rounded">
+              <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 text-white text-xs rounded font-medium">
                 {formatDuration(videoMeta.duration)}
               </div>
             )}
           </div>
         )}
 
-        {/* Upload Progress Overlay */}
-        {item.uploading && item.progress !== undefined && (
-          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
-            <div className="w-16 h-1.5 bg-gray-300 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-blue-500 transition-all duration-300"
-                style={{ width: `${item.progress}%` }}
-              />
+        {/* Upload Progress Overlay - Styled Progress Bar */}
+        {item.uploading && (
+          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-2">
+            {/* Circular progress indicator */}
+            <div className="relative w-12 h-12 mb-2">
+              <svg className="w-12 h-12 transform -rotate-90">
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="20"
+                  stroke="rgba(255,255,255,0.3)"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="20"
+                  stroke="#3B82F6"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={`${progressPercent * 1.256} 125.6`}
+                  className="transition-all duration-300"
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-white text-sm font-bold">
+                {progressPercent}%
+              </span>
             </div>
-            <span className="text-white text-xs mt-1 font-medium">{item.progress}%</span>
+            
+            {/* Linear progress bar */}
+            <div className="w-full px-2">
+              <div className="w-full h-1.5 bg-white/30 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-500 transition-all duration-300 ease-out rounded-full"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+            </div>
+            <span className="text-white/80 text-xs mt-1">Uploading...</span>
           </div>
         )}
 
-        {/* Error Overlay */}
+        {/* Error State with Retry Button */}
         {item.error && (
-          <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center p-2">
-            <span className="text-red-700 text-xs text-center font-medium line-clamp-2">
+          <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center p-2">
+            <button
+              onClick={() => onRetry && onRetry(index, type)}
+              className="flex flex-col items-center gap-1 text-white hover:text-blue-300 transition-colors"
+              data-testid={`retry-upload-${type}-${index}`}
+            >
+              <RotateCcw className="w-6 h-6" />
+              <span className="text-xs font-medium">Retry</span>
+            </button>
+            <span className="text-red-300 text-[10px] mt-1 text-center line-clamp-2 px-1">
               {item.error}
             </span>
           </div>
         )}
 
-        {/* Uploaded Success Indicator */}
-        {item.uploaded && !item.error && (
-          <div className="absolute top-1 left-1">
-            <CheckCircle2 className="w-5 h-5 text-green-500 drop-shadow-md" />
+        {/* Upload Success Indicator */}
+        {item.uploaded && !item.error && !item.uploading && (
+          <div className="absolute top-1 left-1 bg-green-500 rounded-full p-0.5">
+            <CheckCircle2 className="w-4 h-4 text-white" />
           </div>
         )}
       </div>
 
-      {/* Remove Button */}
-      {!isUploading && (
+      {/* Remove Button - Always visible except during upload */}
+      {!item.uploading && (
         <button
           onClick={() => onRemove(index)}
-          className="absolute -top-2 -right-2 p-1 bg-gray-800 hover:bg-red-500 text-white rounded-full shadow-lg transition-colors z-10"
+          className="absolute -top-2 -right-2 p-1.5 bg-gray-800 hover:bg-red-500 text-white rounded-full shadow-lg transition-colors z-10"
           data-testid={`remove-media-${type}-${index}`}
           title="Remove"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
       )}
 
-      {/* Video Metadata Badge */}
-      {type === 'video' && videoMeta && !item.uploading && (
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-gray-800 text-white text-[10px] rounded-full whitespace-nowrap">
+      {/* Video Resolution Badge */}
+      {type === 'video' && videoMeta && !item.uploading && !item.error && (
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-gray-800 text-white text-[10px] rounded-full whitespace-nowrap font-medium">
           {videoMeta.width}×{videoMeta.height}
         </div>
       )}
@@ -144,7 +176,8 @@ const MediaItem = memo(({
  */
 const MediaPreview = ({ 
   mediaFiles = [], 
-  onRemove, 
+  onRemove,
+  onRetry,
   isUploading = false,
   maxImages = 4,
   maxVideos = 1 
@@ -157,7 +190,7 @@ const MediaPreview = ({
   return (
     <div className="mt-3 mb-2" data-testid="media-preview-container">
       <AnimatePresence mode="popLayout">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           {/* Image Previews */}
           {images.map((item, idx) => (
             <MediaItem
@@ -166,6 +199,7 @@ const MediaPreview = ({
               index={idx}
               type="image"
               onRemove={(i) => onRemove(i, 'image')}
+              onRetry={onRetry}
               isUploading={isUploading}
             />
           ))}
@@ -178,6 +212,7 @@ const MediaPreview = ({
               index={idx}
               type="video"
               onRemove={(i) => onRemove(i, 'video')}
+              onRetry={onRetry}
               isUploading={isUploading}
             />
           ))}
@@ -185,14 +220,16 @@ const MediaPreview = ({
       </AnimatePresence>
 
       {/* Media Limits Info */}
-      <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+      <div className="flex items-center gap-3 mt-3 text-xs text-gray-500">
         {images.length > 0 && (
-          <span data-testid="image-count">
+          <span data-testid="image-count" className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-blue-400"></span>
             Images: {images.length}/{maxImages}
           </span>
         )}
         {videos.length > 0 && (
-          <span data-testid="video-count">
+          <span data-testid="video-count" className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-purple-400"></span>
             Videos: {videos.length}/{maxVideos}
           </span>
         )}
