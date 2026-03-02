@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, Shield, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -16,28 +18,29 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      // Hardcoded admin credentials (backup)
-      const ADMIN_USERS = {
-        'admin': 'ceibaa@admin2025',
-        'super_admin': 'SuperAdmin@123'
-      };
+      // Secure API-based authentication
+      const response = await axios.post(`${API_URL}/api/admin/auth/login`, {
+        username: credentials.username,
+        password: credentials.password
+      });
 
-      if (ADMIN_USERS[credentials.username] === credentials.password) {
-        // Store admin token
-        localStorage.setItem('ceibaa_admin_token', 'admin_authenticated');
-        localStorage.setItem('ceibaa_admin_user', JSON.stringify({
-          username: credentials.username,
-          role: 'super_admin',
-          loginTime: new Date().toISOString()
-        }));
+      if (response.data.success) {
+        // Store secure token
+        localStorage.setItem('ceibaa_admin_token', response.data.token);
+        localStorage.setItem('ceibaa_admin_user', JSON.stringify(response.data.user));
         
         // Navigate to admin dashboard
         navigate('/admin/dashboard');
       } else {
-        setError('Invalid credentials. Access denied.');
+        setError(response.data.message || 'Login failed');
       }
     } catch (err) {
-      setError('Login failed. Please try again.');
+      console.error('Admin login error:', err);
+      if (err.response?.status === 401) {
+        setError('Invalid credentials. Access denied.');
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -69,13 +72,13 @@ const AdminLogin = () => {
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Username */}
             <div>
-              <label className="block text-white font-semibold mb-2">Username</label>
+              <label className="block text-white font-semibold mb-2">Username or Email</label>
               <input
                 type="text"
                 value={credentials.username}
                 onChange={(e) => setCredentials({...credentials, username: e.target.value})}
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 transition-all"
-                placeholder="Enter admin username"
+                placeholder="Enter admin username or email"
                 required
               />
             </div>

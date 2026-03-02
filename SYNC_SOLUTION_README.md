@@ -112,12 +112,12 @@ python3 generate_frontend_mappings.py > /tmp/mappings.js
 
 ### Test API Endpoint
 ```bash
-curl https://battle-mode.preview.emergentagent.com/api/exam-metadata | jq
+curl https://ceibaa-preview.preview.emergentagent.com/api/exam-metadata | jq
 ```
 
 ### Test Specific Exam
 ```bash
-curl https://battle-mode.preview.emergentagent.com/api/exam-metadata/CAPF | jq
+curl https://ceibaa-preview.preview.emergentagent.com/api/exam-metadata/CAPF | jq
 ```
 
 ### Validate Sync

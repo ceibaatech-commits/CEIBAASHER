@@ -242,6 +242,12 @@ import parents_mode_routes
 parents_mode_routes.init_db(db)
 fastapi_app.include_router(parents_mode_router, prefix="/api")  # Parents Mode
 
+# Admin Auth Routes (Secure Login)
+from admin_auth_routes import router as admin_auth_router
+import admin_auth_routes
+admin_auth_routes.init_db(db)
+fastapi_app.include_router(admin_auth_router, prefix="/api")  # Admin Auth
+
 # fastapi_app.add_middleware(
 #     CORSMiddleware,
 #     allow_credentials=True,
