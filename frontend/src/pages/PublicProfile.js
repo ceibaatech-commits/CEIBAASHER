@@ -65,8 +65,15 @@ const PublicProfile = () => {
 
   const handleFollowChange = (newStatus) => {
     setFollowStatus(newStatus);
-    // Refresh profile to update counts
-    fetchProfile();
+    // Update follower count locally instead of re-fetching entire profile
+    // This avoids unmounting FollowButton and potential cache issues
+    if (profile) {
+      const delta = newStatus === 'approved' ? 1 : (newStatus === null ? -1 : 0);
+      setProfile(prev => ({
+        ...prev,
+        followers_count: Math.max(0, (prev.followers_count || 0) + delta)
+      }));
+    }
   };
 
   const handleFollowersClick = () => {

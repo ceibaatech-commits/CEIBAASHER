@@ -308,14 +308,17 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     });
 
     try {
+      const token = localStorage.getItem('token');
       if (isFollowing) {
         await axios.delete(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
         });
         toast.success('Unfollowed successfully');
       } else {
         await axios.post(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {}, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true
         });
         toast.success('Following!');
       }

@@ -190,10 +190,11 @@
   - Added catch-all `*` route in App.js for undefined URLs
 
 - **Follow Button Bug Fix (Mar 2, 2026):**
-  - Fixed: Button not changing to "Following" on mobile (removed hover events, uses click-based confirm)
-  - Fixed: Follow notifications not appearing (notification query used wrong field name 'notification_type' → 'type')
-  - Added justFollowed guard to prevent accidental immediate unfollow after tap
-  - Added outside-click dismiss for unfollow confirmation popup
+  - Fixed: Button reverting from "Following" back to "Follow" after tap — caused by `fetchProfile()` re-mounting the button with stale cached data. Now updates follower count locally instead of re-fetching.
+  - Fixed: Notification query field mismatch (`notification_type` → `type`) preventing follow notifications from displaying
+  - Added `withCredentials: true` to all follow API calls for proper cookie-based auth
+  - FollowButton rewritten: click-based confirm toggle (mobile-friendly), `justFollowed` guard, outside-click dismiss
+  - VictoryLane PostCardMenu: Updated icons (UserPlus/UserMinus) and kept correct API routes (`/api/social/user/follow/`)
 
 ## Pending Issues
 

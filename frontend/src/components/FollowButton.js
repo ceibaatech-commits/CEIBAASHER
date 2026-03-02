@@ -39,7 +39,7 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
       if (!token) return;
       const response = await axios.get(
         `${BACKEND_URL}/api/profile/follow-status/${targetUserId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
       );
       if (response.data.success) {
         setFollowStatus(response.data.status);
@@ -56,13 +56,16 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
       const response = await axios.post(
         `${BACKEND_URL}/api/profile/follow`,
         { target_user_id: targetUserId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
       );
       if (response.data.success) {
         setFollowStatus(response.data.status);
         justFollowed.current = true;
-        // Reset justFollowed after 1s to allow unfollow on next tap
         setTimeout(() => { justFollowed.current = false; }, 1000);
+        if (onFollowChange) onFollowChange(response.data.status);
+      } else if (response.data.status) {
+        // Already following — sync UI with actual status
+        setFollowStatus(response.data.status);
         if (onFollowChange) onFollowChange(response.data.status);
       }
     } catch (error) {
@@ -83,7 +86,7 @@ const FollowButton = ({ targetUserId, targetUsername, initialStatus = null, onFo
       const token = localStorage.getItem('token');
       const response = await axios.delete(
         `${BACKEND_URL}/api/profile/unfollow/${targetUserId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
       );
       if (response.data.success) {
         setFollowStatus(null);
