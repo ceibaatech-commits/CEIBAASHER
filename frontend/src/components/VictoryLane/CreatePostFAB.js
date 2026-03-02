@@ -215,6 +215,7 @@ const CreatePostFAB = ({
                       <MediaPreview
                         mediaFiles={mediaFiles}
                         onRemove={removeMedia}
+                        onRetry={retryUpload}
                         isUploading={isUploading}
                         maxImages={4}
                         maxVideos={1}
