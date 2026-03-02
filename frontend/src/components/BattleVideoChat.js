@@ -1,5 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Minimize2, Maximize2, Phone, AlertCircle } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Minimize2, Maximize2, Phone, AlertCircle, Flag, X, AlertTriangle } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'sonner';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+// Report reasons for inappropriate behavior
+const REPORT_REASONS = [
+  { id: 'nudity', label: 'Nudity / Sexual Content', description: 'Showing private parts or sexual behavior' },
+  { id: 'harassment', label: 'Harassment / Bullying', description: 'Verbal abuse or threatening behavior' },
+  { id: 'offensive_content', label: 'Offensive Content', description: 'Hate speech, slurs, or discriminatory behavior' },
+  { id: 'cheating', label: 'Cheating', description: 'Using unfair means to win' },
+  { id: 'inappropriate_behavior', label: 'Other Inappropriate Behavior', description: 'Any other concerning behavior' }
+];
 
 // Updated ICE servers with reliable STUN/TURN
 const ICE_SERVERS = { 
