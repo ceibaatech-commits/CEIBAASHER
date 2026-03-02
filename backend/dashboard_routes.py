@@ -226,69 +226,181 @@ async def set_user_goal(user_id: str, request: SetGoalRequest):
 
 @router.get("/stats/{user_id}")
 async def get_dashboard_stats(user_id: str):
-    """Get user dashboard statistics including tests completed, avg score, streak, and study hours"""
+    """
+    Get user dashboard statistics including tests completed, avg score, streak, and study hours.
+    
+    Tests include:
+    - Quiz history (chapter tests, solo practice)
+    - Battle room submissions
+    - 1v1 matchmaking battles
+    
+    Streak: Consecutive days with at least one activity (quiz, battle, or room participation)
+    """
     try:
-        # Get quiz history for the user
+        # ==================== COLLECT ALL TEST DATA ====================
+        
+        # 1. Quiz History (chapter tests, practice quizzes)
         quiz_history = await db.quiz_history.find(
             {"user_id": user_id},
-            {"_id": 0}
+            {"_id": 0, "score": 1, "total_questions": 1, "completed_at": 1, "created_at": 1, "subject": 1, "exam": 1}
         ).to_list(1000)
         
-        # Calculate stats
-        tests_completed = len(quiz_history)
+        # 2. Battle Room Submissions (async battles)
+        battle_submissions = await db.battle_submissions.find(
+            {"user_id": user_id},
+            {"_id": 0, "score": 1, "total_questions": 1, "submitted_at": 1, "exam_category": 1, "subject": 1}
+        ).to_list(500)
         
-        # Calculate average score
-        if tests_completed > 0:
-            total_score = sum(q.get("score", 0) for q in quiz_history)
-            avg_score = round(total_score / tests_completed, 1)
-        else:
-            avg_score = 0
+        # 3. 1v1 Battle Results - Check user_battle_history collection
+        battle_results = await db.user_battle_history.find(
+            {"user_id": user_id},
+            {"_id": 0, "score": 1, "total_questions": 1, "completed_at": 1, "created_at": 1, "exam": 1, "subject": 1}
+        ).to_list(500)
         
-        # Calculate streak (consecutive days with at least one quiz)
-        streak = 0
-        if quiz_history:
-            # Sort by date
-            sorted_history = sorted(
-                quiz_history, 
-                key=lambda x: x.get("completed_at", x.get("created_at", "")),
-                reverse=True
-            )
-            
-            # Get unique dates
-            quiz_dates = set()
-            for q in sorted_history:
-                date_str = q.get("completed_at", q.get("created_at", ""))
-                if date_str:
-                    try:
-                        if isinstance(date_str, str):
-                            date_obj = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-                        else:
-                            date_obj = date_str
-                        quiz_dates.add(date_obj.date())
-                    except:
-                        pass
-            
-            # Calculate streak
-            today = datetime.now(timezone.utc).date()
-            current_date = today
-            
-            while current_date in quiz_dates:
-                streak += 1
-                current_date -= timedelta(days=1)
+        # ==================== CALCULATE TOTAL TESTS ====================
         
-        # Calculate study hours (estimate: 3 minutes per question on average)
-        total_questions = sum(q.get("total_questions", 10) for q in quiz_history)
-        study_hours = round(total_questions * 3 / 60, 1)  # Convert to hours
+        quiz_count = len(quiz_history)
+        battle_room_count = len(battle_submissions)
+        matchmaking_count = len(battle_results)
+        tests_completed = quiz_count + battle_room_count + matchmaking_count
         
-        # Calculate subject mastery
-        subject_stats = {}
+        # ==================== CALCULATE AVERAGE SCORE ====================
+        
+        all_scores = []
+        
+        # Scores from quiz history
         for q in quiz_history:
-            subject = q.get("subject", q.get("exam", "General"))
+            score = q.get("score", 0)
+            if isinstance(score, (int, float)) and score >= 0:
+                all_scores.append(score)
+        
+        # Scores from battle submissions (calculate percentage)
+        for b in battle_submissions:
+            score = b.get("score", 0)
+            total = b.get("total_questions", 10)
+            if total > 0:
+                percentage = (score / total) * 100
+                all_scores.append(percentage)
+        
+        # Scores from 1v1 battles
+        for b in battle_results:
+            score = b.get("score", 0)
+            total = b.get("total_questions", 10)
+            if total > 0:
+                percentage = (score / total) * 100
+                all_scores.append(percentage)
+        
+        avg_score = round(sum(all_scores) / len(all_scores), 1) if all_scores else 0
+        
+        # ==================== CALCULATE STREAK ====================
+        
+        # Collect all activity dates
+        activity_dates = set()
+        
+        # Dates from quiz history
+        for q in quiz_history:
+            date_str = q.get("completed_at") or q.get("created_at", "")
+            if date_str:
+                try:
+                    if isinstance(date_str, str):
+                        date_obj = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+                    else:
+                        date_obj = date_str
+                    activity_dates.add(date_obj.date())
+                except:
+                    pass
+        
+        # Dates from battle submissions
+        for b in battle_submissions:
+            date_str = b.get("submitted_at", "")
+            if date_str:
+                try:
+                    if isinstance(date_str, str):
+                        date_obj = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+                    else:
+                        date_obj = date_str
+                    activity_dates.add(date_obj.date())
+                except:
+                    pass
+        
+        # Dates from 1v1 battles
+        for b in battle_results:
+            date_str = b.get("completed_at") or b.get("created_at", "")
+            if date_str:
+                try:
+                    if isinstance(date_str, str):
+                        date_obj = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+                    else:
+                        date_obj = date_str
+                    activity_dates.add(date_obj.date())
+                except:
+                    pass
+        
+        # Calculate streak (consecutive days including today or yesterday)
+        streak = 0
+        today = datetime.now(timezone.utc).date()
+        
+        # Start from today, if no activity today, check if yesterday had activity
+        current_date = today
+        if today not in activity_dates and (today - timedelta(days=1)) in activity_dates:
+            current_date = today - timedelta(days=1)
+        
+        while current_date in activity_dates:
+            streak += 1
+            current_date -= timedelta(days=1)
+        
+        # ==================== CALCULATE STUDY HOURS ====================
+        
+        # Estimate: 2 minutes per question on average (more realistic)
+        total_questions = 0
+        
+        for q in quiz_history:
+            total_questions += q.get("total_questions", 10)
+        
+        for b in battle_submissions:
+            total_questions += b.get("total_questions", 10)
+        
+        for b in battle_results:
+            total_questions += b.get("total_questions", 10)
+        
+        study_hours = round(total_questions * 2 / 60, 1)  # 2 min per question, convert to hours
+        
+        # ==================== CALCULATE SUBJECT MASTERY ====================
+        
+        subject_stats = {}
+        
+        # From quiz history
+        for q in quiz_history:
+            subject = q.get("subject") or q.get("exam", "General")
             if subject not in subject_stats:
                 subject_stats[subject] = {"total_score": 0, "count": 0, "total_questions": 0}
             subject_stats[subject]["total_score"] += q.get("score", 0)
             subject_stats[subject]["count"] += 1
             subject_stats[subject]["total_questions"] += q.get("total_questions", 10)
+        
+        # From battle submissions
+        for b in battle_submissions:
+            subject = b.get("subject") or b.get("exam_category", "Battle")
+            if subject not in subject_stats:
+                subject_stats[subject] = {"total_score": 0, "count": 0, "total_questions": 0}
+            score = b.get("score", 0)
+            total = b.get("total_questions", 10)
+            if total > 0:
+                subject_stats[subject]["total_score"] += (score / total) * 100
+                subject_stats[subject]["count"] += 1
+                subject_stats[subject]["total_questions"] += total
+        
+        # From 1v1 battles
+        for b in battle_results:
+            subject = b.get("subject") or b.get("exam", "1v1 Battle")
+            if subject not in subject_stats:
+                subject_stats[subject] = {"total_score": 0, "count": 0, "total_questions": 0}
+            score = b.get("score", 0)
+            total = b.get("total_questions", 10)
+            if total > 0:
+                subject_stats[subject]["total_score"] += (score / total) * 100
+                subject_stats[subject]["count"] += 1
+                subject_stats[subject]["total_questions"] += total
         
         # Format subject mastery with colors
         colors = [
@@ -322,7 +434,13 @@ async def get_dashboard_stats(user_id: str):
                 "tests_completed": tests_completed,
                 "avg_score": avg_score,
                 "streak": streak,
-                "study_hours": study_hours
+                "study_hours": study_hours,
+                # Detailed breakdown (optional, for debugging)
+                "breakdown": {
+                    "quizzes": quiz_count,
+                    "battle_rooms": battle_room_count,
+                    "matchmaking_battles": matchmaking_count
+                }
             },
             "subject_mastery": subject_mastery,
             "learner_level": learner_level
