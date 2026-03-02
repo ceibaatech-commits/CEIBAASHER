@@ -222,6 +222,47 @@ const usePostCreation = (user, fetchFeed) => {
     return uploadedUrls;
   }, [mediaFiles]);
 
+  // Retry a single failed upload
+  const retryUpload = useCallback(async (index, type) => {
+    // Find the item to retry
+    const itemsOfType = mediaFiles.filter(f => f.type === type);
+    const item = itemsOfType[index];
+    
+    if (!item || !item.error) return;
+
+    // Get the actual index in mediaFiles array
+    const actualIndex = mediaFiles.findIndex(f => f.id === item.id);
+    if (actualIndex === -1) return;
+
+    // Reset the item state
+    setMediaFiles(prev => prev.map((f, idx) => 
+      idx === actualIndex ? { ...f, uploading: true, progress: 0, error: null } : f
+    ));
+
+    try {
+      const uploadFn = item.type === 'image' ? uploadImage : uploadVideo;
+      
+      const result = await uploadFn(item.file, 'posts/', (progress) => {
+        setMediaFiles(prev => prev.map((f, idx) => 
+          idx === actualIndex ? { ...f, progress } : f
+        ));
+      });
+
+      if (result.secure_url) {
+        setMediaFiles(prev => prev.map((f, idx) => 
+          idx === actualIndex ? { ...f, uploading: false, uploaded: true, uploadedUrl: result.secure_url, error: null } : f
+        ));
+        toast.success(`${item.type === 'image' ? 'Image' : 'Video'} uploaded successfully!`);
+      }
+    } catch (err) {
+      console.error(`Retry upload error for ${item.type}:`, err);
+      setMediaFiles(prev => prev.map((f, idx) => 
+        idx === actualIndex ? { ...f, uploading: false, error: err.message || 'Upload failed' } : f
+      ));
+      toast.error(`Failed to upload ${item.type}: ${err.message}`);
+    }
+  }, [mediaFiles]);
+
   // Check if post can be submitted
   const canSubmitPost = useCallback(() => {
     const hasContent = newPostContent.trim().length > 0;
