@@ -357,7 +357,7 @@ async def terminate_battle(
     
     try:
         # Update in database
-        result = await db.live_battles.update_one(
+        await db.live_battles.update_one(
             {"$or": [{"id": battle_id}, {"room_id": battle_id}]},
             {
                 "$set": {
