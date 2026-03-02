@@ -131,6 +131,14 @@
   - Blocked users see a friendly screen explaining the restriction
   - Solo practice and study materials remain accessible
   - API: `/api/user/parents-mode/status`, `/enable`, `/check-battle-access`
+- **Fixed Dashboard Stats (Feb 28, 2026):**
+  - Tests now count: quiz_history + battle_submissions + 1v1 matchmaking battles
+  - Average score calculated across all test types (percentage-based)
+  - Streak tracks consecutive days with ANY activity (quizzes, battles, rooms)
+  - New `user_battle_history` collection stores battle results for stats
+  - API response includes breakdown: `{ quizzes, battle_rooms, matchmaking_battles }`
+  - Study hours estimated at 2 min per question (more realistic)
+  - Subject mastery aggregates all test sources
 
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
