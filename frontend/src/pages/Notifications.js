@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
+import Header from '../components/Header';
 import { Bell, Heart, MessageCircle, Users, Trophy, Flame, Check, Trash2, ArrowLeft, CheckCheck } from 'lucide-react';
 
 const Notifications = () => {
@@ -140,6 +141,7 @@ const Notifications = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       {/* Sticky Header */}
       <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-2xl mx-auto">

@@ -180,6 +180,11 @@
   - Created comprehensive build & publish guide at `frontend/ANDROID_BUILD_GUIDE.md`
   - Backend push notification APIs: register, unregister, send, list tokens
 
+- **UI Fixes: Headers & 404 Page (Mar 2, 2026):**
+  - Added Header to Notifications page and JoinRoom page (both authenticated & login-required states)
+  - Created custom 404 NotFound page with dark theme, animated gradient, compass icon, "Back to Home" / "Go Back" buttons, and quick navigation links
+  - Added catch-all `*` route in App.js for undefined URLs
+
 ## Pending Issues
 - P2: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
 

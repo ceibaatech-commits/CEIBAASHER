@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users, Lock, AlertCircle } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import Header from '../components/Header';
 
 const BATTLE_URL = window.location.origin;
 
@@ -30,10 +31,13 @@ const JoinRoom = () => {
   // Show login required screen if not authenticated
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking authentication...</p>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 64px)' }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Checking authentication...</p>
+          </div>
         </div>
       </div>
     );
@@ -41,34 +45,37 @@ const JoinRoom = () => {
 
   if (!isUserAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-8 h-8 text-white" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Login Required</h2>
-          <p className="text-gray-600 text-sm mb-5">
-            Please login or create an account to join quiz rooms.
-          </p>
-          <div className="space-y-2">
-            <button
-              onClick={() => navigate('/login', { state: { from: location.pathname } })}
-              className="w-full h-11 bg-purple-600 text-white rounded-lg font-semibold text-sm hover:bg-purple-700 transition-all"
-            >
-              Login to Continue
-            </button>
-            <button
-              onClick={() => navigate('/signup', { state: { from: location.pathname } })}
-              className="w-full h-11 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-all"
-            >
-              Create Account
-            </button>
-            <button
-              onClick={() => navigate(-1)}
-              className="w-full text-gray-500 py-1.5 text-xs hover:text-gray-700"
-            >
-              ← Go Back
-            </button>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100">
+        <Header />
+        <div className="flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 64px)' }}>
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Login Required</h2>
+            <p className="text-gray-600 text-sm mb-5">
+              Please login or create an account to join quiz rooms.
+            </p>
+            <div className="space-y-2">
+              <button
+                onClick={() => navigate('/login', { state: { from: location.pathname } })}
+                className="w-full h-11 bg-purple-600 text-white rounded-lg font-semibold text-sm hover:bg-purple-700 transition-all"
+              >
+                Login to Continue
+              </button>
+              <button
+                onClick={() => navigate('/signup', { state: { from: location.pathname } })}
+                className="w-full h-11 bg-gray-100 text-gray-700 rounded-lg font-semibold text-sm hover:bg-gray-200 transition-all"
+              >
+                Create Account
+              </button>
+              <button
+                onClick={() => navigate(-1)}
+                className="w-full text-gray-500 py-1.5 text-xs hover:text-gray-700"
+              >
+                Go Back
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -158,7 +165,9 @@ const JoinRoom = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      <Header />
+      <div className="py-8">
       <div className="max-w-md mx-auto px-4">
         <button
           onClick={() => navigate('/')}
@@ -263,6 +272,7 @@ const JoinRoom = () => {
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

@@ -49,6 +49,9 @@ import LiveBattleMode from "@/pages/LiveBattleMode";
 // 1v1 Matchmaking without audio/video (New simplified version)
 import Matchmaking1v1 from "@/pages/Matchmaking1v1";
 
+// 404 Page
+import NotFound from "@/pages/NotFound";
+
 // Admin Panel
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -183,6 +186,9 @@ function App() {
           
           {/* Divya AI Tutor */}
           <Route path="/divya" element={<DivyaTutor />} />
+          
+          {/* 404 Catch-All */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
             </div>
             <MobileBottomNav />
