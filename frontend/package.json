@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^6",
+    "@capacitor/cli": "^6",
+    "@capacitor/core": "^6",
+    "@capacitor/push-notifications": "^6",
+    "@capacitor/splash-screen": "^6",
+    "@capacitor/status-bar": "^6",
     "@dotlottie/react-player": "^1.6.19",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-accordion": "^1.2.8",
@@ -96,7 +102,8 @@
     "eslint-plugin-react": "7.37.4",
     "globals": "15.15.0",
     "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.3"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
   "proxy": "http://localhost:8001"

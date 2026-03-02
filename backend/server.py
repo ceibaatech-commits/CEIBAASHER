@@ -248,6 +248,9 @@ import admin_auth_routes
 admin_auth_routes.init_db(db)
 fastapi_app.include_router(admin_auth_router, prefix="/api")  # Admin Auth
 
+from push_notification_routes import router as push_router
+fastapi_app.include_router(push_router, prefix="/api")  # Push Notifications
+
 # fastapi_app.add_middleware(
 #     CORSMiddleware,
 #     allow_credentials=True,

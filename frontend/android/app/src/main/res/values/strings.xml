@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ceibaa</string>
+    <string name="title_activity_main">Ceibaa</string>
+    <string name="package_name">in.ceibaa.app</string>
+    <string name="custom_url_scheme">in.ceibaa.app</string>
+</resources>

@@ -173,6 +173,13 @@
   - Exam Sheet Manager: 670 sheets with 7-page pagination (100/page), First/Prev/Next/Last/Go-to buttons working
   - Both sections render correctly after admin login fix
 
+- **Android App Setup with Capacitor 6 (Mar 2, 2026):**
+  - Configured Capacitor 6 with package ID `in.ceibaa.app`, pointing to `https://ceibaa.in`
+  - Generated Android app icons (all densities) and splash screens from uploaded Ceibaa logo
+  - Set up push notification support via FCM (backend API + frontend service)
+  - Created comprehensive build & publish guide at `frontend/ANDROID_BUILD_GUIDE.md`
+  - Backend push notification APIs: register, unregister, send, list tokens
+
 ## Pending Issues
 - P2: Update "Follow" button icon on user profiles (person head/shoulders + plus sign)
 

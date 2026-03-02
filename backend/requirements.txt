@@ -12,12 +12,14 @@ bidict==0.23.1
 black==25.9.0
 boto3==1.40.55
 botocore==1.40.55
+CacheControl==0.14.4
 cachetools==6.2.1
 certifi==2025.10.5
 cffi==2.0.0
 chardet==3.0.4
 charset-normalizer==3.4.4
 click==8.3.0
+cloudinary==1.44.1
 cryptography==46.0.3
 deep-translator==1.11.4
 distro==1.9.0
@@ -29,6 +31,7 @@ emergentintegrations==0.1.0
 fastapi==0.110.1
 fastuuid==0.14.0
 filelock==3.20.0
+firebase_admin==7.2.0
 flake8==7.3.0
 flatbuffers==25.12.19
 frozenlist==1.8.0
@@ -39,8 +42,13 @@ google-api-python-client==2.187.0
 google-auth==2.41.1
 google-auth-httplib2==0.2.1
 google-auth-oauthlib==1.2.2
+google-cloud-core==2.5.0
+google-cloud-firestore==2.23.0
+google-cloud-storage==3.9.0
+google-crc32c==1.8.0
 google-genai==1.53.0
 google-generativeai==0.8.5
+google-resumable-media==2.8.0
 googleapis-common-protos==1.72.0
 grpcio==1.76.0
 grpcio-status==1.71.2
@@ -76,6 +84,7 @@ mccabe==0.7.0
 mdurl==0.1.2
 motor==3.3.1
 mpmath==1.3.0
+msgpack==1.1.2
 multidict==6.7.0
 mypy==1.18.2
 mypy_extensions==1.1.0
