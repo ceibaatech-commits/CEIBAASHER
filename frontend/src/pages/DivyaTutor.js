@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Mic, MicOff, FileText, Image, X, Play, Pause, Loader2, Volume2, SkipBack, SkipForward, MessageCircle, Send, Network, Hand, LogIn } from 'lucide-react';
+import { Upload, Mic, MicOff, FileText, Image, X, Loader2, Volume2, VolumeX, MessageCircle, Send, LogIn, ChevronLeft, Languages, Sparkles, StopCircle } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import Header from '../components/Header';
@@ -8,625 +8,597 @@ import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+/* ─── Language & Tutor Config ─── */
+const LANGUAGES = [
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'hi', label: 'Hindi', flag: '🇮🇳' },
+  { code: 'ta', label: 'Tamil', flag: '🇮🇳' },
+  { code: 'mr', label: 'Marathi', flag: '🇮🇳' },
+  { code: 'te', label: 'Telugu', flag: '🇮🇳' },
+  { code: 'kn', label: 'Kannada', flag: '🇮🇳' },
+  { code: 'bn', label: 'Bengali', flag: '🇮🇳' },
+];
+
+const TUTORS = {
+  divya: {
+    name: 'Divya',
+    tagline: 'Warm & Encouraging',
+    desc: 'Explains with examples & analogies. Makes learning fun!',
+    avatar: '/images/divya_avatar.png',
+    color: 'purple',
+    bg: 'from-purple-500 to-pink-500',
+    light: 'bg-purple-50',
+    border: 'border-purple-200',
+    ring: 'ring-purple-400',
+    text: 'text-purple-600',
+    pulse: 'bg-purple-400',
+  },
+  sher: {
+    name: 'Sher',
+    tagline: 'Sharp & Exam-Focused',
+    desc: 'Mnemonics, tricks & strategies to ace your exams.',
+    avatar: '/images/sher_avatar.png',
+    color: 'teal',
+    bg: 'from-teal-500 to-cyan-500',
+    light: 'bg-teal-50',
+    border: 'border-teal-200',
+    ring: 'ring-teal-400',
+    text: 'text-teal-600',
+    pulse: 'bg-teal-400',
+  },
+};
+
+/* ─── Main Component ─── */
 const DivyaTutor = () => {
   const navigate = useNavigate();
   const { user, logout, isAuthenticated } = useAuth();
   const isLoggedIn = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
 
-  // Upload state
-  const [files, setFiles] = useState([]);
-  const [prompt, setPrompt] = useState('');
-  const [generating, setGenerating] = useState(false);
-  const [progress, setProgress] = useState('');
+  // Session state
+  const [sessionActive, setSessionActive] = useState(false);
+  const [selectedTutor, setSelectedTutor] = useState(null);
+  const [selectedLang, setSelectedLang] = useState('en');
+  const [pdfContext, setPdfContext] = useState('');
+  const [pdfName, setPdfName] = useState('');
+  const [uploadingPdf, setUploadingPdf] = useState(false);
 
-  // Podcast state
-  const [dialogue, setDialogue] = useState([]);
-  const [audioUrl, setAudioUrl] = useState('');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentLine, setCurrentLine] = useState(-1);
-  const [audioTime, setAudioTime] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(0);
+  // Conversation state
+  const [messages, setMessages] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [inputText, setInputText] = useState('');
 
-  // Join conversation state
-  const [joined, setJoined] = useState(false);
-  const [userQuestion, setUserQuestion] = useState('');
-  const [conversationHistory, setConversationHistory] = useState([]);
-  const [answering, setAnswering] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef(null);
-
-  // Mind map state
-  const [mindMap, setMindMap] = useState(null);
-  const [generatingMap, setGeneratingMap] = useState(false);
-
-  // Source content for follow-ups
-  const [sourceContent, setSourceContent] = useState('');
-
+  // Audio refs
   const audioRef = useRef(null);
-  const fileInputRef = useRef(null);
-  const dialogueRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
   const chatEndRef = useRef(null);
-
-  // Auto-scroll transcript to current line
-  useEffect(() => {
-    if (currentLine >= 0 && dialogueRef.current && !joined) {
-      const el = dialogueRef.current.querySelector(`[data-line="${currentLine}"]`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [currentLine, joined]);
+  const fileInputRef = useRef(null);
 
   // Auto-scroll chat
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [conversationHistory]);
+  }, [messages, isProcessing]);
 
-  // Cleanup blob URL on unmount to free memory
+  // Cleanup audio on unmount
   useEffect(() => {
     return () => {
-      if (audioUrl && audioUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(audioUrl);
-      }
+      stopAudio();
+      stopRecording();
     };
-  }, [audioUrl]);
+  }, []);
 
-  // Estimate current line from audio time
-  useEffect(() => {
-    if (!dialogue.length || !audioDuration) return;
-    const totalChars = dialogue.reduce((sum, d) => sum + d.text.length, 0);
-    let elapsed = 0;
-    for (let i = 0; i < dialogue.length; i++) {
-      elapsed += dialogue[i].text.length;
-      if ((elapsed / totalChars) * audioDuration >= audioTime) {
-        setCurrentLine(i);
-        return;
-      }
+  /* ─── PDF Upload ─── */
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file');
+      return;
     }
-    setCurrentLine(dialogue.length - 1);
-  }, [audioTime, dialogue, audioDuration]);
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error('File too large (max 20MB)');
+      return;
+    }
 
-  // File handling
-  const handleFileAdd = (e) => {
-    const newFiles = Array.from(e.target.files);
-    const pdfCount = files.filter(f => f.type === 'application/pdf').length + newFiles.filter(f => f.type === 'application/pdf').length;
-    const total = files.length + newFiles.length;
-    if (pdfCount > 1) { toast.error('Only 1 PDF allowed'); return; }
-    if (total > 6) { toast.error('Maximum 6 files (1 PDF + 5 images)'); return; }
-    for (const f of newFiles) {
-      if (f.size > 20 * 1024 * 1024) { toast.error(`${f.name} exceeds 20MB`); return; }
-      const ext = f.name.split('.').pop().toLowerCase();
-      if (!['pdf', 'png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
-        toast.error(`Unsupported: ${f.name}`); return;
+    setUploadingPdf(true);
+    setPdfName(file.name);
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+      const res = await axios.post(`${BACKEND_URL}/api/divya/live/upload-context`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000,
+      });
+      if (res.data.success) {
+        setPdfContext(res.data.context);
+        toast.success(`PDF loaded: ${res.data.char_count} chars extracted`);
       }
+    } catch (err) {
+      toast.error('Failed to process PDF');
+      setPdfName('');
+    } finally {
+      setUploadingPdf(false);
     }
-    setFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const removePdf = () => {
+    setPdfContext('');
+    setPdfName('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const removeFile = (idx) => setFiles(prev => prev.filter((_, i) => i !== idx));
+  /* ─── Start Session ─── */
+  const startSession = (tutor) => {
+    setSelectedTutor(tutor);
+    setSessionActive(true);
+    const t = TUTORS[tutor];
+    setMessages([{
+      role: 'tutor',
+      text: tutor === 'divya'
+        ? `Namaste! I'm Divya. ${pdfContext ? "I've read your study material — ask me anything about it!" : "Upload a PDF or just ask me any question. I'm here to help you learn!"}`
+        : `Hey! I'm Sher. ${pdfContext ? "I've gone through your material — let's crack those exam questions!" : "Upload a PDF or fire away with your doubts. Let's get you exam-ready!"}`,
+    }]);
+  };
 
-  // Generate podcast
-  const generatePodcast = async () => {
-    if (!files.length) { toast.error('Upload at least one file'); return; }
-    setGenerating(true);
-    setProgress('Uploading files...');
-    setDialogue([]);
-    setAudioUrl('');
-    setCurrentLine(-1);
-    setMindMap(null);
-    setConversationHistory([]);
-    setJoined(false);
+  /* ─── End Session ─── */
+  const endSession = () => {
+    stopAudio();
+    stopRecording();
+    setSessionActive(false);
+    setSelectedTutor(null);
+    setMessages([]);
+    setIsProcessing(false);
+  };
 
+  /* ─── Audio Playback ─── */
+  const playAudio = (base64Audio) => {
+    stopAudio();
     try {
-      const formData = new FormData();
-      files.forEach(f => formData.append('files', f));
-      if (prompt) formData.append('prompt', prompt);
-
-      setProgress('Divya & Sher are reading your content...');
-      const res = await axios.post(`${BACKEND_URL}/api/divya/generate-podcast`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 300000
-      });
-
-      if (res.data.success) {
-        setDialogue(res.data.dialogue);
-        // Convert base64 audio to blob URL (no server storage)
-        const audioBlob = new Blob(
-          [Uint8Array.from(atob(res.data.audio_base64), c => c.charCodeAt(0))],
-          { type: 'audio/mpeg' }
-        );
-        setAudioUrl(URL.createObjectURL(audioBlob));
-        setSourceContent(res.data.dialogue.map(d => `${d.speaker}: ${d.text}`).join('\n'));
-        toast.success('Podcast ready!');
-      }
+      const audioBytes = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0));
+      const blob = new Blob([audioBytes], { type: 'audio/mpeg' });
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onplay = () => setIsSpeaking(true);
+      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(url); };
+      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(url); };
+      audio.play().catch(() => setIsSpeaking(false));
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Generation failed');
-    } finally {
-      setGenerating(false);
-      setProgress('');
+      console.error('Audio playback error:', err);
     }
   };
 
-  // Audio controls
-  const togglePlay = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) audioRef.current.pause();
-    else audioRef.current.play().catch(() => toast.error('Audio playback failed'));
-    setIsPlaying(!isPlaying);
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
   };
 
-  const seekAudio = (sec) => {
-    if (audioRef.current) audioRef.current.currentTime = Math.max(0, audioRef.current.currentTime + sec);
-  };
+  /* ─── Send Message (Text) ─── */
+  const sendMessage = useCallback(async (text) => {
+    if (!text?.trim() || isProcessing) return;
+    const userText = text.trim();
+    setInputText('');
 
-  const formatTime = (s) => `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
+    // Add user message
+    setMessages(prev => [...prev, { role: 'user', text: userText }]);
+    setIsProcessing(true);
 
-  // Join conversation - Raise hand during audio
-  const handleRaiseHand = () => {
-    if (audioRef.current) audioRef.current.pause();
-    setIsPlaying(false);
-    setJoined(true);
-    // Only Divya welcomes the student
-    setConversationHistory(prev => [...prev, {
-      speaker: 'Divya',
-      text: "Haan, bolo! I paused for you. What would you like to know about what we just discussed? Feel free to ask anything!"
-    }]);
-  };
+    // Build chat history for context
+    const chatHistory = messages.slice(-8).map(m => ({
+      role: m.role === 'user' ? 'Student' : TUTORS[selectedTutor]?.name || 'Tutor',
+      text: m.text,
+    }));
 
-  // Full join conversation (from button)
-  const handleJoin = () => {
-    if (audioRef.current) audioRef.current.pause();
-    setIsPlaying(false);
-    setJoined(true);
-    setConversationHistory(prev => [...prev, {
-      speaker: 'Divya',
-      text: "Welcome! You've joined our discussion. Feel free to ask any question about what we've covered, and I'll explain it to you!"
-    }]);
-  };
-
-  // Send user question (text)
-  const sendQuestion = async () => {
-    const q = userQuestion.trim();
-    if (!q || answering) return;
-    setUserQuestion('');
-    setConversationHistory(prev => [...prev, { speaker: 'You', text: q }]);
-    await getAIResponse(q);
-  };
-
-  // Get AI response to user question
-  const getAIResponse = useCallback(async (question) => {
-    setAnswering(true);
     try {
-      const context = sourceContent.substring(0, 3000);
-      const recentChat = conversationHistory.slice(-6).map(c => `${c.speaker}: ${c.text}`).join('\n');
-
-      const res = await axios.post(`${BACKEND_URL}/api/divya/ask`, {
-        question,
-        context,
-        recent_chat: recentChat
+      const res = await axios.post(`${BACKEND_URL}/api/divya/live/ask`, {
+        text: userText,
+        tutor: selectedTutor,
+        language: selectedLang,
+        context: pdfContext,
+        chat_history: chatHistory,
       }, { timeout: 60000 });
 
       if (res.data.success) {
-        setConversationHistory(prev => [...prev, ...res.data.responses]);
+        setMessages(prev => [...prev, { role: 'tutor', text: res.data.text }]);
+        if (res.data.audio_base64) {
+          playAudio(res.data.audio_base64);
+        }
       }
     } catch (err) {
-      setConversationHistory(prev => [...prev, {
-        speaker: 'Divya',
-        text: "I'm sorry, I couldn't process that. Could you try rephrasing your question?"
+      setMessages(prev => [...prev, {
+        role: 'tutor',
+        text: "Sorry, I couldn't process that. Could you try again?",
       }]);
     } finally {
-      setAnswering(false);
+      setIsProcessing(false);
     }
-  }, [sourceContent, conversationHistory]);
+  }, [isProcessing, messages, selectedTutor, selectedLang, pdfContext]);
 
-  // Voice input
-  const toggleVoice = () => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
+  /* ─── Voice Recording ─── */
+  const startRecording = async () => {
+    // Barge-in: stop tutor audio if playing
+    stopAudio();
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? 'audio/webm;codecs=opus'
+          : 'audio/webm',
+      });
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        if (blob.size > 1000) {
+          await transcribeAndSend(blob);
+        }
+      };
+
+      mediaRecorder.start(250);
+      mediaRecorderRef.current = mediaRecorder;
+      setIsRecording(true);
+    } catch (err) {
+      toast.error('Microphone access denied');
     }
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) { toast.error('Speech recognition not supported'); return; }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-IN';
-    recognition.interimResults = true;
-    recognition.continuous = false;
-    recognition.onresult = (e) => {
-      const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-      setUserQuestion(transcript);
-      if (e.results[0].isFinal) {
-        setIsListening(false);
-      }
-    };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-    recognitionRef.current = recognition;
-    setIsListening(true);
   };
 
-  // Generate mind map
-  const generateMindMap = async () => {
-    if (generatingMap) return;
-    setGeneratingMap(true);
-    try {
-      const res = await axios.post(`${BACKEND_URL}/api/divya/mind-map`, {
-        content: sourceContent.substring(0, 4000)
-      }, { timeout: 60000 });
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+    mediaRecorderRef.current = null;
+    setIsRecording(false);
+  };
 
-      if (res.data.success) {
-        setMindMap(res.data.mind_map);
-        toast.success('Mind map generated!');
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  /* ─── Transcribe Audio & Send ─── */
+  const transcribeAndSend = async (audioBlob) => {
+    setIsProcessing(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'recording.webm');
+      const res = await axios.post(`${BACKEND_URL}/api/divya/live/transcribe`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 30000,
+      });
+      if (res.data.success && res.data.text) {
+        await sendMessage(res.data.text);
+      } else {
+        toast.error("Couldn't understand the audio. Please try again.");
+        setIsProcessing(false);
       }
     } catch (err) {
-      toast.error('Failed to generate mind map');
-    } finally {
-      setGeneratingMap(false);
+      toast.error('Transcription failed. Try typing instead.');
+      setIsProcessing(false);
     }
   };
 
-  // Reset - also revoke blob URL to free memory
-  const resetAll = () => {
-    if (audioUrl && audioUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(audioUrl);
-    }
-    setDialogue([]); setAudioUrl(''); setFiles([]); setPrompt('');
-    setCurrentLine(-1); setMindMap(null); setConversationHistory([]);
-    setJoined(false); setSourceContent('');
-  };
+  const tutor = selectedTutor ? TUTORS[selectedTutor] : null;
 
+  /* ─── RENDER ─── */
   return (
     <div className="min-h-screen bg-gray-50">
       <Header isLoggedIn={isLoggedIn} user={user} onLogout={logout} />
 
-      <div className="max-w-4xl mx-auto px-4 py-6 pt-20">
-        {/* Hero */}
-        <div className="bg-[#0f1729] rounded-2xl p-5 sm:p-7 mb-5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="flex -space-x-3 flex-shrink-0">
-              <img src="/images/divya_avatar.png" alt="Divya" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#0f1729] object-cover bg-purple-200" />
-              <img src="/images/sher_avatar.png" alt="Sher" className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#0f1729] object-cover bg-teal-200" />
+      <div className="max-w-2xl mx-auto px-4 pt-20 pb-8">
+        {/* Login Gate */}
+        {!isLoggedIn ? (
+          <LoginPrompt navigate={navigate} />
+        ) : !sessionActive ? (
+          /* ─── Setup Screen ─── */
+          <SetupScreen
+            selectedLang={selectedLang}
+            setSelectedLang={setSelectedLang}
+            pdfName={pdfName}
+            pdfContext={pdfContext}
+            uploadingPdf={uploadingPdf}
+            handlePdfUpload={handlePdfUpload}
+            removePdf={removePdf}
+            fileInputRef={fileInputRef}
+            startSession={startSession}
+          />
+        ) : (
+          /* ─── Conversation Screen ─── */
+          <ConversationScreen
+            tutor={tutor}
+            selectedTutor={selectedTutor}
+            messages={messages}
+            isProcessing={isProcessing}
+            isSpeaking={isSpeaking}
+            isRecording={isRecording}
+            inputText={inputText}
+            setInputText={setInputText}
+            sendMessage={sendMessage}
+            toggleRecording={toggleRecording}
+            stopAudio={stopAudio}
+            endSession={endSession}
+            chatEndRef={chatEndRef}
+            pdfName={pdfName}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Login Prompt ─── */
+const LoginPrompt = ({ navigate }) => (
+  <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center mt-4">
+    <div className="w-16 h-16 bg-gradient-to-br from-teal-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <LogIn className="w-8 h-8 text-teal-600" />
+    </div>
+    <h2 className="text-lg font-bold text-gray-800 mb-2">Login Required</h2>
+    <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto">
+      Login to talk with Divya & Sher — your personal AI tutors who respond in voice!
+    </p>
+    <div className="flex gap-3 justify-center">
+      <button onClick={() => navigate('/login')} className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm" data-testid="login-btn">Login</button>
+      <button onClick={() => navigate('/signup')} className="border-2 border-teal-500 text-teal-600 px-6 py-2.5 rounded-xl font-semibold text-sm" data-testid="signup-btn">Sign Up Free</button>
+    </div>
+  </div>
+);
+
+/* ─── Setup Screen ─── */
+const SetupScreen = ({ selectedLang, setSelectedLang, pdfName, pdfContext, uploadingPdf, handlePdfUpload, removePdf, fileInputRef, startSession }) => (
+  <>
+    {/* Hero */}
+    <div className="bg-[#0f1729] rounded-2xl p-6 mb-5 relative overflow-hidden" data-testid="tutor-hero">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl" />
+      <div className="relative z-10 text-center">
+        <div className="flex justify-center -space-x-3 mb-3">
+          <img src="/images/divya_avatar.png" alt="Divya" className="w-14 h-14 rounded-full border-3 border-[#0f1729] object-cover bg-purple-200" />
+          <img src="/images/sher_avatar.png" alt="Sher" className="w-14 h-14 rounded-full border-3 border-[#0f1729] object-cover bg-teal-200" />
+        </div>
+        <h1 className="text-xl font-black text-white mb-1">AI Voice Tutor</h1>
+        <p className="text-gray-400 text-sm">Talk to your tutor. They respond in voice!</p>
+      </div>
+    </div>
+
+    {/* Language Selection */}
+    <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-4" data-testid="language-selector">
+      <div className="flex items-center gap-2 mb-3">
+        <Languages className="w-4 h-4 text-gray-500" />
+        <h3 className="text-sm font-bold text-gray-700">Choose Language</h3>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {LANGUAGES.map(lang => (
+          <button
+            key={lang.code}
+            onClick={() => setSelectedLang(lang.code)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              selectedLang === lang.code
+                ? 'bg-gray-900 text-white shadow-md'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+            data-testid={`lang-${lang.code}`}
+          >
+            {lang.flag} {lang.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* PDF Upload (Optional) */}
+    <div className="bg-white rounded-2xl border border-gray-200 p-4 mb-5" data-testid="pdf-upload-section">
+      <div className="flex items-center gap-2 mb-3">
+        <FileText className="w-4 h-4 text-gray-500" />
+        <h3 className="text-sm font-bold text-gray-700">Study Material <span className="text-gray-400 font-normal">(optional)</span></h3>
+      </div>
+      {pdfName ? (
+        <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-3 py-2.5">
+          <FileText className="w-4 h-4 text-green-600 shrink-0" />
+          <span className="text-xs text-green-700 font-medium truncate flex-1">{pdfName}</span>
+          <span className="text-[10px] text-green-500">{pdfContext ? 'Ready' : 'Processing...'}</span>
+          <button onClick={removePdf} className="p-0.5 hover:bg-green-100 rounded"><X className="w-3.5 h-3.5 text-green-500" /></button>
+        </div>
+      ) : (
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploadingPdf}
+          className="w-full border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-teal-400 hover:bg-teal-50/30 transition-colors disabled:opacity-50"
+          data-testid="upload-pdf-btn"
+        >
+          {uploadingPdf ? (
+            <Loader2 className="w-6 h-6 text-teal-500 mx-auto mb-1 animate-spin" />
+          ) : (
+            <Upload className="w-6 h-6 text-gray-300 mx-auto mb-1" />
+          )}
+          <p className="text-xs text-gray-500 font-medium">{uploadingPdf ? 'Processing PDF...' : 'Upload PDF (max 30 pages)'}</p>
+        </button>
+      )}
+      <input ref={fileInputRef} type="file" accept=".pdf" onChange={handlePdfUpload} className="hidden" />
+    </div>
+
+    {/* Tutor Selection */}
+    <h3 className="text-sm font-bold text-gray-700 mb-3 px-1">Choose Your Tutor</h3>
+    <div className="grid grid-cols-2 gap-3 mb-6">
+      {Object.entries(TUTORS).map(([key, t]) => (
+        <button
+          key={key}
+          onClick={() => startSession(key)}
+          className="bg-white rounded-2xl border-2 border-gray-200 p-4 text-center hover:shadow-lg hover:border-gray-300 transition-all group active:scale-95"
+          data-testid={`tutor-${key}-btn`}
+        >
+          <div className="relative mx-auto w-20 h-20 mb-3">
+            <img
+              src={t.avatar}
+              alt={t.name}
+              className={`w-20 h-20 rounded-full object-cover border-3 ${t.border} group-hover:shadow-lg transition-all`}
+              style={{ backgroundColor: key === 'divya' ? '#e9d5ff' : '#ccfbf1' }}
+            />
+            <div className={`absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r ${t.bg} rounded-full flex items-center justify-center shadow-md`}>
+              <Mic className="w-3 h-3 text-white" />
             </div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-black text-white">Divya & Sher</h1>
-              <p className="text-gray-400 text-xs sm:text-sm">Upload your chapter. We'll turn it into a podcast you can join!</p>
+          </div>
+          <h4 className="text-sm font-bold text-gray-800">{t.name}</h4>
+          <p className={`text-[10px] font-semibold ${t.text} mb-1`}>{t.tagline}</p>
+          <p className="text-[10px] text-gray-400 leading-relaxed">{t.desc}</p>
+        </button>
+      ))}
+    </div>
+  </>
+);
+
+/* ─── Conversation Screen ─── */
+const ConversationScreen = ({ tutor, selectedTutor, messages, isProcessing, isSpeaking, isRecording, inputText, setInputText, sendMessage, toggleRecording, stopAudio, endSession, chatEndRef, pdfName }) => (
+  <div className="flex flex-col" style={{ height: 'calc(100vh - 6rem)' }}>
+    {/* Top Bar */}
+    <div className="flex items-center gap-3 py-3 border-b border-gray-200 bg-white rounded-t-2xl px-4 shrink-0">
+      <button onClick={endSession} className="p-1.5 hover:bg-gray-100 rounded-lg transition" data-testid="end-session-btn">
+        <ChevronLeft className="w-5 h-5 text-gray-500" />
+      </button>
+      <div className="relative">
+        <img
+          src={tutor.avatar}
+          alt={tutor.name}
+          className="w-10 h-10 rounded-full object-cover border-2"
+          style={{
+            borderColor: isSpeaking ? (selectedTutor === 'divya' ? '#a855f7' : '#14b8a6') : '#e5e7eb',
+            backgroundColor: selectedTutor === 'divya' ? '#e9d5ff' : '#ccfbf1',
+          }}
+        />
+        {isSpeaking && (
+          <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 ${tutor.pulse} rounded-full animate-pulse border-2 border-white`} />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="text-sm font-bold text-gray-800">{tutor.name}</h3>
+        <p className="text-[10px] text-gray-400">
+          {isSpeaking ? 'Speaking...' : isProcessing ? 'Thinking...' : 'Listening'}
+          {pdfName && ` · ${pdfName}`}
+        </p>
+      </div>
+      {isSpeaking && (
+        <button
+          onClick={stopAudio}
+          className="p-2 bg-red-50 hover:bg-red-100 rounded-lg transition"
+          data-testid="stop-audio-btn"
+          title="Stop speaking"
+        >
+          <VolumeX className="w-4 h-4 text-red-500" />
+        </button>
+      )}
+    </div>
+
+    {/* Messages */}
+    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50" data-testid="chat-messages">
+      {messages.map((msg, idx) => (
+        <MessageBubble key={idx} msg={msg} tutor={tutor} selectedTutor={selectedTutor} />
+      ))}
+      {isProcessing && (
+        <div className="flex gap-2.5">
+          <img src={tutor.avatar} alt={tutor.name} className="w-8 h-8 rounded-full shrink-0 object-cover"
+            style={{ backgroundColor: selectedTutor === 'divya' ? '#e9d5ff' : '#ccfbf1' }} />
+          <div className={`${tutor.light} rounded-2xl rounded-tl-sm px-4 py-3`}>
+            <div className="flex gap-1.5">
+              <span className={`w-2 h-2 ${tutor.pulse} rounded-full animate-bounce`} style={{ animationDelay: '0ms' }} />
+              <span className={`w-2 h-2 ${tutor.pulse} rounded-full animate-bounce`} style={{ animationDelay: '150ms' }} />
+              <span className={`w-2 h-2 ${tutor.pulse} rounded-full animate-bounce`} style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
+      )}
+      <div ref={chatEndRef} />
+    </div>
 
-        {/* Login Required Message */}
-        {!isLoggedIn && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-8 mb-5 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-teal-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <LogIn className="w-8 h-8 text-teal-600" />
-            </div>
-            <h2 className="text-lg font-bold text-gray-800 mb-2">Login Required</h2>
-            <p className="text-sm text-gray-500 mb-5 max-w-md mx-auto">
-              Please login to access Divya & Sher AI Tutor. Upload your study materials and get personalized podcast explanations!
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => navigate('/login')}
-                className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition"
-                data-testid="login-btn"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => navigate('/signup')}
-                className="border-2 border-teal-500 text-teal-600 px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-teal-50 transition"
-                data-testid="signup-btn"
-              >
-                Sign Up Free
-              </button>
-            </div>
-          </div>
-        )}
+    {/* Input Area */}
+    <div className="bg-white border-t border-gray-200 px-4 py-3 rounded-b-2xl shrink-0">
+      {/* Mic Button */}
+      <div className="flex items-center justify-center mb-3">
+        <button
+          onClick={toggleRecording}
+          disabled={isProcessing}
+          className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-lg active:scale-90 disabled:opacity-50 ${
+            isRecording
+              ? 'bg-red-500 hover:bg-red-600 shadow-red-200'
+              : `bg-gradient-to-r ${tutor.bg} hover:opacity-90 shadow-gray-200`
+          }`}
+          data-testid="mic-button"
+        >
+          {isRecording ? (
+            <StopCircle className="w-7 h-7 text-white" />
+          ) : (
+            <Mic className="w-7 h-7 text-white" />
+          )}
+          {isRecording && (
+            <span className="absolute inset-0 rounded-full bg-red-400 animate-ping opacity-30" />
+          )}
+        </button>
+      </div>
+      <p className="text-[10px] text-gray-400 text-center mb-3">
+        {isRecording ? 'Listening... Tap to stop' : isSpeaking ? 'Tap mic to interrupt' : 'Tap mic to speak'}
+      </p>
 
-        {/* Upload Section - Only show when logged in */}
-        {isLoggedIn && !dialogue.length && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
-            <h2 className="text-sm font-bold text-gray-800 mb-2">Upload your study material</h2>
-            <p className="text-xs text-gray-400 mb-3">1 PDF (max 30 pages) + up to 5 images</p>
+      {/* Text Input */}
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage(inputText)}
+          placeholder={`Ask ${tutor.name} anything...`}
+          className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+          disabled={isProcessing}
+          data-testid="text-input"
+        />
+        <button
+          onClick={() => sendMessage(inputText)}
+          disabled={!inputText.trim() || isProcessing}
+          className={`p-2.5 bg-gradient-to-r ${tutor.bg} text-white rounded-xl hover:opacity-90 transition disabled:opacity-40 shrink-0`}
+          data-testid="send-btn"
+        >
+          <Send className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-200 rounded-xl p-5 text-center cursor-pointer hover:border-teal-400 hover:bg-teal-50/30 transition-colors mb-3"
-              data-testid="file-drop-zone"
-            >
-              <Upload className="w-7 h-7 text-gray-300 mx-auto mb-1.5" />
-              <p className="text-sm text-gray-500 font-medium">Click to upload</p>
-              <p className="text-xs text-gray-400">PDF, PNG, JPG, WEBP</p>
-              <input ref={fileInputRef} type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" onChange={handleFileAdd} className="hidden" />
-            </div>
-
-            {files.length > 0 && (
-              <div className="space-y-1.5 mb-3">
-                {files.map((f, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-                    {f.type === 'application/pdf' ? <FileText className="w-4 h-4 text-red-500 flex-shrink-0" /> : <Image className="w-4 h-4 text-blue-500 flex-shrink-0" />}
-                    <span className="text-xs text-gray-700 truncate flex-1">{f.name}</span>
-                    <span className="text-[10px] text-gray-400">{(f.size / 1024 / 1024).toFixed(1)}MB</span>
-                    <button onClick={() => removeFile(i)} className="p-0.5 hover:bg-gray-200 rounded"><X className="w-3 h-3 text-gray-400" /></button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <input
-              type="text" value={prompt} onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Focus area? e.g. 'Explain formulas simply'"
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent mb-3"
-              data-testid="prompt-input"
-            />
-
-            <button
-              onClick={generatePodcast} disabled={generating || !files.length}
-              className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 text-white py-3 rounded-xl font-bold text-sm hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-              data-testid="generate-btn"
-            >
-              {generating ? <><Loader2 className="w-4 h-4 animate-spin" />{progress}</> : <><Mic className="w-4 h-4" />Generate Podcast</>}
-            </button>
-          </div>
-        )}
-
-        {/* Results - Only show when logged in */}
-        {isLoggedIn && dialogue.length > 0 && (
-          <>
-            {/* Audio Player — sticky */}
-            {audioUrl && (
-              <div className="bg-[#0f1729] rounded-2xl p-4 mb-4 sticky top-16 z-30" data-testid="audio-player">
-                <audio
-                  ref={audioRef} src={audioUrl} preload="auto"
-                  onTimeUpdate={() => setAudioTime(audioRef.current?.currentTime || 0)}
-                  onLoadedMetadata={() => setAudioDuration(audioRef.current?.duration || 0)}
-                  onEnded={() => { setIsPlaying(false); setCurrentLine(-1); }}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  onError={(e) => console.error('Audio error:', e)}
-                />
-                <div className="flex items-center gap-3">
-                  <button onClick={() => seekAudio(-10)} className="p-1 text-gray-400 hover:text-white"><SkipBack className="w-4 h-4" /></button>
-                  <button onClick={togglePlay} className="w-10 h-10 bg-teal-500 hover:bg-teal-400 rounded-full flex items-center justify-center transition flex-shrink-0" data-testid="play-pause-btn">
-                    {isPlaying ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white ml-0.5" />}
-                  </button>
-                  <button onClick={() => seekAudio(10)} className="p-1 text-gray-400 hover:text-white"><SkipForward className="w-4 h-4" /></button>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="w-full h-1.5 bg-slate-700 rounded-full cursor-pointer" onClick={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      if (audioRef.current) audioRef.current.currentTime = ((e.clientX - rect.left) / rect.width) * audioDuration;
-                    }}>
-                      <div className="h-1.5 bg-teal-400 rounded-full transition-all" style={{ width: audioDuration ? `${(audioTime / audioDuration) * 100}%` : '0%' }} />
-                    </div>
-                    <span className="text-[10px] text-gray-500 font-mono">{formatTime(audioTime)} / {formatTime(audioDuration)}</span>
-                  </div>
-
-                  {/* Raise Hand button - always visible during audio, pulses when playing */}
-                  {!joined && (
-                    <button
-                      onClick={handleRaiseHand}
-                      className={`text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition flex-shrink-0 ${
-                        isPlaying 
-                          ? 'bg-amber-500 hover:bg-amber-400 animate-pulse shadow-lg shadow-amber-500/30' 
-                          : 'bg-amber-600 hover:bg-amber-500'
-                      }`}
-                      data-testid="raise-hand-btn"
-                      title="Raise your hand to ask a question"
-                    >
-                      <Hand className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">{isPlaying ? 'Ask Now' : 'Ask'}</span>
-                    </button>
-                  )}
-                </div>
-                
-                {/* Hint text when playing */}
-                {isPlaying && !joined && (
-                  <p className="text-[10px] text-gray-500 mt-2 text-center">
-                    💡 Tap "Ask Now" anytime to pause and ask Divya a question
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Action buttons */}
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={generateMindMap} disabled={generatingMap}
-                className="flex-1 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-xl font-semibold text-xs hover:bg-gray-50 transition flex items-center justify-center gap-1.5 disabled:opacity-50"
-                data-testid="mind-map-btn"
-              >
-                {generatingMap ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Network className="w-3.5 h-3.5" />}
-                Mind Map
-              </button>
-              {!joined && (
-                <button
-                  onClick={handleJoin}
-                  className="flex-1 bg-amber-50 border border-amber-200 text-amber-700 py-2.5 rounded-xl font-semibold text-xs hover:bg-amber-100 transition flex items-center justify-center gap-1.5"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />Ask Divya
-                </button>
-              )}
-              <button onClick={resetAll} className="flex-1 bg-white border border-gray-200 text-gray-700 py-2.5 rounded-xl font-semibold text-xs hover:bg-gray-50 transition">
-                New Upload
-              </button>
-            </div>
-
-            {/* Improved Mind Map UI */}
-            {mindMap && (
-              <div className="bg-gradient-to-br from-slate-50 to-teal-50 rounded-2xl border border-teal-100 p-5 sm:p-6 mb-4 relative overflow-hidden" data-testid="mind-map-section">
-                {/* Background decoration */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-teal-200/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-200/20 rounded-full blur-2xl" />
-                
-                <div className="relative z-10">
-                  <h3 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <div className="w-6 h-6 bg-teal-500 rounded-lg flex items-center justify-center">
-                      <Network className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    Mind Map
-                  </h3>
-                  
-                  {/* Central Topic */}
-                  <div className="flex justify-center mb-5">
-                    <div className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white rounded-2xl px-6 py-3 text-center font-bold text-sm shadow-lg shadow-teal-200 max-w-xs">
-                      {mindMap.title}
-                    </div>
-                  </div>
-                  
-                  {/* Branches - Radial Layout */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {mindMap.branches?.map((branch, i) => {
-                      const colors = [
-                        { bg: 'bg-purple-50', border: 'border-purple-200', accent: 'bg-purple-500', text: 'text-purple-700', line: 'border-purple-300' },
-                        { bg: 'bg-blue-50', border: 'border-blue-200', accent: 'bg-blue-500', text: 'text-blue-700', line: 'border-blue-300' },
-                        { bg: 'bg-amber-50', border: 'border-amber-200', accent: 'bg-amber-500', text: 'text-amber-700', line: 'border-amber-300' },
-                        { bg: 'bg-rose-50', border: 'border-rose-200', accent: 'bg-rose-500', text: 'text-rose-700', line: 'border-rose-300' },
-                        { bg: 'bg-emerald-50', border: 'border-emerald-200', accent: 'bg-emerald-500', text: 'text-emerald-700', line: 'border-emerald-300' },
-                        { bg: 'bg-indigo-50', border: 'border-indigo-200', accent: 'bg-indigo-500', text: 'text-indigo-700', line: 'border-indigo-300' },
-                      ];
-                      const c = colors[i % colors.length];
-                      return (
-                        <div key={i} className={`${c.bg} ${c.border} border rounded-xl p-3 transition-all hover:shadow-md`}>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className={`w-2 h-2 ${c.accent} rounded-full`} />
-                            <h4 className={`text-xs font-bold ${c.text}`}>{branch.label}</h4>
-                          </div>
-                          <ul className="space-y-1 ml-4">
-                            {branch.children?.map((child, j) => (
-                              <li key={j} className={`text-[11px] text-gray-600 pl-2.5 border-l-2 ${c.line} relative`}>
-                                <span className={`absolute -left-[5px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 ${c.accent} rounded-full opacity-60`} />
-                                {child}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  {/* Summary */}
-                  {mindMap.summary && (
-                    <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-100">
-                      <p className="text-xs text-gray-600 italic leading-relaxed">
-                        <span className="font-semibold text-teal-600">Summary:</span> {mindMap.summary}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Live Conversation with Divya (when joined) */}
-            {joined && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 mb-4" data-testid="conversation-section">
-                <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-purple-500" />Ask Divya
-                </h3>
-
-                <div className="max-h-80 overflow-y-auto space-y-2.5 mb-3 pr-1">
-                  {conversationHistory.map((msg, idx) => {
-                    const isDivya = msg.speaker === 'Divya';
-                    const isUser = msg.speaker === 'You';
-                    return (
-                      <div key={idx} className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
-                        {isUser ? (
-                          <div className="w-7 h-7 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-white text-[10px] font-bold">U</div>
-                        ) : (
-                          <img
-                            src="/images/divya_avatar.png"
-                            alt="Divya" className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
-                            style={{ backgroundColor: '#e9d5ff' }}
-                          />
-                        )}
-                        <div className={`max-w-[80%] rounded-xl px-3 py-2 ${
-                          isUser ? 'bg-blue-500 text-white' : 'bg-purple-50'
-                        }`}>
-                          <span className={`text-[10px] font-bold ${isUser ? 'text-blue-100' : 'text-purple-600'}`}>
-                            {msg.speaker}
-                          </span>
-                          <p className={`text-xs leading-relaxed ${isUser ? 'text-white' : 'text-gray-700'}`}>{msg.text}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {answering && (
-                    <div className="flex gap-2.5">
-                      <img src="/images/divya_avatar.png" alt="Divya" className="w-7 h-7 rounded-full flex-shrink-0 object-cover bg-purple-200" />
-                      <div className="bg-purple-50 rounded-xl px-3 py-2 flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
-                        <span className="text-[10px] text-purple-400">Divya is thinking...</span>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={chatEndRef} />
-                </div>
-
-                {/* Input */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={toggleVoice}
-                    className={`p-2.5 rounded-xl transition flex-shrink-0 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-                    data-testid="voice-btn"
-                  >
-                    {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                  </button>
-                  <input
-                    type="text" value={userQuestion}
-                    onChange={(e) => setUserQuestion(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && sendQuestion()}
-                    placeholder="Ask Divya anything..."
-                    className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    data-testid="chat-input"
-                  />
-                  <button
-                    onClick={sendQuestion} disabled={!userQuestion.trim() || answering}
-                    className="p-2.5 bg-purple-500 text-white rounded-xl hover:bg-purple-400 transition disabled:opacity-50 flex-shrink-0"
-                    data-testid="send-btn"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Dialogue Transcript */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 mb-5" ref={dialogueRef}>
-              <h3 className="text-sm font-bold text-gray-700 mb-3">Transcript</h3>
-              <div className="space-y-2">
-                {dialogue.map((line, idx) => {
-                  const isDivya = line.speaker === 'Divya';
-                  const isActive = idx === currentLine;
-                  return (
-                    <div
-                      key={idx} data-line={idx} data-testid={`dialogue-line-${idx}`}
-                      className={`flex gap-2.5 p-2.5 rounded-xl transition-colors cursor-pointer ${
-                        isActive ? (isDivya ? 'bg-purple-50 ring-1 ring-purple-200' : 'bg-teal-50 ring-1 ring-teal-200') : 'hover:bg-gray-50'
-                      }`}
-                      onClick={() => {
-                        if (!audioRef.current || !audioDuration) return;
-                        const totalChars = dialogue.reduce((s, d) => s + d.text.length, 0);
-                        let before = 0;
-                        for (let i = 0; i < idx; i++) before += dialogue[i].text.length;
-                        audioRef.current.currentTime = (before / totalChars) * audioDuration;
-                        if (!isPlaying) { audioRef.current.play(); setIsPlaying(true); }
-                      }}
-                    >
-                      <img src={isDivya ? '/images/divya_avatar.png' : '/images/sher_avatar.png'} alt={line.speaker}
-                        className="w-7 h-7 rounded-full flex-shrink-0 object-cover" style={{ backgroundColor: isDivya ? '#e9d5ff' : '#ccfbf1' }} />
-                      <div className="min-w-0">
-                        <span className={`text-[10px] font-bold ${isDivya ? 'text-purple-600' : 'text-teal-600'}`}>{line.speaker}</span>
-                        <p className="text-xs text-gray-700 leading-relaxed">{line.text}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </>
-        )}
+/* ─── Message Bubble ─── */
+const MessageBubble = ({ msg, tutor, selectedTutor }) => {
+  const isUser = msg.role === 'user';
+  return (
+    <div className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
+      {isUser ? (
+        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0 text-white text-[11px] font-bold">
+          You
+        </div>
+      ) : (
+        <img
+          src={tutor.avatar}
+          alt={tutor.name}
+          className="w-8 h-8 rounded-full shrink-0 object-cover"
+          style={{ backgroundColor: selectedTutor === 'divya' ? '#e9d5ff' : '#ccfbf1' }}
+        />
+      )}
+      <div
+        className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+          isUser
+            ? 'bg-gray-800 text-white rounded-tr-sm'
+            : `${tutor.light} rounded-tl-sm`
+        }`}
+      >
+        <p className={`text-sm leading-relaxed ${isUser ? 'text-white' : 'text-gray-700'}`}>{msg.text}</p>
       </div>
     </div>
   );

@@ -230,6 +230,10 @@ fastapi_app.include_router(test_router, prefix="/api")
 from divya_routes import router as divya_router
 fastapi_app.include_router(divya_router, prefix="/api")  # Divya AI Tutor routes
 
+from divya_live_routes import router as divya_live_router
+fastapi_app.include_router(divya_live_router, prefix="/api")  # Divya Live Tutor routes
+
+
 # Live Battles Admin Routes (Super Admin only)
 from live_battles_admin_routes import router as live_battles_admin_router
 import live_battles_admin_routes
