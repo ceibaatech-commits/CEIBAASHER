@@ -8,6 +8,7 @@ import FollowListModal from '../components/FollowListModal';
 import ShareReferralModal from '../components/ShareReferralModal';
 import Header from '../components/Header';
 import MathText from '../components/MathText';
+import VideoPost from '../components/VictoryLane/VideoPost';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -841,6 +842,23 @@ const PublicProfile = () => {
                                 onClick={() => navigate(`/post/${post.id}`)}
                               >
                                 <MathText text={post.content} />
+                              </div>
+                            )}
+                            
+                            {/* Post Media (images & videos) */}
+                            {post.media_urls && post.media_urls.length > 0 && (
+                              <div className="pl-[46px] md:pl-[52px] mt-2">
+                                {post.media_urls.map((url, mIdx) => {
+                                  const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('/video/');
+                                  if (isVideo) {
+                                    return <VideoPost key={mIdx} src={url} className="rounded-lg" />;
+                                  }
+                                  return (
+                                    <img key={mIdx} src={url} alt="Post media"
+                                      className="w-full rounded-lg object-cover max-h-80 cursor-pointer"
+                                      onClick={() => navigate(`/post/${post.id}`)} />
+                                  );
+                                })}
                               </div>
                             )}
                             

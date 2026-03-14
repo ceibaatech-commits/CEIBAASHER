@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
 import MathText from '../components/MathText';
+import VideoPost from '../components/VictoryLane/VideoPost';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 
@@ -423,22 +424,8 @@ const SinglePost = () => {
           {post.media_urls && post.media_urls.length > 0 && (
             <div className="px-4 pb-3">
               <div className="rounded-2xl overflow-hidden border border-gray-200">
-                {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
-                  <div className="relative w-full bg-black" style={{ aspectRatio: '16/9' }}>
-                    <video 
-                      src={post.media_urls[0]} 
-                      controls 
-                      playsInline
-                      preload="metadata"
-                      className="absolute inset-0 w-full h-full object-contain"
-                      controlsList="nodownload"
-                      onError={(e) => {
-                        console.warn('Video playback error:', e);
-                      }}
-                    >
-                      Your browser does not support video playback.
-                    </video>
-                  </div>
+                {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') || post.media_urls[0].includes('.mov') ? (
+                  <VideoPost src={post.media_urls[0]} />
                 ) : (
                   <img 
                     src={post.media_urls[0]} 

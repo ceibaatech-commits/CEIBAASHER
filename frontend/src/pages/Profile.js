@@ -9,6 +9,7 @@ import {
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
+import VideoPost from '../components/VictoryLane/VideoPost';
 
 const BACKEND_URL = window.location.origin;
 
@@ -475,6 +476,22 @@ const Profile = () => {
                             )}
                           </div>
                           <p className="text-gray-900 mb-3 whitespace-pre-wrap">{post.content}</p>
+
+                          {/* Post Media (images & videos) */}
+                          {post.media_urls && post.media_urls.length > 0 && (
+                            <div className="mb-3">
+                              {post.media_urls.map((url, mIdx) => {
+                                const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('/video/');
+                                if (isVideo) {
+                                  return <VideoPost key={mIdx} src={url} className="rounded-lg" />;
+                                }
+                                return (
+                                  <img key={mIdx} src={url} alt="Post media"
+                                    className="w-full rounded-lg object-cover max-h-80" />
+                                );
+                              })}
+                            </div>
+                          )}
 
                           {/* Quiz Room Card */}
                           {post.post_type === 'quiz_room' && post.quiz_details && (
