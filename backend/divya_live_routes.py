@@ -267,7 +267,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
 
     except Exception as e:
         print(f"[DIVYA-LIVE] Transcription error: {e}")
-        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Transcription failed. Please try again or type your question instead.")
     finally:
         try:
             os.remove(tmp_path)

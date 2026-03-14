@@ -203,10 +203,19 @@
   - Fix: Added `shrink-0` class to all nav icon SVGs in `Header.js`
   - Added Home icon (cyan) for consistency with other nav items
 
+## AI Voice Tutor Rebuild (Mar 14, 2026)
+- **Complete rebuild of Divya Tutor** as audio-first interactive AI tutor
+- **Two Tutors:** Divya (warm, `nova` voice) & Sher (exam-focused, `shimmer` voice)
+- **Audio-First:** Text/voice input -> Gemini AI -> OpenAI TTS -> auto-plays audio response
+- **Barge-in:** Tap mic to stop tutor and ask next question
+- **Multilingual:** 7 languages (en, hi, ta, mr, te, kn, bn)
+- **PDF Context:** Optional PDF upload for context-aware tutoring
+- **Backend:** `/api/divya/live/ask`, `/api/divya/live/upload-context`, `/api/divya/live/transcribe`
+- **Testing:** 13/13 backend tests pass, all frontend flows verified
+
 ## Pending Issues
-- **AI Tutor Not Working (P1):** User-reported, not yet investigated
-- **Follow Button UI Update (P2):** Replace text with icon-based UI
 - **Google Search Console (P1):** Add verification meta tag, submit sitemap
+- **Follow Button UI Update (P2):** Replace text with icon-based button
 
 ## Upcoming Tasks
 - P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
