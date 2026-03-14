@@ -62,7 +62,6 @@
 ## Pending Issues
 - P1: Update "Follow" button icon on user profiles (person head/shoulders + plus sign) - VERIFICATION PENDING
 - P1: Google Search Console Integration - NOT STARTED
-- P2: Refactor matchmaking logic in backend/matchmaking.py
 
 ## Completed (Mar 2026 - Latest)
 - **GIF → SVG Icon Replacement (Mar 14, 2026):**
@@ -77,6 +76,10 @@
   - Added global Axios interceptor in AuthContext to catch 401 "expired token" errors
   - Shows "Session expired. Please login again." toast and redirects to /login
   - Prevents confusing raw error messages from reaching users
+- **Matchmaking Refactor (Mar 14, 2026):**
+  - Replaced list-based queues with `deque` for O(1) popleft (was O(n))
+  - Added `_player_battles` reverse index for O(1) battle lookup by socket_id (was O(n) linear scan)
+  - `get_player_battle` and `cleanup_player` now O(1) instead of scanning all active battles
 
 ## Completed (Feb 2026 - Latest)
 - Divya & Sher AI Tutor: PDF/image upload → Gemini dialogue generation → OpenAI TTS podcast audio

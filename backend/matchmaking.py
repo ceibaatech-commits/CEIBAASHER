@@ -4,13 +4,14 @@ Handles automatic player pairing for quiz battles.
 Uses dict-based queues keyed by exam for cross-topic matching within same exam.
 Supports timeout for odd-player-out and queue size reporting.
 """
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional, Any
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from collections import defaultdict
+from collections import defaultdict, deque
 
 
 MATCH_TIMEOUT_SECONDS = 30  # Max wait before notifying "no opponent found"
+STALE_THRESHOLD_SECONDS = 300  # 5 min — auto-evict from queue
 
 
 @dataclass
@@ -42,15 +43,18 @@ class MatchmakingManager:
     """
 
     def __init__(self):
-        # Bucket queue: {exam: [WaitingPlayer, ...]} - match by EXAM only
-        self._queues: Dict[str, List[WaitingPlayer]] = defaultdict(list)
-        # Quick lookup: socket_id -> exam key
+        # Bucket queue: {exam: deque[WaitingPlayer]} — O(1) popleft
+        self._queues: Dict[str, deque] = defaultdict(deque)
+        # Reverse index: socket_id -> exam key (for O(1) queue removal)
         self._player_keys: Dict[str, str] = {}
+        # Active battles: room_id -> MatchedBattle
         self.active_battles: Dict[str, MatchedBattle] = {}
+        # Reverse index: socket_id -> room_id (for O(1) battle lookup)
+        self._player_battles: Dict[str, str] = {}
 
     @staticmethod
     def _normalize_exam(exam: str) -> str:
-        """Normalize exam name for matching - ignore subject for broader matching"""
+        """Normalize exam name for matching — ignore subject for broader matching"""
         return exam.lower().strip()
 
     # ── Queue operations ──
@@ -58,31 +62,29 @@ class MatchmakingManager:
     def add_to_queue(self, socket_id: str, player_name: str, exam: str, subject: str) -> Optional[WaitingPlayer]:
         """
         Add player to queue. Returns opponent if instant match found, else None.
-        Matches by EXAM only, not subject - enabling cross-topic battles.
+        Matches by EXAM only, not subject — enabling cross-topic battles.
         Example: NDA Economics vs NDA History
         """
-        # Already queued?
         if socket_id in self._player_keys:
             return None
 
-        key = self._normalize_exam(exam)  # Match by exam only!
+        key = self._normalize_exam(exam)
         bucket = self._queues[key]
+        now = datetime.now(timezone.utc).timestamp()
 
         # Scan for first valid opponent (skip self, skip stale entries)
-        now = datetime.now(timezone.utc).timestamp()
         while bucket:
             candidate = bucket[0]
-            # Skip stale players (waited > 5 min somehow still in queue)
-            if now - candidate.joined_at > 300:
-                bucket.pop(0)
+            if now - candidate.joined_at > STALE_THRESHOLD_SECONDS:
+                bucket.popleft()
                 self._player_keys.pop(candidate.socket_id, None)
                 continue
             if candidate.socket_id == socket_id:
-                bucket.pop(0)
+                bucket.popleft()
                 self._player_keys.pop(candidate.socket_id, None)
                 continue
-            # Match found — pop and return (cross-topic match allowed!)
-            opponent = bucket.pop(0)
+            # Match found — pop and return
+            opponent = bucket.popleft()
             self._player_keys.pop(opponent.socket_id, None)
             print(f"[MATCHMAKING] Match found: {player_name} ({subject}) <-> {opponent.player_name} ({opponent.subject}) on exam={key}")
             return opponent
@@ -98,10 +100,11 @@ class MatchmakingManager:
         key = self._player_keys.pop(socket_id, None)
         if key is None:
             return False
-        bucket = self._queues.get(key, [])
-        self._queues[key] = [p for p in bucket if p.socket_id != socket_id]
-        if not self._queues[key]:
-            del self._queues[key]
+        bucket = self._queues.get(key)
+        if bucket is not None:
+            self._queues[key] = deque(p for p in bucket if p.socket_id != socket_id)
+            if not self._queues[key]:
+                del self._queues[key]
         return True
 
     def get_queue_size(self, exam: str, subject: str) -> int:
@@ -112,13 +115,13 @@ class MatchmakingManager:
     def get_total_searching(self) -> int:
         return sum(len(b) for b in self._queues.values())
 
-    def get_timed_out_players(self) -> List[WaitingPlayer]:
+    def get_timed_out_players(self) -> list:
         """Return players who have been waiting longer than MATCH_TIMEOUT_SECONDS."""
         now = datetime.now(timezone.utc).timestamp()
         timed_out = []
         for key in list(self._queues.keys()):
             bucket = self._queues[key]
-            remaining = []
+            remaining = deque()
             for p in bucket:
                 if now - p.joined_at > MATCH_TIMEOUT_SECONDS:
                     timed_out.append(p)
@@ -136,27 +139,29 @@ class MatchmakingManager:
     def create_battle(self, room_id: str, player1: Dict[str, Any], player2: Dict[str, Any], exam: str, subject: str):
         battle = MatchedBattle(room_id=room_id, player1=player1, player2=player2, exam=exam, subject=subject)
         self.active_battles[room_id] = battle
+        self._player_battles[player1['socketId']] = room_id
+        self._player_battles[player2['socketId']] = room_id
 
     def get_battle(self, room_id: str) -> Optional[MatchedBattle]:
         return self.active_battles.get(room_id)
 
     def remove_battle(self, room_id: str):
-        self.active_battles.pop(room_id, None)
+        battle = self.active_battles.pop(room_id, None)
+        if battle:
+            self._player_battles.pop(battle.player1['socketId'], None)
+            self._player_battles.pop(battle.player2['socketId'], None)
 
     def get_player_battle(self, socket_id: str) -> Optional[MatchedBattle]:
-        for battle in self.active_battles.values():
-            if battle.player1['socketId'] == socket_id or battle.player2['socketId'] == socket_id:
-                return battle
+        room_id = self._player_battles.get(socket_id)
+        if room_id:
+            return self.active_battles.get(room_id)
         return None
 
     def cleanup_player(self, socket_id: str):
         self.remove_from_queue(socket_id)
-        battles_to_remove = [
-            rid for rid, b in self.active_battles.items()
-            if b.player1['socketId'] == socket_id or b.player2['socketId'] == socket_id
-        ]
-        for rid in battles_to_remove:
-            self.remove_battle(rid)
+        room_id = self._player_battles.get(socket_id)
+        if room_id:
+            self.remove_battle(room_id)
 
 
 # Global matchmaking manager
