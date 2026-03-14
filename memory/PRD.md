@@ -207,11 +207,15 @@
 - **Complete rebuild of Divya Tutor** as audio-first interactive AI tutor
 - **Two Tutors:** Divya (warm, `nova` voice) & Sher (exam-focused, `shimmer` voice)
 - **Audio-First:** Text/voice input -> Gemini AI -> OpenAI TTS -> auto-plays audio response
+- **Audio Fix:** Uses AudioContext + createMediaElementSource to bypass browser autoplay policy. Fallback "Play audio" button on each tutor message.
 - **Barge-in:** Tap mic to stop tutor and ask next question
 - **Multilingual:** 7 languages (en, hi, ta, mr, te, kn, bn)
-- **PDF Context:** Optional PDF upload for context-aware tutoring
-- **Backend:** `/api/divya/live/ask`, `/api/divya/live/upload-context`, `/api/divya/live/transcribe`
-- **Testing:** 13/13 backend tests pass, all frontend flows verified
+- **File Upload:** PDF + JPG/PNG/WEBP image support in both modes
+- **Two Modes (Tab Switcher):**
+  - **Live Tutor:** Real-time audio conversation with Divya or Sher
+  - **Podcast:** Upload files -> generate Divya-Sher conversation podcast with transcript + audio player
+- **Backend:** `/api/divya/live/ask`, `/api/divya/live/upload-context`, `/api/divya/live/transcribe`, `/api/divya/generate-podcast`
+- **Testing:** 8/9 backend pass (1 timeout), 100% frontend pass
 
 ## Pending Issues
 - **Google Search Console (P1):** Add verification meta tag, submit sitemap
