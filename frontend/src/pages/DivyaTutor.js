@@ -14,7 +14,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const ACCEPTED_FILES = '.pdf,.jpg,.jpeg,.png,.webp';
 
 const LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'en', label: 'English', flag: '🇮🇳' },
   { code: 'hi', label: 'Hindi', flag: '🇮🇳' },
   { code: 'ta', label: 'Tamil', flag: '🇮🇳' },
   { code: 'mr', label: 'Marathi', flag: '🇮🇳' },
