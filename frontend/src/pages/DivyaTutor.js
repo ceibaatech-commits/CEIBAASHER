@@ -144,6 +144,7 @@ const DivyaTutor = () => {
   const { user, logout, isAuthenticated } = useAuth();
   const isLoggedIn = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
   const [activeTab, setActiveTab] = useState('live');
+  const [liveSessionActive, setLiveSessionActive] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -151,16 +152,19 @@ const DivyaTutor = () => {
       <div className="max-w-2xl mx-auto px-4 pt-20 pb-8">
         {!isLoggedIn ? <LoginPrompt navigate={navigate} /> : (
           <>
-            <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-4" data-testid="mode-tabs">
-              {[['live', Mic, 'Live Tutor'], ['podcast', Headphones, 'Podcast']].map(([key, Icon, label]) => (
-                <button key={key} onClick={() => setActiveTab(key)}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === key ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                  data-testid={`tab-${key}`}>
-                  <Icon className="w-4 h-4 shrink-0" /> {label}
-                </button>
-              ))}
-            </div>
-            {activeTab === 'live' ? <LiveTutor /> : <PodcastMode />}
+            {/* Hide tabs when in live session */}
+            {!liveSessionActive && (
+              <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-4" data-testid="mode-tabs">
+                {[['live', Mic, 'Live Tutor'], ['podcast', Headphones, 'Podcast']].map(([key, Icon, label]) => (
+                  <button key={key} onClick={() => setActiveTab(key)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold transition-all ${activeTab === key ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    data-testid={`tab-${key}`}>
+                    <Icon className="w-4 h-4 shrink-0" /> {label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {activeTab === 'live' ? <LiveTutor onSessionChange={setLiveSessionActive} /> : <PodcastMode />}
           </>
         )}
       </div>
@@ -171,7 +175,7 @@ const DivyaTutor = () => {
 /* ══════════════════════════════════════
    LIVE TUTOR
    ══════════════════════════════════════ */
-const LiveTutor = () => {
+const LiveTutor = ({ onSessionChange }) => {
   const [sessionActive, setSessionActive] = useState(false);
   const [selectedTutor, setSelectedTutor] = useState(null);
   const [selectedLang, setSelectedLang] = useState('en');
@@ -223,9 +227,10 @@ const LiveTutor = () => {
 
   /* ─── Session ─── */
   const startSession = (tutor) => {
-    audioMgr.warmUp(); // warm up audio on user click
+    audioMgr.warmUp();
     setSelectedTutor(tutor);
     setSessionActive(true);
+    onSessionChange?.(true);
     setMessages([{
       role: 'tutor',
       text: tutor === 'divya'
@@ -234,7 +239,7 @@ const LiveTutor = () => {
     }]);
   };
 
-  const endSession = () => { audioMgr.stop(); stopRecording(); setSessionActive(false); setSelectedTutor(null); setMessages([]); setIsProcessing(false); };
+  const endSession = () => { audioMgr.stop(); stopRecording(); setSessionActive(false); onSessionChange?.(false); setSelectedTutor(null); setMessages([]); setIsProcessing(false); };
 
   /* ─── Play audio for a specific message ─── */
   const playMessageAudio = async (audioB64) => {
@@ -334,11 +339,12 @@ const LiveTutor = () => {
   }
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 7.5rem)' }}>
-      {/* Top Bar */}
-      <div className="flex items-center gap-3 py-3 border-b border-gray-200 bg-white rounded-t-2xl px-4 shrink-0">
-        <button onClick={endSession} className="p-1.5 hover:bg-gray-100 rounded-lg" data-testid="end-session-btn">
-          <ChevronLeft className="w-5 h-5 text-gray-500" />
+    <div className="fixed inset-x-0 top-16 bottom-14 z-40 bg-gray-50">
+      <div className="max-w-2xl mx-auto h-full flex flex-col px-4">
+        {/* Top Bar */}
+        <div className="flex items-center gap-3 py-3 border-b border-gray-200 bg-white px-4 shrink-0 -mx-4">
+          <button onClick={endSession} className="p-1.5 hover:bg-gray-100 rounded-lg" data-testid="end-session-btn">
+            <ChevronLeft className="w-5 h-5 text-gray-500" />
         </button>
         <div className="relative">
           <img src={tutor.avatar} alt={tutor.name} className="w-10 h-10 rounded-full object-cover border-2"
@@ -379,7 +385,7 @@ const LiveTutor = () => {
       </div>
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200 px-4 py-3 rounded-b-2xl shrink-0">
+      <div className="bg-white border-t border-gray-200 px-4 py-3 shrink-0">
         <div className="flex items-center justify-center mb-3">
           <button onClick={toggleRecording} disabled={isProcessing}
             className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-lg active:scale-90 disabled:opacity-50 ${
@@ -404,6 +410,7 @@ const LiveTutor = () => {
             <Send className="w-4 h-4" />
           </button>
         </div>
+      </div>
       </div>
     </div>
   );

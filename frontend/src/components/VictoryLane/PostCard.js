@@ -5,6 +5,7 @@ import MathText from '../MathText';
 import PostCardMenu from './PostCardMenu';
 import PostActions from './PostActions';
 import QuizRoomCard from './QuizRoomCard';
+import VideoPost from './VideoPost';
 
 const WORD_LIMIT = 100;
 
@@ -197,23 +198,8 @@ const PostCard = ({
           {post.media_urls && post.media_urls.length > 0 && (
             <div className="mt-3 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
               {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
-                /* Video Player - 16:9 aspect ratio for professional look */
-                <div className="relative w-full bg-black" style={{ aspectRatio: '16/9' }}>
-                  <video 
-                    src={post.media_urls[0]} 
-                    controls 
-                    preload="metadata"
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-contain" 
-                    onClick={(e) => e.stopPropagation()}
-                    controlsList="nodownload"
-                    onError={(e) => {
-                      console.warn('Video playback error:', e);
-                    }}
-                  >
-                    Your browser does not support video playback.
-                  </video>
-                </div>
+                /* Video Player - auto-play on scroll, single at a time */
+                <VideoPost src={post.media_urls[0]} />
               ) : (
                 /* Image - Responsive with max 4:5 aspect ratio (engagement friendly) */
                 <div className="relative w-full" style={{ maxHeight: '600px' }}>

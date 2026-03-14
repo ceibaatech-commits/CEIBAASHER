@@ -197,11 +197,18 @@
   - VictoryLane PostCardMenu: Updated icons (UserPlus/UserMinus) and kept correct API routes (`/api/social/user/follow/`)
 
 ## Bug Fixes (Mar 2026)
-- **Desktop Navigation Icons Fix (Mar 14, 2026):**
-  - Fixed: Icons in desktop navbar rendered with `width: 0px` due to flex-shrink collapsing SVGs
-  - Root cause: lucide-react SVG icons inside flex containers (`flex items-center gap-1.5`) were being shrunk to zero width
-  - Fix: Added `shrink-0` class to all nav icon SVGs in `Header.js`
-  - Added Home icon (cyan) for consistency with other nav items
+- **Desktop Navigation Icons Fix:** Added `shrink-0` to all nav SVGs in `Header.js` (were collapsing to 0px width)
+- **AI Tutor Back Button Fix:** Conversation container now uses `fixed inset-x-0 top-16 bottom-14` positioning so back button is always visible above messages
+- **Victory Lane Video Player:**
+  - Custom `VideoPost` component replacing default `<video controls>`
+  - Cloudinary URLs transformed: `.mov` -> `f_mp4` (MP4 format), poster from `so_0` thumbnail API
+  - Auto-play on scroll into view (IntersectionObserver, 50% threshold)
+  - Only one video plays at a time (global tracker pauses previous video)
+  - Shows thumbnail poster instead of black screen
+  - Shows duration badge (bottom-right) + mute button (top-right) + thin progress bar
+  - No browser default controls
+  - Loops automatically when ended
+  - Error fallback: shows poster image if video can't load
 
 ## AI Voice Tutor Rebuild (Mar 14, 2026)
 - **Complete rebuild of Divya Tutor** as audio-first interactive AI tutor
