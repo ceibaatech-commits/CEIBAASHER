@@ -331,7 +331,9 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
         return newSet;
       });
       setMyFollowingCount(prev => isFollowing ? prev + 1 : prev - 1);
-      toast.error('Failed to update follow status');
+      if (error.response?.status !== 401) {
+        toast.error('Failed to update follow status');
+      }
     }
   };
 

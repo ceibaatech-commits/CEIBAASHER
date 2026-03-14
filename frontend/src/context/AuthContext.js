@@ -1,5 +1,6 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const AuthContext = createContext(null);
 
@@ -8,6 +9,31 @@ const BACKEND_URL = window.location.origin;
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const logoutRef = useRef(null);
+
+  // Global Axios interceptor for expired tokens
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          const detail = error.response?.data?.detail || '';
+          if (detail.includes('expired') || detail.includes('Invalid token')) {
+            localStorage.removeItem('ceibaa_user');
+            localStorage.removeItem('token');
+            localStorage.removeItem('auth_token');
+            setUser(null);
+            toast.error('Session expired. Please login again.');
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+    return () => axios.interceptors.response.eject(interceptor);
+  }, []);
 
   // Load user from localStorage on mount
   useEffect(() => {

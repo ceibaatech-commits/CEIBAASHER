@@ -71,7 +71,12 @@
   - `requirements.gif` (679KB) → `requirements_person_checklist.svg` (5.7KB) for Academic Questions
   - `integration.gif` (493KB) → `integration_network_animated.svg` (8.9KB) for Quiz Room
   - `quiz-animated.gif` (2.7MB) → `integration_network_animated.svg` (8.9KB) for Quiz Room cards
-  - Total reduction: ~4.3MB → 32KB (99.3% smaller)
+  - `create-animated.gif` (3.1MB) → `create_animated_cycle.svg` (5.7KB) for FAB button
+  - Total reduction: ~7.4MB → 38KB (99.5% smaller)
+- **Expired Token Handling (Mar 14, 2026):**
+  - Added global Axios interceptor in AuthContext to catch 401 "expired token" errors
+  - Shows "Session expired. Please login again." toast and redirects to /login
+  - Prevents confusing raw error messages from reaching users
 
 ## Completed (Feb 2026 - Latest)
 - Divya & Sher AI Tutor: PDF/image upload → Gemini dialogue generation → OpenAI TTS podcast audio
