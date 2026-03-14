@@ -307,7 +307,7 @@ const CreatePostFAB = ({
           <X className="w-7 h-7 text-purple-600" />
         ) : (
           <img 
-            src="/images/create-animated.gif" 
+            src="/images/create_animated_cycle.svg" 
             alt="Create" 
             className="w-12 h-12 object-contain"
           />
