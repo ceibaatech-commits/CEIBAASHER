@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import NavbarSearch from './NavbarSearch';
@@ -108,36 +108,39 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
           </div>
 
           {/* Desktop Navigation - Centered */}
-          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 flex-1 ml-4">
-            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
+          <nav className="hidden lg:flex items-center space-x-5 xl:space-x-7 flex-1 ml-4">
+            <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <Home className="w-4 h-4 shrink-0 text-cyan-500" />
               Home
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            <button onClick={() => navigate('/victory-lane')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
+            <button onClick={() => navigate('/victory-lane')} className="text-gray-700 hover:text-amber-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <Trophy className="w-4 h-4 shrink-0 text-amber-500" />
               Victory Lane
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            <button onClick={() => navigate('/chapter-tests')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
+            <button onClick={() => navigate('/chapter-tests')} className="text-gray-700 hover:text-blue-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <Zap className="w-4 h-4 shrink-0 text-blue-500" />
               Skill Drills
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            <button onClick={() => navigate('/courses')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
+            <button onClick={() => navigate('/courses')} className="text-gray-700 hover:text-indigo-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <GraduationCap className="w-4 h-4 shrink-0 text-indigo-500" />
               Courses
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            <button onClick={() => navigate('/earn')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1">
-              <TreePine className="w-4 h-4" />
+            <button onClick={() => navigate('/earn')} className="text-gray-700 hover:text-emerald-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <TreePine className="w-4 h-4 shrink-0 text-emerald-500" />
               Canopy
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            {/* Join Battle Room - visible for everyone */}
-            <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group">
+            <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-rose-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <Swords className="w-4 h-4 shrink-0 text-rose-500" />
               Join Battle Room
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-600 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-rose-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            {/* Divya Tutor - AI Learning */}
-            <button onClick={() => navigate('/divya')} className="text-gray-700 hover:text-purple-600 transition-all duration-200 font-semibold text-base whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1">
-              <Mic className="w-4 h-4" />
+            <button onClick={() => navigate('/divya')} className="text-gray-700 hover:text-purple-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <Mic className="w-4 h-4 shrink-0 text-purple-500" />
               Divya Tutor
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 transition-all duration-200 group-hover:w-full"></span>
             </button>

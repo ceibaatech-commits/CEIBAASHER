@@ -196,7 +196,17 @@
   - FollowButton rewritten: click-based confirm toggle (mobile-friendly), `justFollowed` guard, outside-click dismiss
   - VictoryLane PostCardMenu: Updated icons (UserPlus/UserMinus) and kept correct API routes (`/api/social/user/follow/`)
 
+## Bug Fixes (Mar 2026)
+- **Desktop Navigation Icons Fix (Mar 14, 2026):**
+  - Fixed: Icons in desktop navbar rendered with `width: 0px` due to flex-shrink collapsing SVGs
+  - Root cause: lucide-react SVG icons inside flex containers (`flex items-center gap-1.5`) were being shrunk to zero width
+  - Fix: Added `shrink-0` class to all nav icon SVGs in `Header.js`
+  - Added Home icon (cyan) for consistency with other nav items
+
 ## Pending Issues
+- **AI Tutor Not Working (P1):** User-reported, not yet investigated
+- **Follow Button UI Update (P2):** Replace text with icon-based UI
+- **Google Search Console (P1):** Add verification meta tag, submit sitemap
 
 ## Upcoming Tasks
 - P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
