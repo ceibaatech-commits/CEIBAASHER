@@ -1,0 +1,119 @@
+<svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    @keyframes bob {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-6px); }
+    }
+    @keyframes clipboardFloat {
+      0%,100% { transform: translateY(0px); }
+      50%      { transform: translateY(-4px); }
+    }
+    @keyframes checkPop {
+      0%   { transform: scale(0); opacity:0; }
+      70%  { transform: scale(1.3); opacity:1; }
+      100% { transform: scale(1); opacity:1; }
+    }
+    @keyframes fadeSlide {
+      0%   { opacity:0; transform: translateX(-6px); }
+      100% { opacity:1; transform: translateX(0); }
+    }
+    .person-group { animation: bob 3s ease-in-out infinite; }
+    .clipboard-group { animation: clipboardFloat 3.5s ease-in-out infinite 0.4s; }
+    .check1 { animation: checkPop 0.4s ease-out both 0.2s; }
+    .check2 { animation: checkPop 0.4s ease-out both 0.55s; }
+    .check3 { animation: checkPop 0.4s ease-out both 0.9s; }
+    .line1  { animation: fadeSlide 0.3s ease-out both 0.3s; }
+    .line2  { animation: fadeSlide 0.3s ease-out both 0.65s; }
+    .line3  { animation: fadeSlide 0.3s ease-out both 1.0s; }
+  </style>
+</defs>
+
+<!-- ===== PERSON GROUP ===== -->
+<g class="person-group">
+
+  <!-- Shoulders / body base (teal shirt) -->
+  <path d="M58 295 Q58 240 78 225 Q95 215 110 212 L110 220 Q100 223 88 232 Q72 248 72 295Z" fill="#4DD9C0" stroke="#1a237e" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M182 295 Q182 240 162 225 Q145 215 130 212 L130 220 Q140 223 152 232 Q168 248 168 295Z" fill="#4DD9C0" stroke="#1a237e" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M72 295 Q72 255 80 240 Q95 222 120 218 Q145 222 160 240 Q168 255 168 295Z" fill="#4DD9C0" stroke="#1a237e" stroke-width="5" stroke-linejoin="round"/>
+
+  <!-- Arms -->
+  <path d="M75 240 Q60 255 58 275 Q57 285 62 290" stroke="#1a237e" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M163 240 Q175 255 177 272" stroke="#1a237e" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- Neck -->
+  <rect x="111" y="196" width="18" height="22" rx="6" fill="#FDDCB5" stroke="#1a237e" stroke-width="4"/>
+
+  <!-- Hair back layer -->
+  <ellipse cx="120" cy="118" rx="42" ry="46" fill="#C0503A" stroke="#1a237e" stroke-width="5"/>
+  <!-- Side hair swoosh left -->
+  <path d="M80 130 Q75 160 82 178 Q90 170 92 155 Q88 142 80 130Z" fill="#C0503A" stroke="#1a237e" stroke-width="4" stroke-linejoin="round"/>
+
+  <!-- Head -->
+  <ellipse cx="120" cy="122" rx="38" ry="42" fill="#FDDCB5" stroke="#1a237e" stroke-width="5"/>
+
+  <!-- Ears -->
+  <ellipse cx="82" cy="126" rx="7" ry="9" fill="#FDDCB5" stroke="#1a237e" stroke-width="4"/>
+  <ellipse cx="158" cy="126" rx="7" ry="9" fill="#FDDCB5" stroke="#1a237e" stroke-width="4"/>
+
+  <!-- Hair top/front -->
+  <path d="M84 108 Q88 72 120 70 Q154 70 158 108 Q148 84 120 86 Q92 84 84 108Z" fill="#C0503A" stroke="#1a237e" stroke-width="4" stroke-linejoin="round"/>
+
+  <!-- Eyebrows -->
+  <path d="M104 108 Q110 104 116 108" stroke="#C0503A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M124 108 Q130 104 136 108" stroke="#C0503A" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Eyes -->
+  <ellipse cx="110" cy="118" rx="7" ry="7.5" fill="white" stroke="#1a237e" stroke-width="2"/>
+  <ellipse cx="130" cy="118" rx="7" ry="7.5" fill="white" stroke="#1a237e" stroke-width="2"/>
+  <circle cx="111" cy="119" r="4" fill="#1a237e"/>
+  <circle cx="131" cy="119" r="4" fill="#1a237e"/>
+  <circle cx="113" cy="117" r="1.5" fill="white"/>
+  <circle cx="133" cy="117" r="1.5" fill="white"/>
+
+  <!-- Nose -->
+  <path d="M118 126 Q115 136 118 140 Q121 142 124 140 Q127 136 122 126" stroke="#e8a87c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+  <!-- Smile -->
+  <path d="M108 152 Q120 163 132 152" stroke="#1a237e" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <path d="M112 152 Q120 156 128 152" fill="#f0a882" stroke="none"/>
+
+  <!-- Cheek blush -->
+  <ellipse cx="96" cy="142" rx="8" ry="5" fill="#f4a0a0" opacity="0.4"/>
+  <ellipse cx="144" cy="142" rx="8" ry="5" fill="#f4a0a0" opacity="0.4"/>
+
+  <!-- V-neck collar -->
+  <path d="M108 215 L120 230 L132 215" stroke="#1a237e" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+</g>
+
+<!-- ===== CLIPBOARD GROUP ===== -->
+<g class="clipboard-group">
+  <!-- Shadow -->
+  <rect x="192" y="163" width="108" height="133" rx="10" fill="#e8e8f0"/>
+  <!-- Body -->
+  <rect x="188" y="158" width="108" height="133" rx="10" fill="white" stroke="#1a237e" stroke-width="5"/>
+  <!-- Clip bar -->
+  <rect x="213" y="150" width="58" height="20" rx="6" fill="#1a237e"/>
+  <rect x="229" y="145" width="26" height="14" rx="5" fill="white" stroke="#1a237e" stroke-width="3.5"/>
+
+  <!-- Row 1 -->
+  <g class="check1" style="transform-origin:203px 193px;">
+    <path d="M196 195 L202 202 L215 184" stroke="#4DD9C0" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <rect class="line1" x="225" y="189" width="52" height="7" rx="3.5" fill="#1a237e" opacity="0.8"/>
+
+  <!-- Row 2 -->
+  <g class="check2" style="transform-origin:203px 220px;">
+    <path d="M196 222 L202 229 L215 211" stroke="#4DD9C0" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <rect class="line2" x="225" y="216" width="52" height="7" rx="3.5" fill="#1a237e" opacity="0.8"/>
+
+  <!-- Row 3 -->
+  <g class="check3" style="transform-origin:203px 247px;">
+    <path d="M196 249 L202 256 L215 238" stroke="#4DD9C0" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <rect class="line3" x="225" y="243" width="52" height="7" rx="3.5" fill="#1a237e" opacity="0.8"/>
+</g>
+
+</svg>

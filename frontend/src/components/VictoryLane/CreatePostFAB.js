@@ -105,7 +105,7 @@ const CreatePostFAB = ({
               data-testid="create-academic-btn"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/icons/requirements.gif" alt="Academic" className="w-10 h-10 object-cover" />
+                <img src="/images/icons/requirements_person_checklist.svg" alt="Academic" className="w-10 h-10 object-cover" />
               </div>
               <span className="font-medium text-gray-800 text-sm">Academic Question</span>
             </button>
@@ -120,7 +120,7 @@ const CreatePostFAB = ({
               data-testid="create-quiz-btn"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/icons/integration.gif" alt="Quiz Room" className="w-10 h-10 object-cover" />
+                <img src="/images/icons/integration_network_animated.svg" alt="Quiz Room" className="w-10 h-10 object-cover" />
               </div>
               <span className="font-medium text-gray-800 text-sm">Quiz Room</span>
             </button>
@@ -135,7 +135,7 @@ const CreatePostFAB = ({
               data-testid="create-quick-post-btn"
             >
               <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/icons/talk.gif" alt="Quick Post" className="w-10 h-10 object-cover" />
+                <img src="/images/icons/talk_animated.svg" alt="Quick Post" className="w-10 h-10 object-cover" />
               </div>
               <span className="font-medium text-gray-800 text-sm">Quick Post</span>
             </button>

@@ -12,7 +12,7 @@ import requests
 import os
 import time
 
-BASE_URL = "https://ceibaa-preview-1.preview.emergentagent.com"
+BASE_URL = "https://ceibaa-dev.preview.emergentagent.com"
 
 # Test credentials from review request
 TEST_USER_1_ID = "3deb5942-7fe2-46f7-8602-125426484b5e"

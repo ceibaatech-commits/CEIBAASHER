@@ -1,0 +1,162 @@
+<svg width="320" height="320" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    @keyframes dash {
+      to { stroke-dashoffset: -40; }
+    }
+    @keyframes pulse-center {
+      0%,100% { transform: translate(160px,160px) scale(1); }
+      50% { transform: translate(160px,160px) scale(1.12); }
+    }
+    @keyframes bob0 { 0%,100%{transform:translate(75px,75px) scale(1)} 50%{transform:translate(75px,72px) scale(1.07)} }
+    @keyframes bob1 { 0%,100%{transform:translate(160px,60px) scale(1)} 50%{transform:translate(160px,57px) scale(1.07)} }
+    @keyframes bob2 { 0%,100%{transform:translate(245px,75px) scale(1)} 50%{transform:translate(245px,72px) scale(1.07)} }
+    @keyframes bob3 { 0%,100%{transform:translate(60px,160px) scale(1)} 50%{transform:translate(57px,160px) scale(1.07)} }
+    @keyframes bob4 { 0%,100%{transform:translate(260px,160px) scale(1)} 50%{transform:translate(263px,160px) scale(1.07)} }
+    @keyframes bob5 { 0%,100%{transform:translate(75px,245px) scale(1)} 50%{transform:translate(75px,248px) scale(1.07)} }
+    @keyframes bob6 { 0%,100%{transform:translate(160px,260px) scale(1)} 50%{transform:translate(160px,263px) scale(1.07)} }
+    @keyframes bob7 { 0%,100%{transform:translate(245px,245px) scale(1)} 50%{transform:translate(245px,248px) scale(1.07)} }
+    @keyframes glow-line {
+      0%,100% { opacity: 0.5; stroke-width: 8; }
+      50%      { opacity: 1;   stroke-width: 12; }
+    }
+    @keyframes td0 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:75px;cy:75px} }
+    @keyframes td1 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:160px;cy:60px} }
+    @keyframes td2 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:245px;cy:75px} }
+    @keyframes td3 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:60px;cy:160px} }
+    @keyframes td4 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:260px;cy:160px} }
+    @keyframes td5 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:75px;cy:245px} }
+    @keyframes td6 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:160px;cy:260px} }
+    @keyframes td7 { 0%{opacity:0;cx:160px;cy:160px} 10%{opacity:1} 90%{opacity:1} 100%{opacity:0;cx:245px;cy:245px} }
+
+    .line-anim {
+      stroke: #4DD9C0; stroke-linecap: round; fill: none;
+      stroke-dasharray: 10 8; animation: dash 1.2s linear infinite;
+    }
+    .l0{animation-delay:0s} .l1{animation-delay:-0.15s} .l2{animation-delay:-0.3s} .l3{animation-delay:-0.45s}
+    .l4{animation-delay:-0.6s} .l5{animation-delay:-0.75s} .l6{animation-delay:-0.9s} .l7{animation-delay:-1.05s}
+
+    .glow-l { stroke:#4DD9C0; fill:none; stroke-linecap:round; animation: glow-line 2s ease-in-out infinite; }
+    .g0{animation-delay:0s} .g1{animation-delay:.25s} .g2{animation-delay:.5s} .g3{animation-delay:.75s}
+    .g4{animation-delay:1s}  .g5{animation-delay:1.25s} .g6{animation-delay:1.5s} .g7{animation-delay:1.75s}
+
+    .node-center { animation: pulse-center 2s ease-in-out infinite; transform-origin: 0 0; }
+    .n0 { animation: bob0 2.4s ease-in-out infinite; transform-origin:0 0; }
+    .n1 { animation: bob1 2.2s ease-in-out infinite 0.2s; transform-origin:0 0; }
+    .n2 { animation: bob2 2.6s ease-in-out infinite 0.4s; transform-origin:0 0; }
+    .n3 { animation: bob3 2.3s ease-in-out infinite 0.6s; transform-origin:0 0; }
+    .n4 { animation: bob4 2.5s ease-in-out infinite 0.8s; transform-origin:0 0; }
+    .n5 { animation: bob5 2.2s ease-in-out infinite 1.0s; transform-origin:0 0; }
+    .n6 { animation: bob6 2.4s ease-in-out infinite 1.2s; transform-origin:0 0; }
+    .n7 { animation: bob7 2.6s ease-in-out infinite 1.4s; transform-origin:0 0; }
+
+    .tdot { r: 5; fill: #ffffff; opacity: 0; }
+    .td0 { animation: td0 1.6s ease-in-out infinite 0s; }
+    .td1 { animation: td1 1.6s ease-in-out infinite 0.2s; }
+    .td2 { animation: td2 1.6s ease-in-out infinite 0.4s; }
+    .td3 { animation: td3 1.6s ease-in-out infinite 0.6s; }
+    .td4 { animation: td4 1.6s ease-in-out infinite 0.8s; }
+    .td5 { animation: td5 1.6s ease-in-out infinite 1.0s; }
+    .td6 { animation: td6 1.6s ease-in-out infinite 1.2s; }
+    .td7 { animation: td7 1.6s ease-in-out infinite 1.4s; }
+  </style>
+
+  <clipPath id="cc">  <rect x="-28" y="-32" width="56" height="60" rx="12"/></clipPath>
+  <clipPath id="cs0"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs1"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs2"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs3"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs4"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs5"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs6"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+  <clipPath id="cs7"> <rect x="-24" y="-28" width="48" height="52" rx="10"/></clipPath>
+</defs>
+
+<!-- Glow base lines -->
+<line class="glow-l g0" x1="160" y1="160" x2="75"  y2="75"  stroke-width="10"/>
+<line class="glow-l g1" x1="160" y1="160" x2="160" y2="60"  stroke-width="10"/>
+<line class="glow-l g2" x1="160" y1="160" x2="245" y2="75"  stroke-width="10"/>
+<line class="glow-l g3" x1="160" y1="160" x2="60"  y2="160" stroke-width="10"/>
+<line class="glow-l g4" x1="160" y1="160" x2="260" y2="160" stroke-width="10"/>
+<line class="glow-l g5" x1="160" y1="160" x2="75"  y2="245" stroke-width="10"/>
+<line class="glow-l g6" x1="160" y1="160" x2="160" y2="260" stroke-width="10"/>
+<line class="glow-l g7" x1="160" y1="160" x2="245" y2="245" stroke-width="10"/>
+
+<!-- Dashed animated lines -->
+<line class="line-anim l0" x1="160" y1="160" x2="75"  y2="75"  stroke-width="3"/>
+<line class="line-anim l1" x1="160" y1="160" x2="160" y2="60"  stroke-width="3"/>
+<line class="line-anim l2" x1="160" y1="160" x2="245" y2="75"  stroke-width="3"/>
+<line class="line-anim l3" x1="160" y1="160" x2="60"  y2="160" stroke-width="3"/>
+<line class="line-anim l4" x1="160" y1="160" x2="260" y2="160" stroke-width="3"/>
+<line class="line-anim l5" x1="160" y1="160" x2="75"  y2="245" stroke-width="3"/>
+<line class="line-anim l6" x1="160" y1="160" x2="160" y2="260" stroke-width="3"/>
+<line class="line-anim l7" x1="160" y1="160" x2="245" y2="245" stroke-width="3"/>
+
+<!-- Travelling dots -->
+<circle class="tdot td0"/><circle class="tdot td1"/><circle class="tdot td2"/><circle class="tdot td3"/>
+<circle class="tdot td4"/><circle class="tdot td5"/><circle class="tdot td6"/><circle class="tdot td7"/>
+
+<!-- TOP-LEFT (75,75) -->
+<g class="n0">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#E57373"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#CE93D8" clip-path="url(#cs0)"/>
+</g>
+
+<!-- TOP-CENTER (160,60) -->
+<g class="n1">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#F8BBD0"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#A5D6A7" clip-path="url(#cs1)"/>
+</g>
+
+<!-- TOP-RIGHT (245,75) -->
+<g class="n2">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#FFDAB9"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#FFD54F" clip-path="url(#cs2)"/>
+</g>
+
+<!-- MID-LEFT (60,160) -->
+<g class="n3">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#F8BBD0"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#FFD54F" clip-path="url(#cs3)"/>
+</g>
+
+<!-- MID-RIGHT (260,160) -->
+<g class="n4">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#FFDAB9"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#CE93D8" clip-path="url(#cs4)"/>
+</g>
+
+<!-- BOT-LEFT (75,245) -->
+<g class="n5">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#E57373"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#A5D6A7" clip-path="url(#cs5)"/>
+</g>
+
+<!-- BOT-CENTER (160,260) -->
+<g class="n6">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#E57373"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#FFD54F" clip-path="url(#cs6)"/>
+</g>
+
+<!-- BOT-RIGHT (245,245) -->
+<g class="n7">
+  <rect x="-24" y="-28" width="48" height="52" rx="10" fill="#1a237e"/>
+  <circle cx="0" cy="-12" r="11" fill="#F8BBD0"/>
+  <ellipse cx="0" cy="19" rx="15" ry="11" fill="#CE93D8" clip-path="url(#cs7)"/>
+</g>
+
+<!-- CENTER (160,160) -->
+<g class="node-center">
+  <rect x="-28" y="-32" width="56" height="60" rx="12" fill="#1a237e"/>
+  <circle cx="0" cy="-14" r="13" fill="#FFDAB9"/>
+  <ellipse cx="0" cy="20" rx="18" ry="12" fill="#F4695A" clip-path="url(#cc)"/>
+</g>
+
+</svg>

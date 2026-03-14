@@ -3,7 +3,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://ceibaa-preview-1.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://ceibaa-dev.preview.emergentagent.com")
 
 class Class9QuizTester:
     def __init__(self):

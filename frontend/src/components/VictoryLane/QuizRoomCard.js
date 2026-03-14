@@ -28,7 +28,7 @@ const QuizRoomCard = ({ quizRoom, getDifficultyColor, handleJoinRoom }) => {
             <p className="text-gray-600 text-sm mt-0.5">{quizRoom.category}</p>
           </div>
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center shadow-lg ml-3 overflow-hidden">
-            <img src="/images/quiz-animated.gif" alt="Quiz" className="w-12 h-12 object-contain" />
+            <img src="/images/icons/integration_network_animated.svg" alt="Quiz" className="w-12 h-12 object-contain" />
           </div>
         </div>
       </div>

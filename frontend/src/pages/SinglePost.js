@@ -455,7 +455,7 @@ const SinglePost = () => {
                     </div>
                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center shadow-lg ml-3 overflow-hidden">
                       <img 
-                        src="/images/quiz-animated.gif" 
+                        src="/images/icons/integration_network_animated.svg" 
                         alt="Quiz" 
                         className="w-12 h-12 object-contain"
                       />
