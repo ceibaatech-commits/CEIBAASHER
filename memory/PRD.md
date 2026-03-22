@@ -64,6 +64,18 @@
 - P1: Google Search Console Integration - NOT STARTED
 
 ## Completed (Mar 2026 - Latest)
+- **Copy Protection (Mar 22, 2026):**
+  - CSS user-select: none on body, JS blocks right-click/copy/cut/Ctrl+C/X/U/A
+  - Input/textarea fields still allow text selection for usability
+- **Admin Live Battles Panel Fix (Mar 22, 2026):**
+  - Fixed admin auth: verify_super_admin now checks admin_sessions collection (was only checking user_sessions)
+  - Fixed route conflict: renamed GET /{battle_id} to GET /detail/{battle_id} so /reports and /stats aren't caught
+  - Added battle persistence to live_battles DB collection in battle_socketio.py
+  - Admin notifications wired: notify_admins_battle_started/ended/new_report called on events
+  - Reports endpoint fully functional: submit, list, filter, review
+  - All 12 backend tests passed (100%)
+
+## Completed (Mar 2026 - Latest)
 - **GIF → SVG Icon Replacement (Mar 14, 2026):**
   - Replaced heavy GIFs with lightweight animated SVGs in CreatePostFAB, QuizRoomCard, SinglePost
   - `talk.gif` (424KB) → `talk_animated.svg` (8.6KB) for Quick Post
