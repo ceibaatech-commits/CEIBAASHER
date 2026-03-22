@@ -64,9 +64,14 @@
 - P1: Google Search Console Integration - NOT STARTED
 
 ## Completed (Mar 2026 - Latest)
-- **Copy Protection (Mar 22, 2026):**
-  - CSS user-select: none on body, JS blocks right-click/copy/cut/Ctrl+C/X/U/A
-  - Input/textarea fields still allow text selection for usability
+- **Career Programs / Beyond Exams Feature (Mar 22, 2026):**
+  - Backend: programs_routes.py with full CRUD + enquiry endpoints
+  - MongoDB: `programs` and `program_enquiries` collections
+  - Frontend: Redesigned /courses page with domain-filtered cards (6 domains: competition, research, internship, ai_tech, healthcare, summer)
+  - Frontend: /programs/:slug detail page with overview, highlights, mentor, related exams sidebar, enquiry modal
+  - Admin: Create/update/delete programs + list enquiries
+  - 6 programs seeded: Innovation Challenge, Research Mentorship, Finance Internship, AI Bootcamp, Healthcare Internship, Summer Residency
+  - All 19 backend + all frontend tests passed (100%)
 - **Admin Live Battles Panel Fix (Mar 22, 2026):**
   - Fixed admin auth: verify_super_admin now checks admin_sessions collection (was only checking user_sessions)
   - Fixed route conflict: renamed GET /{battle_id} to GET /detail/{battle_id} so /reports and /stats aren't caught
