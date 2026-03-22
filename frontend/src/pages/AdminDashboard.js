@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, FileText, DollarSign, Settings, 
   LogOut, Menu, X, TrendingUp, Activity, Shield, Bell,
-  BookOpen, MessageSquare, BarChart3, Globe, Award,
+  BookOpen, MessageSquare, BarChart3, Globe, Award, GraduationCap,
   AlertCircle, CheckCircle, Clock, Zap, Target, Layers, Briefcase
 } from 'lucide-react';
 
@@ -18,6 +18,7 @@ import ExamCategoryManager from '../components/admin/ExamCategoryManager';
 import SupportPanel from '../components/admin/SupportPanel';
 import EmployeeManager from '../components/admin/EmployeeManager';
 import LiveBattlesManager from '../components/admin/LiveBattlesManager';
+import ProgramsManager from '../components/admin/ProgramsManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ const AdminDashboard = () => {
     { id: 'revenue', label: 'Revenue & Finance', icon: DollarSign, color: 'yellow' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, color: 'pink' },
     { id: 'battles', label: 'Live Battles', icon: Zap, color: 'red' },
+    { id: 'programs', label: 'Programs', icon: GraduationCap, color: 'violet' },
     { id: 'support', label: 'Support Tickets', icon: MessageSquare, color: 'teal' },
     { id: 'settings', label: 'System Settings', icon: Settings, color: 'gray' },
   ];
@@ -84,6 +86,8 @@ const AdminDashboard = () => {
         return <RevenueManagement />;
       case 'battles':
         return <LiveBattlesManager />;
+      case 'programs':
+        return <ProgramsManager />;
       case 'support':
         return <SupportPanel />;
       case 'settings':

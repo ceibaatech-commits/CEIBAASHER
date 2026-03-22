@@ -75,6 +75,7 @@
   - Footer added to Courses + ProgramDetail pages
   - Fixed "Explore Mock Tests" button 404 (was /exam-selection, now /)
   - Deleted test program (TEST_PROGRAM) created by testing agent
+  - Admin Programs panel: enquiries table with filters (status/program/search), status actions (contacted/enrolled/rejected), program CRUD with edit/delete, Add Program modal
   - All 19 backend + all frontend tests passed (100%)
 - **Admin Live Battles Panel Fix (Mar 22, 2026):**
   - Fixed admin auth: verify_super_admin now checks admin_sessions collection (was only checking user_sessions)
