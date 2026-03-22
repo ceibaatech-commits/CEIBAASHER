@@ -22,6 +22,7 @@ from social_routes import router as social_router
 # Socket.io proxy now runs separately on port 5002
 # from socket_proxy import socket_app  # Not needed anymore
 from contact_routes import router as contact_router
+from programs_routes import router as programs_router
 from social_feed_routes import router as social_feed_router
 import social_feed_routes
 from ceep_routes import router as ceep_router
@@ -173,6 +174,11 @@ fastapi_app.include_router(battle_async_router)  # Hybrid REST + Socket.IO battl
 import contact_routes
 contact_routes.init_db(db)
 fastapi_app.include_router(contact_router, prefix="/api")
+
+# Programs/Courses routes
+import programs_routes
+programs_routes.init_db(db)
+fastapi_app.include_router(programs_router, prefix="/api")
 
 fastapi_app.include_router(social_feed_router, prefix="/api/social")
 fastapi_app.include_router(ceep_router, prefix="/api/ceep")

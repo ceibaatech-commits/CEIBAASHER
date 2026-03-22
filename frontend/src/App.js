@@ -18,6 +18,7 @@ import Profile from "@/pages/Profile";
 import Books from "@/pages/Books";
 import BookDetails from "@/pages/BookDetails";
 import Courses from "@/pages/Courses";
+import ProgramDetail from "@/pages/ProgramDetail";
 import AboutUs from "@/pages/AboutUs";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
@@ -170,6 +171,7 @@ function App() {
           
           {/* Courses Route */}
           <Route path="/courses" element={<Courses />} />
+          <Route path="/programs/:slug" element={<ProgramDetail />} />
           
           {/* PIN-based Room Quiz Routes (Multiple players) */}
           <Route path="/create-room/:examId/:subject/:topic" element={<CreateRoom />} />

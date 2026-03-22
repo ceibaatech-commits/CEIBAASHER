@@ -1,163 +1,208 @@
-import React from 'react';
-import { ExternalLink, GraduationCap, Clock, Award, TrendingUp, Users, BookOpen, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'sonner';
+import {
+  GraduationCap, Trophy, Microscope, Briefcase, Cpu, Heart, Sun,
+  Clock, Users, ArrowRight, Sparkles, Filter, ChevronRight
+} from 'lucide-react';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+const DOMAIN_CONFIG = {
+  competition:     { label: 'Competition',     color: 'bg-amber-100 text-amber-800 border-amber-200',   accent: 'from-amber-500 to-orange-500',   icon: Trophy },
+  research:        { label: 'Research',         color: 'bg-violet-100 text-violet-800 border-violet-200', accent: 'from-violet-500 to-purple-600',  icon: Microscope },
+  entrepreneurship:{ label: 'Internship',       color: 'bg-amber-100 text-amber-800 border-amber-200',   accent: 'from-amber-500 to-yellow-500',   icon: Briefcase },
+  ai_tech:         { label: 'AI & Tech',        color: 'bg-teal-100 text-teal-800 border-teal-200',       accent: 'from-teal-500 to-cyan-500',      icon: Cpu },
+  healthcare:      { label: 'Healthcare',       color: 'bg-rose-100 text-rose-800 border-rose-200',       accent: 'from-rose-500 to-pink-500',      icon: Heart },
+  summer:          { label: 'Summer Program',   color: 'bg-sky-100 text-sky-800 border-sky-200',          accent: 'from-sky-500 to-blue-500',       icon: Sun },
+};
+
+const FILTERS = [
+  { key: 'all', label: 'All Programs' },
+  { key: 'competition', label: 'Competitions' },
+  { key: 'research', label: 'Research' },
+  { key: 'entrepreneurship', label: 'Internships' },
+  { key: 'ai_tech', label: 'AI & Tech' },
+  { key: 'healthcare', label: 'Healthcare' },
+  { key: 'summer', label: 'Summer' },
+];
 
 const Courses = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
 
-  const courses = [
-    {
-      id: 1,
-      title: "Hospital Management",
-      subtitle: "IIM Professional Certificate",
-      institution: "IIM Bangalore",
-      duration: "6 Months",
-      level: "Professional",
-      link: "https://iimbx.iimb.ac.in/hospital-management-program/",
-      gradient: "from-cyan-400 via-blue-500 to-indigo-600",
-      icon: "🏥"
-    },
-    {
-      id: 2,
-      title: "AI for Managers",
-      subtitle: "Professional Certificate",
-      institution: "IIM Bangalore",
-      duration: "4 Months",
-      level: "Professional",
-      link: "https://iimbx.iimb.ac.in/ai-for-managers/",
-      gradient: "from-fuchsia-400 via-purple-500 to-pink-600",
-      icon: "🤖"
-    },
-    {
-      id: 3,
-      title: "User Interface Design",
-      subtitle: "NPTEL Online Course",
-      institution: "NPTEL",
-      duration: "12 Weeks",
-      level: "Intermediate",
-      link: "https://onlinecourses.nptel.ac.in/noc26_ar15/preview",
-      gradient: "from-emerald-400 via-teal-500 to-cyan-600",
-      icon: "🎨"
-    },
-    {
-      id: 4,
-      title: "Unit Operations of Particulate Matter",
-      subtitle: "NPTEL Online Course",
-      institution: "NPTEL",
-      duration: "12 Weeks",
-      level: "Advanced",
-      link: "https://onlinecourses.nptel.ac.in/noc26_ch44/preview",
-      gradient: "from-orange-400 via-red-500 to-rose-600",
-      icon: "⚗️"
-    }
-  ];
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const params = filter !== 'all' ? `?domain=${filter}` : '';
+        const res = await axios.get(`${API_URL}/api/programs${params}`);
+        setPrograms(res.data.programs || []);
+      } catch {
+        toast.error('Failed to load programs');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPrograms();
+  }, [filter]);
+
+  const filtered = programs;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-slate-50" data-testid="courses-page">
       <Header isLoggedIn={isAuthenticated()} user={user} />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6 md:mb-8 group transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-          <span className="font-semibold">Back</span>
-        </button>
 
-        {/* Header Section */}
-        <div className="text-center mb-8 md:mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl mb-4 md:mb-6 shadow-xl">
-            <GraduationCap className="w-8 h-8 md:w-10 md:h-10 text-white" />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-violet-950 to-slate-900 pt-12 pb-16 px-4">
+        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(139,92,246,0.3), transparent 50%), radial-gradient(circle at 80% 20%, rgba(20,184,166,0.25), transparent 50%)' }} />
+        <div className="max-w-5xl mx-auto relative text-center">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 mb-6">
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span className="text-sm text-white/90 font-medium">Beyond Exam Prep</span>
           </div>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 md:mb-4">
-            Professional Courses
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+            Career Programs <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">&amp; Courses</span>
           </h1>
-          <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-            Advance your career with premium certificate programs
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">
+            Go beyond textbooks. Research, intern, innovate &mdash; build skills that colleges and employers value.
           </p>
         </div>
+      </section>
 
-        {/* Courses Grid - 3 columns on desktop, 2 on mobile */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {courses.map((course) => (
-            <a
-              key={course.id}
-              href={course.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden cursor-pointer"
+      {/* Filters */}
+      <div className="max-w-6xl mx-auto px-4 -mt-6 relative z-10">
+        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2 flex gap-1.5 overflow-x-auto no-scrollbar" data-testid="program-filters">
+          {FILTERS.map(f => (
+            <button
+              key={f.key}
+              onClick={() => { setFilter(f.key); setLoading(true); }}
+              data-testid={`filter-${f.key}`}
+              className={`whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filter === f.key
+                  ? 'bg-violet-600 text-white shadow-md'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
             >
-              {/* Gradient Header */}
-              <div className={`bg-gradient-to-br ${course.gradient} p-4 md:p-6 relative overflow-hidden`}>
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-                
-                <div className="relative">
-                  <div className="text-3xl md:text-4xl mb-2 md:mb-3">{course.icon}</div>
-                  <h3 className="text-lg md:text-xl font-bold text-white mb-1 line-clamp-2">
-                    {course.title}
-                  </h3>
-                  <p className="text-xs md:text-sm text-white/90 font-medium mb-3 md:mb-4">
-                    {course.subtitle}
-                  </p>
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-4 md:p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
-                    <BookOpen className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-                    <span className="text-xs font-medium text-blue-700">{course.institution}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <div className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-1 rounded-full">
-                    <Clock className="w-3 h-3 text-gray-600" />
-                    <span className="text-gray-700">{course.duration}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs bg-gray-100 px-2 py-1 rounded-full">
-                    <TrendingUp className="w-3 h-3 text-gray-600" />
-                    <span className="text-gray-700">{course.level}</span>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className={`w-full bg-gradient-to-r ${course.gradient} text-white py-2 md:py-2.5 px-4 rounded-lg font-semibold text-xs md:text-sm hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group-hover:scale-105`}>
-                  <span>More Info</span>
-                  <ExternalLink className="w-3 h-3 md:w-4 md:h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </a>
+              {f.label}
+            </button>
           ))}
         </div>
+      </div>
 
-        {/* Info Banner */}
-        <div className="mt-8 md:mt-12 bg-white/80 backdrop-blur-sm border-2 border-purple-200 rounded-2xl p-4 md:p-8 shadow-lg">
-          <div className="flex flex-col md:flex-row items-start gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl md:rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
-              <Award className="w-5 h-5 md:w-6 md:h-6 text-white" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">
-                Premium Learning Partners
-              </h3>
-              <p className="text-sm md:text-base text-gray-700 leading-relaxed">
-                IIM Bangalore and NPTEL are India's premier educational institutions offering world-class programs. 
-                These certificate courses are designed for professionals seeking career advancement with recognized credentials.
-              </p>
-            </div>
+      {/* Programs Grid */}
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1,2,3].map(i => (
+              <div key={i} className="bg-white rounded-2xl h-80 animate-pulse border border-slate-200" />
+            ))}
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-20 text-slate-500">
+            <GraduationCap className="w-12 h-12 mx-auto mb-4 opacity-40" />
+            <p className="text-lg font-medium">No programs found</p>
+            <p className="text-sm mt-1">Try a different filter</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="programs-grid">
+            {filtered.map(program => (
+              <ProgramCard key={program.id} program={program} onClick={() => navigate(`/programs/${program.slug || program.id}`)} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom CTA */}
+      <section className="bg-gradient-to-r from-violet-600 to-teal-500 py-12 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">Already preparing for exams on Ceibaa?</h2>
+          <p className="text-white/80 mb-6 text-sm sm:text-base">
+            Strengthen your foundation with our mock tests, then level up with career programs.
+          </p>
+          <button
+            onClick={() => navigate('/exam-selection')}
+            className="bg-white text-violet-700 font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all text-sm"
+            data-testid="explore-exams-btn"
+          >
+            Explore Mock Tests
+          </button>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+function ProgramCard({ program, onClick }) {
+  const cfg = DOMAIN_CONFIG[program.domain] || DOMAIN_CONFIG.competition;
+  const Icon = cfg.icon;
+  const seatsLow = program.seats_left != null && program.seats_left < 30;
+
+  return (
+    <div
+      onClick={onClick}
+      data-testid={`program-card-${program.slug || program.id}`}
+      className="group bg-white rounded-2xl border border-slate-200 hover:border-violet-300 hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
+    >
+      {/* Top accent bar */}
+      <div className={`h-1.5 bg-gradient-to-r ${cfg.accent}`} />
+
+      <div className="p-5 flex flex-col flex-1">
+        {/* Domain tag + Grade badge */}
+        <div className="flex items-center justify-between mb-3">
+          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${cfg.color}`}>
+            <Icon className="w-3.5 h-3.5" />
+            {cfg.label}
+          </span>
+          <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+            Grade {program.grade_min}–{program.grade_max}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-violet-700 transition-colors line-clamp-2">
+          {program.title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-sm text-slate-500 mb-4 line-clamp-2 flex-1">
+          {program.short_description}
+        </p>
+
+        {/* Meta row */}
+        <div className="flex items-center gap-3 text-xs text-slate-500 mb-4">
+          <span className="inline-flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5" />
+            {program.duration}
+          </span>
+          {program.seats_left != null && (
+            <span className={`inline-flex items-center gap-1 ${seatsLow ? 'text-rose-600 font-semibold' : ''}`}>
+              <Users className="w-3.5 h-3.5" />
+              {program.seats_left} seats left
+            </span>
+          )}
+        </div>
+
+        {/* CTA + Price row */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          {program.price ? (
+            <span className="text-sm font-bold text-slate-900">Rs. {program.price}</span>
+          ) : (
+            <span className="text-sm font-semibold text-emerald-600">Free</span>
+          )}
+          <span className={`inline-flex items-center gap-1 text-sm font-semibold bg-gradient-to-r ${cfg.accent} text-transparent bg-clip-text group-hover:gap-2 transition-all`}>
+            {program.is_enrolling ? 'Enroll Now' : 'Learn More'}
+            <ArrowRight className={`w-4 h-4 text-violet-500 group-hover:translate-x-1 transition-transform`} />
+          </span>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Courses;
