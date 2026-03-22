@@ -175,7 +175,7 @@ const LiveBattlesManager = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/api/admin/battles/${battleId}/terminate`,
+        `${API_URL}/api/admin/battles/detail/${battleId}/terminate`,
         { reason: 'Admin terminated' },
         { headers: { Authorization: `Bearer ${getToken()}` } }
       );

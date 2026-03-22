@@ -425,6 +425,26 @@ async def complete_battle(sid, data):
         await sio.emit('battle_completed', final_results, room=room_id)
 
         print(f"[COMPLETE] Battle completed in room {room_id}")
+
+        # Update live_battles for admin panel
+        try:
+            leaderboard = room.get_leaderboard()
+            winner = leaderboard[0] if leaderboard else None
+            await db.live_battles.update_one(
+                {"room_id": room_id},
+                {"$set": {
+                    "status": "completed",
+                    "ended_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "winner_id": winner.get("user_id") if winner else None,
+                    "winner_name": winner.get("username") if winner else None,
+                    "final_leaderboard": leaderboard
+                }},
+                upsert=True
+            )
+            await notify_admins_battle_ended(room_id, {"leaderboard": leaderboard})
+        except Exception as e:
+            print(f"[COMPLETE] Failed to update live_battles: {e}")
         
         # Save battle history for all participants (for stats tracking)
         try:
@@ -540,7 +560,34 @@ async def start_battle(sid, data):
                 starter_name = p.username
                 break
 
-        print(f"[START] ✅ Battle started in room {room_id} by {starter_name}")
+        print(f"[START] Battle started in room {room_id} by {starter_name}")
+
+        # Persist to live_battles for admin panel
+        try:
+            players_data = [{"user_id": p.user_id, "username": p.username, "score": p.score} for p in room.participants]
+            battle_doc = {
+                "id": room_id,
+                "room_id": room_id,
+                "type": "room",
+                "status": "in_progress",
+                "players": players_data,
+                "exam": room.exam or "",
+                "subject": room.subject or "",
+                "total_questions": len(room.questions),
+                "started_at": datetime.now(timezone.utc).isoformat(),
+                "ended_at": None,
+                "is_demo": False,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db.live_battles.update_one(
+                {"room_id": room_id},
+                {"$set": battle_doc},
+                upsert=True
+            )
+            await notify_admins_battle_started(room_id, battle_doc)
+        except Exception as e:
+            print(f"[START] Failed to persist battle: {e}")
 
         # Notify all participants
         await sio.emit('battle_started', {
@@ -868,6 +915,33 @@ async def find_match(sid, data):
             }, room=room_id)
 
             print(f"[MATCHMAKING] Instant match: Room {room_id}")
+
+            # Persist to live_battles collection for admin panel
+            battle_doc = {
+                "id": room_id,
+                "room_id": room_id,
+                "type": "1v1",
+                "status": "in_progress",
+                "players": [
+                    {"user_id": sid, "username": player_name, "score": 0},
+                    {"user_id": opponent.socket_id, "username": opponent.player_name, "score": 0}
+                ],
+                "exam": exam,
+                "subject": subject,
+                "total_questions": 10,
+                "duration_seconds": 0,
+                "started_at": datetime.now(timezone.utc).isoformat(),
+                "ended_at": None,
+                "winner_id": None,
+                "is_demo": False,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
+            try:
+                await db.live_battles.insert_one(battle_doc.copy())
+                await notify_admins_battle_started(room_id, battle_doc)
+            except Exception as e:
+                print(f"[MATCHMAKING] Failed to persist battle: {e}")
         else:
             # Send queue info so frontend can show position
             queue_size = matchmaking_manager.get_queue_size(exam, subject)
@@ -1007,6 +1081,31 @@ async def battle_complete(sid, data):
         }, room=room_id, skip_sid=sid)
         
         print(f"[BATTLE_COMPLETE] {player_name} finished with {final_score} pts in {room_id}")
+
+        # Update live_battles in DB for admin panel
+        try:
+            await db.live_battles.update_one(
+                {"room_id": room_id},
+                {"$set": {
+                    "status": "completed",
+                    "ended_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                },
+                "$push": {
+                    "player_sessions": {
+                        "user_id": user_id,
+                        "username": player_name,
+                        "final_score": final_score,
+                        "completed_at": datetime.now(timezone.utc).isoformat()
+                    }
+                }}
+            )
+            await notify_admins_battle_ended(room_id, {
+                "player_name": player_name,
+                "final_score": final_score
+            })
+        except Exception as e:
+            print(f"[BATTLE_COMPLETE] Failed to update live_battles: {e}")
         
     except Exception as e:
         print(f"[ERROR] battle_complete: {str(e)}")

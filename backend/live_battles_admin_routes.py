@@ -131,9 +131,18 @@ async def verify_super_admin(authorization: Optional[str] = Header(None)) -> dic
     token = authorization.replace("Bearer ", "")
     
     try:
-        # Try session token first
-        session = await db.user_sessions.find_one({"session_token": token})
-        user_id = session.get("user_id") if session else None
+        user_id = None
+        
+        # Try admin_sessions first (from admin login)
+        admin_session = await db.admin_sessions.find_one({"token": token})
+        if admin_session:
+            user_id = admin_session.get("user_id")
+        
+        # Try user_sessions
+        if not user_id:
+            session = await db.user_sessions.find_one({"session_token": token})
+            if session:
+                user_id = session.get("user_id")
         
         # Try JWT decode
         if not user_id:
@@ -311,7 +320,7 @@ async def get_battle_history(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{battle_id}")
+@router.get("/detail/{battle_id}")
 async def get_battle_details(
     battle_id: str,
     authorization: Optional[str] = Header(None)
@@ -351,7 +360,7 @@ async def get_battle_details(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/{battle_id}/terminate")
+@router.post("/detail/{battle_id}/terminate")
 async def terminate_battle(
     battle_id: str,
     authorization: Optional[str] = Header(None),
@@ -422,8 +431,12 @@ async def record_battle_completion(
         if authorization:
             token = authorization.replace("Bearer ", "")
             try:
-                session = await db.user_sessions.find_one({"session_token": token})
-                user_id = session.get("user_id") if session else None
+                admin_session = await db.admin_sessions.find_one({"token": token})
+                if admin_session:
+                    user_id = admin_session.get("user_id")
+                if not user_id:
+                    session = await db.user_sessions.find_one({"session_token": token})
+                    user_id = session.get("user_id") if session else None
                 if not user_id:
                     payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
                     user_id = payload.get("sub")
@@ -497,9 +510,14 @@ async def create_battle_report(
         reporter_id = None
         reporter_name = "Anonymous"
         
-        session = await db.user_sessions.find_one({"session_token": token})
-        if session:
-            reporter_id = session.get("user_id")
+        admin_session = await db.admin_sessions.find_one({"token": token})
+        if admin_session:
+            reporter_id = admin_session.get("user_id")
+        
+        if not reporter_id:
+            session = await db.user_sessions.find_one({"session_token": token})
+            if session:
+                reporter_id = session.get("user_id")
         
         if not reporter_id:
             try:
@@ -554,6 +572,14 @@ async def create_battle_report(
                 "$inc": {"report_count": 1}
             }
         )
+        
+        # Notify admins in real-time
+        try:
+            from battle_socketio import notify_admins_new_report
+            import asyncio
+            asyncio.create_task(notify_admins_new_report(report_doc))
+        except Exception as notify_err:
+            print(f"[REPORT] Failed to notify admins: {notify_err}")
         
         return {
             "success": True,
