@@ -78,13 +78,13 @@ const Courses = () => {
 
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 -mt-6 relative z-10">
-        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-2 flex gap-1.5 overflow-x-auto no-scrollbar" data-testid="program-filters">
+        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 flex flex-nowrap gap-1 overflow-x-auto scrollbar-hide" data-testid="program-filters" style={{ WebkitOverflowScrolling: 'touch' }}>
           {FILTERS.map(f => (
             <button
               key={f.key}
               onClick={() => { setFilter(f.key); setLoading(true); }}
               data-testid={`filter-${f.key}`}
-              className={`whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
                 filter === f.key
                   ? 'bg-violet-600 text-white shadow-md'
                   : 'text-slate-600 hover:bg-slate-100'

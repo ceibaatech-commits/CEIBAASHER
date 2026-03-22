@@ -4967,7 +4967,7 @@ class BackendTester:
             
             # Try admin credentials
             response = requests.post(f"{BACKEND_URL}/api/auth/login", json={
-                "username": "admin",
+                "username": "",
                 "password": "ceibaa@admin2025"
             })
             if response.status_code == 200:
