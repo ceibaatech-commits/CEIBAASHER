@@ -71,6 +71,10 @@
   - Frontend: /programs/:slug detail page with overview, highlights, mentor, related exams sidebar, enquiry modal
   - Admin: Create/update/delete programs + list enquiries
   - 6 programs seeded: Innovation Challenge, Research Mentorship, Finance Internship, AI Bootcamp, Healthcare Internship, Summer Residency
+  - Course landing page: Hero with pricing card, enrollment progress bar, interactive preview, countdown timer, 4-module syllabus timeline, FAQ accordion (6 questions), chatbot widget with quick replies, mentor section, "Strengthen Your Foundation" exam links
+  - Footer added to Courses + ProgramDetail pages
+  - Fixed "Explore Mock Tests" button 404 (was /exam-selection, now /)
+  - Deleted test program (TEST_PROGRAM) created by testing agent
   - All 19 backend + all frontend tests passed (100%)
 - **Admin Live Battles Panel Fix (Mar 22, 2026):**
   - Fixed admin auth: verify_super_admin now checks admin_sessions collection (was only checking user_sessions)

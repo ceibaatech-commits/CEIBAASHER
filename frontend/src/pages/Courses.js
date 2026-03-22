@@ -7,6 +7,7 @@ import {
   Clock, Users, ArrowRight, Sparkles, Filter, ChevronRight
 } from 'lucide-react';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -126,7 +127,7 @@ const Courses = () => {
             Strengthen your foundation with our mock tests, then level up with career programs.
           </p>
           <button
-            onClick={() => navigate('/exam-selection')}
+            onClick={() => navigate('/')}
             className="bg-white text-violet-700 font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all text-sm"
             data-testid="explore-exams-btn"
           >
@@ -134,6 +135,8 @@ const Courses = () => {
           </button>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
