@@ -290,3 +290,10 @@
   - TestHistoryTable with TanStack DataTable (sorting, filters, pagination, stats bar) now on /board
   - Dashboard.js cleaned up: only Posts, Quiz Rooms, Reposts tabs remain
 - **CORS_ORIGINS deployment fix:** Set to `*` in backend/.env to unblock production deployment
+- **Quiz history now persists to MongoDB with real data:**
+  - `quiz_routes.py` saves every quiz submission to `quiz_history` collection with `user_name`
+  - `battle_async_routes.py` saves async battle results to `battle_submissions` for dashboard tracking
+  - `battle_socketio.py` includes `user_name` in `user_battle_history`
+  - `social_feed_routes.py` saves quiz room results to both `quiz_results` and `quiz_history`
+  - `dashboard_routes.py` aggregates from all 4 collections: `quiz_history`, `quiz_results`, `battle_submissions`, `user_battle_history`
+  - All existing records backfilled with correct `user_name` values
