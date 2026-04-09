@@ -289,7 +289,14 @@
 - **Test History Table migrated to Board.js** from Dashboard.js (user's explicit request)
   - TestHistoryTable with TanStack DataTable (sorting, filters, pagination, stats bar) now on /board
   - Dashboard.js cleaned up: only Posts, Quiz Rooms, Reposts tabs remain
-- **CORS_ORIGINS deployment fix:** Set to `*` in backend/.env to unblock production deployment
+- **WebRTC BattleVideoChat.js completely rewritten (Apr 9, 2026):**
+  - Auto-start: caller sends offer 800ms after joining (no manual button press)
+  - ICE restart (`iceRestart: true`) instead of full teardown on connection drops
+  - Correct perfect-negotiation role assignment (`socket.id > roomId` instead of `roomId.split('_').pop()`)
+  - Candidate queue flushed after `setRemoteDescription`
+  - `iceCandidatePoolSize` reduced from 10 to 2 (prevents signalling flood)
+  - Starts minimised with spinner + status dot in thumbnail
+  - `phaseRef` mirror prevents stale closure bugs in callbacks
 - **Quiz history now persists to MongoDB with real data:**
   - `quiz_routes.py` saves every quiz submission to `quiz_history` collection with `user_name`
   - `battle_async_routes.py` saves async battle results to `battle_submissions` for dashboard tracking

@@ -1,892 +1,727 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Minimize2, Maximize2, Phone, AlertCircle, Flag, X, AlertTriangle } from 'lucide-react';
+import {
+  Mic, MicOff, Video, VideoOff, PhoneOff,
+  Minimize2, Maximize2, AlertCircle, Flag,
+  X, AlertTriangle, Loader2
+} from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Report reasons for inappropriate behavior
+// ─── Report reasons ────────────────────────────────────────────────────────────
 const REPORT_REASONS = [
-  { id: 'nudity', label: 'Nudity / Sexual Content', description: 'Showing private parts or sexual behavior' },
-  { id: 'harassment', label: 'Harassment / Bullying', description: 'Verbal abuse or threatening behavior' },
-  { id: 'offensive_content', label: 'Offensive Content', description: 'Hate speech, slurs, or discriminatory behavior' },
+  { id: 'nudity', label: 'Nudity / Sexual Content', description: 'Showing private parts or sexual behaviour' },
+  { id: 'harassment', label: 'Harassment / Bullying', description: 'Verbal abuse or threatening behaviour' },
+  { id: 'offensive_content', label: 'Offensive Content', description: 'Hate speech, slurs, or discriminatory behaviour' },
   { id: 'cheating', label: 'Cheating', description: 'Using unfair means to win' },
-  { id: 'inappropriate_behavior', label: 'Other Inappropriate Behavior', description: 'Any other concerning behavior' }
+  { id: 'inappropriate_behavior', label: 'Other Inappropriate Behaviour', description: 'Any other concerning behaviour' },
 ];
 
-// Updated ICE servers with reliable STUN/TURN
-const ICE_SERVERS = { 
+// ─── ICE configuration ─────────────────────────────────────────────────────────
+// Uses only the most reliable free STUN servers + Metered TURN as fallback.
+// Keep iceCandidatePoolSize low – a value of 10 floods the signalling channel
+// and makes the first offer arrive before the peer is ready to receive it.
+const ICE_CONFIG = {
   iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' }, 
+    { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' },
-    { urls: 'stun:stun3.l.google.com:19302' },
-    { urls: 'stun:stun4.l.google.com:19302' },
-    // Metered TURN servers (free tier)
     {
-      urls: 'turn:a.relay.metered.ca:80',
-      username: 'e8dd65b92f6aee9be7827b53',
-      credential: 'pCAvMhVj5r/cCbj9'
+      urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turns:openrelay.metered.ca:443'],
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
     },
-    {
-      urls: 'turn:a.relay.metered.ca:80?transport=tcp',
-      username: 'e8dd65b92f6aee9be7827b53',
-      credential: 'pCAvMhVj5r/cCbj9'
-    },
-    {
-      urls: 'turn:a.relay.metered.ca:443',
-      username: 'e8dd65b92f6aee9be7827b53',
-      credential: 'pCAvMhVj5r/cCbj9'
-    },
-    {
-      urls: 'turns:a.relay.metered.ca:443?transport=tcp',
-      username: 'e8dd65b92f6aee9be7827b53',
-      credential: 'pCAvMhVj5r/cCbj9'
-    }
   ],
-  iceCandidatePoolSize: 10
+  iceCandidatePoolSize: 2, // lower = faster first candidate
+  bundlePolicy: 'max-bundle', // one DTLS connection for audio + video
+  rtcpMuxPolicy: 'require',
 };
 
+// ─── Video constraints ─────────────────────────────────────────────────────────
+// Low-res intentionally: this is a side PiP during a quiz, not a video call app.
+const VIDEO_CONSTRAINTS = {
+  width: { ideal: 320, max: 480 },
+  height: { ideal: 240, max: 360 },
+  frameRate: { ideal: 15, max: 20 },
+};
+
+// How long (ms) to wait for the remote peer to respond before showing a hint.
+const OFFER_TIMEOUT_MS = 18000;
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+const noop = () => {};
+
+/**
+ * BattleVideoChat
+ *
+ * Key improvements over the original:
+ *  1. AUTO-START – as soon as both socket + roomId are available, the component
+ *     joins the video room and the caller (determined by socket.id comparison)
+ *     sends an offer without the user having to press a button.
+ *  2. SINGLE PEER REF PATTERN – every mutation goes through `pcRef` so stale-
+ *     closure bugs are eliminated.
+ *  3. TRICKLE ICE with a queue – ICE candidates that arrive before
+ *     setRemoteDescription is called are buffered and flushed immediately after.
+ *  4. ROBUST RECONNECT – on ICE failure/disconnect we restart ICE via
+ *     `createOffer({iceRestart: true})` instead of rebuilding the whole peer.
+ *  5. OFFER DEDUPLICATION – a `makingOffer` guard and the perfect-negotiation
+ *     pattern prevent double-offer races.
+ *  6. FRAME POSITION FIXED – the widget is `position: fixed` and never
+ *     interferes with the quiz layout.  It starts minimised so it doesn't
+ *     block quiz content on mobile.
+ *  7. GRACEFUL MEDIA ERRORS – camera/mic permission denial, device not found,
+ *     etc. are caught and displayed without breaking the quiz.
+ */
 const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId }) => {
-  const [callState, setCallState] = useState('idle'); // idle | connecting | connected | error
-  const [audioEnabled, setAudioEnabled] = useState(true);
-  const [videoEnabled, setVideoEnabled] = useState(true);
-  const [minimized, setMinimized] = useState(false);
-  const [remoteStream, setRemoteStream] = useState(null);
-  const [showButton, setShowButton] = useState(true);
-  const [debugInfo, setDebugInfo] = useState('');
+  // ── UI state ──────────────────────────────────────────────────────────────
+  const [phase, setPhase] = useState('idle'); // idle|joining|connecting|connected|error
+  const [audioOn, setAudioOn] = useState(true);
+  const [videoOn, setVideoOn] = useState(true);
+  const [minimised, setMinimised] = useState(true); // start minimised
   const [errorMsg, setErrorMsg] = useState('');
-  const [isPolite, setIsPolite] = useState(false); // For perfect negotiation
-  
-  // Report modal state
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [selectedReason, setSelectedReason] = useState('');
-  const [reportDescription, setReportDescription] = useState('');
-  const [submittingReport, setSubmittingReport] = useState(false);
-  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [remoteReady, setRemoteReady] = useState(false);
+
+  // Report modal
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDesc, setReportDesc] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [reportDone, setReportDone] = useState(false);
   const [reportId, setReportId] = useState(null);
 
+  // ── Refs (never trigger re-renders) ──────────────────────────────────────
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-  const peerRef = useRef(null);
-  const localStreamRef = useRef(null);
-  const pendingCandidates = useRef([]);
+  const pcRef = useRef(null); // RTCPeerConnection
+  const localStreamRef = useRef(null); // MediaStream
+  const pendingCandidates = useRef([]); // ICE candidates buffered before SDP
   const makingOffer = useRef(false);
   const ignoreOffer = useRef(false);
-  const roomJoinedRef = useRef(false);
+  const roomJoined = useRef(false);
+  const isPoliteRef = useRef(false); // perfect-negotiation role
+  const offerTimer = useRef(null);
+  const phaseRef = useRef('idle'); // mirror of `phase` for use inside callbacks
 
-  const log = (msg) => {
-    const timestamp = new Date().toLocaleTimeString();
-    console.log(`[VIDEO ${timestamp}] ${msg}`);
-    setDebugInfo(prev => `${timestamp}: ${msg}\n${prev}`.slice(0, 800));
-  };
+  // keep phaseRef in sync
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
-  const cleanup = useCallback(() => {
-    log('Cleaning up WebRTC...');
-    makingOffer.current = false;
-    ignoreOffer.current = false;
-    
-    if (peerRef.current) {
-      peerRef.current.ontrack = null;
-      peerRef.current.onicecandidate = null;
-      peerRef.current.oniceconnectionstatechange = null;
-      peerRef.current.onconnectionstatechange = null;
-      peerRef.current.onnegotiationneeded = null;
-      peerRef.current.close();
-      peerRef.current = null;
+  // ── Logging ───────────────────────────────────────────────────────────────
+  const log = useCallback((msg) => {
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[VideoChat ${new Date().toLocaleTimeString()}] ${msg}`);
     }
-    
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(t => {
-        t.stop();
-        log(`Stopped ${t.kind} track`);
-      });
-      localStreamRef.current = null;
-    }
-    
-    if (localVideoRef.current) localVideoRef.current.srcObject = null;
-    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
-    
-    setRemoteStream(null);
-    setCallState('idle');
-    pendingCandidates.current = [];
   }, []);
 
-  // Set remote video when stream changes
-  useEffect(() => {
-    if (remoteVideoRef.current && remoteStream) {
-      log('Setting remote stream to video element');
-      remoteVideoRef.current.srcObject = remoteStream;
-      // Ensure video plays
-      remoteVideoRef.current.play().catch(e => log(`Video play error: ${e.message}`));
-    }
-  }, [remoteStream]);
+  // ── Attach remote stream to <video> element ───────────────────────────────
+  const attachRemoteStream = useCallback((stream) => {
+    if (!remoteVideoRef.current) return;
+    remoteVideoRef.current.srcObject = stream;
+    remoteVideoRef.current.play().catch(noop);
+    setRemoteReady(true);
+    setPhase('connected');
+    log('Remote stream attached');
+  }, [log]);
 
-  // Re-attach local stream to video element when callState changes (ref becomes available)
-  useEffect(() => {
-    if (localVideoRef.current && localStreamRef.current) {
-      if (localVideoRef.current.srcObject !== localStreamRef.current) {
-        localVideoRef.current.srcObject = localStreamRef.current;
-        localVideoRef.current.play().catch(() => {});
-        log('Re-attached local stream to video element');
-      }
-    }
-  }, [callState]);
+  // ── Cleanup ───────────────────────────────────────────────────────────────
+  const cleanup = useCallback(() => {
+    log('Cleanup called');
+    clearTimeout(offerTimer.current);
+    makingOffer.current = false;
+    ignoreOffer.current = false;
+    pendingCandidates.current = [];
 
-  // Join video room when roomId is available
-  useEffect(() => {
-    if (!socket || !roomId || roomJoinedRef.current) return;
-    
-    log(`Joining video room: ${roomId}`);
-    socket.emit('join-video-room', { roomId });
-    roomJoinedRef.current = true;
-    
-    // Determine politeness based on socket ID (for perfect negotiation)
-    // The "impolite" peer creates offers, the "polite" peer yields to collision
-    setIsPolite(socket.id > roomId.split('_').pop());
-    log(`Role: ${socket.id > roomId.split('_').pop() ? 'polite' : 'impolite'}`);
-  }, [socket, roomId]);
-
-  // Socket event listeners with perfect negotiation pattern
-  useEffect(() => {
-    if (!socket) {
-      log('No socket available');
-      return;
+    if (pcRef.current) {
+      pcRef.current.ontrack = null;
+      pcRef.current.onicecandidate = null;
+      pcRef.current.oniceconnectionstatechange = null;
+      pcRef.current.onconnectionstatechange = null;
+      pcRef.current.onnegotiationneeded = null;
+      pcRef.current.close();
+      pcRef.current = null;
     }
 
-    log(`Socket status: ${socket.connected ? 'connected' : 'disconnected'}, roomId: ${roomId}`);
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(t => t.stop());
+      localStreamRef.current = null;
+    }
 
-    const handleOffer = async (data) => {
-      log(`Received offer from: ${data.from}`);
-      
-      // Perfect negotiation: handle offer collision
-      const offerCollision = makingOffer.current || 
-        (peerRef.current && peerRef.current.signalingState !== 'stable');
-      
-      ignoreOffer.current = !isPolite && offerCollision;
-      if (ignoreOffer.current) {
-        log('Ignoring offer due to collision (impolite peer)');
-        return;
-      }
+    if (localVideoRef.current) localVideoRef.current.srcObject = null;
+    if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
 
-      try {
-        setCallState('connecting');
-        setShowButton(false);
-        setErrorMsg('');
-        
-        // Get or create peer connection
-        if (!peerRef.current) {
-          const stream = await getLocalStream();
-          createPeer(stream);
-        }
-        
-        const pc = peerRef.current;
-        
-        // Set remote description (offer)
-        await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-        log('Set remote description (offer)');
-        
-        // Drain pending ICE candidates
-        while (pendingCandidates.current.length > 0) {
-          const candidate = pendingCandidates.current.shift();
-          try {
-            await pc.addIceCandidate(new RTCIceCandidate(candidate));
-            log('Added queued ICE candidate');
-          } catch (e) {
-            log(`Failed to add queued ICE: ${e.message}`);
-          }
-        }
-        
-        // Create and send answer
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        log('Created and set local description (answer)');
-        
-        socket.emit('webrtc_answer', { roomId, answer });
-        log('Sent answer to room');
-        
-      } catch (err) {
-        log(`Offer handling error: ${err.message}`);
-        console.error('WebRTC offer error:', err);
-        setErrorMsg('Connection failed. Try again.');
-        cleanup();
-        setShowButton(true);
-      }
-    };
+    setRemoteReady(false);
+    setPhase('idle');
+  }, [log]);
 
-    const handleAnswer = async (data) => {
-      log(`Received answer from: ${data.from}`);
-      try {
-        const pc = peerRef.current;
-        if (!pc) {
-          log('No peer connection for answer');
-          return;
-        }
-        
-        if (pc.signalingState === 'have-local-offer') {
-          await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-          log('Set remote description (answer)');
-          
-          // Drain pending ICE candidates
-          while (pendingCandidates.current.length > 0) {
-            const candidate = pendingCandidates.current.shift();
-            try {
-              await pc.addIceCandidate(new RTCIceCandidate(candidate));
-              log('Added queued ICE candidate');
-            } catch (e) {
-              log(`Failed to add queued ICE: ${e.message}`);
-            }
-          }
-          log('Call setup complete!');
-        } else {
-          log(`Ignoring answer - wrong state: ${pc.signalingState}`);
-        }
-      } catch (err) {
-        log(`Answer handling error: ${err.message}`);
-        console.error('WebRTC answer error:', err);
-      }
-    };
-
-    const handleICE = async (data) => {
-      log(`Received ICE candidate from: ${data.from}`);
-      try {
-        const pc = peerRef.current;
-        if (pc && pc.remoteDescription && pc.remoteDescription.type) {
-          await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-          log('Added ICE candidate directly');
-        } else {
-          log('Queuing ICE candidate (waiting for remote description)');
-          pendingCandidates.current.push(data.candidate);
-        }
-      } catch (err) {
-        // Ignore non-fatal ICE errors
-        if (!err.message.includes('location information')) {
-          log(`ICE handling error: ${err.message}`);
-        }
-      }
-    };
-
-    // Listen for peer disconnection
-    const handlePeerLeft = (data) => {
-      log(`Peer left: ${data.reason || 'disconnected'}`);
-      cleanup();
-      setShowButton(true);
-    };
-
-    socket.on('webrtc-offer', handleOffer);
-    socket.on('webrtc-answer', handleAnswer);
-    socket.on('webrtc-ice-candidate', handleICE);
-    socket.on('peer-left', handlePeerLeft);
-
-    return () => {
-      socket.off('webrtc-offer', handleOffer);
-      socket.off('webrtc-answer', handleAnswer);
-      socket.off('webrtc-ice-candidate', handleICE);
-      socket.off('peer-left', handlePeerLeft);
-    };
-  }, [socket, roomId, isPolite]);
-
-  const getLocalStream = async () => {
+  // ── Get local media ───────────────────────────────────────────────────────
+  const getLocalStream = useCallback(async () => {
     if (localStreamRef.current) return localStreamRef.current;
-    log('Requesting camera/mic access...');
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        },
-        video: { 
-          width: { ideal: 320, max: 640 }, 
-          height: { ideal: 240, max: 480 }, 
-          frameRate: { ideal: 15, max: 24 }
-        }
-      });
-      localStreamRef.current = stream;
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-        localVideoRef.current.play().catch(() => {});
-      }
-      log('Got local stream with ' + stream.getTracks().length + ' tracks');
-      return stream;
-    } catch (err) {
-      log(`Media access error: ${err.name} - ${err.message}`);
-      throw err;
-    }
-  };
 
-  const createPeer = (stream) => {
-    // Close existing peer if any
-    if (peerRef.current) {
-      peerRef.current.close();
-    }
-    
-    log('Creating new peer connection...');
-    const pc = new RTCPeerConnection(ICE_SERVERS);
-    peerRef.current = pc;
-    
-    // Add all local tracks
-    stream.getTracks().forEach(track => {
-      pc.addTrack(track, stream);
-      log(`Added local ${track.kind} track`);
+    log('Requesting camera/mic...');
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      video: VIDEO_CONSTRAINTS,
     });
 
-    // Handle incoming tracks (remote stream)
+    localStreamRef.current = stream;
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+      localVideoRef.current.play().catch(noop);
+    }
+    log(`Got local stream (${stream.getTracks().length} tracks)`);
+    return stream;
+  }, [log]);
+
+  // ── Drain buffered ICE candidates ─────────────────────────────────────────
+  const drainCandidates = useCallback(async (pc) => {
+    while (pendingCandidates.current.length > 0) {
+      const c = pendingCandidates.current.shift();
+      try {
+        await pc.addIceCandidate(new RTCIceCandidate(c));
+        log('Drained buffered ICE candidate');
+      } catch (e) {
+        log(`Buffered ICE error (ignored): ${e.message}`);
+      }
+    }
+  }, [log]);
+
+  // ── ICE restart (avoid full teardown) ────────────────────────────────────
+  const restartICE = useCallback(async () => {
+    const pc = pcRef.current;
+    if (!pc || !socket?.connected || !roomId) {
+      cleanup(); return;
+    }
+    log('Restarting ICE...');
+    try {
+      makingOffer.current = true;
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+      socket.emit('webrtc_offer', { roomId, offer: pc.localDescription });
+      log('ICE-restart offer sent');
+    } catch (err) {
+      log(`ICE restart failed: ${err.message}`);
+      cleanup();
+    } finally {
+      makingOffer.current = false;
+    }
+  }, [cleanup, log, socket, roomId]);
+
+  // ── Create RTCPeerConnection ──────────────────────────────────────────────
+  const createPC = useCallback((stream) => {
+    if (pcRef.current) {
+      pcRef.current.close();
+      pcRef.current = null;
+    }
+
+    log('Creating RTCPeerConnection...');
+    const pc = new RTCPeerConnection(ICE_CONFIG);
+    pcRef.current = pc;
+
+    // Add local tracks
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+    // Receive remote tracks
     pc.ontrack = (e) => {
-      log(`Received remote ${e.track.kind} track, streams: ${e.streams.length}`);
-      if (e.streams && e.streams[0]) {
-        log(`Remote stream has ${e.streams[0].getTracks().length} tracks`);
-        setRemoteStream(e.streams[0]);
-        setCallState('connected');
-        log('Remote stream connected!');
-      } else if (e.track) {
-        // Fallback: create stream from track
-        log('Creating stream from track...');
-        const newStream = new MediaStream([e.track]);
-        setRemoteStream(prev => {
-          if (prev) {
-            prev.addTrack(e.track);
-            return prev;
-          }
-          return newStream;
-        });
-        setCallState('connected');
-      }
+      log(`ontrack: ${e.track.kind}, streams: ${e.streams.length}`);
+      const remoteStream = e.streams?.[0] ?? (() => {
+        const s = new MediaStream(); s.addTrack(e.track); return s;
+      })();
+      attachRemoteStream(remoteStream);
     };
 
-    // Send ICE candidates to peer
+    // Trickle ICE
     pc.onicecandidate = (e) => {
-      if (e.candidate && socket && roomId) {
+      if (e.candidate && socket?.connected && roomId) {
         socket.emit('webrtc_ice_candidate', { roomId, candidate: e.candidate });
-        log(`Sent ICE candidate (${e.candidate.type || 'unknown'})`);
-      } else if (!e.candidate) {
-        log('ICE gathering complete');
       }
     };
 
-    // Monitor ICE connection state
+    // ICE state machine
     pc.oniceconnectionstatechange = () => {
-      const state = pc.iceConnectionState;
-      log(`ICE connection: ${state}`);
-      
-      switch (state) {
-        case 'checking':
-          setCallState('connecting');
-          break;
-        case 'connected':
-        case 'completed':
-          setCallState('connected');
-          setErrorMsg('');
-          break;
-        case 'disconnected':
-          log('ICE disconnected - attempting reconnection...');
-          // Don't immediately cleanup, ICE may recover
-          break;
-        case 'failed':
-          log('ICE connection failed');
-          setErrorMsg('Connection failed. Please retry.');
-          setCallState('error');
-          break;
-        case 'closed':
-          cleanup();
-          setShowButton(true);
-          break;
-        default:
-          break;
+      const s = pc.iceConnectionState;
+      log(`ICE: ${s}`);
+      if (s === 'connected' || s === 'completed') {
+        clearTimeout(offerTimer.current);
+        setPhase('connected');
+        setErrorMsg('');
+      } else if (s === 'disconnected') {
+        // ICE may recover on its own; wait 4 s then restart
+        setTimeout(() => {
+          if (pcRef.current?.iceConnectionState === 'disconnected') {
+            log('ICE still disconnected - restarting...');
+            restartICE();
+          }
+        }, 4000);
+      } else if (s === 'failed') {
+        log('ICE failed - restarting...');
+        restartICE();
       }
     };
 
-    // Monitor overall connection state
     pc.onconnectionstatechange = () => {
-      log(`Connection state: ${pc.connectionState}`);
-      if (pc.connectionState === 'failed') {
-        setErrorMsg('Connection lost. Please retry.');
-        cleanup();
-        setShowButton(true);
-      }
+      log(`Connection: ${pc.connectionState}`);
+      if (pc.connectionState === 'failed') restartICE();
     };
 
-    // Handle negotiation needed (for renegotiation)
+    // Renegotiation (e.g. after track replacement)
     pc.onnegotiationneeded = async () => {
+      if (isPoliteRef.current || makingOffer.current) return;
       log('Negotiation needed');
-      // Only the impolite peer should initiate renegotiation
-      if (!isPolite && callState === 'connected') {
-        try {
-          makingOffer.current = true;
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          socket.emit('webrtc_offer', { roomId, offer });
-          log('Sent renegotiation offer');
-        } catch (err) {
-          log(`Renegotiation error: ${err.message}`);
-        } finally {
-          makingOffer.current = false;
-        }
+      try {
+        makingOffer.current = true;
+        const offer = await pc.createOffer();
+        if (pc.signalingState !== 'stable') return;
+        await pc.setLocalDescription(offer);
+        socket?.emit('webrtc_offer', { roomId, offer: pc.localDescription });
+        log('Re-negotiation offer sent');
+      } catch (err) {
+        log(`Renegotiation error: ${err.message}`);
+      } finally {
+        makingOffer.current = false;
       }
     };
 
     return pc;
-  };
+    // eslint-disable-next-line
+  }, [attachRemoteStream, log, socket, roomId]);
 
-  const startCall = async () => {
-    if (!socket) {
-      log('No socket connection');
-      setErrorMsg('Waiting for connection...');
-      return;
+  // ── Initiate call (caller side) ───────────────────────────────────────────
+  const startCall = useCallback(async () => {
+    if (!socket?.connected || !roomId) {
+      log('Socket not ready'); return;
     }
-    if (!roomId) {
-      log('No roomId available');
-      setErrorMsg('Waiting for opponent match...');
-      return;
-    }
-    
     if (makingOffer.current) {
-      log('Already making offer, skipping...');
-      return;
+      log('Already making offer'); return;
     }
-    
+    if (phaseRef.current === 'connecting' || phaseRef.current === 'connected') return;
+
+    log(`Starting call in room ${roomId}`);
+    setPhase('connecting');
+    setErrorMsg('');
+
     try {
-      makingOffer.current = true;
-      log(`Starting call in room: ${roomId}`);
-      setCallState('connecting');
-      setShowButton(false);
-      setErrorMsg('');
-      
-      // Ensure we're in the video room
-      if (!roomJoinedRef.current) {
-        socket.emit('join-video-room', { roomId });
-        roomJoinedRef.current = true;
-        // Small delay to ensure room join is processed
-        await new Promise(r => setTimeout(r, 200));
-      }
-      
       const stream = await getLocalStream();
-      const pc = createPeer(stream);
-      
-      // Create and send offer
+      const pc = createPC(stream);
+
+      makingOffer.current = true;
       const offer = await pc.createOffer({
         offerToReceiveAudio: true,
-        offerToReceiveVideo: true
+        offerToReceiveVideo: true,
       });
       await pc.setLocalDescription(offer);
-      log('Created and set local description (offer)');
-      
-      socket.emit('webrtc_offer', { roomId, offer });
-      log('Sent offer to room');
-      
-      // Set timeout for no response
-      setTimeout(() => {
-        if (callState === 'connecting' && !remoteStream) {
-          log('Connection timeout - no response from peer');
-          setErrorMsg('Opponent not responding. They may need to click "Video Call".');
+      socket.emit('webrtc_offer', { roomId, offer: pc.localDescription });
+      log('Offer sent');
+
+      // Hint after timeout if no response
+      clearTimeout(offerTimer.current);
+      offerTimer.current = setTimeout(() => {
+        if (phaseRef.current === 'connecting') {
+          setErrorMsg('Opponent hasn\'t responded yet - they may need to open the battle page.');
         }
-      }, 15000);
-      
+      }, OFFER_TIMEOUT_MS);
+
     } catch (err) {
-      log(`Start call error: ${err.message}`);
-      console.error('Start call error:', err);
+      log(`startCall error: ${err.name} - ${err.message}`);
       cleanup();
-      setShowButton(true);
-      makingOffer.current = false;
-      
-      if (err.name === 'NotAllowedError') {
-        setErrorMsg('Camera/mic access denied. Please allow access.');
-      } else if (err.name === 'NotFoundError') {
-        setErrorMsg('No camera/microphone found.');
-      } else {
-        setErrorMsg('Failed to start call. Please retry.');
-      }
+      setErrorMsg(
+        err.name === 'NotAllowedError' ? 'Camera/mic access denied. Please allow in browser settings.' :
+        err.name === 'NotFoundError' ? 'No camera or microphone found on this device.' :
+        'Could not start video. Please retry.'
+      );
+      setPhase('error');
     } finally {
       makingOffer.current = false;
     }
-  };
+  }, [cleanup, createPC, getLocalStream, log, roomId, socket]);
 
-  const endCall = () => {
-    log('Ending call');
-    cleanup();
-    setShowButton(true);
-  };
+  // ── Auto-join + auto-call on mount (or when socket/roomId arrive) ─────────
+  useEffect(() => {
+    if (!socket || !roomId) return;
+    if (roomJoined.current) return;
 
+    // Determine negotiation role: lower socket.id string = caller (impolite)
+    isPoliteRef.current = socket.id > roomId;
+    log(`Role: ${isPoliteRef.current ? 'polite (answerer)' : 'impolite (caller)'}`);
+
+    socket.emit('join-video-room', { roomId });
+    roomJoined.current = true;
+    log(`Joined video room ${roomId}`);
+
+    // Only the caller initiates; answerer waits for offer.
+    if (!isPoliteRef.current) {
+      // Small delay so both sides have joined the room before the offer arrives.
+      const t = setTimeout(() => startCall(), 800);
+      return () => clearTimeout(t);
+    }
+    // We intentionally exclude `startCall` from deps to avoid re-running
+    // eslint-disable-next-line
+  }, [socket, roomId]);
+
+  // ── Socket event handlers ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!socket) return;
+
+    // ── handle offer ────────────────────────────────────────────────────────
+    const onOffer = async ({ offer, from }) => {
+      log(`Offer from ${from}`);
+
+      const collision = makingOffer.current ||
+        (pcRef.current && pcRef.current.signalingState !== 'stable');
+
+      ignoreOffer.current = !isPoliteRef.current && collision;
+      if (ignoreOffer.current) {
+        log('Ignoring offer (collision, impolite)'); return;
+      }
+
+      setPhase(p => p === 'idle' ? 'connecting' : p);
+      setErrorMsg('');
+
+      try {
+        // Ensure we have a peer connection
+        if (!pcRef.current) {
+          const stream = await getLocalStream();
+          createPC(stream);
+        }
+        const pc = pcRef.current;
+
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        log('Remote description (offer) set');
+
+        await drainCandidates(pc);
+
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit('webrtc_answer', { roomId, answer: pc.localDescription });
+        log('Answer sent');
+
+      } catch (err) {
+        log(`onOffer error: ${err.message}`);
+        setErrorMsg('Connection failed. Please retry.');
+        cleanup();
+        setPhase('error');
+      }
+    };
+
+    // ── handle answer ────────────────────────────────────────────────────────
+    const onAnswer = async ({ answer, from }) => {
+      log(`Answer from ${from}`);
+      const pc = pcRef.current;
+      if (!pc) {
+        log('No PC for answer'); return;
+      }
+      if (pc.signalingState !== 'have-local-offer') {
+        log(`Ignoring answer - state: ${pc.signalingState}`); return;
+      }
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+        log('Remote description (answer) set');
+        await drainCandidates(pc);
+      } catch (err) {
+        log(`onAnswer error: ${err.message}`);
+      }
+    };
+
+    // ── handle ICE candidate ─────────────────────────────────────────────────
+    const onICE = async ({ candidate }) => {
+      if (!candidate) return;
+      const pc = pcRef.current;
+      if (pc?.remoteDescription?.type) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (e) {
+          if (!e.message?.includes('location')) log(`ICE add error: ${e.message}`);
+        }
+      } else {
+        log('Buffering ICE candidate (no remote desc yet)');
+        pendingCandidates.current.push(candidate);
+      }
+    };
+
+    // ── peer left ────────────────────────────────────────────────────────────
+    const onPeerLeft = ({ reason }) => {
+      log(`Peer left: ${reason}`);
+      cleanup();
+    };
+
+    socket.on('webrtc-offer', onOffer);
+    socket.on('webrtc-answer', onAnswer);
+    socket.on('webrtc-ice-candidate', onICE);
+    socket.on('peer-left', onPeerLeft);
+
+    return () => {
+      socket.off('webrtc-offer', onOffer);
+      socket.off('webrtc-answer', onAnswer);
+      socket.off('webrtc-ice-candidate', onICE);
+      socket.off('peer-left', onPeerLeft);
+    };
+  }, [cleanup, createPC, drainCandidates, getLocalStream, log, roomId, socket]);
+
+  // ── Cleanup on unmount ────────────────────────────────────────────────────
+  useEffect(() => () => cleanup(), [cleanup]);
+
+  // ── Controls ──────────────────────────────────────────────────────────────
   const toggleAudio = () => {
-    if (localStreamRef.current) {
-      const audioTrack = localStreamRef.current.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = !audioTrack.enabled;
-        setAudioEnabled(audioTrack.enabled);
-        log(`Audio ${audioTrack.enabled ? 'enabled' : 'disabled'}`);
-      }
+    const track = localStreamRef.current?.getAudioTracks()[0];
+    if (track) {
+      track.enabled = !track.enabled;
+      setAudioOn(track.enabled);
     }
   };
-
   const toggleVideo = () => {
-    if (localStreamRef.current) {
-      const videoTrack = localStreamRef.current.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.enabled = !videoTrack.enabled;
-        setVideoEnabled(videoTrack.enabled);
-        log(`Video ${videoTrack.enabled ? 'enabled' : 'disabled'}`);
-      }
+    const track = localStreamRef.current?.getVideoTracks()[0];
+    if (track) {
+      track.enabled = !track.enabled;
+      setVideoOn(track.enabled);
     }
   };
+  const endCall = () => {
+    cleanup();
+    roomJoined.current = false;
+  };
 
-  // Submit report for inappropriate behavior
-  const handleSubmitReport = async () => {
-    if (!selectedReason) {
-      toast.error('Please select a reason for reporting');
-      return;
+  // ── Report submission ─────────────────────────────────────────────────────
+  const submitReport = async () => {
+    if (!reportReason) {
+      toast.error('Please select a reason'); return;
     }
-
-    setSubmittingReport(true);
+    setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error('Please log in to submit a report');
-        return;
-      }
-
-      const response = await axios.post(
+      const res = await axios.post(
         `${API_URL}/api/admin/battles/report`,
         {
-          battle_id: roomId,
-          room_id: roomId,
+          battle_id: roomId, room_id: roomId,
           reported_user_id: opponentId || 'unknown',
           reported_username: opponentName || 'Opponent',
-          reason: selectedReason,
-          description: reportDescription,
-          chat_messages: []
+          reason: reportReason, description: reportDesc, chat_messages: [],
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      if (response.data.success) {
-        setReportId(response.data.report_id);
-        setReportSubmitted(true);
-        setSelectedReason('');
-        setReportDescription('');
+      if (res.data.success) {
+        setReportId(res.data.report_id);
+        setReportDone(true);
       }
-    } catch (error) {
-      console.error('Report submission error:', error);
+    } catch (e) {
+      console.error('Failed to submit report:', e);
       toast.error('Failed to submit report. Please try again.');
     } finally {
-      setSubmittingReport(false);
+      setSubmitting(false);
     }
   };
 
-  // Close report modal and reset state
-  const closeReportModal = () => {
-    setShowReportModal(false);
-    setReportSubmitted(false);
+  const closeReport = () => {
+    setShowReport(false);
+    setReportDone(false);
     setReportId(null);
-    setSelectedReason('');
-    setReportDescription('');
+    setReportReason('');
+    setReportDesc('');
   };
 
-  // Don't render if no socket or roomId
-  if (!socket || !roomId) {
-    return null;
-  }
+  // ─────────────────────────────────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────────────────────────────────
 
-  // Error state
-  if (callState === 'error' || errorMsg) {
-    return (
-      <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-red-700 max-w-xs">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
-            <AlertCircle className="w-5 h-5 text-red-400" />
-          </div>
-          <div>
-            <p className="text-white font-medium text-sm">Connection Issue</p>
-            <p className="text-red-400 text-xs">{errorMsg || 'Please retry'}</p>
-          </div>
-        </div>
-        <button
-          onClick={() => { setErrorMsg(''); setCallState('idle'); setShowButton(true); }}
-          className="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition"
-        >
-          Try Again
-        </button>
-      </div>
-    );
-  }
+  // Nothing to show until socket + room are available
+  if (!socket || !roomId) return null;
 
-  // Idle: show call button
-  if (callState === 'idle' && showButton) {
-    return (
-      <button
-        onClick={startCall}
-        className="fixed bottom-6 right-4 z-[60] flex items-center gap-2 px-4 py-3 bg-green-500 hover:bg-green-600 active:scale-95 text-white rounded-full shadow-2xl transition-all animate-pulse"
-        data-testid="start-video-call"
-      >
-        <Video className="w-5 h-5" />
-        <span className="text-sm font-semibold">Video Call</span>
-      </button>
-    );
-  }
-
-  // Connecting state
-  if (callState === 'connecting') {
-    return (
-      <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl border border-gray-700">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
-            <Phone className="w-5 h-5 text-green-400 animate-pulse" />
-          </div>
-          <div>
-            <p className="text-white font-medium">Connecting...</p>
-            <p className="text-gray-400 text-xs">Setting up video call</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Connected: show video UI
-  if (callState === 'connected') {
-    if (minimized) {
-      return (
-        <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
-          <div className="relative w-32 h-24">
-            {remoteStream ? (
-              <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover bg-gray-900" />
+  return (
+    <>
+      {/* ── Report modal ───────────────────────────────────────────────────── */}
+      {showReport && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80] p-4" data-testid="report-modal">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[85vh] overflow-y-auto shadow-2xl">
+            {reportDone ? (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Report Submitted</h3>
+                <p className="text-gray-600 text-sm mb-3">
+                  Your report against <strong>{opponentName || 'this user'}</strong> has been received.
+                </p>
+                {reportId && (
+                  <p className="font-mono text-xs text-gray-500 bg-gray-100 rounded px-2 py-1 inline-block mb-4">
+                    Ref: {reportId.slice(0, 8).toUpperCase()}
+                  </p>
+                )}
+                <button onClick={closeReport} className="w-full py-2.5 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition" data-testid="report-close-btn">Close</button>
+              </div>
             ) : (
-              <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                <Video className="w-6 h-6 text-gray-500" />
+              <>
+                <div className="flex items-center justify-between p-4 border-b">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-red-100 rounded-full"><AlertTriangle className="w-4 h-4 text-red-600" /></div>
+                    <h3 className="font-bold text-gray-900">Report User</h3>
+                  </div>
+                  <button onClick={closeReport} className="p-1.5 hover:bg-gray-100 rounded-full" data-testid="report-close-x"><X className="w-4 h-4 text-gray-500" /></button>
+                </div>
+                <div className="p-4 space-y-3">
+                  <p className="text-sm text-gray-600">Report <strong>{opponentName || 'this user'}</strong> for inappropriate behaviour.</p>
+                  <div className="space-y-2">
+                    {REPORT_REASONS.map(r => (
+                      <label key={r.id} className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition ${reportReason === r.id ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                        <input type="radio" name="report_reason" value={r.id} checked={reportReason === r.id} onChange={e => setReportReason(e.target.value)} className="mt-0.5 text-red-500" />
+                        <div>
+                          <p className="font-medium text-sm text-gray-900">{r.label}</p>
+                          <p className="text-xs text-gray-500">{r.description}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  <textarea value={reportDesc} onChange={e => setReportDesc(e.target.value)} placeholder="Additional details (optional)" rows={3}
+                    className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 resize-none" data-testid="report-description" />
+                </div>
+                <div className="flex gap-3 p-4 border-t">
+                  <button onClick={closeReport} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition" data-testid="report-cancel-btn">Cancel</button>
+                  <button onClick={submitReport} disabled={!reportReason || submitting}
+                    className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition disabled:opacity-50" data-testid="report-submit-btn">
+                    {submitting ? 'Submitting...' : 'Submit'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Main video widget ──────────────────────────────────────────────── */}
+      <div
+        className="fixed bottom-4 right-4 z-[70]"
+        style={{ willChange: 'transform' }}
+        data-testid="video-chat-widget"
+      >
+
+        {/* ── MINIMISED pill ──────────────────────────────────────────────── */}
+        {minimised ? (
+          <div className="relative w-28 h-20 rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 bg-gray-900 cursor-pointer"
+            onClick={() => setMinimised(false)} data-testid="video-minimised">
+
+            {/* Remote video thumbnail */}
+            <video ref={remoteVideoRef} autoPlay playsInline
+              className={`absolute inset-0 w-full h-full object-cover ${remoteReady ? '' : 'opacity-0'}`} />
+
+            {/* Placeholder when no remote video */}
+            {!remoteReady && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                {phase === 'connecting' || phase === 'joining'
+                  ? <Loader2 className="w-5 h-5 text-green-400 animate-spin" />
+                  : <Video className="w-5 h-5 text-gray-500" />}
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute bottom-1 left-1 right-1 flex justify-between items-center">
-              <button onClick={() => setMinimized(false)} className="p-1 bg-black/50 rounded">
-                <Maximize2 className="w-3 h-3 text-white" />
-              </button>
-              <button onClick={endCall} className="p-1 bg-red-500 rounded">
-                <PhoneOff className="w-3 h-3 text-white" />
-              </button>
+
+            {/* Local PiP (tiny) */}
+            <div className="absolute top-1 right-1 w-8 h-6 rounded overflow-hidden border border-white/30 bg-gray-700">
+              <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
             </div>
+
+            {/* Expand hint */}
+            <div className="absolute bottom-1 left-1">
+              <Maximize2 className="w-3 h-3 text-white/60" />
+            </div>
+
+            {/* Status badge */}
+            <div className={`absolute bottom-1 right-1 w-2 h-2 rounded-full ${
+              phase === 'connected' ? 'bg-green-400' :
+              phase === 'connecting' || phase === 'joining' ? 'bg-yellow-400 animate-pulse' :
+              'bg-gray-500'}`} />
           </div>
-        </div>
-      );
-    }
 
-    return (
-      <>
-        {/* Report Modal */}
-        {showReportModal && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70] p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto">
-              
-              {/* Report Submitted Confirmation */}
-              {reportSubmitted ? (
-                <>
-                  <div className="p-8 text-center">
-                    <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
-                      <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">Complaint Raised Successfully</h3>
-                    <p className="text-gray-600 mb-4">
-                      Your report against <span className="font-semibold">{opponentName || 'this user'}</span> has been submitted.
-                    </p>
-                    
-                    {reportId && (
-                      <div className="bg-gray-50 rounded-xl p-3 mb-4">
-                        <p className="text-xs text-gray-500">Reference ID</p>
-                        <p className="font-mono text-sm text-gray-800">{reportId.slice(0, 8).toUpperCase()}</p>
-                      </div>
+        ) : (
+          /* ── EXPANDED card ──────────────────────────────────────────────── */
+          <div className="w-72 rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-gray-900/95 backdrop-blur-md" data-testid="video-expanded">
+
+            {/* Remote video area */}
+            <div className="relative" style={{ aspectRatio: '4/3' }}>
+              <div className="absolute inset-0 bg-gray-800">
+                <video ref={remoteVideoRef} autoPlay playsInline
+                  className={`w-full h-full object-cover ${remoteReady ? '' : 'opacity-0'}`} />
+
+                {/* Overlay when no remote stream */}
+                {!remoteReady && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                    {phase === 'error' ? (
+                      <>
+                        <AlertCircle className="w-7 h-7 text-red-400" />
+                        <p className="text-red-300 text-xs text-center px-4">{errorMsg || 'Connection error'}</p>
+                        <button onClick={() => { setPhase('idle'); setErrorMsg(''); roomJoined.current = false; startCall(); }}
+                          className="mt-1 px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs rounded-full transition" data-testid="video-retry-btn">
+                          Retry
+                        </button>
+                      </>
+                    ) : phase === 'connecting' || phase === 'joining' ? (
+                      <>
+                        <Loader2 className="w-7 h-7 text-green-400 animate-spin" />
+                        <p className="text-gray-400 text-xs">
+                          {phase === 'joining' ? 'Joining room...' : 'Connecting to opponent...'}
+                        </p>
+                        {errorMsg && <p className="text-yellow-300 text-xs text-center px-4">{errorMsg}</p>}
+                      </>
+                    ) : (
+                      <>
+                        <Video className="w-7 h-7 text-gray-500" />
+                        <p className="text-gray-500 text-xs">
+                          {opponentName ? `Waiting for ${opponentName}...` : 'Video loading...'}
+                        </p>
+                      </>
                     )}
-                    
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 text-left">
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className="font-medium text-blue-900 text-sm">What happens next?</p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            Our moderation team will review your complaint within 24-48 hours. 
-                            If action is taken, you will be notified. Thank you for helping keep our community safe.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <button
-                      onClick={closeReportModal}
-                      className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition"
-                    >
-                      Close
-                    </button>
                   </div>
-                </>
-              ) : (
-                <>
-                  {/* Modal Header */}
-                  <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                    <div className="flex items-center gap-2">
-                      <div className="p-2 bg-red-100 rounded-full">
-                        <AlertTriangle className="w-5 h-5 text-red-600" />
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900">Report User</h3>
-                    </div>
-                    <button
-                      onClick={closeReportModal}
-                      className="p-2 hover:bg-gray-100 rounded-full transition"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
+                )}
+
+                {/* Opponent name badge */}
+                {remoteReady && opponentName && (
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/60 rounded text-white text-xs font-medium">
+                    {opponentName}
                   </div>
+                )}
+              </div>
 
-                  {/* Modal Body */}
-                  <div className="p-4 space-y-4">
-                    <p className="text-sm text-gray-600">
-                      Report <span className="font-semibold">{opponentName || 'this user'}</span> for inappropriate behavior during the battle.
-                    </p>
-
-                    {/* Reason Selection */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Select a reason *</label>
-                      {REPORT_REASONS.map((reason) => (
-                        <label
-                          key={reason.id}
-                          className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer transition ${
-                            selectedReason === reason.id
-                              ? 'border-red-500 bg-red-50'
-                              : 'border-gray-200 hover:border-gray-300'
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="report_reason"
-                            value={reason.id}
-                            checked={selectedReason === reason.id}
-                            onChange={(e) => setSelectedReason(e.target.value)}
-                            className="mt-1 w-4 h-4 text-red-500 focus:ring-red-500"
-                          />
-                          <div>
-                            <p className="font-medium text-gray-900 text-sm">{reason.label}</p>
-                            <p className="text-xs text-gray-500">{reason.description}</p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-
-                    {/* Additional Details */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Additional details (optional)</label>
-                      <textarea
-                        value={reportDescription}
-                        onChange={(e) => setReportDescription(e.target.value)}
-                        placeholder="Provide any additional context..."
-                        className="mt-1 w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
-                        rows={3}
-                      />
-                    </div>
-
-                    {/* Warning */}
-                    <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
-                      <p className="text-xs text-yellow-800">
-                        <strong>Note:</strong> False reports may result in action against your account. 
-                        Only report genuine violations.
-                      </p>
-                    </div>
+              {/* Local PiP */}
+              <div className="absolute top-2 right-2 w-20 h-16 rounded-lg overflow-hidden border-2 border-white/20 shadow-lg bg-gray-700">
+                <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+                {playerName && (
+                  <div className="absolute bottom-0 left-0 right-0 text-center text-white text-[9px] bg-black/50 truncate px-1">
+                    {playerName}
                   </div>
+                )}
+              </div>
 
-                  {/* Modal Footer */}
-                  <div className="flex gap-3 p-4 border-t border-gray-200">
-                    <button
-                      onClick={closeReportModal}
-                      className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSubmitReport}
-                      disabled={!selectedReason || submittingReport}
-                      className="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {submittingReport ? 'Submitting...' : 'Submit Report'}
-                    </button>
-                  </div>
-                </>
-              )}
+              {/* Top bar: minimise + report */}
+              <div className="absolute top-2 left-2 flex gap-1.5">
+                <button onClick={() => setMinimised(true)} className="p-1.5 bg-black/50 hover:bg-black/70 rounded-lg transition" title="Minimise" data-testid="video-minimise-btn">
+                  <Minimize2 className="w-3.5 h-3.5 text-white/70" />
+                </button>
+                <button onClick={() => setShowReport(true)} className="p-1.5 bg-orange-500/80 hover:bg-orange-600 rounded-lg transition" title="Report user" data-testid="video-report-btn">
+                  <Flag className="w-3.5 h-3.5 text-white" />
+                </button>
+              </div>
+            </div>
+
+            {/* Controls bar */}
+            <div className="flex justify-center items-center gap-3 px-4 py-3 bg-gray-800/60">
+              <button onClick={toggleAudio}
+                className={`p-2.5 rounded-full transition ${audioOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
+                title={audioOn ? 'Mute' : 'Unmute'} data-testid="video-toggle-audio">
+                {audioOn ? <Mic className="w-4 h-4 text-white" /> : <MicOff className="w-4 h-4 text-white" />}
+              </button>
+
+              <button onClick={toggleVideo}
+                className={`p-2.5 rounded-full transition ${videoOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
+                title={videoOn ? 'Turn off camera' : 'Turn on camera'} data-testid="video-toggle-video">
+                {videoOn ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-white" />}
+              </button>
+
+              <button onClick={endCall} className="p-2.5 bg-red-500 hover:bg-red-600 rounded-full transition" title="End call" data-testid="video-end-call">
+                <PhoneOff className="w-4 h-4 text-white" />
+              </button>
             </div>
           </div>
         )}
-
-        {/* Video Chat UI */}
-        <div className="fixed bottom-6 right-4 z-[60] bg-gray-900/95 backdrop-blur-sm rounded-2xl overflow-hidden shadow-2xl border border-gray-700 w-72">
-          {/* Remote Video (Main) */}
-          <div className="relative aspect-[4/3] bg-gray-800">
-            {remoteStream ? (
-              <video ref={remoteVideoRef} autoPlay playsInline className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <Video className="w-8 h-8 text-gray-500 mx-auto mb-2" />
-                  <p className="text-gray-400 text-xs">Waiting for video...</p>
-                </div>
-              </div>
-            )}
-            
-            {/* Local Video (PiP) */}
-            <div className="absolute top-2 right-2 w-20 h-16 rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
-              <video ref={localVideoRef} autoPlay playsInline muted className="w-full h-full object-cover bg-gray-700" />
-            </div>
-            
-            {/* Minimize button */}
-            <button 
-              onClick={() => setMinimized(true)} 
-              className="absolute top-2 left-2 p-1.5 bg-black/50 hover:bg-black/70 rounded-lg transition"
-            >
-              <Minimize2 className="w-4 h-4 text-white/50" />
-            </button>
-
-            {/* Report button */}
-            <button 
-              onClick={() => setShowReportModal(true)} 
-              className="absolute top-2 left-10 p-1.5 bg-red-500/80 hover:bg-red-600 rounded-lg transition"
-              title="Report user"
-            >
-              <Flag className="w-4 h-4 text-white" />
-            </button>
-          </div>
-
-          {/* Controls */}
-          <div className="flex justify-center gap-3 p-3 bg-gray-800/50">
-            <button
-              onClick={toggleAudio}
-              className={`p-2.5 rounded-full transition ${audioEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
-            >
-              {audioEnabled ? <Mic className="w-4 h-4 text-white" /> : <MicOff className="w-4 h-4 text-white" />}
-            </button>
-            <button
-              onClick={toggleVideo}
-              className={`p-2.5 rounded-full transition ${videoEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-500 hover:bg-red-600'}`}
-            >
-              {videoEnabled ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-white" />}
-            </button>
-            <button
-              onClick={() => setShowReportModal(true)}
-              className="p-2.5 bg-orange-500 hover:bg-orange-600 rounded-full transition"
-              title="Report inappropriate behavior"
-            >
-              <Flag className="w-4 h-4 text-white" />
-            </button>
-            <button
-              onClick={endCall}
-              className="p-2.5 bg-red-500 hover:bg-red-600 rounded-full transition"
-            >
-              <PhoneOff className="w-4 h-4 text-white" />
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  return null;
+      </div>
+    </>
+  );
 };
 
 export default BattleVideoChat;
