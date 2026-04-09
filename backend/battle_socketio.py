@@ -454,6 +454,7 @@ async def complete_battle(sid, data):
                 if user_id:
                     await db.user_battle_history.insert_one({
                         "user_id": user_id,
+                        "user_name": participant.get('username', participant.get('playerName', 'Unknown')),
                         "battle_type": "room",
                         "room_id": room_id,
                         "score": participant.get('score', 0),
@@ -1059,8 +1060,13 @@ async def battle_complete(sid, data):
         # Save to user_battle_history for stats tracking
         if user_id:
             try:
+                # Fetch user name
+                user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1})
+                u_name = user_doc.get("name", player_name) if user_doc else player_name
+                
                 await db.user_battle_history.insert_one({
                     "user_id": user_id,
+                    "user_name": u_name,
                     "battle_type": "1v1",
                     "room_id": room_id,
                     "score": final_score,

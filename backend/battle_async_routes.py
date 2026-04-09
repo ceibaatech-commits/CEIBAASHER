@@ -19,6 +19,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 import random
+import uuid
 
 router = APIRouter(prefix="/api/battle/async", tags=["Async Battle Rooms"])
 
@@ -338,6 +339,35 @@ async def submit_answers(pin: str, request: SubmitAnswersRequest):
         
         # Create response without _id
         submission = {k: v for k, v in submission_doc.items() if k != "_id"}
+        
+        # Also save to battle_submissions for dashboard test-history tracking
+        try:
+            total_q = len(request.answers)
+            correct_count = sum(1 for a in request.answers if a.get("is_correct"))
+            wrong_count = total_q - correct_count
+            score_pct = round((correct_count / total_q) * 100) if total_q > 0 else 0
+            
+            dashboard_doc = {
+                "id": str(uuid.uuid4()),
+                "user_id": request.player_id,
+                "user_name": request.player_name,
+                "room_id": pin,
+                "exam_category": room.get("exam_category", "Battle"),
+                "subject": room.get("subject", "Mixed"),
+                "topic": "Battle Room",
+                "score": correct_count,
+                "total_questions": total_q,
+                "correct_answers": correct_count,
+                "wrong_answers": wrong_count,
+                "accuracy": score_pct,
+                "xp_earned": correct_count * 6 + (5 if score_pct >= 70 else 0),
+                "submitted_at": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": request.total_time,
+                "source": "async_battle"
+            }
+            await db.battle_submissions.insert_one(dashboard_doc)
+        except Exception as e:
+            print(f"[ASYNC ROOM] Failed to save to battle_submissions: {e}")
         
         # Increment submission count
         await db.async_battle_rooms.update_one(

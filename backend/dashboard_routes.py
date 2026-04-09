@@ -971,6 +971,15 @@ async def get_test_history(user_id: str):
     """Get all test/quiz history for a user from all sources."""
     try:
         results = []
+        seen_ids = set()  # Avoid duplicates
+
+        # Fetch user name for reference
+        user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "username": 1})
+        if user_doc:
+            user_name = user_doc.get("name", "Unknown")
+        else:
+            demo_names = {"demo1-uuid": "Demo Student 1", "demo2-uuid": "Demo Student 2", "demo3-uuid": "Demo Student 3"}
+            user_name = demo_names.get(user_id, "User")
 
         # 1. Quiz History (chapter tests, practice)
         quiz_docs = await db.quiz_history.find(
@@ -978,14 +987,20 @@ async def get_test_history(user_id: str):
         ).sort("completed_at", -1).to_list(500)
 
         for q in quiz_docs:
+            doc_id = q.get("id", q.get("quiz_id", ""))
+            if doc_id and doc_id in seen_ids:
+                continue
+            if doc_id:
+                seen_ids.add(doc_id)
             total = q.get("total_questions", 0)
             correct = q.get("correct_answers", q.get("score", 0))
             wrong = q.get("wrong_answers", 0)
             skipped = max(0, total - correct - wrong) if total else 0
-            score_pct = round((correct / total) * 100) if total else 0
+            score_pct = q.get("accuracy", round((correct / total) * 100) if total else 0)
             results.append({
-                "id": q.get("id", q.get("quiz_id", "")),
+                "id": doc_id,
                 "type": "quiz",
+                "user_name": q.get("user_name", user_name),
                 "exam": q.get("exam", "Practice"),
                 "subject": q.get("subject", "General"),
                 "topic": q.get("topic", q.get("chapter", "")),
@@ -1003,20 +1018,62 @@ async def get_test_history(user_id: str):
                 "duration_seconds": q.get("duration_seconds", q.get("time_taken", 0)),
             })
 
-        # 2. Battle Room Submissions
+        # 2. Quiz Results (from quiz room submissions)
+        quiz_result_docs = await db.quiz_results.find(
+            {"user_id": user_id}, {"_id": 0}
+        ).sort("completed_at", -1).to_list(500)
+
+        for qr in quiz_result_docs:
+            doc_id = qr.get("id", "")
+            if doc_id and doc_id in seen_ids:
+                continue
+            if doc_id:
+                seen_ids.add(doc_id)
+            total = qr.get("total_questions", 0)
+            correct = qr.get("correct_answers", 0)
+            wrong = total - correct if total else 0
+            score_pct = round((correct / total) * 100) if total else 0
+            results.append({
+                "id": doc_id,
+                "type": "quiz_room",
+                "user_name": qr.get("user_name", user_name),
+                "exam": qr.get("exam", "Quiz Room"),
+                "subject": qr.get("subject", "Mixed"),
+                "topic": qr.get("topic", "Quiz Room"),
+                "date": qr.get("completed_at", ""),
+                "score": score_pct,
+                "accuracy": score_pct,
+                "total_questions": total,
+                "correct": correct,
+                "wrong": wrong,
+                "skipped": 0,
+                "rank": None,
+                "percentile": None,
+                "xp": qr.get("xp_earned", 0),
+                "status": "completed",
+                "duration_seconds": qr.get("time_taken_seconds", 0),
+            })
+
+        # 3. Battle Room Submissions
         battle_docs = await db.battle_submissions.find(
             {"user_id": user_id}, {"_id": 0}
         ).sort("submitted_at", -1).to_list(500)
 
         for b in battle_docs:
+            doc_id = b.get("id", b.get("room_id", ""))
+            if doc_id and doc_id in seen_ids:
+                continue
+            if doc_id:
+                seen_ids.add(doc_id)
             total = b.get("total_questions", 10)
-            correct = b.get("score", 0)
+            correct = b.get("correct_answers", b.get("score", 0))
             wrong = b.get("wrong_answers", 0)
             skipped = max(0, total - correct - wrong)
-            score_pct = round((correct / total) * 100) if total else 0
+            score_pct = b.get("accuracy", round((correct / total) * 100) if total else 0)
             results.append({
-                "id": b.get("id", b.get("room_id", "")),
+                "id": doc_id,
                 "type": "battle",
+                "user_name": b.get("user_name", user_name),
                 "exam": b.get("exam_category", "Battle"),
                 "subject": b.get("subject", "Mixed"),
                 "topic": b.get("topic", "Battle Room"),
@@ -1034,12 +1091,17 @@ async def get_test_history(user_id: str):
                 "duration_seconds": b.get("duration_seconds", 0),
             })
 
-        # 3. 1v1 Matchmaking Battle Results
+        # 4. 1v1 Matchmaking Battle Results
         match_docs = await db.user_battle_history.find(
             {"user_id": user_id}, {"_id": 0}
         ).sort("completed_at", -1).to_list(500)
 
         for m in match_docs:
+            doc_id = m.get("id", m.get("battle_id", ""))
+            if doc_id and doc_id in seen_ids:
+                continue
+            if doc_id:
+                seen_ids.add(doc_id)
             total = m.get("total_questions", 10)
             correct = m.get("score", 0)
             wrong = m.get("wrong_answers", 0)
@@ -1047,8 +1109,9 @@ async def get_test_history(user_id: str):
             score_pct = round((correct / total) * 100) if total else 0
             won = m.get("result", "") == "won" or m.get("is_winner", False)
             results.append({
-                "id": m.get("id", m.get("battle_id", "")),
+                "id": doc_id,
                 "type": "1v1",
+                "user_name": m.get("user_name", user_name),
                 "exam": m.get("exam", "1v1 Battle"),
                 "subject": m.get("subject", "Mixed"),
                 "topic": m.get("topic", "1v1 Match"),
@@ -1069,7 +1132,7 @@ async def get_test_history(user_id: str):
         # Sort by date descending
         results.sort(key=lambda x: x.get("date", ""), reverse=True)
 
-        return {"success": True, "history": results, "total": len(results)}
+        return {"success": True, "history": results, "total": len(results), "user_name": user_name}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

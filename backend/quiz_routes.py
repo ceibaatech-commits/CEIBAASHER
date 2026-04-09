@@ -3,6 +3,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 import random
+import uuid
+from datetime import datetime, timezone
 from exam_data import get_all_exams, get_exam_details, get_exam_subjects, get_subject_topics, get_all_topics_flat
 
 router = APIRouter(prefix="/quiz", tags=["quiz"])
@@ -807,6 +809,49 @@ async def submit_quiz(request: QuizSubmitRequest):
         })
     
     score = round((correct_answers / len(questions)) * 100)
+    
+    # Save quiz result to quiz_history for performance tracking
+    if user_id:
+        try:
+            from exam_structure_routes import db
+            
+            # Fetch user name — check DB first, then fall back for demo users
+            user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1, "username": 1})
+            if user_doc:
+                user_name = user_doc.get("name", "Unknown")
+            else:
+                # Handle demo users with hardcoded IDs
+                demo_names = {"demo1-uuid": "Demo Student 1", "demo2-uuid": "Demo Student 2", "demo3-uuid": "Demo Student 3"}
+                user_name = demo_names.get(user_id, "User")
+            
+            wrong_answers = len(questions) - correct_answers - sum(1 for a in answers if a.get("selectedOption") is None)
+            skipped = len(questions) - correct_answers - wrong_answers
+            if wrong_answers < 0:
+                wrong_answers = len(questions) - correct_answers
+                skipped = 0
+            
+            history_doc = {
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "user_name": user_name,
+                "exam": session.get("exam", "Practice"),
+                "subject": session.get("subject", "General"),
+                "topic": session.get("topic", ""),
+                "total_questions": len(questions),
+                "correct_answers": correct_answers,
+                "wrong_answers": wrong_answers,
+                "score": correct_answers,
+                "accuracy": score,
+                "xp_earned": correct_answers * 8 + (10 if score >= 80 else 0),
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": 0,
+                "source": "chapter_quiz"
+            }
+            await db.quiz_history.insert_one(history_doc)
+            print(f"[QUIZ] Saved quiz history for user {user_name} ({user_id}) - Score: {score}%")
+        except Exception as e:
+            print(f"[QUIZ] Failed to save quiz history: {str(e)}")
     
     # Auto-post quiz result to social feed
     if user_id and score >= 50:  # Only post if score is decent

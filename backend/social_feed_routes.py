@@ -1800,6 +1800,35 @@ async def submit_quiz_results(
         
         await db.quiz_results.insert_one(result.copy())
         
+        # Also save to quiz_history for dashboard test-history tracking
+        try:
+            correct_count = sum(1 for a in result_data.answers if a.get("is_correct"))
+            total_q = result_data.total_questions
+            wrong_count = total_q - correct_count
+            score_pct = round((correct_count / total_q) * 100) if total_q > 0 else 0
+            
+            history_entry = {
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "user_name": user.get("name", "User") if user else "User",
+                "exam": room.get("category", room.get("exam_category", "Quiz Room")),
+                "subject": room.get("subject", "Mixed"),
+                "topic": room.get("title", "Quiz Room"),
+                "total_questions": total_q,
+                "correct_answers": correct_count,
+                "wrong_answers": wrong_count,
+                "score": correct_count,
+                "accuracy": score_pct,
+                "xp_earned": correct_count * 7,
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "duration_seconds": sum(a.get("time_taken", 0) for a in result_data.answers),
+                "source": "quiz_room"
+            }
+            await db.quiz_history.insert_one(history_entry)
+        except Exception as e:
+            print(f"[QUIZ_ROOM] Failed to save to quiz_history: {str(e)}")
+        
         # Update play count in the appropriate collection
         if room_collection == "quiz_rooms":
             await db.quiz_rooms.update_one({"room_code": room_code.upper()}, {"$inc": {"plays_count": 1}})
