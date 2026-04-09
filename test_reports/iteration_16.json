@@ -31,7 +31,7 @@
   },
   "test_credentials": {
     "admin_login": "POST /api/admin/auth/login with {username: 'admin@ceibaa.in', password: 'SuperAdmin@123'}",
-    "backend_url": "https://ceibaa-dev.preview.emergentagent.com"
+    "backend_url": "https://test-history-board.preview.emergentagent.com"
   },
   "seed_data_creation": "Test programs created during admin CRUD tests (auto-cleaned)",
   "retest_needed": false,

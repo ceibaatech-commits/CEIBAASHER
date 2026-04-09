@@ -4,12 +4,13 @@ import {
   Trophy, Clock, Users, Search, Play, CheckCircle,
   Target, Flame, BookOpen, TrendingUp, Calendar, Lightbulb,
   Star, Zap, Brain, ChevronRight, RefreshCw, Award, GraduationCap,
-  School, X, Settings, ArrowLeft, Shield, AlertTriangle
+  School, X, Settings, ArrowLeft, Shield, AlertTriangle, BarChart3
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import TestHistoryTable from '../components/TestHistoryTable';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -174,6 +175,10 @@ const Board = () => {
   const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
   
+  // Test History state
+  const [testHistory, setTestHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
   // Existing room state
   const [activeTab, setActiveTab] = useState('all');
   const [rooms, setRooms] = useState([]);
@@ -241,6 +246,21 @@ const Board = () => {
       }
     } catch (error) {
       console.error('Error setting goal:', error);
+    }
+  };
+
+  // Fetch test history
+  const fetchTestHistory = async (userId) => {
+    setHistoryLoading(true);
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/dashboard/test-history/${userId}`);
+      if (response.data.success) {
+        setTestHistory(response.data.history || []);
+      }
+    } catch (error) {
+      console.error('Error fetching test history:', error);
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -543,6 +563,7 @@ const Board = () => {
       fetchRooms();
       fetchDashboardData(user.id);
       fetchParentsModeStatus();
+      fetchTestHistory(user.id);
     }
   }, [user?.id]);
 
@@ -1062,6 +1083,23 @@ const Board = () => {
                 <p>Complete quizzes to get personalized recommendations</p>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Divider - Test History */}
+        <div className="flex items-center gap-4 my-10">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent"></div>
+          <span className="text-violet-300/70 font-medium px-4 flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Test Performance History
+          </span>
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent"></div>
+        </div>
+
+        {/* Test History Table */}
+        <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20 mb-8" data-testid="board-test-history-section">
+          <div className="bg-white rounded-xl p-4 sm:p-6">
+            <TestHistoryTable data={testHistory} loading={historyLoading} />
           </div>
         </div>
 
