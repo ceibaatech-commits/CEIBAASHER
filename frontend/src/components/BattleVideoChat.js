@@ -17,31 +17,31 @@ const REPORT_REASONS = [
 // Updated ICE servers with reliable STUN/TURN
 const ICE_SERVERS = { 
   iceServers: [
-    // Google STUN servers (free, reliable)
     { urls: 'stun:stun.l.google.com:19302' }, 
     { urls: 'stun:stun1.l.google.com:19302' },
     { urls: 'stun:stun2.l.google.com:19302' },
-    // Metered Open Relay TURN servers (free tier)
+    { urls: 'stun:stun3.l.google.com:19302' },
+    { urls: 'stun:stun4.l.google.com:19302' },
+    // Metered TURN servers (free tier)
     {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
+      urls: 'turn:a.relay.metered.ca:80',
+      username: 'e8dd65b92f6aee9be7827b53',
+      credential: 'pCAvMhVj5r/cCbj9'
     },
     {
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
+      urls: 'turn:a.relay.metered.ca:80?transport=tcp',
+      username: 'e8dd65b92f6aee9be7827b53',
+      credential: 'pCAvMhVj5r/cCbj9'
     },
     {
-      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
+      urls: 'turn:a.relay.metered.ca:443',
+      username: 'e8dd65b92f6aee9be7827b53',
+      credential: 'pCAvMhVj5r/cCbj9'
     },
-    // Additional backup TURN
     {
-      urls: 'turns:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
+      urls: 'turns:a.relay.metered.ca:443?transport=tcp',
+      username: 'e8dd65b92f6aee9be7827b53',
+      credential: 'pCAvMhVj5r/cCbj9'
     }
   ],
   iceCandidatePoolSize: 10
@@ -121,6 +121,17 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
       remoteVideoRef.current.play().catch(e => log(`Video play error: ${e.message}`));
     }
   }, [remoteStream]);
+
+  // Re-attach local stream to video element when callState changes (ref becomes available)
+  useEffect(() => {
+    if (localVideoRef.current && localStreamRef.current) {
+      if (localVideoRef.current.srcObject !== localStreamRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
+        localVideoRef.current.play().catch(() => {});
+        log('Re-attached local stream to video element');
+      }
+    }
+  }, [callState]);
 
   // Join video room when roomId is available
   useEffect(() => {

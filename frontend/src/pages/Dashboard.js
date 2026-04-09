@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2, Trash2, Undo2, MoreHorizontal, Gift } from 'lucide-react';
+import { ArrowLeft, Award, MapPin, Calendar, Trophy, FileText, Heart, MessageCircle, Repeat2, Trash2, Undo2, MoreHorizontal, Gift, BarChart3 } from 'lucide-react';
 import EditProfileModal from '../components/EditProfileModal';
 import FollowListModal from '../components/FollowListModal';
 import ShareReferralModal from '../components/ShareReferralModal';
 import Header from '../components/Header';
 import MathText from '../components/MathText';
+import TestHistoryTable from '../components/TestHistoryTable';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -25,6 +26,8 @@ const Dashboard = () => {
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [followModalType, setFollowModalType] = useState('followers');
   const [showShareModal, setShowShareModal] = useState(false);
+  const [testHistory, setTestHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   
   // Interaction states
   const [likedPosts, setLikedPosts] = useState(new Set());
@@ -147,6 +150,16 @@ const Dashboard = () => {
         );
         if (response.data.success) {
           setQuizRooms(response.data.quiz_rooms || []);
+        }
+      } else if (tab === 'history') {
+        setHistoryLoading(true);
+        try {
+          const response = await axios.get(`${BACKEND_URL}/api/dashboard/test-history/${user.id}`);
+          if (response.data.success) {
+            setTestHistory(response.data.history || []);
+          }
+        } finally {
+          setHistoryLoading(false);
         }
       }
     } catch (error) {
@@ -591,6 +604,20 @@ const Dashboard = () => {
                 Reposts
               </div>
             </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              data-testid="tab-history"
+              className={`flex-1 py-4 px-6 font-semibold transition-colors ${
+                activeTab === 'history'
+                  ? 'border-b-2 border-purple-600 text-purple-600'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                History
+              </div>
+            </button>
           </div>
 
           {/* Tab Content */}
@@ -899,6 +926,9 @@ const Dashboard = () => {
                       </p>
                     </div>
                   )
+                )}
+                {activeTab === 'history' && (
+                  <TestHistoryTable data={testHistory} loading={historyLoading} />
                 )}
               </>
             )}

@@ -963,3 +963,113 @@ def get_default_insights() -> Dict:
         },
         "tip_of_the_day": "Take short breaks every 45 minutes to maintain focus and retention!"
     }
+
+
+
+@router.get("/test-history/{user_id}")
+async def get_test_history(user_id: str):
+    """Get all test/quiz history for a user from all sources."""
+    try:
+        results = []
+
+        # 1. Quiz History (chapter tests, practice)
+        quiz_docs = await db.quiz_history.find(
+            {"user_id": user_id}, {"_id": 0}
+        ).sort("completed_at", -1).to_list(500)
+
+        for q in quiz_docs:
+            total = q.get("total_questions", 0)
+            correct = q.get("correct_answers", q.get("score", 0))
+            wrong = q.get("wrong_answers", 0)
+            skipped = max(0, total - correct - wrong) if total else 0
+            score_pct = round((correct / total) * 100) if total else 0
+            results.append({
+                "id": q.get("id", q.get("quiz_id", "")),
+                "type": "quiz",
+                "exam": q.get("exam", "Practice"),
+                "subject": q.get("subject", "General"),
+                "topic": q.get("topic", q.get("chapter", "")),
+                "date": q.get("completed_at") or q.get("created_at", ""),
+                "score": score_pct,
+                "accuracy": score_pct,
+                "total_questions": total,
+                "correct": correct,
+                "wrong": wrong,
+                "skipped": skipped,
+                "rank": q.get("rank", None),
+                "percentile": q.get("percentile", None),
+                "xp": q.get("xp_earned", q.get("xp", 0)),
+                "status": "completed",
+                "duration_seconds": q.get("duration_seconds", q.get("time_taken", 0)),
+            })
+
+        # 2. Battle Room Submissions
+        battle_docs = await db.battle_submissions.find(
+            {"user_id": user_id}, {"_id": 0}
+        ).sort("submitted_at", -1).to_list(500)
+
+        for b in battle_docs:
+            total = b.get("total_questions", 10)
+            correct = b.get("score", 0)
+            wrong = b.get("wrong_answers", 0)
+            skipped = max(0, total - correct - wrong)
+            score_pct = round((correct / total) * 100) if total else 0
+            results.append({
+                "id": b.get("id", b.get("room_id", "")),
+                "type": "battle",
+                "exam": b.get("exam_category", "Battle"),
+                "subject": b.get("subject", "Mixed"),
+                "topic": b.get("topic", "Battle Room"),
+                "date": b.get("submitted_at", ""),
+                "score": score_pct,
+                "accuracy": score_pct,
+                "total_questions": total,
+                "correct": correct,
+                "wrong": wrong,
+                "skipped": skipped,
+                "rank": b.get("rank", None),
+                "percentile": b.get("percentile", None),
+                "xp": b.get("xp_earned", b.get("xp", 0)),
+                "status": "completed",
+                "duration_seconds": b.get("duration_seconds", 0),
+            })
+
+        # 3. 1v1 Matchmaking Battle Results
+        match_docs = await db.user_battle_history.find(
+            {"user_id": user_id}, {"_id": 0}
+        ).sort("completed_at", -1).to_list(500)
+
+        for m in match_docs:
+            total = m.get("total_questions", 10)
+            correct = m.get("score", 0)
+            wrong = m.get("wrong_answers", 0)
+            skipped = max(0, total - correct - wrong)
+            score_pct = round((correct / total) * 100) if total else 0
+            won = m.get("result", "") == "won" or m.get("is_winner", False)
+            results.append({
+                "id": m.get("id", m.get("battle_id", "")),
+                "type": "1v1",
+                "exam": m.get("exam", "1v1 Battle"),
+                "subject": m.get("subject", "Mixed"),
+                "topic": m.get("topic", "1v1 Match"),
+                "date": m.get("completed_at") or m.get("created_at", ""),
+                "score": score_pct,
+                "accuracy": score_pct,
+                "total_questions": total,
+                "correct": correct,
+                "wrong": wrong,
+                "skipped": skipped,
+                "rank": m.get("rank", None),
+                "percentile": m.get("percentile", None),
+                "xp": m.get("xp_earned", m.get("xp", 0)),
+                "status": "won" if won else "completed",
+                "duration_seconds": m.get("duration_seconds", 0),
+            })
+
+        # Sort by date descending
+        results.sort(key=lambda x: x.get("date", ""), reverse=True)
+
+        return {"success": True, "history": results, "total": len(results)}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

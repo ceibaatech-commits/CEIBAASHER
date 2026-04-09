@@ -77,6 +77,12 @@
   - Deleted test program (TEST_PROGRAM) created by testing agent
   - Admin Programs panel: enquiries table with filters (status/program/search), status actions (contacted/enrolled/rejected), program CRUD with edit/delete, Add Program modal
   - All 19 backend + all frontend tests passed (100%)
+- **Test History DataTable (Apr 9, 2026):**
+  - TanStack React Table with sorting, multi-select pill filters (Exam/Subject/Status), global search
+  - Live stats bar (Avg Score, Avg Accuracy, Best Rank, Total XP) recalculates on filter change
+  - Custom cells: accuracy proportional bar (green/amber/red), questions breakdown (total·correct·wrong·skipped), rank+percentile stacked, XP amber pill
+  - Pagination with 8/15/20/50 per page selector
+  - Backend endpoint GET /api/dashboard/test-history/:userId aggregates quiz_history, battle_submissions, user_battle_history
 - **Admin Live Battles Panel Fix (Mar 22, 2026):**
   - Fixed admin auth: verify_super_admin now checks admin_sessions collection (was only checking user_sessions)
   - Fixed route conflict: renamed GET /{battle_id} to GET /detail/{battle_id} so /reports and /stats aren't caught
