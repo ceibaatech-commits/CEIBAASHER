@@ -275,8 +275,18 @@
 - **Follow Button UI Update (P2):** Replace text with icon-based button
 
 ## Upcoming Tasks
+- P2: Program enrollment/payment flow (Stripe integration)
+- P2: Profile badges for career program completers
+- P2: "Programs Alumni" tag on leaderboard
+- P2: Export test history to CSV/PDF
 - P2: Mobile Number (SMS/OTP) login via Twilio/Firebase
 - P2: Facebook Login via OAuth
 - P2: Dedicated Referral Dashboard for tracking stats
 - P2: Bookmarks page, API caching
 - P3: "Follows you" badge, follower notifications
+
+## Completed (Apr 9, 2026)
+- **Test History Table migrated to Board.js** from Dashboard.js (user's explicit request)
+  - TestHistoryTable with TanStack DataTable (sorting, filters, pagination, stats bar) now on /board
+  - Dashboard.js cleaned up: only Posts, Quiz Rooms, Reposts tabs remain
+- **CORS_ORIGINS deployment fix:** Set to `*` in backend/.env to unblock production deployment
