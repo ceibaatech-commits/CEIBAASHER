@@ -706,12 +706,14 @@ async def get_for_you_feed(
         # Sort by created_at with proper date parsing
         def parse_date(post):
             try:
-                date_str = post.get('created_at', '')
-                if date_str:
-                    if '+' in date_str or date_str.endswith('Z'):
-                        dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                date_val = post.get('created_at', '')
+                if isinstance(date_val, datetime):
+                    return date_val if date_val.tzinfo else date_val.replace(tzinfo=timezone.utc)
+                if date_val:
+                    if '+' in date_val or date_val.endswith('Z'):
+                        dt = datetime.fromisoformat(date_val.replace('Z', '+00:00'))
                     else:
-                        dt = datetime.fromisoformat(date_str).replace(tzinfo=timezone.utc)
+                        dt = datetime.fromisoformat(date_val).replace(tzinfo=timezone.utc)
                     return dt
                 return datetime.min.replace(tzinfo=timezone.utc)
             except Exception:
@@ -827,14 +829,16 @@ async def get_trending_feed(skip: int = 0, limit: int = 10):
         # Sort by created_at in Python to handle mixed date formats
         def parse_date(post):
             try:
-                date_str = post.get('created_at', '')
+                date_val = post.get('created_at', '')
+                if isinstance(date_val, datetime):
+                    return date_val if date_val.tzinfo else date_val.replace(tzinfo=timezone.utc)
                 # Handle both ISO formats (with and without timezone)
-                if date_str:
-                    if '+' in date_str or date_str.endswith('Z'):
-                        dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                if date_val:
+                    if '+' in date_val or date_val.endswith('Z'):
+                        dt = datetime.fromisoformat(date_val.replace('Z', '+00:00'))
                     else:
                         # Assume UTC for timezone-naive dates
-                        dt = datetime.fromisoformat(date_str).replace(tzinfo=timezone.utc)
+                        dt = datetime.fromisoformat(date_val).replace(tzinfo=timezone.utc)
                     return dt
                 return datetime.min.replace(tzinfo=timezone.utc)
             except Exception as e:
@@ -1258,7 +1262,7 @@ async def share_post(post_id: str, request: Request, authorization: Optional[str
             "user_avatar": user.get("profile_picture"),
             "is_verified": user.get("is_verified", False),
             "content": original_post.get("content", ""),
-            "created_at": datetime.now(timezone.utc),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "likes_count": 0,
             "comments_count": 0,
             "shares_count": 0,
@@ -1271,7 +1275,20 @@ async def share_post(post_id: str, request: Request, authorization: Optional[str
             "original_user_name": original_post.get("user_name"),
             "original_username": original_post.get("username"),
             "original_user_avatar": original_post.get("user_avatar"),
-            "original_created_at": original_post.get("created_at")
+            "original_created_at": original_post.get("created_at"),
+            # Copy media and metadata from original post
+            "media_urls": original_post.get("media_urls", []),
+            "media_url": original_post.get("media_url"),
+            "media_type": original_post.get("media_type"),
+            "hashtags": original_post.get("hashtags", []),
+            "tags": original_post.get("tags", []),
+            "post_type": original_post.get("post_type", "general"),
+            "quiz_details": original_post.get("quiz_details"),
+            "quiz_room": original_post.get("quiz_room"),
+            "exam_category": original_post.get("exam_category"),
+            "subject": original_post.get("subject"),
+            "topic": original_post.get("topic"),
+            "battle_stats": original_post.get("battle_stats"),
         }
         
         # Copy badges from user

@@ -131,12 +131,29 @@ const PostCard = ({ post, isOwn, onDelete, profile }) => {
     }
   };
 
-  const displayName = post.user_name || post.username || profile?.name || 'User';
-  const displayUsername = post.username || profile?.username || '';
-  const displayAvatar = post.user_avatar || profile?.profile_picture;
+  const displayName = post.is_retweet
+    ? (post.original_user_name || post.original_username || post.user_name || 'User')
+    : (post.user_name || post.username || profile?.name || 'User');
+  const displayUsername = post.is_retweet
+    ? (post.original_username || post.username || '')
+    : (post.username || profile?.username || '');
+  const displayAvatar = post.is_retweet
+    ? (post.original_user_avatar || post.user_avatar)
+    : (post.user_avatar || profile?.profile_picture);
 
   return (
-    <div className="px-4 py-4 border-b border-gray-100 hover:bg-gray-50/50 transition-colors" data-testid="profile-post-card">
+    <div
+      className="px-4 py-4 border-b border-gray-100 hover:bg-gray-50/50 transition-colors cursor-pointer"
+      data-testid="profile-post-card"
+      onClick={() => navigate(`/post/${post.id}`)}
+    >
+      {/* Repost indicator */}
+      {post.is_retweet && (
+        <div className="flex items-center gap-1.5 text-gray-500 text-[13px] mb-2 pl-9" data-testid="profile-repost-indicator">
+          <Repeat2 className="w-3.5 h-3.5" />
+          <span className="font-medium">{post.user_name || post.username} reposted</span>
+        </div>
+      )}
       {/* Post header with username */}
       <div className="flex items-start gap-3 mb-3">
         <div className="cursor-pointer" onClick={() => displayUsername && navigate(`/profile/${displayUsername}`)}>
@@ -220,7 +237,7 @@ const PostCard = ({ post, isOwn, onDelete, profile }) => {
         <div className="flex items-center gap-0.5">
           {/* Comment */}
           <button
-            onClick={(e) => { e.stopPropagation(); toast.info('Comments coming soon'); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/post/${post.id}`); }}
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all active:scale-95"
             data-testid="post-comment-btn"
           >
