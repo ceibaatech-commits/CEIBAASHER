@@ -65,10 +65,13 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 ## Prioritized Backlog
 
 ### P1 (Next)
+- [ ] Follow Button UI visual verification
 - [ ] Google Search Console integration (need user's meta tag)
 - [ ] Program enrollment/payment flow (Stripe)
 - [ ] Comments/reply system on posts
-- [ ] Follow Button UI visual verification
+
+### Recently Completed (Apr 2026)
+- [x] 1v1 Battle Setup Page layout fix (reduced header-to-card gap, responsive padding)
 
 ### P2 (Future)
 - [ ] Profile badges for career program completers
