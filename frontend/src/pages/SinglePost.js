@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, MessageCircle, Repeat2, CheckCircle, GraduationCap, Send, Trash2, Undo2, BookOpen, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Heart, MessageCircle, Repeat2, CheckCircle, GraduationCap, Send, Trash2, Undo2, BookOpen, MoreHorizontal, TrendingUp, Star, Target, Bookmark } from 'lucide-react';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -31,10 +31,41 @@ const SinglePost = () => {
   const [shared, setShared] = useState(false);
   const [shareCount, setShareCount] = useState(0);
   const [viewsCount, setViewsCount] = useState(0);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [closeFriendIds, setCloseFriendIds] = useState(new Set());
+
+  // EXAM_COLORS for image exam tags
+  const EXAM_COLORS = {
+    'JEE':        { bg: 'bg-blue-50',   text: 'text-blue-800',   border: 'border-blue-200' },
+    'NEET':       { bg: 'bg-green-50',  text: 'text-green-800',  border: 'border-green-200' },
+    'UPSC':       { bg: 'bg-amber-50',  text: 'text-amber-800',  border: 'border-amber-200' },
+    'Physics':    { bg: 'bg-purple-50', text: 'text-purple-800', border: 'border-purple-200' },
+    'Chemistry':  { bg: 'bg-teal-50',   text: 'text-teal-800',   border: 'border-teal-200' },
+    'Mathematics':{ bg: 'bg-indigo-50', text: 'text-indigo-800', border: 'border-indigo-200' },
+    'Biology':    { bg: 'bg-pink-50',   text: 'text-pink-800',   border: 'border-pink-200' },
+  };
+  const examTagStyle = (tag) => {
+    for (const [key, val] of Object.entries(EXAM_COLORS)) {
+      if (tag.toLowerCase().includes(key.toLowerCase())) return val;
+    }
+    return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+  };
 
   useEffect(() => {
     fetchPost();
   }, [postId]);
+
+  // Fetch close friend IDs + bookmark status
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || !user) return;
+    axios.get(`${BACKEND_URL}/api/profile/close-friend-ids`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => { if (res.data.success) setCloseFriendIds(new Set(res.data.friend_ids)); })
+      .catch(() => {});
+    axios.get(`${BACKEND_URL}/api/social/bookmarks`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => { if (res.data.success) setBookmarked(res.data.posts?.some(p => p.id === postId)); })
+      .catch(() => {});
+  }, [user, postId]);
 
   // Increment view count when page loads
   useEffect(() => {
@@ -190,6 +221,30 @@ const SinglePost = () => {
     }
   };
 
+  const handleBookmark = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) { toast.error('Please login to bookmark'); return; }
+    const wasBookmarked = bookmarked;
+    setBookmarked(!wasBookmarked);
+    try {
+      if (wasBookmarked) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success('Removed from bookmarks');
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+        toast.success('Added to bookmarks');
+      }
+    } catch {
+      setBookmarked(wasBookmarked);
+      toast.error('Failed to update bookmark');
+    }
+  };
+
+  // Detect close friend and image post
+  const isCloseFriend = post ? closeFriendIds.has(post.is_retweet ? post.original_user_id : post.user_id) : false;
+  const hasImageMedia = post?.media_urls?.length > 0 && !post.media_urls[0].includes('.mp4') && !post.media_urls[0].includes('.webm') && !post.media_urls[0].includes('/video/');
+  const postHashtags = post?.hashtags || post?.tags || [];
+
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm('Delete this comment?')) return;
     
@@ -316,6 +371,24 @@ const SinglePost = () => {
 
         {/* Main Post */}
         <article className="border-b border-gray-200">
+          {/* Close friend indicator */}
+          {isCloseFriend && !post.is_retweet && (
+            <div className="flex items-center gap-1.5 text-teal-600 text-[13px] px-4 pt-3 pl-16" data-testid="single-post-close-friend">
+              <Star className="w-3.5 h-3.5 fill-teal-500 text-teal-500" />
+              <span className="font-semibold">Close friend</span>
+            </div>
+          )}
+
+          {/* Repost indicator */}
+          {post.is_retweet && (
+            <div className="flex items-center gap-2 text-gray-500 text-[13px] px-4 pt-3 pl-16" data-testid="single-post-repost">
+              <Repeat2 className="w-4 h-4" />
+              <span className="font-medium cursor-pointer hover:underline" onClick={() => navigate(`/profile/${post.user_id}`)}>
+                {post.user_name || post.username} reposted
+              </span>
+            </div>
+          )}
+
           {/* Author info */}
           <div className="px-4 pt-4 pb-3">
             <div className="flex items-start justify-between">
@@ -388,6 +461,21 @@ const SinglePost = () => {
             </div>
           )}
 
+          {/* Quiz trending badge + stats */}
+          {post.quiz_details && post.post_type !== 'quiz_room' && (
+            <div className="px-4 pb-3" data-testid="single-post-quiz-badge">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-semibold border border-orange-200">
+                <TrendingUp className="w-3 h-3" />
+                Trending in {post.quiz_details.category || post.exam_category || 'Exams'}
+              </span>
+              <div className="flex gap-5 mt-2">
+                <div className="text-center"><p className="text-sm font-bold text-gray-900">{post.quiz_details.attempts || 0}</p><p className="text-[11px] text-gray-500">Attempts</p></div>
+                <div className="text-center"><p className="text-sm font-bold text-gray-900">{post.quiz_details.avg_score || '-'}%</p><p className="text-[11px] text-gray-500">Avg score</p></div>
+                <div className="text-center"><p className="text-sm font-bold text-gray-900">#{post.quiz_details.rank || '-'}</p><p className="text-[11px] text-gray-500">Rank</p></div>
+              </div>
+            </div>
+          )}
+
           {/* Post content */}
           <div className="px-4 pb-3">
             <div className="text-[17px] leading-relaxed text-gray-900 whitespace-pre-wrap">
@@ -437,6 +525,26 @@ const SinglePost = () => {
               </div>
             </div>
           )}
+
+          {/* Image exam tags from hashtags */}
+          {hasImageMedia && postHashtags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 px-4 pb-3" data-testid="single-post-exam-tags">
+              {postHashtags.map((tag, idx) => {
+                const style = examTagStyle(tag);
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => navigate(`/victory-lane?tag=${encodeURIComponent(tag)}`)}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border transition-colors hover:opacity-80 ${style.bg} ${style.text} ${style.border}`}
+                  >
+                    <Target className="w-3 h-3" />
+                    {tag}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
 
           {/* Quiz Room Card - Call to Action */}
           {post.post_type === 'quiz_room' && (post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code) && (
@@ -556,6 +664,17 @@ const SinglePost = () => {
               }`}
             >
               <Heart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
+            </button>
+            <button
+              onClick={handleBookmark}
+              data-testid="single-post-bookmark-btn"
+              className={`p-3 rounded-full transition-colors ${
+                bookmarked
+                  ? 'text-blue-500 hover:bg-blue-50'
+                  : 'text-gray-500 hover:text-blue-500 hover:bg-blue-50'
+              }`}
+            >
+              <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-current' : ''}`} />
             </button>
           </div>
         </article>

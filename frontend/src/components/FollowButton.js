@@ -8,7 +8,7 @@ import {
 const BACKEND_URL = window.location.origin;
 
 // Follow Popup (not yet following)
-const FollowPopup = ({ username, onFollow, onClose, anchorRef }) => (
+const FollowPopup = ({ username, onFollow, onBlock, onClose, anchorRef }) => (
   <div
     className="absolute top-full mt-2 right-0 z-50 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
     style={{ minWidth: 260 }}
@@ -44,6 +44,20 @@ const FollowPopup = ({ username, onFollow, onClose, anchorRef }) => (
       <div>
         <p className="text-sm font-medium text-gray-900">Follow + Close friend</p>
         <p className="text-xs text-gray-500">Priority feed + all notifications</p>
+      </div>
+    </button>
+
+    <button
+      onClick={onBlock}
+      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left border-t border-gray-100"
+      data-testid="block-user-btn-popup"
+    >
+      <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
+        <ShieldOff className="w-4 h-4 text-red-600" />
+      </div>
+      <div>
+        <p className="text-sm font-medium text-red-600">Block user</p>
+        <p className="text-xs text-gray-500">They won't see your profile or posts</p>
       </div>
     </button>
 
@@ -253,14 +267,18 @@ const FollowButton = ({
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
+      const res = await axios.post(
         `${BACKEND_URL}/api/profile/block`,
         { target_user_id: targetUserId },
         { headers: { Authorization: `Bearer ${token}` } }
-      ).catch(() => {});
-      setStatus(null);
-      onFollowChange?.(null);
-      onBlock?.();
+      );
+      if (res.data.success) {
+        setStatus(null);
+        onFollowChange?.(null);
+        onBlock?.();
+      }
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to block user');
     } finally { setLoading(false); }
   }, [targetUserId, targetUsername, onFollowChange, onBlock]);
 
@@ -324,6 +342,7 @@ const FollowButton = ({
         <FollowPopup
           username={targetUsername}
           onFollow={apiFollow}
+          onBlock={apiBlock}
           onClose={() => setPopup(null)}
           anchorRef={wrapRef}
         />

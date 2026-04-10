@@ -308,6 +308,8 @@ const Profile = () => {
   const [showExamPicker, setShowExamPicker] = useState(false);
   const [savedPosts, setSavedPosts] = useState([]);
   const [savedLoading, setSavedLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', bio: '', location: '', website: '' });
 
   // Available exams (from the website)
   const AVAILABLE_EXAMS = [
@@ -447,7 +449,49 @@ const Profile = () => {
     else if (!newStatus && followStatus) setFollowersCount(c => Math.max(0, c - 1));
   };
 
-  const handleBlockAndRedirect = () => navigate('/victory-lane');
+  const handleBlockAndRedirect = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${BACKEND_URL}/api/profile/block`,
+        { target_user_id: resolvedUserId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success(`Blocked @${profile.username}`);
+      navigate('/victory-lane');
+    } catch {
+      toast.error('Failed to block user');
+    }
+  };
+
+  const openEditModal = () => {
+    setEditForm({
+      name: profile.name || '',
+      bio: profile.bio || '',
+      location: profile.location || '',
+      website: profile.website || '',
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveProfile = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await axios.put(
+        `${BACKEND_URL}/api/profile/update`,
+        editForm,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        setProfile(prev => ({ ...prev, ...editForm }));
+        toast.success('Profile updated');
+        setShowEditModal(false);
+      }
+    } catch {
+      toast.error('Failed to update profile');
+    }
+  };
 
   const handleAddExam = async (exam) => {
     const token = localStorage.getItem('token');
@@ -540,6 +584,81 @@ const Profile = () => {
         </div>
       )}
 
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" data-testid="edit-profile-modal">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="font-bold text-gray-900">Edit Profile</h3>
+              <button onClick={() => setShowEditModal(false)} className="p-1.5 hover:bg-gray-100 rounded-full"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  data-testid="edit-name-input"
+                  type="text"
+                  value={editForm.name}
+                  onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                <textarea
+                  data-testid="edit-bio-input"
+                  value={editForm.bio}
+                  onChange={e => setEditForm(f => ({ ...f, bio: e.target.value }))}
+                  rows={3}
+                  maxLength={160}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                  placeholder="Tell people about yourself..."
+                />
+                <p className="text-right text-xs text-gray-400 mt-0.5">{editForm.bio.length}/160</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <input
+                  data-testid="edit-location-input"
+                  type="text"
+                  value={editForm.location}
+                  onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="City, Country"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
+                <input
+                  data-testid="edit-website-input"
+                  type="text"
+                  value={editForm.website}
+                  onChange={e => setEditForm(f => ({ ...f, website: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="https://yourwebsite.com"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2 p-4 border-t">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="px-4 py-2 rounded-xl border border-gray-300 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                data-testid="save-profile-btn"
+                className="px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-2xl mx-auto">
 
         {/* Back */}
@@ -570,7 +689,7 @@ const Profile = () => {
                 {isOwnProfile ? (
                   <>
                     <button
-                      onClick={() => toast.info('Edit profile coming soon!')}
+                      onClick={openEditModal}
                       className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                       data-testid="edit-profile-btn"
                     >
@@ -827,7 +946,15 @@ const Profile = () => {
                       <p className="text-sm font-semibold text-blue-900 truncate">{post.quiz_details.title}</p>
                       <p className="text-xs text-blue-600">{post.quiz_details.category} · {relTime(post.created_at)}</p>
                     </div>
-                    <button className="text-xs font-semibold px-3 py-1.5 bg-blue-600 text-white rounded-full">Attempt</button>
+                    <button
+                      onClick={() => {
+                        const rc = post.quiz_details?.room_code || post.room_code;
+                        if (rc) navigate(`/quiz-room/${rc}`);
+                        else navigate(`/post/${post.id}`);
+                      }}
+                      data-testid={`quiz-attempt-${post.id}`}
+                      className="text-xs font-semibold px-3 py-1.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+                    >Attempt</button>
                   </div>
                   <div className="flex gap-6 px-4 py-2.5 bg-white">
                     <div><p className="text-sm font-bold text-gray-900">{post.quiz_details.attempts || 0}</p><p className="text-xs text-gray-500">Attempts</p></div>

@@ -5,13 +5,14 @@ import { ArrowLeft, Send, MessageSquare, Search, Check, CheckCheck } from 'lucid
 import axios from 'axios';
 import io from 'socket.io-client';
 import UserAvatar from '../components/UserAvatar';
+import Header from '../components/Header';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function Messages() {
   const { conversationId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [activeConv, setActiveConv] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -163,7 +164,9 @@ export default function Messages() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex" data-testid="messages-page" style={{ marginTop: '-64px', paddingTop: '64px' }}>
+    <div className="min-h-screen bg-gray-950" data-testid="messages-page">
+      <Header isLoggedIn={!!user} user={user} onLogout={logout} />
+      <div className="flex" style={{ height: 'calc(100vh - 64px)' }}>
       {/* Sidebar */}
       <aside
         data-testid="conversations-sidebar"
@@ -378,6 +381,7 @@ export default function Messages() {
           </>
         )}
       </main>
+      </div>
     </div>
   );
 }
