@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import {
-  Flag, X, AlertTriangle, Minimize2, Maximize2, Loader2
+  Flag, X, AlertTriangle, Minimize2, Maximize2
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -23,8 +23,8 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
   const zpRef = useRef(null);
   const initDone = useRef(false);
 
-  const [minimised, setMinimised] = useState(true);
-  const [ready, setReady] = useState(false);
+  // Start EXPANDED so ZegoCloud has a proper container to render into
+  const [minimised, setMinimised] = useState(false);
 
   // Report state
   const [showReport, setShowReport] = useState(false);
@@ -34,21 +34,22 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
   const [reportDone, setReportDone] = useState(false);
   const [reportId, setReportId] = useState(null);
 
-  // Initialize ZegoCloud once when roomId + playerName + container are all available
-  useEffect(() => {
-    if (!roomId || !playerName || !containerRef.current) return;
-    if (initDone.current) return;
+  // Initialize ZegoCloud
+  const initZego = useCallback(() => {
+    if (initDone.current || !containerRef.current || !roomId || !playerName) return;
     if (!ZEGO_APP_ID || !ZEGO_SERVER_SECRET) {
-      console.error('ZegoCloud credentials missing');
+      console.error('[ZegoCloud] Credentials missing - ZEGO_APP_ID:', ZEGO_APP_ID, 'SECRET present:', !!ZEGO_SERVER_SECRET);
       return;
     }
 
     initDone.current = true;
 
-    // Generate a stable-ish userID from playerName + timestamp
-    const userID = `${playerName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}`;
-    // ZegoCloud room IDs must be alphanumeric
-    const zegoRoomId = roomId.replace(/[^a-zA-Z0-9]/g, '');
+    // Unique userID per session — must be different for each player
+    const userID = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    // ZegoCloud room IDs must be alphanumeric, max 128 chars
+    const zegoRoomId = roomId.replace(/[^a-zA-Z0-9]/g, '').substring(0, 128) || 'defaultroom';
+
+    console.log('[ZegoCloud] Initializing:', { appID: ZEGO_APP_ID, zegoRoomId, userID, playerName });
 
     try {
       const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
@@ -68,70 +69,64 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
         showPreJoinView: false,
         turnOnCameraWhenJoining: true,
         turnOnMicrophoneWhenJoining: true,
-        showRoomTimer: true,
-        onLeaveRoom: () => {
-          setReady(false);
-        },
+        showRoomTimer: false,
+        showLayoutButton: false,
+        showScreenSharingButton: false,
         onJoinRoom: () => {
-          setReady(true);
+          console.log('[ZegoCloud] Joined room successfully');
+        },
+        onLeaveRoom: () => {
+          console.log('[ZegoCloud] Left room');
         },
       });
 
-      setReady(true);
+      console.log('[ZegoCloud] joinRoom called');
     } catch (err) {
-      console.error('ZegoCloud init error:', err);
-      toast.error('Failed to start video call');
+      console.error('[ZegoCloud] Init error:', err);
+      initDone.current = false;
     }
+  }, [roomId, playerName]);
 
+  // Run init once container + props are ready
+  useEffect(() => {
+    // Small delay to ensure container is rendered at full size
+    const timer = setTimeout(() => initZego(), 300);
     return () => {
+      clearTimeout(timer);
       if (zpRef.current) {
-        zpRef.current.destroy();
+        try { zpRef.current.destroy(); } catch (e) { /* ignore */ }
         zpRef.current = null;
         initDone.current = false;
       }
     };
-  }, [roomId, playerName]);
+  }, [initZego]);
 
   // Report submission
   const submitReport = async () => {
-    if (!reportReason) {
-      toast.error('Please select a reason');
-      return;
-    }
+    if (!reportReason) { toast.error('Please select a reason'); return; }
     setSubmitting(true);
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
         `${API_URL}/api/admin/battles/report`,
         {
-          battle_id: roomId,
-          room_id: roomId,
+          battle_id: roomId, room_id: roomId,
           reported_user_id: opponentId || 'unknown',
           reported_username: opponentName || 'Opponent',
-          reason: reportReason,
-          description: reportDesc,
-          chat_messages: [],
+          reason: reportReason, description: reportDesc, chat_messages: [],
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (res.data.success) {
-        setReportId(res.data.report_id);
-        setReportDone(true);
-      }
+      if (res.data.success) { setReportId(res.data.report_id); setReportDone(true); }
     } catch (e) {
       console.error('Failed to submit report:', e);
-      toast.error('Failed to submit report. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+      toast.error('Failed to submit report.');
+    } finally { setSubmitting(false); }
   };
 
   const closeReport = () => {
-    setShowReport(false);
-    setReportDone(false);
-    setReportId(null);
-    setReportReason('');
-    setReportDesc('');
+    setShowReport(false); setReportDone(false);
+    setReportId(null); setReportReason(''); setReportDesc('');
   };
 
   // Don't render until socket + roomId are available
@@ -199,47 +194,48 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
         </div>
       )}
 
-      {/* Video widget */}
-      <div className="fixed bottom-4 right-4 z-[70]" data-testid="video-chat-widget">
-        {/* Top controls: minimize/maximize + report */}
-        <div className="flex justify-end mb-1.5 gap-1.5">
+      {/* Video widget — fixed bottom-right */}
+      <div
+        className={`fixed z-[70] transition-all duration-300 ease-in-out ${
+          minimised
+            ? 'bottom-4 right-4'
+            : 'bottom-4 right-4'
+        }`}
+        data-testid="video-chat-widget"
+      >
+        {/* Overlay controls: minimize/report */}
+        <div className="absolute top-2 left-2 z-10 flex gap-1.5" style={{ pointerEvents: 'auto' }}>
           <button
             onClick={() => setMinimised(m => !m)}
-            className="p-2 bg-gray-800/80 backdrop-blur rounded-full text-white hover:bg-gray-700 transition shadow-lg"
-            title={minimised ? 'Expand video' : 'Minimise video'}
+            className="p-1.5 bg-black/60 backdrop-blur rounded-lg text-white hover:bg-black/80 transition"
+            title={minimised ? 'Expand' : 'Minimise'}
             data-testid="video-toggle-size"
           >
-            {minimised ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+            {minimised ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
           </button>
           <button
             onClick={() => setShowReport(true)}
-            className="p-2 bg-orange-500/80 backdrop-blur rounded-full text-white hover:bg-orange-600 transition shadow-lg"
+            className="p-1.5 bg-orange-500/80 backdrop-blur rounded-lg text-white hover:bg-orange-600 transition"
             title="Report user"
             data-testid="video-report-btn"
           >
-            <Flag className="w-4 h-4" />
+            <Flag className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        {/* ZegoCloud container — always mounted, CSS controls size */}
+        {/* ZegoCloud container — always mounted at a usable size */}
         <div
           ref={containerRef}
-          className={`rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-gray-900 transition-all duration-300 ease-in-out ${
-            minimised
-              ? 'w-32 h-24 cursor-pointer'
-              : 'w-[340px] sm:w-[420px]'
+          className={`rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 bg-gray-900 transition-all duration-300 ease-in-out ${
+            minimised ? 'cursor-pointer' : ''
           }`}
-          style={minimised ? {} : { height: '320px' }}
+          style={{
+            width: minimised ? '140px' : '340px',
+            height: minimised ? '105px' : '280px',
+          }}
           onClick={minimised ? () => setMinimised(false) : undefined}
           data-testid={minimised ? 'video-minimised' : 'video-expanded'}
-        >
-          {/* Loading state before ZegoCloud renders */}
-          {!ready && (
-            <div className="w-full h-full flex items-center justify-center">
-              <Loader2 className="w-6 h-6 text-green-400 animate-spin" />
-            </div>
-          )}
-        </div>
+        />
       </div>
     </>
   );
