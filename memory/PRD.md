@@ -49,7 +49,10 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - Header visible on Messages page
 
 ### 1v1 Battles & WebRTC
-- WebRTC video chat with ICE restarts, minimize/maximize without black screen
+- ZegoCloud Prebuilt SDK for 1v1 video calls (replaced custom WebRTC)
+- AppID/ServerSecret in frontend/.env
+- Minimize/maximize PiP widget, report modal
+- Battle quiz with live chat, matchmaking via Socket.io
 
 ## Key API Endpoints
 - `/api/auth/demo-login` — Demo login (returns access_token)
