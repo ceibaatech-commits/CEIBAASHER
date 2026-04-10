@@ -171,16 +171,25 @@ export default function Messages() {
       >
         {/* Sidebar header */}
         <div className="p-4 border-b border-gray-800/60">
-          <h1 className="text-xl font-bold text-white mb-3 tracking-tight">Messages</h1>
+          <div className="flex items-center gap-3 mb-3">
+            <button
+              data-testid="messages-back-btn"
+              onClick={() => navigate(-1)}
+              className="p-1.5 -ml-1 rounded-lg hover:bg-gray-800 text-gray-400 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-bold text-white tracking-tight">Messages</h1>
+          </div>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-500/60 pointer-events-none" />
             <input
               data-testid="conversation-search"
               type="text"
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-gray-900 border border-gray-800 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-colors"
             />
           </div>
         </div>
