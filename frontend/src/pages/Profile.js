@@ -6,7 +6,7 @@ import {
   MapPin, Calendar, Link2, ArrowLeft, MoreHorizontal,
   Trophy, Zap, Target, BookOpen, Edit2, Plus,
   Heart, MessageCircle, Share2, Bookmark, CheckCircle2,
-  Users, Activity, Award, Repeat2, Trash2, X
+  Users, Activity, Award, Repeat2, Trash2, X, Camera
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -487,21 +487,57 @@ const Profile = () => {
       bio: profile.bio || '',
       location: profile.location || '',
       website: profile.website || '',
+      profile_picture: profile.profile_picture || '',
+      cover_photo: profile.cover_image || profile.cover_photo || '',
     });
     setShowEditModal(true);
+  };
+
+  const handleProfileImageUpload = async (e, type) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.post(
+        `${BACKEND_URL}/api/media/profile-upload?upload_type=${type === 'avatar' ? 'avatar' : 'cover'}`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
+      );
+      if (res.data.success) {
+        const key = type === 'avatar' ? 'profile_picture' : 'cover_photo';
+        setEditForm(f => ({ ...f, [key]: res.data.url }));
+        toast.success(`${type === 'avatar' ? 'Profile picture' : 'Cover photo'} uploaded`);
+      }
+    } catch {
+      toast.error('Upload failed. Try a smaller image.');
+    }
   };
 
   const handleSaveProfile = async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
+      const payload = {
+        name: editForm.name,
+        bio: editForm.bio,
+        location: editForm.location,
+        website: editForm.website,
+        profile_picture: editForm.profile_picture || undefined,
+        cover_photo: editForm.cover_photo || undefined,
+      };
       const res = await axios.put(
         `${BACKEND_URL}/api/profile/update`,
-        editForm,
+        payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
-        setProfile(prev => ({ ...prev, ...editForm }));
+        setProfile(prev => ({
+          ...prev,
+          ...payload,
+          cover_image: payload.cover_photo || prev.cover_image,
+        }));
         toast.success('Profile updated');
         setShowEditModal(false);
       }
@@ -604,12 +640,58 @@ const Profile = () => {
       {/* Edit Profile Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" data-testid="edit-profile-modal">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden">
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b">
               <h3 className="font-bold text-gray-900">Edit Profile</h3>
               <button onClick={() => setShowEditModal(false)} className="p-1.5 hover:bg-gray-100 rounded-full"><X className="w-4 h-4" /></button>
             </div>
-            <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4 overflow-y-auto flex-1">
+              {/* Cover Photo */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Cover Photo</label>
+                <div
+                  className="relative h-24 rounded-xl bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 overflow-hidden border border-gray-200 cursor-pointer group"
+                  style={editForm.cover_photo ? { backgroundImage: `url(${editForm.cover_photo})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                  onClick={() => document.getElementById('cover-upload').click()}
+                >
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+                <input id="cover-upload" type="file" accept="image/*" className="hidden" data-testid="cover-upload-input" onChange={e => handleProfileImageUpload(e, 'cover')} />
+              </div>
+
+              {/* Profile Picture */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
+                <div className="flex items-center gap-4">
+                  <div
+                    className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-gray-200 cursor-pointer group"
+                    onClick={() => document.getElementById('avatar-upload').click()}
+                  >
+                    {editForm.profile_picture ? (
+                      <img src={editForm.profile_picture} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xl">
+                        {(editForm.name || 'U')[0].toUpperCase()}
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center rounded-full">
+                      <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('avatar-upload').click()}
+                    className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                  >
+                    Change photo
+                  </button>
+                  <input id="avatar-upload" type="file" accept="image/*" className="hidden" data-testid="avatar-upload-input" onChange={e => handleProfileImageUpload(e, 'avatar')} />
+                </div>
+              </div>
+
+              {/* Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
@@ -621,6 +703,7 @@ const Profile = () => {
                   placeholder="Your name"
                 />
               </div>
+              {/* Bio */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                 <textarea
@@ -634,6 +717,7 @@ const Profile = () => {
                 />
                 <p className="text-right text-xs text-gray-400 mt-0.5">{editForm.bio.length}/160</p>
               </div>
+              {/* Location */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input
@@ -645,6 +729,7 @@ const Profile = () => {
                   placeholder="City, Country"
                 />
               </div>
+              {/* Website */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
                 <input
@@ -691,15 +776,62 @@ const Profile = () => {
         {/* Cover + header */}
         <div className="bg-white border-b border-gray-100">
           <div
-            className="h-28 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50"
+            className={`h-28 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 relative ${isOwnProfile ? 'cursor-pointer group' : ''}`}
             style={profile.cover_image ? { backgroundImage: `url(${profile.cover_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
-          />
+            onClick={() => { if (isOwnProfile) document.getElementById('inline-cover-upload')?.click(); }}
+          >
+            {isOwnProfile && (
+              <>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <input id="inline-cover-upload" type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const formData = new FormData();
+                  formData.append('file', file);
+                  try {
+                    const token = localStorage.getItem('token');
+                    const res = await axios.post(`${BACKEND_URL}/api/media/profile-upload?upload_type=cover`, formData, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } });
+                    if (res.data.success) {
+                      await axios.put(`${BACKEND_URL}/api/profile/update`, { cover_photo: res.data.url }, { headers: { Authorization: `Bearer ${token}` } });
+                      setProfile(prev => ({ ...prev, cover_image: res.data.url }));
+                      toast.success('Cover photo updated');
+                    }
+                  } catch { toast.error('Upload failed'); }
+                }} />
+              </>
+            )}
+          </div>
 
           <div className="px-4">
             {/* Avatar row */}
             <div className="flex items-end justify-between -mt-9 mb-3">
-              <div className="border-3 border-white rounded-full shadow-md">
+              <div className={`border-3 border-white rounded-full shadow-md relative ${isOwnProfile ? 'cursor-pointer group' : ''}`}
+                onClick={() => { if (isOwnProfile) document.getElementById('inline-avatar-upload')?.click(); }}>
                 <UserAvatar profilePicture={profile.profile_picture} name={profile.name} size="xxl" />
+                {isOwnProfile && (
+                  <>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center rounded-full">
+                      <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <input id="inline-avatar-upload" type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      try {
+                        const token = localStorage.getItem('token');
+                        const res = await axios.post(`${BACKEND_URL}/api/media/profile-upload?upload_type=avatar`, formData, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } });
+                        if (res.data.success) {
+                          await axios.put(`${BACKEND_URL}/api/profile/update`, { profile_picture: res.data.url }, { headers: { Authorization: `Bearer ${token}` } });
+                          setProfile(prev => ({ ...prev, profile_picture: res.data.url }));
+                          toast.success('Profile picture updated');
+                        }
+                      } catch { toast.error('Upload failed'); }
+                    }} />
+                  </>
+                )}
               </div>
 
               <div className="flex items-center gap-2 mt-10">

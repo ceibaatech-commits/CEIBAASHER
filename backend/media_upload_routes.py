@@ -318,6 +318,53 @@ async def get_media(filename: str):
     return FileResponse(file_path, media_type=media_type)
 
 
+@router.post("/profile-upload")
+async def upload_profile_image(file: UploadFile = File(...), upload_type: str = Query("avatar", enum=["avatar", "cover"])):
+    """Upload profile picture or cover photo to Cloudinary."""
+    try:
+        file_ext = Path(file.filename).suffix.lower()
+        if file_ext not in ALLOWED_IMAGE_EXTENSIONS:
+            raise HTTPException(400, f"Only images allowed: {', '.join(ALLOWED_IMAGE_EXTENSIONS)}")
+
+        content = await file.read()
+        if len(content) > MAX_IMAGE_SIZE:
+            raise HTTPException(400, f"Image too large. Max: {MAX_IMAGE_SIZE // (1024*1024)}MB")
+
+        cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME")
+        if not cloud_name:
+            # Fallback to local
+            unique_id = str(uuid.uuid4())[:12]
+            safe_filename = f"{unique_id}{file_ext}"
+            file_path = UPLOAD_DIR / safe_filename
+            with open(file_path, "wb") as f:
+                f.write(content)
+            return {"success": True, "url": f"/api/media/view/{safe_filename}"}
+
+        folder = "avatars" if upload_type == "avatar" else "covers"
+        transformation = IMAGE_TRANSFORMATIONS.get("profile" if upload_type == "avatar" else "cover", "")
+
+        await file.seek(0)
+        # Use dict-based transformation for cloudinary upload
+        if upload_type == "avatar":
+            transform = {"width": 400, "height": 400, "crop": "fill", "gravity": "face", "quality": "auto", "fetch_format": "auto"}
+        else:
+            transform = {"width": 1500, "height": 500, "crop": "fill", "quality": "auto", "fetch_format": "auto"}
+
+        result = cloudinary.uploader.upload(
+            content,
+            folder=folder,
+            resource_type="image",
+            transformation=transform,
+            unique_filename=True,
+        )
+        return {"success": True, "url": result.get("secure_url", result.get("url", ""))}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, f"Upload failed: {str(e)}")
+
+
+
 @router.delete("/delete/{filename}")
 async def delete_media(filename: str):
     """
