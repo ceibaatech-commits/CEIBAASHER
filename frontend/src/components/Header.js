@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
+import InboxDropdown from './InboxDropdown';
 import NavbarSearch from './NavbarSearch';
 import '../styles/navbar-search.css';
 import { useAuth } from '../context/AuthContext';
@@ -158,6 +159,9 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                 {/* Notifications Bell - Only for logged-in users */}
                 <NotificationBell />
 
+                {/* Inbox Dropdown - Only for logged-in users */}
+                <InboxDropdown user={user} />
+
                 {/* User Profile Avatar with Dropdown (Desktop) - Only for logged-in users */}
                 <div className="hidden md:block relative profile-dropdown-container">
                   <button 
@@ -247,6 +251,18 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                         >
                           <TreePine className="w-4 h-4 text-emerald-600" />
                           <span className="font-medium text-sm">The Canopy</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            navigate('/messages');
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
+                          data-testid="dropdown-messages-link"
+                        >
+                          <MessageSquare className="w-4 h-4 text-cyan-600" />
+                          <span className="font-medium text-sm">Messages</span>
                         </button>
                         
                         <div className="border-t border-gray-200 my-1"></div>

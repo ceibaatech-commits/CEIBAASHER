@@ -590,7 +590,21 @@ const Profile = () => {
                   currentUser && (
                     <>
                       <button
-                        onClick={() => toast.info('Messaging coming soon!')}
+                        onClick={async () => {
+                          try {
+                            const tkn = localStorage.getItem('token');
+                            const res = await axios.post(
+                              `${BACKEND_URL}/api/messages/conversations`,
+                              { target_user_id: resolvedUserId },
+                              { headers: { Authorization: `Bearer ${tkn}` } }
+                            );
+                            if (res.data.success) {
+                              navigate(`/messages/${res.data.conversation.id}`);
+                            }
+                          } catch {
+                            toast.error('Could not start conversation');
+                          }
+                        }}
                         className="px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                         data-testid="message-btn"
                       >

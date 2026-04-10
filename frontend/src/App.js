@@ -82,6 +82,7 @@ import ChapterTestChapters from "@/pages/ChapterTestChapters";
 // Single Post View
 import SinglePost from "@/pages/SinglePost";
 import DivyaTutor from "@/pages/DivyaTutor";
+import Messages from "@/pages/Messages";
 
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -193,6 +194,10 @@ function App() {
           
           {/* Divya AI Tutor */}
           <Route path="/divya" element={<DivyaTutor />} />
+          
+          {/* Messaging */}
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:conversationId" element={<Messages />} />
           
           {/* Sitemap */}
           <Route path="/sitemap" element={<Sitemap />} />

@@ -55,6 +55,8 @@ from referral_routes import router as referral_router
 import referral_routes
 from media_upload_routes import router as media_upload_router
 import media_upload_routes
+from messaging_routes import router as messaging_router
+import messaging_routes
 # socketio_proxy_routes removed - using proper Socket.io ASGI app instead
 
 
@@ -83,6 +85,9 @@ referral_routes.init_db(db)
 
 # Initialize media upload routes
 media_upload_routes.init_db(db)
+
+# Initialize messaging routes
+messaging_routes.init_db(db)
 
 # Initialize social auto-post utilities
 import social_auto_post
@@ -115,6 +120,11 @@ from social_socketio import social_socket_app, init_social_socketio_db
 init_social_socketio_db(db)
 # Mount at /api/socialws for social feed real-time updates
 fastapi_app.mount("/api/socialws", social_socket_app)
+
+# Import and mount Messaging Socket.IO for real-time chat
+from messaging_socketio import messaging_socket_app, init_messaging_socketio_db
+init_messaging_socketio_db(db)
+fastapi_app.mount("/api/messagews", messaging_socket_app)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
@@ -198,6 +208,7 @@ fastapi_app.include_router(referral_router, prefix="/api")  # Referral system
 fastapi_app.include_router(admin_data_router, prefix="/api/admin")  # Admin data management (hardcoded exams, CBSE chapters)
 fastapi_app.include_router(user_management_router, prefix="/api")  # User management (teacher status)
 fastapi_app.include_router(dashboard_router)  # AI-powered dashboard routes
+fastapi_app.include_router(messaging_router, prefix="/api/messages")  # Real-time messaging
 fastapi_app.include_router(question_image_router, prefix="/api")  # Question image upload routes
 fastapi_app.include_router(cbse_data_router, prefix="/api")  # CBSE data - single source of truth
 
