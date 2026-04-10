@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Award, GraduationCap, ArrowRight, Sparkles, Zap, Target, BarChart3, Smartphone, Users } from 'lucide-react';
+import { BookOpen, Award, GraduationCap, ArrowRight, Sparkles, Zap, Target, BarChart3, Smartphone, Users, Bell, Clock } from 'lucide-react';
+import { toast } from 'sonner';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -15,6 +16,17 @@ const CLASS_DATA = [
   { num: 10, label: 'Class 10', gradient: 'from-slate-600 to-slate-800', shadow: 'shadow-slate-100' },
   { num: 11, label: 'Class 11', gradient: 'from-teal-600 to-cyan-700', shadow: 'shadow-teal-100' },
   { num: 12, label: 'Class 12', gradient: 'from-slate-700 to-gray-900', shadow: 'shadow-gray-200' },
+];
+
+const STATE_BOARDS = [
+  { name: 'Haryana Board', abbr: 'HBSE', emoji: '🌾' },
+  { name: 'Rajasthan Board', abbr: 'RBSE', emoji: '🏰' },
+  { name: 'Bihar Board', abbr: 'BSEB', emoji: '🏛️' },
+  { name: 'Tamil Nadu Board', abbr: 'TNBSE', emoji: '🛕' },
+  { name: 'UP Board', abbr: 'UPMSP', emoji: '🕌' },
+  { name: 'Maharashtra Board', abbr: 'MSBSHSE', emoji: '🏔️' },
+  { name: 'MP Board', abbr: 'MPBSE', emoji: '🐅' },
+  { name: 'West Bengal Board', abbr: 'WBBSE', emoji: '🌺' },
 ];
 
 const FEATURES = [
@@ -142,6 +154,52 @@ const ChapterTestHome = () => {
                 </div>
               </button>
             ))}
+          </div>
+
+          {/* ── STATE BOARDS DIVIDER ── */}
+          <div className="flex items-center gap-4 my-8 sm:my-10" data-testid="state-boards-divider">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-[0.06em] whitespace-nowrap">
+              State Boards — Coming Soon
+            </span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          {/* ── STATE BOARDS GRID ── */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 sm:gap-4" data-testid="state-boards-grid">
+            {STATE_BOARDS.map(({ name, abbr, emoji }) => (
+              <div
+                key={abbr}
+                data-testid={`state-board-card-${abbr}`}
+                className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-dashed border-gray-300 cursor-default opacity-80"
+              >
+                <div className="flex flex-col items-center gap-1.5 sm:gap-2.5">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gray-100 flex items-center justify-center">
+                    <span className="text-xl sm:text-2xl">{emoji}</span>
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-700 leading-tight">{name}</h3>
+                    <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{abbr} · Classes 6–12</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 border border-yellow-200 rounded-full px-2 py-0.5 text-[9px] sm:text-xs font-bold">
+                    <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                    Coming Soon
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── NOTIFY BUTTON ── */}
+          <div className="flex justify-center mt-6 sm:mt-8">
+            <button
+              onClick={() => toast.success("You'll be notified when your board goes live!")}
+              className="inline-flex items-center gap-2 border border-green-500 text-green-700 rounded-full px-6 py-2.5 text-sm font-semibold hover:bg-green-50 transition-colors"
+              data-testid="notify-state-boards-btn"
+            >
+              <Bell className="w-4 h-4" />
+              Notify me when my board launches
+            </button>
           </div>
         </section>
 
