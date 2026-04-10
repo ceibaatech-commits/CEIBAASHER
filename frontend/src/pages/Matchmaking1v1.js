@@ -434,17 +434,20 @@ const Matchmaking1v1 = () => {
   // Setup Screen
   if (battleState === 'setup') {
     return withVideoChat(
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 py-8 pt-20">
-        <div className="max-w-lg mx-auto px-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 pt-20">
+        <div className="px-4 sm:px-12 pt-6 sm:pt-10">
+          {/* Back button — flush left, above the card */}
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-gray-300 hover:text-white mb-6 transition-colors"
+            className="flex items-center text-gray-300 hover:text-white mb-5 transition-colors"
+            data-testid="battle-back-btn"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back
           </button>
 
-          <div className="bg-white rounded-2xl shadow-2xl p-8">
+          {/* Card — constrained on desktop, full-width on mobile */}
+          <div className="w-full sm:max-w-[460px] sm:mx-auto bg-white rounded-2xl shadow-2xl p-6 sm:p-8 mb-10">
             <div className="text-center mb-8">
               <div className="bg-gradient-to-br from-red-500 to-rose-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Swords className="w-10 h-10" />
