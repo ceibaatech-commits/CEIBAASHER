@@ -15,7 +15,7 @@ const PostCard = ({
   onToggleLike, onToggleShare, onToggleComments, onOpenMenu,
   onDeletePost, onTagClick, onCategoryClick, onPostClick,
   formatTimestamp, getGradientColor, getDifficultyColor, handleJoinRoom,
-  bookmarkedPosts
+  bookmarkedPosts, onToggleBookmark, onShareLink
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -23,6 +23,8 @@ const PostCard = ({
   const isFollowing = followingList.has(post.user_id);
   const isLiked = likedPosts.has(post.id);
   const isShared = sharedPosts.has(post.is_retweet ? post.original_post_id : post.id);
+
+  const isBookmarked = bookmarkedPosts ? bookmarkedPosts.has(post.id) : false;
 
   const likesCount = post.likes_count || post.like_count || 0;
   const shareCount = post.share_count || post.shares_count || 0;
@@ -243,9 +245,12 @@ const PostCard = ({
             viewsCount={viewsCount}
             isLiked={isLiked}
             isShared={isShared}
+            isBookmarked={isBookmarked}
             onToggleComments={onToggleComments}
             onToggleShare={onToggleShare}
             onToggleLike={onToggleLike}
+            onToggleBookmark={onToggleBookmark}
+            onShareLink={onShareLink}
           />
         </div>
       </div>

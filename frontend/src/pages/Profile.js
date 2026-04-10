@@ -6,13 +6,14 @@ import {
   MapPin, Calendar, Link2, ArrowLeft, MoreHorizontal,
   Trophy, Zap, Target, BookOpen, Edit2, Plus,
   Heart, MessageCircle, Share2, Bookmark, CheckCircle2,
-  Users, Activity, Award
+  Users, Activity, Award, Repeat2, Trash2, X
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
 import VideoPost from '../components/VictoryLane/VideoPost';
 import FollowButton from '../components/FollowButton';
+import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
 
@@ -59,14 +60,18 @@ const relTime = (ts) => {
 };
 
 // Post card
-const PostCard = ({ post, isOwn, onDelete }) => {
+const PostCard = ({ post, isOwn, onDelete, profile }) => {
   const [liked, setLiked] = useState(post.liked_by_user || false);
   const [likes, setLikes] = useState(post.likes_count || 0);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(post.user_bookmarked || false);
+  const [shared, setShared] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const navigate = useNavigate();
 
-  const toggleLike = async () => {
+  const toggleLike = async (e) => {
+    e.stopPropagation();
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) { toast.error('Please login to like posts'); return; }
     const next = !liked;
     setLiked(next);
     setLikes(l => next ? l + 1 : Math.max(0, l - 1));
@@ -79,8 +84,100 @@ const PostCard = ({ post, isOwn, onDelete }) => {
     } catch { setLiked(!next); setLikes(l => next ? l - 1 : l + 1); }
   };
 
+  const toggleBookmark = async (e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem('token');
+    if (!token) { toast.error('Please login to save posts'); return; }
+    const next = !saved;
+    setSaved(next);
+    toast.success(next ? 'Post saved' : 'Removed from saved');
+    try {
+      if (next) {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      } else {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${post.id}/bookmark`, { headers: { Authorization: `Bearer ${token}` } });
+      }
+    } catch { setSaved(!next); }
+  };
+
+  const handleRepost = async (e) => {
+    e.stopPropagation();
+    const token = localStorage.getItem('token');
+    if (!token) { toast.error('Please login to repost'); return; }
+    if (shared) { toast.info('Already reposted'); return; }
+    try {
+      await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/share`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setShared(true);
+      toast.success('Reposted!');
+    } catch { toast.error('Failed to repost'); }
+  };
+
+  const handleShare = async (e) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/post/${post.id}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Check this post', url }); } catch { /* cancelled */ }
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(url);
+      toast.success('Post link copied!');
+    }
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    setShowMenu(false);
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      onDelete?.(post.id);
+    }
+  };
+
+  const displayName = post.user_name || post.username || profile?.name || 'User';
+  const displayUsername = post.username || profile?.username || '';
+  const displayAvatar = post.user_avatar || profile?.profile_picture;
+
   return (
     <div className="px-4 py-4 border-b border-gray-100 hover:bg-gray-50/50 transition-colors" data-testid="profile-post-card">
+      {/* Post header with username */}
+      <div className="flex items-start gap-3 mb-3">
+        <div className="cursor-pointer" onClick={() => displayUsername && navigate(`/profile/${displayUsername}`)}>
+          <UserAvatar profilePicture={displayAvatar} name={displayName} size="sm" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-gray-900 truncate cursor-pointer hover:underline"
+              onClick={() => displayUsername && navigate(`/profile/${displayUsername}`)}>
+              {displayName}
+            </span>
+            <span className="text-sm text-gray-500 truncate">@{displayUsername}</span>
+            <span className="text-xs text-gray-400 ml-auto flex-shrink-0">{relTime(post.created_at)}</span>
+          </div>
+        </div>
+        {/* Menu for own posts */}
+        {isOwn && (
+          <div className="relative">
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
+              className="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              data-testid="post-menu-btn"
+            >
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
+            {showMenu && (
+              <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20 w-40">
+                <button
+                  onClick={handleDelete}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  data-testid="delete-post-btn"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete post
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {post.quiz_details && (
         <div className="mb-3 rounded-xl border border-blue-100 overflow-hidden">
           <div className="bg-blue-50 px-3 py-2 flex items-center gap-2">
@@ -118,8 +215,32 @@ const PostCard = ({ post, isOwn, onDelete }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1">
+      {/* Action buttons: Comment, Repost, Like, Share, Bookmark */}
+      <div className="flex items-center justify-between -ml-1">
+        <div className="flex items-center gap-0.5">
+          {/* Comment */}
+          <button
+            onClick={(e) => { e.stopPropagation(); toast.info('Comments coming soon'); }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all active:scale-95"
+            data-testid="post-comment-btn"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>{post.comments_count || post.comment_count || 0}</span>
+          </button>
+
+          {/* Repost */}
+          <button
+            onClick={handleRepost}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 ${
+              shared ? 'text-green-500 bg-green-50' : 'text-gray-500 hover:text-green-500 hover:bg-green-50'
+            }`}
+            data-testid="post-repost-btn"
+          >
+            <Repeat2 className={`w-3.5 h-3.5 ${shared ? 'stroke-[2.5px]' : ''}`} />
+            <span>{(post.shares_count || post.share_count || 0) + (shared ? 1 : 0)}</span>
+          </button>
+
+          {/* Like */}
           <button
             onClick={toggleLike}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 ${
@@ -130,32 +251,25 @@ const PostCard = ({ post, isOwn, onDelete }) => {
             <Heart className={`w-3.5 h-3.5 ${liked ? 'fill-red-500' : ''}`} />
             <span>{likes}</span>
           </button>
-          <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all">
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>{post.comments_count || 0}</span>
-          </button>
-          <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all">
-            <Share2 className="w-3.5 h-3.5" />
-            <span>{post.shares_count || 0}</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
+
+          {/* Share (clipboard/native) */}
           <button
-            onClick={() => setSaved(s => !s)}
-            className={`p-1.5 rounded-full transition-all ${saved ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:bg-gray-100'}`}
+            onClick={handleShare}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-indigo-500 hover:bg-indigo-50 transition-all active:scale-95"
+            data-testid="post-share-btn"
           >
-            <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-blue-600' : ''}`} />
+            <Share2 className="w-3.5 h-3.5" />
           </button>
-          {isOwn && (
-            <button
-              onClick={() => onDelete?.(post.id)}
-              className="p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
-            >
-              <MoreHorizontal className="w-3.5 h-3.5" />
-            </button>
-          )}
-          <span className="text-xs text-gray-400">{relTime(post.created_at)}</span>
         </div>
+
+        {/* Bookmark */}
+        <button
+          onClick={toggleBookmark}
+          className={`p-1.5 rounded-full transition-all active:scale-95 ${saved ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:text-blue-500 hover:bg-gray-100'}`}
+          data-testid="post-bookmark-btn"
+        >
+          <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-blue-600' : ''}`} />
+        </button>
       </div>
     </div>
   );
@@ -190,6 +304,17 @@ const Profile = () => {
   const [followStatus, setFollowStatus] = useState(null);
   const [stats, setStats] = useState(null);
   const [mutualFollowers, setMutualFollowers] = useState([]);
+
+  const [showExamPicker, setShowExamPicker] = useState(false);
+
+  // Available exams (from the website)
+  const AVAILABLE_EXAMS = [
+    'JEE Main', 'JEE Advanced', 'NEET', 'UPSC CSE', 'CAT',
+    'GATE', 'CBSE Class 10', 'CBSE Class 12', 'ICSE',
+    'RPSC', 'SSC CGL', 'IBPS PO', 'NDA', 'CLAT',
+    'Physics', 'Chemistry', 'Mathematics', 'Biology',
+    'English', 'General Knowledge', 'Reasoning'
+  ];
 
   // Resolved user ID (fetched from profile)
   const [resolvedUserId, setResolvedUserId] = useState(null);
@@ -307,6 +432,26 @@ const Profile = () => {
 
   const handleBlockAndRedirect = () => navigate('/victory-lane');
 
+  const handleAddExam = async (exam) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const currentExams = profile.exam_focus || [];
+      if (currentExams.includes(exam)) { toast.info('Already added'); return; }
+      const updated = [...currentExams, exam];
+      await axios.put(
+        `${BACKEND_URL}/api/profile/update`,
+        { exam_focus: updated },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setProfile(prev => ({ ...prev, exam_focus: updated }));
+      toast.success(`Added ${exam}`);
+      setShowExamPicker(false);
+    } catch {
+      toast.error('Failed to add exam');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -332,6 +477,51 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-50" data-testid="profile-page">
       <Header isLoggedIn={!!currentUser} user={currentUser} onLogout={logout} />
+
+      {/* Exam Picker Modal */}
+      {showExamPicker && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" data-testid="exam-picker-modal">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="font-bold text-gray-900">Add Exam Focus</h3>
+              <button onClick={() => setShowExamPicker(false)} className="p-1.5 hover:bg-gray-100 rounded-full"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="p-4 overflow-y-auto max-h-[60vh]">
+              <p className="text-sm text-gray-500 mb-3">Select exams you're preparing for:</p>
+              <div className="flex flex-wrap gap-2">
+                {AVAILABLE_EXAMS.filter(e => !(profile?.exam_focus || []).includes(e)).map(exam => {
+                  const s = examTagStyle(exam);
+                  return (
+                    <button
+                      key={exam}
+                      onClick={() => handleAddExam(exam)}
+                      className={`inline-flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-full border transition-all hover:scale-105 active:scale-95 ${s.bg} ${s.text} ${s.border}`}
+                    >
+                      <Plus className="w-3 h-3" />
+                      {exam}
+                    </button>
+                  );
+                })}
+              </div>
+              {(profile?.exam_focus || []).length > 0 && (
+                <div className="mt-4 pt-3 border-t">
+                  <p className="text-xs text-gray-500 mb-2">Your current exams:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {profile.exam_focus.map(tag => {
+                      const s = examTagStyle(tag);
+                      return (
+                        <span key={tag} className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${s.bg} ${s.text} ${s.border}`}>
+                          <Target className="w-3 h-3" />{tag}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-2xl mx-auto">
 
@@ -363,7 +553,7 @@ const Profile = () => {
                 {isOwnProfile ? (
                   <>
                     <button
-                      onClick={() => navigate('/settings/profile')}
+                      onClick={() => toast.info('Edit profile coming soon!')}
                       className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                       data-testid="edit-profile-btn"
                     >
@@ -371,7 +561,7 @@ const Profile = () => {
                       Edit profile
                     </button>
                     <button
-                      onClick={() => navigate('/create-post')}
+                      onClick={() => navigate('/victory-lane')}
                       className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
                       data-testid="create-post-btn"
                     >
@@ -382,7 +572,11 @@ const Profile = () => {
                 ) : (
                   currentUser && (
                     <>
-                      <button className="px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                      <button
+                        onClick={() => toast.info('Messaging coming soon!')}
+                        className="px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                        data-testid="message-btn"
+                      >
                         Message
                       </button>
                       <FollowButton
@@ -425,7 +619,7 @@ const Profile = () => {
                 })}
                 {isOwnProfile && (
                   <button
-                    onClick={() => navigate('/settings/profile')}
+                    onClick={() => setShowExamPicker(true)}
                     className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border border-dashed border-gray-300 text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
                   >
                     <Plus className="w-3 h-3" />
@@ -436,7 +630,7 @@ const Profile = () => {
             )}
             {!profile.exam_focus?.length && isOwnProfile && (
               <button
-                onClick={() => navigate('/settings/profile')}
+                onClick={() => setShowExamPicker(true)}
                 className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 transition-colors mb-3"
               >
                 <Target className="w-3 h-3" />
@@ -576,6 +770,7 @@ const Profile = () => {
                   post={post}
                   isOwn={isOwnProfile}
                   onDelete={handleDeletePost}
+                  profile={profile}
                 />
               ))
             )}

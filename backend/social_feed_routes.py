@@ -1338,6 +1338,108 @@ async def unshare_post(post_id: str, request: Request, authorization: Optional[s
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error removing repost: {str(e)}")
 
+
+# ==================== BOOKMARK ENDPOINTS ====================
+
+@router.post("/posts/{post_id}/bookmark")
+async def bookmark_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
+    """Bookmark a post"""
+    try:
+        user_id = await get_user_id_from_request(authorization, request)
+        
+        # Check if post exists
+        post = await db.social_posts.find_one({"id": post_id})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Check if already bookmarked
+        existing_bookmark = await db.bookmarks.find_one({
+            "post_id": post_id,
+            "user_id": user_id
+        })
+        
+        if existing_bookmark:
+            return {"success": True, "message": "Already bookmarked"}
+        
+        # Create bookmark
+        await db.bookmarks.insert_one({
+            "id": str(uuid.uuid4()),
+            "post_id": post_id,
+            "user_id": user_id,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        # Update post's bookmarked_by array
+        await db.social_posts.update_one(
+            {"id": post_id},
+            {"$addToSet": {"bookmarked_by": user_id}}
+        )
+        
+        return {"success": True, "message": "Post bookmarked"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error bookmarking post: {str(e)}")
+
+
+@router.delete("/posts/{post_id}/bookmark")
+async def unbookmark_post(post_id: str, request: Request, authorization: Optional[str] = Header(None)):
+    """Remove bookmark from a post"""
+    try:
+        user_id = await get_user_id_from_request(authorization, request)
+        
+        # Delete bookmark
+        result = await db.bookmarks.delete_one({
+            "post_id": post_id,
+            "user_id": user_id
+        })
+        
+        if result.deleted_count == 0:
+            return {"success": True, "message": "Bookmark not found"}
+        
+        # Update post's bookmarked_by array
+        await db.social_posts.update_one(
+            {"id": post_id},
+            {"$pull": {"bookmarked_by": user_id}}
+        )
+        
+        return {"success": True, "message": "Bookmark removed"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error removing bookmark: {str(e)}")
+
+
+@router.get("/bookmarks")
+async def get_user_bookmarks(request: Request, authorization: Optional[str] = Header(None)):
+    """Get user's bookmarked posts"""
+    try:
+        user_id = await get_user_id_from_request(authorization, request)
+        
+        # Get all bookmarks for user
+        bookmarks = await db.bookmarks.find(
+            {"user_id": user_id}
+        ).sort("created_at", -1).to_list(length=100)
+        
+        post_ids = [b["post_id"] for b in bookmarks]
+        
+        # Get the actual posts
+        posts = await db.social_posts.find(
+            {"id": {"$in": post_ids}},
+            {"_id": 0}
+        ).to_list(length=100)
+        
+        # Mark all as bookmarked
+        for post in posts:
+            post["user_bookmarked"] = True
+        
+        return {"success": True, "posts": posts}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching bookmarks: {str(e)}")
+
+
 # ==================== USER PROFILE ENDPOINTS ====================
 
 @router.get("/user/{user_id}")

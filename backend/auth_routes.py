@@ -432,7 +432,14 @@ async def demo_login(login_data: DemoLoginRequest):
         # Upsert user into database to ensure permissions work
         # This makes sure demo users exist in the database with their data
         try:
-            user_in_db = await db.users.find_one({"id": user_data["id"]})
+            # First check if user exists by username (to handle ID mismatch)
+            user_in_db = await db.users.find_one({"username": user_data["username"]})
+            if user_in_db:
+                # Use the actual ID from database
+                user_data["id"] = user_in_db["id"]
+            else:
+                # Check by the demo ID
+                user_in_db = await db.users.find_one({"id": user_data["id"]})
             print(f"📝 User in DB: {user_in_db is not None}")
             if not user_in_db:
                 # Insert demo user into database (without password in stored doc)

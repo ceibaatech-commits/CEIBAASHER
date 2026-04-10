@@ -359,12 +359,38 @@ async def block_user(request: Request):
 async def get_user_stats(user_id: str):
     """Get quiz/battle stats for a user."""
     try:
+        # Resolve all possible user IDs (handle demo user ID mismatch)
+        user_ids = [user_id]
+        user_doc = await db.users.find_one(
+            {"$or": [{"id": user_id}, {"username": user_id}]},
+            {"_id": 0, "id": 1, "username": 1, "xp": 1, "total_xp": 1}
+        )
+        if user_doc and user_doc.get("id") != user_id:
+            user_ids.append(user_doc["id"])
+
+        # Also check for demo user IDs
+        demo_mapping = {"demo1-uuid": "demostudent1", "demo2-uuid": "demostudent2", "demo3-uuid": "demostudent3"}
+        reverse_demo = {v: k for k, v in demo_mapping.items()}
+        if user_id in demo_mapping:
+            mapped_user = await db.users.find_one({"username": demo_mapping[user_id]}, {"_id": 0, "id": 1})
+            if mapped_user:
+                user_ids.append(mapped_user["id"])
+        elif user_id in reverse_demo:
+            user_ids.append(reverse_demo[user_id])
+        if user_doc:
+            uname = user_doc.get("username", "")
+            if uname in reverse_demo:
+                user_ids.append(reverse_demo[uname])
+
+        user_ids = list(set(user_ids))
+        uid_query = {"user_id": {"$in": user_ids}}
+
         # Count quizzes completed
-        quizzes_completed = await db.quiz_history.count_documents({"user_id": user_id})
+        quizzes_completed = await db.quiz_history.count_documents(uid_query)
 
         # Calculate average score
         pipeline = [
-            {"$match": {"user_id": user_id}},
+            {"$match": uid_query},
             {"$group": {"_id": None, "avg_score": {"$avg": "$accuracy"}}}
         ]
         avg_result = await db.quiz_history.aggregate(pipeline).to_list(1)
@@ -372,25 +398,21 @@ async def get_user_stats(user_id: str):
 
         # Count battle wins
         battle_wins = await db.user_battle_history.count_documents({
-            "user_id": user_id,
+            **uid_query,
             "$or": [{"result": "won"}, {"is_winner": True}, {"rank": 1}]
         })
 
-        # Calculate rank (by total XP or quizzes)
+        # Calculate rank
         rank = None
-        try:
-            user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "xp": 1, "total_xp": 1})
-            if user_doc:
-                user_xp = user_doc.get("total_xp", user_doc.get("xp", 0))
-                if user_xp > 0:
-                    rank = await db.users.count_documents({
-                        "$or": [
-                            {"total_xp": {"$gt": user_xp}},
-                            {"xp": {"$gt": user_xp}}
-                        ]
-                    }) + 1
-        except Exception:
-            pass
+        if user_doc:
+            user_xp = user_doc.get("total_xp", user_doc.get("xp", 0))
+            if user_xp and user_xp > 0:
+                rank = await db.users.count_documents({
+                    "$or": [
+                        {"total_xp": {"$gt": user_xp}},
+                        {"xp": {"$gt": user_xp}}
+                    ]
+                }) + 1
 
         return {
             "success": True,
@@ -1146,7 +1168,14 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
         can_view = True
         
         # Fetch user's posts from social_posts collection
-        posts = await db.social_posts.find({"user_id": user_id}).sort("created_at", -1).to_list(length=100)
+        # Also check by username to handle demo user ID mismatch
+        posts = await db.social_posts.find({
+            "$or": [
+                {"user_id": user_id},
+                {"username": user.get("username", "")},
+                {"user_name": user.get("name", "")}
+            ]
+        }).sort("created_at", -1).to_list(length=100)
         
         # Remove MongoDB _id field from each post and ensure is_retweet is explicitly set
         for post in posts:

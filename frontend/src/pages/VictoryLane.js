@@ -164,6 +164,11 @@ const VictoryLane = () => {
                     onToggleLike={feed.toggleLike}
                     onToggleShare={feed.toggleShare}
                     onToggleBookmark={feed.toggleBookmark}
+                    onShareLink={(postId) => {
+                      const url = `${window.location.origin}/post/${postId}`;
+                      if (navigator.share) navigator.share({ title: 'Check this post', url }).catch(() => {});
+                      else if (navigator.clipboard) navigator.clipboard.writeText(url);
+                    }}
                     onToggleComments={feed.toggleComments}
                     onOpenMenu={feed.setOpenMenuId}
                     onDeletePost={feed.handleDeleteClick}
