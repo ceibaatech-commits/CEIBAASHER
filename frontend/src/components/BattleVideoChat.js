@@ -94,6 +94,7 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
   const remoteVideoRef = useRef(null);
   const pcRef = useRef(null); // RTCPeerConnection
   const localStreamRef = useRef(null); // MediaStream
+  const remoteStreamRef = useRef(null); // Remote MediaStream (persists across minimize/maximize)
   const pendingCandidates = useRef([]); // ICE candidates buffered before SDP
   const makingOffer = useRef(false);
   const ignoreOffer = useRef(false);
@@ -107,6 +108,23 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
     phaseRef.current = phase;
   }, [phase]);
 
+  // ── Re-attach streams when minimize/maximize toggles ──────────────────────
+  // React destroys the old <video> DOM nodes and creates new ones.
+  // We must re-set srcObject on the new elements so they don't go black.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      if (localVideoRef.current && localStreamRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
+        localVideoRef.current.play().catch(noop);
+      }
+      if (remoteVideoRef.current && remoteStreamRef.current) {
+        remoteVideoRef.current.srcObject = remoteStreamRef.current;
+        remoteVideoRef.current.play().catch(noop);
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [minimised]);
+
   // ── Logging ───────────────────────────────────────────────────────────────
   const log = useCallback((msg) => {
     if (process.env.NODE_ENV !== 'production') {
@@ -116,6 +134,7 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
 
   // ── Attach remote stream to <video> element ───────────────────────────────
   const attachRemoteStream = useCallback((stream) => {
+    remoteStreamRef.current = stream; // persist for re-attach on minimize/maximize
     if (!remoteVideoRef.current) return;
     remoteVideoRef.current.srcObject = stream;
     remoteVideoRef.current.play().catch(noop);
@@ -149,6 +168,7 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
 
     if (localVideoRef.current) localVideoRef.current.srcObject = null;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    remoteStreamRef.current = null;
 
     setRemoteReady(false);
     setPhase('idle');
