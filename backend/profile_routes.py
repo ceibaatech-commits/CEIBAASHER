@@ -260,6 +260,193 @@ async def create_notification(
 
 # ==================== PROFILE ENDPOINTS ====================
 
+# --- Close friend endpoint ---
+@router.post("/close-friend")
+async def toggle_close_friend(request: Request):
+    """Add or remove a user from close friends list."""
+    try:
+        body = await request.json()
+        target_user_id = body.get("target_user_id")
+        action = body.get("action", "add")  # 'add' or 'remove'
+
+        authorization = request.headers.get("authorization")
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+
+        token = authorization.replace("Bearer ", "")
+        import jwt
+        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production"), algorithms=["HS256"])
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        if action == "add":
+            await db.close_friends.update_one(
+                {"user_id": user_id, "friend_id": target_user_id},
+                {"$set": {"user_id": user_id, "friend_id": target_user_id, "created_at": datetime.now(timezone.utc).isoformat()}},
+                upsert=True
+            )
+            # Also update follow relationship type
+            await db.follows.update_one(
+                {"follower_id": user_id, "following_id": target_user_id},
+                {"$set": {"follow_type": "close_friend"}}
+            )
+        else:
+            await db.close_friends.delete_one({"user_id": user_id, "friend_id": target_user_id})
+            await db.follows.update_one(
+                {"follower_id": user_id, "following_id": target_user_id},
+                {"$set": {"follow_type": "approved"}}
+            )
+
+        return {"success": True, "action": action}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Block user endpoint ---
+@router.post("/block")
+async def block_user(request: Request):
+    """Block a user."""
+    try:
+        body = await request.json()
+        target_user_id = body.get("target_user_id")
+
+        authorization = request.headers.get("authorization")
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+
+        token = authorization.replace("Bearer ", "")
+        import jwt
+        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production"), algorithms=["HS256"])
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        # Add to blocks
+        await db.blocks.update_one(
+            {"blocker_id": user_id, "blocked_id": target_user_id},
+            {"$set": {"blocker_id": user_id, "blocked_id": target_user_id, "created_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True
+        )
+
+        # Remove any follow relationship
+        await db.follows.delete_many({
+            "$or": [
+                {"follower_id": user_id, "following_id": target_user_id},
+                {"follower_id": target_user_id, "following_id": user_id}
+            ]
+        })
+
+        # Remove from close friends
+        await db.close_friends.delete_many({
+            "$or": [
+                {"user_id": user_id, "friend_id": target_user_id},
+                {"user_id": target_user_id, "friend_id": user_id}
+            ]
+        })
+
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- User stats endpoint ---
+@router.get("/stats/{user_id}")
+async def get_user_stats(user_id: str):
+    """Get quiz/battle stats for a user."""
+    try:
+        # Count quizzes completed
+        quizzes_completed = await db.quiz_history.count_documents({"user_id": user_id})
+
+        # Calculate average score
+        pipeline = [
+            {"$match": {"user_id": user_id}},
+            {"$group": {"_id": None, "avg_score": {"$avg": "$accuracy"}}}
+        ]
+        avg_result = await db.quiz_history.aggregate(pipeline).to_list(1)
+        avg_score = avg_result[0]["avg_score"] if avg_result else 0
+
+        # Count battle wins
+        battle_wins = await db.user_battle_history.count_documents({
+            "user_id": user_id,
+            "$or": [{"result": "won"}, {"is_winner": True}, {"rank": 1}]
+        })
+
+        # Calculate rank (by total XP or quizzes)
+        rank = None
+        try:
+            user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "xp": 1, "total_xp": 1})
+            if user_doc:
+                user_xp = user_doc.get("total_xp", user_doc.get("xp", 0))
+                if user_xp > 0:
+                    rank = await db.users.count_documents({
+                        "$or": [
+                            {"total_xp": {"$gt": user_xp}},
+                            {"xp": {"$gt": user_xp}}
+                        ]
+                    }) + 1
+        except Exception:
+            pass
+
+        return {
+            "success": True,
+            "quizzes_completed": quizzes_completed,
+            "avg_score": round(avg_score, 1) if avg_score else 0,
+            "battle_wins": battle_wins,
+            "rank": rank
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Mutual followers endpoint ---
+@router.get("/mutual-followers/{target_user_id}")
+async def get_mutual_followers(target_user_id: str, request: Request):
+    """Get users that both the current user and target user follow."""
+    try:
+        authorization = request.headers.get("authorization")
+        if not authorization:
+            return {"success": True, "mutual": []}
+
+        token = authorization.replace("Bearer ", "")
+        import jwt
+        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production"), algorithms=["HS256"])
+        user_id = payload.get("sub")
+        if not user_id:
+            return {"success": True, "mutual": []}
+
+        # Get people who follow the target user
+        target_followers = await db.follows.find(
+            {"following_id": target_user_id, "status": "approved"},
+            {"_id": 0, "follower_id": 1}
+        ).to_list(500)
+        target_follower_ids = {f["follower_id"] for f in target_followers}
+
+        # Get people the current user follows
+        my_following = await db.follows.find(
+            {"follower_id": user_id, "status": "approved"},
+            {"_id": 0, "following_id": 1}
+        ).to_list(500)
+        my_following_ids = {f["following_id"] for f in my_following}
+
+        # Intersection
+        mutual_ids = list(target_follower_ids & my_following_ids)[:5]
+
+        mutual_users = []
+        for mid in mutual_ids:
+            u = await db.users.find_one({"id": mid}, {"_id": 0, "id": 1, "name": 1, "username": 1, "profile_picture": 1})
+            if u:
+                mutual_users.append(u)
+
+        return {"success": True, "mutual": mutual_users}
+    except Exception as e:
+        return {"success": True, "mutual": []}
+
+
 @router.get("/{username}")
 async def get_user_profile(username: str, current_user_id: Optional[str] = None):
     """

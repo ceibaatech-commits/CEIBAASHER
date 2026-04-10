@@ -129,7 +129,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/earn" element={<Earn />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
-          <Route path="/profile/:username" element={<PublicProfile />} />
+          <Route path="/profile/:username" element={<Profile />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings/privacy" element={<PrivacySettings />} />
           

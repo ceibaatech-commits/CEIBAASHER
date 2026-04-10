@@ -1,799 +1,673 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { 
-  Heart, MessageCircle, Trophy, Calendar, MapPin, Link2, 
-  CheckCircle2, Users, ArrowLeft, Play, Clock, Plus, MoreHorizontal, Trash2, Edit2
+import {
+  MapPin, Calendar, Link2, ArrowLeft, MoreHorizontal,
+  Trophy, Zap, Target, BookOpen, Edit2, Plus,
+  Heart, MessageCircle, Share2, Bookmark, CheckCircle2,
+  Users, Activity, Award
 } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import UserAvatar from '../components/UserAvatar';
 import VideoPost from '../components/VictoryLane/VideoPost';
+import FollowButton from '../components/FollowButton';
 
 const BACKEND_URL = window.location.origin;
 
+// Exam tag colours
+const EXAM_COLORS = {
+  'JEE':        { bg: 'bg-blue-50',   text: 'text-blue-800',   border: 'border-blue-200' },
+  'NEET':       { bg: 'bg-green-50',  text: 'text-green-800',  border: 'border-green-200' },
+  'UPSC':       { bg: 'bg-amber-50',  text: 'text-amber-800',  border: 'border-amber-200' },
+  'Physics':    { bg: 'bg-purple-50', text: 'text-purple-800', border: 'border-purple-200' },
+  'Chemistry':  { bg: 'bg-teal-50',   text: 'text-teal-800',   border: 'border-teal-200' },
+  'Mathematics':{ bg: 'bg-indigo-50', text: 'text-indigo-800', border: 'border-indigo-200' },
+  'Biology':    { bg: 'bg-pink-50',   text: 'text-pink-800',   border: 'border-pink-200' },
+};
+const examTagStyle = (tag) => {
+  for (const [key, val] of Object.entries(EXAM_COLORS)) {
+    if (tag.includes(key)) return val;
+  }
+  return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+};
+
+// Role badge
+const RoleBadge = ({ profile }) => {
+  if (profile.isProfessor || profile.badges?.isProfessor)
+    return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200"><Award className="w-3 h-3" />Professor</span>;
+  if (profile.isTeacher || profile.badges?.isTeacher)
+    return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200"><Trophy className="w-3 h-3" />Teacher</span>;
+  if (profile.isOfficial || profile.badges?.isOfficial)
+    return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-gray-800 text-white"><CheckCircle2 className="w-3 h-3" />Official</span>;
+  return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200"><BookOpen className="w-3 h-3" />Student</span>;
+};
+
+// Relative time
+const relTime = (ts) => {
+  if (!ts) return '';
+  const diff = Date.now() - new Date(ts).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `${d}d`;
+  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+};
+
+// Post card
+const PostCard = ({ post, isOwn, onDelete }) => {
+  const [liked, setLiked] = useState(post.liked_by_user || false);
+  const [likes, setLikes] = useState(post.likes_count || 0);
+  const [saved, setSaved] = useState(false);
+
+  const toggleLike = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const next = !liked;
+    setLiked(next);
+    setLikes(l => next ? l + 1 : Math.max(0, l - 1));
+    try {
+      await axios[next ? 'post' : 'delete'](
+        `${BACKEND_URL}/api/social/posts/${post.id}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch { setLiked(!next); setLikes(l => next ? l - 1 : l + 1); }
+  };
+
+  return (
+    <div className="px-4 py-4 border-b border-gray-100 hover:bg-gray-50/50 transition-colors" data-testid="profile-post-card">
+      {post.quiz_details && (
+        <div className="mb-3 rounded-xl border border-blue-100 overflow-hidden">
+          <div className="bg-blue-50 px-3 py-2 flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-blue-600 flex items-center justify-center flex-shrink-0">
+              <Target className="w-3 h-3 text-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-blue-900 truncate">{post.quiz_details.title || 'Quiz'}</p>
+              <p className="text-xs text-blue-600">{post.quiz_details.category} · {post.quiz_details.num_questions || '-'} questions</p>
+            </div>
+            <button className="text-xs font-semibold px-3 py-1.5 bg-blue-600 text-white rounded-full shrink-0 hover:bg-blue-700 transition-colors">
+              Attempt
+            </button>
+          </div>
+        </div>
+      )}
+
+      {post.content && (
+        <p className="text-sm text-gray-800 leading-relaxed mb-3 whitespace-pre-wrap">
+          {post.content.split(/(#\w+)/g).map((part, i) =>
+            /^#/.test(part)
+              ? <span key={i} className="text-blue-600 font-medium hover:underline cursor-pointer">{part}</span>
+              : part
+          )}
+        </p>
+      )}
+
+      {post.media_url && post.media_type === 'video' && (
+        <div className="mb-3 rounded-xl overflow-hidden"><VideoPost src={post.media_url} /></div>
+      )}
+
+      {post.media_url && post.media_type === 'image' && (
+        <div className="mb-3 rounded-xl overflow-hidden">
+          <img src={post.media_url} alt="" className="w-full object-cover max-h-80" loading="lazy" />
+        </div>
+      )}
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={toggleLike}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium transition-all active:scale-95 ${
+              liked ? 'text-red-500 bg-red-50' : 'text-gray-500 hover:text-red-400 hover:bg-red-50'
+            }`}
+            data-testid="post-like-btn"
+          >
+            <Heart className={`w-3.5 h-3.5 ${liked ? 'fill-red-500' : ''}`} />
+            <span>{likes}</span>
+          </button>
+          <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-all">
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>{post.comments_count || 0}</span>
+          </button>
+          <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium text-gray-500 hover:text-green-500 hover:bg-green-50 transition-all">
+            <Share2 className="w-3.5 h-3.5" />
+            <span>{post.shares_count || 0}</span>
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSaved(s => !s)}
+            className={`p-1.5 rounded-full transition-all ${saved ? 'text-blue-600 bg-blue-50' : 'text-gray-400 hover:bg-gray-100'}`}
+          >
+            <Bookmark className={`w-3.5 h-3.5 ${saved ? 'fill-blue-600' : ''}`} />
+          </button>
+          {isOwn && (
+            <button
+              onClick={() => onDelete?.(post.id)}
+              className="p-1.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+            >
+              <MoreHorizontal className="w-3.5 h-3.5" />
+            </button>
+          )}
+          <span className="text-xs text-gray-400">{relTime(post.created_at)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Achievement card
+const AchCard = ({ title, sub, xp, icon: Icon, color }) => (
+  <div className="border border-gray-100 rounded-2xl p-4 hover:shadow-sm transition-shadow">
+    <div className={`w-10 h-10 rounded-xl mb-3 flex items-center justify-center ${color}`}>
+      <Icon className="w-5 h-5" />
+    </div>
+    <p className="text-sm font-semibold text-gray-900">{title}</p>
+    <p className="text-xs text-gray-500 mt-0.5">{sub}</p>
+    {xp && <p className="text-xs font-semibold text-amber-600 mt-2">+{xp} XP</p>}
+  </div>
+);
+
+// MAIN COMPONENT
 const Profile = () => {
-  const { userId } = useParams();
+  const { username } = useParams();
   const navigate = useNavigate();
   const { user: currentUser, logout } = useAuth();
-  
+
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [followers, setFollowers] = useState([]);
   const [following, setFollowing] = useState([]);
   const [activeTab, setActiveTab] = useState('posts');
   const [loading, setLoading] = useState(true);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-  const [openMenuId, setOpenMenuId] = useState(null);
-  const [showQuickPostModal, setShowQuickPostModal] = useState(false);
-  const [newPostContent, setNewPostContent] = useState('');
+  const [followStatus, setFollowStatus] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [mutualFollowers, setMutualFollowers] = useState([]);
 
-  // Fetch profile data
-  useEffect(() => {
-    if (userId) {
-      fetchProfile();
-      fetchUserPosts();
-    }
-  }, [userId]);
+  // Resolved user ID (fetched from profile)
+  const [resolvedUserId, setResolvedUserId] = useState(null);
+  const isOwnProfile = currentUser && (currentUser.id === resolvedUserId || currentUser.username === username);
 
-  // Check if current user follows this profile
-  useEffect(() => {
-    if (currentUser && userId && userId !== currentUser.id) {
-      checkFollowStatus();
-    }
-  }, [currentUser, userId]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}`);
-      console.log('Profile API response:', response.data);
-      if (response.data.success && response.data.user) {
-        const userData = response.data.user;
-        setProfile(userData);
-        setFollowersCount(userData.followers_count || 0);
-        setFollowingCount(userData.following_count || 0);
+      const res = await axios.get(`${BACKEND_URL}/api/profile/${username}`, {
+        params: { current_user_id: currentUser?.id }
+      });
+      const userData = res.data.user || res.data.profile;
+      if (res.data.success && userData) {
+        const u = userData;
+        setProfile(u);
+        setResolvedUserId(u.id);
+        setFollowersCount(u.followers_count || 0);
+        setFollowingCount(u.following_count || 0);
+        setFollowStatus(u.follow_status || null);
       } else {
-        console.error('Profile not found or API returned no user data');
         setProfile(null);
       }
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      setProfile(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    } catch { setProfile(null); }
+    finally { setLoading(false); }
+  }, [username, currentUser?.id]);
 
-  const fetchUserPosts = async () => {
+  const fetchPosts = useCallback(async (uid) => {
+    if (!uid) return;
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}/posts`);
-      if (response.data.success) {
-        setPosts(response.data.posts || []);
-      }
-    } catch (error) {
-      console.error('Error fetching user posts:', error);
-      setPosts([]);
-    }
-  };
-
-  const fetchFollowers = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}/followers`);
-      if (response.data.success) {
-        setFollowers(response.data.followers || []);
-      }
-    } catch (error) {
-      console.error('Error fetching followers:', error);
-      setFollowers([]);
-    }
-  };
-
-  const fetchFollowing = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/user/${userId}/following`);
-      if (response.data.success) {
-        setFollowing(response.data.following || []);
-      }
-    } catch (error) {
-      console.error('Error fetching following:', error);
-      setFollowing([]);
-    }
-  };
-
-  const checkFollowStatus = async () => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/user/${currentUser.id}/following`);
-      if (response.data.success) {
-        const followingIds = response.data.following?.map(f => f.id || f.user_id) || [];
-        setIsFollowing(followingIds.includes(userId));
-      }
-    } catch (error) {
-      console.error('Error checking follow status:', error);
-    }
-  };
-
-  const handleFollow = async () => {
-    if (!currentUser) {
-      navigate('/login');
-      return;
-    }
-
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-      if (isFollowing) {
-        await axios.delete(`${BACKEND_URL}/api/social/user/follow/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setIsFollowing(false);
-        setFollowersCount(prev => Math.max(0, prev - 1));
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await axios.get(`${BACKEND_URL}/api/profile/${username}/posts`, {
+        params: { current_user_id: currentUser?.id },
+        headers
+      }).catch(() => null);
+      if (res?.data?.success) {
+        setPosts(res.data.posts || []);
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/user/follow/${userId}`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setIsFollowing(true);
-        setFollowersCount(prev => prev + 1);
+        // Try alternate endpoint
+        const alt = await axios.get(`${BACKEND_URL}/api/social/user/${uid}/posts`).catch(() => ({ data: {} }));
+        if (alt.data?.success) setPosts(alt.data.posts || []);
       }
-    } catch (error) {
-      console.error('Error toggling follow:', error);
+    } catch { setPosts([]); }
+  }, [username, currentUser?.id]);
+
+  const fetchStats = useCallback(async (uid) => {
+    if (!uid) return;
+    try {
+      const token = localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await axios.get(`${BACKEND_URL}/api/profile/stats/${uid}`, { headers }).catch(() => ({ data: null }));
+      if (res.data) setStats(res.data);
+    } catch { /* optional */ }
+  }, []);
+
+  const fetchMutualFollowers = useCallback(async (uid) => {
+    if (!currentUser || !uid) return;
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await axios.get(`${BACKEND_URL}/api/profile/mutual-followers/${uid}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => ({ data: { mutual: [] } }));
+      setMutualFollowers(res.data?.mutual?.slice(0, 3) || []);
+    } catch { /* ignore */ }
+  }, [currentUser]);
+
+  const fetchTabData = useCallback(async (tab) => {
+    if (!resolvedUserId) return;
+    if (tab === 'followers' && followers.length === 0) {
+      const res = await axios.get(`${BACKEND_URL}/api/profile/followers/${resolvedUserId}`).catch(() => ({ data: {} }));
+      if (res.data.success) setFollowers(res.data.followers || []);
     }
-  };
+    if (tab === 'following' && following.length === 0) {
+      const res = await axios.get(`${BACKEND_URL}/api/profile/following/${resolvedUserId}`).catch(() => ({ data: {} }));
+      if (res.data.success) setFollowing(res.data.following || []);
+    }
+  }, [resolvedUserId, followers.length, following.length]);
+
+  // Initial profile fetch
+  useEffect(() => {
+    if (username) fetchProfile();
+  }, [username, fetchProfile]);
+
+  // Once we have the resolved user ID, fetch dependent data
+  useEffect(() => {
+    if (resolvedUserId) {
+      fetchPosts(resolvedUserId);
+      fetchStats(resolvedUserId);
+      if (!isOwnProfile) fetchMutualFollowers(resolvedUserId);
+    }
+  }, [resolvedUserId, fetchPosts, fetchStats, fetchMutualFollowers, isOwnProfile]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab === 'followers' && followers.length === 0) {
-      fetchFollowers();
-    } else if (tab === 'following' && following.length === 0) {
-      fetchFollowing();
-    }
+    fetchTabData(tab);
   };
 
-  // Delete post
   const handleDeletePost = async (postId) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
-    
+    if (!window.confirm('Delete this post?')) return;
     const token = localStorage.getItem('token');
-    if (!token) return;
-
     try {
       await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setPosts(posts.filter(p => p.id !== postId));
-      setOpenMenuId(null);
-    } catch (error) {
-      console.error('Error deleting post:', error);
-    }
+      setPosts(prev => prev.filter(p => p.id !== postId));
+    } catch { alert('Failed to delete post.'); }
   };
 
-  // Create new post
-  const handleCreatePost = async () => {
-    if (!newPostContent.trim()) return;
-    
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
-    try {
-      const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
-        content: newPostContent,
-        post_type: 'general'
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      if (response.data.success) {
-        setNewPostContent('');
-        setShowQuickPostModal(false);
-        fetchUserPosts(); // Refresh posts
-      }
-    } catch (error) {
-      console.error('Error creating post:', error);
-    }
+  const handleFollowChange = (newStatus) => {
+    setFollowStatus(newStatus);
+    if (newStatus && !followStatus) setFollowersCount(c => c + 1);
+    else if (!newStatus && followStatus) setFollowersCount(c => Math.max(0, c - 1));
   };
 
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return '';
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m`;
-    if (diffHours < 24) return `${diffHours}h`;
-    if (diffDays < 7) return `${diffDays}d`;
-    return date.toLocaleDateString();
-  };
-
-  const getGradientColor = (category) => {
-    if (category?.includes('Physics')) return '#8B5CF6';
-    if (category?.includes('Chemistry')) return '#10B981';
-    if (category?.includes('Mathematics') || category?.includes('Math')) return '#3B82F6';
-    if (category?.includes('Biology')) return '#EC4899';
-    return '#6366F1';
-  };
+  const handleBlockAndRedirect = () => navigate('/victory-lane');
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-gray-50">
+        <Header isLoggedIn={!!currentUser} user={currentUser} onLogout={logout} />
+        <div className="flex justify-center items-center h-64">
+          <div className="w-10 h-10 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+        </div>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Profile Not Found</h2>
-        <button
-          onClick={() => navigate('/victory-lane')}
-          className="text-blue-600 hover:underline"
-        >
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-3">
+        <p className="text-xl font-semibold text-gray-800">Profile not found</p>
+        <button onClick={() => navigate('/victory-lane')} className="text-blue-600 hover:underline text-sm">
           Back to Victory Lane
         </button>
       </div>
     );
   }
 
-  const isOwnProfile = currentUser?.id === userId;
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" data-testid="profile-page">
       <Header isLoggedIn={!!currentUser} user={currentUser} onLogout={logout} />
-      
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Back Button */}
+
+      <div className="max-w-2xl mx-auto">
+
+        {/* Back */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-700 hover:text-purple-600 mb-4 font-semibold transition-colors"
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-3 text-sm font-medium transition-colors"
+          data-testid="profile-back-btn"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
           Back
         </button>
 
-        {/* Profile Header */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          {/* Profile Info */}
-          <div className="px-6 py-6">
-            {/* Avatar & Follow Button */}
-            <div className="flex justify-between items-start">
-              <div className="flex items-center gap-4">
-                <div className="border-4 border-purple-100 shadow-lg rounded-full">
-                  <UserAvatar
-                    profilePicture={profile.profile_picture}
-                    name={profile.name}
-                    size="xxl"
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
-                    {profile.is_verified && (
-                      <CheckCircle2 className="w-6 h-6 text-blue-500 fill-blue-500" />
-                    )}
-                  </div>
-                  <p className="text-gray-500">@{profile.username}</p>
-                </div>
+        {/* Cover + header */}
+        <div className="bg-white border-b border-gray-100">
+          <div
+            className="h-28 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50"
+            style={profile.cover_image ? { backgroundImage: `url(${profile.cover_image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+          />
+
+          <div className="px-4">
+            {/* Avatar row */}
+            <div className="flex items-end justify-between -mt-9 mb-3">
+              <div className="border-3 border-white rounded-full shadow-md">
+                <UserAvatar profilePicture={profile.profile_picture} name={profile.name} size="xxl" />
               </div>
-              {!isOwnProfile && currentUser && (
-                <button
-                  onClick={handleFollow}
-                  className={`px-6 py-2 rounded-full font-semibold transition-all ${
-                    isFollowing
-                      ? 'border-2 border-gray-300 bg-white text-gray-700 hover:border-red-300 hover:bg-red-50 hover:text-red-600'
-                      : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-lg'
-                  }`}
-                >
-                  {isFollowing ? 'Following' : 'Follow'}
-                </button>
-              )}
+
+              <div className="flex items-center gap-2 mt-10">
+                {isOwnProfile ? (
+                  <>
+                    <button
+                      onClick={() => navigate('/settings/profile')}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                      data-testid="edit-profile-btn"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      Edit profile
+                    </button>
+                    <button
+                      onClick={() => navigate('/create-post')}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors"
+                      data-testid="create-post-btn"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Post
+                    </button>
+                  </>
+                ) : (
+                  currentUser && (
+                    <>
+                      <button className="px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        Message
+                      </button>
+                      <FollowButton
+                        targetUserId={resolvedUserId}
+                        targetUsername={profile.username || profile.name}
+                        initialStatus={followStatus}
+                        onFollowChange={handleFollowChange}
+                        onBlock={handleBlockAndRedirect}
+                      />
+                    </>
+                  )
+                )}
+              </div>
             </div>
-            
-            {/* Badges Section */}
-            {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute) && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {(profile.badges.isTeacher || profile.isTeacher) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-100 text-blue-700 border-2 border-blue-200 shadow-sm"
-                    title="Teacher Badge"
-                  >
-                    <Trophy className="w-4 h-4 mr-1.5" />
-                    Teacher
-                  </span>
-                )}
-                {(profile.badges?.isProfessor || profile.isProfessor) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-indigo-100 text-indigo-800 border-2 border-indigo-200 shadow-sm"
-                    title="Professor Badge"
-                  >
-                    <Trophy className="w-4 h-4 mr-1.5" />
-                    Professor
-                  </span>
-                )}
-                {(profile.badges?.isOfficial || profile.isOfficial) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-600 text-white border-2 border-gray-700 shadow-sm"
-                    title="Official Badge"
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-1.5 fill-white" />
-                    Official
-                  </span>
-                )}
-                {(profile.badges?.isInstitute || profile.isInstitute) && (
-                  <span 
-                    className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold text-white border-2 shadow-sm"
-                    style={{backgroundColor: '#8B2E2E', borderColor: '#6B1E1E'}}
-                    title="Institute Badge"
-                  >
-                    <Trophy className="w-4 h-4 mr-1.5" />
-                    Institute
-                  </span>
-                )}
-              </div>
-            )}
-            
+
+            {/* Name + role */}
+            <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+              <h1 className="text-xl font-bold text-gray-900">{profile.name}</h1>
+              {profile.is_verified && <CheckCircle2 className="w-5 h-5 text-blue-500 fill-blue-100" />}
+              <RoleBadge profile={profile} />
+            </div>
+            <p className="text-sm text-gray-500 mb-2">@{profile.username}</p>
+
             {/* Bio */}
             {profile.bio && (
-              <p className="text-gray-700 mt-4">{profile.bio}</p>
+              <p className="text-sm text-gray-700 leading-relaxed mb-3">{profile.bio}</p>
             )}
-            
-            {/* Location & Website & Joined */}
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500 mt-4">
+
+            {/* Exam focus tags */}
+            {profile.exam_focus && profile.exam_focus.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {profile.exam_focus.map(tag => {
+                  const s = examTagStyle(tag);
+                  return (
+                    <span key={tag} className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${s.bg} ${s.text} ${s.border}`}>
+                      <Target className="w-3 h-3" />
+                      {tag}
+                    </span>
+                  );
+                })}
+                {isOwnProfile && (
+                  <button
+                    onClick={() => navigate('/settings/profile')}
+                    className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border border-dashed border-gray-300 text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add exam
+                  </button>
+                )}
+              </div>
+            )}
+            {!profile.exam_focus?.length && isOwnProfile && (
+              <button
+                onClick={() => navigate('/settings/profile')}
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 transition-colors mb-3"
+              >
+                <Target className="w-3 h-3" />
+                Add exam focus (JEE, NEET, UPSC...)
+              </button>
+            )}
+
+            {/* Meta row */}
+            <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-3">
               {profile.location && (
-                <span className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" />
-                  {profile.location}
-                </span>
+                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{profile.location}</span>
               )}
               {profile.website && (
-                <a 
-                  href={profile.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-blue-500 hover:underline"
-                >
-                  <Link2 className="w-4 h-4" />
-                  {profile.website}
+                <a href={profile.website} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-500 hover:underline">
+                  <Link2 className="w-3.5 h-3.5" />{profile.website.replace(/^https?:\/\//, '')}
                 </a>
               )}
               <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                Joined {new Date(profile.joined_at || profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                <Calendar className="w-3.5 h-3.5" />
+                Joined {new Date(profile.joined_at || profile.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
               </span>
             </div>
-            
-            {/* Stats */}
-            <div className="flex gap-6 border-t border-gray-200 mt-4 pt-4">
-              <div className="text-center cursor-pointer hover:bg-gray-50 px-4 py-2 rounded-lg transition" onClick={() => handleTabChange('posts')}>
-                <p className="text-2xl font-bold text-gray-900">{profile.posts_count || posts.length || 0}</p>
-                <p className="text-sm text-gray-500">Posts</p>
+
+            {/* Mutual followers */}
+            {!isOwnProfile && mutualFollowers.length > 0 && (
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex">
+                  {mutualFollowers.map((u, i) => (
+                    <div
+                      key={u.id}
+                      className="w-5 h-5 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-indigo-700 font-bold text-xs"
+                      style={{ marginLeft: i > 0 ? -6 : 0, zIndex: mutualFollowers.length - i }}
+                    >
+                      {(u.name || u.username || '?')[0].toUpperCase()}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500">
+                  Followed by {mutualFollowers.map(u => u.name || u.username).join(', ')}
+                  {followersCount > mutualFollowers.length && ` and ${followersCount - mutualFollowers.length} others you follow`}
+                </p>
               </div>
-              <div className="text-center cursor-pointer hover:bg-gray-50 px-4 py-2 rounded-lg transition" onClick={() => handleTabChange('followers')}>
-                <p className="text-2xl font-bold text-gray-900">{followersCount}</p>
-                <p className="text-sm text-gray-500">Followers</p>
+            )}
+
+            {/* Close friend status badge */}
+            {!isOwnProfile && followStatus === 'close_friend' && (
+              <div className="flex items-center gap-1.5 mb-3">
+                <div className="w-2 h-2 rounded-full bg-teal-500" />
+                <p className="text-xs font-medium text-teal-700">Following · Close friend</p>
               </div>
-              <div className="text-center cursor-pointer hover:bg-gray-50 px-4 py-2 rounded-lg transition" onClick={() => handleTabChange('following')}>
-                <p className="text-2xl font-bold text-gray-900">{followingCount}</p>
-                <p className="text-sm text-gray-500">Following</p>
-              </div>
+            )}
+
+            {/* Follow stats */}
+            <div className="flex gap-5 pb-3">
+              <button
+                className="text-left hover:opacity-70 transition-opacity"
+                onClick={() => handleTabChange('following')}
+                data-testid="following-count"
+              >
+                <span className="text-sm font-bold text-gray-900">{followingCount}</span>
+                <span className="text-xs text-gray-500 ml-1">Following</span>
+              </button>
+              <button
+                className="text-left hover:opacity-70 transition-opacity"
+                onClick={() => handleTabChange('followers')}
+                data-testid="followers-count"
+              >
+                <span className="text-sm font-bold text-gray-900">{followersCount}</span>
+                <span className="text-xs text-gray-500 ml-1">Followers</span>
+              </button>
+              <span>
+                <span className="text-sm font-bold text-gray-900">{posts.length}</span>
+                <span className="text-xs text-gray-500 ml-1">Posts</span>
+              </span>
             </div>
           </div>
+
+          {/* Stats cards */}
+          {(isOwnProfile || stats) && (
+            <div className="grid grid-cols-4 gap-px bg-gray-100 border-t border-gray-100">
+              {[
+                { label: 'Quizzes', value: stats?.quizzes_completed ?? '-', icon: Target, color: 'text-blue-600' },
+                { label: 'Avg score', value: stats?.avg_score ? `${Math.round(stats.avg_score)}%` : '-', icon: Activity, color: 'text-green-600' },
+                { label: 'Battle wins', value: stats?.battle_wins ?? '-', icon: Zap, color: 'text-amber-600' },
+                { label: 'Rank', value: stats?.rank ? `#${stats.rank}` : '-', icon: Trophy, color: 'text-purple-600' },
+              ].map(({ label, value, icon: Icon, color }) => (
+                <div key={label} className="bg-white px-3 py-3 text-center">
+                  <div className={`flex justify-center mb-1 ${color}`}><Icon className="w-4 h-4" /></div>
+                  <p className="text-base font-bold text-gray-900">{value}</p>
+                  <p className="text-xs text-gray-500">{label}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-t-2xl shadow-xl">
-          <div className="flex border-b border-gray-200">
-            {['posts', 'badges', 'followers', 'following'].map((tab) => (
+        <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
+          <div className="flex">
+            {['posts', 'quizzes', 'achievements', isOwnProfile ? 'saved' : 'followers', isOwnProfile ? 'followers' : 'following'].map(tab => (
               <button
                 key={tab}
                 onClick={() => handleTabChange(tab)}
-                className={`flex-1 py-4 text-center font-semibold capitalize transition-colors ${
+                data-testid={`tab-${tab}`}
+                className={`flex-1 py-3.5 text-xs font-semibold capitalize transition-colors border-b-2 ${
                   activeTab === tab
-                    ? 'text-purple-600 border-b-2 border-purple-600'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'text-indigo-600 border-indigo-600'
+                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {tab}
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Tab Content */}
-          <div className="p-6">
-            {/* Posts Tab */}
-            {activeTab === 'posts' && (
-              <div className="space-y-4">
-                {posts.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Trophy className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No posts yet</p>
-                    {isOwnProfile && (
-                      <button
-                        onClick={() => setShowQuickPostModal(true)}
-                        className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition"
-                      >
-                        Create your first post
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  posts.map(post => (
-                    <div key={post.id} className="border border-gray-200 rounded-xl p-4 hover:border-purple-300 transition">
-                      <div className="flex items-start gap-3">
-                        <UserAvatar
-                          profilePicture={profile.profile_picture}
-                          name={profile.name}
-                          size="lg"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-bold text-gray-900">{profile.name}</span>
-                              {profile.is_verified && (
-                                <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500" />
-                              )}
-                              <span className="text-gray-500 text-sm">· {formatTimestamp(post.created_at)}</span>
-                            </div>
-                            
-                            {/* Delete menu for own posts */}
-                            {isOwnProfile && (
-                              <div className="relative">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setOpenMenuId(openMenuId === post.id ? null : post.id);
-                                  }}
-                                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-                                >
-                                  <MoreHorizontal className="w-5 h-5" />
-                                </button>
-                                
-                                {openMenuId === post.id && (
-                                  <>
-                                    <div 
-                                      className="fixed inset-0 z-40" 
-                                      onClick={() => setOpenMenuId(null)}
-                                    />
-                                    <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-                                      <button
-                                        onClick={() => handleDeletePost(post.id)}
-                                        className="p-3 text-red-500 hover:bg-gray-50 flex items-center justify-center"
-                                        title="Delete Post"
-                                      >
-                                        <Trash2 className="w-5 h-5" />
-                                      </button>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <p className="text-gray-900 mb-3 whitespace-pre-wrap">{post.content}</p>
-
-                          {/* Post Media (images & videos) */}
-                          {post.media_urls && post.media_urls.length > 0 && (
-                            <div className="mb-3">
-                              {post.media_urls.map((url, mIdx) => {
-                                const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('/video/');
-                                if (isVideo) {
-                                  return <VideoPost key={mIdx} src={url} className="rounded-lg" />;
-                                }
-                                return (
-                                  <img key={mIdx} src={url} alt="Post media"
-                                    className="w-full rounded-lg object-cover max-h-80" />
-                                );
-                              })}
-                            </div>
-                          )}
-
-                          {/* Quiz Room Card */}
-                          {post.post_type === 'quiz_room' && post.quiz_details && (
-                            <div 
-                              className="border border-gray-200 rounded-xl overflow-hidden hover:border-gray-300 transition"
-                              style={{ borderColor: `${getGradientColor(post.quiz_details.category)}40` }}
-                            >
-                              <div 
-                                className="h-24 flex items-center justify-center"
-                                style={{ background: `linear-gradient(135deg, ${getGradientColor(post.quiz_details.category)} 0%, ${getGradientColor(post.quiz_details.category)}cc 100%)` }}
-                              >
-                                <Trophy className="w-10 h-10 text-white opacity-80" />
-                              </div>
-                              <div className="p-3 bg-white">
-                                <h3 className="font-bold text-gray-900 mb-1">{post.quiz_details.title}</h3>
-                                <p className="text-sm text-gray-600 mb-2">{post.quiz_details.category}</p>
-                                <div className="flex items-center gap-3 text-xs text-gray-600">
-                                  <span className="flex items-center gap-1">
-                                    <Play className="w-3 h-3" />
-                                    {post.quiz_details.questions_count || 5} questions
-                                  </span>
-                                  <span className="flex items-center gap-1">
-                                    <Clock className="w-3 h-3" />
-                                    {post.quiz_details.time_limit || 15} min
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Post Stats */}
-                          <div className="flex items-center gap-6 mt-3 text-gray-500 text-sm">
-                            <div className="flex items-center gap-1">
-                              <Heart className="w-4 h-4" />
-                              <span>{post.likes_count || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <MessageCircle className="w-4 h-4" />
-                              <span>{post.comments_count || 0}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
+        {/* Tab: Posts */}
+        {activeTab === 'posts' && (
+          <div className="bg-white">
+            {posts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <BookOpen className="w-10 h-10 mb-3 opacity-40" />
+                <p className="text-sm">No posts yet</p>
+                {isOwnProfile && (
+                  <button
+                    onClick={() => navigate('/victory-lane')}
+                    className="mt-3 text-sm text-indigo-600 hover:underline"
+                  >
+                    Share your first post on Victory Lane
+                  </button>
                 )}
               </div>
+            ) : (
+              posts.map(post => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  isOwn={isOwnProfile}
+                  onDelete={handleDeletePost}
+                />
+              ))
             )}
+          </div>
+        )}
 
-            {/* Badges Tab */}
-            {activeTab === 'badges' && (
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Badges & Achievements</h2>
-                
-                {/* Check if user has any badges */}
-                {(profile.badges?.isTeacher || profile.badges?.isProfessor || profile.badges?.isOfficial || profile.badges?.isInstitute || 
-                  profile.isTeacher || profile.isProfessor || profile.isOfficial || profile.isInstitute) ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    {/* Teacher Badge */}
-                    {(profile.badges?.isTeacher || profile.isTeacher) && (
-                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
-                        <div className="flex items-start gap-4">
-                          <div className="bg-blue-600 p-3 rounded-xl shadow-md">
-                            <Trophy className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-blue-900 mb-1">Teacher</h3>
-                            <p className="text-sm text-blue-700 mb-2">Verified Educator</p>
-                            <p className="text-xs text-blue-600 leading-relaxed">
-                              This badge indicates that this user is a verified teacher or educator, recognized by the platform administration for their educational contributions and expertise.
-                            </p>
-                            <div className="mt-3 flex items-center gap-2 text-xs text-blue-600">
-                              <Calendar className="w-3 h-3" />
-                              <span>Verified by Admin</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Professor Badge */}
-                    {(profile.badges?.isProfessor || profile.isProfessor) && (
-                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-2 border-indigo-200 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
-                        <div className="flex items-start gap-4">
-                          <div className="bg-indigo-700 p-3 rounded-xl shadow-md">
-                            <Trophy className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-indigo-900 mb-1">Professor</h3>
-                            <p className="text-sm text-indigo-700 mb-2">Academic Expert</p>
-                            <p className="text-xs text-indigo-600 leading-relaxed">
-                              This prestigious badge is awarded to verified academic professors who contribute their deep subject matter expertise and scholarly insights to the learning community.
-                            </p>
-                            <div className="mt-3 flex items-center gap-2 text-xs text-indigo-600">
-                              <Calendar className="w-3 h-3" />
-                              <span>Verified by Admin</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Official Badge */}
-                    {(profile.badges?.isOfficial || profile.isOfficial) && (
-                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-300 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
-                        <div className="flex items-start gap-4">
-                          <div className="bg-gray-700 p-3 rounded-xl shadow-md">
-                            <CheckCircle2 className="w-8 h-8 text-white fill-white" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-gray-900 mb-1">Official</h3>
-                            <p className="text-sm text-gray-700 mb-2">Verified Organization</p>
-                            <p className="text-xs text-gray-600 leading-relaxed">
-                              This badge designates verified official organizations, government entities, or NGOs that have been authenticated by platform administrators.
-                            </p>
-                            <div className="mt-3 flex items-center gap-2 text-xs text-gray-600">
-                              <Calendar className="w-3 h-3" />
-                              <span>Verified by Admin</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Institute Badge */}
-                    {(profile.badges?.isInstitute || profile.isInstitute) && (
-                      <div className="bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300 rounded-2xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1">
-                        <div className="flex items-start gap-4">
-                          <div className="p-3 rounded-xl shadow-md" style={{backgroundColor: '#8B2E2E'}}>
-                            <Trophy className="w-8 h-8 text-white" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold mb-1" style={{color: '#8B2E2E'}}>Institute</h3>
-                            <p className="text-sm mb-2" style={{color: '#6B1E1E'}}>Educational Institution</p>
-                            <p className="text-xs leading-relaxed" style={{color: '#8B2E2E'}}>
-                              This badge is reserved for verified educational institutions, colleges, and universities that maintain an official presence on the platform.
-                            </p>
-                            <div className="mt-3 flex items-center gap-2 text-xs" style={{color: '#8B2E2E'}}>
-                              <Calendar className="w-3 h-3" />
-                              <span>Verified by Admin</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-center py-16">
-                    <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Trophy className="w-12 h-12 text-gray-400" />
+        {/* Tab: Quizzes */}
+        {activeTab === 'quizzes' && (
+          <div className="bg-white p-4 grid grid-cols-1 gap-3">
+            {posts.filter(p => p.quiz_details).length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <Target className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">No quizzes shared yet</p>
+              </div>
+            ) : (
+              posts.filter(p => p.quiz_details).map(post => (
+                <div key={post.id} className="border border-blue-100 rounded-xl overflow-hidden">
+                  <div className="bg-blue-50 px-4 py-3 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                      <Target className="w-4 h-4 text-white" />
                     </div>
-                    <p className="text-gray-600 text-lg font-medium mb-2">No badges yet</p>
-                    <p className="text-gray-500 text-sm max-w-md mx-auto">
-                      Badges are awarded by administrators to recognize verified educators, institutions, and organizations.
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-blue-900 truncate">{post.quiz_details.title}</p>
+                      <p className="text-xs text-blue-600">{post.quiz_details.category} · {relTime(post.created_at)}</p>
+                    </div>
+                    <button className="text-xs font-semibold px-3 py-1.5 bg-blue-600 text-white rounded-full">Attempt</button>
                   </div>
+                  <div className="flex gap-6 px-4 py-2.5 bg-white">
+                    <div><p className="text-sm font-bold text-gray-900">{post.quiz_details.attempts || 0}</p><p className="text-xs text-gray-500">Attempts</p></div>
+                    <div><p className="text-sm font-bold text-gray-900">{post.quiz_details.avg_score || '-'}%</p><p className="text-xs text-gray-500">Avg score</p></div>
+                    <div><p className="text-sm font-bold text-gray-900">{post.likes_count || 0}</p><p className="text-xs text-gray-500">Likes</p></div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Tab: Achievements */}
+        {activeTab === 'achievements' && (
+          <div className="bg-white p-4 grid grid-cols-2 gap-3">
+            <AchCard title="Top 50 Physics" sub="National leaderboard" xp={500} icon={Trophy} color="bg-amber-50 text-amber-600" />
+            <AchCard title="100 Battle streak" sub="Won 100 battles" xp={300} icon={Zap} color="bg-blue-50 text-blue-600" />
+            <AchCard title="Quiz master" sub="500+ quizzes done" xp={200} icon={Target} color="bg-teal-50 text-teal-600" />
+            <AchCard title="Perfect score" sub="100% on mock test" xp={150} icon={Award} color="bg-purple-50 text-purple-600" />
+          </div>
+        )}
+
+        {/* Tab: Followers / Following */}
+        {(activeTab === 'followers' || activeTab === 'following') && (
+          <div className="bg-white">
+            {(activeTab === 'followers' ? followers : following).map(u => (
+              <div key={u.id} className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <UserAvatar profilePicture={u.profile_picture} name={u.name} size="md" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">{u.name}</p>
+                  <p className="text-xs text-gray-500">@{u.username}</p>
+                  {u.exam_focus?.length > 0 && (
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {u.exam_focus.slice(0, 2).map(tag => (
+                        <span key={tag} className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${examTagStyle(tag).bg} ${examTagStyle(tag).text}`}>{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {currentUser && u.id !== currentUser.id && (
+                  <FollowButton
+                    targetUserId={u.id}
+                    targetUsername={u.username || u.name}
+                    initialStatus={null}
+                    onFollowChange={() => {}}
+                  />
                 )}
               </div>
-            )}
-
-            {/* Followers Tab */}
-            {activeTab === 'followers' && (
-              <div className="space-y-3">
-                {followers.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>No followers yet</p>
-                  </div>
-                ) : (
-                  followers.map(follower => (
-                    <div 
-                      key={follower.id || follower.user_id}
-                      onClick={() => navigate(`/profile/${follower.id || follower.user_id}`)}
-                      className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition cursor-pointer"
-                    >
-                      <UserAvatar
-                        profilePicture={follower.profile_picture}
-                        name={follower.name}
-                        size="xl"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-gray-900 truncate">{follower.name || 'User'}</p>
-                          {follower.is_verified && (
-                            <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500 flex-shrink-0" />
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500">@{follower.username || 'user'}</p>
-                        {follower.bio && (
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{follower.bio}</p>
-                        )}
-                      </div>
-                      <div className="text-right text-sm text-gray-500">
-                        <p className="font-semibold text-gray-900">{follower.followers_count || 0}</p>
-                        <p>followers</p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-
-            {/* Following Tab */}
-            {activeTab === 'following' && (
-              <div className="space-y-3">
-                {following.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500">
-                    <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                    <p>Not following anyone yet</p>
-                  </div>
-                ) : (
-                  following.map(followedUser => (
-                    <div 
-                      key={followedUser.id || followedUser.user_id}
-                      onClick={() => navigate(`/profile/${followedUser.id || followedUser.user_id}`)}
-                      className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-purple-300 hover:shadow-md transition cursor-pointer"
-                    >
-                      <UserAvatar
-                        profilePicture={followedUser.profile_picture}
-                        name={followedUser.name}
-                        size="xl"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-gray-900 truncate">{followedUser.name || 'User'}</p>
-                          {followedUser.is_verified && (
-                            <CheckCircle2 className="w-4 h-4 text-blue-500 fill-blue-500 flex-shrink-0" />
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-500">@{followedUser.username || 'user'}</p>
-                        {followedUser.bio && (
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">{followedUser.bio}</p>
-                        )}
-                      </div>
-                      <div className="text-right text-sm text-gray-500">
-                        <p className="font-semibold text-gray-900">{followedUser.followers_count || 0}</p>
-                        <p>followers</p>
-                      </div>
-                    </div>
-                  ))
-                )}
+            ))}
+            {(activeTab === 'followers' ? followers : following).length === 0 && (
+              <div className="text-center py-12 text-gray-400">
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">No {activeTab} yet</p>
               </div>
             )}
           </div>
-        </div>
+        )}
+
+        {/* Tab: Saved */}
+        {activeTab === 'saved' && isOwnProfile && (
+          <div className="bg-white flex flex-col items-center justify-center py-16 text-gray-400">
+            <Bookmark className="w-10 h-10 mb-3 opacity-40" />
+            <p className="text-sm">Bookmarked posts appear here</p>
+          </div>
+        )}
       </div>
-
-      {/* Mobile Post Button (FAB) - Only on own profile */}
-      {isOwnProfile && (
-        <button
-          onClick={() => setShowQuickPostModal(true)}
-          className="md:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center"
-        >
-          <Plus className="w-7 h-7" />
-        </button>
-      )}
-
-      {/* Quick Post Modal */}
-      {showQuickPostModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl animate-in slide-in-from-bottom duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">Create Post</h3>
-              <button
-                onClick={() => {
-                  setShowQuickPostModal(false);
-                  setNewPostContent('');
-                }}
-                className="p-2 hover:bg-gray-100 rounded-full transition"
-              >
-                <span className="text-gray-500 text-xl">✕</span>
-              </button>
-            </div>
-            <div className="p-4">
-              <div className="flex gap-3">
-                <UserAvatar
-                  profilePicture={currentUser?.profile_picture}
-                  name={currentUser?.name}
-                  size="md"
-                />
-                <textarea
-                  value={newPostContent}
-                  onChange={(e) => setNewPostContent(e.target.value)}
-                  placeholder="Share your thoughts..."
-                  className="flex-1 border-none outline-none resize-none min-h-[120px] text-base placeholder-gray-400 focus:ring-0"
-                  autoFocus
-                />
-              </div>
-            </div>
-            <div className="p-4 border-t border-gray-100 flex justify-end">
-              <button
-                onClick={handleCreatePost}
-                disabled={!newPostContent.trim()}
-                className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full font-semibold hover:shadow-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Post
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Footer />
     </div>
