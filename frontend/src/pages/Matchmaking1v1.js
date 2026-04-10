@@ -434,12 +434,12 @@ const Matchmaking1v1 = () => {
   // Setup Screen
   if (battleState === 'setup') {
     return withVideoChat(
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900 pt-16">
-        <div className="px-4 sm:px-12 pt-3 sm:pt-4">
-          {/* Back button — flush left, above the card */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-red-900">
+        <div className="px-4 sm:px-12">
+          {/* Back button — flush right after header, no gap */}
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-gray-300 hover:text-white mb-3 transition-colors"
+            className="flex items-center text-gray-300 hover:text-white py-3 transition-colors"
             data-testid="battle-back-btn"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
