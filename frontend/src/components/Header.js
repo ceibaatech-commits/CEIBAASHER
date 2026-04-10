@@ -219,7 +219,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                         <button
                           onClick={() => {
                             setShowProfileDropdown(false);
-                            navigate('/dashboard');
+                            navigate(`/profile/${user?.username || user?.id}`);
                           }}
                           className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
                         >
@@ -422,7 +422,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
               {isLoggedIn && user && (
                 <div className="border-t border-gray-200 mt-1 pt-1">
                   <button 
-                    onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }} 
+                    onClick={() => { navigate(`/profile/${user?.username || user?.id}`); setMobileMenuOpen(false); }} 
                     className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
                   >
                     <LayoutDashboard className="w-4 h-4" />
