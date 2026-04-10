@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Repeat2, Trophy, GraduationCap, BookOpen } from 'lucide-react';
+import { Repeat2, Trophy, GraduationCap, BookOpen, TrendingUp, Star, Target } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 import MathText from '../MathText';
 import PostCardMenu from './PostCardMenu';
@@ -9,13 +9,36 @@ import VideoPost from './VideoPost';
 
 const WORD_LIMIT = 100;
 
+// Exam tag colour map
+const EXAM_COLORS = {
+  'JEE':        { bg: 'bg-blue-50',   text: 'text-blue-800',   border: 'border-blue-200' },
+  'NEET':       { bg: 'bg-green-50',  text: 'text-green-800',  border: 'border-green-200' },
+  'UPSC':       { bg: 'bg-amber-50',  text: 'text-amber-800',  border: 'border-amber-200' },
+  'Physics':    { bg: 'bg-purple-50', text: 'text-purple-800', border: 'border-purple-200' },
+  'Chemistry':  { bg: 'bg-teal-50',   text: 'text-teal-800',   border: 'border-teal-200' },
+  'Mathematics':{ bg: 'bg-indigo-50', text: 'text-indigo-800', border: 'border-indigo-200' },
+  'Biology':    { bg: 'bg-pink-50',   text: 'text-pink-800',   border: 'border-pink-200' },
+  'CAT':        { bg: 'bg-rose-50',   text: 'text-rose-800',   border: 'border-rose-200' },
+  'GATE':       { bg: 'bg-cyan-50',   text: 'text-cyan-800',   border: 'border-cyan-200' },
+  'SSC':        { bg: 'bg-orange-50',  text: 'text-orange-800', border: 'border-orange-200' },
+  'NDA':        { bg: 'bg-slate-50',  text: 'text-slate-800',  border: 'border-slate-200' },
+};
+
+const examTagStyle = (tag) => {
+  for (const [key, val] of Object.entries(EXAM_COLORS)) {
+    if (tag.toLowerCase().includes(key.toLowerCase())) return val;
+  }
+  return { bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-200' };
+};
+
 const PostCard = ({
   post, user, postRefs, followingList, likedPosts, sharedPosts,
   expandedComments, openMenuId, onOpenProfile, onToggleFollow,
   onToggleLike, onToggleShare, onToggleComments, onOpenMenu,
   onDeletePost, onTagClick, onCategoryClick, onPostClick,
   formatTimestamp, getGradientColor, getDifficultyColor, handleJoinRoom,
-  bookmarkedPosts, onToggleBookmark, onShareLink
+  bookmarkedPosts, onToggleBookmark, onShareLink,
+  closeFriendIds
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -23,8 +46,12 @@ const PostCard = ({
   const isFollowing = followingList.has(post.user_id);
   const isLiked = likedPosts.has(post.id);
   const isShared = sharedPosts.has(post.is_retweet ? post.original_post_id : post.id);
-
   const isBookmarked = bookmarkedPosts ? bookmarkedPosts.has(post.id) : false;
+
+  // Close friend check — post author is in current user's close friends list
+  const isCloseFriend = closeFriendIds
+    ? closeFriendIds.has(post.is_retweet ? post.original_user_id : post.user_id)
+    : false;
 
   const likesCount = post.likes_count || post.like_count || 0;
   const shareCount = post.share_count || post.shares_count || 0;
@@ -41,6 +68,15 @@ const PostCard = ({
   const displayUsername = post.is_retweet ? post.original_username : post.username;
   const displayAvatar = post.is_retweet ? post.original_user_avatar : post.user_avatar;
   const displayUserId = post.is_retweet ? post.original_user_id : post.user_id;
+
+  // Detect if post has image media (not video)
+  const hasImageMedia = post.media_urls && post.media_urls.length > 0 &&
+    !post.media_urls[0].includes('.mp4') &&
+    !post.media_urls[0].includes('.webm') &&
+    !post.media_urls[0].includes('/video/');
+
+  // Get hashtags for image exam tags
+  const postHashtags = post.hashtags || post.tags || [];
 
   const quizRoom = useMemo(() => {
     if (post.post_type !== 'quiz_room') return null;
@@ -97,12 +133,20 @@ const PostCard = ({
       ref={(el) => { if (postRefs?.current && el) postRefs.current[post.id] = el; }}
       data-testid={`post-card-${post.id}`}
       data-post-id={post.id}
-      className="border-b border-gray-200 bg-white hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer"
+      className={`border-b border-gray-200 bg-white hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer ${isCloseFriend ? 'border-l-2 border-l-teal-400' : ''}`}
       onClick={handleContentClick}
     >
+      {/* Close friend indicator */}
+      {isCloseFriend && !post.is_retweet && (
+        <div data-testid="close-friend-indicator" className="flex items-center gap-1.5 text-teal-600 text-[13px] px-4 pt-2.5 pl-14">
+          <Star className="w-3.5 h-3.5 fill-teal-500 text-teal-500" />
+          <span className="font-semibold">Close friend</span>
+        </div>
+      )}
+
       {/* Repost indicator */}
       {post.is_retweet && (
-        <div className="flex items-center gap-2 text-gray-500 text-[13px] px-4 pt-3 pl-14">
+        <div data-testid="repost-indicator" className="flex items-center gap-2 text-gray-500 text-[13px] px-4 pt-3 pl-14">
           <Repeat2 className="w-4 h-4" />
           <span className="font-medium hover:underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onOpenProfile(post.user_id); }}>
             {post.user_name || post.username} reposted
@@ -145,7 +189,7 @@ const PostCard = ({
               {post.isOfficial === true && <span className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-800 text-white rounded">Official</span>}
 
               <span className="text-gray-500 text-[15px]">@{displayUsername}</span>
-              <span className="text-gray-500">·</span>
+              <span className="text-gray-500">&middot;</span>
               <span className="text-gray-500 text-[15px] hover:underline">{formatTimestamp(post.created_at)}</span>
             </div>
 
@@ -164,6 +208,30 @@ const PostCard = ({
 
           {/* Post type badge */}
           {getPostTypeBadge() && <div className="mb-2">{getPostTypeBadge()}</div>}
+
+          {/* Quiz trending badge + stats (when post has quiz_details) */}
+          {post.quiz_details && post.post_type !== 'quiz_room' && (
+            <div className="mb-3" data-testid="quiz-trending-badge">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-semibold border border-orange-200">
+                <TrendingUp className="w-3 h-3" />
+                Trending in {post.quiz_details.category || post.exam_category || 'Exams'}
+              </span>
+              <div className="flex gap-5 mt-2">
+                <div className="text-center">
+                  <p className="text-sm font-bold text-gray-900">{post.quiz_details.attempts || 0}</p>
+                  <p className="text-[11px] text-gray-500">Attempts</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-gray-900">{post.quiz_details.avg_score || '-'}%</p>
+                  <p className="text-[11px] text-gray-500">Avg score</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-bold text-gray-900">#{post.quiz_details.rank || '-'}</p>
+                  <p className="text-[11px] text-gray-500">Rank</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Content with See more */}
           <div className="text-[15px] text-gray-900 leading-normal whitespace-pre-wrap break-words mb-3">
@@ -196,27 +264,41 @@ const PostCard = ({
             </div>
           )}
 
-          {/* Media - Optimized aspect ratios */}
+          {/* Media */}
           {post.media_urls && post.media_urls.length > 0 && (
             <div className="mt-3 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
               {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
-                /* Video Player - auto-play on scroll, single at a time */
                 <VideoPost src={post.media_urls[0]} />
               ) : (
-                /* Image - Responsive with max 4:5 aspect ratio (engagement friendly) */
                 <div className="relative w-full" style={{ maxHeight: '600px' }}>
-                  <img 
-                    src={post.media_urls[0]} 
-                    alt="" 
+                  <img
+                    src={post.media_urls[0]}
+                    alt=""
                     className="w-full h-auto object-cover"
-                    style={{ 
-                      maxHeight: '600px',
-                      objectFit: 'cover'
-                    }}
+                    style={{ maxHeight: '600px', objectFit: 'cover' }}
                     loading="lazy"
                   />
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Image post exam tags (from hashtags) */}
+          {hasImageMedia && postHashtags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mt-2" data-testid="image-exam-tags">
+              {postHashtags.map((tag, idx) => {
+                const style = examTagStyle(tag);
+                return (
+                  <button
+                    key={idx}
+                    onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag); }}
+                    className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border transition-colors hover:opacity-80 ${style.bg} ${style.text} ${style.border}`}
+                  >
+                    <Target className="w-3 h-3" />
+                    {tag}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -225,8 +307,8 @@ const PostCard = ({
             <QuizRoomCard quizRoom={quizRoom} getDifficultyColor={getDifficultyColor} handleJoinRoom={handleJoinRoom} />
           )}
 
-          {/* Tags */}
-          {post.tags && post.tags.length > 0 && (
+          {/* Tags (non-image posts) */}
+          {!hasImageMedia && post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {post.tags.map((tag, idx) => (
                 <button key={idx} onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag); }} className="text-blue-500 hover:underline text-[15px]">

@@ -260,6 +260,24 @@ async def create_notification(
 
 # ==================== PROFILE ENDPOINTS ====================
 
+# --- Close friend IDs endpoint ---
+@router.get("/close-friend-ids")
+async def get_close_friend_ids(request: Request, authorization: Optional[str] = Header(None)):
+    """Get list of close friend user IDs for the current user."""
+    try:
+        user_id = await get_user_id_from_request(authorization, request)
+        docs = await db.close_friends.find(
+            {"user_id": user_id},
+            {"_id": 0, "friend_id": 1}
+        ).to_list(500)
+        friend_ids = [d["friend_id"] for d in docs if d.get("friend_id")]
+        return {"success": True, "friend_ids": friend_ids}
+    except HTTPException:
+        raise
+    except Exception as e:
+        return {"success": True, "friend_ids": []}
+
+
 # --- Close friend endpoint ---
 @router.post("/close-friend")
 async def toggle_close_friend(request: Request):

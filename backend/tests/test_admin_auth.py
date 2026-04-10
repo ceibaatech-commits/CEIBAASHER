@@ -7,7 +7,7 @@ import requests
 import os
 
 # Use the preview URL for testing
-BASE_URL = "https://test-history-board.preview.emergentagent.com"
+BASE_URL = "https://profile-social-4.preview.emergentagent.com"
 
 # Admin credentials from requirements
 ADMIN_EMAIL = "admin@ceibaa.in"

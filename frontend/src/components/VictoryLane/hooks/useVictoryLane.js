@@ -23,6 +23,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
   const [likedPosts, setLikedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
   const [sharedPosts, setSharedPosts] = useState(new Set());
+  const [closeFriendIds, setCloseFriendIds] = useState(new Set());
   const [myFollowingCount, setMyFollowingCount] = useState(0);
   const [myFollowersCount, setMyFollowersCount] = useState(0);
 
@@ -52,6 +53,20 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [openMenuId]);
+
+  // Fetch close friend IDs
+  useEffect(() => {
+    if (!user) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    axios.get(`${BACKEND_URL}/api/profile/close-friend-ids`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).then(res => {
+      if (res.data.success && res.data.friend_ids) {
+        setCloseFriendIds(new Set(res.data.friend_ids));
+      }
+    }).catch(() => {});
+  }, [user]);
 
   // --- Socket handlers ---
   const handleNewPost = useCallback((newPostData) => {
@@ -406,6 +421,29 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
       }
       return post;
     }));
+
+    // Persist bookmark to backend
+    try {
+      const token = localStorage.getItem('token');
+      if (isBookmarked) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+    } catch {
+      // Revert on failure
+      setBookmarkedPosts(prev => {
+        const newSet = new Set(prev);
+        if (isBookmarked) newSet.add(postId);
+        else newSet.delete(postId);
+        return newSet;
+      });
+      toast.error('Failed to update bookmark');
+    }
   };
 
   const toggleShare = async (postId) => {
@@ -590,7 +628,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     posts, loading, loadingMore, hasMore, observerTarget,
     filteredPosts, allTags, fetchFeed,
     // Social
-    followingList, likedPosts, bookmarkedPosts, sharedPosts, usersData,
+    followingList, likedPosts, bookmarkedPosts, sharedPosts, usersData, closeFriendIds,
     myFollowingCount, myFollowersCount,
     toggleFollow, toggleLike, toggleBookmark, toggleShare,
     // Comments

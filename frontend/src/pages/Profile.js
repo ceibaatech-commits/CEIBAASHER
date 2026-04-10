@@ -306,6 +306,8 @@ const Profile = () => {
   const [mutualFollowers, setMutualFollowers] = useState([]);
 
   const [showExamPicker, setShowExamPicker] = useState(false);
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [savedLoading, setSavedLoading] = useState(false);
 
   // Available exams (from the website)
   const AVAILABLE_EXAMS = [
@@ -392,7 +394,22 @@ const Profile = () => {
       const res = await axios.get(`${BACKEND_URL}/api/profile/following/${resolvedUserId}`).catch(() => ({ data: {} }));
       if (res.data.success) setFollowing(res.data.following || []);
     }
-  }, [resolvedUserId, followers.length, following.length]);
+    if (tab === 'saved' && isOwnProfile && savedPosts.length === 0) {
+      setSavedLoading(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const res = await axios.get(`${BACKEND_URL}/api/social/bookmarks`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.data.success) {
+            setSavedPosts(res.data.posts || []);
+          }
+        }
+      } catch { /* ignore */ }
+      finally { setSavedLoading(false); }
+    }
+  }, [resolvedUserId, followers.length, following.length, isOwnProfile, savedPosts.length]);
 
   // Initial profile fetch
   useEffect(() => {
@@ -857,9 +874,28 @@ const Profile = () => {
 
         {/* Tab: Saved */}
         {activeTab === 'saved' && isOwnProfile && (
-          <div className="bg-white flex flex-col items-center justify-center py-16 text-gray-400">
-            <Bookmark className="w-10 h-10 mb-3 opacity-40" />
-            <p className="text-sm">Bookmarked posts appear here</p>
+          <div className="bg-white">
+            {savedLoading ? (
+              <div className="flex justify-center py-12">
+                <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+              </div>
+            ) : savedPosts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <Bookmark className="w-10 h-10 mb-3 opacity-40" />
+                <p className="text-sm">No saved posts yet</p>
+                <p className="text-xs text-gray-400 mt-1">Bookmark posts from Victory Lane to see them here</p>
+              </div>
+            ) : (
+              savedPosts.map(post => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  isOwn={post.user_id === resolvedUserId}
+                  onDelete={handleDeletePost}
+                  profile={profile}
+                />
+              ))
+            )}
           </div>
         )}
       </div>

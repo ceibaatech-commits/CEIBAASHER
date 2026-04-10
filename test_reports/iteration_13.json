@@ -42,7 +42,7 @@
   },
   "test_credentials": {
     "demo_login": "POST /api/auth/demo-login with {username: 'demo1', password: 'demo1'}",
-    "backend_url": "https://test-history-board.preview.emergentagent.com"
+    "backend_url": "https://profile-social-4.preview.emergentagent.com"
   },
   "seed_data_creation": "None required - using demo login",
   "retest_needed": false,

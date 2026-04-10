@@ -157,6 +157,7 @@ const VictoryLane = () => {
                     likedPosts={feed.likedPosts}
                     sharedPosts={feed.sharedPosts}
                     bookmarkedPosts={feed.bookmarkedPosts}
+                    closeFriendIds={feed.closeFriendIds}
                     expandedComments={feed.expandedComments}
                     openMenuId={feed.openMenuId}
                     onOpenProfile={openProfile}
