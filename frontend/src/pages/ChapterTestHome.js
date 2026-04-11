@@ -136,8 +136,8 @@ const ChapterTestHome = () => {
         </section>
 
         {/* ═══════ STATS — Overlapping bento ═══════ */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 -mt-12 sm:-mt-16 relative z-20 mb-16" data-testid="stats-section">
-          <div className="grid grid-cols-3 gap-3 sm:gap-5">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 -mt-8 sm:-mt-16 relative z-20 mb-16" data-testid="stats-section">
+          <div className="grid grid-cols-3 gap-2 sm:gap-5">
             {[
               { val: '500+', label: 'Chapter Tests', Icon: BookOpen, bg: 'bg-[#A7F3D0]' },
               { val: '10,000+', label: 'Questions', Icon: Award, bg: 'bg-[#E9D5FF]' },
@@ -145,12 +145,12 @@ const ChapterTestHome = () => {
             ].map(({ val, label, Icon, bg }) => (
               <div
                 key={label}
-                className={`${bg} border-2 border-[#0A0A0A] rounded-xl p-4 sm:p-6 text-center shadow-[4px_4px_0px_#0A0A0A]`}
+                className={`${bg} border-2 border-[#0A0A0A] rounded-xl p-3 sm:p-6 text-center shadow-[4px_4px_0px_#0A0A0A]`}
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white border-2 border-[#0A0A0A] rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 shadow-[2px_2px_0px_#0A0A0A]">
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#0A0A0A]" strokeWidth={2.5} />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white border-2 border-[#0A0A0A] rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 shadow-[2px_2px_0px_#0A0A0A]">
+                  <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-[#0A0A0A]" strokeWidth={2.5} />
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-[#0A0A0A]" style={{ fontFamily: "'Clash Display', sans-serif" }}>{val}</p>
+                <p className="text-lg sm:text-2xl sm:text-3xl font-bold text-[#0A0A0A]" style={{ fontFamily: "'Clash Display', sans-serif" }}>{val}</p>
                 <p className="text-xs sm:text-sm text-[#0A0A0A]/70 font-medium mt-0.5">{label}</p>
               </div>
             ))}

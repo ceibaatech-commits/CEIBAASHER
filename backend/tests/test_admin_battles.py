@@ -12,8 +12,7 @@ import uuid
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials from requirements
-ADMIN_USERNAME = "admin@ceibaa.in"
-ADMIN_PASSWORD = "SuperAdmin@123"
+from conftest import ADMIN_EMAIL as ADMIN_USERNAME, ADMIN_PASSWORD
 
 
 class TestAdminAuth:

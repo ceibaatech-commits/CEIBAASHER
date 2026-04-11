@@ -10,9 +10,7 @@ import os
 BASE_URL = "https://profile-social-4.preview.emergentagent.com"
 
 # Admin credentials from requirements
-ADMIN_EMAIL = "admin@ceibaa.in"
-ADMIN_PASSWORD = "SuperAdmin@123"
-ADMIN_USERNAME = "superadmin"
+from conftest import ADMIN_EMAIL, ADMIN_PASSWORD
 
 
 class TestAdminLoginEndpoint:

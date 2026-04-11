@@ -388,7 +388,7 @@ const Profile = () => {
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await axios.get(`${BACKEND_URL}/api/profile/stats/${uid}`, { headers }).catch(() => ({ data: null }));
       if (res.data) setStats(res.data);
-    } catch { /* optional */ }
+    } catch (err) { console.error('Failed to fetch stats:', err); }
   }, []);
 
   const fetchMutualFollowers = useCallback(async (uid) => {
@@ -400,8 +400,7 @@ const Profile = () => {
         headers: { Authorization: `Bearer ${token}` }
       }).catch(() => ({ data: { mutual: [] } }));
       setMutualFollowers(res.data?.mutual?.slice(0, 3) || []);
-    } catch { /* ignore */ }
-  }, [currentUser]);
+    } catch (err) { console.error('Failed to fetch mutual followers:', err); }
 
   const fetchTabData = useCallback(async (tab) => {
     if (!resolvedUserId) return;
@@ -425,7 +424,7 @@ const Profile = () => {
             setSavedPosts(res.data.posts || []);
           }
         }
-      } catch { /* ignore */ }
+      } catch (err) { console.error('Failed to fetch bookmarks:', err); }
       finally { setSavedLoading(false); }
     }
   }, [resolvedUserId, followers.length, following.length, isOwnProfile, savedPosts.length]);

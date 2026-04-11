@@ -9,8 +9,7 @@ import os
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com').rstrip('/')
 
 # Test credentials from test_credentials.md
-DEMO1_USERNAME = "demo1"
-DEMO1_PASSWORD = "demo1"
+from conftest import DEMO_USERNAME as DEMO1_USERNAME, DEMO_PASSWORD as DEMO1_PASSWORD
 DEMO3_USERNAME = "demo3"
 DEMO3_PASSWORD = "demo3"
 

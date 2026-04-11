@@ -2,6 +2,7 @@ import requests
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
+import secrets
 import random
 import uuid
 from datetime import datetime, timezone
@@ -524,12 +525,12 @@ async def start_quiz(request: QuizStartRequest):
             sheet_mapping = await db.exam_sheets.find_one(query)
         
         if sheet_mapping:
-            print(f"✅ Found sheet mapping in exam_sheets collection")
+            print("✅ Found sheet mapping in exam_sheets collection")
             print(f"   Sheet link: {sheet_mapping.get('sheet_link')}")
             print(f"   Questions imported: {sheet_mapping.get('questions_imported')}")
             print(f"   Question count: {sheet_mapping.get('question_count')}")
         else:
-            print(f"❌ No sheet mapping found in exam_sheets collection")
+            print("❌ No sheet mapping found in exam_sheets collection")
             print(f"   Query used: {query}")
         
         if sheet_mapping:
@@ -702,7 +703,7 @@ async def start_quiz(request: QuizStartRequest):
         for q in questions
     ]
     
-    quiz_id = f"quiz_{random.randint(100000, 999999)}"
+    quiz_id = f"quiz_{secrets.randbelow(900000) + 100000}"
     quiz_sessions[quiz_id] = {
         "questions": normalized_questions,
         "exam": exam,
@@ -763,7 +764,7 @@ async def submit_quiz(request: QuizSubmitRequest):
                     # Try to parse as integer string
                     try:
                         correct_index = int(correct_answer)
-                    except:
+                    except (ValueError, TypeError):
                         correct_index = None
         
         # Normalize selected option to index
@@ -779,7 +780,7 @@ async def submit_quiz(request: QuizSubmitRequest):
                 else:
                     try:
                         selected_index = int(selected_option)
-                    except:
+                    except (ValueError, TypeError):
                         selected_index = None
         
         # Convert indices to letters for display

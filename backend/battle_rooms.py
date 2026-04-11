@@ -13,7 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Optional, Any
-import random
+import secrets
 import asyncio
 
 
@@ -402,7 +402,7 @@ class BattleRoomManager:
             exam_id=str(cfg.get("examId", "")) or ""
         )
 
-        room_id = str(data.get("roomId", "")) or str(random.randint(100000, 999999))
+        room_id = str(data.get("roomId", "")) or str(secrets.randbelow(900000) + 100000)
         room = BattleRoom(room_id, host, config)
 
         room.status = data.get("status", "waiting")
@@ -437,7 +437,7 @@ class BattleRoomManager:
     def generate_room_id(self) -> str:
         """Generate a unique 6-digit room code."""
         while True:
-            code = str(random.randint(100000, 999999))
+            code = str(secrets.randbelow(900000) + 100000)
             if code not in self.rooms:
                 return code
 

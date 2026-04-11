@@ -4,6 +4,7 @@ Push Notification Routes - FCM integration for Android app
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from datetime import datetime, timezone
+from database import db
 import os
 
 router = APIRouter()
@@ -22,7 +23,6 @@ class SendNotificationRequest(BaseModel):
 @router.post("/push/register")
 async def register_push_token(request: RegisterTokenRequest):
     """Register or update a device's FCM token for a user"""
-    from server import db
     
     await db.push_tokens.update_one(
         {"user_id": request.user_id, "fcm_token": request.fcm_token},
@@ -41,7 +41,6 @@ async def register_push_token(request: RegisterTokenRequest):
 @router.post("/push/unregister")
 async def unregister_push_token(request: RegisterTokenRequest):
     """Deactivate a device's FCM token"""
-    from server import db
     
     await db.push_tokens.update_one(
         {"user_id": request.user_id, "fcm_token": request.fcm_token},
@@ -53,7 +52,6 @@ async def unregister_push_token(request: RegisterTokenRequest):
 @router.post("/push/send")
 async def send_push_notification(request: SendNotificationRequest):
     """Send a push notification to a specific user (admin only)"""
-    from server import db
     
     FIREBASE_CREDENTIALS = os.environ.get("FIREBASE_CREDENTIALS_PATH")
     if not FIREBASE_CREDENTIALS:
@@ -114,7 +112,6 @@ async def send_push_notification(request: SendNotificationRequest):
 @router.get("/push/tokens/{user_id}")
 async def get_user_tokens(user_id: str):
     """Get active push tokens for a user (admin debug)"""
-    from server import db
     
     tokens = []
     async for doc in db.push_tokens.find(

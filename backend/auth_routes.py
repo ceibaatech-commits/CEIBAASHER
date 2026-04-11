@@ -130,9 +130,9 @@ async def generate_unique_username(base_name: str):
         return base
     
     # Add random suffix if needed
-    import random
+    import secrets
     for _ in range(10):
-        suffix = str(random.randint(100, 999))
+        suffix = str(secrets.randbelow(900) + 100)
         username = f"{base}{suffix}"
         existing = await db.users.find_one({"username": username})
         if not existing:

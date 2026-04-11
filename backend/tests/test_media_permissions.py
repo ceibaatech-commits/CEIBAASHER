@@ -12,8 +12,7 @@ BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.pre
 # Test credentials
 TEST_USER_EMAIL = "testbug@test.com"
 TEST_USER_PASSWORD = "test1234"
-DEMO_USER = "demo1"
-DEMO_PASSWORD = "demo1"
+from conftest import DEMO_USERNAME as DEMO_USER, DEMO_PASSWORD
 
 
 class TestGlobalMediaSettings:
