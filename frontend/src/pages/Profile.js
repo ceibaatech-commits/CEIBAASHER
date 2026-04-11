@@ -401,6 +401,7 @@ const Profile = () => {
       }).catch(() => ({ data: { mutual: [] } }));
       setMutualFollowers(res.data?.mutual?.slice(0, 3) || []);
     } catch (err) { console.error('Failed to fetch mutual followers:', err); }
+  }, [currentUser]);
 
   const fetchTabData = useCallback(async (tab) => {
     if (!resolvedUserId) return;

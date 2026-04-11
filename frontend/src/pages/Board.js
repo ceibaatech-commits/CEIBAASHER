@@ -3,14 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Trophy, Clock, Users, Search, Play, CheckCircle,
   Target, Flame, BookOpen, TrendingUp, Calendar, Lightbulb,
-  Star, Zap, Brain, ChevronRight, RefreshCw, Award, GraduationCap,
-  School, X, Settings, ArrowLeft, Shield, AlertTriangle, BarChart3
+  Star, Zap, Brain, ChevronRight, RefreshCw, Award,
+  X, Settings, BarChart3, GraduationCap, School
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import TestHistoryTable from '../components/TestHistoryTable';
+import { GoalSelectionModal } from '../components/GoalSelectionModal';
+import { ParentsModePanel } from '../components/ParentsModePanel';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -25,129 +27,7 @@ const LEVEL_COLORS = {
   'Master': 'from-yellow-400 to-yellow-500'
 };
 
-// Goal Selection Modal Component
-const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal }) => {
-  const [selectedType, setSelectedType] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const goalOptions = {
-    competitive: {
-      name: "Competitive Exams",
-      icon: GraduationCap,
-      description: "JEE, NEET, UPSC, Defence, Banking & more",
-      color: "from-purple-500 to-indigo-600",
-      categories: [
-        { id: "jee", name: "JEE (Engineering)", icon: "🎯" },
-        { id: "neet", name: "NEET (Medical)", icon: "🏥" },
-        { id: "upsc", name: "UPSC (Civil Services)", icon: "🏛️" },
-        { id: "defence", name: "Defence Exams", icon: "🎖️", image: "https://cdn-icons-png.flaticon.com/512/6142/6142033.png" },
-        { id: "banking", name: "Banking & SSC", icon: "🏦", image: "https://cdn-icons-png.flaticon.com/512/3696/3696141.png" },
-        { id: "gate", name: "GATE", icon: "⚙️" },
-        { id: "cat", name: "CAT (MBA)", icon: "📊" }
-      ]
-    },
-    cbse: {
-      name: "CBSE Classes",
-      icon: School,
-      description: "Class 6 to 12 - All Streams",
-      color: "from-emerald-500 to-teal-600",
-      categories: [
-        { id: "class_6", name: "Class 6", icon: "6️⃣" },
-        { id: "class_7", name: "Class 7", icon: "7️⃣" },
-        { id: "class_8", name: "Class 8", icon: "8️⃣" },
-        { id: "class_9", name: "Class 9", icon: "9️⃣" },
-        { id: "class_10", name: "Class 10", icon: "🔟" },
-        { id: "class_11_science", name: "Class 11 (Science)", icon: "🔬" },
-        { id: "class_11_commerce", name: "Class 11 (Commerce)", icon: "💼" },
-        { id: "class_12_science", name: "Class 12 (Science)", icon: "🧪" },
-        { id: "class_12_commerce", name: "Class 12 (Commerce)", icon: "📈" }
-      ]
-    }
-  };
-
-  const handleSelectCategory = async (type, categoryId) => {
-    setLoading(true);
-    await onSelectGoal(type, categoryId);
-    setLoading(false);
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Choose Your Study Goal</h2>
-            <p className="text-gray-500">Personalize your dashboard and recommendations</p>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
-        </div>
-
-        <div className="p-6">
-          {!selectedType ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(goalOptions).map(([type, data]) => {
-                const Icon = data.icon;
-                return (
-                  <button
-                    key={type}
-                    onClick={() => setSelectedType(type)}
-                    className={`p-6 rounded-xl border-2 border-gray-200 hover:border-transparent hover:shadow-lg transition-all text-left group bg-gradient-to-br hover:${data.color} hover:text-white`}
-                  >
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${data.color} flex items-center justify-center mb-4 group-hover:bg-white/20`}>
-                      <Icon className="w-7 h-7 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-white">{data.name}</h3>
-                    <p className="text-gray-500 group-hover:text-white/80">{data.description}</p>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div>
-              <button 
-                onClick={() => setSelectedType(null)}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to categories
-              </button>
-              
-              <h3 className="text-lg font-semibold mb-4">Select your {goalOptions[selectedType].name}</h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {goalOptions[selectedType].categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => handleSelectCategory(selectedType, cat.id)}
-                    disabled={loading}
-                    className={`p-4 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left flex items-center gap-3 ${
-                      currentGoal?.goal_category === cat.id ? 'border-emerald-500 bg-emerald-50' : ''
-                    } disabled:opacity-50`}
-                  >
-                    {cat.image ? (
-                      <img src={cat.image} alt={cat.name} className="w-7 h-7 object-contain" />
-                    ) : (
-                      <span className="text-2xl">{cat.icon}</span>
-                    )}
-                    <span className="font-semibold text-gray-800">{cat.name}</span>
-                    {currentGoal?.goal_category === cat.id && (
-                      <CheckCircle className="w-5 h-5 text-emerald-500 ml-auto" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
+// GoalSelectionModal extracted to /components/GoalSelectionModal.js
 
 const Board = () => {
   const navigate = useNavigate();
@@ -186,13 +66,6 @@ const Board = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0, created: 0 });
-
-  // Parents Mode state
-  const [parentsModeActive, setParentsModeActive] = useState(false);
-  const [parentsModeTimeRemaining, setParentsModeTimeRemaining] = useState(0);
-  const [parentsModeExpiresAt, setParentsModeExpiresAt] = useState(null);
-  const [showParentsModeConfirm, setShowParentsModeConfirm] = useState(false);
-  const [enablingParentsMode, setEnablingParentsMode] = useState(false);
 
   // Fetch user goal
   const fetchUserGoal = async (userId) => {
@@ -367,98 +240,13 @@ const Board = () => {
     setFilteredRooms(filtered);
   };
 
-  // Fetch Parents Mode status
-  const fetchParentsModeStatus = async () => {
-    try {
-      const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
-      if (!token) return;
-
-      const response = await axios.get(`${BACKEND_URL}/api/user/parents-mode/status`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.data.success) {
-        setParentsModeActive(response.data.parents_mode_active);
-        setParentsModeTimeRemaining(response.data.time_remaining_seconds || 0);
-        setParentsModeExpiresAt(response.data.expires_at);
-      }
-    } catch (error) {
-      console.error('Error fetching parents mode status:', error);
-    }
-  };
-
-  // Enable Parents Mode
-  const enableParentsMode = async () => {
-    setEnablingParentsMode(true);
-    try {
-      const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
-      if (!token) {
-        toast.error('Please log in to enable Parents Mode');
-        return;
-      }
-
-      const response = await axios.post(
-        `${BACKEND_URL}/api/user/parents-mode/enable`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (response.data.success) {
-        setParentsModeActive(true);
-        setParentsModeTimeRemaining(response.data.time_remaining_seconds);
-        setParentsModeExpiresAt(response.data.expires_at);
-        setShowParentsModeConfirm(false);
-        toast.success('Parents Mode enabled! 1v1 Battle Mode is now blocked for 12 hours.');
-      }
-    } catch (error) {
-      console.error('Error enabling parents mode:', error);
-      toast.error('Failed to enable Parents Mode');
-    } finally {
-      setEnablingParentsMode(false);
-    }
-  };
-
-  // Format time remaining
-  const formatTimeRemaining = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    } else if (minutes > 0) {
-      return `${minutes}m ${secs}s`;
-    }
-    return `${secs}s`;
-  };
-
-  // Countdown timer for Parents Mode
-  useEffect(() => {
-    if (!parentsModeActive || parentsModeTimeRemaining <= 0) return;
-
-    const interval = setInterval(() => {
-      setParentsModeTimeRemaining(prev => {
-        if (prev <= 1) {
-          setParentsModeActive(false);
-          toast.success('Parents Mode has expired. 1v1 Battle Mode is now available!');
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [parentsModeActive, parentsModeTimeRemaining]);
-
   const getTimeRemaining = (expiresAt) => {
     const now = new Date();
     const expiry = new Date(expiresAt);
     const diff = expiry - now;
-    
     if (diff <= 0) return 'Expired';
-    
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
     return `${hours}h ${minutes}m remaining`;
   };
 
@@ -562,7 +350,6 @@ const Board = () => {
       fetchUserGoal(user.id);
       fetchRooms();
       fetchDashboardData(user.id);
-      fetchParentsModeStatus();
       fetchTestHistory(user.id);
     }
   }, [user?.id]);
@@ -611,143 +398,10 @@ const Board = () => {
           currentGoal={userGoal}
         />
 
-        {/* Parents Mode Confirmation Modal */}
-        {showParentsModeConfirm && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
-              <div className="p-6 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">Enable Parents Mode</h3>
-                    <p className="text-gray-500 text-sm">Protect your child from distractions</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="p-6 space-y-4">
-                <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                  <div className="flex items-start gap-3">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-amber-800">Important Notice</p>
-                      <p className="text-sm text-amber-700 mt-1">
-                        Once enabled, Parents Mode <strong>cannot be manually disabled</strong>. 
-                        It will automatically turn off after <strong>12 hours</strong>.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2 text-sm text-gray-600">
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                    1v1 Battle Mode will be blocked
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    Solo practice & quizzes remain available
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    Auto-disables after 12 hours
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3 p-6 border-t border-gray-100">
-                <button
-                  onClick={() => setShowParentsModeConfirm(false)}
-                  className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={enableParentsMode}
-                  disabled={enablingParentsMode}
-                  className="flex-1 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {enablingParentsMode ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Enabling...
-                    </>
-                  ) : (
-                    <>
-                      <Shield className="w-4 h-4" />
-                      Enable for 12 Hours
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Parents Mode Panel — extracted component */}
+        <ParentsModePanel />
 
-        {/* Parents Mode Card */}
-        <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 mb-8 border border-white/20">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                parentsModeActive 
-                  ? 'bg-gradient-to-br from-amber-500 to-orange-500' 
-                  : 'bg-white/10 border border-white/20'
-              }`}>
-                <Shield className={`w-7 h-7 ${parentsModeActive ? 'text-white' : 'text-emerald-400'}`} />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  Parents Mode
-                  {parentsModeActive && (
-                    <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-full text-xs font-medium border border-amber-500/30">
-                      ACTIVE
-                    </span>
-                  )}
-                </h3>
-                <p className="text-emerald-200/70 text-sm">
-                  {parentsModeActive 
-                    ? `1v1 Battle Mode blocked • Expires in ${formatTimeRemaining(parentsModeTimeRemaining)}`
-                    : 'Block 1v1 Battle Mode for 12 hours'
-                  }
-                </p>
-              </div>
-            </div>
-            
-            {parentsModeActive ? (
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-xs text-emerald-200/60">Time Remaining</p>
-                  <p className="text-2xl font-bold text-amber-400 font-mono">
-                    {formatTimeRemaining(parentsModeTimeRemaining)}
-                  </p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center border-2 border-amber-500/30">
-                  <Clock className="w-5 h-5 text-amber-400" />
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => setShowParentsModeConfirm(true)}
-                className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-              >
-                <Shield className="w-5 h-5" />
-                Enable Parents Mode
-              </button>
-            )}
-          </div>
-          
-          {parentsModeActive && (
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <div className="flex items-center gap-2 text-amber-300/80 text-sm">
-                <AlertTriangle className="w-4 h-4" />
-                <span>This mode cannot be manually disabled. It will automatically turn off when the timer expires.</span>
-              </div>
-            </div>
-          )}
-        </div>
-
+        {/* Profile Header Card - Glassmorphism */}
         {/* Profile Header Card - Glassmorphism */}
         <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 mb-8 border border-white/20 shadow-2xl">
           <div className="flex flex-col md:flex-row items-center gap-6">
