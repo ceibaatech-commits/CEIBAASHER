@@ -307,7 +307,7 @@ const ChapterTestHome = () => {
                 </div>
               </div>
               {/* Image side */}
-              <div className="relative bg-[#A7F3D0] border-t md:border-t-0 md:border-l-2 border-[#0A0A0A] min-h-[280px] sm:min-h-[360px]">
+              <div className="relative bg-[#A7F3D0] border-t md:border-t-0 md:border-l-2 border-[#0A0A0A] h-48 md:h-auto md:min-h-[360px]">
                 <img
                   src="https://images.pexels.com/photos/5965699/pexels-photo-5965699.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
                   alt="Students studying together"
