@@ -30,14 +30,14 @@ const CLASS_DATA = [
 ];
 
 const STATE_BOARDS = [
-  { name: 'Haryana Board', abbr: 'HBSE', emoji: '\u{1F33E}' },
-  { name: 'Rajasthan Board', abbr: 'RBSE', emoji: '\u{1F3F0}' },
-  { name: 'Bihar Board', abbr: 'BSEB', emoji: '\u{1F3DB}\u{FE0F}' },
-  { name: 'Tamil Nadu Board', abbr: 'TNBSE', emoji: '\u{1F6D5}' },
-  { name: 'UP Board', abbr: 'UPMSP', emoji: '\u{1F54C}' },
-  { name: 'Maharashtra Board', abbr: 'MSBSHSE', emoji: '\u{1F3D4}\u{FE0F}' },
-  { name: 'MP Board', abbr: 'MPBSE', emoji: '\u{1F405}' },
-  { name: 'West Bengal Board', abbr: 'WBBSE', emoji: '\u{1F33A}' },
+  { name: 'Haryana Board', abbr: 'HBSE', logo: 'https://bseh.org.in/logo.png' },
+  { name: 'Rajasthan Board', abbr: 'RBSE', logo: 'https://rajeduboard.rajasthan.gov.in/Images/logo-bw.jpg' },
+  { name: 'Bihar Board', abbr: 'BSEB', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurIRzAozqqvB6oeu6AtsBKajPXAcneI5cfKH3AIJPwQiRss722qGPjc&s=10' },
+  { name: 'Tamil Nadu Board', abbr: 'TNBSE', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQ-xL8bBH8V0muviqy4ugfn8z3fjC-9RTDAtOkSg4xRky7-GbkbY8nmM&s=10' },
+  { name: 'UP Board', abbr: 'UPMSP', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH0-G5YTSz055LClxVm5HMPOXdk9YkJUz15fWpWxI2KuK9lCHuba85pRI&usqp=CAE&s' },
+  { name: 'Maharashtra Board', abbr: 'MSBSHSE', logo: 'https://mahahsscboard.in/boardlogo.svg' },
+  { name: 'MP Board', abbr: 'MPBSE', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLa5vNIMOo1x4zzw6gDoPw8j-uZ0ZOyCQCS3ojKlpxIKwOJxI4ERIUELnm&s=10' },
+  { name: 'West Bengal Board', abbr: 'WBBSE', logo: 'https://wbbse.wb.gov.in/img/logo.png' },
 ];
 
 const FEATURES = [
@@ -208,14 +208,14 @@ const ChapterTestHome = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5" data-testid="state-boards-grid">
-              {STATE_BOARDS.map(({ name, abbr, emoji }) => (
+              {STATE_BOARDS.map(({ name, abbr, logo }) => (
                 <div
                   key={abbr}
                   data-testid={`state-board-card-${abbr}`}
                   className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-5 cursor-default opacity-70 flex flex-col items-center text-center"
                 >
-                  <div className="w-11 h-11 sm:w-14 sm:h-14 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center mb-2">
-                    <span className="text-xl sm:text-2xl">{emoji}</span>
+                  <div className="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-lg overflow-hidden flex items-center justify-center mb-2 bg-white">
+                    <img src={logo} alt={`${name} logo`} className="w-full h-full object-contain" loading="lazy" />
                   </div>
                   <h3 className="text-xs sm:text-sm font-semibold text-gray-600 leading-tight">{name}</h3>
                   <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{abbr} · Classes 6–12</p>
