@@ -99,15 +99,15 @@ const ChapterTestHome = () => {
 
             <h1
               className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-[1.08] mb-4 drop-shadow-lg"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
+              style={{ fontFamily: "'Clash Display', sans-serif", wordSpacing: '0.3em'  }}
               data-testid="hero-title"
             >
-              Master Every
+              Master  Every  Chapter
+              <br /> 
+              <span className="text-[#FFD832]">Ace</span>{' '}
+              <span className="text-[#A7F3D0]">Every&nbsp;Exam</span>
               <br />
-              <span className="text-[#FFD831]">Chapter.</span>{' '}
-              <span className="text-[#A7F3D0]">Ace&nbsp;Every</span>
-              <br />
-              <span className="text-[#E9D5FF]">Exam.</span>
+              
             </h1>
 
             <p className="text-base sm:text-lg text-gray-200 max-w-xl mx-auto mb-8 leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
