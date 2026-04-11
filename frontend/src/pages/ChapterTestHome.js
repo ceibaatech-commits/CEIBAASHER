@@ -74,7 +74,7 @@ const ChapterTestHome = () => {
       <main className="flex-1">
 
         {/* ═══════ HERO — Video Background ═══════ */}
-        <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden" data-testid="hero-section">
+        <section className="relative min-h-[60vh] sm:min-h-[85vh] flex items-center justify-center overflow-hidden" data-testid="hero-section">
           {/* Video */}
           <video
             autoPlay loop muted playsInline
