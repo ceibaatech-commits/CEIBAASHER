@@ -1,0 +1,130 @@
+{
+  "theme": "light",
+  "archetype": "3 (Pastel & Soft) with E1 Neo-Brutalist twist",
+  "design_strategy": "A high-energy, playful, and structured Neo-Brutalist design. We are mixing pastel backgrounds (mint, yellow, lavender) with harsh black borders (2px-3px) and solid offset drop shadows (4px 4px 0px #0A0A0A) to create a tactile, interactive feel perfect for an engaging EdTech platform targeting Indian students aged 12-18.",
+  "typography": {
+    "headings": {
+      "font_family": "Clash Display, sans-serif",
+      "weights": ["600", "700"],
+      "strategy": "Used for all major titles. High impact, bold, tight tracking. Do not use Inter."
+    },
+    "body": {
+      "font_family": "Outfit, sans-serif",
+      "weights": ["400", "500", "600"],
+      "strategy": "Clean, highly legible geometric sans-serif for reading comprehension and UI elements."
+    }
+  },
+  "colors": {
+    "primary": {
+      "hex": "#FFD831",
+      "name": "Cyber Yellow",
+      "tailwind": "bg-[#FFD831]",
+      "usage": "Primary CTAs, highlighted text, major section backgrounds."
+    },
+    "secondary": {
+      "hex": "#A7F3D0",
+      "name": "Mint Green",
+      "tailwind": "bg-[#A7F3D0]",
+      "usage": "Card backgrounds, success states."
+    },
+    "tertiary": {
+      "hex": "#E9D5FF",
+      "name": "Soft Lavender",
+      "tailwind": "bg-[#E9D5FF]",
+      "usage": "Alternate card backgrounds, playful accents."
+    },
+    "accent": {
+      "hex": "#FFBDBE",
+      "name": "Peach Pink",
+      "tailwind": "bg-[#FFBDBE]",
+      "usage": "Hover states, badges, special features."
+    },
+    "neutral": {
+      "background": "#FDFBF7",
+      "text": "#0A0A0A",
+      "border": "#0A0A0A",
+      "muted": "#F3F4F6"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing. Containers use p-8 to p-12. Grids use wide gaps (gap-6 to gap-8). Elements should feel blocky and tactile.",
+    "card_radius": "rounded-xl",
+    "borders": "border-2 md:border-[3px] border-[#0A0A0A]",
+    "shadows": {
+      "brutal_sm": "shadow-[2px_2px_0px_#0A0A0A]",
+      "brutal_md": "shadow-[4px_4px_0px_#0A0A0A]",
+      "brutal_lg": "shadow-[8px_8px_0px_#0A0A0A]",
+      "brutal_hover": "hover:shadow-[6px_6px_0px_#0A0A0A] hover:-translate-y-1 hover:-translate-x-1 transition-all"
+    }
+  },
+  "components": {
+    "hero": {
+      "layout": "Full screen (min-h-[85vh]) relative container.",
+      "background": "The provided MP4 video absolutely positioned, w-full h-full object-cover. Must use autoPlay, loop, muted, playsInline.",
+      "overlay": "bg-black/50 (dark enough for text contrast).",
+      "typography": "text-5xl md:text-6xl+ font-bold text-white tracking-tight text-center drop-shadow-md.",
+      "cta": "bg-[#FFD831] text-black border-2 border-black shadow-[4px_4px_0px_#0A0A0A] px-8 py-4 rounded-xl font-bold text-xl hover:translate-y-1 hover:translate-x-1 hover:shadow-[2px_2px_0px_#0A0A0A] transition-all."
+    },
+    "stats_section": {
+      "layout": "3-column grid (bento style) overlapping the hero bottom edge or placed directly below it with negative margin.",
+      "styling": "Cards with pastel backgrounds (Mint, Lavender, Yellow), heavy borders, brutal_md shadow. Large text for numbers (text-4xl font-black), small text for labels."
+    },
+    "class_grid": {
+      "layout": "Grid cols-2 md:cols-3 lg:cols-4 gap-6.",
+      "card_style": "bg-white border-2 border-black rounded-xl p-6 shadow-[4px_4px_0px_#0A0A0A] brutal_hover cursor-pointer group flex flex-col items-center text-center.",
+      "colors": "Apply a different pastel background color on hover or randomly assign pastel colors to cards.",
+      "content": "Display class number prominently."
+    },
+    "state_boards": {
+      "layout": "Grid cols-2 md:cols-4 gap-6 relative p-8 bg-gray-50 border-y-2 border-black.",
+      "card_style": "bg-white border-2 border-dashed border-gray-400 rounded-xl p-6 text-gray-500 opacity-70 flex items-center justify-center font-bold.",
+      "overlay_cta": "Absolute centered 'Notify Me' floating card overlapping the grid. It should use a striking pastel color (e.g., Peach or Yellow) with brutal_lg shadow."
+    },
+    "features_grid": {
+      "layout": "Bento grid (e.g. 2 large cards, 4 small cards) or 3x2 standard grid.",
+      "card_style": "Neo-brutalist cards with white or pastel backgrounds. Use large Lucide icons (strokeWidth={2.5})."
+    },
+    "why_ceibaa": {
+      "layout": "Split 2-column layout (text left, image right).",
+      "image_style": "Image wrapped in a container with border-[3px] border-black and heavy shadow-[8px_8px_0px_#FFD831] to make it pop. Aspect ratio 4:3."
+    }
+  },
+  "media": {
+    "video_urls": {
+      "hero_background": {
+        "url": "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4",
+        "description": "Main background video for the hero section."
+      }
+    },
+    "image_urls": {
+      "why_ceibaa_image": {
+        "url": "https://images.pexels.com/photos/5965699/pexels-photo-5965699.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Students studying together, used in the Why Ceibaa section."
+      },
+      "cta_background": {
+        "url": "https://images.unsplash.com/photo-1623303366639-0e330d7c3d9f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NDh8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBzdHVkZW50cyUyMHN0dWR5aW5nfGVufDB8fHx8MTc3NTg4NTIyNXww&ixlib=rb-4.1.0&q=85",
+        "description": "Boy studying, used as an atmospheric background for the final CTA or features section."
+      }
+    }
+  },
+  "icons": {
+    "library": "lucide-react",
+    "instructions": "Use bold, thick strokes (strokeWidth={2.5} to 3) for icons to match the chunky neo-brutalist aesthetic."
+  },
+  "animations": {
+    "hover": "Scale up slightly or translate -4px on X/Y to reveal larger shadow underneath. For buttons pressing down, translate +2px and reduce shadow.",
+    "scroll": "Use framer-motion for staggered entrances on grid items (e.g. initial={{opacity:0, y:20}} animate={{opacity:1, y:0}})."
+  },
+  "instructions_to_main_agent": [
+    "You are building the '/chapter-tests' landing page.",
+    "Implement a Light theme with Neo-Brutalist elements (hard 2px-3px black borders, solid offset shadows, pastel colors like Mint, Lavender, Yellow).",
+    "Use 'Clash Display' (or a similar bold geometric sans) for headings and 'Outfit' for body text. Integrate them via Google Fonts.",
+    "Hero section MUST feature the provided video url as an absolute background. Apply a dark overlay (bg-black/50) so the bold white text overlays are highly readable.",
+    "Build the Class Selection Grid (Classes 6-12). Ensure cards cycle through pastel colors and have interactive hover states (shift X/Y and increase shadow).",
+    "Build the State Boards 'Coming Soon' section. It should look 'locked' with 8 dashed-border cards and a prominent floating 'Notify Me' button.",
+    "Build the 6 Features grid and 'Why Ceibaa' section using the provided image URLs.",
+    "Add 'data-testid' to all buttons, links, form inputs, and major sections.",
+    "Do NOT use raw HTML `<select>`, `<input type='date'>`, etc. If needed, use shadcn components but heavily customize them to fit the Neo-Brutalist look (thick borders, offset shadows).",
+    "Never use placeholder image URLs. Only use the ones provided in the media object."
+  ]
+}
