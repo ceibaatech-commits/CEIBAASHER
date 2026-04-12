@@ -84,6 +84,21 @@ import SinglePost from "@/pages/SinglePost";
 import DivyaTutor from "@/pages/DivyaTutor";
 import Messages from "@/pages/Messages";
 
+// Recruitment Portal
+import RecruitmentCell from "@/pages/RecruitmentCell";
+import RecruiterLogin from "@/pages/RecruiterLogin";
+import RecruiterDashboard from "@/pages/RecruiterDashboard";
+import RecruiterAnalytics from "@/pages/RecruiterAnalytics";
+import CreatePost from "@/pages/CreatePost";
+import ManageApplicants from "@/pages/ManageApplicants";
+import JobsFeed from "@/pages/JobsFeed";
+import DiscoverCompanies from "@/pages/DiscoverCompanies";
+import CompanyChannel from "@/pages/CompanyChannel";
+import ApplyJob from "@/pages/ApplyJob";
+import QuizAttempt from "@/pages/QuizAttempt";
+import HackathonDetail from "@/pages/HackathonDetail";
+import MyApplications from "@/pages/MyApplications";
+
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
 
@@ -201,6 +216,21 @@ function App() {
           
           {/* Sitemap */}
           <Route path="/sitemap" element={<Sitemap />} />
+          
+          {/* Recruitment Portal Routes */}
+          <Route path="/recruitment-admin" element={<RecruitmentCell />} />
+          <Route path="/recruiter" element={<RecruiterLogin />} />
+          <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
+          <Route path="/recruiter/analytics" element={<RecruiterAnalytics />} />
+          <Route path="/recruiter/post" element={<CreatePost />} />
+          <Route path="/recruiter/applicants/:postId" element={<ManageApplicants />} />
+          <Route path="/jobs" element={<JobsFeed />} />
+          <Route path="/discover" element={<DiscoverCompanies />} />
+          <Route path="/company/:slug" element={<CompanyChannel />} />
+          <Route path="/apply/:jobId" element={<ApplyJob />} />
+          <Route path="/quiz-recruit/:quizId" element={<QuizAttempt />} />
+          <Route path="/hackathon/:hackId" element={<HackathonDetail />} />
+          <Route path="/my-applications" element={<MyApplications />} />
           
           {/* 404 Catch-All */}
           <Route path="*" element={<NotFound />} />

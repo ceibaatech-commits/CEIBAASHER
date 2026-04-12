@@ -272,6 +272,12 @@ fastapi_app.include_router(admin_auth_router, prefix="/api")  # Admin Auth
 from push_notification_routes import router as push_router
 fastapi_app.include_router(push_router, prefix="/api")  # Push Notifications
 
+# Recruitment Portal Routes
+from recruitment_routes import router as recruitment_router
+from recruitment_admin_routes import router as recruitment_admin_router
+fastapi_app.include_router(recruitment_router, prefix="/api")  # Recruitment Portal
+fastapi_app.include_router(recruitment_admin_router, prefix="/api")  # Recruitment Admin
+
 # fastapi_app.add_middleware(
 #     CORSMiddleware,
 #     allow_credentials=True,
@@ -294,6 +300,11 @@ async def shutdown_db_client():
 @fastapi_app.on_event("startup")
 async def startup_matchmaking():
     start_matchmaking_sweep()
+
+@fastapi_app.on_event("startup")
+async def seed_recruitment():
+    from recruitment_seed import seed_recruitment_data
+    await seed_recruitment_data(db)
 
 # Export the FastAPI app directly; battle Socket.IO is mounted at /api/battlews
 app = fastapi_app
