@@ -90,6 +90,8 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - [x] Recruitment & Internship Portal — Full integration (16 files, all tested 100%)
 - [x] Student auth integration with recruitment module (uses existing Ceibaa JWT)
 - [x] Recruitment seed data on backend startup
+- [x] Header nav: "Canopy" renamed to "The Headhunt" → links to /jobs
+- [x] /jobs and /discover pages redesigned with Header, Footer, light theme matching Courses page
 
 ### Earlier Completed
 - [x] 1v1 Battle Setup Page layout fix
