@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare, Briefcase } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import InboxDropdown from './InboxDropdown';
@@ -130,10 +130,10 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
               Courses
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
-            <button onClick={() => navigate('/earn')} className="text-gray-700 hover:text-emerald-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
-              <TreePine className="w-4 h-4 shrink-0 text-emerald-500" />
-              Canopy
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-200 group-hover:w-full"></span>
+            <button onClick={() => navigate('/jobs')} className="text-gray-700 hover:text-orange-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
+              <Briefcase className="w-4 h-4 shrink-0 text-orange-500" />
+              The Headhunt
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-orange-500 transition-all duration-200 group-hover:w-full"></span>
             </button>
             <button onClick={() => navigate('/join-room')} className="text-gray-700 hover:text-rose-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
               <Swords className="w-4 h-4 shrink-0 text-rose-500" />
@@ -245,12 +245,12 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                         <button
                           onClick={() => {
                             setShowProfileDropdown(false);
-                            navigate('/earn');
+                            navigate('/jobs');
                           }}
                           className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
                         >
-                          <TreePine className="w-4 h-4 text-emerald-600" />
-                          <span className="font-medium text-sm">The Canopy</span>
+                          <Briefcase className="w-4 h-4 text-orange-600" />
+                          <span className="font-medium text-sm">The Headhunt</span>
                         </button>
 
                         <button
@@ -391,11 +391,11 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
               </button>
               
               <button 
-                onClick={() => { navigate('/earn'); setMobileMenuOpen(false); }} 
-                className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-800 hover:bg-emerald-50 hover:text-emerald-600 transition-all"
+                onClick={() => { navigate('/jobs'); setMobileMenuOpen(false); }} 
+                className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-800 hover:bg-orange-50 hover:text-orange-600 transition-all"
               >
-                <TreePine className="w-4 h-4" />
-                <span className="font-medium text-sm">Canopy</span>
+                <Briefcase className="w-4 h-4" />
+                <span className="font-medium text-sm">The Headhunt</span>
               </button>
               
               <button 
