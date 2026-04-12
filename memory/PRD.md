@@ -92,6 +92,7 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - [x] Recruitment seed data on backend startup
 - [x] Header nav: "Canopy" renamed to "The Headhunt" → links to /jobs
 - [x] /jobs and /discover pages redesigned with Header, Footer, light theme matching Courses page
+- [x] All recruitment student pages (/my-applications, /company/:slug, /apply/:jobId, /hackathon/:hackId, /quiz-recruit/:quizId) updated with Header, Footer, and light theme
 
 ### Earlier Completed
 - [x] 1v1 Battle Setup Page layout fix
