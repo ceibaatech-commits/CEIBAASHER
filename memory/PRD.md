@@ -1,7 +1,7 @@
 # Ceibaa - Educational Platform PRD
 
 ## Original Problem Statement
-Build and enhance the "Ceibaa" educational platform — a full-stack app (React, FastAPI, MongoDB, Socket.IO) featuring AI tutors, live 1v1 battles, career programs, social feeds (Victory Lane), WebRTC video chat, and real-time messaging.
+Build and enhance the "Ceibaa" educational platform — a full-stack app (React, FastAPI, MongoDB, Socket.IO) featuring AI tutors, live 1v1 battles, career programs, social feeds (Victory Lane), WebRTC video chat, real-time messaging, and a Recruitment & Internship Portal.
 
 ## Core Architecture
 - **Frontend**: React + Tailwind CSS + Shadcn UI
@@ -19,65 +19,82 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - Profile system with followers, following, stats, close friends, blocking
 
 ### Profile Features
-- **Edit Profile modal** (Name, Bio, Location, Website + Photo uploads)
-- **Profile picture upload** via Cloudinary (400x400 face crop)
-- **Cover photo upload** via Cloudinary (1500x500 fill)
-- **Inline click-to-upload** on avatar and cover photo (own profile only)
+- Edit Profile modal (Name, Bio, Location, Website + Photo uploads)
+- Profile picture upload via Cloudinary (400x400 face crop)
+- Cover photo upload via Cloudinary (1500x500 fill)
+- Inline click-to-upload on avatar and cover photo (own profile only)
 - Block user for both followed and non-followed users
 - Saved posts tab fetches from /api/social/bookmarks
-- Quiz Attempt button navigates to quiz room or post page
-- Posts on profile are clickable → opens SinglePost view
-- Comment button navigates to SinglePost (with comment section)
 
 ### Victory Lane (Social Feed)
 - Post creation (text, image, video, quiz rooms)
-- 4 Post Card Types: Close friend indicator, Quiz trending badge, Image exam tags, Repost indicator
 - Like, share, bookmark, comment actions
 - Bookmark persistence to backend API
-- **Reposts preserve full media/metadata** from original post (media_urls, hashtags, tags, post_type, quiz_details)
-- Reposts show in feed with "X reposted" indicator
+- Reposts preserve full media/metadata from original post
 
-### SinglePost Page
-- Matches new VictoryLane UI: repost indicator, close friend badge, quiz trending badge, image exam tags, bookmark button
-- Full comment section with reply input
-
-### Messaging System (Apr 2026)
+### Messaging System
 - REST API at `/api/messages/*` + Socket.IO at `/api/messagews`
 - 1-on-1 conversations, text messages, unread counts, real-time delivery
-- Messages page with dark theme, sidebar + chat view, cyan-to-purple gradient bubbles
-- InboxDropdown in header with unread badge
-- Header visible on Messages page
 
 ### 1v1 Battles & WebRTC
-- ZegoCloud Prebuilt SDK for 1v1 video calls (replaced custom WebRTC)
-- AppID/ServerSecret in frontend/.env
-- Minimize/maximize PiP widget, report modal
+- ZegoCloud Prebuilt SDK for 1v1 video calls
 - Battle quiz with live chat, matchmaking via Socket.io
 
+### Recruitment & Internship Portal (Feb 2026)
+- **3 Roles**: Student (uses existing Ceibaa auth), Recruiter (separate login), Admin (separate login)
+- **4 Post Types**: Job/Internship, MCQ Quiz, Hackathon, Event
+- **13 Frontend Pages**: JobsFeed, DiscoverCompanies, CompanyChannel, RecruiterLogin, RecruiterDashboard, RecruiterAnalytics, CreatePost, ManageApplicants, ApplyJob, QuizAttempt, HackathonDetail, MyApplications, RecruitmentCell (Admin)
+- **Backend**: recruitment_routes.py (23 endpoints), recruitment_admin_routes.py (8 endpoints)
+- **Seed Data**: 5 companies, 8 students with AIR ranks, 6 sample posts, 1 admin
+- **Key Features**: Company follow, post moderation queue, AIR rank filtering, quiz engine integration, hackathon registration, event RSVP, recruiter analytics
+
 ## Key API Endpoints
-- `/api/auth/demo-login` — Demo login (returns access_token)
+- `/api/auth/demo-login` — Demo login
 - `/api/social/feed/*` — Victory Lane feeds
-- `/api/social/posts/{id}/bookmark` — Bookmark toggle
-- `/api/social/posts/{id}/share` — Repost (copies full media/metadata)
-- `/api/profile/update` — Update profile (PUT) incl. profile_picture, cover_photo
-- `/api/profile/block` — Block user
-- `/api/media/profile-upload` — Upload profile pic or cover to Cloudinary
-- `/api/messages/conversations` — List/create conversations
-- `/api/messages/conversations/{id}/messages` — Get/send messages
+- `/api/profile/update` — Update profile
+- `/api/messages/conversations` — Messaging
+- `/api/recruitment/recruiter/login` — Recruiter login
+- `/api/recruitment-admin/login` — Recruitment admin login
+- `/api/recruitment/companies` — List companies
+- `/api/recruitment/feed` — Recruitment feed
+- `/api/recruitment/posts` — Create post (recruiter)
+- `/api/recruitment/apply/{post_id}` — Apply to job (student)
+- `/api/recruitment/quiz/{quiz_id}/start` — Start quiz
+- `/api/recruitment/hackathon/{id}/register` — Register hackathon
+- `/api/recruitment/analytics` — Recruiter analytics
+- `/api/recruitment-admin/recruiters` — Manage recruiters
+- `/api/recruitment-admin/pending-posts` — Moderation queue
 
 ## Prioritized Backlog
 
-### P1 (Next)
-- [ ] Follow Button UI visual verification
-- [ ] Google Search Console integration (need user's meta tag)
+### P0 (Next)
+- [ ] Email service for credential delivery & event reminders (SendGrid/Resend already in .env)
+
+### P1
+- [ ] Resume upload feature
+- [ ] Bulk applicant actions (shortlist by AIR rank)
+- [ ] CSV export of applicants
+- [ ] Quiz leaderboard auto-shortlist feature
 - [ ] Program enrollment/payment flow (Stripe)
 - [ ] Comments/reply system on posts
 
-### Recently Completed (Apr 2026)
-- [x] 1v1 Battle Setup Page layout fix (reduced header-to-card gap, responsive padding)
-
-### P2 (Future)
-- [ ] Profile badges for career program completers
-- [ ] "Programs Alumni" tag on leaderboard
+### P2
+- [ ] Real-time notifications on application status change
+- [ ] Follow Button UI visual verification
+- [ ] Google Search Console integration
+- [ ] Profile badges, Alumni tags
 - [ ] Export test history to CSV/PDF
-- [ ] Dashboard.js cleanup (orphaned)
+- [ ] ExamSheetManager.js further decomposition (1733 lines)
+
+### Recently Completed (Feb 2026)
+- [x] Recruitment & Internship Portal — Full integration (16 files, all tested 100%)
+- [x] Student auth integration with recruitment module (uses existing Ceibaa JWT)
+- [x] Recruitment seed data on backend startup
+
+### Earlier Completed
+- [x] 1v1 Battle Setup Page layout fix
+- [x] ZegoCloud SDK integration for video battles
+- [x] Chapter Tests page redesign with Neo-Brutalist UI
+- [x] Backend Code Quality fixes (socket_proxy, secrets, circular deps)
+- [x] Component decomposition (Board.js, ExamSheetManager.js)
+- [x] Messaging system
