@@ -107,28 +107,27 @@ const Matchmaking1v1 = () => {
       const opp = d.players.find(p => p.playerName !== playerName);
       setOpponent(opp);
       setBattleState('matched');
-      // Fetch questions then auto-transition
-      try {
-        const r = await axios.post(`${BACKEND_URL}/api/quiz/start`, { exam: examId, subject, topic, num_questions: 10 });
-        if (r.data.success && r.data.questions && r.data.questions.length > 0) {
-          setQuestions(r.data.questions);
-          setTimeout(() => setBattleState('playing'), 2500);
-        } else {
-          throw new Error('No questions returned');
+      // Fetch questions — try with topic first, then without, then broader
+      const fetchQ = async () => {
+        const attempts = [
+          { exam: examId, subject, topic, num_questions: 10 },
+          { exam: examId, subject, num_questions: 10 },
+        ];
+        for (const body of attempts) {
+          try {
+            const r = await axios.post(`${BACKEND_URL}/api/quiz/start`, body);
+            if (r.data.success && r.data.questions?.length > 0) return r.data.questions;
+          } catch {}
         }
-      } catch (err) {
-        console.error('Question fetch failed, trying socket fallback:', err);
-        if (s) s.emit('request-questions', { roomId: d.roomId, exam: examId, subject, topic });
-        // Force transition after 4s even if socket fallback is slow
-        setTimeout(() => {
-          setBattleState(prev => {
-            if (prev === 'matched') {
-              console.warn('Force-transitioning to playing state');
-              return 'playing';
-            }
-            return prev;
-          });
-        }, 4000);
+        return null;
+      };
+      const qs = await fetchQ();
+      if (qs) {
+        setQuestions(qs);
+        setTimeout(() => setBattleState('playing'), 2500);
+      } else {
+        toast.error('No questions available for this exam. Returning to setup.');
+        setTimeout(() => setBattleState('setup'), 2000);
       }
     });
 
@@ -164,15 +163,15 @@ const Matchmaking1v1 = () => {
     return () => clearInterval(iv);
   }, [battleState]);
 
-  // Timer
+  // Timer — only run if questions are loaded
   useEffect(() => {
-    if (battleState === 'playing' && timeLeft > 0 && selectedAnswer === null) {
+    if (battleState === 'playing' && questions.length > 0 && timeLeft > 0 && selectedAnswer === null) {
       const t = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(t);
-    } else if (battleState === 'playing' && timeLeft === 0 && selectedAnswer === null) {
+    } else if (battleState === 'playing' && questions.length > 0 && timeLeft === 0 && selectedAnswer === null) {
       handleAnswerSelect(-1);
     }
-  }, [timeLeft, battleState, selectedAnswer]);
+  }, [timeLeft, battleState, selectedAnswer, questions.length]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
@@ -205,8 +204,9 @@ const Matchmaking1v1 = () => {
 
   const handleAnswerSelect = (index) => {
     if (selectedAnswer !== null) return;
-    setSelectedAnswer(index);
     const q = questions[currentQuestionIndex];
+    if (!q) return; // Guard: no question loaded yet
+    setSelectedAnswer(index);
     const raw = q.correctAnswer || q.correct_answer;
     let ci;
     if (typeof raw === 'string' && /^[A-Da-d]$/.test(raw)) ci = raw.toUpperCase().charCodeAt(0) - 65;
@@ -363,6 +363,7 @@ const Matchmaking1v1 = () => {
   // ━━━━━━━━━━━━━━━━━━━━ PLAYING ━━━━━━━━━━━━━━━━━━━━
   if (battleState === 'playing' && questions.length > 0) {
     const q = questions[currentQuestionIndex];
+    if (!q) return <div className="min-h-screen flex items-center justify-center" style={{ background: C.cream }}><Loader2 className="w-8 h-8 animate-spin" style={{ color: C.red }} /></div>;
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
     const oppName = opponent?.playerName || 'Opponent';
 
