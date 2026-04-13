@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
+from jose import jwt as jose_jwt
 import os
 import httpx
 import uuid
@@ -15,6 +16,9 @@ router = APIRouter()
 # Environment variables
 MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 DB_NAME = os.getenv("DB_NAME", "test_database")
+JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 
 # MongoDB connection
 client = AsyncIOMotorClient(MONGO_URL)
@@ -153,11 +157,19 @@ async def process_emergent_session(session_request: SessionRequest, response: Re
             {"id": user_id},
             {"_id": 0, "provider_id": 0}
         )
+
+        # Generate a JWT so every other route can authenticate this user
+        jwt_token = jose_jwt.encode(
+            {"sub": user_id, "email": email, "role": "user",
+             "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)},
+            JWT_SECRET, algorithm=JWT_ALGORITHM
+        )
         
         return {
             "success": True,
             "user": user,
-            "session_token": session_token
+            "session_token": session_token,
+            "access_token": jwt_token
         }
         
     except HTTPException:

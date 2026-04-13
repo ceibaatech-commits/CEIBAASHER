@@ -33,36 +33,29 @@ const AuthCallback = () => {
 
         if (response.data.success) {
           const userData = response.data.user;
+          const jwtToken = response.data.access_token;
           const sessionToken = response.data.session_token;
 
           console.log('[AuthCallback] userData:', JSON.stringify(userData));
-          console.log('[AuthCallback] sessionToken:', sessionToken);
+          console.log('[AuthCallback] jwtToken:', jwtToken ? 'present' : 'missing');
 
           // Write to localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('auth_token');
           localStorage.removeItem('ceibaa_user');
 
-          if (sessionToken && sessionToken !== 'undefined') {
-            localStorage.setItem('token', sessionToken);
-            localStorage.setItem('auth_token', sessionToken);
+          // Prefer JWT token (works with all API routes), fall back to session token
+          const tokenToStore = jwtToken || sessionToken;
+          if (tokenToStore && tokenToStore !== 'undefined') {
+            localStorage.setItem('token', tokenToStore);
+            localStorage.setItem('auth_token', tokenToStore);
           }
           localStorage.setItem('ceibaa_user', JSON.stringify(userData));
-
-          // Verify it actually saved
-          console.log('[AuthCallback] localStorage after save:');
-          console.log('  token:', localStorage.getItem('token'));
-          console.log('  auth_token:', localStorage.getItem('auth_token'));
-          console.log('  ceibaa_user:', localStorage.getItem('ceibaa_user'));
 
           setUserData(userData);
           sessionStorage.setItem('just_authenticated', 'true');
 
           setTimeout(() => {
-            // Verify AGAIN just before redirect
-            console.log('[AuthCallback] localStorage just before redirect:');
-            console.log('  token:', localStorage.getItem('token'));
-            console.log('  ceibaa_user:', localStorage.getItem('ceibaa_user'));
             window.location.replace('/victory-lane');
           }, 300);
 
