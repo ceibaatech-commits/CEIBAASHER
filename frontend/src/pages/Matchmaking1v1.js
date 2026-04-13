@@ -7,6 +7,7 @@ import axios from 'axios';
 import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 import AgoraUIKit from 'agora-react-uikit';
+import Header from '../components/Header';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
@@ -106,11 +107,29 @@ const Matchmaking1v1 = () => {
       const opp = d.players.find(p => p.playerName !== playerName);
       setOpponent(opp);
       setBattleState('matched');
-      // Fetch questions
+      // Fetch questions then auto-transition
       try {
         const r = await axios.post(`${BACKEND_URL}/api/quiz/start`, { exam: examId, subject, topic, num_questions: 10 });
-        if (r.data.success && r.data.questions) { setQuestions(r.data.questions); setTimeout(() => setBattleState('playing'), 2500); }
-      } catch { if (s) s.emit('request-questions', { roomId: d.roomId, exam: examId, subject, topic }); }
+        if (r.data.success && r.data.questions && r.data.questions.length > 0) {
+          setQuestions(r.data.questions);
+          setTimeout(() => setBattleState('playing'), 2500);
+        } else {
+          throw new Error('No questions returned');
+        }
+      } catch (err) {
+        console.error('Question fetch failed, trying socket fallback:', err);
+        if (s) s.emit('request-questions', { roomId: d.roomId, exam: examId, subject, topic });
+        // Force transition after 4s even if socket fallback is slow
+        setTimeout(() => {
+          setBattleState(prev => {
+            if (prev === 'matched') {
+              console.warn('Force-transitioning to playing state');
+              return 'playing';
+            }
+            return prev;
+          });
+        }, 4000);
+      }
     });
 
     s.on('match-timeout', () => { setSearchTimedOut(true); setBattleState('setup'); });
@@ -272,6 +291,7 @@ const Matchmaking1v1 = () => {
   if (battleState === 'setup') {
     return (
       <div className="min-h-screen" style={{ background: C.cream }}>
+        <Header isLoggedIn={isUserAuth} user={user} />
         <div className="px-4 sm:px-12 pt-4">
           <button onClick={() => navigate(-1)} className="flex items-center text-gray-600 hover:text-gray-900 py-3"><ArrowLeft className="w-5 h-5 mr-2" /> Back</button>
           <div className="w-full sm:max-w-[460px] sm:mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-10">
@@ -300,7 +320,9 @@ const Matchmaking1v1 = () => {
   // ━━━━━━━━━━━━━━━━━━━━ SEARCHING ━━━━━━━━━━━━━━━━━━━━
   if (battleState === 'searching') {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: C.cream }}>
+      <div className="min-h-screen flex flex-col" style={{ background: C.cream }}>
+        <Header isLoggedIn={isUserAuth} user={user} />
+        <div className="flex-1 flex items-center justify-center">
         <div className="text-center max-w-sm mx-auto px-4">
           <div className="relative mb-6">
             <div className="w-28 h-28 rounded-full flex items-center justify-center mx-auto" style={{ background: C.red }}><Swords className="w-14 h-14 text-white" /></div>
@@ -313,6 +335,7 @@ const Matchmaking1v1 = () => {
           <div className="flex items-center justify-center gap-2 mb-6"><Loader2 className="w-4 h-4 animate-spin" style={{ color: C.red }} /><span className="text-gray-500 text-sm">{searchCountdown > 20 ? 'Searching...' : searchCountdown > 10 ? 'Still looking...' : 'Expanding search...'}</span></div>
           <button onClick={cancelMatchmaking} className="px-6 py-2.5 bg-gray-200 text-gray-700 rounded-xl font-semibold text-sm hover:bg-gray-300" data-testid="cancel-search-btn">Cancel</button>
         </div>
+        </div>
       </div>
     );
   }
@@ -320,7 +343,9 @@ const Matchmaking1v1 = () => {
   // ━━━━━━━━━━━━━━━━━━━━ MATCHED ━━━━━━━━━━━━━━━━━━━━
   if (battleState === 'matched') {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: C.cream }}>
+      <div className="min-h-screen flex flex-col" style={{ background: C.cream }}>
+        <Header isLoggedIn={isUserAuth} user={user} />
+        <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-3xl font-black text-gray-900 mb-6">Match Found!</h2>
           <div className="flex items-center justify-center gap-6 mb-6">
@@ -329,6 +354,7 @@ const Matchmaking1v1 = () => {
             <div className="text-center"><div className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-2" style={{ background: C.blue }}>{opponent?.playerName?.charAt(0).toUpperCase() || '?'}</div><p className="font-semibold text-gray-900">{opponent?.playerName || 'Opponent'}</p></div>
           </div>
           <p className="text-gray-400 animate-pulse">Starting battle...</p>
+        </div>
         </div>
       </div>
     );
