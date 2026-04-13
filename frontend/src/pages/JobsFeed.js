@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { toast } from 'sonner';
 import {
   Briefcase, Code2, Trophy, Calendar, MapPin, DollarSign, Clock,
   Heart, MessageCircle, Share2, Users, ArrowRight, Bookmark,
-  ChevronRight, Zap, Award, TrendingUp, Sparkles, Search
+  ChevronRight, Zap, Award, TrendingUp, Sparkles, Search, Send, X
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -38,17 +39,15 @@ const FILTER_TABS = [
   { key: 'event',     label: 'Events',     icon: Calendar },
 ];
 
-/* ── Feed Card ── */
-function FeedCard({ post }) {
+/* ── Feed Card with working social actions ── */
+function FeedCard({ post, liked, bookmarked, onLike, onBookmark, onShare, onOpenComments }) {
   const config = POST_TYPE_CONFIG[post.post_type] || POST_TYPE_CONFIG.job;
   const Icon = config.icon;
   const linkTo = post.post_type === 'quiz' ? `/quiz-recruit/${post.id}` : post.post_type === 'hackathon' ? `/hackathon/${post.id}` : `/apply/${post.id}`;
 
   return (
     <div className="group bg-white rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 overflow-hidden" data-testid={`post-card-${post.id}`}>
-      {/* Top accent bar */}
       <div className={`h-1 bg-gradient-to-r ${config.accent}`} />
-
       {/* Company header */}
       <div className="flex items-center gap-3 px-5 pt-4 pb-2">
         <Link to={`/company/${post.company_slug || post.company_id}`} className="flex-shrink-0">
@@ -61,19 +60,13 @@ function FeedCard({ post }) {
           <p className="text-slate-400 text-xs">{timeAgo(post.created_at)}</p>
         </div>
         <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${config.color}`}>
-          <Icon className="w-3.5 h-3.5" />
-          {config.label}
+          <Icon className="w-3.5 h-3.5" />{config.label}
         </span>
       </div>
-
       {/* Body */}
       <div className="px-5 pb-3">
-        <Link to={linkTo}>
-          <h3 className="text-slate-900 font-bold text-lg leading-snug group-hover:text-blue-600 transition-colors">{post.title}</h3>
-        </Link>
+        <Link to={linkTo}><h3 className="text-slate-900 font-bold text-lg leading-snug group-hover:text-blue-600 transition-colors">{post.title}</h3></Link>
         {post.description && <p className="text-slate-500 text-sm mt-1.5 line-clamp-2 leading-relaxed">{post.description}</p>}
-
-        {/* Meta tags */}
         <div className="flex flex-wrap gap-2 mt-3">
           {post.location && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><MapPin className="w-3 h-3" /> {post.location}</span>}
           {post.salary && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><DollarSign className="w-3 h-3" /> {post.salary}</span>}
@@ -85,21 +78,13 @@ function FeedCard({ post }) {
           {post.event_type && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700"><Calendar className="w-3 h-3" /> {post.event_type}</span>}
           {post.deadline && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500"><Clock className="w-3 h-3" /> {post.deadline}</span>}
         </div>
-
-        {/* Quiz preview */}
         {post.post_type === 'quiz' && post.questions?.length > 0 && (
           <div className="mt-3 bg-violet-50 border border-violet-100 rounded-xl p-3.5">
             <p className="text-violet-600 text-[10px] uppercase tracking-wider font-semibold mb-1.5">Sample Question</p>
             <p className="text-slate-800 text-sm font-medium">{post.questions[0]?.question}</p>
-            <div className="grid grid-cols-2 gap-1.5 mt-2">
-              {(post.questions[0]?.options || []).map((opt, i) => (
-                <div key={i} className="text-xs text-slate-600 bg-white px-2.5 py-1.5 rounded-lg border border-violet-100">{String.fromCharCode(65 + i)}. {opt}</div>
-              ))}
-            </div>
+            <div className="grid grid-cols-2 gap-1.5 mt-2">{(post.questions[0]?.options || []).map((opt, i) => (<div key={i} className="text-xs text-slate-600 bg-white px-2.5 py-1.5 rounded-lg border border-violet-100">{String.fromCharCode(65 + i)}. {opt}</div>))}</div>
           </div>
         )}
-
-        {/* Hackathon prizes */}
         {post.post_type === 'hackathon' && post.prizes && (
           <div className="flex gap-2 mt-3">
             {post.prizes.first && <div className="flex-1 bg-amber-50 border border-amber-200 rounded-xl py-2 text-center"><span className="text-amber-600 text-xs font-bold block">1st</span><span className="text-slate-800 text-xs font-semibold">&#8377;{post.prizes.first}</span></div>}
@@ -108,18 +93,93 @@ function FeedCard({ post }) {
           </div>
         )}
       </div>
-
-      {/* Footer */}
+      {/* Footer with working buttons */}
       <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-5 text-slate-400">
-          <button className="flex items-center gap-1.5 text-xs hover:text-rose-500 transition-colors"><Heart className="w-4 h-4" /> <span>{post.likes_count || 0}</span></button>
-          <button className="flex items-center gap-1.5 text-xs hover:text-blue-500 transition-colors"><MessageCircle className="w-4 h-4" /> <span>{post.comments_count || 0}</span></button>
-          <button className="flex items-center gap-1.5 text-xs hover:text-emerald-500 transition-colors"><Share2 className="w-4 h-4" /></button>
-          <button className="flex items-center gap-1.5 text-xs hover:text-amber-500 transition-colors"><Bookmark className="w-4 h-4" /></button>
+        <div className="flex items-center gap-5">
+          <button onClick={() => onLike(post.id)} className={`flex items-center gap-1.5 text-xs transition-colors ${liked ? 'text-rose-500' : 'text-slate-400 hover:text-rose-500'}`} data-testid={`like-btn-${post.id}`}>
+            <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} /> <span>{post.likes_count || 0}</span>
+          </button>
+          <button onClick={() => onOpenComments(post.id)} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-blue-500 transition-colors" data-testid={`comment-btn-${post.id}`}>
+            <MessageCircle className="w-4 h-4" /> <span>{post.comments_count || 0}</span>
+          </button>
+          <button onClick={() => onShare(post)} className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-500 transition-colors" data-testid={`share-btn-${post.id}`}>
+            <Share2 className="w-4 h-4" />
+          </button>
+          <button onClick={() => onBookmark(post.id)} className={`flex items-center gap-1.5 text-xs transition-colors ${bookmarked ? 'text-amber-500' : 'text-slate-400 hover:text-amber-500'}`} data-testid={`bookmark-btn-${post.id}`}>
+            <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+          </button>
         </div>
         <Link to={linkTo} className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold text-white transition-all ${config.actionColor}`} data-testid={`action-${post.id}`}>
           {config.actionLabel} <ChevronRight className="w-3.5 h-3.5" />
         </Link>
+      </div>
+    </div>
+  );
+}
+
+/* ── Comment Modal ── */
+function CommentModal({ postId, onClose }) {
+  const [comments, setComments] = useState([]);
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [posting, setPosting] = useState(false);
+
+  useEffect(() => { fetchComments(); }, [postId]);
+
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/posts/${postId}/comments`);
+      setComments(data.comments || []);
+    } catch {}
+    finally { setLoading(false); }
+  };
+
+  const handlePost = async () => {
+    if (!text.trim()) return;
+    setPosting(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) { toast.error('Please login to comment'); return; }
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/comment`, { text: text.trim() }, { headers: { Authorization: `Bearer ${token}` } });
+      setComments(prev => [data, ...prev]);
+      setText('');
+    } catch (err) { toast.error(err.response?.data?.detail || 'Failed to post comment'); }
+    finally { setPosting(false); }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
+      <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()} data-testid="comment-modal">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200">
+          <h3 className="font-bold text-slate-800">Comments</h3>
+          <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5 text-slate-500" /></button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {loading ? <div className="text-center text-slate-400 py-8">Loading...</div> : comments.length === 0 ? (
+            <div className="text-center text-slate-400 py-8">No comments yet. Be the first!</div>
+          ) : comments.map(c => (
+            <div key={c.id} className="flex gap-3" data-testid={`comment-${c.id}`}>
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex-shrink-0 overflow-hidden">
+                {c.user_avatar ? <img src={c.user_avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-blue-600 text-xs font-bold">{(c.user_name || '?')[0]}</div>}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-slate-800 text-sm font-semibold">{c.user_name}</span>
+                  <span className="text-slate-400 text-xs">{timeAgo(c.created_at)}</span>
+                </div>
+                <p className="text-slate-600 text-sm mt-0.5">{c.text}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="p-4 border-t border-slate-200 flex gap-2">
+          <input value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handlePost()} placeholder="Write a comment..." data-testid="comment-input"
+            className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <button onClick={handlePost} disabled={posting || !text.trim()} data-testid="comment-submit"
+            className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors">
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -132,8 +192,11 @@ export default function JobsFeed() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [likedIds, setLikedIds] = useState(new Set());
+  const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
+  const [commentModalPostId, setCommentModalPostId] = useState(null);
 
-  useEffect(() => { fetchFeed(); }, []);
+  useEffect(() => { fetchFeed(); fetchInteractions(); }, []);
 
   const fetchFeed = async () => {
     try {
@@ -144,6 +207,45 @@ export default function JobsFeed() {
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
+
+  const fetchInteractions = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-interactions`, { headers: { Authorization: `Bearer ${token}` } });
+      setLikedIds(new Set(data.liked_post_ids || []));
+      setBookmarkedIds(new Set(data.bookmarked_post_ids || []));
+    } catch {}
+  };
+
+  const handleLike = useCallback(async (postId) => {
+    const token = localStorage.getItem('token');
+    if (!token) { toast.error('Please login to like posts'); navigate('/login'); return; }
+    try {
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/like`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setLikedIds(prev => { const s = new Set(prev); data.liked ? s.add(postId) : s.delete(postId); return s; });
+      setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: data.likes_count } : p));
+    } catch (err) { toast.error('Failed to like'); }
+  }, [navigate]);
+
+  const handleBookmark = useCallback(async (postId) => {
+    const token = localStorage.getItem('token');
+    if (!token) { toast.error('Please login to save posts'); navigate('/login'); return; }
+    try {
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      setBookmarkedIds(prev => { const s = new Set(prev); data.bookmarked ? s.add(postId) : s.delete(postId); return s; });
+      toast.success(data.bookmarked ? 'Post saved' : 'Post unsaved');
+    } catch (err) { toast.error('Failed to save'); }
+  }, [navigate]);
+
+  const handleShare = useCallback(async (post) => {
+    const url = `${window.location.origin}/apply/${post.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard!');
+      axios.post(`${BACKEND_URL}/api/recruitment/posts/${post.id}/share`).catch(() => {});
+    } catch { toast.error('Failed to copy link'); }
+  }, []);
 
   const filtered = filter === 'all' ? posts : posts.filter(p => p.post_type === filter);
 
@@ -180,11 +282,7 @@ export default function JobsFeed() {
             const count = f.key === 'all' ? posts.length : posts.filter(p => p.post_type === f.key).length;
             return (
               <button key={f.key} onClick={() => setFilter(f.key)} data-testid={`filter-${f.key}`}
-                className={`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
-                  filter === f.key
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'text-slate-600 hover:bg-slate-100'
-                }`}>
+                className={`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${filter === f.key ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}>
                 <FIcon className="w-3.5 h-3.5" /> {f.label} <span className="opacity-70">({count})</span>
               </button>
             );
@@ -195,7 +293,6 @@ export default function JobsFeed() {
       {/* Feed Grid */}
       <div className="max-w-6xl mx-auto px-4 py-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Feed */}
           <div className="lg:col-span-2 space-y-5">
             {loading ? (
               [1,2,3].map(i => <div key={i} className="bg-white rounded-2xl h-52 animate-pulse border border-slate-200" />)
@@ -207,11 +304,14 @@ export default function JobsFeed() {
                 <Link to="/discover" className="inline-block mt-5 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all">Browse Companies</Link>
               </div>
             ) : (
-              filtered.map(post => <FeedCard key={post.id} post={post} />)
+              filtered.map(post => (
+                <FeedCard key={post.id} post={post}
+                  liked={likedIds.has(post.id)} bookmarked={bookmarkedIds.has(post.id)}
+                  onLike={handleLike} onBookmark={handleBookmark} onShare={handleShare}
+                  onOpenComments={setCommentModalPostId} />
+              ))
             )}
           </div>
-
-          {/* Sidebar */}
           <div className="space-y-5 hidden lg:block">
             <TrendingSidebar />
             {user && <ProfileBadgeCard user={user} />}
@@ -224,13 +324,14 @@ export default function JobsFeed() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">Want to hire from CEIBAA?</h2>
           <p className="text-white/80 mb-6 text-sm sm:text-base">Post jobs, run quizzes, and find top talent with verified AIR ranks.</p>
-          <button onClick={() => navigate('/recruiter')} className="bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all text-sm" data-testid="recruiter-cta">
-            Recruiter Portal
-          </button>
+          <button onClick={() => navigate('/recruiter')} className="bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all text-sm" data-testid="recruiter-cta">Recruiter Portal</button>
         </div>
       </section>
 
       <Footer />
+
+      {/* Comment Modal */}
+      {commentModalPostId && <CommentModal postId={commentModalPostId} onClose={() => { setCommentModalPostId(null); fetchFeed(); }} />}
     </div>
   );
 }
@@ -238,24 +339,17 @@ export default function JobsFeed() {
 /* ── Sidebar Components ── */
 function TrendingSidebar() {
   const [companies, setCompanies] = useState([]);
-  useEffect(() => {
-    axios.get(`${BACKEND_URL}/api/recruitment/companies?limit=4`).then(r => setCompanies((r.data.companies || []).slice(0, 4))).catch(() => {});
-  }, []);
+  useEffect(() => { axios.get(`${BACKEND_URL}/api/recruitment/companies?limit=4`).then(r => setCompanies((r.data.companies || []).slice(0, 4))).catch(() => {}); }, []);
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
       <h3 className="text-slate-900 font-bold text-sm mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-blue-500" /> Trending Companies</h3>
-      <div className="space-y-3">
-        {companies.map(c => (
-          <Link key={c.id} to={`/company/${c.slug}`} className="flex items-center gap-3 group" data-testid={`trending-${c.slug}`}>
-            <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-100 flex-shrink-0 ring-1 ring-slate-200"><img src={c.logo_url} alt="" className="w-full h-full object-cover" /></div>
-            <div className="flex-1 min-w-0">
-              <p className="text-slate-800 text-sm font-medium truncate group-hover:text-blue-600 transition-colors">{c.company_name}</p>
-              <p className="text-slate-400 text-xs">{c.industry} · {c.open_roles || 0} roles</p>
-            </div>
-            {c.open_roles > 0 && <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-50 text-emerald-600 font-semibold border border-emerald-200">Hiring</span>}
-          </Link>
-        ))}
-      </div>
+      <div className="space-y-3">{companies.map(c => (
+        <Link key={c.id} to={`/company/${c.slug}`} className="flex items-center gap-3 group" data-testid={`trending-${c.slug}`}>
+          <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-100 flex-shrink-0 ring-1 ring-slate-200"><img src={c.logo_url} alt="" className="w-full h-full object-cover" /></div>
+          <div className="flex-1 min-w-0"><p className="text-slate-800 text-sm font-medium truncate group-hover:text-blue-600 transition-colors">{c.company_name}</p><p className="text-slate-400 text-xs">{c.industry} · {c.open_roles || 0} roles</p></div>
+          {c.open_roles > 0 && <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-50 text-emerald-600 font-semibold border border-emerald-200">Hiring</span>}
+        </Link>
+      ))}</div>
     </div>
   );
 }
@@ -268,14 +362,9 @@ function ProfileBadgeCard({ user }) {
         <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 ring-1 ring-slate-200">
           {(user.profile_picture || user.avatar) ? <img src={user.profile_picture || user.avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-blue-600 font-bold">{(user.name || '?')[0]}</div>}
         </div>
-        <div>
-          <p className="text-slate-800 text-sm font-semibold">{user.name}</p>
-          {user.air_rank && <p className="text-amber-600 text-xs font-medium">AIR {user.air_rank}</p>}
-        </div>
+        <div><p className="text-slate-800 text-sm font-semibold">{user.name}</p>{user.air_rank && <p className="text-amber-600 text-xs font-medium">AIR {user.air_rank}</p>}</div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {(user.badges || []).map((b, i) => <span key={i} className="px-2 py-0.5 rounded text-[10px] bg-blue-50 text-blue-600 font-medium border border-blue-200">{b}</span>)}
-      </div>
+      <div className="flex flex-wrap gap-2">{(user.badges || []).map((b, i) => <span key={i} className="px-2 py-0.5 rounded text-[10px] bg-blue-50 text-blue-600 font-medium border border-blue-200">{b}</span>)}</div>
       <Link to="/my-applications" className="block mt-3 text-center py-2 rounded-lg bg-slate-50 text-slate-500 text-xs font-medium hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200">View Applications &rarr;</Link>
     </div>
   );

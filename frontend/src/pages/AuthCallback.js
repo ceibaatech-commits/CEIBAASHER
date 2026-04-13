@@ -12,83 +12,72 @@ const AuthCallback = () => {
   useEffect(() => {
     const processAuth = async () => {
       try {
-        console.log('[AuthCallback] Starting authentication process');
-        console.log('[AuthCallback] Current URL:', window.location.href);
-        console.log('[AuthCallback] Hash:', window.location.hash);
-        
-        // Get session_id from URL fragment
         const hash = window.location.hash;
-        const params = new URLSearchParams(hash.substring(1)); // Remove # from hash
+        const params = new URLSearchParams(hash.substring(1));
         const sessionId = params.get('session_id');
 
-        console.log('[AuthCallback] Extracted session_id:', sessionId);
+        console.log('[AuthCallback] session_id:', sessionId);
 
         if (!sessionId) {
-          console.error('[AuthCallback] No session_id found in URL');
-          console.error('[AuthCallback] Full hash:', hash);
-          console.error('[AuthCallback] Parsed params:', Array.from(params.entries()));
-          
-          // Don't redirect immediately - wait a moment in case hash arrives late
-          setTimeout(() => {
-            window.location.replace('/login?error=no_session_id');
-          }, 1000);
+          setTimeout(() => window.location.replace('/login?error=no_session_id'), 1000);
           return;
         }
 
-        // Clear the hash immediately to prevent re-processing
-        console.log('[AuthCallback] Clearing hash from URL');
         window.history.replaceState(null, '', window.location.pathname);
 
-        // Exchange session_id for user data
-        console.log('[AuthCallback] Exchanging session_id for user data');
         const response = await axios.post(`${BACKEND_URL}/api/auth/emergent/session`, {
           session_id: sessionId
-        }, {
-          withCredentials: true  // Important for setting cookies
-        });
+        }, { withCredentials: true });
 
-        console.log('[AuthCallback] Response received:', response.data.success);
+        console.log('[AuthCallback] Full response:', JSON.stringify(response.data));
 
         if (response.data.success) {
           const userData = response.data.user;
-          console.log('[AuthCallback] User authenticated:', userData.email);
-          
-          // CRITICAL: Clear any existing tokens before setting new ones
+          const sessionToken = response.data.session_token;
+
+          console.log('[AuthCallback] userData:', JSON.stringify(userData));
+          console.log('[AuthCallback] sessionToken:', sessionToken);
+
+          // Write to localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('auth_token');
           localStorage.removeItem('ceibaa_user');
-          
-          // Store new session token
-          const sessionToken = response.data.session_token;
+
           if (sessionToken && sessionToken !== 'undefined') {
             localStorage.setItem('token', sessionToken);
             localStorage.setItem('auth_token', sessionToken);
           }
-          
-          setUserData(userData);
+          localStorage.setItem('ceibaa_user', JSON.stringify(userData));
 
-          // Set flag to skip delay in ProtectedRoute
+          // Verify it actually saved
+          console.log('[AuthCallback] localStorage after save:');
+          console.log('  token:', localStorage.getItem('token'));
+          console.log('  auth_token:', localStorage.getItem('auth_token'));
+          console.log('  ceibaa_user:', localStorage.getItem('ceibaa_user'));
+
+          setUserData(userData);
           sessionStorage.setItem('just_authenticated', 'true');
 
-          console.log('[AuthCallback] Redirecting to /victory-lane');
-          
-          // Use window.location.replace for hard redirect (clears React state)
-          window.location.replace('/victory-lane');
+          setTimeout(() => {
+            // Verify AGAIN just before redirect
+            console.log('[AuthCallback] localStorage just before redirect:');
+            console.log('  token:', localStorage.getItem('token'));
+            console.log('  ceibaa_user:', localStorage.getItem('ceibaa_user'));
+            window.location.replace('/victory-lane');
+          }, 300);
+
         } else {
-          throw new Error('Authentication failed - server returned success: false');
+          throw new Error('Auth failed');
         }
       } catch (error) {
-        console.error('[AuthCallback] Error during authentication:', error);
-        console.error('[AuthCallback] Error details:', error.response?.data);
-        
-        setTimeout(() => {
-          window.location.replace('/login?error=auth_failed');
-        }, 2000);
+        console.error('[AuthCallback] Error:', error);
+        console.error('[AuthCallback] Response data:', error.response?.data);
+        setTimeout(() => window.location.replace('/login?error=auth_failed'), 2000);
       }
     };
 
     processAuth();
-  }, []); // Empty dependency array - run only once
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50">

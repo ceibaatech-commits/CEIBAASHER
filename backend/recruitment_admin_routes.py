@@ -7,6 +7,7 @@ import uuid
 import bcrypt
 from datetime import datetime, timezone, timedelta
 from typing import Optional
+from collections import defaultdict
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from jose import jwt, JWTError
@@ -16,6 +17,27 @@ router = APIRouter()
 
 JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key-2026")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
+# --- Brute Force Protection ---
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_MINUTES = 15
+_login_attempts = defaultdict(list)  # key: ip+email -> list of timestamps
+
+def _check_rate_limit(ip: str, email: str):
+    key = f"{ip}:{email}"
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(minutes=LOCKOUT_MINUTES)
+    _login_attempts[key] = [t for t in _login_attempts[key] if t > cutoff]
+    if len(_login_attempts[key]) >= MAX_FAILED_ATTEMPTS:
+        raise HTTPException(429, f"Too many failed login attempts. Try again in {LOCKOUT_MINUTES} minutes.")
+
+def _record_failed_attempt(ip: str, email: str):
+    key = f"{ip}:{email}"
+    _login_attempts[key].append(datetime.now(timezone.utc))
+
+def _clear_attempts(ip: str, email: str):
+    key = f"{ip}:{email}"
+    _login_attempts.pop(key, None)
 
 async def get_admin(request: Request):
     auth = request.headers.get("Authorization", "")
@@ -49,13 +71,18 @@ class CreateRecruiter(BaseModel):
 
 # --- Admin Auth ---
 @router.post("/recruitment-admin/login")
-async def admin_login(data: AdminLogin):
+async def admin_login(data: AdminLogin, request: Request):
     email = data.email.strip().lower()
+    client_ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(client_ip, email)
     admin = await db.ceibaa_admins.find_one({"email": email}, {"_id": 0})
     if not admin:
+        _record_failed_attempt(client_ip, email)
         raise HTTPException(401, "Invalid credentials")
     if not bcrypt.checkpw(data.password.encode(), admin["password_hash"].encode()):
+        _record_failed_attempt(client_ip, email)
         raise HTTPException(401, "Invalid credentials")
+    _clear_attempts(client_ip, email)
     token = jwt.encode(
         {"sub": admin["id"], "email": email, "role": "ceibaa_admin",
          "exp": datetime.now(timezone.utc) + timedelta(days=7)},

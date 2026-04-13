@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, Header, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from jose import jwt, JWTError
@@ -297,39 +297,137 @@ async def google_callback(request: Request):
         return RedirectResponse(url=f"{FRONTEND_URL}/login?error=Google login failed")
 
 @router.get("/auth/me")
-async def get_current_user(request: Request):
-    # Get token from Authorization header
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
+async def get_current_user(
+    request: Request,
+    response: Response,
+):
+    """
+    Get the currently authenticated user.
+
+    Supports two authentication methods in priority order:
+
+    1. **Emergent / Google OAuth** – The session token (issued by the Emergent
+       auth service) is looked up in the ``user_sessions`` collection.  The
+       token may arrive either as an ``httpOnly`` cookie named
+       ``session_token`` or as a ``Bearer`` token in the ``Authorization``
+       header.
+
+    2. **Email / password (JWT)** – If no matching session is found in the
+       database the token is decoded as a signed JWT.  The ``sub`` claim must
+       contain a valid ``user_id``.
+
+    Returns the user document (without ``_id`` / ``provider_id``) on success,
+    or a 401 if neither method authenticates the request.
+    """
+    from datetime import timezone as _tz
+
+    # ------------------------------------------------------------------
+    # 1.  Extract the raw token value from cookie or Authorization header.
+    # ------------------------------------------------------------------
+    token = request.cookies.get("session_token")
+
+    if not token:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[len("Bearer "):]
+
+    if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    token = auth_header.replace("Bearer ", "")
-    
+
+    # ------------------------------------------------------------------
+    # 2.  Try Emergent session-token lookup first.
+    # ------------------------------------------------------------------
+    try:
+        session_doc = await db.user_sessions.find_one(
+            {"session_token": token},
+            {"_id": 0},
+        )
+
+        if session_doc:
+            expires_at = session_doc.get("expires_at")
+            if isinstance(expires_at, str):
+                expires_at = datetime.fromisoformat(expires_at)
+            if expires_at is not None:
+                if expires_at.tzinfo is None:
+                    expires_at = expires_at.replace(tzinfo=_tz.utc)
+                if expires_at < datetime.now(_tz.utc):
+                    # Clean up and fall through to JWT path
+                    await db.user_sessions.delete_one({"session_token": token})
+                else:
+                    # Valid Emergent session – fetch and return user
+                    user_id = session_doc["user_id"]
+                    user = await db.users.find_one(
+                        {"id": user_id},
+                        {"_id": 0, "provider_id": 0},
+                    )
+                    if not user:
+                        # Backward-compat: some docs use user_id field
+                        user = await db.users.find_one(
+                            {"user_id": user_id},
+                            {"_id": 0, "provider_id": 0},
+                        )
+                    if not user:
+                        raise HTTPException(status_code=404, detail="User not found")
+                    return user
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Session lookup failure is non-fatal; fall through to JWT
+        print(f"[auth/me] Session lookup error (falling back to JWT): {e}")
+
+    # ------------------------------------------------------------------
+    # 3.  Fall back to JWT decode for email/password (and legacy OAuth) users.
+    # ------------------------------------------------------------------
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")
-        
+
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
-        # Get user from database
+
         user = await db.users.find_one({"id": user_id})
-        
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        
-        # Remove MongoDB _id field
+
         user.pop("_id", None)
-        
+        user.pop("provider_id", None)
         return user
-        
+
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+
 @router.post("/auth/logout")
-async def logout():
-    # In a stateless JWT system, logout is handled client-side by removing the token
-    return {"message": "Logged out successfully"}
+async def logout(request: Request, response: Response):
+    """
+    Log out the current user.
+
+    For Emergent / Google OAuth sessions the session record is deleted from
+    ``user_sessions`` and the ``session_token`` cookie is cleared.
+    For JWT users (email/password) the cookie clear is a no-op and the client
+    is expected to discard the token locally.
+    """
+    try:
+        session_token = request.cookies.get("session_token")
+
+        if session_token:
+            # Remove Emergent session from database (JWT users have no DB session)
+            await db.user_sessions.delete_one({"session_token": session_token})
+
+        # Clear cookie regardless of auth method
+        response.delete_cookie(
+            key="session_token",
+            path="/",
+            secure=True,
+            samesite="none",
+        )
+
+        return {"success": True, "message": "Logged out successfully"}
+
+    except Exception as e:
+        print(f"[auth/logout] Error: {e}")
+        # Always report success to the client so the frontend can clean up
+        return {"success": True, "message": "Logged out"}
 
 @router.get("/auth/search-user")
 async def search_user(name: str):

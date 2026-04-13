@@ -2,7 +2,7 @@
 Emergent-managed Google Auth Routes
 Provides hassle-free social authentication via Google OAuth
 """
-from fastapi import APIRouter, HTTPException, Request, Response, Header
+from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -169,99 +169,6 @@ async def process_emergent_session(session_request: SessionRequest, response: Re
         raise HTTPException(status_code=500, detail="Failed to process session")
 
 
-@router.get("/auth/me")
-async def get_current_user(
-    request: Request,
-    authorization: str = Header(None)
-):
-    """
-    Get current authenticated user
-    Checks session_token from cookie first, then Authorization header
-    """
-    try:
-        # Try to get session_token from cookie first
-        session_token = request.cookies.get("session_token")
-        
-        # Fallback to Authorization header
-        if not session_token and authorization:
-            if authorization.startswith("Bearer "):
-                session_token = authorization.replace("Bearer ", "")
-        
-        if not session_token:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Find session in database
-        session_doc = await db.user_sessions.find_one(
-            {"session_token": session_token},
-            {"_id": 0}
-        )
-        
-        if not session_doc:
-            raise HTTPException(status_code=401, detail="Invalid session")
-        
-        # Check expiry
-        expires_at = session_doc["expires_at"]
-        if isinstance(expires_at, str):
-            expires_at = datetime.fromisoformat(expires_at)
-        if expires_at.tzinfo is None:
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
-        
-        if expires_at < datetime.now(timezone.utc):
-            # Clean up expired session
-            await db.user_sessions.delete_one({"session_token": session_token})
-            raise HTTPException(status_code=401, detail="Session expired")
-        
-        # Get user data
-        user_id = session_doc["user_id"]
-        user = await db.users.find_one(
-            {"id": user_id},
-            {"_id": 0, "provider_id": 0}
-        )
-        
-        if not user:
-            # Also try user_id field for backward compatibility
-            user = await db.users.find_one(
-                {"user_id": user_id},
-                {"_id": 0, "provider_id": 0}
-            )
-        
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        return user
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Error getting current user: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Failed to get user")
-
-
-@router.post("/auth/logout")
-async def logout(request: Request, response: Response):
-    """
-    Logout current user
-    Deletes session from database and clears cookie
-    """
-    try:
-        session_token = request.cookies.get("session_token")
-        
-        if session_token:
-            # Delete session from database
-            await db.user_sessions.delete_one({"session_token": session_token})
-        
-        # Clear cookie
-        response.delete_cookie(
-            key="session_token",
-            path="/",
-            secure=True,
-            samesite="none"
-        )
-        
-        return {"success": True, "message": "Logged out successfully"}
-        
-    except Exception as e:
-        print(f"Error during logout: {str(e)}")
-        return {"success": True, "message": "Logged out"}  # Always succeed
+# NOTE: GET /auth/me and POST /auth/logout are defined in auth_routes.py.
+# They handle both Emergent session-token users and JWT (email/password) users
+# in a single unified handler.  Do not re-define those routes here.
