@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Mic, MicOff, Video, VideoOff, Phone, PhoneOff, EyeOff, Eye, Flag, X, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Mic, MicOff, Video, VideoOff, Phone, PhoneOff, EyeOff, Eye, Flag, X, AlertTriangle, Minimize2, Maximize2 } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -64,7 +64,7 @@ const Matchmaking1v1 = () => {
   const [agoraToken, setAgoraToken] = useState(null);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
-  const [vcHidden, setVcHidden] = useState(false);
+  const [vcMinimized, setVcMinimized] = useState(false); // PiP minimized mode
   const [vcRequester, setVcRequester] = useState('');
 
   // Report state
@@ -376,37 +376,12 @@ const Matchmaking1v1 = () => {
           <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm">
             <div className="flex items-center gap-2"><button onClick={() => navigate(-1)}><ArrowLeft className="w-5 h-5 text-gray-600" /></button><span className="font-bold text-gray-900 text-sm">{playerName}</span></div>
             <div className="flex items-center gap-2">
-              {/* Mobile VC button */}
-              {vcState === 'idle' && <button onClick={requestVC} className="p-1.5 rounded-lg text-white" style={{ background: C.blue }}><Phone className="w-4 h-4" /></button>}
+              {vcState === 'idle' && <button onClick={requestVC} className="p-1.5 rounded-lg text-white" style={{ background: C.blue }} data-testid="mobile-start-vc"><Phone className="w-4 h-4" /></button>}
               {vcState === 'requesting' && <span className="text-xs text-gray-400 animate-pulse">Calling...</span>}
-              {vcState === 'active' && <button onClick={() => setVcHidden(!vcHidden)} className="p-1.5 rounded-lg" style={{ background: C.pink }}>{vcHidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}</button>}
               <button onClick={() => setShowReport(true)} className="p-1.5 rounded-lg bg-gray-100"><Flag className="w-3.5 h-3.5 text-gray-400" /></button>
               <div className="px-3 py-1 rounded-full text-white text-sm font-bold" style={{ background: timeLeft <= 10 ? C.red : '#888' }}>{timeLeft}s</div>
             </div>
           </div>
-
-          {/* VC Panel (mobile) */}
-          {vcState === 'active' && !vcHidden && (
-            <div className="px-4 py-3" style={{ background: C.pink }}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: C.blue }}>{oppName[0]}</div><div><p className="text-xs font-semibold text-gray-800">{oppName}</p><p className="text-[10px] text-green-600">Connected</p></div></div>
-                <div className="flex items-center gap-1.5">
-                  <button onClick={() => setMicOn(!micOn)} className={`p-1.5 rounded-lg ${micOn ? 'bg-white' : 'bg-red-100'}`}>{micOn ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5 text-red-500" />}</button>
-                  <button onClick={() => setCamOn(!camOn)} className={`p-1.5 rounded-lg ${camOn ? 'bg-white' : 'bg-red-100'}`}>{camOn ? <Video className="w-3.5 h-3.5" /> : <VideoOff className="w-3.5 h-3.5 text-red-500" />}</button>
-                  <button onClick={() => setVcHidden(true)} className="p-1.5 bg-white rounded-lg"><EyeOff className="w-3.5 h-3.5 text-gray-500" /></button>
-                  <button onClick={endVC} className="p-1.5 bg-red-500 rounded-lg"><PhoneOff className="w-3.5 h-3.5 text-white" /></button>
-                </div>
-              </div>
-              {agoraToken !== null && <div className="w-full h-32 rounded-xl overflow-hidden bg-gray-900"><AgoraUIKit rtcProps={{ appId: AGORA_APP_ID, channel: sanitizedChannel, token: agoraToken || '', role: 'host', layout: 1 }} callbacks={{ EndCall: endVC }} /></div>}
-            </div>
-          )}
-
-          {/* Hidden VC thumbnail */}
-          {vcState === 'active' && vcHidden && (
-            <button onClick={() => setVcHidden(false)} className="fixed bottom-20 right-3 z-50 w-16 h-16 rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900">
-              <div className="w-full h-full flex items-center justify-center"><Eye className="w-5 h-5 text-white" /></div>
-            </button>
-          )}
 
           {/* Progress bar */}
           <div className="h-1.5 mx-4 mt-2 rounded-full overflow-hidden" style={{ background: '#e0d8d0' }}><div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: `linear-gradient(to right, ${C.red}, ${C.blue})` }} /></div>
@@ -517,20 +492,17 @@ const Matchmaking1v1 = () => {
                 <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2" style={{ background: C.blue }}>{oppName.charAt(0).toUpperCase()}</div>
                 <p className="font-bold text-gray-900 text-sm">{oppName}</p>
                 <p className="text-xs text-gray-500">{decodeURIComponent(examId)}</p>
-                {/* VC embedded in sidebar */}
-                {vcState === 'active' && agoraToken !== null && (
-                  <div className="mt-3 w-full h-32 rounded-xl overflow-hidden bg-gray-900"><AgoraUIKit rtcProps={{ appId: AGORA_APP_ID, channel: sanitizedChannel, token: agoraToken || '', role: 'host', layout: 1 }} callbacks={{ EndCall: endVC }} /></div>
-                )}
               </div>
 
               {/* VC controls */}
               <div className="bg-white rounded-xl p-3 border border-gray-100 space-y-2">
-                {vcState === 'idle' && <button onClick={requestVC} className="w-full py-2 rounded-lg text-white text-sm font-semibold flex items-center justify-center gap-2" style={{ background: C.blue }}><Phone className="w-4 h-4" /> Start Video Call</button>}
-                {vcState === 'requesting' && <div className="text-center py-2 text-sm text-gray-500 animate-pulse">Waiting for opponent...</div>}
+                {vcState === 'idle' && <button onClick={requestVC} className="w-full py-2 rounded-lg text-white text-sm font-semibold flex items-center justify-center gap-2" style={{ background: C.blue }} data-testid="desktop-start-vc"><Phone className="w-4 h-4" /> Start Video Call</button>}
+                {vcState === 'requesting' && <div className="text-center py-2 text-sm text-gray-500 animate-pulse">Ringing opponent...</div>}
                 {vcState === 'active' && (
                   <div className="flex items-center justify-center gap-2">
                     <button onClick={() => setMicOn(!micOn)} className={`p-2 rounded-lg ${micOn ? 'bg-gray-100' : 'bg-red-100'}`}>{micOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4 text-red-500" />}</button>
                     <button onClick={() => setCamOn(!camOn)} className={`p-2 rounded-lg ${camOn ? 'bg-gray-100' : 'bg-red-100'}`}>{camOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4 text-red-500" />}</button>
+                    <button onClick={() => setVcMinimized(!vcMinimized)} className="p-2 bg-gray-100 rounded-lg">{vcMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}</button>
                     <button onClick={endVC} className="p-2 bg-red-500 rounded-lg"><PhoneOff className="w-4 h-4 text-white" /></button>
                   </div>
                 )}
@@ -565,6 +537,43 @@ const Matchmaking1v1 = () => {
           </div>
         </div>
         </div>
+
+        {/* ── FLOATING VIDEO CALL OVERLAY (WhatsApp PiP style) ── */}
+        {vcState === 'active' && agoraToken !== null && (
+          <>
+            {/* Minimized: small floating thumbnail bottom-right */}
+            {vcMinimized ? (
+              <button onClick={() => setVcMinimized(false)} className="fixed bottom-24 right-4 z-[70] w-28 h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900 transition-all hover:scale-105" data-testid="vc-pip-mini">
+                <AgoraUIKit rtcProps={{ appId: AGORA_APP_ID, channel: sanitizedChannel, token: agoraToken || '', role: 'host', layout: 0 }} callbacks={{ EndCall: endVC }} />
+                <div className="absolute bottom-1 left-1 right-1 flex items-center justify-center gap-1">
+                  <span className="text-[9px] text-white bg-black/60 rounded-full px-2 py-0.5">Tap to expand</span>
+                </div>
+              </button>
+            ) : (
+              /* Expanded: large floating overlay */
+              <div className="fixed inset-x-4 bottom-20 md:bottom-4 md:right-4 md:left-auto md:w-[360px] z-[70] rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900 transition-all" style={{ height: '280px' }} data-testid="vc-pip-expanded">
+                {/* Agora video */}
+                <div className="w-full h-full">
+                  <AgoraUIKit rtcProps={{ appId: AGORA_APP_ID, channel: sanitizedChannel, token: agoraToken || '', role: 'host', layout: 0 }} callbacks={{ EndCall: endVC }} />
+                </div>
+                {/* Overlay controls */}
+                <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur rounded-full px-2.5 py-1">
+                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-[10px] text-white font-medium">{oppName}</span>
+                  </div>
+                  <button onClick={() => setVcMinimized(true)} className="p-1.5 bg-black/50 backdrop-blur rounded-full"><Minimize2 className="w-3.5 h-3.5 text-white" /></button>
+                </div>
+                {/* Bottom controls bar */}
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 flex items-center justify-center gap-3">
+                  <button onClick={() => setMicOn(!micOn)} className={`p-2.5 rounded-full ${micOn ? 'bg-white/20' : 'bg-red-500'}`}>{micOn ? <Mic className="w-4 h-4 text-white" /> : <MicOff className="w-4 h-4 text-white" />}</button>
+                  <button onClick={() => setCamOn(!camOn)} className={`p-2.5 rounded-full ${camOn ? 'bg-white/20' : 'bg-red-500'}`}>{camOn ? <Video className="w-4 h-4 text-white" /> : <VideoOff className="w-4 h-4 text-white" />}</button>
+                  <button onClick={endVC} className="p-2.5 bg-red-500 rounded-full" data-testid="vc-end-btn"><PhoneOff className="w-4 h-4 text-white" /></button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         {/* VC Request Modal (incoming) */}
         {vcState === 'incoming' && (
