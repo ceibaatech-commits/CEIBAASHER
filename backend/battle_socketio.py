@@ -1135,6 +1135,42 @@ async def join_video_room(sid, data):
         print(f"[ERROR] join_video_room: {str(e)}")
 
 
+# ==================== VIDEO CALL REQUEST EVENTS ====================
+
+@sio.event
+async def vc_request(sid, data):
+    """Player requests a video call with opponent"""
+    room_id = data.get('roomId')
+    player_name = data.get('playerName', 'Player')
+    print(f"[VC] Video call requested by {player_name} ({sid}) in room {room_id}")
+    await sio.emit('vc_request', {'playerName': player_name, 'from': sid}, room=room_id, skip_sid=sid)
+
+@sio.event
+async def vc_accepted(sid, data):
+    """Opponent accepted the video call"""
+    room_id = data.get('roomId')
+    player_name = data.get('playerName', 'Player')
+    print(f"[VC] Video call accepted by {player_name} ({sid}) in room {room_id}")
+    await sio.emit('vc_accepted', {'playerName': player_name, 'from': sid}, room=room_id, skip_sid=sid)
+
+@sio.event
+async def vc_declined(sid, data):
+    """Opponent declined the video call"""
+    room_id = data.get('roomId')
+    player_name = data.get('playerName', 'Player')
+    print(f"[VC] Video call declined by {player_name} ({sid}) in room {room_id}")
+    await sio.emit('vc_declined', {'playerName': player_name, 'from': sid}, room=room_id, skip_sid=sid)
+
+@sio.event
+async def vc_ended(sid, data):
+    """Video call ended"""
+    room_id = data.get('roomId')
+    player_name = data.get('playerName', 'Player')
+    print(f"[VC] Video call ended by {player_name} ({sid}) in room {room_id}")
+    await sio.emit('vc_ended', {'playerName': player_name, 'from': sid}, room=room_id, skip_sid=sid)
+
+
+
 @sio.event
 async def webrtc_offer(sid, data):
     """WebRTC offer signaling"""

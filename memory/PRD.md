@@ -93,6 +93,17 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - [x] Header nav: "Canopy" renamed to "The Headhunt" → links to /jobs
 - [x] /jobs and /discover pages redesigned with Header, Footer, light theme matching Courses page
 - [x] All recruitment student pages (/my-applications, /company/:slug, /apply/:jobId, /hackathon/:hackId, /quiz-recruit/:quizId) updated with Header, Footer, and light theme
+- [x] Social actions on recruitment feed (Like, Comment, Share, Bookmark) with backend APIs
+- [x] Saved posts tab in /my-applications
+- [x] Brute force protection on admin/recruiter login (5 attempts → 15min lockout)
+- [x] Google OAuth fix — useRef guard for StrictMode, hash+query param session_id extraction
+- [x] Emergent Auth JWT issuance alongside session_token
+- [x] Agora RTC token generation endpoint (GET /api/agora/token)
+- [x] 1v1 Battle page complete redesign — cream/pink/red/blue color scheme, mobile+desktop layouts
+- [x] Video call flow: manual start via socket vc_request/vc_accepted/vc_declined/vc_ended
+- [x] Answer cards: red highlight for self, blue for opponent
+- [x] Battle results redesign: Victory/Lost/Draw with color-coded score cards
+- [x] Matchmaking already matches by exam only (cross-topic within same exam)
 
 ### Earlier Completed
 - [x] 1v1 Battle Setup Page layout fix
