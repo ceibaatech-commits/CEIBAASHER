@@ -371,10 +371,18 @@ const Matchmaking1v1 = () => {
       <div className="min-h-screen" style={{ background: C.cream }}>
         {/* ── MOBILE LAYOUT ── */}
         <div className="md:hidden flex flex-col min-h-screen">
+          <Header isLoggedIn={isUserAuth} user={user} />
           {/* Top bar */}
           <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm">
             <div className="flex items-center gap-2"><button onClick={() => navigate(-1)}><ArrowLeft className="w-5 h-5 text-gray-600" /></button><span className="font-bold text-gray-900 text-sm">{playerName}</span></div>
-            <div className="px-3 py-1 rounded-full text-white text-sm font-bold" style={{ background: timeLeft <= 10 ? C.red : '#888' }}>{timeLeft}s</div>
+            <div className="flex items-center gap-2">
+              {/* Mobile VC button */}
+              {vcState === 'idle' && <button onClick={requestVC} className="p-1.5 rounded-lg text-white" style={{ background: C.blue }}><Phone className="w-4 h-4" /></button>}
+              {vcState === 'requesting' && <span className="text-xs text-gray-400 animate-pulse">Calling...</span>}
+              {vcState === 'active' && <button onClick={() => setVcHidden(!vcHidden)} className="p-1.5 rounded-lg" style={{ background: C.pink }}>{vcHidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}</button>}
+              <button onClick={() => setShowReport(true)} className="p-1.5 rounded-lg bg-gray-100"><Flag className="w-3.5 h-3.5 text-gray-400" /></button>
+              <div className="px-3 py-1 rounded-full text-white text-sm font-bold" style={{ background: timeLeft <= 10 ? C.red : '#888' }}>{timeLeft}s</div>
+            </div>
           </div>
 
           {/* VC Panel (mobile) */}
@@ -447,7 +455,9 @@ const Matchmaking1v1 = () => {
         </div>
 
         {/* ── DESKTOP LAYOUT ── */}
-        <div className="hidden md:block max-w-7xl mx-auto px-6 py-4">
+        <div className="hidden md:block">
+          <Header isLoggedIn={isUserAuth} user={user} />
+          <div className="max-w-7xl mx-auto px-6 py-4">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -554,6 +564,7 @@ const Matchmaking1v1 = () => {
             </div>
           </div>
         </div>
+        </div>
 
         {/* VC Request Modal (incoming) */}
         {vcState === 'incoming' && (
@@ -597,7 +608,9 @@ const Matchmaking1v1 = () => {
     const oppName = opponent?.playerName || 'Opponent';
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: C.cream }}>
+      <div className="min-h-screen" style={{ background: C.cream }}>
+        <Header isLoggedIn={isUserAuth} user={user} />
+        <div className="flex items-center justify-center p-4 py-8">
         <div className="max-w-md w-full">
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
             {/* Result banner */}
@@ -639,6 +652,7 @@ const Matchmaking1v1 = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     );
