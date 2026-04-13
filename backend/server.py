@@ -278,6 +278,10 @@ from recruitment_admin_routes import router as recruitment_admin_router
 fastapi_app.include_router(recruitment_router, prefix="/api")  # Recruitment Portal
 fastapi_app.include_router(recruitment_admin_router, prefix="/api")  # Recruitment Admin
 
+# Agora RTC Token Routes
+from agora_routes import router as agora_router
+fastapi_app.include_router(agora_router, prefix="/api")  # Agora Token Generation
+
 # fastapi_app.add_middleware(
 #     CORSMiddleware,
 #     allow_credentials=True,

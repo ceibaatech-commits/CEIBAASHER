@@ -191,9 +191,8 @@ const Home = () => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 pb-0 md:pb-0">
       {/* SEO Component for Home Page */}
       <SEO 
-        title="Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for JEE, NEET, UPSC, SSC & 38+ Competitive Exams"
-        description="Master 38+ competitive exams including JEE 2026, NEET 2026, UPSC, SSC, Banking, Teaching with Ceibaa's free online test series, MCQs, and practice quizzes. Join live multiplayer battles, take mock tests, and prepare with comprehensive syllabus coverage."
-        keywords="JEE 2026, NEET 2026, UPSC 2026, SSC 2026, Banking exams, Teaching exams, competitive exams, test series, MCQ practice, free quiz, online mock tests, exam preparation, live battles"
+        title="Ceibaa 2026 - India's #1 Social Learning & Career Platform"
+        description="FREE 1M+ MCQ's. Live 1v1 Duels. Multiplayer Rooms. The Victory Lane (Post MCQ's, Videos and Photos. Courses. Interships and Jobs by Top Companies"
       />
       
       <Header 

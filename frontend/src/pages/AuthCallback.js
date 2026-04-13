@@ -1,60 +1,60 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-const BACKEND_URL = window.location.origin || 'http://localhost:8001';
+// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+const BACKEND_URL = window.location.origin;
 
 const AuthCallback = () => {
   const navigate = useNavigate();
   const { setUserData } = useAuth();
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // Prevent double-processing in React 18 StrictMode
+    if (hasProcessed.current) return;
+    hasProcessed.current = true;
+
     const processAuth = async () => {
       try {
-        // Check both hash fragment and query params for session_id
+        // Extract session_id from hash fragment (Emergent Auth returns #session_id=xxx)
         let sessionId = null;
+        const fullUrl = window.location.href;
 
-        const hash = window.location.hash;
-        if (hash) {
-          const hashParams = new URLSearchParams(hash.substring(1));
+        const hashIdx = fullUrl.indexOf('#');
+        if (hashIdx !== -1) {
+          const hashParams = new URLSearchParams(fullUrl.substring(hashIdx + 1));
           sessionId = hashParams.get('session_id');
         }
 
+        // Fallback: check query params
         if (!sessionId) {
           const queryParams = new URLSearchParams(window.location.search);
           sessionId = queryParams.get('session_id');
         }
 
-        console.log('[AuthCallback] session_id:', sessionId);
-
         if (!sessionId) {
-          setTimeout(() => window.location.replace('/login?error=no_session_id'), 1000);
+          window.location.replace('/login?error=no_session_id');
           return;
         }
 
+        // Clear URL fragment immediately
         window.history.replaceState(null, '', window.location.pathname);
 
         const response = await axios.post(`${BACKEND_URL}/api/auth/emergent/session`, {
           session_id: sessionId
         }, { withCredentials: true });
 
-        console.log('[AuthCallback] Full response:', JSON.stringify(response.data));
-
         if (response.data.success) {
           const userData = response.data.user;
           const jwtToken = response.data.access_token;
           const sessionToken = response.data.session_token;
 
-          console.log('[AuthCallback] userData:', JSON.stringify(userData));
-          console.log('[AuthCallback] jwtToken:', jwtToken ? 'present' : 'missing');
-
-          // Write to localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('auth_token');
           localStorage.removeItem('ceibaa_user');
 
-          // Prefer JWT token (works with all API routes), fall back to session token
           const tokenToStore = jwtToken || sessionToken;
           if (tokenToStore && tokenToStore !== 'undefined') {
             localStorage.setItem('token', tokenToStore);
@@ -65,17 +65,13 @@ const AuthCallback = () => {
           setUserData(userData);
           sessionStorage.setItem('just_authenticated', 'true');
 
-          setTimeout(() => {
-            window.location.replace('/victory-lane');
-          }, 300);
-
+          window.location.replace('/victory-lane');
         } else {
           throw new Error('Auth failed');
         }
       } catch (error) {
         console.error('[AuthCallback] Error:', error);
-        console.error('[AuthCallback] Response data:', error.response?.data);
-        setTimeout(() => window.location.replace('/login?error=auth_failed'), 2000);
+        window.location.replace('/login?error=auth_failed');
       }
     };
 

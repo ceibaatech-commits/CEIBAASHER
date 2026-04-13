@@ -83,9 +83,9 @@ const ChapterTestSubjects = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       <SEO
-        title={`Class ${classNumber} - Free Chapter-wise MCQs & NCERT Solutions`}
-        description={`Practice free chapter-wise MCQs and NCERT solutions for CBSE Class ${classNumber}. All subjects covered - Mathematics, Science, English, Hindi, Social Science & more.`}
-        keywords={`class ${classNumber} mcq, class ${classNumber} ncert solutions, cbse class ${classNumber} quiz, class ${classNumber} chapter wise test`}
+        title={`Class ${classNumber?.replace('class-', '')} - Free Chapter-wise MCQs & NCERT Solutions`}
+        description={`Practice free chapter-wise MCQs and NCERT solutions for CBSE Class ${classNumber?.replace('class-', '')}. All subjects covered - Mathematics, Science, English, Hindi, Social Science & more.`}
+        keywords={`class ${classNumber?.replace('class-', '')} mcq, class ${classNumber?.replace('class-', '')} ncert solutions, cbse class ${classNumber?.replace('class-', '')} quiz, class ${classNumber?.replace('class-', '')} chapter wise test`}
         canonical={`https://ceibaa.in/chapter-tests/${classNumber}`}
       />
       <Header 
