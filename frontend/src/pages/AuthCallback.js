@@ -12,9 +12,19 @@ const AuthCallback = () => {
   useEffect(() => {
     const processAuth = async () => {
       try {
+        // Check both hash fragment and query params for session_id
+        let sessionId = null;
+
         const hash = window.location.hash;
-        const params = new URLSearchParams(hash.substring(1));
-        const sessionId = params.get('session_id');
+        if (hash) {
+          const hashParams = new URLSearchParams(hash.substring(1));
+          sessionId = hashParams.get('session_id');
+        }
+
+        if (!sessionId) {
+          const queryParams = new URLSearchParams(window.location.search);
+          sessionId = queryParams.get('session_id');
+        }
 
         console.log('[AuthCallback] session_id:', sessionId);
 
