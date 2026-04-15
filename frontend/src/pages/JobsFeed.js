@@ -14,11 +14,11 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const POST_TYPE_CONFIG = {
-  job:        { icon: Briefcase, color: 'bg-blue-100 text-blue-700 border-blue-200',   accent: 'from-blue-500 to-indigo-600',  label: 'Job Opening',  actionLabel: 'Apply Now',    actionColor: 'bg-blue-600 hover:bg-blue-700' },
+  job:         { icon: Briefcase, color: 'bg-blue-100 text-blue-700 border-blue-200',   accent: 'from-blue-500 to-indigo-600',  label: 'Job Opening',  actionLabel: 'Apply Now',    actionColor: 'bg-blue-600 hover:bg-blue-700' },
   internship: { icon: Briefcase, color: 'bg-blue-100 text-blue-700 border-blue-200',   accent: 'from-blue-500 to-indigo-600',  label: 'Internship',   actionLabel: 'Apply Now',    actionColor: 'bg-blue-600 hover:bg-blue-700' },
-  quiz:       { icon: Code2,     color: 'bg-violet-100 text-violet-700 border-violet-200', accent: 'from-violet-500 to-purple-600', label: 'MCQ Quiz',  actionLabel: 'Attempt Quiz', actionColor: 'bg-violet-600 hover:bg-violet-700' },
-  hackathon:  { icon: Trophy,    color: 'bg-emerald-100 text-emerald-700 border-emerald-200', accent: 'from-emerald-500 to-teal-600', label: 'Hackathon', actionLabel: 'Register',     actionColor: 'bg-emerald-600 hover:bg-emerald-700' },
-  event:      { icon: Calendar,  color: 'bg-amber-100 text-amber-700 border-amber-200', accent: 'from-amber-500 to-orange-600', label: 'Campus Event', actionLabel: 'Register',     actionColor: 'bg-amber-600 hover:bg-amber-700' },
+  quiz:        { icon: Code2,     color: 'bg-violet-100 text-violet-700 border-violet-200', accent: 'from-violet-500 to-purple-600', label: 'MCQ Quiz',  actionLabel: 'Attempt Quiz', actionColor: 'bg-violet-600 hover:bg-violet-700' },
+  hackathon:   { icon: Trophy,    color: 'bg-emerald-100 text-emerald-700 border-emerald-200', accent: 'from-emerald-500 to-teal-600', label: 'Hackathon', actionLabel: 'Register',     actionColor: 'bg-emerald-600 hover:bg-emerald-700' },
+  event:       { icon: Calendar,  color: 'bg-amber-100 text-amber-700 border-amber-200', accent: 'from-amber-500 to-orange-600', label: 'Campus Event', actionLabel: 'Register',     actionColor: 'bg-amber-600 hover:bg-amber-700' },
 };
 
 const timeAgo = (dateStr) => {
@@ -35,7 +35,7 @@ const FILTER_TABS = [
   { key: 'all',       label: 'All',        icon: Zap },
   { key: 'job',       label: 'Jobs',       icon: Briefcase },
   { key: 'quiz',      label: 'Quizzes',    icon: Code2 },
-  { key: 'hackathon', label: 'Hackathons', icon: Trophy },
+  { key: 'hackathon', label: 'Hacks',      icon: Trophy }, // Shortened for mobile fit
   { key: 'event',     label: 'Events',     icon: Calendar },
 ];
 
@@ -48,7 +48,6 @@ function FeedCard({ post, liked, bookmarked, onLike, onBookmark, onShare, onOpen
   return (
     <div className="group bg-white rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 overflow-hidden" data-testid={`post-card-${post.id}`}>
       <div className={`h-1 bg-gradient-to-r ${config.accent}`} />
-      {/* Company header */}
       <div className="flex items-center gap-3 px-5 pt-4 pb-2">
         <Link to={`/company/${post.company_slug || post.company_id}`} className="flex-shrink-0">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 ring-2 ring-slate-200">
@@ -63,7 +62,6 @@ function FeedCard({ post, liked, bookmarked, onLike, onBookmark, onShare, onOpen
           <Icon className="w-3.5 h-3.5" />{config.label}
         </span>
       </div>
-      {/* Body */}
       <div className="px-5 pb-3">
         <Link to={linkTo}><h3 className="text-slate-900 font-bold text-lg leading-snug group-hover:text-blue-600 transition-colors">{post.title}</h3></Link>
         {post.description && <p className="text-slate-500 text-sm mt-1.5 line-clamp-2 leading-relaxed">{post.description}</p>}
@@ -93,7 +91,6 @@ function FeedCard({ post, liked, bookmarked, onLike, onBookmark, onShare, onOpen
           </div>
         )}
       </div>
-      {/* Footer with working buttons */}
       <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-5">
           <button onClick={() => onLike(post.id)} className={`flex items-center gap-1.5 text-xs transition-colors ${liked ? 'text-rose-500' : 'text-slate-400 hover:text-rose-500'}`} data-testid={`like-btn-${post.id}`}>
@@ -274,19 +271,34 @@ export default function JobsFeed() {
         </div>
       </section>
 
-      {/* Filters */}
-      <div className="max-w-6xl mx-auto px-4 -mt-6 relative z-10">
-        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 flex flex-nowrap gap-1 overflow-x-auto scrollbar-hide" data-testid="feed-filters" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {FILTER_TABS.map(f => {
-            const FIcon = f.icon;
-            const count = f.key === 'all' ? posts.length : posts.filter(p => p.post_type === f.key).length;
-            return (
-              <button key={f.key} onClick={() => setFilter(f.key)} data-testid={`filter-${f.key}`}
-                className={`flex items-center gap-1.5 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${filter === f.key ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}`}>
-                <FIcon className="w-3.5 h-3.5" /> {f.label} <span className="opacity-70">({count})</span>
-              </button>
-            );
-          })}
+      {/* FILTERS - FIXED FOR PC AND MOBILE */}
+      <div className="max-w-6xl mx-auto px-2 md:px-4 -mt-6 relative z-10">
+        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-1">
+          <div className="flex items-center w-full gap-1 md:gap-4 md:justify-center">
+            {FILTER_TABS.map(f => {
+              const FIcon = f.icon;
+              const count = f.key === 'all' ? posts.length : posts.filter(p => p.post_type === f.key).length;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key)}
+                  data-testid={`filter-${f.key}`}
+                  className={`flex-1 md:flex-none min-w-0 flex items-center justify-center gap-1 md:gap-2 py-2.5 px-1 md:px-6 rounded-lg transition-all whitespace-nowrap ${
+                    filter === f.key ? 'bg-blue-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {/* Hide Icon on mobile for more text space */}
+                  <FIcon className="hidden md:inline-block w-3.5 h-3.5" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] sm:text-xs md:text-sm font-semibold leading-none">{f.label}</span>
+                    <span className={`text-[9px] md:text-xs font-medium ${filter === f.key ? 'text-white/90' : 'text-slate-400'}`}>
+                      ({count})
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
