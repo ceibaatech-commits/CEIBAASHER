@@ -172,14 +172,18 @@ const Matchmaking1v1 = () => {
       setBattleState('matched');
 
       const fetchQ = async () => {
+        const decodedExam = decodeURIComponent(examId);
+        const decodedSubject = decodeURIComponent(subject);
+        const decodedTopic = topic ? decodeURIComponent(topic) : undefined;
         const attempts = [
-          { exam: examId, subject, topic, num_questions: 10 },
-          { exam: examId, subject, num_questions: 10 },
+          { exam: decodedExam, subject: decodedSubject, topic: decodedTopic, num_questions: 10 },
+          { exam: decodedExam, subject: decodedSubject, num_questions: 10 },
         ];
         for (const body of attempts) {
           try {
             const r = await axios.post(`${BACKEND_URL}/api/quiz/start`, body);
             if (r.data.success && r.data.questions?.length > 0) return r.data.questions;
+            if (r.data.questions?.length > 0) return r.data.questions;
           } catch {}
         }
         return null;
