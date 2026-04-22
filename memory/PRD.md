@@ -152,3 +152,22 @@ components/
 - [x] Removed all hardcoded credentials from 6 test files: `test_referral_system.py`, `test_recruitment.py`, `test_post_interactions.py`, `test_new_recruitment_features.py`, `test_messaging.py`, `test_media_permissions.py`
 - [x] All 99 tests in the refactored files collect cleanly; 60/63 sanity-run tests still pass (3 pre-existing seed-count failures unrelated to refactor)
 
+
+
+### Feb 20, 2026 — Code Review Round A + B Fixes
+- [x] **Round A — Hygiene fixes:**
+  - Final hardcoded-secret cleanup in `test_follow_notification.py` (now imports from conftest)
+  - Fixed array-index React keys in `RRB_NTPC.js` (3), `QuizRoom.js` (1), `PublicProfile.js` (2), `ProgramDetail.js` (4)
+  - Removed stale `// eslint-disable-next-line` in `VictoryLane.js` (false-positive dep list)
+  - Extracted nested ternaries into named helpers in `QuizRoom.js` (rank/option class helpers), `SoloPractice.js` (reviewOptionBorder/Badge/Text, quizOptionBorder/Badge), `PublicProfile.js` (privacy IIFE)
+- [x] **Round B — Backend complexity refactor (auth_routes.py + admin_routes.py):**
+  - `get_current_user` (was 97 lines / CC 16) → split into `_extract_token`, `_session_expired`, `_user_by_id`, `_resolve_emergent_session`, `_resolve_jwt` helpers
+  - `demo_login` (was 132 lines / CC 11) → extracted `_build_demo_user`, `_demo_users`, `_upsert_demo_user`, `_issue_jwt`
+  - `signup` (was 86 lines / CC 12) → extracted `_validate_signup_payload`, `_new_user_doc`, `_process_referral_safe`, `_public_user_response`
+  - `get_current_user_media_permissions` (was 91 lines / CC 18) → extracted `_media_disabled_response`, `_resolve_user_id_from_auth`, `_user_media_permissions`
+  - `create_sheet` (was 129 lines) → extracted `_build_sheet_data`, `_build_question_doc`, `_import_sheet_questions`, `_exam_fields`, `_class_fields`
+- [x] All 15 regression tests pass (iteration_28.json) — demo_login, signup, /auth/me, /user/media-permissions, /api/chapter-tests/start-test, recruitment & messaging smoke — no regressions
+
+### Deferred (explicit user decision required)
+- [ ] **Round C — localStorage → httpOnly cookies auth migration** (breaks all sessions, needs CSRF plumbing, CORS credentials changes)
+- [ ] **Oversized component decomposition**: ExamSheetManager.js (1720), ExamCategoryManager.js (997), LiveBattlesManager.js (736), UserManagement.js (684), Board.js (872)
