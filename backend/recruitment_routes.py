@@ -500,6 +500,99 @@ async def quiz_leaderboard(quiz_id: str):
     ).sort("score", -1).to_list(100)
     return {"leaderboard": attempts}
 
+# --- Quiz Auto-Shortlist ---
+class QuizAutoShortlistConfig(BaseModel):
+    top_n: Optional[int] = None          # shortlist top N scorers
+    min_percentage: Optional[float] = None  # shortlist anyone scoring >= this %
+
+@router.post("/recruitment/quiz/{quiz_id}/auto-shortlist")
+async def quiz_auto_shortlist(quiz_id: str, data: QuizAutoShortlistConfig, request: Request):
+    """Recruiter triggers auto-shortlist based on quiz leaderboard"""
+    rec = await get_current_recruiter(request)
+    post = await db.recruitment_posts.find_one({"id": quiz_id, "post_type": "quiz", "company_id": rec["id"]}, {"_id": 0})
+    if not post:
+        raise HTTPException(404, "Quiz not found or unauthorized")
+    if not data.top_n and data.min_percentage is None:
+        raise HTTPException(400, "Provide top_n or min_percentage")
+
+    # Get leaderboard sorted by score desc
+    attempts = await db.recruitment_quiz_attempts.find({"quiz_id": quiz_id}, {"_id": 0}).sort("score", -1).to_list(1000)
+    if not attempts:
+        return {"shortlisted": 0, "message": "No quiz attempts yet"}
+
+    # Determine which users to shortlist
+    shortlist_user_ids = []
+    if data.top_n:
+        shortlist_user_ids = [a["user_id"] for a in attempts[:data.top_n]]
+    elif data.min_percentage is not None:
+        shortlist_user_ids = [a["user_id"] for a in attempts if a.get("percentage", 0) >= data.min_percentage]
+
+    if not shortlist_user_ids:
+        return {"shortlisted": 0, "message": "No candidates meet the criteria"}
+
+    # Create applications for shortlisted users (if not already applied) and set status to shortlisted
+    shortlisted_count = 0
+    for uid in shortlist_user_ids:
+        existing_app = await db.recruitment_applications.find_one({"post_id": quiz_id, "user_id": uid})
+        if existing_app:
+            if existing_app.get("status") == "applied":
+                await db.recruitment_applications.update_one(
+                    {"id": existing_app["id"]},
+                    {"$set": {"status": "shortlisted", "shortlisted_via": "quiz_leaderboard", "updated_at": datetime.now(timezone.utc).isoformat()}}
+                )
+                shortlisted_count += 1
+        else:
+            # Auto-create application for quiz takers who didn't formally apply
+            user = await db.users.find_one({"id": uid}, {"_id": 0})
+            attempt = next((a for a in attempts if a["user_id"] == uid), None)
+            if user and attempt:
+                app_doc = {
+                    "id": str(uuid.uuid4()), "post_id": quiz_id, "company_id": rec["id"],
+                    "user_id": uid, "user_name": user.get("name", ""), "user_email": user.get("email", ""),
+                    "user_air": user.get("air_rank"), "user_exam_type": user.get("exam_type", ""),
+                    "user_college": user.get("college", ""), "user_avatar": user.get("profile_picture") or user.get("avatar", ""),
+                    "status": "shortlisted", "shortlisted_via": "quiz_leaderboard",
+                    "quiz_score": attempt.get("score"), "quiz_percentage": attempt.get("percentage"),
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+                await db.recruitment_applications.insert_one(app_doc)
+                shortlisted_count += 1
+                # Send email notification
+                if user.get("email"):
+                    await send_email(user["email"], f"Congratulations! You've been shortlisted — {post.get('title','')}",
+                        f"""<div style="font-family:system-ui;max-width:500px;margin:0 auto;padding:24px">
+                            <h2 style="color:#1e293b">Congratulations {user.get('name','')}!</h2>
+                            <p>Based on your quiz performance (<b>{attempt.get('score')}/{attempt.get('total')}</b> — {attempt.get('percentage')}%), you've been <span style="color:#22c55e;font-weight:bold">shortlisted</span> for <b>{post.get('title','')}</b> at <b>{rec.get('company_name','')}</b>.</p>
+                            <p style="color:#64748b;font-size:14px">Track your application at <a href="{SITE_URL}/my-applications" style="color:#3b82f6">My Applications</a>.</p>
+                            <p style="color:#94a3b8;font-size:12px;margin-top:24px">— CEIBAA Recruitment Cell</p>
+                        </div>""")
+
+    # Save auto-shortlist config on the post for future reference
+    await db.recruitment_posts.update_one({"id": quiz_id}, {"$set": {
+        "auto_shortlist": {"top_n": data.top_n, "min_percentage": data.min_percentage, "last_run": datetime.now(timezone.utc).isoformat(), "shortlisted": shortlisted_count}
+    }})
+
+    return {
+        "shortlisted": shortlisted_count,
+        "total_attempts": len(attempts),
+        "criteria": {"top_n": data.top_n, "min_percentage": data.min_percentage}
+    }
+
+@router.get("/recruitment/quiz/{quiz_id}/leaderboard-detailed")
+async def quiz_leaderboard_detailed(quiz_id: str, request: Request):
+    """Recruiter gets detailed leaderboard with shortlist status"""
+    rec = await get_current_recruiter(request)
+    post = await db.recruitment_posts.find_one({"id": quiz_id, "post_type": "quiz", "company_id": rec["id"]}, {"_id": 0})
+    if not post:
+        raise HTTPException(404, "Quiz not found or unauthorized")
+    attempts = await db.recruitment_quiz_attempts.find({"quiz_id": quiz_id}, {"_id": 0}).sort("score", -1).to_list(1000)
+    # Enrich with application status
+    for a in attempts:
+        app = await db.recruitment_applications.find_one({"post_id": quiz_id, "user_id": a["user_id"]}, {"_id": 0})
+        a["application_status"] = app.get("status") if app else None
+        a["application_id"] = app.get("id") if app else None
+    return {"leaderboard": attempts, "post": post, "auto_shortlist_config": post.get("auto_shortlist")}
+
 # --- Hackathon ---
 @router.post("/recruitment/hackathon/{hack_id}/register")
 async def register_hackathon(hack_id: str, request: Request):

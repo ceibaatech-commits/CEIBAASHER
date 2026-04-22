@@ -74,7 +74,7 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - [x] Resume upload feature (Cloudinary, PDF/DOC/DOCX, 5MB limit)
 - [x] Bulk applicant actions (shortlist by AIR rank, bulk status change)
 - [x] CSV export of applicants
-- [ ] Quiz leaderboard auto-shortlist feature
+- [x] Quiz leaderboard auto-shortlist feature
 - [ ] Program enrollment/payment flow (Stripe)
 - [ ] Comments/reply system on posts
 
