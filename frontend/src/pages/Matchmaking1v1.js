@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Mic, MicOff, Video, VideoOff, Phone, PhoneOff, EyeOff, Eye, Flag, X, AlertTriangle, Minimize2, Maximize2 } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, PhoneOff, Flag, X, AlertTriangle, Minimize2 } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -12,6 +12,16 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
+
+/* ── Stable Agora wrapper — prevents remount on parent re-renders ── */
+const StableAgoraVideo = memo(({ appId, channel, token, onEnd }) => {
+  const rtcProps = useMemo(() => ({
+    appId, channel, token: token || '', role: 'host', layout: 0
+  }), [appId, channel, token]);
+  const callbacks = useMemo(() => ({ EndCall: onEnd }), [onEnd]);
+  return <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />;
+});
+StableAgoraVideo.displayName = 'StableAgoraVideo';
 
 /* ── Color Tokens ── */
 const C = {
@@ -72,8 +82,6 @@ const Matchmaking1v1 = () => {
   const [vcState, setVcState] = useState('idle'); // idle | requesting | incoming | active
   const [agoraToken, setAgoraToken] = useState(null);
   const [vcReady, setVcReady] = useState(false);
-  const [micOn, setMicOn] = useState(true);
-  const [camOn, setCamOn] = useState(true);
   const [vcMinimized, setVcMinimized] = useState(false);
   const [vcRequester, setVcRequester] = useState('');
 
@@ -353,12 +361,12 @@ const Matchmaking1v1 = () => {
     setVcState('idle');
   };
 
-  const endVC = () => {
+  const endVC = useCallback(() => {
     if (socket && roomIdRef.current) socket.emit('vc_ended', { roomId: roomIdRef.current, playerName });
     setVcState('idle');
     setVcReady(false);
     setAgoraToken(null);
-  };
+  }, [socket, playerName]);
 
   const submitReport = async () => {
     if (!reportReason) return;
@@ -388,13 +396,8 @@ const Matchmaking1v1 = () => {
 
   const isUserAuth = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
 
-  // Derive channel + build stable rtcProps object only when vcReady.
-  // Passing a fresh object every render would cause AgoraUIKit to remount and re-join,
-  // which resets the video stream and shows black screen momentarily.
+  // Derive sanitized channel name (stable ref-based)
   const sanitizedChannel = roomIdRef.current?.replace(/[^a-zA-Z0-9]/g, '').substring(0, 64) || '';
-  const agoraRtcProps = vcReady && agoraToken
-    ? { appId: AGORA_APP_ID, channel: sanitizedChannel, token: agoraToken, role: 'host', layout: 0 }
-    : null;
 
   // ━━━━━━━━━━━━━━━━━━━━ LOGIN REQUIRED ━━━━━━━━━━━━━━━━━━━━
   if (!isUserAuth) {
@@ -828,51 +831,31 @@ const Matchmaking1v1 = () => {
         </div>
 
         {/* ── FLOATING VIDEO CALL OVERLAY ──
-            Gated on vcReady (not agoraToken !== null).
-            AgoraUIKit only mounts after token is confirmed valid.
-            agoraRtcProps is a stable object — avoids prop churn causing remounts. */}
-        {vcState === 'active' && vcReady && agoraRtcProps && (
-          <>
-            {vcMinimized ? (
-              /* Minimized PiP thumbnail */
-              <button
-                onClick={() => setVcMinimized(false)}
-                className="fixed bottom-20 right-3 z-[70] w-28 h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900 hover:scale-105 transition-transform md:bottom-6 md:right-4"
-                data-testid="vc-pip-mini"
-              >
-                <AgoraUIKit rtcProps={agoraRtcProps} callbacks={{ EndCall: endVC }} />
-                <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center">
-                  <span className="text-[9px] text-white bg-black/60 rounded-full px-2 py-0.5">Tap to expand</span>
-                </div>
+            Single AgoraUIKit instance — only the container size changes.
+            Agora provides its own mic/cam/end controls. */}
+        {vcState === 'active' && vcReady && agoraToken && (
+          <div
+            className={`fixed z-[70] rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900 transition-all duration-300 ${
+              vcMinimized
+                ? 'bottom-20 right-3 w-28 h-36 md:bottom-6 md:right-4 cursor-pointer'
+                : 'md:bottom-4 md:right-4 md:w-[360px] md:h-[280px]'
+            }`}
+            style={!vcMinimized ? { bottom: '72px', right: '12px', width: window.innerWidth >= 768 ? '360px' : '200px', height: window.innerWidth >= 768 ? '280px' : '240px' } : undefined}
+            onClick={vcMinimized ? () => setVcMinimized(false) : undefined}
+            data-testid="vc-pip"
+          >
+            <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} onEnd={endVC} />
+            {!vcMinimized && (
+              <button onClick={(e) => { e.stopPropagation(); setVcMinimized(true); }} className="absolute top-2 right-2 p-1.5 bg-black/50 backdrop-blur rounded-full z-10">
+                <Minimize2 className="w-3.5 h-3.5 text-white" />
               </button>
-            ) : (
-              <>
-                {/* Mobile expanded PiP — corner above score bar, only Agora UI */}
-                <div
-                  className="md:hidden fixed z-[70] rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900"
-                  style={{ bottom: '72px', right: '12px', width: '180px', height: '220px' }}
-                  data-testid="vc-pip-mobile"
-                >
-                  <AgoraUIKit rtcProps={agoraRtcProps} callbacks={{ EndCall: endVC }} />
-                  <button onClick={() => setVcMinimized(true)} className="absolute top-2 right-2 p-1 bg-black/50 backdrop-blur rounded-full">
-                    <Minimize2 className="w-3 h-3 text-white" />
-                  </button>
-                </div>
-
-                {/* Desktop expanded PiP — bottom-right, only Agora UI */}
-                <div
-                  className="hidden md:block fixed bottom-4 right-4 z-[70] rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900"
-                  style={{ width: '360px', height: '280px' }}
-                  data-testid="vc-pip-desktop"
-                >
-                  <AgoraUIKit rtcProps={agoraRtcProps} callbacks={{ EndCall: endVC }} />
-                  <button onClick={() => setVcMinimized(true)} className="absolute top-2 right-2 p-1.5 bg-black/50 backdrop-blur rounded-full">
-                    <Minimize2 className="w-3.5 h-3.5 text-white" />
-                  </button>
-                </div>
-              </>
             )}
-          </>
+            {vcMinimized && (
+              <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center">
+                <span className="text-[9px] text-white bg-black/60 rounded-full px-2 py-0.5">Tap to expand</span>
+              </div>
+            )}
+          </div>
         )}
 
         {/* VC incoming request modal */}
