@@ -14,10 +14,10 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 
 /* ── Stable Agora wrapper — prevents remount on parent re-renders ── */
-const StableAgoraVideo = memo(({ appId, channel, token, onEnd }) => {
+const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
   const rtcProps = useMemo(() => ({
-    appId, channel, token: token || '', role: 'host', layout: 0
-  }), [appId, channel, token]);
+    appId, channel, token: token || '', uid: uid || 0, role: 'host', layout: 0
+  }), [appId, channel, token, uid]);
   const callbacks = useMemo(() => ({ EndCall: onEnd }), [onEnd]);
   return <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />;
 });
@@ -81,6 +81,7 @@ const Matchmaking1v1 = () => {
   // Now: vcReady is only set true after a valid non-empty token is confirmed.
   const [vcState, setVcState] = useState('idle'); // idle | requesting | incoming | active
   const [agoraToken, setAgoraToken] = useState(null);
+  const [agoraUid, setAgoraUid] = useState(0);
   const [vcReady, setVcReady] = useState(false);
   const [vcMinimized, setVcMinimized] = useState(false);
   const [vcRequester, setVcRequester] = useState('');
@@ -134,9 +135,10 @@ const Matchmaking1v1 = () => {
       const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
       const { data } = await axios.get(`${BACKEND_URL}/api/agora/token?channel=${ch}`, { headers });
       if (!data.token) throw new Error('Server returned empty Agora token');
-      console.log('[VC] Token fetched for channel:', ch);
+      console.log('[VC] Token fetched for channel:', ch, 'uid:', data.uid);
       setAgoraToken(data.token);
-      setVcReady(true); // only now is it safe to mount AgoraUIKit
+      setAgoraUid(data.uid || 0);
+      setVcReady(true);
     } catch (err) {
       console.error('[VC] Token fetch failed:', err);
       toast.error('Could not start video call. Please try again.');
@@ -848,7 +850,7 @@ const Matchmaking1v1 = () => {
             onClick={vcMinimized ? () => setVcMinimized(false) : undefined}
             data-testid="vc-pip"
           >
-            <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} onEnd={endVC} />
+            <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} uid={agoraUid} onEnd={endVC} />
             {!vcMinimized && (
               <button onClick={(e) => { e.stopPropagation(); setVcMinimized(true); }} className="absolute top-2 right-2 p-1.5 bg-black/50 backdrop-blur rounded-full z-10">
                 <Minimize2 className="w-3.5 h-3.5 text-white" />
