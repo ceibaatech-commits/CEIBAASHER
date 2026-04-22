@@ -16,10 +16,17 @@ const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 /* ── Stable Agora wrapper — prevents remount on parent re-renders ── */
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
   const rtcProps = useMemo(() => ({
-    appId, channel, token: token || '', uid: uid || 0, role: 'host', layout: 0
+    appId, channel, token: token || '', uid: uid || 0, role: 'host', layout: 1
   }), [appId, channel, token, uid]);
   const callbacks = useMemo(() => ({ EndCall: onEnd }), [onEnd]);
-  return <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />;
+  return (
+    <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+      <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} styleProps={{
+        localBtnContainer: { backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 12, padding: 4, bottom: 4 },
+        UIKitContainer: { width: '100%', height: '100%', display: 'flex' }
+      }} />
+    </div>
+  );
 });
 StableAgoraVideo.displayName = 'StableAgoraVideo';
 
@@ -841,12 +848,11 @@ const Matchmaking1v1 = () => {
             Agora provides its own mic/cam/end controls. */}
         {vcState === 'active' && vcReady && agoraToken && (
           <div
-            className={`fixed z-[70] rounded-2xl overflow-hidden shadow-2xl border-2 border-white bg-gray-900 transition-all duration-300 ${
+            className={`fixed z-[70] overflow-hidden shadow-2xl border-2 border-white bg-gray-900 transition-all duration-300 ${
               vcMinimized
-                ? 'bottom-20 right-3 w-28 h-36 md:bottom-6 md:right-4 cursor-pointer'
-                : 'md:bottom-4 md:right-4 md:w-[360px] md:h-[280px]'
+                ? 'bottom-20 right-3 w-[120px] h-[160px] md:bottom-6 md:right-4 rounded-2xl cursor-pointer'
+                : 'bottom-[72px] right-3 w-[200px] h-[260px] md:bottom-4 md:right-4 md:w-[340px] md:h-[280px] rounded-2xl'
             }`}
-            style={!vcMinimized ? { bottom: '72px', right: '12px', width: window.innerWidth >= 768 ? '360px' : '200px', height: window.innerWidth >= 768 ? '280px' : '240px' } : undefined}
             onClick={vcMinimized ? () => setVcMinimized(false) : undefined}
             data-testid="vc-pip"
           >
