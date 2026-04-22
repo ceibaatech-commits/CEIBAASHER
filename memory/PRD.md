@@ -76,7 +76,7 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - [x] CSV export of applicants
 - [x] Quiz leaderboard auto-shortlist feature
 - [ ] Program enrollment/payment flow (Stripe)
-- [ ] Comments/reply system on posts
+- [x] Comments/reply system on posts (threaded, with likes)
 
 ### P2
 - [ ] Real-time notifications on application status change
