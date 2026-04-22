@@ -155,7 +155,7 @@ export default function RecruitmentCell() {
               <div className="bg-[#1a1e2e] border border-[#252a3d] rounded-xl p-5">
                 <h3 className="text-[#e8eaf0] font-semibold mb-4">Top Hiring Companies</h3>
                 {analytics.top_hiring.map((t, i) => (
-                  <div key={i} className="flex items-center gap-3 py-2">
+                  <div key={`hiring-${i}-${t.company_name}`} className="flex items-center gap-3 py-2">
                     <span className="w-6 h-6 rounded-full bg-[#7c3aed]/20 text-[#7c3aed] flex items-center justify-center text-xs font-bold">{i + 1}</span>
                     <span className="flex-1 text-[#e8eaf0]">{t.company_name}</span>
                     <span className="text-[#f59e0b] font-semibold">{t.count} offers</span>

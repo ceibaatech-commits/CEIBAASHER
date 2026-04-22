@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional
 from battle_rooms import room_manager, Participant
 from matchmaking import matchmaking_manager
 from datetime import datetime, timezone
-import random
+import secrets
 import string
 
 # Create Socket.IO server with async mode
@@ -1256,7 +1256,7 @@ async def webrtc_ice_candidate(sid, data):
 
 def generate_random_id(length: int = 9) -> str:
     """Generate random alphanumeric ID"""
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+    return ''.join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(length))
 
 
 async def handle_user_leave(sid, room_id):

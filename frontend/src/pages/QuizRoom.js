@@ -91,6 +91,7 @@ const QuizRoom = () => {
     };
 
     fetchQuizData();
+    // eslint-disable-next-line
   }, [questions.length, roomCode, user, navigate]);
 
   // Fetch leaderboard after quiz completion

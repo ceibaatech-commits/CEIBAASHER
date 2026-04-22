@@ -21,6 +21,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     checkAuth();
+    // eslint-disable-next-line
   }, []);
 
   const checkAuth = async () => {
@@ -353,7 +354,7 @@ const UserDashboard = () => {
                     </h5>
                     <div className="space-y-2">
                       {currentExam.topicsStrong.map((topic, index) => (
-                        <div key={index} className="text-white/80 text-sm">• {topic}</div>
+                        <div key={`topic-${index}-${topic}`} className="text-white/80 text-sm">• {topic}</div>
                       ))}
                     </div>
                   </div>
@@ -364,7 +365,7 @@ const UserDashboard = () => {
                     </h5>
                     <div className="space-y-2">
                       {currentExam.topicsWeak.map((topic, index) => (
-                        <div key={index} className="text-white/80 text-sm">• {topic}</div>
+                        <div key={`topic-${index}-${topic}`} className="text-white/80 text-sm">• {topic}</div>
                       ))}
                     </div>
                   </div>
@@ -376,7 +377,7 @@ const UserDashboard = () => {
                 <h3 className="text-2xl font-bold text-white mb-6">📊 Weekly Performance</h3>
                 <div className="flex items-end justify-between space-x-2 h-64">
                   {weeklyPerformance.map((day, index) => (
-                    <div key={index} className="flex-1 flex flex-col items-center">
+                    <div key={`day-${day.day || index}`} className="flex-1 flex flex-col items-center">
                       <div className="relative w-full">
                         <div
                           className="bg-gradient-to-t from-purple-500 to-pink-600 rounded-t-lg transition-all duration-500 hover:scale-105"

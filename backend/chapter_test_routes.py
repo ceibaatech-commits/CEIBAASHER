@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from cbse_chapter_data import get_chapters_by_class_subject, get_all_subjects_for_class, get_chapter_details
 import os
-import random
+import secrets
 
 # Import MongoDB connection
 import motor.motor_asyncio
@@ -219,7 +219,7 @@ async def start_chapter_test(
         
         return {
             "success": True,
-            "test_id": f"test-{class_number}-{chapter}-{random.randint(1000,9999)}",
+            "test_id": f"test-{class_number}-{chapter}-{secrets.token_hex(4)}",
             "total_questions": len(test_questions),
             "duration_minutes": max(30, len(test_questions) * 1.5),
             "questions": test_questions

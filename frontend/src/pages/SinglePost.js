@@ -533,7 +533,7 @@ const SinglePost = () => {
                 const style = examTagStyle(tag);
                 return (
                   <button
-                    key={idx}
+                    key={`tag-${tag}`}
                     onClick={() => navigate(`/victory-lane?tag=${encodeURIComponent(tag)}`)}
                     className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border transition-colors hover:opacity-80 ${style.bg} ${style.text} ${style.border}`}
                   >

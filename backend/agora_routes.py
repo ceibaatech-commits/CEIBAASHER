@@ -4,7 +4,7 @@ Generates temporary tokens for Agora video/audio channels
 """
 import os
 import time
-import random
+import secrets
 from fastapi import APIRouter, HTTPException, Query
 from agora_token_builder import RtcTokenBuilder
 
@@ -22,7 +22,7 @@ async def generate_agora_token(
         raise HTTPException(500, "Agora credentials not configured")
 
     # If uid=0, generate a random unique one to avoid conflicts
-    actual_uid = uid if uid > 0 else random.randint(1, 2**31 - 1)
+    actual_uid = uid if uid > 0 else secrets.randbelow(2**31 - 1) + 1
     expiry = int(time.time()) + 3600  # 1 hour
 
     token = RtcTokenBuilder.buildTokenWithUid(

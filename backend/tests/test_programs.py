@@ -23,7 +23,7 @@ class TestPublicProgramsAPI:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        assert data.get("success") is True, "Expected success:true"
+        assert data.get("success") == True, "Expected success:true"
         assert "programs" in data, "Expected 'programs' key in response"
         assert isinstance(data["programs"], list), "Programs should be a list"
         
@@ -38,7 +38,7 @@ class TestPublicProgramsAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         programs = data.get("programs", [])
         
         # All returned programs should have domain=research
@@ -53,7 +53,7 @@ class TestPublicProgramsAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         programs = data.get("programs", [])
         
         for program in programs:
@@ -67,7 +67,7 @@ class TestPublicProgramsAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         programs = data.get("programs", [])
         
         for program in programs:
@@ -90,7 +90,7 @@ class TestPublicProgramsAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "program" in data
         
         program = data["program"]
@@ -111,7 +111,7 @@ class TestPublicProgramsAPI:
         
         assert response.status_code == 200
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert data.get("program", {}).get("domain") == "research"
         print("✓ GET /api/programs/research-mentorship-program returned research program")
     
@@ -149,7 +149,7 @@ class TestEnquiryAPI:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "message" in data
         
         print(f"✓ POST /api/programs/enquiry succeeded for program: {test_program.get('title')}")
@@ -224,7 +224,7 @@ class TestAdminProgramsAPI:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "program" in data
         
         created_program = data["program"]
@@ -275,7 +275,7 @@ class TestAdminProgramsAPI:
         )
         
         assert update_response.status_code == 200
-        assert update_response.json().get("success") is True
+        assert update_response.json().get("success") == True
         
         print(f"✓ PUT /api/admin/programs/{program_id} updated successfully")
         
@@ -308,7 +308,7 @@ class TestAdminProgramsAPI:
         )
         
         assert delete_response.status_code == 200
-        assert delete_response.json().get("success") is True
+        assert delete_response.json().get("success") == True
         
         print(f"✓ DELETE /api/admin/programs/{program_id} succeeded")
         
@@ -339,7 +339,7 @@ class TestAdminProgramsAPI:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "enquiries" in data
         assert isinstance(data["enquiries"], list)
         assert "pagination" in data

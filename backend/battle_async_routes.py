@@ -18,7 +18,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
-import random
+import secrets
 import uuid
 
 router = APIRouter(prefix="/api/battle/async", tags=["Async Battle Rooms"])
@@ -73,7 +73,7 @@ class SendMessageRequest(BaseModel):
 
 def generate_room_pin() -> str:
     """Generate 6-digit room PIN"""
-    return str(random.randint(100000, 999999))
+    return str(secrets.randbelow(900000) + 100000)
 
 
 async def get_room_from_db(db, pin: str) -> Optional[Dict]:

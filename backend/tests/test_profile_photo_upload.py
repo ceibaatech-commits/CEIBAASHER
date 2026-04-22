@@ -50,7 +50,7 @@ class TestProfileUploadEndpoint:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         assert "url" in data
         assert data["url"].startswith("https://res.cloudinary.com/")
         assert "/avatars/" in data["url"]
@@ -67,7 +67,7 @@ class TestProfileUploadEndpoint:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         assert "url" in data
         assert data["url"].startswith("https://res.cloudinary.com/")
         assert "/covers/" in data["url"]
@@ -158,7 +158,7 @@ class TestProfileUpdateWithPhotos:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         assert "profile_picture" in data.get("updated_fields", [])
         assert data["profile"]["profile_picture"] == test_url
         print(f"Profile picture updated: {data['profile']['profile_picture']}")
@@ -178,7 +178,7 @@ class TestProfileUpdateWithPhotos:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         assert "cover_photo" in data.get("updated_fields", [])
         assert data["profile"]["cover_photo"] == test_url
         print(f"Cover photo updated: {data['profile']['cover_photo']}")
@@ -202,7 +202,7 @@ class TestProfileUpdateWithPhotos:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         assert data["profile"]["profile_picture"] == profile_url
         assert data["profile"]["cover_photo"] == cover_url
         print(f"Both photos updated successfully")
@@ -213,7 +213,7 @@ class TestProfileUpdateWithPhotos:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         
         profile = data.get("profile", {})
         # Check that photo fields exist in response
@@ -247,7 +247,7 @@ class TestUploadEndpointValidation:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["success"] is True
+        assert data["success"] == True
         assert "/avatars/" in data["url"]  # Should default to avatars folder
         print(f"Default upload_type=avatar verified: {data['url']}")
 

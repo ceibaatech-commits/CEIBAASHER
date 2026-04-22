@@ -272,7 +272,7 @@ const TeacherEarnings = () => {
                 <tbody>
                   {earningsTiers.map((tier, index) => (
                     <tr 
-                      key={index} 
+                      key={`tier-${tier.tier || index}`} 
                       className="border-b border-teal-100 hover:bg-teal-50/50 transition-colors duration-200"
                     >
                       <td className="py-3 px-4">
@@ -311,7 +311,7 @@ const TeacherEarnings = () => {
           {/* Earnings Cards - Mobile */}
           <div className="md:hidden space-y-3 mb-5">
             {earningsTiers.map((tier, index) => (
-              <TierCard key={index} tier={tier} index={index} />
+              <TierCard key={`tier-${tier.tier || index}`} tier={tier} index={index} />
             ))}
           </div>
 
@@ -323,7 +323,7 @@ const TeacherEarnings = () => {
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {benefits.map((benefit, index) => (
-                <BenefitCard key={index} benefit={benefit} />
+                <BenefitCard key={`benefit-${benefit.title || index}`} benefit={benefit} />
               ))}
             </div>
           </div>
@@ -342,7 +342,7 @@ const TeacherEarnings = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {steps.map((step, index) => (
-              <StepCard key={index} step={step} index={index} />
+              <StepCard key={`step-${step.step || index}`} step={step} index={index} />
             ))}
           </div>
         </div>

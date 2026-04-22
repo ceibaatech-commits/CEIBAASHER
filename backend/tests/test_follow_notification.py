@@ -12,12 +12,30 @@ import requests
 import os
 import time
 
-BASE_URL = "https://profile-social-4.preview.emergentagent.com"
+BASE_URL = os.getenv("TEST_BASE_URL", "https://profile-social-4.preview.emergentagent.com")
 
-# Test credentials from review request
-TEST_USER_1_ID = "3deb5942-7fe2-46f7-8602-125426484b5e"
-TEST_USER_1_USERNAME = "testuser"
-TEST_USER_1_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzZGViNTk0Mi03ZmUyLTQ2ZjctODYwMi0xMjU0MjY0ODRiNWUiLCJ1c2VybmFtZSI6InRlc3R1c2VyIn0.kkeNiMGbbqiN74sUTaOc-UAvBdLHryiLkBJP1TKE5ns"
+# Get token dynamically instead of hardcoding
+TEST_USER_1_USERNAME = "demo1"
+TEST_USER_1_PASSWORD = "demo1"
+
+def _get_auth_token():
+    resp = requests.post(f"{BASE_URL}/api/auth/demo-login", json={"username": TEST_USER_1_USERNAME, "password": TEST_USER_1_PASSWORD})
+    if resp.status_code == 200:
+        data = resp.json()
+        return data.get("access_token") or data.get("token")
+    return None
+
+TEST_USER_1_TOKEN = _get_auth_token() or os.getenv("TEST_API_TOKEN", "")
+# Get user ID from /auth/me
+def _get_user_id():
+    if not TEST_USER_1_TOKEN:
+        return ""
+    resp = requests.get(f"{BASE_URL}/api/auth/me", headers={"Authorization": f"Bearer {TEST_USER_1_TOKEN}"})
+    if resp.status_code == 200:
+        return resp.json().get("id", "")
+    return ""
+
+TEST_USER_1_ID = _get_user_id()
 
 TEST_USER_2_ID = "80e98208-953b-484b-af3c-917265eeb871"
 TEST_USER_2_USERNAME = "sher"
@@ -48,7 +66,7 @@ class TestFollowStatus:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         # Should NOT be following after cleanup
         assert data.get("status") in [None, "null"]
         print(f"Follow status (before follow): {data.get('status')}")
@@ -71,7 +89,7 @@ class TestFollowUser:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         # For public account, status should be "approved"
         assert data.get("status") == "approved"
         assert "message" in data
@@ -85,7 +103,7 @@ class TestFollowUser:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert data.get("status") == "approved"
         print(f"Follow status (after follow): {data.get('status')}")
 
@@ -118,7 +136,7 @@ class TestFollowNotification:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "notifications" in data
         # Verify the query works without error
         print(f"Follow notifications count: {len(data.get('notifications', []))}")
@@ -137,7 +155,7 @@ class TestUnfollowUser:
         assert response.status_code == 200
         
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         print(f"Unfollow result: {data}")
     
     def test_follow_status_after_unfollow(self):
@@ -148,7 +166,7 @@ class TestUnfollowUser:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert data.get("status") in [None, "null"]
         print(f"Follow status (after unfollow): {data.get('status')}")
 
@@ -169,7 +187,7 @@ class TestFollowRefollow:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert data.get("status") == "approved"
         print(f"Re-follow successful: {data.get('status')}")
 
@@ -212,7 +230,7 @@ class TestFollowNotificationFieldName:
         data = response.json()
         
         # The response should work without error - this proves the fix
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "notifications" in data
         print(f"Notification filter test passed - notifications found: {len(data.get('notifications', []))}")
 
@@ -228,7 +246,7 @@ class TestProfilePage:
         )
         assert response.status_code == 200
         data = response.json()
-        assert data.get("success") is True
+        assert data.get("success") == True
         assert "profile" in data
         # follow_status should be present
         assert "follow_status" in data

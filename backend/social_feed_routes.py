@@ -1684,8 +1684,8 @@ async def unfollow_user(target_user_id: str, request: Request, authorization: Op
 # ==================== QUIZ ROOM ENDPOINTS ====================
 
 def generate_room_code():
-    import random, string
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    import secrets, string
+    return ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
 
 async def ensure_unique_room_code():
     while True:
