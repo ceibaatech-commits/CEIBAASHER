@@ -423,7 +423,7 @@ async def logout(request: Request, response: Response):
             key="session_token",
             path="/",
             secure=True,
-            samesite="none",
+            samesite="lax",
         )
 
         return {"success": True, "message": "Logged out successfully"}
@@ -537,8 +537,27 @@ def _issue_jwt(user_id: str, email: str) -> str:
     return jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
+def _set_auth_cookie(response: Response, token: str) -> None:
+    """
+    Set the auth token as an httpOnly cookie for dual-mode auth.
+
+    Backwards compatible: the legacy Bearer-token flow still works because the
+    same value is also returned in the JSON body. The cookie is the preferred
+    delivery mechanism for new code (safer against XSS).
+    """
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/",
+    )
+
+
 @router.post("/auth/demo-login")
-async def demo_login(login_data: DemoLoginRequest):
+async def demo_login(login_data: DemoLoginRequest, response: Response):
     """Demo login endpoint - No social login, only demo accounts"""
     try:
         demo_users = _demo_users()
@@ -554,6 +573,7 @@ async def demo_login(login_data: DemoLoginRequest):
         await _upsert_demo_user(user_data)
 
         access_token = _issue_jwt(user_data["id"], user_data["email"])
+        _set_auth_cookie(response, access_token)
         return {
             "access_token": access_token,
             "token_type": "bearer",
@@ -627,7 +647,7 @@ def _public_user_response(user_doc: dict) -> dict:
 
 
 @router.post("/auth/signup")
-async def signup(request: SignupRequest):
+async def signup(request: SignupRequest, response: Response):
     """Create new user account"""
     try:
         email_lower = _validate_signup_payload(request)
@@ -642,6 +662,7 @@ async def signup(request: SignupRequest):
         await _process_referral_safe(request.referral_code, user_id, email_lower)
 
         token = _issue_jwt(user_id, email_lower)
+        _set_auth_cookie(response, token)
         return {
             "user": _public_user_response(user_doc),
             "token": token,
@@ -655,7 +676,7 @@ async def signup(request: SignupRequest):
 
 
 @router.post("/auth/login")
-async def email_login(login_data: EmailLoginRequest):
+async def email_login(login_data: EmailLoginRequest, response: Response):
     """Login with email and password"""
     try:
         email_lower = login_data.email.strip().lower()
@@ -686,13 +707,9 @@ async def email_login(login_data: EmailLoginRequest):
         )
         
         # Generate JWT token
-        token_data = {
-            "sub": user["id"],
-            "email": email_lower,
-            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        }
-        token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
-        
+        token = _issue_jwt(user["id"], email_lower)
+        _set_auth_cookie(response, token)
+
         # Return user data (without password)
         user_response = {
             "id": user["id"],

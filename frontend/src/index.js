@@ -1,7 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import axios from "axios";
 import "@/index.css";
 import App from "@/App";
+
+// Dual-mode auth: send httpOnly cookies alongside Bearer token on every request.
+// Safe for same-origin (Kubernetes ingress) — no CORS credentials change needed.
+axios.defaults.withCredentials = true;
 
 // Safari/iOS WebKit polyfill for EmptyRanges video bug
 // This prevents "Can't find variable: EmptyRanges" errors

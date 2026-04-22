@@ -171,3 +171,25 @@ components/
 ### Deferred (explicit user decision required)
 - [ ] **Round C — localStorage → httpOnly cookies auth migration** (breaks all sessions, needs CSRF plumbing, CORS credentials changes)
 - [ ] **Oversized component decomposition**: ExamSheetManager.js (1720), ExamCategoryManager.js (997), LiveBattlesManager.js (736), UserManagement.js (684), Board.js (872)
+
+### Feb 20, 2026 — Round C (dual-mode cookie auth) + UserManagement decomposition
+- [x] **Round C — Dual-mode auth (backwards compatible, no sessions invalidated):**
+  - Added `_set_auth_cookie(response, token)` helper in `auth_routes.py` (httpOnly, Secure, SameSite=Lax, 7d max-age)
+  - `/api/auth/demo-login`, `/api/auth/signup`, `/api/auth/login` now set the session_token cookie AND still return `access_token` in JSON (legacy Bearer still works everywhere)
+  - `/api/auth/logout` already clears cookie; updated samesite to `lax` for consistency
+  - Frontend `src/index.js` enables `axios.defaults.withCredentials = true` so the cookie travels on every request
+  - Verified: login sets `Set-Cookie: session_token=...; HttpOnly; Secure; SameSite=Lax`; `/auth/me` works with cookie-only AND Bearer-only requests; localStorage token still populated for backwards-compat
+- [x] **UserManagement.js decomposition** (698 lines → 79-line orchestrator + 6 focused files in `/components/admin/user-management/`):
+  - `useUserManagement.js` (128 lines) — custom hook: fetch, stats, filter/sort/pagination state, `toggleBadge` with mutual-exclusion (Teacher⇄Professor)
+  - `UserStatsCards.js` (33 lines) — 4 stat cards with shared `StatCard` subcomponent
+  - `UserFiltersBar.js` (77 lines) — search + status filter + sort + export + refresh
+  - `UserRow.js` (117 lines) — single user row with `StatusPill` and `BadgeButton` subcomponents
+  - `UserTable.js` (38 lines) — table header + empty state + row iteration
+  - `UserPagination.js` (124 lines) — First/Prev/numbers/Next/Last + Go-to input
+  - Live smoke test: admin login → /admin/dashboard → User Management → all testids present, 94 users render, stats/filters/badges visible identical to pre-refactor
+- [x] 33/33 backend regression tests pass (follow_notification, post_interactions, media_permissions)
+
+### Deferred (explicit future work)
+- [ ] Full localStorage→httpOnly cookie cutover (remove all `localStorage.getItem('token')` reads, add CSRF — Round C-hard)
+- [ ] Decompose remaining oversized components: `ExamSheetManager.js` (1720), `ExamCategoryManager.js` (997), `LiveBattlesManager.js` (736), `Board.js` (872)
+
