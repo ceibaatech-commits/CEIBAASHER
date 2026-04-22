@@ -77,6 +77,7 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 - [x] Quiz leaderboard auto-shortlist feature
 - [ ] Program enrollment/payment flow (Stripe)
 - [x] Comments/reply system on posts (threaded, with likes)
+- [x] Admin company verification panel (GST/PAN/CIN edit, document upload to Cloudinary, email verification)
 
 ### P2
 - [ ] Real-time notifications on application status change

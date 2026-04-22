@@ -1,14 +1,18 @@
 """
 CEIBAA Recruitment Portal - Admin Recruitment Cell Routes
-Handles: Recruiter management, content moderation, global analytics
+Handles: Recruiter management, content moderation, global analytics,
+         Company verification (GST/PAN/CIN), document management
 """
 import os
 import uuid
 import bcrypt
+import resend
+import cloudinary
+import cloudinary.uploader
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 from collections import defaultdict
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File
 from pydantic import BaseModel
 from jose import jwt, JWTError
 from database import db
@@ -17,6 +21,21 @@ router = APIRouter()
 
 JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key-2026")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
+# Email
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+SENDER_EMAIL = os.getenv("SENDER_EMAIL", "onboarding@resend.dev")
+SITE_URL = os.getenv("SITE_URL", "https://ceibaa.com")
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
+
+# Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 # --- Brute Force Protection ---
 MAX_FAILED_ATTEMPTS = 5
@@ -251,3 +270,140 @@ async def list_students(request: Request, page: int = 1, limit: int = 50):
         s["applications_count"] = await db.recruitment_applications.count_documents({"user_id": s.get("id", "")})
         s["placed"] = await db.recruitment_applications.count_documents({"user_id": s.get("id", ""), "status": "accepted"}) > 0
     return {"students": students, "total": total}
+
+
+# ==================== COMPANY VERIFICATION & DOCUMENT MANAGEMENT ====================
+
+@router.get("/recruitment-admin/recruiter/{rec_id}")
+async def get_recruiter_detail(rec_id: str, request: Request):
+    """Get full recruiter details including verification docs"""
+    await get_admin(request)
+    rec = await db.recruiters.find_one({"id": rec_id}, {"_id": 0, "password_hash": 0})
+    if not rec:
+        raise HTTPException(404, "Recruiter not found")
+    rec["posts_count"] = await db.recruitment_posts.count_documents({"company_id": rec_id})
+    rec["apps_count"] = await db.recruitment_applications.count_documents({"company_id": rec_id})
+    return rec
+
+class CompanyVerificationUpdate(BaseModel):
+    gst_number: Optional[str] = None
+    pan_number: Optional[str] = None
+    cin_number: Optional[str] = None
+    verified_email: Optional[bool] = None
+    verified_mobile: Optional[bool] = None
+    verified_gst: Optional[bool] = None
+    verified_pan: Optional[bool] = None
+    verified_cin: Optional[bool] = None
+    admin_notes: Optional[str] = None
+
+@router.put("/recruitment-admin/recruiter/{rec_id}/verification")
+async def update_company_verification(rec_id: str, data: CompanyVerificationUpdate, request: Request):
+    """Admin edits company GST/PAN/CIN and verification status"""
+    await get_admin(request)
+    rec = await db.recruiters.find_one({"id": rec_id})
+    if not rec:
+        raise HTTPException(404, "Recruiter not found")
+    update = {}
+    for field in ["gst_number", "pan_number", "cin_number", "verified_email", "verified_mobile",
+                   "verified_gst", "verified_pan", "verified_cin", "admin_notes"]:
+        val = getattr(data, field, None)
+        if val is not None:
+            update[field] = val
+    if update:
+        update["verification_updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.recruiters.update_one({"id": rec_id}, {"$set": update})
+    return {"updated": list(update.keys())}
+
+@router.post("/recruitment-admin/recruiter/{rec_id}/upload-document")
+async def upload_company_document(rec_id: str, request: Request, file: UploadFile = File(...), doc_type: str = "gst_certificate"):
+    """Upload company verification document (GST cert, PAN card, CIN cert, incorporation cert)"""
+    await get_admin(request)
+    rec = await db.recruiters.find_one({"id": rec_id})
+    if not rec:
+        raise HTTPException(404, "Recruiter not found")
+    allowed_types = ["gst_certificate", "pan_card", "cin_certificate", "incorporation_certificate"]
+    if doc_type not in allowed_types:
+        raise HTTPException(400, f"doc_type must be one of: {allowed_types}")
+    if not file.filename:
+        raise HTTPException(400, "No file provided")
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in [".pdf", ".jpg", ".jpeg", ".png", ".webp"]:
+        raise HTTPException(400, "Only PDF, JPG, PNG files allowed")
+    content = await file.read()
+    if len(content) > 10 * 1024 * 1024:
+        raise HTTPException(400, "File too large (max 10MB)")
+    try:
+        resource_type = "raw" if ext == ".pdf" else "image"
+        result = cloudinary.uploader.upload(
+            content,
+            resource_type=resource_type,
+            folder=f"company_docs/{rec_id}",
+            public_id=f"{doc_type}_{uuid.uuid4().hex[:8]}",
+            overwrite=True,
+        )
+        doc_url = result["secure_url"]
+    except Exception as e:
+        raise HTTPException(500, f"Upload failed: {str(e)}")
+    # Store document URL on the recruiter
+    doc_field = f"{doc_type}_url"
+    await db.recruiters.update_one({"id": rec_id}, {"$set": {
+        doc_field: doc_url,
+        f"{doc_type}_uploaded_at": datetime.now(timezone.utc).isoformat()
+    }})
+    return {"url": doc_url, "doc_type": doc_type, "filename": file.filename}
+
+@router.post("/recruitment-admin/recruiter/{rec_id}/send-verification-email")
+async def send_verification_email(rec_id: str, request: Request):
+    """Send verification email to the company"""
+    await get_admin(request)
+    rec = await db.recruiters.find_one({"id": rec_id}, {"_id": 0, "password_hash": 0})
+    if not rec:
+        raise HTTPException(404, "Recruiter not found")
+    email = rec.get("email")
+    if not email:
+        raise HTTPException(400, "No email on file")
+    verification_code = uuid.uuid4().hex[:8].upper()
+    await db.recruiters.update_one({"id": rec_id}, {"$set": {
+        "email_verification_code": verification_code,
+        "email_verification_sent_at": datetime.now(timezone.utc).isoformat()
+    }})
+    if not RESEND_API_KEY:
+        return {"sent": False, "reason": "Email service not configured", "code": verification_code}
+    try:
+        resend.Emails.send({
+            "from": SENDER_EMAIL, "to": [email],
+            "subject": f"CEIBAA — Email Verification for {rec.get('company_name', '')}",
+            "html": f"""
+                <div style="font-family:system-ui;max-width:500px;margin:0 auto;padding:24px">
+                    <h2 style="color:#1e293b">Email Verification</h2>
+                    <p>Hi {rec.get('company_name','')},</p>
+                    <p>Please verify your company email by entering this code in the CEIBAA portal:</p>
+                    <div style="background:#f1f5f9;padding:20px;border-radius:12px;text-align:center;margin:16px 0">
+                        <span style="font-size:32px;font-weight:bold;letter-spacing:6px;color:#3b82f6">{verification_code}</span>
+                    </div>
+                    <p style="color:#64748b;font-size:14px">This code expires in 24 hours.</p>
+                    <p style="color:#94a3b8;font-size:12px;margin-top:24px">— CEIBAA Recruitment Cell</p>
+                </div>
+            """
+        })
+        return {"sent": True, "to": email}
+    except Exception as e:
+        return {"sent": False, "error": str(e), "code": verification_code}
+
+@router.post("/recruitment-admin/recruiter/{rec_id}/verify-email-code")
+async def verify_email_code(rec_id: str, request: Request):
+    """Admin verifies the code returned by the company"""
+    await get_admin(request)
+    body = await request.json()
+    code = body.get("code", "").strip().upper()
+    rec = await db.recruiters.find_one({"id": rec_id})
+    if not rec:
+        raise HTTPException(404, "Recruiter not found")
+    stored_code = rec.get("email_verification_code", "")
+    if not stored_code or code != stored_code:
+        raise HTTPException(400, "Invalid verification code")
+    await db.recruiters.update_one({"id": rec_id}, {"$set": {
+        "verified_email": True,
+        "email_verified_at": datetime.now(timezone.utc).isoformat()
+    }, "$unset": {"email_verification_code": ""}})
+    return {"verified": True}
