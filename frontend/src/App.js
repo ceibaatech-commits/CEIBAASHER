@@ -23,8 +23,6 @@ import AboutUs from "@/pages/AboutUs";
 import FAQ from "@/pages/FAQ";
 import Contact from "@/pages/Contact";
 import TestSheets from "@/pages/TestSheets";
-import TestSocket from "@/pages/TestSocket";
-import TestLatex from "@/pages/TestLatex";
 import UserDashboard from "@/pages/UserDashboard";
 import Dashboard from "@/pages/Dashboard";
 import PublicProfile from "@/pages/PublicProfile";
@@ -177,8 +175,6 @@ function App() {
           <Route path="/earn-with-ceibaa" element={<TeacherEarnings />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/test-sheets" element={<TestSheets />} />
-          <Route path="/test-socket" element={<TestSocket />} />
-          <Route path="/test-latex" element={<TestLatex />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           
           {/* Books Routes */}

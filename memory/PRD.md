@@ -3,12 +3,44 @@
 ## Original Problem Statement
 Build and enhance the "Ceibaa" educational platform — a full-stack app (React, FastAPI, MongoDB, Socket.IO) featuring AI tutors, live 1v1 battles, career programs, social feeds (Victory Lane), WebRTC video chat, real-time messaging, and a Recruitment & Internship Portal.
 
-## Core Architecture
+## Code Architecture
 - **Frontend**: React + Tailwind CSS + Shadcn UI
 - **Backend**: FastAPI + MongoDB (Motor) + Socket.IO
 - **Auth**: JWT + Emergent Google Auth + Demo Login
-- **Media**: Cloudinary for image uploads
+- **Media**: Cloudinary for image/document uploads
 - **Real-time**: Socket.IO for battles, social feed, and messaging
+- **Video**: Agora RTC for 1v1 battle video calls
+
+### Backend Structure (Refactored Feb 2026)
+```
+backend/
+├── server.py                    # FastAPI app + route registration
+├── database.py                  # Centralized MongoDB connection
+├── recruitment_routes.py        # Thin aggregator (imports sub-routers)
+├── recruitment/
+│   ├── core_routes.py           # Auth, companies, feed, applications, posts CRUD (319 lines)
+│   ├── social_routes.py         # Likes, comments, bookmarks, shares (134 lines)
+│   ├── quiz_routes.py           # Quiz engine, leaderboard, auto-shortlist (91 lines)
+│   └── bulk_routes.py           # Resume upload, CSV export, bulk actions, email (117 lines)
+├── recruitment_admin_routes.py  # Admin panel, company verification, document management
+├── models/
+│   └── recruitment_models.py    # Shared Pydantic models (100 lines)
+├── utils/
+│   ├── auth_helpers.py          # JWT auth helpers (54 lines)
+│   └── email_service.py         # Resend email utility (23 lines)
+├── auth_routes.py               # Main auth (JWT, demo, Google)
+├── battle_socketio.py           # Battle socket events + VC events
+├── matchmaking.py               # Exam-level matchmaking
+└── tests/
+```
+
+### Frontend Extracted Components
+```
+components/
+├── FeedCard.js                  # Reusable post card with social actions (96 lines)
+├── CommentModal.js              # Threaded comment modal with reply/like (120 lines)
+└── BattleVideoChat.js           # Agora video overlay
+```
 
 ## What's Been Implemented
 
