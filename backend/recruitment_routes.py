@@ -1,14 +1,21 @@
 """
 CEIBAA Recruitment Portal - Main Routes
-Handles: Companies, Posts (Job/Quiz/Hackathon/Event), Applications, Feed, Quiz Engine
+Handles: Companies, Posts (Job/Quiz/Hackathon/Event), Applications, Feed, Quiz Engine,
+         Email notifications, Resume upload, Bulk applicant actions
 """
 import os
+import io
+import csv
 import uuid
 import bcrypt
+import resend
+import cloudinary
+import cloudinary.uploader
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List
 from collections import defaultdict
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, UploadFile, File
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from jose import jwt, JWTError
 from database import db
@@ -17,6 +24,33 @@ router = APIRouter()
 
 JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key-2026")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+
+# --- Email Service (Resend) ---
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+SENDER_EMAIL = os.getenv("SENDER_EMAIL", "onboarding@resend.dev")
+SITE_URL = os.getenv("SITE_URL", "https://ceibaa.com")
+if RESEND_API_KEY:
+    resend.api_key = RESEND_API_KEY
+
+async def send_email(to: str, subject: str, html: str):
+    if not RESEND_API_KEY:
+        print(f"[EMAIL] Skipped (no key): {subject} -> {to}")
+        return False
+    try:
+        resend.Emails.send({"from": SENDER_EMAIL, "to": [to], "subject": subject, "html": html})
+        print(f"[EMAIL] Sent: {subject} -> {to}")
+        return True
+    except Exception as e:
+        print(f"[EMAIL] Error: {e}")
+        return False
+
+# --- Cloudinary for Resume Upload ---
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 # --- Brute Force Protection ---
 MAX_FAILED_ATTEMPTS = 5
@@ -386,6 +420,25 @@ async def update_applicant_status(app_id: str, request: Request):
         {"id": app_id},
         {"$set": {"status": new_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
     )
+    # Send email notification to applicant
+    user_email = app.get("user_email")
+    user_name = app.get("user_name", "Applicant")
+    post_title = post.get("title", "a position")
+    company_name = rec.get("company_name", "a company")
+    status_labels = {"shortlisted": "Shortlisted", "interview": "Interview Scheduled", "offer": "Offer Extended", "accepted": "Accepted", "rejected": "Not Selected"}
+    status_label = status_labels.get(new_status, new_status.title())
+    if user_email:
+        colors = {"shortlisted": "#22c55e", "interview": "#8b5cf6", "offer": "#f59e0b", "accepted": "#22c55e", "rejected": "#ef4444"}
+        color = colors.get(new_status, "#3b82f6")
+        await send_email(user_email, f"Application Update — {status_label}", f"""
+            <div style="font-family:system-ui;max-width:500px;margin:0 auto;padding:24px">
+                <h2 style="color:#1e293b">Hi {user_name},</h2>
+                <p>Your application for <strong>{post_title}</strong> at <strong>{company_name}</strong> has been updated:</p>
+                <div style="background:{color};color:white;padding:12px 20px;border-radius:12px;text-align:center;font-size:18px;font-weight:bold;margin:16px 0">{status_label}</div>
+                <p style="color:#64748b;font-size:14px">Track all your applications at <a href="{SITE_URL}/my-applications" style="color:#3b82f6">My Applications</a>.</p>
+                <p style="color:#94a3b8;font-size:12px;margin-top:24px">— CEIBAA Recruitment Cell</p>
+            </div>
+        """)
     return {"status": new_status}
 
 # --- Quiz Attempt ---
@@ -666,3 +719,176 @@ async def get_my_interactions(request: Request):
         "liked_post_ids": [l["post_id"] for l in likes],
         "bookmarked_post_ids": [b["post_id"] for b in bookmarks]
     }
+
+
+
+# ==================== RESUME UPLOAD ====================
+
+@router.post("/recruitment/resume/upload")
+async def upload_resume(request: Request, file: UploadFile = File(...)):
+    user = await get_current_student(request)
+    if not file.filename:
+        raise HTTPException(400, "No file provided")
+    ext = os.path.splitext(file.filename)[1].lower()
+    if ext not in [".pdf", ".doc", ".docx"]:
+        raise HTTPException(400, "Only PDF, DOC, DOCX files allowed")
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(400, "File too large (max 5MB)")
+    try:
+        result = cloudinary.uploader.upload(
+            content,
+            resource_type="raw",
+            folder="resumes",
+            public_id=f"{user['id']}_{uuid.uuid4().hex[:8]}",
+            overwrite=True,
+        )
+        resume_url = result["secure_url"]
+    except Exception as e:
+        raise HTTPException(500, f"Upload failed: {str(e)}")
+    await db.users.update_one({"id": user["id"]}, {"$set": {"resume_url": resume_url}})
+    return {"resume_url": resume_url, "filename": file.filename}
+
+@router.delete("/recruitment/resume")
+async def delete_resume(request: Request):
+    user = await get_current_student(request)
+    await db.users.update_one({"id": user["id"]}, {"$unset": {"resume_url": ""}})
+    return {"deleted": True}
+
+
+# ==================== BULK APPLICANT ACTIONS ====================
+
+class BulkStatusUpdate(BaseModel):
+    app_ids: List[str]
+    status: str
+
+@router.post("/recruitment/applicants/{post_id}/bulk-status")
+async def bulk_update_status(post_id: str, data: BulkStatusUpdate, request: Request):
+    rec = await get_current_recruiter(request)
+    post = await db.recruitment_posts.find_one({"id": post_id, "company_id": rec["id"]}, {"_id": 0})
+    if not post:
+        raise HTTPException(404, "Post not found or unauthorized")
+    if data.status not in ["shortlisted", "rejected", "interview", "offer", "accepted"]:
+        raise HTTPException(400, "Invalid status")
+    result = await db.recruitment_applications.update_many(
+        {"id": {"$in": data.app_ids}, "post_id": post_id},
+        {"$set": {"status": data.status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    # Send email to all affected applicants
+    for aid in data.app_ids:
+        app = await db.recruitment_applications.find_one({"id": aid}, {"_id": 0})
+        if app and app.get("user_email"):
+            await send_email(app["user_email"], f"Application Update — {data.status.title()}",
+                f"<p>Hi {app.get('user_name','')}, your application for <b>{post.get('title','')}</b> at <b>{rec.get('company_name','')}</b> status: <b>{data.status.title()}</b>.</p>"
+            )
+    return {"updated": result.modified_count, "status": data.status}
+
+class BulkShortlistByAIR(BaseModel):
+    max_air: int
+
+@router.post("/recruitment/applicants/{post_id}/shortlist-by-air")
+async def shortlist_by_air_rank(post_id: str, data: BulkShortlistByAIR, request: Request):
+    rec = await get_current_recruiter(request)
+    post = await db.recruitment_posts.find_one({"id": post_id, "company_id": rec["id"]}, {"_id": 0})
+    if not post:
+        raise HTTPException(404, "Post not found or unauthorized")
+    result = await db.recruitment_applications.update_many(
+        {"post_id": post_id, "user_air": {"$lte": data.max_air}, "status": "applied"},
+        {"$set": {"status": "shortlisted", "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    return {"shortlisted": result.modified_count, "max_air": data.max_air}
+
+
+# ==================== CSV EXPORT ====================
+
+@router.get("/recruitment/applicants/{post_id}/export-csv")
+async def export_applicants_csv(post_id: str, request: Request):
+    rec = await get_current_recruiter(request)
+    post = await db.recruitment_posts.find_one({"id": post_id, "company_id": rec["id"]}, {"_id": 0})
+    if not post:
+        raise HTTPException(404, "Post not found or unauthorized")
+    apps = await db.recruitment_applications.find({"post_id": post_id}, {"_id": 0}).sort("user_air", 1).to_list(5000)
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Name", "Email", "AIR Rank", "Exam", "College", "Status", "Applied Date", "Resume URL"])
+    for a in apps:
+        writer.writerow([
+            a.get("user_name", ""), a.get("user_email", ""), a.get("user_air", ""),
+            a.get("user_exam_type", ""), a.get("user_college", ""), a.get("status", ""),
+            a.get("created_at", ""), a.get("resume_url", "")
+        ])
+    output.seek(0)
+    filename = f"applicants_{post_id}_{datetime.now().strftime('%Y%m%d')}.csv"
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+# ==================== EMAIL: SEND CREDENTIALS ====================
+
+class SendCredentialsEmail(BaseModel):
+    email: str
+    name: str
+    password: str
+    role: str = "recruiter"
+
+@router.post("/recruitment/send-credentials")
+async def send_credentials_email(data: SendCredentialsEmail, request: Request):
+    """Admin sends login credentials to a new recruiter via email"""
+    # Verify admin
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        raise HTTPException(401, "Auth required")
+    try:
+        token = auth.split(" ")[1]
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        if payload.get("role") != "ceibaa_admin":
+            raise HTTPException(403, "Admin only")
+    except JWTError:
+        raise HTTPException(401, "Invalid token")
+
+    ok = await send_email(data.email, f"Your CEIBAA Recruiter Login Credentials", f"""
+        <div style="font-family:system-ui;max-width:500px;margin:0 auto;padding:24px">
+            <h2 style="color:#1e293b">Welcome to CEIBAA, {data.name}!</h2>
+            <p>Your recruiter account has been created. Here are your login credentials:</p>
+            <div style="background:#f1f5f9;padding:16px;border-radius:12px;margin:16px 0">
+                <p style="margin:4px 0"><strong>Portal:</strong> <a href="{SITE_URL}/recruiter" style="color:#3b82f6">{SITE_URL}/recruiter</a></p>
+                <p style="margin:4px 0"><strong>Email:</strong> {data.email}</p>
+                <p style="margin:4px 0"><strong>Password:</strong> {data.password}</p>
+            </div>
+            <p style="color:#ef4444;font-size:13px">Please change your password after first login.</p>
+            <p style="color:#94a3b8;font-size:12px;margin-top:24px">— CEIBAA Recruitment Cell</p>
+        </div>
+    """)
+    return {"sent": ok, "to": data.email}
+
+
+# ==================== EMAIL: EVENT REMINDER ====================
+
+@router.post("/recruitment/posts/{post_id}/send-reminder")
+async def send_event_reminder(post_id: str, request: Request):
+    """Recruiter sends event/hackathon reminder to all registered users"""
+    rec = await get_current_recruiter(request)
+    post = await db.recruitment_posts.find_one({"id": post_id, "company_id": rec["id"]}, {"_id": 0})
+    if not post:
+        raise HTTPException(404, "Post not found or unauthorized")
+    if post.get("post_type") not in ["event", "hackathon"]:
+        raise HTTPException(400, "Only events and hackathons support reminders")
+    apps = await db.recruitment_applications.find({"post_id": post_id}, {"_id": 0}).to_list(5000)
+    sent_count = 0
+    for a in apps:
+        email = a.get("user_email")
+        if email:
+            ok = await send_email(email, f"Reminder: {post.get('title', 'Event')} — {rec.get('company_name', '')}",
+                f"""<div style="font-family:system-ui;max-width:500px;margin:0 auto;padding:24px">
+                    <h2 style="color:#1e293b">Hi {a.get('user_name', '')}!</h2>
+                    <p>This is a reminder for <strong>{post.get('title','')}</strong> by <strong>{rec.get('company_name','')}</strong>.</p>
+                    {'<p><strong>Date:</strong> ' + post.get('start_date','') + '</p>' if post.get('start_date') else ''}
+                    {'<p><strong>Deadline:</strong> ' + post.get('deadline','') + '</p>' if post.get('deadline') else ''}
+                    <p style="color:#94a3b8;font-size:12px;margin-top:24px">— CEIBAA Recruitment Cell</p>
+                </div>""")
+            if ok:
+                sent_count += 1
+    return {"sent": sent_count, "total": len(apps)}
