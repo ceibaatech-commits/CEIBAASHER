@@ -17,20 +17,23 @@ import requests
 import os
 import io
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001')
 
-# Test credentials from seed data
-RECRUITER_EMAIL = "hr@tcs.com"
-RECRUITER_PASSWORD = "tcs123"
-ADMIN_EMAIL = "admin@ceibaa.in"
-ADMIN_PASSWORD = "admin123"
-STUDENT_USERNAME = "demo1"
-STUDENT_PASSWORD = "demo1"
+from conftest import (
+    RECRUITER_PASSWORD,
+    RECRUITMENT_ADMIN_EMAIL as ADMIN_EMAIL,
+    RECRUITMENT_ADMIN_PASSWORD as ADMIN_PASSWORD,
+    DEMO_USERNAME as STUDENT_USERNAME,
+    DEMO_PASSWORD as STUDENT_PASSWORD,
+)
 
-# Known post IDs from seed data
-TCS_INTERN_POST_ID = "post-tcs-intern-001"
-FLIPKART_HACKATHON_POST_ID = "post-flipkart-hack-001"
-RAZORPAY_EVENT_POST_ID = "post-razorpay-event-001"
+# Recruitment test recruiter is seeded with hr@tcs.com in seed scripts
+RECRUITER_EMAIL = os.environ.get("TEST_RECRUITER_SEED_EMAIL", "hr@tcs.com")
+
+# Known post IDs from seed data (non-secret)
+TCS_INTERN_POST_ID = os.environ.get("TEST_TCS_INTERN_POST_ID", "post-tcs-intern-001")
+FLIPKART_HACKATHON_POST_ID = os.environ.get("TEST_FLIPKART_HACK_POST_ID", "post-flipkart-hack-001")
+RAZORPAY_EVENT_POST_ID = os.environ.get("TEST_RAZORPAY_EVENT_POST_ID", "post-razorpay-event-001")
 
 
 class TestAuthHelpers:

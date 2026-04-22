@@ -145,3 +145,10 @@ components/
 - [x] Backend Code Quality fixes (socket_proxy, secrets, circular deps)
 - [x] Component decomposition (Board.js, ExamSheetManager.js)
 - [x] Messaging system
+
+### Feb 20, 2026 — Code Quality P0 Cleanup
+- [x] Fixed `chapter_test_routes.py` F821 crash (restored `random.sample` as `secrets.SystemRandom().sample()`)
+- [x] Extended `tests/conftest.py` with env-backed constants: `RECRUITMENT_ADMIN_*`, `DEMO3_*`, `TEST_USER_*`, `RECRUITER_*`
+- [x] Removed all hardcoded credentials from 6 test files: `test_referral_system.py`, `test_recruitment.py`, `test_post_interactions.py`, `test_new_recruitment_features.py`, `test_messaging.py`, `test_media_permissions.py`
+- [x] All 99 tests in the refactored files collect cleanly; 60/63 sanity-run tests still pass (3 pre-existing seed-count failures unrelated to refactor)
+

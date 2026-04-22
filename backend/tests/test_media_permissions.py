@@ -7,12 +7,15 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
-# Test credentials
-TEST_USER_EMAIL = "testbug@test.com"
-TEST_USER_PASSWORD = "test1234"
-from conftest import DEMO_USERNAME as DEMO_USER, DEMO_PASSWORD
+# Credentials sourced from shared conftest (env-backed)
+from conftest import (
+    DEMO_USERNAME as DEMO_USER,
+    DEMO_PASSWORD,
+    TEST_USER_PASSWORD,
+)
+TEST_USER_EMAIL = os.environ.get("TEST_USER_EMAIL", "testbug@test.com")
 
 
 class TestGlobalMediaSettings:

@@ -6,8 +6,7 @@ Testing the following bug fixes:
 2. SinglePost.js handleSubmitComment() - Fixed: changed endpoint from /comments (plural) to /comment (singular)
 3. Backend get_optional_user_id_async() - New async function supporting both JWT and session tokens
 
-Test user: testbug@test.com / test1234 / username: testbug
-Test post ID: c176c31e-e253-4767-a1aa-e610a70692ff
+Credentials come from environment (see conftest.py / env vars).
 """
 
 import pytest
@@ -15,13 +14,13 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com').rstrip('/')
+from conftest import TEST_USER_PASSWORD
 
-# Test credentials from main agent
-TEST_USER_EMAIL = "testbug@test.com"
-TEST_USER_PASSWORD = "test1234"
-TEST_USER_USERNAME = "testbug"
-TEST_POST_ID = "c176c31e-e253-4767-a1aa-e610a70692ff"
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
+
+# Non-secret test fixtures (overridable via env)
+TEST_USER_EMAIL = os.environ.get("TEST_USER_EMAIL", "testbug@test.com")
+TEST_POST_ID = os.environ.get("TEST_POST_ID", "c176c31e-e253-4767-a1aa-e610a70692ff")
 
 
 class TestAuth:

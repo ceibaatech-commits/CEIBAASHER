@@ -10,14 +10,16 @@ import requests
 import os
 import uuid
 
+from conftest import TEST_USER_PASSWORD
+
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 
-# Test credentials from previous iterations
-TEST_USER_EMAIL = "testbug@test.com"
-TEST_USER_PASSWORD = "test1234"
-TEST_USER_USERNAME = "testbug"
-REFERRAL_CODE = "UJI1BVOU"
-EXISTING_REFERRED_EMAIL = "referred@test.com"
+# Non-secret test configuration (overridable via env)
+TEST_USER_EMAIL = os.environ.get("TEST_USER_EMAIL", "testbug@test.com")
+REFERRAL_CODE = os.environ.get("TEST_REFERRAL_CODE", "UJI1BVOU")
+EXISTING_REFERRED_EMAIL = os.environ.get("TEST_REFERRED_EMAIL", "referred@test.com")
+# Dummy password used for ephemeral signup users during referral tests
+SIGNUP_DUMMY_PASSWORD = os.environ.get("TEST_SIGNUP_DUMMY_PASSWORD", "test123456")
 
 
 @pytest.fixture(scope="module")
@@ -167,7 +169,7 @@ class TestSignupWithReferral:
         signup_response = requests.post(f"{BASE_URL}/api/auth/signup", json={
             "name": "TEST Referral User",
             "email": unique_email,
-            "password": "test123456",
+            "password": SIGNUP_DUMMY_PASSWORD,
             "referral_code": REFERRAL_CODE
         })
         
@@ -191,7 +193,7 @@ class TestSignupWithReferral:
         response = requests.post(f"{BASE_URL}/api/auth/signup", json={
             "name": "TEST No Referral User",
             "email": unique_email,
-            "password": "test123456"
+            "password": SIGNUP_DUMMY_PASSWORD
         })
         
         assert response.status_code == 200, f"Signup failed: {response.text}"
@@ -205,7 +207,7 @@ class TestSignupWithReferral:
         response = requests.post(f"{BASE_URL}/api/auth/signup", json={
             "name": "Duplicate Test",
             "email": EXISTING_REFERRED_EMAIL,
-            "password": "test123456",
+            "password": SIGNUP_DUMMY_PASSWORD,
             "referral_code": REFERRAL_CODE
         })
         
@@ -219,7 +221,7 @@ class TestSignupWithReferral:
         response = requests.post(f"{BASE_URL}/api/auth/signup", json={
             "name": "TEST Bad Referral User",
             "email": unique_email,
-            "password": "test123456",
+            "password": SIGNUP_DUMMY_PASSWORD,
             "referral_code": "INVALID123"
         })
         

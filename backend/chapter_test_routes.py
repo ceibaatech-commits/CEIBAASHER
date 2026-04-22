@@ -166,7 +166,7 @@ async def get_chapter_questions(
         
         # Randomize if requested
         if randomize and len(questions) > limit:
-            questions = random.sample(questions, limit)
+            questions = secrets.SystemRandom().sample(questions, limit)
         else:
             questions = questions[:limit]
         
@@ -211,7 +211,7 @@ async def start_chapter_test(
             return {"success": False, "error": "No questions found"}
         
         # Randomize and limit
-        test_questions = random.sample(all_questions, min(num_questions, len(all_questions)))
+        test_questions = secrets.SystemRandom().sample(all_questions, min(num_questions, len(all_questions)))
         
         # Remove explanation for test mode (don't show until submitted)
         for q in test_questions:

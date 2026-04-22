@@ -6,17 +6,20 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
 
-# Test credentials from test_credentials.md
-from conftest import DEMO_USERNAME as DEMO1_USERNAME, DEMO_PASSWORD as DEMO1_PASSWORD
-DEMO3_USERNAME = "demo3"
-DEMO3_PASSWORD = "demo3"
+# Credentials sourced from shared conftest (env-backed)
+from conftest import (
+    DEMO_USERNAME as DEMO1_USERNAME,
+    DEMO_PASSWORD as DEMO1_PASSWORD,
+    DEMO3_USERNAME,
+    DEMO3_PASSWORD,
+)
 
-# Known IDs from agent context
-DEMO1_USER_ID = "ab3581a5-23e6-407d-a7ac-21e0f4da2b4f"
-DEMO3_USER_ID = "demo3-uuid"
-EXISTING_CONVERSATION_ID = "3671b9df-ac8f-4e3a-b7e1-b10b949a2d78"
+# Known IDs — non-secret, overridable via env (these are populated at runtime when possible)
+DEMO1_USER_ID = os.environ.get("TEST_DEMO1_USER_ID", "ab3581a5-23e6-407d-a7ac-21e0f4da2b4f")
+DEMO3_USER_ID = os.environ.get("TEST_DEMO3_USER_ID", "demo3-uuid")
+EXISTING_CONVERSATION_ID = os.environ.get("TEST_EXISTING_CONVERSATION_ID", "3671b9df-ac8f-4e3a-b7e1-b10b949a2d78")
 
 
 class TestMessagingAPI:
