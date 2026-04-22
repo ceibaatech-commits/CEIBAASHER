@@ -17,23 +17,35 @@ const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
   const [videoCall, setVideoCall] = useState(true);
   const rtcProps = useMemo(() => ({
-    appId, channel, token: token || '', uid: uid || 0, role: 'host', layout: 1
+    appId,
+    channel,
+    token: token || '',
+    uid: uid || 0,
+    role: 'host',
+    layout: 1,
+    disableRtm: true,
+    enableVideo: true,
+    enableAudio: true,
   }), [appId, channel, token, uid]);
   const callbacks = useMemo(() => ({
-    EndCall: () => { setVideoCall(false); if (onEnd) onEnd(); }
+    EndCall: () => { setVideoCall(false); if (onEnd) onEnd(); },
+    'user-joined': (user) => console.log('[Agora] Remote user joined:', user),
+    'user-published': (user, mediaType) => console.log('[Agora] Remote published:', user, mediaType),
   }), [onEnd]);
 
   if (!videoCall) return null;
 
   return (
-    <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0 }}>
+    <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0, overflow: 'hidden' }}>
       <AgoraUIKit
         rtcProps={rtcProps}
         callbacks={callbacks}
         styleProps={{
           localBtnContainer: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 25, padding: 6, bottom: 8, gap: 12 },
           UIKitContainer: { width: '100%', height: '100%', display: 'flex', flex: 1, position: 'relative' },
-          videoMode: { max: 'cover', min: 'cover' }
+          videoMode: { max: 'cover', min: 'cover' },
+          minViewContainer: { position: 'absolute', top: 8, right: 8, width: 80, height: 100, borderRadius: 10, overflow: 'hidden', zIndex: 5, border: '2px solid white' },
+          maxViewContainer: { width: '100%', height: '100%' },
         }}
       />
     </div>
