@@ -732,9 +732,10 @@ async def toggle_like(post_id: str, request: Request):
     await db.recruitment_posts.update_one({"id": post_id}, {"$inc": {"likes_count": 1}})
     return {"liked": True, "likes_count": post.get("likes_count", 0) + 1}
 
-# --- Comment on Post ---
+# --- Comment on Post (with replies) ---
 class CommentCreate(BaseModel):
     text: str
+    parent_id: Optional[str] = None  # if replying to another comment
 
 @router.post("/recruitment/posts/{post_id}/comment")
 async def add_comment(post_id: str, data: CommentCreate, request: Request):
@@ -742,22 +743,76 @@ async def add_comment(post_id: str, data: CommentCreate, request: Request):
     post = await db.recruitment_posts.find_one({"id": post_id})
     if not post:
         raise HTTPException(404, "Post not found")
+    if data.parent_id:
+        parent = await db.recruitment_comments.find_one({"id": data.parent_id, "post_id": post_id})
+        if not parent:
+            raise HTTPException(404, "Parent comment not found")
     comment = {
         "id": str(uuid.uuid4()), "post_id": post_id, "user_id": user["id"],
         "user_name": user.get("name", "Anonymous"),
         "user_avatar": user.get("profile_picture") or user.get("avatar", ""),
         "text": data.text.strip(),
+        "parent_id": data.parent_id,
+        "likes_count": 0,
+        "replies_count": 0,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.recruitment_comments.insert_one(comment.copy())
     comment.pop("_id", None)
     await db.recruitment_posts.update_one({"id": post_id}, {"$inc": {"comments_count": 1}})
+    if data.parent_id:
+        await db.recruitment_comments.update_one({"id": data.parent_id}, {"$inc": {"replies_count": 1}})
     return comment
 
 @router.get("/recruitment/posts/{post_id}/comments")
-async def get_comments(post_id: str):
-    comments = await db.recruitment_comments.find({"post_id": post_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
-    return {"comments": comments}
+async def get_comments(post_id: str, request: Request):
+    # Get top-level comments (no parent_id)
+    top_comments = await db.recruitment_comments.find(
+        {"post_id": post_id, "$or": [{"parent_id": None}, {"parent_id": {"$exists": False}}]}, {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    # Get all replies
+    reply_ids = [c["id"] for c in top_comments]
+    all_replies = await db.recruitment_comments.find(
+        {"post_id": post_id, "parent_id": {"$in": reply_ids}}, {"_id": 0}
+    ).sort("created_at", 1).to_list(500)
+    # Check if current user liked any comments
+    liked_comment_ids = []
+    try:
+        user = await get_current_student(request)
+        likes = await db.recruitment_comment_likes.find({"user_id": user["id"], "post_id": post_id}, {"_id": 0, "comment_id": 1}).to_list(500)
+        liked_comment_ids = [l["comment_id"] for l in likes]
+    except:
+        pass
+    # Nest replies under their parent
+    reply_map = {}
+    for r in all_replies:
+        pid = r["parent_id"]
+        if pid not in reply_map:
+            reply_map[pid] = []
+        r["is_liked"] = r["id"] in liked_comment_ids
+        reply_map[pid].append(r)
+    for c in top_comments:
+        c["replies"] = reply_map.get(c["id"], [])
+        c["is_liked"] = c["id"] in liked_comment_ids
+    return {"comments": top_comments}
+
+@router.post("/recruitment/comments/{comment_id}/like")
+async def toggle_comment_like(comment_id: str, request: Request):
+    user = await get_current_student(request)
+    comment = await db.recruitment_comments.find_one({"id": comment_id})
+    if not comment:
+        raise HTTPException(404, "Comment not found")
+    existing = await db.recruitment_comment_likes.find_one({"user_id": user["id"], "comment_id": comment_id})
+    if existing:
+        await db.recruitment_comment_likes.delete_one({"user_id": user["id"], "comment_id": comment_id})
+        await db.recruitment_comments.update_one({"id": comment_id}, {"$inc": {"likes_count": -1}})
+        return {"liked": False, "likes_count": max((comment.get("likes_count", 0) - 1), 0)}
+    await db.recruitment_comment_likes.insert_one({
+        "id": str(uuid.uuid4()), "user_id": user["id"], "comment_id": comment_id,
+        "post_id": comment.get("post_id"), "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    await db.recruitment_comments.update_one({"id": comment_id}, {"$inc": {"likes_count": 1}})
+    return {"liked": True, "likes_count": comment.get("likes_count", 0) + 1}
 
 # --- Bookmark / Save Post ---
 @router.post("/recruitment/posts/{post_id}/bookmark")
