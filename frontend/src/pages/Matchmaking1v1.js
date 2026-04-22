@@ -15,16 +15,27 @@ const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 
 /* ── Stable Agora wrapper — prevents remount on parent re-renders ── */
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
+  const [videoCall, setVideoCall] = useState(true);
   const rtcProps = useMemo(() => ({
     appId, channel, token: token || '', uid: uid || 0, role: 'host', layout: 1
   }), [appId, channel, token, uid]);
-  const callbacks = useMemo(() => ({ EndCall: onEnd }), [onEnd]);
+  const callbacks = useMemo(() => ({
+    EndCall: () => { setVideoCall(false); if (onEnd) onEnd(); }
+  }), [onEnd]);
+
+  if (!videoCall) return null;
+
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100%' }}>
-      <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} styleProps={{
-        localBtnContainer: { backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 12, padding: 4, bottom: 4 },
-        UIKitContainer: { width: '100%', height: '100%', display: 'flex' }
-      }} />
+    <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0 }}>
+      <AgoraUIKit
+        rtcProps={rtcProps}
+        callbacks={callbacks}
+        styleProps={{
+          localBtnContainer: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 25, padding: 6, bottom: 8, gap: 12 },
+          UIKitContainer: { width: '100%', height: '100%', display: 'flex', flex: 1, position: 'relative' },
+          videoMode: { max: 'cover', min: 'cover' }
+        }}
+      />
     </div>
   );
 });
@@ -376,9 +387,12 @@ const Matchmaking1v1 = () => {
 
   const endVC = useCallback(() => {
     if (socket && roomIdRef.current) socket.emit('vc_ended', { roomId: roomIdRef.current, playerName });
-    setVcState('idle');
-    setVcReady(false);
-    setAgoraToken(null);
+    // Delay state cleanup to let AgoraUIKit finish its own teardown
+    setTimeout(() => {
+      setVcState('idle');
+      setVcReady(false);
+      setAgoraToken(null);
+    }, 500);
   }, [socket, playerName]);
 
   const submitReport = async () => {
@@ -848,24 +862,18 @@ const Matchmaking1v1 = () => {
             Agora provides its own mic/cam/end controls. */}
         {vcState === 'active' && vcReady && agoraToken && (
           <div
-            className={`fixed z-[70] overflow-hidden shadow-2xl border-2 border-white bg-gray-900 transition-all duration-300 ${
-              vcMinimized
-                ? 'bottom-20 right-3 w-[120px] h-[160px] md:bottom-6 md:right-4 rounded-2xl cursor-pointer'
-                : 'bottom-[72px] right-3 w-[200px] h-[260px] md:bottom-4 md:right-4 md:w-[340px] md:h-[280px] rounded-2xl'
-            }`}
+            style={vcMinimized
+              ? { position: 'fixed', zIndex: 70, bottom: 80, right: 12, width: 120, height: 160, borderRadius: 16, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 10px 40px rgba(0,0,0,0.4)', cursor: 'pointer', display: 'flex' }
+              : { position: 'fixed', zIndex: 70, bottom: 72, right: 12, width: 220, height: 300, borderRadius: 16, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 10px 40px rgba(0,0,0,0.4)', display: 'flex' }
+            }
             onClick={vcMinimized ? () => setVcMinimized(false) : undefined}
             data-testid="vc-pip"
           >
             <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} uid={agoraUid} onEnd={endVC} />
             {!vcMinimized && (
-              <button onClick={(e) => { e.stopPropagation(); setVcMinimized(true); }} className="absolute top-2 right-2 p-1.5 bg-black/50 backdrop-blur rounded-full z-10">
-                <Minimize2 className="w-3.5 h-3.5 text-white" />
+              <button onClick={(e) => { e.stopPropagation(); setVcMinimized(true); }} style={{ position: 'absolute', top: 8, right: 8, padding: 6, background: 'rgba(0,0,0,0.5)', borderRadius: '50%', zIndex: 10, border: 'none', cursor: 'pointer' }}>
+                <Minimize2 style={{ width: 14, height: 14, color: 'white' }} />
               </button>
-            )}
-            {vcMinimized && (
-              <div className="absolute bottom-1 left-0 right-0 flex items-center justify-center">
-                <span className="text-[9px] text-white bg-black/60 rounded-full px-2 py-0.5">Tap to expand</span>
-              </div>
             )}
           </div>
         )}
