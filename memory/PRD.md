@@ -68,12 +68,12 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 ## Prioritized Backlog
 
 ### P0 (Next)
-- [ ] Email service for credential delivery & event reminders (SendGrid/Resend already in .env)
+- [x] Email service for credential delivery & event reminders (Resend — sandbox mode, needs domain verification for production)
 
 ### P1
-- [ ] Resume upload feature
-- [ ] Bulk applicant actions (shortlist by AIR rank)
-- [ ] CSV export of applicants
+- [x] Resume upload feature (Cloudinary, PDF/DOC/DOCX, 5MB limit)
+- [x] Bulk applicant actions (shortlist by AIR rank, bulk status change)
+- [x] CSV export of applicants
 - [ ] Quiz leaderboard auto-shortlist feature
 - [ ] Program enrollment/payment flow (Stripe)
 - [ ] Comments/reply system on posts
