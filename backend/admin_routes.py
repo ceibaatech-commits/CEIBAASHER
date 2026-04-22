@@ -201,97 +201,104 @@ async def get_user_permissions(user_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching permissions: {str(e)}")
 
+def _media_disabled_response(globally_disabled: bool = False) -> dict:
+    return {
+        "can_post_images": False,
+        "can_post_videos": False,
+        "is_disabled": False,
+        "media_disabled_globally": globally_disabled,
+    }
+
+
+async def _resolve_user_id_from_auth(authorization: Optional[str]) -> Optional[str]:
+    """Extract user_id from either session token or JWT in Authorization header."""
+    from jose import jwt, JWTError
+    import os as _os
+
+    if not authorization:
+        return None
+    token = authorization.replace("Bearer ", "")
+
+    session = await db.user_sessions.find_one({"session_token": token})
+    if session and session.get("user_id"):
+        return session["user_id"]
+
+    try:
+        payload = jwt.decode(
+            token,
+            _os.getenv("JWT_SECRET", "ceibaa-super-secret-key"),
+            algorithms=[_os.getenv("JWT_ALGORITHM", "HS256")],
+        )
+        return payload.get("sub")
+    except JWTError:
+        return None
+
+
+def _user_media_permissions(user: dict, global_images: bool, global_videos: bool) -> dict:
+    """Compose per-user media permissions given the user doc and global toggles."""
+    if user.get("is_disabled", False) or user.get("media_disabled", False):
+        return {
+            "can_post_images": False,
+            "can_post_videos": False,
+            "is_disabled": True,
+            "media_disabled_globally": False,
+        }
+
+    user_images = user.get("can_post_images")
+    user_videos = user.get("can_post_videos")
+    if user_images is False or user_videos is False:
+        return {
+            "can_post_images": global_images and user_images is not False,
+            "can_post_videos": global_videos and user_videos is not False,
+            "is_disabled": False,
+            "media_disabled_globally": False,
+        }
+
+    return {
+        "can_post_images": global_images,
+        "can_post_videos": global_videos,
+        "is_disabled": False,
+        "media_disabled_globally": False,
+    }
+
+
 # Public endpoint to get current user's media permissions
 @router.get("/user/media-permissions")
 async def get_current_user_media_permissions(authorization: Optional[str] = Header(None)):
     """
     Get current logged-in user's media posting permissions.
-    
+
     Logic:
     - If global media is DISABLED -> no one can post media
-    - If global media is ENABLED -> ALL authenticated users can post (unless specifically disabled)
+    - If global media is ENABLED -> all authenticated users can post unless specifically disabled
     """
-    from jose import jwt, JWTError
-    import os
-    
-    JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
-    JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-    
-    disabled_response = {"can_post_images": False, "can_post_videos": False, "is_disabled": False, "media_disabled_globally": False}
-    
     try:
-        # Check global setting first
-        global_settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0})
-        global_media = global_settings.get("allow_media_posts", False) if global_settings else False
-        global_images = global_settings.get("allow_image_posts", False) if global_settings else False
-        global_videos = global_settings.get("allow_video_posts", False) if global_settings else False
-        
-        # If global is disabled, no one can post
+        global_settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0}) or {}
+        global_media = global_settings.get("allow_media_posts", False)
+        global_images = global_settings.get("allow_image_posts", False)
+        global_videos = global_settings.get("allow_video_posts", False)
+
         if not global_media:
-            return {**disabled_response, "media_disabled_globally": True}
-        
-        # No auth token = can't post
-        if not authorization:
-            return disabled_response
-        
-        token = authorization.replace("Bearer ", "")
-        user_id = None
-        
-        # Try session token first
-        session = await db.user_sessions.find_one({"session_token": token})
-        if session:
-            user_id = session.get("user_id")
-        
-        # Try JWT decode
+            return _media_disabled_response(globally_disabled=True)
+
+        user_id = await _resolve_user_id_from_auth(authorization)
         if not user_id:
-            try:
-                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-                user_id = payload.get("sub")
-            except JWTError:
-                pass
-        
-        # If we have a valid user_id from token/session, allow media posting
-        # (when global is enabled)
-        if user_id:
-            # Check if user exists and is not specifically disabled
-            user = await db.users.find_one({
-                "$or": [
-                    {"id": user_id}, 
-                    {"user_id": user_id},
-                    {"email": user_id}
-                ]
-            })
-            
-            if user:
-                # Check if user is specifically disabled
-                if user.get("is_disabled", False) or user.get("media_disabled", False):
-                    return {
-                        "can_post_images": False,
-                        "can_post_videos": False,
-                        "is_disabled": True,
-                        "media_disabled_globally": False
-                    }
-                
-                # Check if user is explicitly blocked from posting
-                if user.get("can_post_images") is False or user.get("can_post_videos") is False:
-                    return {
-                        "can_post_images": global_images and user.get("can_post_images") is not False,
-                        "can_post_videos": global_videos and user.get("can_post_videos") is not False,
-                        "is_disabled": False,
-                        "media_disabled_globally": False
-                    }
-            
-            # User found or valid token - allow posting when global is enabled
-            return {
-                "can_post_images": global_images,
-                "can_post_videos": global_videos,
-                "is_disabled": False,
-                "media_disabled_globally": False
-            }
-        
-        # No valid user found
-        return disabled_response
-        
+            return _media_disabled_response()
+
+        user = await db.users.find_one({
+            "$or": [{"id": user_id}, {"user_id": user_id}, {"email": user_id}]
+        })
+
+        if user:
+            return _user_media_permissions(user, global_images, global_videos)
+
+        # Valid token but user row not found — still allow when global is on
+        return {
+            "can_post_images": global_images,
+            "can_post_videos": global_videos,
+            "is_disabled": False,
+            "media_disabled_globally": False,
+        }
     except Exception as e:
         print(f"Error fetching media permissions: {e}")
         return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
@@ -354,122 +361,119 @@ async def get_all_sheets():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching sheets: {str(e)}")
 
+# ---- Sheet helpers (extracted from create_sheet to reduce complexity) ----
+
+def _exam_fields(sheet: "ExamSheet") -> dict:
+    return {
+        "exam_name": sheet.exam_name,
+        "syllabus_topic": sheet.syllabus_topic,
+        "subject": sheet.subject,
+        "sub_topic": sheet.sub_topic,
+        "sub_sub_topic": sheet.sub_sub_topic,
+    }
+
+
+def _class_fields(sheet: "ExamSheet") -> dict:
+    return {
+        "class_name": sheet.class_name,
+        "subject": sheet.subject,
+        "chapter": sheet.chapter,
+    }
+
+
+def _build_sheet_data(sheet: "ExamSheet", sheet_id: str) -> dict:
+    data = {
+        "id": sheet_id,
+        "type": sheet.type,
+        "sheet_link": sheet.sheet_link,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "questions_imported": False,
+        "question_count": 0,
+    }
+    if sheet.type == "exam":
+        data.update(_exam_fields(sheet))
+    elif sheet.type == "class":
+        data.update(_class_fields(sheet))
+    return data
+
+
+def _build_question_doc(sheet: "ExamSheet", sheet_id: str, idx: int, question: dict) -> dict:
+    correct_answer = question["correctAnswer"]
+    if isinstance(correct_answer, int):
+        correct_answer = chr(ord('A') + correct_answer)
+
+    doc = {
+        "id": str(uuid.uuid4()),
+        "sheet_id": sheet_id,
+        "type": sheet.type,
+        "question_number": idx + 1,
+        "question": question["question"],
+        "options": question["options"],
+        "correctAnswer": correct_answer,
+        "explanation": question.get("explanation", ""),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if sheet.type == "exam":
+        doc.update(_exam_fields(sheet))
+    else:
+        doc.update(_class_fields(sheet))
+    return doc
+
+
+async def _import_sheet_questions(sheet: "ExamSheet", sheet_id: str) -> int:
+    """Fetch questions from the Google Sheet and insert them. Returns count imported."""
+    from google_sheets_service import GoogleSheetsService
+    sheets_service = GoogleSheetsService()
+
+    print(f"Fetching questions from: {sheet.sheet_link}")
+    questions = sheets_service.fetch_questions(sheet.sheet_link)
+    print(f"Fetched {len(questions)} questions")
+
+    if not questions:
+        return 0
+
+    for idx, question in enumerate(questions):
+        await db.questions.insert_one(_build_question_doc(sheet, sheet_id, idx, question).copy())
+
+    await db.exam_sheets.update_one(
+        {"id": sheet_id},
+        {"$set": {
+            "questions_imported": True,
+            "question_count": len(questions),
+            "last_import": datetime.now(timezone.utc).isoformat(),
+        }},
+    )
+    return len(questions)
+
+
 @router.post("/admin/sheets")
 async def create_sheet(sheet: ExamSheet):
-    """
-    Create a new exam sheet entry and import questions
-    """
+    """Create a new exam sheet entry and import questions."""
     try:
         sheet_id = str(uuid.uuid4())
-        sheet_data = {
-            "id": sheet_id,
-            "type": sheet.type,
-            "sheet_link": sheet.sheet_link,
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "questions_imported": False,
-            "question_count": 0
-        }
-        
-        # Add exam-specific fields
-        if sheet.type == "exam":
-            sheet_data.update({
-                "exam_name": sheet.exam_name,
-                "syllabus_topic": sheet.syllabus_topic,
-                "subject": sheet.subject,
-                "sub_topic": sheet.sub_topic,
-                "sub_sub_topic": sheet.sub_sub_topic
-            })
-        # Add class-specific fields
-        elif sheet.type == "class":
-            sheet_data.update({
-                "class_name": sheet.class_name,
-                "subject": sheet.subject,
-                "chapter": sheet.chapter
-            })
-        
-        # Save sheet metadata first (create a copy without _id for response)
-        insert_result = await db.exam_sheets.insert_one(sheet_data.copy())
-        # Remove MongoDB's _id from response data
-        if "_id" in sheet_data:
-            del sheet_data["_id"]
-        
-        # Import questions from Google Sheet
+        sheet_data = _build_sheet_data(sheet, sheet_id)
+
+        await db.exam_sheets.insert_one(sheet_data.copy())
+        sheet_data.pop("_id", None)
+
         try:
-            from google_sheets_service import GoogleSheetsService
-            sheets_service = GoogleSheetsService()
-            
-            # Fetch questions from the sheet
-            print(f"Fetching questions from: {sheet.sheet_link}")
-            questions = sheets_service.fetch_questions(sheet.sheet_link)
-            print(f"Fetched {len(questions)} questions")
-            
-            if questions:
-                # Add metadata to each question
-                for idx, question in enumerate(questions):
-                    # Convert correctAnswer index to letter if needed
-                    correct_answer = question["correctAnswer"]
-                    if isinstance(correct_answer, int):
-                        correct_answer = chr(ord('A') + correct_answer)
-                    
-                    question_doc = {
-                        "id": str(uuid.uuid4()),
-                        "sheet_id": sheet_id,
-                        "type": sheet.type,
-                        "question_number": idx + 1,
-                        "question": question["question"],
-                        "options": question["options"],
-                        "correctAnswer": correct_answer,
-                        "explanation": question.get("explanation", ""),
-                        "created_at": datetime.now(timezone.utc).isoformat()
-                    }
-                    
-                    # Add categorization
-                    if sheet.type == "exam":
-                        question_doc.update({
-                            "exam_name": sheet.exam_name,
-                            "syllabus_topic": sheet.syllabus_topic,
-                            "subject": sheet.subject,
-                            "sub_topic": sheet.sub_topic,
-                            "sub_sub_topic": sheet.sub_sub_topic
-                        })
-                    else:
-                        question_doc.update({
-                            "class_name": sheet.class_name,
-                            "subject": sheet.subject,
-                            "chapter": sheet.chapter
-                        })
-                    
-                    # Insert question into database (pass copy to avoid _id in original)
-                    await db.questions.insert_one(question_doc.copy())
-                
-                # Update sheet with import status
-                await db.exam_sheets.update_one(
-                    {"id": sheet_id},
-                    {"$set": {
-                        "questions_imported": True,
-                        "question_count": len(questions),
-                        "last_import": datetime.now(timezone.utc).isoformat()
-                    }}
-                )
-                
-                return {
-                    "success": True,
-                    "message": f"Sheet created successfully with {len(questions)} questions imported",
-                    "sheet": sheet_data,
-                    "questions_imported": len(questions),
-                    "sheet_id": sheet_id
-                }
-            else:
-                print("No questions found in sheet")
+            imported = await _import_sheet_questions(sheet, sheet_id)
+            if imported == 0:
                 return {
                     "success": True,
                     "message": "Sheet created but no questions found. Please check sheet format.",
                     "sheet": sheet_data,
                     "questions_imported": 0,
                     "warning": "No questions imported. Verify sheet is public and has correct format.",
-                    "sheet_id": sheet_id
+                    "sheet_id": sheet_id,
                 }
-                
+            return {
+                "success": True,
+                "message": f"Sheet created successfully with {imported} questions imported",
+                "sheet": sheet_data,
+                "questions_imported": imported,
+                "sheet_id": sheet_id,
+            }
         except Exception as import_error:
             import traceback
             print(f"Error importing questions: {import_error}")
@@ -480,9 +484,9 @@ async def create_sheet(sheet: ExamSheet):
                 "sheet": sheet_data,
                 "questions_imported": 0,
                 "error": str(import_error),
-                "sheet_id": sheet_id
+                "sheet_id": sheet_id,
             }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating sheet: {str(e)}")
 

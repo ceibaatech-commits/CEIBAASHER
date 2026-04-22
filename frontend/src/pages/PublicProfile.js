@@ -69,7 +69,9 @@ const PublicProfile = () => {
     // Update follower count locally instead of re-fetching entire profile
     // This avoids unmounting FollowButton and potential cache issues
     if (profile) {
-      const delta = newStatus === 'approved' ? 1 : (newStatus === null ? -1 : 0);
+      let delta = 0;
+      if (newStatus === 'approved') delta = 1;
+      else if (newStatus === null) delta = -1;
       setProfile(prev => ({
         ...prev,
         followers_count: Math.max(0, (prev.followers_count || 0) + delta)
@@ -851,10 +853,10 @@ const PublicProfile = () => {
                                 {post.media_urls.map((url, mIdx) => {
                                   const isVideo = url.includes('.mp4') || url.includes('.webm') || url.includes('.mov') || url.includes('/video/');
                                   if (isVideo) {
-                                    return <VideoPost key={mIdx} src={url} className="rounded-lg" />;
+                                    return <VideoPost key={`${post.id}-media-${url}`} src={url} className="rounded-lg" />;
                                   }
                                   return (
-                                    <img key={mIdx} src={url} alt="Post media"
+                                    <img key={`${post.id}-media-${url}`} src={url} alt="Post media"
                                       className="w-full rounded-lg object-cover max-h-80 cursor-pointer"
                                       onClick={() => navigate(`/post/${post.id}`)} />
                                   );
@@ -965,7 +967,11 @@ const PublicProfile = () => {
                               🏷️ {room.category}
                             </span>
                             <span className="px-3 py-1 bg-white rounded-full text-gray-700 font-semibold">
-                              {room.privacy === 'public' ? '🌐 Public' : room.privacy === 'followers_only' ? '👥 Followers' : '🔒 Private'}
+                              {(() => {
+                                if (room.privacy === 'public') return '🌐 Public';
+                                if (room.privacy === 'followers_only') return '👥 Followers';
+                                return '🔒 Private';
+                              })()}
                             </span>
                           </div>
                           <button

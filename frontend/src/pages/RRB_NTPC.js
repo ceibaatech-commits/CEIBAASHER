@@ -351,7 +351,7 @@ const RRB_NTPC = () => {
                       </div>
                       <div className="grid md:grid-cols-2 gap-3">
                         {data.subjects.map((subjectItem, index) => (
-                          <div key={index} className="flex items-start">
+                          <div key={`subject-${subjectItem}-${index}`} className="flex items-start">
                             <CheckCircle className="w-4 h-4 text-green-600 mr-2 mt-1 flex-shrink-0" />
                             <span className="text-gray-700">{subjectItem}</span>
                           </div>
@@ -399,8 +399,8 @@ const RRB_NTPC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {examPattern.cbt1.subjects.map((subject, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
+                          {examPattern.cbt1.subjects.map((subject) => (
+                            <tr key={`cbt1-${subject.name}`} className="hover:bg-gray-50">
                               <td className="border border-gray-300 px-4 py-3">{subject.name}</td>
                               <td className="border border-gray-300 px-4 py-3 text-center font-semibold">{subject.questions}</td>
                               <td className="border border-gray-300 px-4 py-3 text-center font-semibold">{subject.marks}</td>
@@ -435,8 +435,8 @@ const RRB_NTPC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {examPattern.cbt2.subjects.map((subject, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
+                          {examPattern.cbt2.subjects.map((subject) => (
+                            <tr key={`cbt2-${subject.name}`} className="hover:bg-gray-50">
                               <td className="border border-gray-300 px-4 py-3">{subject.name}</td>
                               <td className="border border-gray-300 px-4 py-3 text-center font-semibold">{subject.questions}</td>
                               <td className="border border-gray-300 px-4 py-3 text-center font-semibold">{subject.marks}</td>

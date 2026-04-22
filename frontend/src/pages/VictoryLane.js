@@ -47,7 +47,6 @@ const VictoryLane = () => {
       searchParams.delete('tag');
       setSearchParams(searchParams, { replace: true });
     }
-    // eslint-disable-next-line
   }, [searchParams, setSearchParams]);
 
   // Scroll to post from notification link

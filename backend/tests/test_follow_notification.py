@@ -12,11 +12,9 @@ import requests
 import os
 import time
 
-BASE_URL = os.getenv("TEST_BASE_URL", "https://profile-social-4.preview.emergentagent.com")
+from conftest import DEMO_USERNAME as TEST_USER_1_USERNAME, DEMO_PASSWORD as TEST_USER_1_PASSWORD
 
-# Get token dynamically instead of hardcoding
-TEST_USER_1_USERNAME = "demo1"
-TEST_USER_1_PASSWORD = "demo1"
+BASE_URL = os.getenv("TEST_BASE_URL") or os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001")
 
 def _get_auth_token():
     resp = requests.post(f"{BASE_URL}/api/auth/demo-login", json={"username": TEST_USER_1_USERNAME, "password": TEST_USER_1_PASSWORD})
@@ -37,8 +35,8 @@ def _get_user_id():
 
 TEST_USER_1_ID = _get_user_id()
 
-TEST_USER_2_ID = "80e98208-953b-484b-af3c-917265eeb871"
-TEST_USER_2_USERNAME = "sher"
+TEST_USER_2_ID = os.getenv("TEST_USER_2_ID", "80e98208-953b-484b-af3c-917265eeb871")
+TEST_USER_2_USERNAME = os.getenv("TEST_USER_2_USERNAME", "sher")
 
 
 class TestFollowSystemCleanup:

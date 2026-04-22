@@ -10,6 +10,39 @@ import { useAuth } from '../context/AuthContext';
 const API_URL = window.location.origin;
 const QUIZ_API_URL = window.location.origin; // Use main backend
 
+// ---- Visual helpers (extracted from nested ternaries) ----
+const reviewOptionBorder = (isCorrect, isWrong) => {
+  if (isCorrect) return 'border-green-500 bg-green-50';
+  if (isWrong) return 'border-red-500 bg-red-50';
+  return 'border-gray-100 bg-gray-50';
+};
+
+const reviewOptionBadge = (isCorrect, isWrong) => {
+  if (isCorrect) return 'bg-green-500 text-white';
+  if (isWrong) return 'bg-red-500 text-white';
+  return 'bg-gray-200 text-gray-600';
+};
+
+const reviewOptionText = (isCorrect, isWrong) => {
+  if (isCorrect) return 'text-green-800 font-medium';
+  if (isWrong) return 'text-red-800';
+  return 'text-gray-600';
+};
+
+const quizOptionBorder = (isAnswered, isCorrect, isWrong) => {
+  if (!isAnswered) return 'bg-slate-50 border-slate-200 hover:border-blue-400 hover:bg-blue-50 active:scale-[0.98]';
+  if (isCorrect) return 'bg-green-50 border-green-500 shadow-sm';
+  if (isWrong) return 'bg-red-50 border-red-500 shadow-sm';
+  return 'bg-slate-50/50 border-slate-100 opacity-60';
+};
+
+const quizOptionBadge = (isAnswered, isCorrect, isWrong) => {
+  if (!isAnswered) return 'bg-slate-200 text-slate-600';
+  if (isCorrect) return 'bg-green-600 text-white';
+  if (isWrong) return 'bg-red-600 text-white';
+  return 'bg-slate-200 text-slate-600';
+};
+
 const SoloPractice = () => {
   const { examName, subjectName, examId, topicName } = useParams();
   const navigate = useNavigate();
@@ -483,30 +516,15 @@ const SoloPractice = () => {
                       return (
                         <div
                           key={optIndex}
-                          className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
-                            isCorrectOption
-                              ? 'border-green-500 bg-green-50'
-                              : isWrongSelection
-                                ? 'border-red-500 bg-red-50'
-                                : 'border-gray-100 bg-gray-50'
-                          }`}
+                          className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${reviewOptionBorder(isCorrectOption, isWrongSelection)}`}
                         >
                           {/* Option Badge */}
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-                            isCorrectOption
-                              ? 'bg-green-500 text-white'
-                              : isWrongSelection
-                                ? 'bg-red-500 text-white'
-                                : 'bg-gray-200 text-gray-600'
-                          }`}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${reviewOptionBadge(isCorrectOption, isWrongSelection)}`}>
                             {String.fromCharCode(65 + optIndex)}
                           </div>
                           
                           {/* Option Text */}
-                          <span className={`flex-1 text-sm ${
-                            isCorrectOption ? 'text-green-800 font-medium' : 
-                            isWrongSelection ? 'text-red-800' : 'text-gray-600'
-                          }`}>
+                          <span className={`flex-1 text-sm ${reviewOptionText(isCorrectOption, isWrongSelection)}`}>
                             <MathText text={optionText} />
                           </span>
                           
@@ -948,28 +966,12 @@ const SoloPractice = () => {
                   key={index}
                   onClick={() => handleAnswerSelect(index)}
                   disabled={isAnswered}
-                  className={`w-full text-left p-3.5 md:p-4 rounded-2xl border-2 transition-all duration-200 ${
-                    !isAnswered
-                      ? 'bg-slate-50 border-slate-200 hover:border-blue-400 hover:bg-blue-50 active:scale-[0.98]'
-                      : isCorrectOption
-                        ? 'bg-green-50 border-green-500 shadow-sm'
-                        : isWrongSelected
-                          ? 'bg-red-50 border-red-500 shadow-sm'
-                          : 'bg-slate-50/50 border-slate-100 opacity-60'
-                  }`}
+                  className={`w-full text-left p-3.5 md:p-4 rounded-2xl border-2 transition-all duration-200 ${quizOptionBorder(isAnswered, isCorrectOption, isWrongSelected)}`}
                   data-testid={`option-${index}`}
                 >
                   <div className="flex items-center gap-3">
                     {/* Option Letter Badge - Pill style */}
-                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0 transition-colors ${
-                      !isAnswered
-                        ? 'bg-slate-200 text-slate-600'
-                        : isCorrectOption
-                          ? 'bg-green-600 text-white'
-                          : isWrongSelected
-                            ? 'bg-red-600 text-white'
-                            : 'bg-slate-200 text-slate-600'
-                    }`}>
+                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm md:text-base flex-shrink-0 transition-colors ${quizOptionBadge(isAnswered, isCorrectOption, isWrongSelected)}`}>
                       {String.fromCharCode(65 + index)}
                     </div>
                     {/* Option Content (Text and/or Image) */}

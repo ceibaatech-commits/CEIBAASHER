@@ -296,6 +296,79 @@ async def google_callback(request: Request):
         traceback.print_exc()
         return RedirectResponse(url=f"{FRONTEND_URL}/login?error=Google login failed")
 
+# ---- Auth helpers (extracted from get_current_user to reduce complexity) ----
+
+def _extract_token(request: Request) -> Optional[str]:
+    """Extract bearer token from session cookie or Authorization header."""
+    token = request.cookies.get("session_token")
+    if token:
+        return token
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        return auth_header[len("Bearer "):]
+    return None
+
+
+def _session_expired(session_doc: dict) -> bool:
+    """Return True if the Emergent session has expired."""
+    from datetime import timezone as _tz
+    expires_at = session_doc.get("expires_at")
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at)
+    if expires_at is None:
+        return False
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=_tz.utc)
+    return expires_at < datetime.now(_tz.utc)
+
+
+async def _user_by_id(user_id: str) -> Optional[dict]:
+    """Fetch user by id or legacy user_id field, excluding sensitive fields."""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "provider_id": 0})
+    if user:
+        return user
+    # Backward-compat: some docs use user_id field
+    return await db.users.find_one({"user_id": user_id}, {"_id": 0, "provider_id": 0})
+
+
+async def _resolve_emergent_session(token: str) -> Optional[dict]:
+    """
+    Look up token in user_sessions. Returns the user doc if a valid session
+    exists, None if no session (caller should try JWT), and deletes expired
+    sessions as a side effect.
+    """
+    session_doc = await db.user_sessions.find_one({"session_token": token}, {"_id": 0})
+    if not session_doc:
+        return None
+    if _session_expired(session_doc):
+        await db.user_sessions.delete_one({"session_token": token})
+        return None
+    user = await _user_by_id(session_doc["user_id"])
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+async def _resolve_jwt(token: str) -> dict:
+    """Decode JWT and return the associated user document."""
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.pop("_id", None)
+    user.pop("provider_id", None)
+    return user
+
+
 @router.get("/auth/me")
 async def get_current_user(
     request: Request,
@@ -304,97 +377,28 @@ async def get_current_user(
     """
     Get the currently authenticated user.
 
-    Supports two authentication methods in priority order:
+    Priority order:
+    1. Emergent session token (cookie or Bearer) looked up in user_sessions.
+    2. Email/password JWT fallback (JWT_SECRET).
 
-    1. **Emergent / Google OAuth** – The session token (issued by the Emergent
-       auth service) is looked up in the ``user_sessions`` collection.  The
-       token may arrive either as an ``httpOnly`` cookie named
-       ``session_token`` or as a ``Bearer`` token in the ``Authorization``
-       header.
-
-    2. **Email / password (JWT)** – If no matching session is found in the
-       database the token is decoded as a signed JWT.  The ``sub`` claim must
-       contain a valid ``user_id``.
-
-    Returns the user document (without ``_id`` / ``provider_id``) on success,
-    or a 401 if neither method authenticates the request.
+    Returns the user document (without _id / provider_id) on success, or 401.
     """
-    from datetime import timezone as _tz
-
-    # ------------------------------------------------------------------
-    # 1.  Extract the raw token value from cookie or Authorization header.
-    # ------------------------------------------------------------------
-    token = request.cookies.get("session_token")
-
-    if not token:
-        auth_header = request.headers.get("Authorization", "")
-        if auth_header.startswith("Bearer "):
-            token = auth_header[len("Bearer "):]
-
+    token = _extract_token(request)
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
-    # ------------------------------------------------------------------
-    # 2.  Try Emergent session-token lookup first.
-    # ------------------------------------------------------------------
+    # 1. Emergent session path (non-fatal on failure; falls through to JWT)
     try:
-        session_doc = await db.user_sessions.find_one(
-            {"session_token": token},
-            {"_id": 0},
-        )
-
-        if session_doc:
-            expires_at = session_doc.get("expires_at")
-            if isinstance(expires_at, str):
-                expires_at = datetime.fromisoformat(expires_at)
-            if expires_at is not None:
-                if expires_at.tzinfo is None:
-                    expires_at = expires_at.replace(tzinfo=_tz.utc)
-                if expires_at < datetime.now(_tz.utc):
-                    # Clean up and fall through to JWT path
-                    await db.user_sessions.delete_one({"session_token": token})
-                else:
-                    # Valid Emergent session – fetch and return user
-                    user_id = session_doc["user_id"]
-                    user = await db.users.find_one(
-                        {"id": user_id},
-                        {"_id": 0, "provider_id": 0},
-                    )
-                    if not user:
-                        # Backward-compat: some docs use user_id field
-                        user = await db.users.find_one(
-                            {"user_id": user_id},
-                            {"_id": 0, "provider_id": 0},
-                        )
-                    if not user:
-                        raise HTTPException(status_code=404, detail="User not found")
-                    return user
+        user = await _resolve_emergent_session(token)
+        if user is not None:
+            return user
     except HTTPException:
         raise
     except Exception as e:
-        # Session lookup failure is non-fatal; fall through to JWT
         print(f"[auth/me] Session lookup error (falling back to JWT): {e}")
 
-    # ------------------------------------------------------------------
-    # 3.  Fall back to JWT decode for email/password (and legacy OAuth) users.
-    # ------------------------------------------------------------------
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub")
-
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-
-        user = await db.users.find_one({"id": user_id})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        user.pop("_id", None)
-        user.pop("provider_id", None)
-        return user
-
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    # 2. JWT fallback
+    return await _resolve_jwt(token)
 
 
 @router.post("/auth/logout")
@@ -454,135 +458,107 @@ async def search_user(name: str):
         print(f"Error searching for user: {e}")
         return {"user_id": None}
 
+# ---- Demo login helpers (extracted to reduce complexity) ----
+
+def _build_demo_user(username: str, display_name: str, bg_color: str,
+                     password: str, bio: str, location: str, exam: str,
+                     streak: int, badge: str) -> dict:
+    now = datetime.utcnow().isoformat()
+    return {
+        "id": f"{username}-uuid",
+        "username": f"demostudent{username[-1]}",
+        "name": display_name,
+        "email": f"{username}@ceibaa.com",
+        "profile_picture": f"https://ui-avatars.com/api/?name={display_name.replace(' ', '+')}&background={bg_color}&color=fff&size=200",
+        "provider": "demo",
+        "provider_id": username,
+        "password": password,
+        "bio": bio,
+        "location": location,
+        "exam_focus": [exam],
+        "is_private": False,
+        "streak_days": streak,
+        "badges": [badge],
+        "created_at": now,
+        "joined_at": now,
+    }
+
+
+def _demo_users() -> dict:
+    return {
+        "demo1": _build_demo_user("demo1", "Demo Student 1", "3B82F6", "demo1",
+                                  "Preparing for JEE Main 2025", "Mumbai, India", "JEE", 5, "Quiz Master"),
+        "demo2": _build_demo_user("demo2", "Demo Student 2", "10B981", "demo2",
+                                  "NEET aspirant | Class 12", "Delhi, India", "NEET", 3, "Top Scorer"),
+        "demo3": _build_demo_user("demo3", "Demo Student 3", "F59E0B", "demo3",
+                                  "SSC CGL aspirant", "Bangalore, India", "SSC", 7, "Consistent"),
+    }
+
+
+async def _upsert_demo_user(user_data: dict) -> None:
+    """Ensure the demo user exists in DB and sync permissions back into user_data."""
+    try:
+        # Prefer username match (handles historical ID drift)
+        user_in_db = await db.users.find_one({"username": user_data["username"]})
+        if user_in_db:
+            user_data["id"] = user_in_db["id"]
+        else:
+            user_in_db = await db.users.find_one({"id": user_data["id"]})
+
+        if not user_in_db:
+            user_to_store = {k: v for k, v in user_data.items() if k != "password"}
+            await db.users.insert_one(user_to_store)
+            return
+
+        update_data = {k: v for k, v in user_data.items() if k != "password"}
+        # Preserve existing permission flags
+        for field in ("can_post_images", "can_post_videos", "is_disabled"):
+            if field in user_in_db:
+                update_data[field] = user_in_db[field]
+        await db.users.update_one({"id": user_data["id"]}, {"$set": update_data})
+        refreshed = await db.users.find_one({"id": user_data["id"]}, {"_id": 0})
+        if refreshed:
+            user_data.update({
+                "can_post_images": refreshed.get("can_post_images", False),
+                "can_post_videos": refreshed.get("can_post_videos", False),
+                "is_disabled": refreshed.get("is_disabled", False),
+            })
+    except Exception as db_err:
+        # Non-fatal: login still proceeds with in-memory data
+        print(f"[demo-login] DB upsert error: {db_err}")
+
+
+def _issue_jwt(user_id: str, email: str) -> str:
+    token_data = {
+        "sub": user_id,
+        "email": email,
+        "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    }
+    return jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+
 @router.post("/auth/demo-login")
 async def demo_login(login_data: DemoLoginRequest):
     """Demo login endpoint - No social login, only demo accounts"""
     try:
-        print(f"🔍 Demo login attempt - Username: '{login_data.username}', Password: '{login_data.password}'")
-        
-        # Define demo users
-        demo_users = {
-            "demo1": {
-                "id": "demo1-uuid",
-                "username": "demostudent1",
-                "name": "Demo Student 1",
-                "email": "demo1@ceibaa.com",
-                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+1&background=3B82F6&color=fff&size=200",
-                "provider": "demo",
-                "provider_id": "demo1",
-                "password": "demo1",
-                "bio": "Preparing for JEE Main 2025",
-                "location": "Mumbai, India",
-                "exam_focus": ["JEE"],
-                "is_private": False,
-                "streak_days": 5,
-                "badges": ["Quiz Master"],
-                "created_at": datetime.utcnow().isoformat(),
-                "joined_at": datetime.utcnow().isoformat()
-            },
-            "demo2": {
-                "id": "demo2-uuid",
-                "username": "demostudent2",
-                "name": "Demo Student 2",
-                "email": "demo2@ceibaa.com",
-                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+2&background=10B981&color=fff&size=200",
-                "provider": "demo",
-                "provider_id": "demo2",
-                "password": "demo2",
-                "bio": "NEET aspirant | Class 12",
-                "location": "Delhi, India",
-                "exam_focus": ["NEET"],
-                "is_private": False,
-                "streak_days": 3,
-                "badges": ["Top Scorer"],
-                "created_at": datetime.utcnow().isoformat(),
-                "joined_at": datetime.utcnow().isoformat()
-            },
-            "demo3": {
-                "id": "demo3-uuid",
-                "username": "demostudent3",
-                "name": "Demo Student 3",
-                "email": "demo3@ceibaa.com",
-                "profile_picture": "https://ui-avatars.com/api/?name=Demo+Student+3&background=F59E0B&color=fff&size=200",
-                "provider": "demo",
-                "provider_id": "demo3",
-                "password": "demo3",
-                "bio": "SSC CGL aspirant",
-                "location": "Bangalore, India",
-                "exam_focus": ["SSC"],
-                "is_private": False,
-                "streak_days": 7,
-                "badges": ["Consistent"],
-                "created_at": datetime.utcnow().isoformat(),
-                "joined_at": datetime.utcnow().isoformat()
-            }
-        }
-
-        # Check credentials
+        demo_users = _demo_users()
         username_lower = login_data.username.lower().strip()
+
         if username_lower not in demo_users:
             raise HTTPException(status_code=401, detail="Invalid username or password")
-        
+
         user_data = demo_users[username_lower]
         if login_data.password != user_data["password"]:
             raise HTTPException(status_code=401, detail="Invalid username or password")
-        
-        # Upsert user into database to ensure permissions work
-        # This makes sure demo users exist in the database with their data
-        try:
-            # First check if user exists by username (to handle ID mismatch)
-            user_in_db = await db.users.find_one({"username": user_data["username"]})
-            if user_in_db:
-                # Use the actual ID from database
-                user_data["id"] = user_in_db["id"]
-            else:
-                # Check by the demo ID
-                user_in_db = await db.users.find_one({"id": user_data["id"]})
-            print(f"📝 User in DB: {user_in_db is not None}")
-            if not user_in_db:
-                # Insert demo user into database (without password in stored doc)
-                user_to_store = {**user_data}
-                user_to_store.pop("password", None)  # Don't store password in db
-                result = await db.users.insert_one(user_to_store)
-                print(f"📝 Inserted user with ID: {result.inserted_id}")
-            else:
-                # Update existing user's data (keep permissions if they exist)
-                update_data = {**user_data}
-                update_data.pop("password", None)
-                # Preserve existing permissions
-                for field in ["can_post_images", "can_post_videos", "is_disabled"]:
-                    if field in user_in_db:
-                        update_data[field] = user_in_db[field]
-                await db.users.update_one(
-                    {"id": user_data["id"]},
-                    {"$set": update_data}
-                )
-                # Refresh user data with db permissions
-                user_in_db = await db.users.find_one({"id": user_data["id"]}, {"_id": 0})
-                if user_in_db:
-                    user_data.update({
-                        "can_post_images": user_in_db.get("can_post_images", False),
-                        "can_post_videos": user_in_db.get("can_post_videos", False),
-                        "is_disabled": user_in_db.get("is_disabled", False)
-                    })
-        except Exception as db_err:
-            print(f"❌ DB error during user upsert: {db_err}")
-        
-        # Generate JWT token
-        token_data = {
-            "sub": user_data["id"],
-            "email": user_data["email"],
-            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        }
-        access_token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
-        
-        # Return user data
+
+        await _upsert_demo_user(user_data)
+
+        access_token = _issue_jwt(user_data["id"], user_data["email"])
         return {
             "access_token": access_token,
             "token_type": "bearer",
-            "user": user_data
+            "user": user_data,
         }
-        
     except HTTPException:
         raise
     except Exception as e:
@@ -590,89 +566,87 @@ async def demo_login(login_data: DemoLoginRequest):
         raise HTTPException(status_code=500, detail="Login failed")
 
 
+# ---- Signup helpers (extracted to reduce complexity) ----
+
+def _validate_signup_payload(request: "SignupRequest") -> str:
+    """Validate signup input. Returns the lowercased email."""
+    if not request.name or len(request.name.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Name must be at least 2 characters")
+    if not request.email or '@' not in request.email:
+        raise HTTPException(status_code=400, detail="Please enter a valid email")
+    if not request.password or len(request.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    return request.email.strip().lower()
+
+
+def _new_user_doc(user_id: str, name: str, email_lower: str, hashed_password: str) -> dict:
+    now = datetime.utcnow().isoformat()
+    return {
+        "id": user_id,
+        "user_id": user_id,  # For backward compatibility
+        "name": name.strip(),
+        "email": email_lower,
+        "username": email_lower.split('@')[0],
+        "password": hashed_password,
+        "avatar": None,
+        "verified": False,
+        "rating": 1200,
+        "streak": 0,
+        "posts_count": 0,
+        "ceeping_count": 0,
+        "ceepers_count": 0,
+        "referral_coins": 0,
+        "created_at": now,
+        "last_login": now,
+    }
+
+
+async def _process_referral_safe(referral_code: Optional[str], user_id: str, email_lower: str) -> None:
+    """Non-blocking referral processing."""
+    if not referral_code:
+        return
+    try:
+        from referral_routes import process_referral
+        await process_referral(referral_code, user_id, email_lower)
+    except Exception as ref_err:
+        print(f"Referral processing error (non-blocking): {ref_err}")
+
+
+def _public_user_response(user_doc: dict) -> dict:
+    return {
+        "id": user_doc["id"],
+        "user_id": user_doc["id"],
+        "name": user_doc["name"],
+        "email": user_doc["email"],
+        "username": user_doc["username"],
+        "avatar": user_doc["avatar"],
+        "verified": user_doc["verified"],
+        "rating": user_doc["rating"],
+        "streak": user_doc["streak"],
+    }
+
+
 @router.post("/auth/signup")
 async def signup(request: SignupRequest):
     """Create new user account"""
     try:
-        # Validate input
-        if not request.name or len(request.name.strip()) < 2:
-            raise HTTPException(status_code=400, detail="Name must be at least 2 characters")
-        
-        if not request.email or '@' not in request.email:
-            raise HTTPException(status_code=400, detail="Please enter a valid email")
-        
-        if not request.password or len(request.password) < 6:
-            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
-        
-        # Check if email already exists
-        email_lower = request.email.strip().lower()
-        existing_user = await db.users.find_one({"email": email_lower})
-        
-        if existing_user:
+        email_lower = _validate_signup_payload(request)
+
+        if await db.users.find_one({"email": email_lower}):
             raise HTTPException(status_code=400, detail="Email already registered. Please login.")
-        
-        # Hash password
-        hashed_password = hash_password(request.password)
-        
-        # Create user document
+
         user_id = str(uuid.uuid4())
-        user_doc = {
-            "id": user_id,
-            "user_id": user_id,  # For backward compatibility
-            "name": request.name.strip(),
-            "email": email_lower,
-            "username": email_lower.split('@')[0],
-            "password": hashed_password,
-            "avatar": None,
-            "verified": False,
-            "rating": 1200,
-            "streak": 0,
-            "posts_count": 0,
-            "ceeping_count": 0,
-            "ceepers_count": 0,
-            "referral_coins": 0,
-            "created_at": datetime.utcnow().isoformat(),
-            "last_login": datetime.utcnow().isoformat()
-        }
-        
-        # Insert user
+        user_doc = _new_user_doc(user_id, request.name, email_lower, hash_password(request.password))
         await db.users.insert_one(user_doc.copy())
-        
-        # Process referral if code provided
-        if request.referral_code:
-            try:
-                from referral_routes import process_referral
-                await process_referral(request.referral_code, user_id, email_lower)
-            except Exception as ref_err:
-                print(f"Referral processing error (non-blocking): {ref_err}")
-        
-        # Generate JWT token
-        token_data = {
-            "sub": user_id,
-            "email": email_lower,
-            "exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        }
-        token = jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
-        
-        # Return user data (without password)
-        user_response = {
-            "id": user_id,
-            "user_id": user_id,
-            "name": user_doc["name"],
-            "email": user_doc["email"],
-            "username": user_doc["username"],
-            "avatar": user_doc["avatar"],
-            "verified": user_doc["verified"],
-            "rating": user_doc["rating"],
-            "streak": user_doc["streak"]
-        }
-        
+
+        await _process_referral_safe(request.referral_code, user_id, email_lower)
+
+        token = _issue_jwt(user_id, email_lower)
         return {
-            "user": user_response,
+            "user": _public_user_response(user_doc),
             "token": token,
-            "access_token": token
+            "access_token": token,
         }
-        
     except HTTPException:
         raise
     except Exception as e:

@@ -66,7 +66,7 @@ function FAQAccordion({ items, accent }) {
   return (
     <div className="space-y-3">
       {items.map((item, i) => (
-        <div key={i} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div key={item.q || `faq-${i}`} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           <button
             onClick={() => setOpenIdx(openIdx === i ? null : i)}
             className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-50 transition-colors"
@@ -147,7 +147,7 @@ function ChatbotWidget({ program, accent }) {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3" style={{ minHeight: '200px', maxHeight: '320px' }}>
         {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div key={`msg-${i}-${m.from}`} className={`flex ${m.from === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-[80%] px-3 py-2 rounded-xl text-sm ${m.from === 'user' ? 'bg-violet-600 text-white' : 'bg-slate-100 text-slate-700'}`}>{m.text}</div>
           </div>
         ))}
@@ -187,7 +187,7 @@ function SyllabusSection({ program, accent }) {
   return (
     <div className="space-y-4">
       {modules.map((mod, i) => (
-        <div key={i} className="flex gap-4 items-start">
+        <div key={mod.week || `mod-${i}`} className="flex gap-4 items-start">
           <div className="flex flex-col items-center">
             <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${accent} text-white font-bold flex items-center justify-center text-sm shadow-md`}>{i + 1}</div>
             {i < modules.length - 1 && <div className="w-0.5 h-full bg-slate-200 mt-2" />}
@@ -197,7 +197,7 @@ function SyllabusSection({ program, accent }) {
             <h4 className="font-bold text-slate-900 mt-1 mb-2">{mod.title}</h4>
             <ul className="space-y-1.5">
               {mod.items.map((item, j) => (
-                <li key={j} className="flex items-center gap-2 text-sm text-slate-600">
+                <li key={`${mod.week}-${j}-${String(item).slice(0, 20)}`} className="flex items-center gap-2 text-sm text-slate-600">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />{item}
                 </li>
               ))}

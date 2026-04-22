@@ -11,6 +11,42 @@ import Header from '../components/Header';
 
 const BACKEND_URL = window.location.origin;
 
+// ---- Visual helpers (extracted from nested ternaries) ----
+const rankColorClass = (index) => {
+  if (index === 0) return 'bg-yellow-400 text-white';
+  if (index === 1) return 'bg-gray-300 text-white';
+  if (index === 2) return 'bg-orange-400 text-white';
+  return 'bg-gray-200 text-gray-600';
+};
+
+const isCorrectOption = (optionId, q) => {
+  if (!optionId || !q) return false;
+  const id = optionId.toLowerCase();
+  return id === q.correct_answer?.toLowerCase() || id === q.correctAnswer?.toLowerCase();
+};
+
+const optionButtonClass = (optionId, selectedAnswer, currentQuestion) => {
+  const correct = isCorrectOption(optionId, currentQuestion);
+  if (selectedAnswer === optionId) {
+    return correct ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500';
+  }
+  if (selectedAnswer && correct) {
+    return 'bg-green-50 border-green-500';
+  }
+  return 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50';
+};
+
+const optionBadgeClass = (optionId, selectedAnswer, currentQuestion) => {
+  const correct = isCorrectOption(optionId, currentQuestion);
+  if (selectedAnswer === optionId) {
+    return correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white';
+  }
+  if (selectedAnswer && correct) {
+    return 'bg-green-500 text-white';
+  }
+  return 'bg-gray-200 text-gray-600';
+};
+
 const QuizRoom = () => {
   const { roomCode } = useParams();
   const location = useLocation();
@@ -416,7 +452,7 @@ const QuizRoom = () => {
               <div className="space-y-2">
                 {leaderboard.map((entry, index) => (
                   <div
-                    key={index}
+                    key={entry.user_id || `lb-${index}`}
                     className={`flex items-center justify-between p-4 rounded-xl ${
                       entry.user_id === user?.id
                         ? 'bg-gradient-to-r from-indigo-100 to-purple-100 border-2 border-indigo-300'
@@ -425,15 +461,7 @@ const QuizRoom = () => {
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                          index === 0
-                            ? 'bg-yellow-400 text-white'
-                            : index === 1
-                            ? 'bg-gray-300 text-white'
-                            : index === 2
-                            ? 'bg-orange-400 text-white'
-                            : 'bg-gray-200 text-gray-600'
-                        }`}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${rankColorClass(index)}`}
                       >
                         {index + 1}
                       </div>
@@ -554,27 +582,11 @@ const QuizRoom = () => {
                 key={optionId}
                 onClick={() => handleAnswerSelect(optionId)}
                 disabled={selectedAnswer !== null}
-                className={`p-6 rounded-xl border-2 text-left transition-all ${
-                  selectedAnswer === optionId
-                    ? optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase()
-                      ? 'bg-green-50 border-green-500'
-                      : 'bg-red-50 border-red-500'
-                    : selectedAnswer && (optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase())
-                    ? 'bg-green-50 border-green-500'
-                    : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50'
-                } ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                className={`p-6 rounded-xl border-2 text-left transition-all ${optionButtonClass(optionId, selectedAnswer, currentQuestion)} ${selectedAnswer !== null ? 'cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                      selectedAnswer === optionId
-                        ? optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase()
-                          ? 'bg-green-500 text-white'
-                          : 'bg-red-500 text-white'
-                        : selectedAnswer && (optionId?.toLowerCase() === currentQuestion.correct_answer?.toLowerCase() || optionId?.toLowerCase() === currentQuestion.correctAnswer?.toLowerCase())
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 text-gray-600'
-                    }`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${optionBadgeClass(optionId, selectedAnswer, currentQuestion)}`}
                   >
                     {optionId}
                   </div>

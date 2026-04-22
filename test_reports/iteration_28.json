@@ -1,0 +1,37 @@
+{
+  "summary": "Backend regression testing for refactor sweep (iteration 28). All 15 tests in test_refactor_regression_v28.py PASSED. Covered demo_login (3 valid + wrong-password), signup (new/duplicate/short-pw), get_current_user (valid/none/invalid token), get_current_user_media_permissions (anon + authenticated), chapter-tests/start-test (confirms secrets.SystemRandom().sample fix — no F821/random crash), plus recruitment & messaging spot-checks. No regressions detected from the refactor.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_refactor_regression_v28.py",
+    "/app/test_reports/pytest/refactor_v28.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "auth_routes.py has 2 ruff F841 unused-variable warnings (token assigned but unused at lines 201, 235) — non-blocking, should be cleaned up.",
+    "admin_routes.py has 3 lint issues: F841 unused `e` at line 85, F841 unused `user_id` at line 111, and E722 bare `except` at line 723. These are pre-existing / minor but worth fixing for code quality.",
+    "chapter_test_routes.py is clean — secrets.SystemRandom().sample() correctly replaces the old undefined `random` reference on lines 169 and 214.",
+    "Demo-login, signup, get_current_user, media-permissions, create_sheet helpers all return expected shapes; MongoDB _id and provider_id are correctly stripped from public user responses.",
+    "No hardcoded secrets detected in the new regression test — credentials pulled from conftest.py as intended."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_refactor_regression_v28.py"
+  ],
+  "success_rate": {
+    "backend": "100% (15/15 tests passed)",
+    "frontend": "N/A (backend-only testing requested)"
+  },
+  "test_credentials": "demo1/demo1, demo2/demo2, demo3/demo3 (all working via POST /api/auth/demo-login)",
+  "seed_data_creation": "Created transient signup users test_refactor_<uuid>@example.com and test_dup_<uuid>@example.com — not cleaned up (no admin cleanup endpoint used to avoid destructive ops per request).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 28 refactor sweep verified non-regressive. New regression suite lives at /app/backend/tests/test_refactor_regression_v28.py and can be reused. Lint warnings in auth_routes.py and admin_routes.py are minor and pre-existing (mostly unused-variable and one bare-except). chapter_test_routes.py lint-clean after secrets migration.",
+  "rca of the issue": "N/A — no bugs reproduced. Previous concern (F821 random undefined name in chapter_test_routes.py) is fully resolved: file now imports `secrets` and uses `secrets.SystemRandom().sample(...)` at lines 169 & 214, confirmed via live call to GET /api/chapter-tests/start-test returning 200."
+}
