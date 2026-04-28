@@ -127,12 +127,16 @@ class TestGetCurrentUser:
         assert "provider_id" not in data
         assert data.get("username") == "demostudent1"
 
-    def test_me_without_token(self, api):
-        r = api.get(f"{BASE_URL}/api/auth/me", timeout=20)
+    def test_me_without_token(self):
+        # Use isolated session — shared `api` may carry auth cookies from
+        # prior demo-login (dual-mode cookie auth is intentional).
+        s = requests.Session()
+        r = s.get(f"{BASE_URL}/api/auth/me", timeout=20)
         assert r.status_code == 401, f"expected 401, got {r.status_code}"
 
-    def test_me_with_invalid_token(self, api):
-        r = api.get(
+    def test_me_with_invalid_token(self):
+        s = requests.Session()
+        r = s.get(
             f"{BASE_URL}/api/auth/me",
             headers={"Authorization": "Bearer not.a.valid.jwt"},
             timeout=20,

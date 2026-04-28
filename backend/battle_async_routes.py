@@ -157,105 +157,91 @@ async def create_async_room(request: CreateRoomRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/rooms/{pin}/join")
-async def join_async_room(pin: str, request: JoinRoomRequest):
-    """
-    Join room and download quiz data
-    Returns: Full quiz questions, room config, existing leaderboard, chat history
-    """
-    try:
-        # Get room
-        room = await get_room_from_db(db, pin)
-        
-        if not room:
-            raise HTTPException(status_code=404, detail="Room not found")
-        
-        # Check if expired
-        if await check_room_expired(room):
-            raise HTTPException(status_code=410, detail="Room expired")
-        
-        if not room.get("is_active"):
-            raise HTTPException(status_code=403, detail="Room is no longer active")
-        
-        # Check if player already submitted
-        if await has_player_submitted(db, pin, request.player_id):
-            raise HTTPException(status_code=409, detail="You have already submitted answers for this room")
-        
-        # Check room capacity
-        if room.get("participant_count", 0) >= room.get("max_participants", 150):
-            raise HTTPException(status_code=403, detail="Room is full")
-        
-        # Increment participant count
-        await db.async_battle_rooms.update_one(
-            {"pin": pin},
-            {"$inc": {"participant_count": 1}}
-        )
-        
-        # Track participant (for Board history)
-        participant_doc = {
+async def _validate_join_request(pin: str, player_id: str) -> dict:
+    """Return the room doc or raise HTTPException if join is not permitted."""
+    room = await get_room_from_db(db, pin)
+    if not room:
+        raise HTTPException(status_code=404, detail="Room not found")
+    if await check_room_expired(room):
+        raise HTTPException(status_code=410, detail="Room expired")
+    if not room.get("is_active"):
+        raise HTTPException(status_code=403, detail="Room is no longer active")
+    if await has_player_submitted(db, pin, player_id):
+        raise HTTPException(status_code=409, detail="You have already submitted answers for this room")
+    if room.get("participant_count", 0) >= room.get("max_participants", 150):
+        raise HTTPException(status_code=403, detail="Room is full")
+    return room
+
+
+async def _register_participant(pin: str, request: "JoinRoomRequest") -> None:
+    await db.async_battle_rooms.update_one({"pin": pin}, {"$inc": {"participant_count": 1}})
+    await db.async_battle_participants.update_one(
+        {"pin": pin, "player_id": request.player_id},
+        {"$set": {
             "pin": pin,
             "player_id": request.player_id,
             "player_name": request.player_name,
-            "joined_at": datetime.now(timezone.utc).isoformat()
-        }
-        
-        # Upsert to avoid duplicates
-        await db.async_battle_participants.update_one(
-            {"pin": pin, "player_id": request.player_id},
-            {"$set": participant_doc},
-            upsert=True
-        )
-        
-        # Get updated room
+            "joined_at": datetime.now(timezone.utc).isoformat(),
+        }},
+        upsert=True,
+    )
+
+
+async def _broadcast_player_joined(pin: str, request: "JoinRoomRequest", participant_count: int) -> None:
+    try:
+        from battle_socketio import sio
+        await sio.emit('player_joined', {
+            "player_name": request.player_name,
+            "player_id": request.player_id,
+            "avatar": request.avatar,
+            "participant_count": participant_count,
+        }, room=pin)
+    except Exception as e:
+        print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
+
+
+def _public_room(pin: str, room: dict) -> dict:
+    return {
+        "pin": pin,
+        "host_name": room["host_name"],
+        "exam_category": room.get("exam_category", ""),
+        "subject": room.get("subject", ""),
+        "questions": room["questions"],
+        "time_per_question": room.get("time_per_question", 30),
+        "max_participants": room.get("max_participants", 150),
+        "participant_count": room.get("participant_count", 0),
+        "created_at": room["created_at"],
+        "expires_at": room["expires_at"],
+    }
+
+
+@router.post("/rooms/{pin}/join")
+async def join_async_room(pin: str, request: JoinRoomRequest):
+    """Join room and download quiz data. Returns questions, leaderboard, chat."""
+    try:
+        await _validate_join_request(pin, request.player_id)
+        await _register_participant(pin, request)
         room = await get_room_from_db(db, pin)
-        
-        # Get leaderboard
+
         submissions = await db.async_battle_submissions.find(
-            {"pin": pin},
-            {"_id": 0}
+            {"pin": pin}, {"_id": 0}
         ).sort("total_score", -1).to_list(100)
-        
-        # Get chat messages
+
         messages = await db.async_battle_messages.find(
-            {"pin": pin},
-            {"_id": 0}
+            {"pin": pin}, {"_id": 0}
         ).sort("timestamp", 1).to_list(500)
-        
+
         print(f"[ASYNC ROOM] Player {request.player_name} joined room {pin}")
-        
-        # HYBRID: Broadcast player joined via Socket.IO (if connected)
-        try:
-            from battle_socketio import sio
-            await sio.emit('player_joined', {
-                "player_name": request.player_name,
-                "player_id": request.player_id,
-                "avatar": request.avatar,
-                "participant_count": room.get("participant_count", 0)
-            }, room=pin)
-            print(f"[HYBRID] Broadcasted player joined via Socket.IO for room {pin}")
-        except Exception as e:
-            # Socket.IO not available or failed - that's OK
-            print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
-        
+        await _broadcast_player_joined(pin, request, room.get("participant_count", 0))
+
         return {
             "success": True,
-            "room": {
-                "pin": pin,
-                "host_name": room["host_name"],
-                "exam_category": room.get("exam_category", ""),
-                "subject": room.get("subject", ""),
-                "questions": room["questions"],
-                "time_per_question": room.get("time_per_question", 30),
-                "max_participants": room.get("max_participants", 150),
-                "participant_count": room.get("participant_count", 0),
-                "created_at": room["created_at"],
-                "expires_at": room["expires_at"]
-            },
+            "room": _public_room(pin, room),
             "leaderboard": submissions,
             "messages": messages,
-            "message": "Joined room successfully"
+            "message": "Joined room successfully",
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -301,119 +287,122 @@ async def delete_room(pin: str, host_id: str):
 
 # ==================== QUIZ SUBMISSION ====================
 
+def _build_submission_doc(pin: str, req: "SubmitAnswersRequest") -> dict:
+    return {
+        "pin": pin,
+        "player_id": req.player_id,
+        "player_name": req.player_name,
+        "answers": req.answers,
+        "total_score": req.total_score,
+        "total_time": req.total_time,
+        "completed_at": req.completed_at,
+        "submitted_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def _build_dashboard_doc(pin: str, room: dict, req: "SubmitAnswersRequest") -> dict:
+    total_q = len(req.answers)
+    correct_count = sum(1 for a in req.answers if a.get("is_correct"))
+    wrong_count = total_q - correct_count
+    score_pct = round((correct_count / total_q) * 100) if total_q > 0 else 0
+    return {
+        "id": str(uuid.uuid4()),
+        "user_id": req.player_id,
+        "user_name": req.player_name,
+        "room_id": pin,
+        "exam_category": room.get("exam_category", "Battle"),
+        "subject": room.get("subject", "Mixed"),
+        "topic": "Battle Room",
+        "score": correct_count,
+        "total_questions": total_q,
+        "correct_answers": correct_count,
+        "wrong_answers": wrong_count,
+        "accuracy": score_pct,
+        "xp_earned": correct_count * 6 + (5 if score_pct >= 70 else 0),
+        "submitted_at": datetime.now(timezone.utc).isoformat(),
+        "duration_seconds": req.total_time,
+        "source": "async_battle",
+    }
+
+
+async def _save_dashboard_record(pin: str, room: dict, req: "SubmitAnswersRequest") -> None:
+    """Save a record into battle_submissions for dashboard history (non-fatal)."""
+    try:
+        await db.battle_submissions.insert_one(_build_dashboard_doc(pin, room, req))
+    except Exception as e:
+        print(f"[ASYNC ROOM] Failed to save to battle_submissions: {e}")
+
+
+async def _ranked_leaderboard(pin: str) -> list:
+    submissions = await db.async_battle_submissions.find(
+        {"pin": pin}, {"_id": 0}
+    ).sort("total_score", -1).to_list(100)
+    for i, s in enumerate(submissions):
+        s["rank"] = i + 1
+    return submissions
+
+
+async def _broadcast_leaderboard(pin: str, submissions: list, player_name: str, score: int, rank: int) -> None:
+    """Broadcast leaderboard update via Socket.IO (best-effort, non-fatal)."""
+    try:
+        from battle_socketio import sio
+        await sio.emit('leaderboard_updated', {
+            "leaderboard": submissions,
+            "latest_submission": {
+                "player_name": player_name,
+                "score": score,
+                "rank": rank,
+            },
+        }, room=pin)
+    except Exception as e:
+        print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
+
+
 @router.post("/rooms/{pin}/submit")
 async def submit_answers(pin: str, request: SubmitAnswersRequest):
     """
-    Submit quiz answers (one-time only per player)
-    Calculates score and updates leaderboard
-    HYBRID: Also broadcasts via Socket.IO if available
+    Submit quiz answers (one-time only per player).
+    Calculates score and updates leaderboard.
+    HYBRID: Also broadcasts via Socket.IO if available.
     """
     try:
-        # Get room
         room = await get_room_from_db(db, pin)
-        
         if not room:
             raise HTTPException(status_code=404, detail="Room not found")
-        
-        # Check if expired
         if await check_room_expired(room):
             raise HTTPException(status_code=410, detail="Room expired")
-        
-        # Check if already submitted
         if await has_player_submitted(db, pin, request.player_id):
             raise HTTPException(status_code=409, detail="You have already submitted answers")
-        
-        # Create submission document
-        submission_doc = {
-            "pin": pin,
-            "player_id": request.player_id,
-            "player_name": request.player_name,
-            "answers": request.answers,
-            "total_score": request.total_score,
-            "total_time": request.total_time,
-            "completed_at": request.completed_at,
-            "submitted_at": datetime.now(timezone.utc).isoformat()
-        }
-        
+
+        submission_doc = _build_submission_doc(pin, request)
         await db.async_battle_submissions.insert_one(submission_doc)
-        
-        # Create response without _id
         submission = {k: v for k, v in submission_doc.items() if k != "_id"}
-        
-        # Also save to battle_submissions for dashboard test-history tracking
-        try:
-            total_q = len(request.answers)
-            correct_count = sum(1 for a in request.answers if a.get("is_correct"))
-            wrong_count = total_q - correct_count
-            score_pct = round((correct_count / total_q) * 100) if total_q > 0 else 0
-            
-            dashboard_doc = {
-                "id": str(uuid.uuid4()),
-                "user_id": request.player_id,
-                "user_name": request.player_name,
-                "room_id": pin,
-                "exam_category": room.get("exam_category", "Battle"),
-                "subject": room.get("subject", "Mixed"),
-                "topic": "Battle Room",
-                "score": correct_count,
-                "total_questions": total_q,
-                "correct_answers": correct_count,
-                "wrong_answers": wrong_count,
-                "accuracy": score_pct,
-                "xp_earned": correct_count * 6 + (5 if score_pct >= 70 else 0),
-                "submitted_at": datetime.now(timezone.utc).isoformat(),
-                "duration_seconds": request.total_time,
-                "source": "async_battle"
-            }
-            await db.battle_submissions.insert_one(dashboard_doc)
-        except Exception as e:
-            print(f"[ASYNC ROOM] Failed to save to battle_submissions: {e}")
-        
-        # Increment submission count
+
+        await _save_dashboard_record(pin, room, request)
+
         await db.async_battle_rooms.update_one(
             {"pin": pin},
-            {"$inc": {"submission_count": 1}}
+            {"$inc": {"submission_count": 1}},
         )
-        
-        # Get updated leaderboard
-        submissions = await db.async_battle_submissions.find(
-            {"pin": pin},
-            {"_id": 0}
-        ).sort("total_score", -1).to_list(100)
-        
-        # Add ranks
-        for i, s in enumerate(submissions):
-            s["rank"] = i + 1
-        
-        # Calculate rank
-        rank = next((i + 1 for i, s in enumerate(submissions) if s["player_id"] == request.player_id), 0)
-        
+
+        submissions = await _ranked_leaderboard(pin)
+        rank = next(
+            (i + 1 for i, s in enumerate(submissions) if s["player_id"] == request.player_id),
+            0,
+        )
+
         print(f"[ASYNC ROOM] Player {request.player_name} submitted answers for room {pin} - Score: {request.total_score}")
-        
-        # HYBRID: Broadcast leaderboard update via Socket.IO (if connected)
-        try:
-            from battle_socketio import sio
-            await sio.emit('leaderboard_updated', {
-                "leaderboard": submissions,
-                "latest_submission": {
-                    "player_name": request.player_name,
-                    "score": request.total_score,
-                    "rank": rank
-                }
-            }, room=pin)
-            print(f"[HYBRID] Broadcasted leaderboard update via Socket.IO for room {pin}")
-        except Exception as e:
-            # Socket.IO not available or failed - that's OK, REST polling will handle it
-            print(f"[HYBRID] Socket.IO broadcast failed (expected if no connections): {e}")
-        
+
+        await _broadcast_leaderboard(pin, submissions, request.player_name, request.total_score, rank)
+
         return {
             "success": True,
             "submission": submission,
             "rank": rank,
             "leaderboard": submissions,
-            "message": "Answers submitted successfully"
+            "message": "Answers submitted successfully",
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:

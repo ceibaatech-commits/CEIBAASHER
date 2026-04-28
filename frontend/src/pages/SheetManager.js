@@ -781,7 +781,7 @@ const SheetManager = () => {
           ) : (
             <div className="space-y-3">
               {sheets.map((sheet, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border-2 border-gray-200 hover:border-green-400 transition-all">
+                <div key={sheet.id || sheet.sheet_url || `sheet-${index}`} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border-2 border-gray-200 hover:border-green-400 transition-all">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="font-bold text-lg text-gray-900">{sheet.exam_id}</span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, Edit2, Trash2, ChevronDown, ChevronRight, 
   BookOpen, Layers, FileText, Search, X, Save,
@@ -41,6 +41,21 @@ const ExamCategoryManager = () => {
   const [modalType, setModalType] = useState('exam'); // exam, category, chapter, or cbse-chapter
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
+
+  // Memoize expensive derived lists (avoid filter/map in render hot paths)
+  const filteredCbseChapters = useMemo(() => {
+    const q = (searchTerm || '').toLowerCase();
+    if (!q) return cbseChapters;
+    return (Array.isArray(cbseChapters) ? cbseChapters : []).filter(item =>
+      item.class?.toLowerCase().includes(q) ||
+      item.subjects?.some(s => s.name?.toLowerCase().includes(q))
+    );
+  }, [cbseChapters, searchTerm]);
+
+  const categoriesForSelectedExam = useMemo(
+    () => categories.filter(c => c.exam_id === formData.exam_id),
+    [categories, formData.exam_id]
+  );
   const [saving, setSaving] = useState(false);
 
   // Fetch all data
@@ -497,12 +512,7 @@ const ExamCategoryManager = () => {
                 </div>
               ) : (
                 <div className="divide-y divide-gray-200">
-                  {cbseChapters
-                    .filter(item => !searchTerm || 
-                      item.class?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                      item.subjects?.some(s => s.name?.toLowerCase().includes(searchTerm.toLowerCase()))
-                    )
-                    .map((classData) => (
+                  {(Array.isArray(filteredCbseChapters) ? filteredCbseChapters : []).map((classData) => (
                     <div key={classData.class} className="bg-white">
                       {/* Class Row */}
                       <div 
@@ -942,7 +952,7 @@ const ExamCategoryManager = () => {
                       disabled={!formData.exam_id}
                     >
                       <option value="">Select a category</option>
-                      {categories.filter(c => c.exam_id === formData.exam_id).map((cat) => (
+                      {categoriesForSelectedExam.map((cat) => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                       ))}
                     </select>

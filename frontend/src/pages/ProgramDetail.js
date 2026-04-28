@@ -357,8 +357,8 @@ export default function ProgramDetail() {
                   </div>
                 )}
                 <ul className="space-y-2.5 mb-5">
-                  {['Certificate of completion', 'Mentor guidance', 'Project-based learning', 'Ceibaa profile badge'].map((t, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-white/80"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> {t}</li>
+                  {['Certificate of completion', 'Mentor guidance', 'Project-based learning', 'Ceibaa profile badge'].map((t) => (
+                    <li key={`perk-${t}`} className="flex items-center gap-2 text-sm text-white/80"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> {t}</li>
                   ))}
                 </ul>
                 <button onClick={() => setShowForm(true)} className="w-full bg-white text-slate-900 font-bold py-3 rounded-xl hover:shadow-lg transition-all text-sm">
@@ -382,8 +382,8 @@ export default function ProgramDetail() {
               { icon: Target, title: 'Clear Outcomes', desc: program.what_you_build?.[0] || 'Build a real-world project' },
               { icon: Zap, title: 'Hands-On Learning', desc: `${program.duration} of practical, mentor-guided work` },
               { icon: GraduationCap, title: 'Career Value', desc: 'Skills that strengthen college apps & resumes' },
-            ].map((card, i) => (
-              <div key={i} className="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/50 transition-colors">
+            ].map((card) => (
+              <div key={`preview-${card.title}`} className="bg-slate-50 rounded-xl p-4 border border-slate-100 hover:border-violet-200 hover:bg-violet-50/50 transition-colors">
                 <card.icon className="w-8 h-8 text-violet-500 mb-3" />
                 <h3 className="font-bold text-sm text-slate-900 mb-1">{card.title}</h3>
                 <p className="text-xs text-slate-500">{card.desc}</p>
@@ -428,7 +428,7 @@ export default function ProgramDetail() {
           <h2 className="text-xl font-bold text-slate-900 mb-6">Program Highlights</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {program.highlights.map((h, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+              <div key={`highlight-${i}-${String(h).slice(0, 30)}`} className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                 <Sparkles className="w-5 h-5 text-violet-500 shrink-0" />
                 <span className="text-sm font-medium text-slate-700">{h}</span>
               </div>

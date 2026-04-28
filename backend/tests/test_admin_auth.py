@@ -7,10 +7,11 @@ import requests
 import os
 
 # Use the preview URL for testing
-BASE_URL = "https://profile-social-4.preview.emergentagent.com"
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8001")
 
-# Admin credentials from requirements
+# Admin credentials from conftest (env-backed)
 from conftest import ADMIN_EMAIL, ADMIN_PASSWORD
+ADMIN_USERNAME = os.environ.get("TEST_ADMIN_USERNAME", "superadmin")
 
 
 class TestAdminLoginEndpoint:

@@ -2302,31 +2302,6 @@ async def get_topic_list(exam: str = Query(...), subject: str = Query(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching topics: {str(e)}")
 
-    """Browse MCQs from database for posting"""
-    try:
-        if db is None:
-            raise HTTPException(status_code=500, detail="Database not initialized")
-        
-        # Build query
-        query = {}
-        if exam:
-            query["exam_name"] = {"$regex": exam, "$options": "i"}
-        if subject:
-            query["syllabus_topic"] = {"$regex": subject, "$options": "i"}
-        if topic:
-            query["subject"] = {"$regex": topic, "$options": "i"}
-        
-        # Fetch questions
-        questions = await db.questions.find(query, {"_id": 0}).limit(limit).to_list(limit)
-        
-        return {
-            "success": True,
-            "questions": questions,
-            "count": len(questions)
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching MCQs: {str(e)}")
-
 
 @router.post("/mcq/post")
 async def create_mcq_post(

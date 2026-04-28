@@ -55,7 +55,9 @@ export default function MyApplications() {
       const token = localStorage.getItem('token');
       await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
       setSavedPosts(prev => prev.filter(p => p.id !== postId));
-    } catch {}
+    } catch (err) {
+      console.error('Failed to unsave post:', err);
+    }
   };
 
   return (

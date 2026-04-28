@@ -19,7 +19,7 @@ export const renderMathText = (text) => {
     // If it's an array of objects, extract text from each
     if (Array.isArray(text)) {
       return text.map((item, idx) => 
-        <span key={idx}>{renderMathText(item)}</span>
+        <span key={item?.id || item?.text || `math-${idx}`}>{renderMathText(item)}</span>
       );
     }
     // If it's an object with text property, use that

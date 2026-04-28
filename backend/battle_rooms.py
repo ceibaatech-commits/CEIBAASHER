@@ -486,86 +486,68 @@ class BattleRoomManager:
                 return self.rooms.get(room_id)
             return None
 
-    async def join_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Join a room - NO HOST APPROVAL REQUIRED.
-        
-        This is the main join entry point. Anyone with valid PIN can join instantly.
-        
-        Returns:
-            {"success": True, "room": room_dict, "participant": {...}}
-            or
-            {"success": False, "error": "...", "code": "..."}
+    async def _load_room_from_db(self, room_id: str) -> Dict[str, Any]:
         """
+        Try to hydrate a room from MongoDB.
+
+        Returns either {"room": Room} on success or an error-dict shaped like
+        join_room's error responses (so callers can return it directly).
+        """
+        if self.db is None:
+            return {"success": False, "error": "Room not found. Please check the PIN.", "code": "ROOM_NOT_FOUND"}
+        try:
+            db_room = await self.db.battle_rooms.find_one({"roomId": room_id})
+        except Exception as e:
+            print(f"[ERROR] Failed to load room {room_id} from DB: {e}")
+            return {"success": False, "error": "Room not found. Please check the PIN.", "code": "ROOM_NOT_FOUND"}
+
+        if not db_room:
+            return {"success": False, "error": f"Room {room_id} not found. Please check the PIN.", "code": "ROOM_NOT_FOUND"}
+
+        room = self._room_from_dict(db_room)
+        if room.is_expired():
+            return {"success": False, "error": "Room expired. Please create a new room.", "code": "ROOM_EXPIRED"}
+        self.rooms[room_id] = room
+        return {"room": room}
+
+    async def _mark_room_expired(self, room: "BattleRoom") -> Dict[str, Any]:
+        room.status = "expired"
+        room.is_active = False
+        await self.save_room_to_db(room)
+        return {"success": False, "error": "Room expired. Please create a new room.", "code": "ROOM_EXPIRED"}
+
+    async def join_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Join a room — no host approval required."""
         async with self._lock:
             room = self.rooms.get(room_id)
-            
             if room is None:
-                # Try to load from database
-                if self.db is not None:
-                    try:
-                        db_room = await self.db.battle_rooms.find_one({"roomId": room_id})
-                        if db_room:
-                            room = self._room_from_dict(db_room)
-                            if not room.is_expired():
-                                self.rooms[room_id] = room
-                            else:
-                                return {
-                                    "success": False,
-                                    "error": "Room expired. Please create a new room.",
-                                    "code": "ROOM_EXPIRED"
-                                }
-                        else:
-                            return {
-                                "success": False, 
-                                "error": f"Room {room_id} not found. Please check the PIN.",
-                                "code": "ROOM_NOT_FOUND"
-                            }
-                    except Exception as e:
-                        print(f"[ERROR] Failed to load room {room_id} from DB: {e}")
-                        return {
-                            "success": False, 
-                            "error": "Room not found. Please check the PIN.",
-                            "code": "ROOM_NOT_FOUND"
-                        }
-                else:
-                    return {
-                        "success": False, 
-                        "error": "Room not found. Please check the PIN.",
-                        "code": "ROOM_NOT_FOUND"
-                    }
-            
-            # Check expiry
+                loaded = await self._load_room_from_db(room_id)
+                if "room" not in loaded:
+                    return loaded
+                room = loaded["room"]
+
             if room.is_expired():
-                room.status = "expired"
-                room.is_active = False
-                await self.save_room_to_db(room)
-                return {
-                    "success": False,
-                    "error": "Room expired. Please create a new room.",
-                    "code": "ROOM_EXPIRED"
-                }
-            
-            # Add participant (no approval needed)
+                return await self._mark_room_expired(room)
+
             result = room.add_participant(user_data.get("userId", ""), user_data)
-            
-            if result.get("success"):
-                participant_id = str(user_data.get("userId", ""))
-                self.user_rooms[participant_id] = room_id
-                await self.save_room_to_db(room)
-                return {
-                    "success": True,
-                    "room": room.to_dict(),
-                    "participant": {
-                        "userId": participant_id,
-                        "username": user_data.get("username", "Anonymous"),
-                        "avatar": user_data.get("avatar", "👤"),
-                        "isHost": False,
-                        "joinedAt": datetime.now(timezone.utc).timestamp()
-                    },
-                    "message": result.get("message", "Successfully joined room")
-                }
-            
-            return result
+            if not result.get("success"):
+                return result
+
+            participant_id = str(user_data.get("userId", ""))
+            self.user_rooms[participant_id] = room_id
+            await self.save_room_to_db(room)
+            return {
+                "success": True,
+                "room": room.to_dict(),
+                "participant": {
+                    "userId": participant_id,
+                    "username": user_data.get("username", "Anonymous"),
+                    "avatar": user_data.get("avatar", "👤"),
+                    "isHost": False,
+                    "joinedAt": datetime.now(timezone.utc).timestamp(),
+                },
+                "message": result.get("message", "Successfully joined room"),
+            }
 
     async def add_user_to_room(self, room_id: str, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """Alias for join_room for backward compatibility."""

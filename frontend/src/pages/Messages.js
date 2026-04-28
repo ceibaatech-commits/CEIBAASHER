@@ -116,7 +116,9 @@ export default function Messages() {
           return c;
         }));
       }
-    } catch { /* */ }
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
     finally { setSending(false); }
   }, [newMsg, conversationId, sending, headers, user]);
 

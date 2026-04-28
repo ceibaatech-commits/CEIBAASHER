@@ -744,90 +744,42 @@ async def email_login(login_data: EmailLoginRequest, response: Response):
 
 @router.post("/auth/create-demo-users")
 async def create_demo_users():
-    """Create demo user accounts for testing (run once)"""
+    """Create demo user accounts for testing (run once)."""
     try:
-        # Demo user 1: Main test account
-        demo_user_1 = {
-            "id": str(uuid.uuid4()),
-            "name": "Test User",
-            "email": "testuser@ceibaa.demo",
-            "profile_picture": "https://ui-avatars.com/api/?name=Test+User&background=4F46E5&color=fff&size=200",
-            "provider": "demo",
-            "provider_id": "12345",
-            "password": "123445",
-            "created_at": datetime.utcnow().isoformat(),
-            "last_login": datetime.utcnow().isoformat()
-        }
-        
-        # Demo user 2: Opponent account
-        demo_user_2 = {
-            "id": str(uuid.uuid4()),
-            "name": "Sher From Delhi",
-            "email": "sher@ceibaa.demo",
-            "profile_picture": "https://ui-avatars.com/api/?name=Sher+From+Delhi&background=DC2626&color=fff&size=200",
-            "provider": "demo",
-            "provider_id": "sher123",
-            "password": "sher123",
-            "created_at": datetime.utcnow().isoformat(),
-            "last_login": datetime.utcnow().isoformat()
-        }
-        
-        # Demo user 3: sher20
-        demo_user_3 = {
-            "id": str(uuid.uuid4()),
-            "name": "Sher20",
-            "email": "sher20@ceibaa.demo",
-            "profile_picture": "https://ui-avatars.com/api/?name=Sher20&background=10B981&color=fff&size=200",
-            "provider": "demo",
-            "provider_id": "sher20",
-            "password": "sher20",
-            "created_at": datetime.utcnow().isoformat(),
-            "last_login": datetime.utcnow().isoformat()
-        }
-        
-        # Demo user 4: Sher25
-        demo_user_4 = {
-            "id": str(uuid.uuid4()),
-            "name": "Sher25",
-            "email": "sher25@ceibaa.demo",
-            "profile_picture": "https://ui-avatars.com/api/?name=Sher25&background=F59E0B&color=fff&size=200",
-            "provider": "demo",
-            "provider_id": "Sher25",
-            "password": "Sher25",
-            "created_at": datetime.utcnow().isoformat(),
-            "last_login": datetime.utcnow().isoformat()
-        }
-        
-        # Check if users already exist and delete them
-        await db.users.delete_many({"provider": "demo", "provider_id": {"$in": ["12345", "sher123", "sher20", "Sher25"]}})
-        
-        # Insert demo users
-        await db.users.insert_many([demo_user_1, demo_user_2, demo_user_3, demo_user_4])
-        
+        now = datetime.utcnow().isoformat()
+
+        def _make(name: str, provider_id: str, password: str, color: str) -> dict:
+            slug = name.replace(' ', '+')
+            return {
+                "id": str(uuid.uuid4()),
+                "name": name,
+                "email": f"{provider_id.lower()}@ceibaa.demo",
+                "profile_picture": f"https://ui-avatars.com/api/?name={slug}&background={color}&color=fff&size=200",
+                "provider": "demo",
+                "provider_id": provider_id,
+                "password": password,
+                "created_at": now,
+                "last_login": now,
+            }
+
+        specs = [
+            ("Test User",       "12345",   "123445", "4F46E5"),
+            ("Sher From Delhi", "sher123", "sher123", "DC2626"),
+            ("Sher20",          "sher20",  "sher20", "10B981"),
+            ("Sher25",          "Sher25",  "Sher25", "F59E0B"),
+        ]
+        demo_users = [_make(*s) for s in specs]
+        provider_ids = [s[1] for s in specs]
+
+        await db.users.delete_many({"provider": "demo", "provider_id": {"$in": provider_ids}})
+        await db.users.insert_many(demo_users)
+
         return {
             "message": "Demo users created successfully",
             "users": [
-                {
-                    "username": "12345",
-                    "password": "123445",
-                    "name": "Test User"
-                },
-                {
-                    "username": "sher123",
-                    "password": "sher123",
-                    "name": "Sher From Delhi"
-                },
-                {
-                    "username": "sher20",
-                    "password": "sher20",
-                    "name": "Sher20"
-                },
-                {
-                    "username": "Sher25",
-                    "password": "Sher25",
-                    "name": "Sher25"
-                }
-            ]
+                {"username": pid, "password": pw, "name": nm}
+                for (nm, pid, pw, _color) in specs
+            ],
         }
     except Exception as e:
         print(f"Error creating demo users: {e}")

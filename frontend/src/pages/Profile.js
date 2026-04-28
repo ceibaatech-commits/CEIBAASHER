@@ -116,7 +116,10 @@ const PostCard = ({ post, isOwn, onDelete, profile }) => {
     e.stopPropagation();
     const url = `${window.location.origin}/post/${post.id}`;
     if (navigator.share) {
-      try { await navigator.share({ title: 'Check this post', url }); } catch { /* cancelled */ }
+      try { await navigator.share({ title: 'Check this post', url }); } catch (err) {
+        // User dismissed the native share sheet — expected, ignore.
+        if (err?.name !== 'AbortError') console.debug('share failed:', err);
+      }
     } else if (navigator.clipboard) {
       await navigator.clipboard.writeText(url);
       toast.success('Post link copied!');

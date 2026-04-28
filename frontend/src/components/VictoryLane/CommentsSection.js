@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Send } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 import MathText from '../MathText';
@@ -26,6 +26,22 @@ const CommentsSection = ({
     }
     return !!user;
   };
+
+  // Pre-compute top-level comments + replies grouped by parent (avoid O(n²) filter in render)
+  const allComments = postComments[post.id] || [];
+  const topLevelComments = useMemo(
+    () => allComments.filter(c => !c.parent_comment_id),
+    [allComments]
+  );
+  const repliesByParent = useMemo(() => {
+    const map = {};
+    for (const c of allComments) {
+      if (c.parent_comment_id) {
+        (map[c.parent_comment_id] ||= []).push(c);
+      }
+    }
+    return map;
+  }, [allComments]);
 
   return (
     <div className="mt-4 pt-4 border-t border-gray-100">
@@ -64,10 +80,10 @@ const CommentsSection = ({
         </div>
       ) : (
         <div className="space-y-3">
-          {(postComments[post.id] || []).length === 0 ? (
+          {allComments.length === 0 ? (
             <p className="text-center text-gray-400 text-sm py-2">No answers yet. Be the first!</p>
           ) : (
-            (postComments[post.id] || []).filter(c => !c.parent_comment_id).map((comment) => (
+            topLevelComments.map((comment) => (
               <div key={comment.id} className="space-y-2">
                 <div className="flex gap-3 items-start">
                   <UserAvatar
@@ -154,7 +170,7 @@ const CommentsSection = ({
                     )}
 
                     {/* Nested Replies */}
-                    {(postComments[post.id] || []).filter(r => r.parent_comment_id === comment.id).map((reply) => (
+                    {(repliesByParent[comment.id] || []).map((reply) => (
                       <div key={reply.id} className="flex gap-2 mt-2 ml-8">
                         <UserAvatar
                           profilePicture={reply.user_avatar}

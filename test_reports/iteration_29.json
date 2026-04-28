@@ -1,0 +1,44 @@
+{
+  "summary": "Backend regression for refactor Round A+B+C (iteration 29). Created /app/backend/tests/test_refactor_regression_v29.py with 14 targeted tests covering all refactored helpers: demo_login, signup, get_current_user (Bearer + cookie dual-mode), create-demo-users idempotency, admin_login (success + 401), admin sheet import endpoint reachability, battle-async join_async_room + submit_answers reachability, battle_rooms.join_room reachability, social/mcq/topics (post dead-code removal), chapter-tests/start-test (secrets.SystemRandom), and recruitment/companies (declarative add_indexes). Combined run with test_admin_auth.py (10 tests) and test_refactor_regression_v28.py (15 tests) = 39/39 passed. No regressions detected from the refactor sweep.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_refactor_regression_v29.py",
+    "/app/backend/tests/test_refactor_regression_v28.py",
+    "/app/backend/tests/test_admin_auth.py",
+    "/app/test_reports/pytest/refactor_v29.xml",
+    "/app/test_reports/pytest/refactor_v29_full.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Refactored admin_login + helpers (_find_admin_user, _create_admin_session, _admin_user_response) work correctly: 200 with token+user on valid creds, 401 on wrong password, 401 on non-admin user.",
+    "Refactored demo_login, signup, create_demo_users (declarative) all functionally identical to pre-refactor — same response shapes, _id and provider_id correctly stripped.",
+    "Dual-mode auth on /api/auth/me confirmed: Bearer header AND cookie both yield 200 (validated /me with fresh-session cookie path explicitly).",
+    "Battle async helpers (_validate_join_request, _register_participant, _build_submission_doc, _broadcast_leaderboard) — endpoints respond cleanly to fake PINs (404/410 path, no 5xx).",
+    "Social MCQ topics endpoint still returns 200 after orphaned dead-code (F821 topic/limit) removal in social_feed_routes.py — no collateral damage.",
+    "Recruitment/companies returns 200 — declarative INDEX_SPECS in add_indexes.py did not break index creation/db init.",
+    "chapter_test_routes.py uses secrets.SystemRandom().sample correctly — start-test returns 200.",
+    "Test hygiene fix: v28 had two tests that shared a module-scoped requests.Session and unintentionally inherited an auth cookie from prior demo-login, causing /me-without-token to return 200. Switched those two assertions to use a fresh isolated Session. Code is correct; the tests were leaky."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_refactor_regression_v29.py (new)",
+    "/app/backend/tests/test_refactor_regression_v28.py (test isolation fix only — fresh sessions for unauth /me tests)"
+  ],
+  "success_rate": {
+    "backend": "100% (39/39 tests passed across v29 + v28 + admin_auth)",
+    "frontend": "N/A (backend-only testing requested)"
+  },
+  "test_credentials": "demo1/demo1, demo2/demo2, demo3/demo3, admin@ceibaa.in/SuperAdmin@123 — all working.",
+  "seed_data_creation": "Created two transient signup users test_v29_<uuid>@example.com and test_dup_<uuid>@example.com via /api/auth/signup. Not cleaned (no destructive admin endpoint used per request).",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 29 refactor sweep verified non-regressive. Reusable regression suite: test_refactor_regression_v29.py (14 tests) + test_refactor_regression_v28.py (15 tests) + test_admin_auth.py (10 tests). For future testers: avoid sharing a requests.Session across auth tests because demo-login sets cookies that propagate dual-mode auth (intentional behavior) — use fresh Session() for unauth assertions.",
+  "rca of the issue": "N/A — no production bugs. One transient test flake found and fixed: shared module-scoped requests.Session in v28 caused cookie bleed (auth cookie set by demo-login persisted into supposedly-unauth /me calls, yielding 200 instead of 401). This validates that dual-mode cookie auth is preserved by the refactor, which was a stated goal. Fix: isolated those tests with fresh Session()."
+}

@@ -5,6 +5,7 @@ Secure admin login with database authentication
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
+from typing import Optional
 import hashlib
 import uuid
 import os
@@ -36,6 +37,69 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 
+def _client_ip(request: Request) -> str:
+    return request.client.host if request.client else "unknown"
+
+
+async def _find_admin_user(username: str) -> Optional[dict]:
+    """Find an admin user by username or email (case-insensitive)."""
+    lower = username.lower().strip()
+    return await db.users.find_one({
+        "$and": [
+            {"$or": [
+                {"username": lower},
+                {"email": lower},
+                {"username": username},
+                {"email": username},
+            ]},
+            {"$or": [
+                {"is_admin": True},
+                {"role": {"$in": ["admin", "super_admin"]}},
+                {"is_super_admin": True},
+            ]},
+        ],
+    })
+
+
+async def _log_admin_login_attempt(username: str, ip: str, success: bool, reason: str = None, user_id: str = None) -> None:
+    doc = {
+        "username": username,
+        "ip_address": ip,
+        "success": success,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    if reason is not None:
+        doc["reason"] = reason
+    if user_id is not None:
+        doc["user_id"] = user_id
+    await db.admin_login_logs.insert_one(doc)
+
+
+async def _create_admin_session(user: dict, ip: str) -> str:
+    token = f"admin_{uuid.uuid4().hex}_{int(datetime.now().timestamp())}"
+    await db.admin_sessions.insert_one({
+        "token": token,
+        "user_id": user.get("id") or user.get("user_id"),
+        "username": user.get("username") or user.get("email"),
+        "role": user.get("role", "admin"),
+        "ip_address": ip,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat(),
+    })
+    return token
+
+
+def _admin_user_response(user: dict) -> dict:
+    return {
+        "id": user.get("id") or user.get("user_id"),
+        "username": user.get("username"),
+        "email": user.get("email"),
+        "name": user.get("name"),
+        "role": user.get("role", "admin"),
+        "is_super_admin": user.get("is_super_admin", False),
+    }
+
+
 @router.post("/login")
 async def admin_login(request: Request, credentials: AdminLoginRequest):
     """
@@ -43,90 +107,28 @@ async def admin_login(request: Request, credentials: AdminLoginRequest):
     Authenticates against database, not hardcoded credentials.
     """
     try:
-        username = credentials.username.lower().strip()
-        password = credentials.password
-        
-        # Find admin user by username or email
-        user = await db.users.find_one({
-            "$and": [
-                {"$or": [
-                    {"username": username},
-                    {"email": username},
-                    {"username": credentials.username},
-                    {"email": credentials.username}
-                ]},
-                {"$or": [
-                    {"is_admin": True},
-                    {"role": {"$in": ["admin", "super_admin"]}},
-                    {"is_super_admin": True}
-                ]}
-            ]
-        })
-        
+        ip = _client_ip(request)
+        user = await _find_admin_user(credentials.username)
+
         if not user:
-            # Log failed attempt
-            await db.admin_login_logs.insert_one({
-                "username": credentials.username,
-                "ip_address": request.client.host if request.client else "unknown",
-                "success": False,
-                "reason": "user_not_found",
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            })
+            await _log_admin_login_attempt(credentials.username, ip, False, reason="user_not_found")
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        # Verify password
-        stored_password = user.get("password", "")
-        password_hash = hash_password(password)
-        
-        if stored_password != password_hash:
-            # Log failed attempt
-            await db.admin_login_logs.insert_one({
-                "username": credentials.username,
-                "user_id": user.get("id"),
-                "ip_address": request.client.host if request.client else "unknown",
-                "success": False,
-                "reason": "wrong_password",
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            })
+
+        if user.get("password", "") != hash_password(credentials.password):
+            await _log_admin_login_attempt(credentials.username, ip, False,
+                                           reason="wrong_password", user_id=user.get("id"))
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        
-        # Generate admin session token
-        admin_token = f"admin_{uuid.uuid4().hex}_{int(datetime.now().timestamp())}"
-        
-        # Store admin session
-        await db.admin_sessions.insert_one({
-            "token": admin_token,
-            "user_id": user.get("id") or user.get("user_id"),
-            "username": user.get("username") or user.get("email"),
-            "role": user.get("role", "admin"),
-            "ip_address": request.client.host if request.client else "unknown",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
-        })
-        
-        # Log successful login
-        await db.admin_login_logs.insert_one({
-            "username": credentials.username,
-            "user_id": user.get("id"),
-            "ip_address": request.client.host if request.client else "unknown",
-            "success": True,
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
-        
+
+        admin_token = await _create_admin_session(user, ip)
+        await _log_admin_login_attempt(credentials.username, ip, True, user_id=user.get("id"))
+
         return {
             "success": True,
             "token": admin_token,
-            "user": {
-                "id": user.get("id") or user.get("user_id"),
-                "username": user.get("username"),
-                "email": user.get("email"),
-                "name": user.get("name"),
-                "role": user.get("role", "admin"),
-                "is_super_admin": user.get("is_super_admin", False)
-            },
-            "message": "Login successful"
+            "user": _admin_user_response(user),
+            "message": "Login successful",
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:

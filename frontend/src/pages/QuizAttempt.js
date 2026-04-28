@@ -124,8 +124,8 @@ export default function QuizAttempt() {
         </div>
         <div className="max-w-3xl mx-auto px-4 pb-2">
           <div className="flex gap-1">
-            {quiz.questions.map((_, i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full ${answers[String(i)] !== undefined ? 'bg-blue-600' : i === currentQ ? 'bg-[#252a3d]' : 'bg-slate-100'}`} />
+            {quiz.questions.map((question, i) => (
+              <div key={question.id || `progress-${i}`} className={`h-1 flex-1 rounded-full ${answers[String(i)] !== undefined ? 'bg-blue-600' : i === currentQ ? 'bg-[#252a3d]' : 'bg-slate-100'}`} />
             ))}
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function QuizAttempt() {
         <div className="space-y-3">
           {q.options.map((opt, i) => (
             <button
-              key={i}
+              key={`q${currentQ}-opt-${i}`}
               onClick={() => setAnswers(prev => ({ ...prev, [String(currentQ)]: i }))}
               data-testid={`option-${i}`}
               className={`w-full text-left p-4 rounded-xl border transition-all ${

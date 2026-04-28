@@ -197,7 +197,7 @@ const QuizResults = () => {
           <div className="space-y-3">
             {leaderboard.map((player, index) => (
               <div
-                key={index}
+                key={player.player_id || `${player.player_name}-${index}`}
                 className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
                   player.player_name === playerName
                     ? 'bg-gradient-to-r from-purple-100 to-blue-100 border-2 border-purple-400 scale-105'

@@ -211,7 +211,7 @@ const RoomDetail = () => {
                 const question = roomData.questions?.find(q => q.id === answer.question_id);
                 return (
                   <div
-                    key={index}
+                    key={answer.question_id || `answer-${index}`}
                     className={`border-2 rounded-xl p-4 ${
                       answer.is_correct
                         ? 'border-green-300 bg-green-50'
@@ -271,7 +271,7 @@ const RoomDetail = () => {
           <div className="space-y-3">
             {leaderboard.map((player, index) => (
               <div
-                key={index}
+                key={player.player_id || `lb-${index}`}
                 className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
                   mySubmission && player.player_id === mySubmission.player_id
                     ? 'bg-gradient-to-r from-purple-100 to-blue-100 border-2 border-purple-400'
