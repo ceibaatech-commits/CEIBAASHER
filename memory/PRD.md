@@ -193,3 +193,34 @@ components/
 - [ ] Full localStorage→httpOnly cookie cutover (remove all `localStorage.getItem('token')` reads, add CSRF — Round C-hard)
 - [ ] Decompose remaining oversized components: `ExamSheetManager.js` (1720), `ExamCategoryManager.js` (997), `LiveBattlesManager.js` (736), `Board.js` (872)
 
+
+### Feb 20, 2026 — 2nd Code-Review Sweep (Round A + B + C — option c)
+- [x] **Round A — Mechanical fixes:**
+  - Removed orphaned dead code in `social_feed_routes.py:2305-2328` (resolved 4×F821 `topic`/`limit` undefined-name errors)
+  - `test_admin_auth.py` — fixed `ADMIN_USERNAME` undefined; now imports from conftest
+  - Array-index keys removed in 10 files: `SheetManager.js`, `RoomDetail.js` (×2), `QuizResults.js`, `QuizAttempt.js` (×2), `ProgramDetail.js` (×3), `utils/renderMath.js`
+  - Empty catch blocks fixed in `Profile.js`, `MyApplications.js`, `Messages.js` — now log errors (with `AbortError` ignore for native share dismiss)
+  - useMemo optimizations: `CommentsSection.js` (precomputed top-level + replies-by-parent map — fixes O(n²) filter), `ExamCategoryManager.js` (filteredCbseChapters, categoriesForSelectedExam), `LiveBattlesManager.js` (filteredReports)
+- [x] **Round B — Backend complexity refactor (7 functions):**
+  - `submit_answers` (battle_async_routes.py) → `_build_submission_doc`, `_build_dashboard_doc`, `_save_dashboard_record`, `_ranked_leaderboard`, `_broadcast_leaderboard`
+  - `join_async_room` → `_validate_join_request`, `_register_participant`, `_broadcast_player_joined`, `_public_room`
+  - `admin_login` (admin_auth_routes.py) → `_client_ip`, `_find_admin_user`, `_log_admin_login_attempt`, `_create_admin_session`, `_admin_user_response`
+  - `create_demo_users` (auth_routes.py) — declarative spec list + `_make` builder (88 → 35 LOC)
+  - `import_sheet_questions` (admin_routes.py) → `_question_doc_from_sheet_dict` helper
+  - `join_room` (battle_rooms.py) → `_load_room_from_db`, `_mark_room_expired`
+  - `add_indexes.py` — declarative `INDEX_SPECS` dict + single iteration loop (130 LOC, much lower complexity per function)
+- [x] **Round C — Component decomposition (#2): `LiveBattlesManager.js` (755 → 84-line orchestrator + 9 sub-files) in `/components/admin/live-battles/`:**
+  - `useLiveBattles.js` (165) — fetches, socket, actions, filters
+  - `StatusBadge.js` (26) — shared status pill with config map
+  - `LiveBattlesStats.js` (26), `LiveBattlesTabs.js` (35)
+  - `LiveBattlesList.js` (75), `ReportsList.js` (61), `BattleHistoryTable.js` (50)
+  - `ReportDetailModal.js` (69), `BattleDetailModal.js` (60)
+  - Smoke-tested live: 91 active battles, 5 reports rendering, all tabs working, zero console errors
+- [x] **Testing:** 39/39 backend regression tests pass (iteration_29.json) — auth + admin + battle flows + recruitment all intact
+
+### Deferred (still open)
+- [ ] Hard cutover of localStorage → cookie (remove all `localStorage.getItem('token')` reads, add CSRF)
+- [ ] Decompose remaining oversized components: `ExamSheetManager.js` (1720), `ExamCategoryManager.js` (997), `Board.js` (872), `AFCAT.js` (672), `EmployeeManager.js` (518), `QuizRoomModal.js` (569)
+- [ ] Remove the bulk of 293 production console.log statements
+- [ ] "5 high-severity security issues" — need user to share specifics
+
