@@ -4,7 +4,7 @@ import { UserRow } from './UserRow';
 
 const HEADERS = ['User ID', 'Name', 'Email', 'Registration Date', 'Status', 'Badges', 'Actions'];
 
-export const UserTable = ({ users, onToggleBadge, children }) => (
+export const UserTable = ({ users, onToggleBadge, onToggleDisable, onDelete, children }) => (
   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full" data-testid="user-management-table">
@@ -27,7 +27,13 @@ export const UserTable = ({ users, onToggleBadge, children }) => (
             </tr>
           ) : (
             users.map(user => (
-              <UserRow key={user.id} user={user} onToggleBadge={onToggleBadge} />
+              <UserRow
+                key={user.id}
+                user={user}
+                onToggleBadge={onToggleBadge}
+                onToggleDisable={onToggleDisable}
+                onDelete={onDelete}
+              />
             ))
           )}
         </tbody>

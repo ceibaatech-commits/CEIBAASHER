@@ -39,7 +39,7 @@ const UserManagement = () => {
     sortOrder, setSortOrder,
     currentPage, setCurrentPage, totalPages,
     indexOfFirstUser, indexOfLastUser,
-    fetchUsers, toggleBadge,
+    fetchUsers, toggleBadge, toggleDisableUser, deleteUser,
   } = useUserManagement();
 
   if (loading) {
@@ -64,7 +64,12 @@ const UserManagement = () => {
         onExport={() => exportUsersToCSV(filteredUsers)}
         onRefresh={fetchUsers}
       />
-      <UserTable users={currentUsers} onToggleBadge={toggleBadge}>
+      <UserTable
+        users={currentUsers}
+        onToggleBadge={toggleBadge}
+        onToggleDisable={toggleDisableUser}
+        onDelete={deleteUser}
+      >
         <UserPagination
           currentPage={currentPage} setCurrentPage={setCurrentPage}
           totalPages={totalPages}

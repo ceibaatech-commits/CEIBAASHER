@@ -77,6 +77,44 @@ export function useUserManagement() {
     }
   }, []);
 
+  const toggleDisableUser = useCallback(async (userId, isCurrentlyDisabled) => {
+    const nextStatus = isCurrentlyDisabled ? 'active' : 'banned';
+    const verb = isCurrentlyDisabled ? 'enable' : 'disable';
+    if (!window.confirm(`Are you sure you want to ${verb} this user?`)) return;
+    try {
+      const res = await axios.put(
+        `${BACKEND_URL}/api/admin/users/${userId}/status`,
+        null,
+        { params: { status: nextStatus } }
+      );
+      if (!res.data.success) {
+        alert(`Failed to ${verb} user`);
+        return;
+      }
+      setUsers(prev => prev.map(u =>
+        u.id === userId ? { ...u, account_status: nextStatus } : u
+      ));
+    } catch (err) {
+      console.error(`Error ${verb}ing user:`, err);
+      alert(`Failed to ${verb} user`);
+    }
+  }, []);
+
+  const deleteUser = useCallback(async (userId, userName) => {
+    if (!window.confirm(`Permanently delete user "${userName}"?\n\nThis will soft-delete their account. Proceed?`)) return;
+    try {
+      const res = await axios.delete(`${BACKEND_URL}/api/admin/users/${userId}`);
+      if (!res.data.success) {
+        alert('Failed to delete user');
+        return;
+      }
+      setUsers(prev => prev.filter(u => u.id !== userId));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      alert('Failed to delete user');
+    }
+  }, []);
+
   const filteredUsers = useMemo(() => {
     let filtered = [...users];
     if (searchQuery) {
@@ -123,6 +161,6 @@ export function useUserManagement() {
     currentPage, setCurrentPage, totalPages, usersPerPage,
     indexOfFirstUser, indexOfLastUser,
     // actions
-    fetchUsers, toggleBadge,
+    fetchUsers, toggleBadge, toggleDisableUser, deleteUser,
   };
 }
