@@ -344,55 +344,6 @@ const Home = () => {
                 );
               })}
             </span>
-
-            {/* Subheading — editorial card with single maroon accent */}
-            <span
-              className="ceibaa-rise-2 mt-4 block rounded-2xl relative overflow-hidden"
-              style={{
-                backgroundColor: '#fffdf6',
-                border: '1px solid rgba(127,29,29,0.18)',
-                boxShadow: '0 10px 24px -16px rgba(15,23,42,0.18)',
-              }}
-            >
-              <span
-                className="absolute left-0 top-0 bottom-0 w-1"
-                style={{ backgroundColor: '#7f1d1d' }}
-                aria-hidden="true"
-              ></span>
-              <span className="block pl-5 pr-4 py-3.5 text-[14px] font-semibold leading-[1.55]" style={{ color: '#1e293b' }}>
-                In the{' '}
-                <span style={{ color: '#7f1d1d', fontWeight: 800 }}>Ceibaa Arena</span>, every battle
-                {' '}<span className="relative inline-block">
-                  <span className="relative z-10">builds a bridge</span>
-                  <span
-                    className="ceibaa-marker-line absolute left-0 right-0 bottom-0.5 h-2 -z-0 opacity-80"
-                    style={{ background: '#f5c451', borderRadius: '2px', animationDelay: '2.0s' }}
-                    aria-hidden="true"
-                  ></span>
-                </span>{' '}to your future. Earn your{' '}
-                <span style={{ color: '#7f1d1d', fontWeight: 800 }}>badge</span>{' '}and unlock{' '}
-                <span style={{ color: '#7f1d1d', fontWeight: 800 }}>opportunities</span>{' '}beyond the exam hall.
-              </span>
-            </span>
-
-            {/* Catchphrase — elastic per-word entrance */}
-            <span
-              className="mt-3 block text-[13px] font-medium italic"
-              style={{ color: '#64748b', fontFamily: 'Georgia, serif' }}
-              data-testid="mobile-home-catchphrase"
-            >
-              {['Real-world', 'ready,', 'Arena', 'tested.'].map((word, i, arr) => (
-                <React.Fragment key={`cw-${i}`}>
-                  <span
-                    className="ceibaa-elastic-word"
-                    style={{ animationDelay: `${1.4 + i * 0.12}s` }}
-                  >
-                    {word}
-                  </span>
-                  {i < arr.length - 1 ? ' ' : ''}
-                </React.Fragment>
-              ))}
-            </span>
           </h1>
         </div>
 
@@ -528,6 +479,39 @@ const Home = () => {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Subheading card — moved here, below the stats strip */}
+        <div className="relative px-5 pb-6">
+          <div
+            className="rounded-2xl relative overflow-hidden"
+            style={{
+              backgroundColor: '#fffdf6',
+              border: '1px solid rgba(127,29,29,0.18)',
+              boxShadow: '0 10px 24px -16px rgba(15,23,42,0.18)',
+            }}
+            data-testid="mobile-home-subheading-card"
+          >
+            <span
+              className="absolute left-0 top-0 bottom-0 w-1"
+              style={{ backgroundColor: '#7f1d1d' }}
+              aria-hidden="true"
+            ></span>
+            <p className="pl-5 pr-4 py-3.5 text-[14px] font-semibold leading-[1.55]" style={{ color: '#1e293b' }}>
+              In the{' '}
+              <span style={{ color: '#7f1d1d', fontWeight: 800 }}>Ceibaa Arena</span>, every battle{' '}
+              <span className="relative inline-block">
+                <span className="relative z-10">builds a bridge</span>
+                <span
+                  className="ceibaa-marker-line absolute left-0 right-0 bottom-0.5 h-2 -z-0 opacity-80"
+                  style={{ background: '#f5c451', borderRadius: '2px', animationDelay: '2.0s' }}
+                  aria-hidden="true"
+                ></span>
+              </span>{' '}to your future. Earn your{' '}
+              <span style={{ color: '#7f1d1d', fontWeight: 800 }}>badge</span>{' '}and unlock{' '}
+              <span style={{ color: '#7f1d1d', fontWeight: 800 }}>opportunities</span>{' '}beyond the exam hall.
+            </p>
           </div>
         </div>
       </div>
