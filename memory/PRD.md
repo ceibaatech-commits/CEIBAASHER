@@ -260,3 +260,24 @@ components/
 - [x] **Route wired:** `/settings` in App.js
 - [x] **Testing:** 8-step E2E smoke passed (wrong-current-rejected, same-old/new-rejected, success + session revoke, current token survives, old password no longer works, new password works); live UI smoke confirmed dropdown items + settings page render; Resend delivers notification email
 
+
+
+
+### Feb 24, 2026 — Mobile Home Page Redesign (editorial / human palette, per reference mock)
+- [x] **File:** `/app/frontend/src/pages/Home.js`
+  - New hero headline: **"Dominate the Arena."** + subheading **"Your Journey to India's Best Begins Here."** + italic tagline **"Don't just pass the exam. Get hired by India's best."**
+  - Two side-by-side CTA cards (warm, non-AI palette):
+    - Purple (`#4c1d95`) **"Career Pathway: Get Hired →"** with `Briefcase` icon → navigates to `/jobs`
+    - Gold (`#efc868`) **"Skill Forge: Train"** with `Sparkles` icon → smooth-scrolls to `#skill-drill-section` (fallback `/chapter-tests`)
+  - Pill search bar: placeholder `Search Exams, Skills, Mentors...`
+  - Stats strip: `Exams 38+`, `Questions 50K+`, `Active Battles: 7 Live` (red pulsing dot)
+  - Category grid **restyled only** — white rounded cards + purple Lucide icon tiles (`GraduationCap`/`Stethoscope`/`Shield`/`Landmark`/`School`/`Briefcase`/`Building2`/`Building`/`ShieldAlert`/`Map`/`Languages`). All existing functionality preserved: drawer open/close, exam cards render inside drawer, sticky scroll, Teaching hidden on mobile.
+  - Skill Drill section kept intact; only header + background restyled to match new cream palette. `id="skill-drill-section"` added for CTA scroll target.
+  - Cream base background `#fdf9ee` with subtle dotted pattern accent. No animated gradients.
+- [x] **Verified live:** Get Hired → `/jobs` ✅, Medical category drawer opens with exam cards ✅, all 11 categories + 11 skill-drill classes still render ✅, no console errors.
+
+### Deferred (unchanged)
+- [ ] Twitter login button (needs user's TWITTER_API_KEY + TWITTER_API_SECRET)
+- [ ] Facebook login UI button (backend already wired)
+- [ ] Decompose `ExamSheetManager.js` (1720), `ExamCategoryManager.js` (997), `Board.js` (872)
+- [ ] Migrate OTP from email to SMS (Twilio)

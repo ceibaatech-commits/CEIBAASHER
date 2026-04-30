@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown, ArrowUpRight, Briefcase, Sparkles, GraduationCap, Stethoscope, Shield, Landmark, School, Building2, Building, ShieldAlert, Map, Languages, BadgeCheck } from 'lucide-react';
 import axios from 'axios';
 import SEO from '../components/SEO';
 import CeibaaLogo from '../components/CeibaaLogo';
@@ -127,6 +127,22 @@ const Home = () => {
   // Categories for mobile - exclude Teaching on mobile
   const mobileCategories = categories.filter(cat => cat.id !== 'teaching');
 
+  // Mobile: Lucide icon map for refreshed category card design
+  const mobileCategoryIconMap = {
+    admission: GraduationCap,
+    medical: Stethoscope,
+    defence: Shield,
+    banking: Landmark,
+    university: School,
+    ssc: Briefcase,
+    upsc: Building2,
+    uppsc: Building,
+    csbc: ShieldAlert,
+    rsmssb: Map,
+    language: Languages,
+    teaching: BookOpen,
+  };
+
   // Filter exams based on category and search
   const getFilteredExams = () => {
     let filtered = exams;
@@ -202,70 +218,202 @@ const Home = () => {
         onLogout={handleLogout}
       />
 
-      {/* Mobile Hero Section - Fresh Design with Animated Gradient */}
+      {/* Mobile Hero Section — matches reference mock */}
       <style>
         {`
-          @keyframes gradientFlow {
-            0% {
-              background-position: 0% 50%;
-            }
-            50% {
-              background-position: 100% 50%;
-            }
-            100% {
-              background-position: 0% 50%;
-            }
+          @keyframes ceibaa-pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(0.8); }
           }
-          .animated-gradient-hero {
-            background: linear-gradient(-45deg, #0f172a, #155e75, #164e63, #0e7490, #0c4a6e, #1e3a5a);
-            background-size: 400% 400%;
-            animation: gradientFlow 8s ease infinite;
+          @keyframes ceibaa-rise {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .ceibaa-rise-1 { animation: ceibaa-rise .5s ease-out both; animation-delay: .05s; }
+          .ceibaa-rise-2 { animation: ceibaa-rise .5s ease-out both; animation-delay: .18s; }
+          .ceibaa-rise-3 { animation: ceibaa-rise .5s ease-out both; animation-delay: .32s; }
+          .ceibaa-rise-4 { animation: ceibaa-rise .5s ease-out both; animation-delay: .46s; }
+          .ceibaa-dot { animation: ceibaa-pulse-dot 1.3s ease-in-out infinite; }
+          .ceibaa-dots-bg {
+            background-image: radial-gradient(rgba(15,23,42,0.18) 1px, transparent 1px);
+            background-size: 14px 14px;
           }
         `}
       </style>
-      <div className="md:hidden animated-gradient-hero text-white px-4 py-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl font-bold">Welcome to Ceibaa</h1>
-            <p className="text-slate-300 text-sm">Competitive Exam In Battle Arena</p>
-          </div>
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
-            <Trophy className="w-6 h-6 text-white" />
+      <div
+        className="md:hidden relative overflow-hidden"
+        style={{ backgroundColor: '#fdf9ee' }}
+        data-testid="mobile-home-hero"
+      >
+        {/* Subtle dotted pattern (right side) */}
+        <div
+          className="absolute top-4 right-0 w-40 h-44 ceibaa-dots-bg opacity-60 pointer-events-none"
+          aria-hidden="true"
+        ></div>
+
+        {/* Headline */}
+        <div className="relative px-5 pt-7 pb-4">
+          <h1 className="tracking-tight" data-testid="mobile-home-headline">
+            <span
+              className="ceibaa-rise-1 block text-[34px] font-black leading-[1.05]"
+              style={{ color: '#0f172a', letterSpacing: '-0.02em' }}
+            >
+              Dominate the Arena.
+            </span>
+            <span
+              className="ceibaa-rise-2 block mt-3 text-[22px] font-extrabold leading-[1.2]"
+              style={{ color: '#0f172a' }}
+            >
+              Your Journey to <br />
+              India's Best Begins Here.
+            </span>
+            <span
+              className="ceibaa-rise-3 block mt-3 text-[13px] font-medium italic"
+              style={{ color: '#64748b', fontFamily: 'Georgia, serif' }}
+            >
+              Don't just pass the exam. Get hired by India's best.
+            </span>
+          </h1>
+        </div>
+
+        {/* CTA pair — purple "Get Hired" + gold "Train" */}
+        <div className="relative px-5 pb-4 ceibaa-rise-4">
+          <div className="grid grid-cols-5 gap-3">
+            <button
+              type="button"
+              onClick={() => navigate('/jobs')}
+              className="col-span-3 relative text-left rounded-2xl px-4 py-4 shadow-[0_10px_24px_-10px_rgba(76,29,149,0.65)] active:scale-[0.98] transition-transform"
+              style={{ backgroundColor: '#4c1d95', color: '#ffffff' }}
+              data-testid="mobile-home-get-hired-btn"
+            >
+              <span
+                className="block text-[11px] font-semibold uppercase tracking-wider mb-1"
+                style={{ color: '#ddd6fe' }}
+              >
+                Career Pathway:
+              </span>
+              <span className="flex items-center gap-1.5 text-[20px] font-black leading-tight">
+                Get Hired <ArrowUpRight className="w-5 h-5" strokeWidth={2.5} />
+              </span>
+              <Briefcase
+                className="absolute top-3 right-3 w-6 h-6 opacity-90"
+                style={{ color: '#ede9fe' }}
+                strokeWidth={2}
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const drill = document.getElementById('skill-drill-section');
+                if (drill) {
+                  drill.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                  navigate('/chapter-tests');
+                }
+              }}
+              className="col-span-2 relative text-left rounded-2xl px-4 py-4 shadow-[0_10px_24px_-10px_rgba(217,180,86,0.6)] active:scale-[0.98] transition-transform"
+              style={{ backgroundColor: '#efc868', color: '#1f1505' }}
+              data-testid="mobile-home-train-btn"
+            >
+              <span
+                className="block text-[11px] font-semibold uppercase tracking-wider mb-1"
+                style={{ color: '#6b4e0d' }}
+              >
+                Skill Forge:
+              </span>
+              <span className="flex items-center gap-1.5 text-[20px] font-black leading-tight">
+                Train
+              </span>
+              <Sparkles
+                className="absolute top-3 right-3 w-5 h-5"
+                style={{ color: '#6b4e0d' }}
+                strokeWidth={2.25}
+              />
+            </button>
           </div>
         </div>
-        
-        {/* Search Bar */}
-        <form onSubmit={handleSearch}>
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search exams, topics..."
-              className="w-full px-4 py-3.5 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-            />
-          </div>
-        </form>
-        
-        {/* Quick Stats */}
-        <div className="flex justify-between mt-4 bg-slate-700/30 backdrop-blur-sm rounded-xl p-4 border border-slate-600/50">
-          <div className="text-center flex-1">
-            <p className="text-2xl font-bold text-cyan-400">38+</p>
-            <p className="text-xs text-slate-400">Exams</p>
-          </div>
-          <div className="text-center flex-1 border-x border-slate-600/50">
-            <p className="text-2xl font-bold text-emerald-400">50K+</p>
-            <p className="text-xs text-slate-400">Questions</p>
-          </div>
-          <div className="text-center flex-1">
-            <p className="text-2xl font-bold text-amber-400">Live</p>
-            <p className="text-xs text-slate-400">Battles</p>
+
+        {/* Search pill */}
+        <div className="relative px-5 pb-3">
+          <form onSubmit={handleSearch} data-testid="mobile-home-search-form">
+            <div
+              className="relative flex items-center rounded-full px-4 py-3 shadow-[0_6px_18px_-10px_rgba(15,23,42,0.35)]"
+              style={{ backgroundColor: '#ffffff', border: '1px solid rgba(15,23,42,0.08)' }}
+            >
+              <Search className="w-4 h-4 mr-3" style={{ color: '#64748b' }} strokeWidth={2.25} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search Exams, Skills, Mentors..."
+                className="flex-1 bg-transparent text-[13px] font-medium focus:outline-none"
+                style={{ color: '#0f172a' }}
+                data-testid="mobile-home-search-input"
+              />
+            </div>
+          </form>
+        </div>
+
+        {/* Stats strip — Exams / Questions / Active Battles Live */}
+        <div className="relative px-5 pb-6">
+          <div
+            className="rounded-2xl px-4 py-3 shadow-[0_6px_18px_-12px_rgba(15,23,42,0.3)]"
+            style={{ backgroundColor: '#ffffff', border: '1px solid rgba(15,23,42,0.08)' }}
+            data-testid="mobile-home-stats"
+          >
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: '#64748b' }}
+                >
+                  Exams:
+                </p>
+                <p className="text-[20px] font-black leading-tight" style={{ color: '#0f172a' }}>
+                  38<span style={{ color: '#4c1d95' }}>+</span>
+                </p>
+              </div>
+              <div className="border-l border-r px-2" style={{ borderColor: 'rgba(15,23,42,0.08)' }}>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: '#64748b' }}
+                >
+                  Questions:
+                </p>
+                <p className="text-[20px] font-black leading-tight" style={{ color: '#0f172a' }}>
+                  50K<span style={{ color: '#4c1d95' }}>+</span>
+                </p>
+              </div>
+              <div>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-wider"
+                  style={{ color: '#64748b' }}
+                >
+                  Active Battles:
+                </p>
+                <p
+                  className="text-[20px] font-black leading-tight flex items-center gap-1.5"
+                  style={{ color: '#0f172a' }}
+                  data-testid="mobile-home-live-battles"
+                >
+                  7
+                  <span
+                    className="ceibaa-dot inline-block w-2 h-2 rounded-full"
+                    style={{ backgroundColor: '#ef4444' }}
+                  ></span>
+                  <span className="text-[13px] font-bold" style={{ color: '#ef4444' }}>
+                    Live
+                  </span>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Category Filter - Grid Layout with Drawer Effect - Teaching hidden on mobile */}
-      <div className="md:hidden bg-white sticky top-16 z-30 shadow-md border-b border-gray-200">
+      <div className="md:hidden sticky top-16 z-30 border-b" style={{ backgroundColor: '#fdf9ee', borderColor: 'rgba(15,23,42,0.08)' }}>
         <div className="py-3 px-3">
           {/* Group categories into rows of 3 */}
           {(() => {
@@ -282,29 +430,49 @@ const Home = () => {
             return rows.map((row, rowIndex) => (
               <React.Fragment key={rowIndex}>
                 {/* Category Row */}
-                <div className="grid grid-cols-3 gap-2 mb-2">
-                  {row.map(cat => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveCategory(activeCategory === cat.id ? '' : cat.id)}
-                      className={`flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl text-[10px] font-semibold transition-all h-20 w-full relative ${
-                        activeCategory === cat.id
-                          ? `bg-gradient-to-r ${cat.color} text-white shadow-lg`
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      {cat.image ? (
-                        <img src={cat.image} alt={cat.label} className="w-7 h-7 object-contain" />
-                      ) : (
-                        <span className="text-xl leading-none">{cat.icon}</span>
-                      )}
-                      <span className="text-center leading-tight px-1 line-clamp-2">{cat.label}</span>
-                      {/* Indicator arrow when selected */}
-                      {activeCategory === cat.id && (
-                        <ChevronDown className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-4 text-white" />
-                      )}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  {row.map(cat => {
+                    const IconComp = mobileCategoryIconMap[cat.id] || BadgeCheck;
+                    const isActive = activeCategory === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setActiveCategory(isActive ? '' : cat.id)}
+                        data-testid={`mobile-category-${cat.id}`}
+                        className="relative flex flex-col items-center justify-center rounded-2xl py-4 px-2 transition-all active:scale-[0.97]"
+                        style={{
+                          backgroundColor: '#ffffff',
+                          border: isActive ? '1.5px solid #4c1d95' : '1px solid rgba(15,23,42,0.08)',
+                          boxShadow: isActive
+                            ? '0 10px 24px -12px rgba(76,29,149,0.45)'
+                            : '0 6px 14px -10px rgba(15,23,42,0.25)',
+                        }}
+                      >
+                        <div
+                          className="w-11 h-11 rounded-xl flex items-center justify-center mb-2"
+                          style={{ backgroundColor: isActive ? '#4c1d95' : '#ede9fe' }}
+                        >
+                          <IconComp
+                            className="w-6 h-6"
+                            strokeWidth={2}
+                            style={{ color: isActive ? '#ffffff' : '#4c1d95' }}
+                          />
+                        </div>
+                        <span
+                          className="text-center text-[11px] font-bold leading-tight line-clamp-2"
+                          style={{ color: '#0f172a' }}
+                        >
+                          {cat.label}
+                        </span>
+                        {isActive && (
+                          <ChevronDown
+                            className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4"
+                            style={{ color: '#4c1d95' }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
                 
                 {/* Drawer Panel - appears below the row containing active category */}
@@ -317,22 +485,17 @@ const Home = () => {
                       transition={{ duration: 0.3, ease: 'easeInOut' }}
                       className="overflow-hidden"
                     >
-                      <div className="bg-gray-50 rounded-xl p-3 mb-2 border border-gray-200">
+                      <div className="rounded-2xl p-3 mb-3" style={{ backgroundColor: '#ffffff', border: '1px solid rgba(15,23,42,0.08)', boxShadow: '0 10px 24px -14px rgba(15,23,42,0.25)' }}>
                         {/* Category Header */}
-                        <div className={`bg-gradient-to-r ${categories.find(c => c.id === activeCategory)?.color} rounded-lg p-3 text-white mb-3`}>
+                        <div className="rounded-xl p-3 mb-3" style={{ backgroundColor: '#4c1d95', color: '#ffffff' }}>
                           <div className="flex items-center gap-2">
-                            {categories.find(c => c.id === activeCategory)?.image ? (
-                              <img 
-                                src={categories.find(c => c.id === activeCategory)?.image} 
-                                alt={categories.find(c => c.id === activeCategory)?.label} 
-                                className="w-6 h-6 object-contain"
-                              />
-                            ) : (
-                              <span className="text-lg">{categories.find(c => c.id === activeCategory)?.icon}</span>
-                            )}
+                            {(() => {
+                              const ActiveIcon = mobileCategoryIconMap[activeCategory] || BadgeCheck;
+                              return <ActiveIcon className="w-5 h-5" style={{ color: '#ffffff' }} strokeWidth={2.2} />;
+                            })()}
                             <div>
                               <h3 className="font-bold text-sm">{categories.find(c => c.id === activeCategory)?.label}</h3>
-                              <p className="text-white/90 text-xs">{filteredExams.length} exams available</p>
+                              <p className="text-[11px]" style={{ color: '#ddd6fe' }}>{filteredExams.length} exams available</p>
                             </div>
                           </div>
                         </div>
@@ -436,10 +599,15 @@ const Home = () => {
 
       {/* Mobile: Skill Drill - CBSE Classes Section */}
       {!searchQuery.trim() && !activeCategory && (
-        <div className="md:hidden px-4 py-6 bg-gradient-to-br from-blue-50 to-purple-50">
-          <div className="mb-4">
-            <h2 className="text-2xl font-black text-gray-900 mb-1">Skill Drill - CBSE Classes</h2>
-            <p className="text-sm text-gray-600">Chapter-wise practice for all subjects</p>
+        <div id="skill-drill-section" className="md:hidden px-4 py-6" style={{ backgroundColor: '#fdf9ee' }} data-testid="mobile-skill-drill-section">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#efc868' }}>
+              <Sparkles className="w-4 h-4" style={{ color: '#6b4e0d' }} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h2 className="text-[20px] font-black" style={{ color: '#0f172a', letterSpacing: '-0.01em' }}>Skill Drill — CBSE Classes</h2>
+              <p className="text-[12px]" style={{ color: '#64748b' }}>Chapter-wise practice for all subjects</p>
+            </div>
           </div>
           
           <div className="grid grid-cols-2 gap-3">
