@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, Clock, Target, Check, X, Download, Share2 } from 'lucide-react';
+import { ArrowLeft, Trophy, Clock, Target, Check, X, Download, Share2, UserPlus, UserCheck, MessageCircle } from 'lucide-react';
 import axios from 'axios';
+import Header from '../components/Header';
 
 const BACKEND_URL = window.location.origin;
 
@@ -12,6 +13,9 @@ const RoomDetail = () => {
   const [mySubmission, setMySubmission] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [followStatus, setFollowStatus] = useState({});
+  const [actionBusy, setActionBusy] = useState({});
 
   useEffect(() => {
     const userStr = localStorage.getItem('ceibaa_user');
@@ -19,6 +23,11 @@ const RoomDetail = () => {
       alert('Please login to view room details');
       navigate('/login');
       return;
+    }
+    try {
+      setUser(JSON.parse(userStr));
+    } catch (err) {
+      console.error('Error parsing user:', err);
     }
     fetchRoomDetail();
   }, [pin]);
@@ -45,10 +54,93 @@ const RoomDetail = () => {
         setMySubmission(submissionResponse.data.submission);
       }
 
+      // Pre-fetch follow status for everyone in the leaderboard (excluding self)
+      try {
+        const lb = leaderboardResponse.data.leaderboard || [];
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+          const others = lb.filter(p => p.player_id && p.player_id !== user.id);
+          const headers = { Authorization: `Bearer ${token}` };
+          const statusEntries = await Promise.all(
+            others.map(async (p) => {
+              try {
+                const r = await axios.get(`${BACKEND_URL}/api/profile/follow-status/${p.player_id}`, { headers });
+                return [p.player_id, r.data?.status || null];
+              } catch (_e) {
+                return [p.player_id, null];
+              }
+            })
+          );
+          setFollowStatus(Object.fromEntries(statusEntries));
+        }
+      } catch (statusErr) {
+        console.warn('Could not pre-fetch follow status:', statusErr);
+      }
+
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch room details:', error);
       setLoading(false);
+    }
+  };
+
+  const handleFollow = async (targetUserId) => {
+    if (!targetUserId || targetUserId === user?.id) return;
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      alert('Please login to follow users');
+      navigate('/login');
+      return;
+    }
+    setActionBusy((prev) => ({ ...prev, [`follow-${targetUserId}`]: true }));
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.post(
+        `${BACKEND_URL}/api/profile/follow`,
+        { target_user_id: targetUserId },
+        { headers }
+      );
+      if (res.data?.success !== false) {
+        const newStatus = res.data?.status || 'approved';
+        setFollowStatus((prev) => ({ ...prev, [targetUserId]: newStatus }));
+      } else if (res.data?.message) {
+        alert(res.data.message);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to follow user';
+      alert(msg);
+    } finally {
+      setActionBusy((prev) => ({ ...prev, [`follow-${targetUserId}`]: false }));
+    }
+  };
+
+  const handleMessage = async (targetUserId) => {
+    if (!targetUserId || targetUserId === user?.id) return;
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      alert('Please login to message users');
+      navigate('/login');
+      return;
+    }
+    setActionBusy((prev) => ({ ...prev, [`msg-${targetUserId}`]: true }));
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const res = await axios.post(
+        `${BACKEND_URL}/api/messages/conversations`,
+        { target_user_id: targetUserId },
+        { headers }
+      );
+      const convId = res.data?.conversation?.id;
+      if (convId) {
+        navigate(`/messages/${convId}`);
+      } else {
+        navigate('/messages');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to open conversation';
+      alert(msg);
+    } finally {
+      setActionBusy((prev) => ({ ...prev, [`msg-${targetUserId}`]: false }));
     }
   };
 
@@ -95,31 +187,39 @@ const RoomDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+        <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('auth_token'); localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
+        <div className="flex items-center justify-center py-32">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
+        </div>
       </div>
     );
   }
 
   if (!roomData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl text-gray-700 mb-4">Room not found</p>
-          <button
-            onClick={() => navigate('/profile/board')}
-            className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold"
-          >
-            Back to Board
-          </button>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+        <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('auth_token'); localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
+        <div className="flex items-center justify-center py-32">
+          <div className="text-center">
+            <p className="text-xl text-gray-700 mb-4">Room not found</p>
+            <button
+              onClick={() => navigate('/profile/board')}
+              className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold"
+              data-testid="room-not-found-back-btn"
+            >
+              Back to Board
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+      <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('auth_token'); localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
+      <div className="max-w-6xl mx-auto py-8 px-4" data-testid="room-detail-container">
         <div className="mb-6 flex items-center justify-between">
           <button
             onClick={() => navigate('/profile/board')}
@@ -269,33 +369,83 @@ const RoomDetail = () => {
             Full Leaderboard
           </h2>
           <div className="space-y-3">
-            {leaderboard.map((player, index) => (
-              <div
-                key={player.player_id || `lb-${index}`}
-                className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
-                  mySubmission && player.player_id === mySubmission.player_id
-                    ? 'bg-gradient-to-r from-purple-100 to-blue-100 border-2 border-purple-400'
-                    : 'bg-gray-50'
-                }`}
-              >
-                <div className="flex-shrink-0 w-12 text-center">
-                  {index === 0 && <Trophy className="w-8 h-8 text-yellow-500 mx-auto" />}
-                  {index === 1 && <Trophy className="w-8 h-8 text-gray-400 mx-auto" />}
-                  {index === 2 && <Trophy className="w-8 h-8 text-orange-600 mx-auto" />}
-                  {index > 2 && <span className="text-lg font-bold text-gray-600">#{index + 1}</span>}
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900">{player.player_name}</div>
-                  <div className="text-sm text-gray-600">
-                    Time: {Math.floor(player.total_time / 60)}:{(player.total_time % 60).toString().padStart(2, '0')}
+            {leaderboard.map((player, index) => {
+              const isSelf = player.player_id && user?.id === player.player_id;
+              const fStatus = followStatus[player.player_id];
+              const followBusy = !!actionBusy[`follow-${player.player_id}`];
+              const msgBusy = !!actionBusy[`msg-${player.player_id}`];
+              const followLabel = fStatus === 'approved'
+                ? 'Following'
+                : fStatus === 'pending'
+                  ? 'Requested'
+                  : 'Follow';
+              const FollowIcon = fStatus === 'approved' ? UserCheck : UserPlus;
+              return (
+                <div
+                  key={player.player_id || `lb-${index}`}
+                  className={`flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl transition-all ${
+                    mySubmission && player.player_id === mySubmission.player_id
+                      ? 'bg-gradient-to-r from-purple-100 to-blue-100 border-2 border-purple-400'
+                      : 'bg-gray-50'
+                  }`}
+                  data-testid={`leaderboard-row-${index}`}
+                >
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="flex-shrink-0 w-12 text-center">
+                      {index === 0 && <Trophy className="w-8 h-8 text-yellow-500 mx-auto" />}
+                      {index === 1 && <Trophy className="w-8 h-8 text-gray-400 mx-auto" />}
+                      {index === 2 && <Trophy className="w-8 h-8 text-orange-600 mx-auto" />}
+                      {index > 2 && <span className="text-lg font-bold text-gray-600">#{index + 1}</span>}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-gray-900 truncate">
+                        {player.player_name}
+                        {isSelf && <span className="ml-2 text-xs font-normal text-purple-700">(You)</span>}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Time: {Math.floor(player.total_time / 60)}:{(player.total_time % 60).toString().padStart(2, '0')}
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-2xl font-bold text-gray-900">{player.total_score}</div>
+                      <div className="text-xs text-gray-500">points</div>
+                    </div>
                   </div>
+
+                  {/* Follow + Message actions for non-self players */}
+                  {!isSelf && player.player_id && (
+                    <div className="flex gap-2 sm:ml-2 flex-shrink-0" data-testid={`leaderboard-actions-${index}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleFollow(player.player_id)}
+                        disabled={followBusy || fStatus === 'approved' || fStatus === 'pending'}
+                        className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold border transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
+                          fStatus === 'approved'
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                            : fStatus === 'pending'
+                              ? 'bg-amber-50 border-amber-300 text-amber-700'
+                              : 'bg-white border-purple-300 text-purple-700 hover:bg-purple-50'
+                        }`}
+                        data-testid={`follow-btn-${index}`}
+                      >
+                        <FollowIcon className="w-4 h-4" />
+                        {followBusy ? '...' : followLabel}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleMessage(player.player_id)}
+                        disabled={msgBusy}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold bg-white border border-blue-300 text-blue-700 hover:bg-blue-50 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                        data-testid={`message-btn-${index}`}
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        {msgBusy ? '...' : 'Message'}
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900">{player.total_score}</div>
-                  <div className="text-xs text-gray-500">points</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
