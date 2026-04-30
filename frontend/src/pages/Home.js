@@ -282,31 +282,39 @@ const Home = () => {
             width: 3px;
             height: 0.95em;
             margin-left: 4px;
-            background: #4c1d95;
+            background: #0f172a;
             vertical-align: -0.12em;
             animation: ceibaa-caret 1s steps(1) infinite;
             border-radius: 1px;
           }
-          @keyframes ceibaa-shimmer {
-            0% { background-position: -120% 0; }
-            100% { background-position: 220% 0; }
-          }
           .ceibaa-badge-word {
-            background: linear-gradient(90deg, #4c1d95 0%, #4c1d95 35%, #facc15 50%, #4c1d95 65%, #4c1d95 100%);
-            background-size: 220% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: ceibaa-shimmer 4s linear infinite;
+            position: relative;
+            color: #7f1d1d;
+            display: inline-block;
+            white-space: nowrap;
+            isolation: isolate;
           }
-          @keyframes ceibaa-stamp-in {
-            0% { opacity: 0; transform: rotate(-12deg) scale(1.6); }
-            60% { opacity: 1; transform: rotate(-3deg) scale(0.92); }
-            100% { opacity: 1; transform: rotate(-3deg) scale(1); }
+          @keyframes ceibaa-marker-paint {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
           }
-          .ceibaa-stamp {
-            animation: ceibaa-stamp-in .6s ease-out both;
-            animation-delay: 2.4s;
+          .ceibaa-badge-word::after {
+            content: '';
+            position: absolute;
+            left: -2px;
+            right: -2px;
+            bottom: 4px;
+            height: 8px;
+            background: #f5c451;
+            border-radius: 2px;
+            z-index: -1;
+            transform-origin: left center;
+            transform: scaleX(0);
+            opacity: 0.85;
+          }
+          .ceibaa-badge-word--done::after {
+            animation: ceibaa-marker-paint .55s ease-out forwards;
+            animation-delay: .15s;
           }
           @keyframes ceibaa-marker {
             from { transform: scaleX(0); }
@@ -342,7 +350,7 @@ const Home = () => {
               {typedHeadline.startsWith('The ') ? (
                 <>
                   {'The '}
-                  <span className="ceibaa-badge-word">
+                  <span className={`ceibaa-badge-word${headlineDone ? ' ceibaa-badge-word--done' : ''}`}>
                     {typedHeadline.slice(4, 9)}
                   </span>
                   {typedHeadline.slice(9)}
@@ -353,52 +361,44 @@ const Home = () => {
               {!headlineDone && <span className="ceibaa-caret" aria-hidden="true"></span>}
             </span>
 
-            {/* Subheading — visually richer card with accent bar + key-word highlights */}
+            {/* Subheading — editorial card with single maroon accent */}
             <span
               className="ceibaa-rise-2 mt-4 block rounded-2xl relative overflow-hidden"
               style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid rgba(76,29,149,0.12)',
-                boxShadow: '0 10px 24px -16px rgba(15,23,42,0.25)',
+                backgroundColor: '#fffdf6',
+                border: '1px solid rgba(127,29,29,0.18)',
+                boxShadow: '0 10px 24px -16px rgba(15,23,42,0.18)',
               }}
             >
-              {/* Left accent bar */}
+              {/* Single-color accent bar (newspaper rule style) */}
               <span
-                className="absolute left-0 top-0 bottom-0 w-1.5"
-                style={{ background: 'linear-gradient(180deg, #4c1d95 0%, #efc868 100%)' }}
+                className="absolute left-0 top-0 bottom-0 w-1"
+                style={{ backgroundColor: '#7f1d1d' }}
                 aria-hidden="true"
               ></span>
               <span className="block pl-5 pr-4 py-3.5 text-[14px] font-semibold leading-[1.55]" style={{ color: '#1e293b' }}>
                 In the{' '}
-                <span style={{ color: '#4c1d95', fontWeight: 800 }}>Ceibaa Arena</span>, every battle
+                <span style={{ color: '#7f1d1d', fontWeight: 800 }}>Ceibaa Arena</span>, every battle
                 {' '}<span className="relative inline-block">
                   <span className="relative z-10">builds a bridge</span>
                   <span
-                    className="ceibaa-marker-line absolute left-0 right-0 bottom-0.5 h-2 -z-0 opacity-70"
-                    style={{ background: '#fde68a', borderRadius: '2px', animationDelay: '2.0s' }}
+                    className="ceibaa-marker-line absolute left-0 right-0 bottom-0.5 h-2 -z-0 opacity-80"
+                    style={{ background: '#f5c451', borderRadius: '2px', animationDelay: '2.0s' }}
                     aria-hidden="true"
                   ></span>
                 </span>{' '}to your future. Earn your{' '}
-                <span style={{ color: '#4c1d95', fontWeight: 800 }}>badge</span>{' '}and unlock{' '}
-                <span style={{ color: '#c2410c', fontWeight: 800 }}>opportunities</span>{' '}beyond the exam hall.
+                <span style={{ color: '#7f1d1d', fontWeight: 800 }}>badge</span>{' '}and unlock{' '}
+                <span style={{ color: '#7f1d1d', fontWeight: 800 }}>opportunities</span>{' '}beyond the exam hall.
               </span>
             </span>
 
-            {/* Catchphrase — stamp/seal style */}
-            <span className="mt-4 flex items-center gap-3" data-testid="mobile-home-catchphrase">
-              <span
-                className="ceibaa-stamp inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-black uppercase tracking-[0.18em]"
-                style={{
-                  color: '#c2410c',
-                  border: '2px solid #c2410c',
-                  backgroundColor: 'rgba(194,65,12,0.06)',
-                  fontFamily: 'Georgia, serif',
-                  letterSpacing: '0.16em',
-                }}
-              >
-                <Sparkles className="w-3.5 h-3.5" strokeWidth={2.5} />
-                Real-world ready · Arena tested
-              </span>
+            {/* Catchphrase — plain editorial italic (original look) */}
+            <span
+              className="ceibaa-rise-3 mt-3 block text-[13px] font-medium italic"
+              style={{ color: '#64748b', fontFamily: 'Georgia, serif' }}
+              data-testid="mobile-home-catchphrase"
+            >
+              Real-world ready, Arena tested.
             </span>
           </h1>
         </div>
