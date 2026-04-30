@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare, Briefcase } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare, Briefcase, KeyRound, Settings as SettingsIcon } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import InboxDropdown from './InboxDropdown';
@@ -264,7 +264,33 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                           <MessageSquare className="w-4 h-4 text-cyan-600" />
                           <span className="font-medium text-sm">Messages</span>
                         </button>
-                        
+
+                        <div className="border-t border-gray-200 my-1"></div>
+
+                        <button
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            navigate('/settings');
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
+                          data-testid="dropdown-settings-link"
+                        >
+                          <SettingsIcon className="w-4 h-4 text-gray-600" />
+                          <span className="font-medium text-sm">Settings</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setShowProfileDropdown(false);
+                            navigate('/settings');
+                          }}
+                          className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
+                          data-testid="dropdown-change-password-link"
+                        >
+                          <KeyRound className="w-4 h-4 text-purple-600" />
+                          <span className="font-medium text-sm">Change Password</span>
+                        </button>
+
                         <div className="border-t border-gray-200 my-1"></div>
                         
                         <button

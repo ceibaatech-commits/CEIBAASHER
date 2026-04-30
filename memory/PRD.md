@@ -246,3 +246,17 @@ components/
 - [ ] Facebook login button (keys already in .env — just need UI wire-up; simple addition)
 - [ ] Migrate OTP from email to SMS (add Twilio when user provides creds — swap is ~5 LOC in `send_phone_otp`)
 
+
+### Feb 20, 2026 — Logged-in "Change Password" + Settings page + Session revocation + Security email
+- [x] **Backend:** `POST /api/auth/change-password` added to `account_security_routes.py`
+  - Verifies current password via bcrypt, rejects if wrong (401)
+  - Rejects same old/new password (400) and <6-char new password (400)
+  - Writes bcrypt hash of new password
+  - Revokes all **other** user sessions (current session kept alive — user stays logged in)
+  - Invalidates any pending password-reset tokens
+  - Sends "Your password was changed" security-breadcrumb email via Resend (best-effort, non-fatal)
+- [x] **Frontend:** `ChangePasswordForm.js` reusable component + `/settings` page (`Settings.js`)
+- [x] **Header dropdown:** added "Settings" + "Change Password" items with Lucide icons (`SettingsIcon`, `KeyRound`)
+- [x] **Route wired:** `/settings` in App.js
+- [x] **Testing:** 8-step E2E smoke passed (wrong-current-rejected, same-old/new-rejected, success + session revoke, current token survives, old password no longer works, new password works); live UI smoke confirmed dropdown items + settings page render; Resend delivers notification email
+

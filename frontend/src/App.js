@@ -13,6 +13,7 @@ import Login from "@/pages/Login";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyPhone from "@/pages/VerifyPhone";
+import Settings from "@/pages/Settings";
 import Signup from "@/pages/Signup";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
@@ -142,6 +143,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-phone" element={<VerifyPhone />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth-callback" element={<AuthCallback />} />
