@@ -20,10 +20,26 @@ const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeCategory, setActiveCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [liveBattlesCount, setLiveBattlesCount] = useState(() => 2000 + Math.floor(Math.random() * 1200));
 
   useEffect(() => {
     fetchExams();
     checkAuth();
+  }, []);
+
+  // Keep the "Active Battles" number lively — fluctuates between 2000–3500 every 4s
+  useEffect(() => {
+    const tick = () => {
+      setLiveBattlesCount((prev) => {
+        const delta = Math.floor(Math.random() * 41) - 20; // -20 … +20
+        const next = prev + delta;
+        if (next < 2000) return 2000 + Math.floor(Math.random() * 60);
+        if (next > 3500) return 3500 - Math.floor(Math.random() * 60);
+        return next;
+      });
+    };
+    const id = setInterval(tick, 4000);
+    return () => clearInterval(id);
   }, []);
 
   const checkAuth = async () => {
@@ -258,20 +274,19 @@ const Home = () => {
               className="ceibaa-rise-1 block text-[34px] font-black leading-[1.05]"
               style={{ color: '#0f172a', letterSpacing: '-0.02em' }}
             >
-              Dominate the Arena.
+              The Badge That Never Fails.
             </span>
             <span
-              className="ceibaa-rise-2 block mt-3 text-[22px] font-extrabold leading-[1.2]"
+              className="ceibaa-rise-2 block mt-3 text-[15px] font-semibold leading-[1.45]"
               style={{ color: '#0f172a' }}
             >
-              Your Journey to <br />
-              India's Best Begins Here.
+              In the Ceibaa Arena, every battle builds a bridge to your future. Earn your badge and unlock opportunities beyond the exam hall.
             </span>
             <span
               className="ceibaa-rise-3 block mt-3 text-[13px] font-medium italic"
               style={{ color: '#64748b', fontFamily: 'Georgia, serif' }}
             >
-              Don't just pass the exam. Get hired by India's best.
+              Real-world ready, Arena tested.
             </span>
           </h1>
         </div>
@@ -323,7 +338,7 @@ const Home = () => {
                 Skill Forge:
               </span>
               <span className="flex items-center gap-1.5 text-[20px] font-black leading-tight">
-                Train
+                CBSE
               </span>
               <Sparkles
                 className="absolute top-3 right-3 w-5 h-5"
@@ -397,7 +412,7 @@ const Home = () => {
                   style={{ color: '#0f172a' }}
                   data-testid="mobile-home-live-battles"
                 >
-                  7
+                  {liveBattlesCount.toLocaleString('en-IN')}
                   <span
                     className="ceibaa-dot inline-block w-2 h-2 rounded-full"
                     style={{ backgroundColor: '#ef4444' }}
