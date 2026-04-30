@@ -21,10 +21,29 @@ const Home = () => {
   const [activeCategory, setActiveCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [liveBattlesCount, setLiveBattlesCount] = useState(() => 2000 + Math.floor(Math.random() * 1200));
+  const HEADLINE_TEXT = 'The Badge That Never Fails.';
+  const [typedHeadline, setTypedHeadline] = useState('');
+  const [headlineDone, setHeadlineDone] = useState(false);
 
   useEffect(() => {
     fetchExams();
     checkAuth();
+  }, []);
+
+  // Typewriter effect for the hero headline (mobile + desktop reuse)
+  useEffect(() => {
+    let i = 0;
+    setTypedHeadline('');
+    setHeadlineDone(false);
+    const typer = setInterval(() => {
+      i += 1;
+      setTypedHeadline(HEADLINE_TEXT.slice(0, i));
+      if (i >= HEADLINE_TEXT.length) {
+        clearInterval(typer);
+        setHeadlineDone(true);
+      }
+    }, 70);
+    return () => clearInterval(typer);
   }, []);
 
   // Keep the "Active Battles" number lively — fluctuates between 2000–3500 every 4s
@@ -254,6 +273,50 @@ const Home = () => {
             background-image: radial-gradient(rgba(15,23,42,0.18) 1px, transparent 1px);
             background-size: 14px 14px;
           }
+          @keyframes ceibaa-caret {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+          }
+          .ceibaa-caret {
+            display: inline-block;
+            width: 3px;
+            height: 0.95em;
+            margin-left: 4px;
+            background: #4c1d95;
+            vertical-align: -0.12em;
+            animation: ceibaa-caret 1s steps(1) infinite;
+            border-radius: 1px;
+          }
+          @keyframes ceibaa-shimmer {
+            0% { background-position: -120% 0; }
+            100% { background-position: 220% 0; }
+          }
+          .ceibaa-badge-word {
+            background: linear-gradient(90deg, #4c1d95 0%, #4c1d95 35%, #facc15 50%, #4c1d95 65%, #4c1d95 100%);
+            background-size: 220% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: ceibaa-shimmer 4s linear infinite;
+          }
+          @keyframes ceibaa-stamp-in {
+            0% { opacity: 0; transform: rotate(-12deg) scale(1.6); }
+            60% { opacity: 1; transform: rotate(-3deg) scale(0.92); }
+            100% { opacity: 1; transform: rotate(-3deg) scale(1); }
+          }
+          .ceibaa-stamp {
+            animation: ceibaa-stamp-in .6s ease-out both;
+            animation-delay: 2.4s;
+          }
+          @keyframes ceibaa-marker {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+          }
+          .ceibaa-marker-line {
+            display: inline-block;
+            transform-origin: left center;
+            animation: ceibaa-marker .55s ease-out both;
+          }
         `}
       </style>
       <div
@@ -271,22 +334,71 @@ const Home = () => {
         <div className="relative px-5 pt-7 pb-4">
           <h1 className="tracking-tight" data-testid="mobile-home-headline">
             <span
-              className="ceibaa-rise-1 block text-[34px] font-black leading-[1.05]"
+              className="block text-[34px] font-black leading-[1.05] min-h-[42px]"
               style={{ color: '#0f172a', letterSpacing: '-0.02em' }}
+              data-testid="mobile-home-headline-typed"
             >
-              The Badge That Never Fails.
+              {/* "The " static prefix */}
+              {typedHeadline.startsWith('The ') ? (
+                <>
+                  {'The '}
+                  <span className="ceibaa-badge-word">
+                    {typedHeadline.slice(4, 9)}
+                  </span>
+                  {typedHeadline.slice(9)}
+                </>
+              ) : (
+                typedHeadline
+              )}
+              {!headlineDone && <span className="ceibaa-caret" aria-hidden="true"></span>}
             </span>
+
+            {/* Subheading — visually richer card with accent bar + key-word highlights */}
             <span
-              className="ceibaa-rise-2 block mt-3 text-[15px] font-semibold leading-[1.45]"
-              style={{ color: '#0f172a' }}
+              className="ceibaa-rise-2 mt-4 block rounded-2xl relative overflow-hidden"
+              style={{
+                backgroundColor: '#ffffff',
+                border: '1px solid rgba(76,29,149,0.12)',
+                boxShadow: '0 10px 24px -16px rgba(15,23,42,0.25)',
+              }}
             >
-              In the Ceibaa Arena, every battle builds a bridge to your future. Earn your badge and unlock opportunities beyond the exam hall.
+              {/* Left accent bar */}
+              <span
+                className="absolute left-0 top-0 bottom-0 w-1.5"
+                style={{ background: 'linear-gradient(180deg, #4c1d95 0%, #efc868 100%)' }}
+                aria-hidden="true"
+              ></span>
+              <span className="block pl-5 pr-4 py-3.5 text-[14px] font-semibold leading-[1.55]" style={{ color: '#1e293b' }}>
+                In the{' '}
+                <span style={{ color: '#4c1d95', fontWeight: 800 }}>Ceibaa Arena</span>, every battle
+                {' '}<span className="relative inline-block">
+                  <span className="relative z-10">builds a bridge</span>
+                  <span
+                    className="ceibaa-marker-line absolute left-0 right-0 bottom-0.5 h-2 -z-0 opacity-70"
+                    style={{ background: '#fde68a', borderRadius: '2px', animationDelay: '2.0s' }}
+                    aria-hidden="true"
+                  ></span>
+                </span>{' '}to your future. Earn your{' '}
+                <span style={{ color: '#4c1d95', fontWeight: 800 }}>badge</span>{' '}and unlock{' '}
+                <span style={{ color: '#c2410c', fontWeight: 800 }}>opportunities</span>{' '}beyond the exam hall.
+              </span>
             </span>
-            <span
-              className="ceibaa-rise-3 block mt-3 text-[13px] font-medium italic"
-              style={{ color: '#64748b', fontFamily: 'Georgia, serif' }}
-            >
-              Real-world ready, Arena tested.
+
+            {/* Catchphrase — stamp/seal style */}
+            <span className="mt-4 flex items-center gap-3" data-testid="mobile-home-catchphrase">
+              <span
+                className="ceibaa-stamp inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-black uppercase tracking-[0.18em]"
+                style={{
+                  color: '#c2410c',
+                  border: '2px solid #c2410c',
+                  backgroundColor: 'rgba(194,65,12,0.06)',
+                  fontFamily: 'Georgia, serif',
+                  letterSpacing: '0.16em',
+                }}
+              >
+                <Sparkles className="w-3.5 h-3.5" strokeWidth={2.5} />
+                Real-world ready · Arena tested
+              </span>
             </span>
           </h1>
         </div>
