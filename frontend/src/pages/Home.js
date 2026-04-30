@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown, ArrowUpRight, Briefcase, Sparkles, GraduationCap, Stethoscope, Shield, Landmark, School, Building2, Building, ShieldAlert, Map, Languages, BadgeCheck } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown, ArrowUpRight, Briefcase, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import SEO from '../components/SEO';
 import CeibaaLogo from '../components/CeibaaLogo';
@@ -140,24 +140,8 @@ const Home = () => {
     { id: 'class-12/humanities', name: 'Class 12 Humanities', icon: '📜', color: 'from-purple-500 to-pink-500', subjects: 'History, Geography, Political Sc.' },
   ];
   
-  // Categories for mobile - exclude Teaching on mobile
-  const mobileCategories = categories.filter(cat => cat.id !== 'teaching');
-
-  // Mobile: Lucide icon map for refreshed category card design
-  const mobileCategoryIconMap = {
-    admission: GraduationCap,
-    medical: Stethoscope,
-    defence: Shield,
-    banking: Landmark,
-    university: School,
-    ssc: Briefcase,
-    upsc: Building2,
-    uppsc: Building,
-    csbc: ShieldAlert,
-    rsmssb: Map,
-    language: Languages,
-    teaching: BookOpen,
-  };
+  // Categories for mobile — include Teaching (now visible on mobile too)
+  const mobileCategories = categories;
 
   // Filter exams based on category and search
   const getFilteredExams = () => {
@@ -536,7 +520,6 @@ const Home = () => {
                 {/* Category Row */}
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   {row.map(cat => {
-                    const IconComp = mobileCategoryIconMap[cat.id] || BadgeCheck;
                     const isActive = activeCategory === cat.id;
                     return (
                       <button
@@ -554,13 +537,20 @@ const Home = () => {
                       >
                         <div
                           className="w-11 h-11 rounded-xl flex items-center justify-center mb-2"
-                          style={{ backgroundColor: isActive ? '#4c1d95' : '#ede9fe' }}
+                          style={{ backgroundColor: isActive ? '#4c1d95' : '#f5e6cb' }}
                         >
-                          <IconComp
-                            className="w-6 h-6"
-                            strokeWidth={2}
-                            style={{ color: isActive ? '#ffffff' : '#4c1d95' }}
-                          />
+                          {cat.image ? (
+                            <img
+                              src={cat.image}
+                              alt={cat.label}
+                              className="w-7 h-7 object-contain"
+                              style={{ filter: isActive ? 'brightness(0) invert(1)' : 'none' }}
+                            />
+                          ) : (
+                            <span className="text-[22px] leading-none" aria-hidden="true">
+                              {cat.icon}
+                            </span>
+                          )}
                         </div>
                         <span
                           className="text-center text-[11px] font-bold leading-tight line-clamp-2"
@@ -594,8 +584,18 @@ const Home = () => {
                         <div className="rounded-xl p-3 mb-3" style={{ backgroundColor: '#4c1d95', color: '#ffffff' }}>
                           <div className="flex items-center gap-2">
                             {(() => {
-                              const ActiveIcon = mobileCategoryIconMap[activeCategory] || BadgeCheck;
-                              return <ActiveIcon className="w-5 h-5" style={{ color: '#ffffff' }} strokeWidth={2.2} />;
+                              const activeCat = categories.find(c => c.id === activeCategory);
+                              if (!activeCat) return null;
+                              return activeCat.image ? (
+                                <img
+                                  src={activeCat.image}
+                                  alt={activeCat.label}
+                                  className="w-6 h-6 object-contain"
+                                  style={{ filter: 'brightness(0) invert(1)' }}
+                                />
+                              ) : (
+                                <span className="text-lg leading-none" aria-hidden="true">{activeCat.icon}</span>
+                              );
                             })()}
                             <div>
                               <h3 className="font-bold text-sm">{categories.find(c => c.id === activeCategory)?.label}</h3>
