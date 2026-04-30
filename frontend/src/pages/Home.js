@@ -21,29 +21,10 @@ const Home = () => {
   const [activeCategory, setActiveCategory] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [liveBattlesCount, setLiveBattlesCount] = useState(() => 2000 + Math.floor(Math.random() * 1200));
-  const HEADLINE_TEXT = 'The Badge That Never Fails.';
-  const [typedHeadline, setTypedHeadline] = useState('');
-  const [headlineDone, setHeadlineDone] = useState(false);
 
   useEffect(() => {
     fetchExams();
     checkAuth();
-  }, []);
-
-  // Typewriter effect for the hero headline (mobile + desktop reuse)
-  useEffect(() => {
-    let i = 0;
-    setTypedHeadline('');
-    setHeadlineDone(false);
-    const typer = setInterval(() => {
-      i += 1;
-      setTypedHeadline(HEADLINE_TEXT.slice(0, i));
-      if (i >= HEADLINE_TEXT.length) {
-        clearInterval(typer);
-        setHeadlineDone(true);
-      }
-    }, 70);
-    return () => clearInterval(typer);
   }, []);
 
   // Keep the "Active Battles" number lively — fluctuates between 2000–3500 every 4s
@@ -273,26 +254,31 @@ const Home = () => {
             background-image: radial-gradient(rgba(15,23,42,0.18) 1px, transparent 1px);
             background-size: 14px 14px;
           }
-          @keyframes ceibaa-caret {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
+          @keyframes ceibaa-morph-in {
+            0% { opacity: 0; filter: blur(14px); transform: translateY(20px) scale(1.45); letter-spacing: 0.18em; }
+            55% { opacity: 1; filter: blur(2px); transform: translateY(0) scale(1); letter-spacing: -0.04em; }
+            100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); letter-spacing: -0.02em; }
           }
-          .ceibaa-caret {
+          .ceibaa-morph-word {
             display: inline-block;
-            width: 3px;
-            height: 0.95em;
-            margin-left: 4px;
-            background: #0f172a;
-            vertical-align: -0.12em;
-            animation: ceibaa-caret 1s steps(1) infinite;
-            border-radius: 1px;
+            animation: ceibaa-morph-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+          }
+          @keyframes ceibaa-elastic-in {
+            0%   { opacity: 0; transform: translateY(28px) scale(0.3); }
+            55%  { opacity: 1; transform: translateY(-5px) scale(1.18); }
+            72%  { transform: translateY(2px) scale(0.94); }
+            86%  { transform: translateY(-1px) scale(1.04); }
+            100% { transform: translateY(0) scale(1); }
+          }
+          .ceibaa-elastic-word {
+            display: inline-block;
+            animation: ceibaa-elastic-in 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) both;
           }
           .ceibaa-badge-word {
             position: relative;
             color: #7f1d1d;
-            display: inline-block;
-            white-space: nowrap;
             isolation: isolate;
+            white-space: nowrap;
           }
           @keyframes ceibaa-marker-paint {
             from { transform: scaleX(0); }
@@ -311,10 +297,7 @@ const Home = () => {
             transform-origin: left center;
             transform: scaleX(0);
             opacity: 0.85;
-          }
-          .ceibaa-badge-word--done::after {
-            animation: ceibaa-marker-paint .55s ease-out forwards;
-            animation-delay: .15s;
+            animation: ceibaa-marker-paint 0.55s ease-out 1.05s forwards;
           }
           @keyframes ceibaa-marker {
             from { transform: scaleX(0); }
@@ -342,23 +325,24 @@ const Home = () => {
         <div className="relative px-5 pt-7 pb-4">
           <h1 className="tracking-tight" data-testid="mobile-home-headline">
             <span
-              className="block text-[34px] font-black leading-[1.05] min-h-[42px]"
+              className="block text-[34px] font-black leading-[1.05]"
               style={{ color: '#0f172a', letterSpacing: '-0.02em' }}
               data-testid="mobile-home-headline-typed"
             >
-              {/* "The " static prefix */}
-              {typedHeadline.startsWith('The ') ? (
-                <>
-                  {'The '}
-                  <span className={`ceibaa-badge-word${headlineDone ? ' ceibaa-badge-word--done' : ''}`}>
-                    {typedHeadline.slice(4, 9)}
-                  </span>
-                  {typedHeadline.slice(9)}
-                </>
-              ) : (
-                typedHeadline
-              )}
-              {!headlineDone && <span className="ceibaa-caret" aria-hidden="true"></span>}
+              {['The', 'Badge', 'That', 'Never', 'Fails.'].map((word, i, arr) => {
+                const isBadge = word === 'Badge';
+                return (
+                  <React.Fragment key={`hw-${i}`}>
+                    <span
+                      className={`ceibaa-morph-word${isBadge ? ' ceibaa-badge-word' : ''}`}
+                      style={{ animationDelay: `${i * 0.12}s` }}
+                    >
+                      {word}
+                    </span>
+                    {i < arr.length - 1 ? ' ' : ''}
+                  </React.Fragment>
+                );
+              })}
             </span>
 
             {/* Subheading — editorial card with single maroon accent */}
@@ -370,7 +354,6 @@ const Home = () => {
                 boxShadow: '0 10px 24px -16px rgba(15,23,42,0.18)',
               }}
             >
-              {/* Single-color accent bar (newspaper rule style) */}
               <span
                 className="absolute left-0 top-0 bottom-0 w-1"
                 style={{ backgroundColor: '#7f1d1d' }}
@@ -392,13 +375,23 @@ const Home = () => {
               </span>
             </span>
 
-            {/* Catchphrase — plain editorial italic (original look) */}
+            {/* Catchphrase — elastic per-word entrance */}
             <span
-              className="ceibaa-rise-3 mt-3 block text-[13px] font-medium italic"
+              className="mt-3 block text-[13px] font-medium italic"
               style={{ color: '#64748b', fontFamily: 'Georgia, serif' }}
               data-testid="mobile-home-catchphrase"
             >
-              Real-world ready, Arena tested.
+              {['Real-world', 'ready,', 'Arena', 'tested.'].map((word, i, arr) => (
+                <React.Fragment key={`cw-${i}`}>
+                  <span
+                    className="ceibaa-elastic-word"
+                    style={{ animationDelay: `${1.4 + i * 0.12}s` }}
+                  >
+                    {word}
+                  </span>
+                  {i < arr.length - 1 ? ' ' : ''}
+                </React.Fragment>
+              ))}
             </span>
           </h1>
         </div>
