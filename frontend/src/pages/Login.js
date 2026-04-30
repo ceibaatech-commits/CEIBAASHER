@@ -82,6 +82,21 @@ const Login = () => {
       
       console.log('[Login] Success - token stored for user:', userData?.name || userData?.email);
 
+      // For email-based logins, gate behind phone verification
+      if (isEmail) {
+        try {
+          const ps = await axios.get(`${BACKEND_URL}/api/auth/phone-status`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (ps.data?.needs_verification) {
+            navigate('/verify-phone', { replace: true, state: { from: location.state?.from } });
+            return;
+          }
+        } catch (psErr) {
+          console.warn('[Login] phone-status check failed (non-fatal):', psErr);
+        }
+      }
+
       const from = location.state?.from || '/victory-lane';
       navigate(from, { replace: true });
       
@@ -134,7 +149,18 @@ const Login = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  <Button
+                    type="button"
+                    variant="link"
+                    onClick={() => navigate('/forgot-password')}
+                    className="p-0 h-auto text-xs font-medium text-cyan-600"
+                    data-testid="forgot-password-link"
+                  >
+                    Forgot password?
+                  </Button>
+                </div>
                 <Input
                   id="password"
                   name="password"

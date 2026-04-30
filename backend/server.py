@@ -12,6 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from quiz_routes import router as quiz_router
 from auth_routes import router as auth_router
+from account_security_routes import router as account_security_router
 from exam_weightage import EXAM_WEIGHTAGE
 from sheets_routes import router as sheets_router
 from image_extraction_routes import router as image_extraction_router
@@ -174,6 +175,7 @@ async def get_status_checks():
 fastapi_app.include_router(api_router)
 fastapi_app.include_router(quiz_router, prefix="/api")
 fastapi_app.include_router(auth_router, prefix="/api")
+fastapi_app.include_router(account_security_router, prefix="/api")
 fastapi_app.include_router(sheets_router, prefix="/api")
 fastapi_app.include_router(image_extraction_router, prefix="/api")
 fastapi_app.include_router(battle_router)

@@ -224,3 +224,25 @@ components/
 - [ ] Remove the bulk of 293 production console.log statements
 - [ ] "5 high-severity security issues" — need user to share specifics
 
+
+### Feb 20, 2026 — Password Reset + Phone OTP (post-login gate)
+- [x] **Backend: `/app/backend/account_security_routes.py`** (new module, ~260 LOC)
+  - `POST /api/auth/forgot-password` — generates cryptographically-secure 64-char token, stores SHA-256 hash in `password_reset_tokens` collection with 1h expiry, sends reset email via Resend. Always returns success (email-enumeration safe).
+  - `POST /api/auth/reset-password` — validates token hash, expiry, and unused status; writes bcrypt-hashed new password (matches auth_routes scheme); marks token `used`; invalidates all other pending reset tokens for that user.
+  - `GET /api/auth/phone-status` — returns `{phone, phone_verified, needs_verification}` for the authenticated user (accepts both session cookie and Bearer JWT).
+  - `POST /api/auth/phone/send-otp` — saves phone number to user doc, generates 6-digit OTP, stores SHA-256 hash in `phone_otps` with 10-min expiry and 5-attempt cap; emails code via Resend (SMS-ready — swap `send_email` → Twilio call).
+  - `POST /api/auth/phone/verify-otp` — hash-compare, increments attempts on failure, on success sets `phone_verified=True` and clears OTP.
+- [x] **Frontend — 3 new pages:**
+  - `/forgot-password` (`ForgotPassword.js`) — email input → "Check your email" confirmation
+  - `/reset-password?token=xxx` (`ResetPassword.js`) — new + confirm password, error handling, success state
+  - `/verify-phone` (`VerifyPhone.js`) — 2-step wizard (phone entry → 6-digit OTP), auto-redirects verified users, auto-redirects unauthenticated to `/login`
+- [x] **Login gate:** `Login.js` now checks `/auth/phone-status` after email login; if `needs_verification`, redirects to `/verify-phone` (one-time gate)
+- [x] **"Forgot password?"** link added to Login.js password field
+- [x] **Resend config:** new API key, `SENDER_EMAIL="Ceibaa <noreply@ceibaa.in>"` (verified domain), `SITE_URL="https://ceibaa.in"`
+- [x] **E2E verified:** 9-step live smoke test passed (signup → forgot-password → reset-password → login with new pw → send OTP → verify OTP → phone-verified). Resend logs confirm delivery to verified domain.
+
+### Deferred
+- [ ] Twitter login button (needs user's TWITTER_API_KEY + TWITTER_API_SECRET)
+- [ ] Facebook login button (keys already in .env — just need UI wire-up; simple addition)
+- [ ] Migrate OTP from email to SMS (add Twilio when user provides creds — swap is ~5 LOC in `send_phone_otp`)
+
