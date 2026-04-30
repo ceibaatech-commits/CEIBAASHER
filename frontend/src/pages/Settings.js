@@ -4,7 +4,18 @@ import Header from '../components/Header';
 import ChangePasswordForm from '../components/ChangePasswordForm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    return null;
+  }
+};
+
 const Settings = () => {
+  const user = getStoredUser();
+  const username = user?.username || user?.name || '';
+  const profileHref = username ? `/profile/${username}` : '/profile/board';
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-purple-50">
       <Header />
@@ -55,7 +66,7 @@ const Settings = () => {
             </CardHeader>
             <CardContent>
               <a
-                href="/profile"
+                href={profileHref}
                 className="inline-flex items-center text-sm font-medium text-cyan-600 hover:text-cyan-700"
                 data-testid="settings-open-profile-link"
               >
