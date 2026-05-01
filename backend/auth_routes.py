@@ -675,66 +675,72 @@ async def signup(request: SignupRequest, response: Response):
         raise HTTPException(status_code=500, detail="Signup failed. Please try again.")
 
 
+def _build_user_response(user: dict) -> dict:
+    """Trim a user record for client responses (no password, flat shape)."""
+    return {
+        "id": user["id"],
+        "user_id": user.get("user_id", user["id"]),
+        "name": user.get("name"),
+        "email": user.get("email"),
+        "username": user.get("username"),
+        "avatar": user.get("avatar") or user.get("profile_picture"),
+        "profile_picture": user.get("profile_picture") or user.get("avatar"),
+        "verified": user.get("verified", False),
+        "rating": user.get("rating", 1200),
+        "streak": user.get("streak", 0),
+        "isTeacher": user.get("isTeacher", False),
+        "isProfessor": user.get("isProfessor", False),
+        "isOfficial": user.get("isOfficial", False),
+        "isInstitute": user.get("isInstitute", False),
+    }
+
+
+async def _authenticate_email_credentials(email_lower: str, password: str) -> dict:
+    """Look up a user and verify the password. Raises HTTPException on any failure.
+    Returns the loaded user document on success.
+    """
+    user = await db.users.find_one({"email": email_lower}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    stored_password = user.get("password")
+    if not stored_password:
+        # User might have signed up with Google
+        raise HTTPException(
+            status_code=401,
+            detail="This account uses Google login. Please use 'Continue with Google'.",
+        )
+
+    if not verify_password(password, stored_password):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    return user
+
+
 @router.post("/auth/login")
 async def email_login(login_data: EmailLoginRequest, response: Response):
     """Login with email and password"""
     try:
         email_lower = login_data.email.strip().lower()
-        
-        # Find user by email
-        user = await db.users.find_one({"email": email_lower}, {"_id": 0})
-        
-        if not user:
-            raise HTTPException(status_code=401, detail="Invalid email or password")
-        
-        # Check if user has a password (signed up with email)
-        stored_password = user.get("password")
-        if not stored_password:
-            # User might have signed up with Google
-            raise HTTPException(
-                status_code=401, 
-                detail="This account uses Google login. Please use 'Continue with Google'."
-            )
-        
-        # Verify password
-        if not verify_password(login_data.password, stored_password):
-            raise HTTPException(status_code=401, detail="Invalid email or password")
-        
+        user = await _authenticate_email_credentials(email_lower, login_data.password)
+
         # Update last login
         await db.users.update_one(
             {"email": email_lower},
-            {"$set": {"last_login": datetime.utcnow().isoformat()}}
+            {"$set": {"last_login": datetime.utcnow().isoformat()}},
         )
-        
-        # Generate JWT token
+
+        # Issue token + set httpOnly cookie
         token = _issue_jwt(user["id"], email_lower)
         _set_auth_cookie(response, token)
 
-        # Return user data (without password)
-        user_response = {
-            "id": user["id"],
-            "user_id": user.get("user_id", user["id"]),
-            "name": user.get("name"),
-            "email": user.get("email"),
-            "username": user.get("username"),
-            "avatar": user.get("avatar") or user.get("profile_picture"),
-            "profile_picture": user.get("profile_picture") or user.get("avatar"),
-            "verified": user.get("verified", False),
-            "rating": user.get("rating", 1200),
-            "streak": user.get("streak", 0),
-            "isTeacher": user.get("isTeacher", False),
-            "isProfessor": user.get("isProfessor", False),
-            "isOfficial": user.get("isOfficial", False),
-            "isInstitute": user.get("isInstitute", False)
-        }
-        
         return {
-            "user": user_response,
+            "user": _build_user_response(user),
             "token": token,
             "access_token": token,
-            "token_type": "bearer"
+            "token_type": "bearer",
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:

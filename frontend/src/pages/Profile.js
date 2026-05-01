@@ -364,11 +364,8 @@ const Profile = () => {
   const fetchPosts = useCallback(async (uid) => {
     if (!uid) return;
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
       const res = await axios.get(`${BACKEND_URL}/api/profile/${username}/posts`, {
-        params: { current_user_id: currentUser?.id },
-        headers
+        params: { current_user_id: currentUser?.id }
       }).catch(() => null);
       if (res?.data?.success) {
         setPosts(res.data.posts || []);
@@ -383,9 +380,7 @@ const Profile = () => {
   const fetchStats = useCallback(async (uid) => {
     if (!uid) return;
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const res = await axios.get(`${BACKEND_URL}/api/profile/stats/${uid}`, { headers }).catch(() => ({ data: null }));
+      const res = await axios.get(`${BACKEND_URL}/api/profile/stats/${uid}`).catch(() => ({ data: null }));
       if (res.data) setStats(res.data);
     } catch (err) { console.error('Failed to fetch stats:', err); }
   }, []);
@@ -393,11 +388,8 @@ const Profile = () => {
   const fetchMutualFollowers = useCallback(async (uid) => {
     if (!currentUser || !uid) return;
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      const res = await axios.get(`${BACKEND_URL}/api/profile/mutual-followers/${uid}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).catch(() => ({ data: { mutual: [] } }));
+      const res = await axios.get(`${BACKEND_URL}/api/profile/mutual-followers/${uid}`)
+        .catch(() => ({ data: { mutual: [] } }));
       setMutualFollowers(res.data?.mutual?.slice(0, 3) || []);
     } catch (err) { console.error('Failed to fetch mutual followers:', err); }
   }, [currentUser]);
@@ -415,14 +407,9 @@ const Profile = () => {
     if (tab === 'saved' && isOwnProfile && savedPosts.length === 0) {
       setSavedLoading(true);
       try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const res = await axios.get(`${BACKEND_URL}/api/social/bookmarks`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (res.data.success) {
-            setSavedPosts(res.data.posts || []);
-          }
+        const res = await axios.get(`${BACKEND_URL}/api/social/bookmarks`);
+        if (res.data.success) {
+          setSavedPosts(res.data.posts || []);
         }
       } catch (err) { console.error('Failed to fetch bookmarks:', err); }
       finally { setSavedLoading(false); }
@@ -450,11 +437,8 @@ const Profile = () => {
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm('Delete this post?')) return;
-    const token = localStorage.getItem('token');
     try {
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`);
       setPosts(prev => prev.filter(p => p.id !== postId));
     } catch { alert('Failed to delete post.'); }
   };
@@ -467,11 +451,9 @@ const Profile = () => {
 
   const handleBlockAndRedirect = async () => {
     try {
-      const token = localStorage.getItem('token');
       await axios.post(
         `${BACKEND_URL}/api/profile/block`,
-        { target_user_id: resolvedUserId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { target_user_id: resolvedUserId }
       );
       toast.success(`Blocked @${profile.username}`);
       navigate('/victory-lane');
@@ -498,11 +480,10 @@ const Profile = () => {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.post(
         `${BACKEND_URL}/api/media/profile-upload?upload_type=${type === 'avatar' ? 'avatar' : 'cover'}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } }
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
       if (res.data.success) {
         const key = type === 'avatar' ? 'profile_picture' : 'cover_photo';
@@ -515,8 +496,7 @@ const Profile = () => {
   };
 
   const handleSaveProfile = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!currentUser) return;
     try {
       const payload = {
         name: editForm.name,
@@ -528,8 +508,7 @@ const Profile = () => {
       };
       const res = await axios.put(
         `${BACKEND_URL}/api/profile/update`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        payload
       );
       if (res.data.success) {
         setProfile(prev => ({
@@ -546,16 +525,14 @@ const Profile = () => {
   };
 
   const handleAddExam = async (exam) => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!currentUser) return;
     try {
       const currentExams = profile.exam_focus || [];
       if (currentExams.includes(exam)) { toast.info('Already added'); return; }
       const updated = [...currentExams, exam];
       await axios.put(
         `${BACKEND_URL}/api/profile/update`,
-        { exam_focus: updated },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { exam_focus: updated }
       );
       setProfile(prev => ({ ...prev, exam_focus: updated }));
       toast.success(`Added ${exam}`);
@@ -790,10 +767,9 @@ const Profile = () => {
                   const formData = new FormData();
                   formData.append('file', file);
                   try {
-                    const token = localStorage.getItem('token');
-                    const res = await axios.post(`${BACKEND_URL}/api/media/profile-upload?upload_type=cover`, formData, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } });
+                    const res = await axios.post(`${BACKEND_URL}/api/media/profile-upload?upload_type=cover`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
                     if (res.data.success) {
-                      await axios.put(`${BACKEND_URL}/api/profile/update`, { cover_photo: res.data.url }, { headers: { Authorization: `Bearer ${token}` } });
+                      await axios.put(`${BACKEND_URL}/api/profile/update`, { cover_photo: res.data.url });
                       setProfile(prev => ({ ...prev, cover_image: res.data.url }));
                       toast.success('Cover photo updated');
                     }
@@ -820,10 +796,9 @@ const Profile = () => {
                       const formData = new FormData();
                       formData.append('file', file);
                       try {
-                        const token = localStorage.getItem('token');
-                        const res = await axios.post(`${BACKEND_URL}/api/media/profile-upload?upload_type=avatar`, formData, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' } });
+                        const res = await axios.post(`${BACKEND_URL}/api/media/profile-upload?upload_type=avatar`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
                         if (res.data.success) {
-                          await axios.put(`${BACKEND_URL}/api/profile/update`, { profile_picture: res.data.url }, { headers: { Authorization: `Bearer ${token}` } });
+                          await axios.put(`${BACKEND_URL}/api/profile/update`, { profile_picture: res.data.url });
                           setProfile(prev => ({ ...prev, profile_picture: res.data.url }));
                           toast.success('Profile picture updated');
                         }
@@ -859,11 +834,9 @@ const Profile = () => {
                       <button
                         onClick={async () => {
                           try {
-                            const tkn = localStorage.getItem('token');
                             const res = await axios.post(
                               `${BACKEND_URL}/api/messages/conversations`,
-                              { target_user_id: resolvedUserId },
-                              { headers: { Authorization: `Bearer ${tkn}` } }
+                              { target_user_id: resolvedUserId }
                             );
                             if (res.data.success) {
                               navigate(`/messages/${res.data.conversation.id}`);

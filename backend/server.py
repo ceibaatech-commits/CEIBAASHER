@@ -19,7 +19,6 @@ from image_extraction_routes import router as image_extraction_router
 from battle_routes import router as battle_router
 from battle_async_routes import router as battle_async_router
 import battle_async_routes
-from social_routes import router as social_router
 # Socket.io proxy now runs separately on port 5002
 # from socket_proxy import socket_app  # Not needed anymore
 from contact_routes import router as contact_router
@@ -180,7 +179,7 @@ fastapi_app.include_router(sheets_router, prefix="/api")
 fastapi_app.include_router(image_extraction_router, prefix="/api")
 fastapi_app.include_router(battle_router)
 fastapi_app.include_router(battle_async_router)  # Hybrid REST + Socket.IO battle system
-# fastapi_app.include_router(social_router, prefix="/api")  # Disabled - using social_feed_router instead
+# Note: legacy social_router (from social_routes.py) removed — fully replaced by social_feed_router.
 
 # Contact/Support routes
 import contact_routes

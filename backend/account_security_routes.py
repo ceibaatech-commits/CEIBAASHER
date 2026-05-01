@@ -365,6 +365,55 @@ def _verify_bcrypt(plain: str, hashed: str) -> bool:
         return False
 
 
+def _validate_new_password(current: str, new: str) -> None:
+    if len(new) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+    if new == current:
+        raise HTTPException(status_code=400, detail="New password must be different from the current one")
+
+
+async def _verify_user_current_password(user_id: str, current_password: str) -> dict:
+    """Load user, ensure they have a password, and verify it. Returns the user."""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    stored = user.get("password")
+    if not stored:
+        raise HTTPException(
+            status_code=400,
+            detail="This account uses social login and doesn't have a password to change.",
+        )
+    if not _verify_bcrypt(current_password, stored):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    return user
+
+
+async def _revoke_other_sessions(user_id: str, current_token: Optional[str]) -> int:
+    sessions_filter = {"user_id": user_id}
+    if current_token:
+        sessions_filter["session_token"] = {"$ne": current_token}
+    revoked = await db.user_sessions.delete_many(sessions_filter)
+    # Also invalidate outstanding password-reset tokens
+    await db.password_reset_tokens.update_many(
+        {"user_id": user_id, "used": False},
+        {"$set": {"used": True, "used_at": _utcnow(), "invalidated": True}},
+    )
+    return revoked.deleted_count
+
+
+async def _notify_password_changed(user: dict) -> None:
+    """Best-effort security-breadcrumb email; never fatal."""
+    try:
+        if user.get("email"):
+            await send_email(
+                user["email"],
+                "Your Ceibaa password was changed",
+                _password_changed_email_html(user.get("name", "")),
+            )
+    except Exception as e:
+        print(f"[change-password] notification email failed: {e}")
+
+
 @router.post("/auth/change-password")
 async def change_password(req: ChangePasswordRequest, request: Request, authorization: Optional[str] = Header(None)):
     """
@@ -377,23 +426,8 @@ async def change_password(req: ChangePasswordRequest, request: Request, authoriz
     """
     user_id = await _user_id_from_bearer(authorization, request)
 
-    if len(req.new_password) < 6:
-        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
-    if req.new_password == req.current_password:
-        raise HTTPException(status_code=400, detail="New password must be different from the current one")
-
-    user = await db.users.find_one({"id": user_id}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    stored = user.get("password")
-    if not stored:
-        raise HTTPException(
-            status_code=400,
-            detail="This account uses social login and doesn't have a password to change.",
-        )
-    if not _verify_bcrypt(req.current_password, stored):
-        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    _validate_new_password(req.current_password, req.new_password)
+    user = await _verify_user_current_password(user_id, req.current_password)
 
     # Update password
     await db.users.update_one(
@@ -404,33 +438,13 @@ async def change_password(req: ChangePasswordRequest, request: Request, authoriz
         }},
     )
 
-    # Invalidate all OTHER sessions (keep current token alive so user isn't kicked)
-    current_token = authorization[len("Bearer "):] if authorization.startswith("Bearer ") else None
-    sessions_filter = {"user_id": user_id}
-    if current_token:
-        sessions_filter["session_token"] = {"$ne": current_token}
-    revoked = await db.user_sessions.delete_many(sessions_filter)
-
-    # Drop any outstanding password-reset tokens, too
-    await db.password_reset_tokens.update_many(
-        {"user_id": user_id, "used": False},
-        {"$set": {"used": True, "used_at": _utcnow(), "invalidated": True}},
-    )
-
-    # Security-breadcrumb email (best-effort, non-fatal)
-    try:
-        if user.get("email"):
-            await send_email(
-                user["email"],
-                "Your Ceibaa password was changed",
-                _password_changed_email_html(user.get("name", "")),
-            )
-    except Exception as e:
-        print(f"[change-password] notification email failed: {e}")
+    current_token = authorization[len("Bearer "):] if authorization and authorization.startswith("Bearer ") else None
+    revoked_count = await _revoke_other_sessions(user_id, current_token)
+    await _notify_password_changed(user)
 
     return {
         "success": True,
         "message": "Password updated. You've been logged out of all other devices for security.",
-        "other_sessions_revoked": revoked.deleted_count,
+        "other_sessions_revoked": revoked_count,
     }
 
