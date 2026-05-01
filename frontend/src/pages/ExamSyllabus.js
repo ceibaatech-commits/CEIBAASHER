@@ -217,7 +217,7 @@ const ExamSyllabus = () => {
         <div className="md:hidden space-y-1">
           {filteredTopics.map((topicData, index) => (
             <div
-              key={index}
+              key={topicData.topic || `topic-mobile-${index}`}
               className="bg-white rounded overflow-hidden border border-gray-100"
             >
               {/* Topic Header - Collapsed: ~50px height */}
@@ -248,7 +248,7 @@ const ExamSyllabus = () => {
                       <div className="flex flex-wrap gap-0.5">
                         {topicData.subtopics.slice(0, 3).map((subtopic, idx) => (
                           <span
-                            key={idx}
+                            key={`${topicData.topic}-sub-${subtopic || idx}`}
                             className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded"
                           >
                             {subtopic}
@@ -306,7 +306,7 @@ const ExamSyllabus = () => {
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTopics.map((topicData, index) => (
             <div
-              key={index}
+              key={topicData.topic || `topic-desktop-${index}`}
               className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden group cursor-pointer"
               onClick={() => navigate(`/topic-quiz/${examId}/${topicData.subject}/${topicData.topic}`)}
             >
@@ -337,7 +337,7 @@ const ExamSyllabus = () => {
                   <div className="flex flex-wrap gap-1">
                     {topicData.subtopics.slice(0, 3).map((subtopic, idx) => (
                       <span
-                        key={idx}
+                        key={`${topicData.topic}-dsub-${subtopic || idx}`}
                         className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full"
                       >
                         {subtopic}

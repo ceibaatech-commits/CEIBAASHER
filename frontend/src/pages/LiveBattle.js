@@ -1136,7 +1136,7 @@ const LiveBattle = () => {
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {allQuestions.map((q, idx) => (
                     <div
-                      key={idx}
+                      key={q.id || q.question || `q-${idx}`}
                       onClick={() => {
                         setCurrentQuestionIndex(idx);
                         setCurrentQuestion(q);
@@ -1167,7 +1167,7 @@ const LiveBattle = () => {
                           <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
                             {q.options.map((opt, optIdx) => (
                               <div
-                                key={optIdx}
+                                key={`${q.id || idx}-opt-${optIdx}`}
                                 className={`px-2 py-1 rounded ${
                                   optIdx === q.correct
                                     ? idx === currentQuestionIndex
@@ -1401,7 +1401,7 @@ const LiveBattle = () => {
                     ) : (
                       chatMessages.map((msg, index) => (
                         <div
-                          key={index}
+                          key={msg.id || msg.timestamp || `msg-${index}`}
                           className={`p-2 rounded-lg ${
                             msg.playerName === playerName
                               ? 'bg-purple-100 ml-4'

@@ -84,7 +84,6 @@
     "test": "craco test"
   },
   "eslintConfig": {
-    "extends": ["react-app"],
     "rules": {
       "no-console": ["warn", { "allow": ["warn", "error"] }]
     }

@@ -236,7 +236,7 @@ const FAQ = () => {
           <div className="grid lg:grid-cols-2 gap-8">
             {faqSections.map((section, sectionIndex) => (
               <motion.div
-                key={sectionIndex}
+                key={section.title || `section-${sectionIndex}`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -262,7 +262,7 @@ const FAQ = () => {
 
                     return (
                       <div
-                        key={faqIndex}
+                        key={faq.question || `${sectionIndex}-faq-${faqIndex}`}
                         onClick={() => toggleAccordion(globalIndex)}
                         className={`cursor-pointer bg-white rounded-2xl border-2 transition-all ${
                           isOpen ? 'border-gray-300 shadow-lg' : 'border-gray-100 hover:border-gray-200'

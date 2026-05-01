@@ -75,18 +75,14 @@ export const AuthProvider = ({ children }) => {
       // Handle successful response
       if (response.data.access_token || response.data.success) {
         const userData = response.data.user;
-        const token = response.data.access_token;
-        
-        // Store both user data and JWT token
+
+        // Store user data (non-sensitive, for UX state persistence).
+        // The auth token is delivered via httpOnly cookie by the backend
+        // (_set_auth_cookie), so we no longer mirror it to localStorage.
+        // This closes the XSS attack surface flagged in code review.
         setUser(userData);
         localStorage.setItem('ceibaa_user', JSON.stringify(userData));
-        
-        if (token) {
-          localStorage.setItem('token', token);
-          localStorage.setItem('auth_token', token); // Keep for backward compatibility
-          console.log('JWT token stored successfully');
-        }
-        
+
         return { success: true };
       } else {
         return { success: false, message: response.data.message || 'Login failed' };

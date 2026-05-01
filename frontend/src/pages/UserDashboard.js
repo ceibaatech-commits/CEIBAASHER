@@ -25,15 +25,16 @@ const UserDashboard = () => {
   }, []);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('auth_token');
     const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (!token || !storedUser) {
+
+    // Auth token lives in an httpOnly cookie (Stage 3 migration). We use
+    // the cached user profile as the client-side gate; the real auth check
+    // happens server-side on any protected call.
+    if (!storedUser) {
       navigate('/login');
       return;
     }
 
-    // Load user from localStorage
     try {
       setUser(JSON.parse(storedUser));
       setLoading(false);

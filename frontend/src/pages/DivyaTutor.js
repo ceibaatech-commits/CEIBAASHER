@@ -366,7 +366,7 @@ const LiveTutor = ({ onSessionChange }) => {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50" data-testid="chat-messages">
         {messages.map((msg, idx) => (
-          <MsgBubble key={idx} msg={msg} tutor={tutor} selectedTutor={selectedTutor}
+          <MsgBubble key={msg.id || msg.timestamp || `msg-${idx}`} msg={msg} tutor={tutor} selectedTutor={selectedTutor}
             onPlayAudio={msg.audio ? () => playMessageAudio(msg.audio) : null}
             isSpeaking={isSpeaking} />
         ))}
@@ -492,7 +492,7 @@ const PodcastMode = () => {
           {files.length > 0 && (
             <div className="space-y-2 mb-3">
               {files.map((f, i) => (
-                <div key={i} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                <div key={f.name || `file-${i}`} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
                   {f.type?.includes('image') ? <ImagePlus className="w-4 h-4 text-blue-500 shrink-0" /> : <FileText className="w-4 h-4 text-orange-500 shrink-0" />}
                   <span className="text-xs text-gray-600 truncate flex-1">{f.name}</span>
                   <span className="text-[10px] text-gray-400">{(f.size / 1024 / 1024).toFixed(1)}MB</span>
@@ -540,7 +540,7 @@ const PodcastMode = () => {
               <h4 className="text-xs font-bold text-gray-500 uppercase mb-3">Transcript</h4>
               <div className="space-y-2">
                 {podcast.dialogue.map((line, i) => (
-                  <div key={i} className="flex gap-2 p-2 rounded-lg">
+                  <div key={`${line.speaker}-${i}`} className="flex gap-2 p-2 rounded-lg">
                     <span className={`text-[10px] font-bold shrink-0 mt-0.5 ${line.speaker === 'DIVYA' ? 'text-purple-500' : 'text-teal-500'}`}>{line.speaker}</span>
                     <p className="text-xs text-gray-600 leading-relaxed">{line.text}</p>
                   </div>
