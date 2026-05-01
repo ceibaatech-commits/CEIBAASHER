@@ -8,9 +8,22 @@ JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key-2026")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 
-async def get_current_student(request: Request):
+def _extract_token(request: Request) -> str | None:
+    """Dual-mode token extraction: httpOnly session cookie first, then
+    Authorization Bearer header. Matches the pattern in auth_routes._extract_token
+    so student/recruiter endpoints work with cookie-based auth too.
+    """
+    token = request.cookies.get("session_token")
+    if token:
+        return token
     auth = request.headers.get("Authorization", "")
-    token = auth.replace("Bearer ", "") if auth.startswith("Bearer ") else None
+    if auth.startswith("Bearer "):
+        return auth[len("Bearer "):]
+    return None
+
+
+async def get_current_student(request: Request):
+    token = _extract_token(request)
     if not token:
         raise HTTPException(401, "Not authenticated")
     try:
@@ -25,8 +38,7 @@ async def get_current_student(request: Request):
 
 
 async def get_current_recruiter(request: Request):
-    auth = request.headers.get("Authorization", "")
-    token = auth.replace("Bearer ", "") if auth.startswith("Bearer ") else None
+    token = _extract_token(request)
     if not token:
         raise HTTPException(401, "Not authenticated")
     try:
@@ -41,11 +53,10 @@ async def get_current_recruiter(request: Request):
 
 
 async def get_admin(request: Request):
-    auth = request.headers.get("Authorization", "")
-    if not auth.startswith("Bearer "):
+    token = _extract_token(request)
+    if not token:
         raise HTTPException(401, "Auth required")
     try:
-        token = auth.split(" ")[1]
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         if payload.get("role") != "ceibaa_admin":
             raise HTTPException(403, "Admin only")

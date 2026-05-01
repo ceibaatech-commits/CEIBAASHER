@@ -83,6 +83,12 @@
     "build": "craco build",
     "test": "craco test"
   },
+  "eslintConfig": {
+    "extends": ["react-app"],
+    "rules": {
+      "no-console": ["warn", { "allow": ["warn", "error"] }]
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",

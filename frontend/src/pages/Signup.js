@@ -93,8 +93,8 @@ const Signup = () => {
         referral_code: referralCode || undefined
       });
 
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('auth_token', response.data.token);
+      // Auth token is set as httpOnly cookie by the backend — safer against XSS.
+      // We no longer mirror it to localStorage (Stage 3 migration).
       setUserData(response.data.user);
       navigate('/victory-lane', { replace: true });
       
