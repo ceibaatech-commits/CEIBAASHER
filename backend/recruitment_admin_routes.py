@@ -12,7 +12,7 @@ import cloudinary.uploader
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 from collections import defaultdict
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Response
 from pydantic import BaseModel
 from jose import jwt, JWTError
 from database import db
@@ -59,8 +59,11 @@ def _clear_attempts(ip: str, email: str):
     _login_attempts.pop(key, None)
 
 async def get_admin(request: Request):
-    auth = request.headers.get("Authorization", "")
-    token = auth.replace("Bearer ", "") if auth.startswith("Bearer ") else None
+    # Stage 3: dual-mode — prefer httpOnly session_token cookie, fall back to Bearer header.
+    token = request.cookies.get("session_token")
+    if not token:
+        auth = request.headers.get("Authorization", "")
+        token = auth[len("Bearer "):] if auth.startswith("Bearer ") else None
     if not token:
         raise HTTPException(401, "Not authenticated")
     try:
@@ -90,7 +93,7 @@ class CreateRecruiter(BaseModel):
 
 # --- Admin Auth ---
 @router.post("/recruitment-admin/login")
-async def admin_login(data: AdminLogin, request: Request):
+async def admin_login(data: AdminLogin, request: Request, response: Response):
     email = data.email.strip().lower()
     client_ip = request.client.host if request.client else "unknown"
     _check_rate_limit(client_ip, email)
@@ -106,6 +109,16 @@ async def admin_login(data: AdminLogin, request: Request):
         {"sub": admin["id"], "email": email, "role": "ceibaa_admin",
          "exp": datetime.now(timezone.utc) + timedelta(days=7)},
         JWT_SECRET, algorithm=JWT_ALGORITHM
+    )
+    # Stage 3: set httpOnly session_token cookie so frontend doesn't need to stash the JWT.
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        max_age=7 * 24 * 60 * 60,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/",
     )
     return {"access_token": token, "token_type": "bearer", "admin": {"id": admin["id"], "name": admin["name"], "email": admin["email"]}}
 

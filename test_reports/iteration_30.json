@@ -1,0 +1,63 @@
+{
+  "summary": "Stage 3 auth refactor regression testing (iteration 30). Added /app/backend/tests/test_stage3_auth_regression.py (18 tests) covering cookie-only flows for /auth/me, social/bookmarks, profile/close-friend-ids, profile/privacy, auth/phone-status, recruitment/quiz/start; Bearer-fallback parity; remember-me cookie Max-Age; and unauth rejection. Frontend smoke test: logged in via /login with demo1/demo1, verified stay-signed-in checkbox (data-testid present), confirmed NO JWT stored in localStorage (only non-sensitive ceibaa_user profile), confirmed ZERO `Authorization: Bearer` header on calls to migrated endpoints (profile/social/messages/auth/me/phone/recruitment). Discovered 2 genuine backend bugs: (1) /api/auth/login returns 500 for admin@ceibaa.in because the stored admin password is a raw 64-char hex digest (SHA256), NOT a bcrypt hash — bcrypt.checkpw raises ValueError('Invalid salt') which the generic except-Exception branch maps to 500 for BOTH correct and wrong passwords against this account; this blocks admin login entirely and prevents remember-me cookie verification. (2) /api/profile/follow-requests returns 404 'User not found' because the route is declared AFTER the catch-all `@router.get('/{username}')` (lines 501 vs 1056) in profile_routes.py, so FastAPI matches 'follow-requests' as a username parameter. 11/18 backend tests passed, 2 failed (the two bugs above), 5 skipped (admin email login, remember-me ×2, recruitment-admin/recruiter cookie paths — not seeded). All other cookie-first, Bearer-fallback flows pass. No frontend regressions.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/auth/login (admin@ceibaa.in)",
+        "issue": "Returns 500 'Login failed. Please try again.' for admin. Root cause: db.users['admin@ceibaa.in'].password is a 64-char hex string (probably SHA256 digest from a legacy seed) rather than a bcrypt hash starting with $2b$. bcrypt.checkpw raises ValueError('Invalid salt'); this is swallowed by the generic `except Exception` in email_login and mapped to 500. This blocks (a) admin login in /login, (b) the entire remember-me test set, (c) any recruitment-admin flow that reuses the same credentials. Fix: re-seed the admin account with `bcrypt.hashpw(b'SuperAdmin@123', bcrypt.gensalt()).decode()` so stored password starts with $2b$; optionally also narrow _authenticate_email_credentials to catch ValueError and return 401 instead of letting it bubble into a 500.",
+        "priority": "CRITICAL"
+      },
+      {
+        "endpoint": "GET /api/profile/follow-requests",
+        "issue": "Returns 404 {'detail':'User not found'} for any authenticated user. Root cause: the catch-all path-param route `@router.get('/{username}')` is declared at line 501 of profile_routes.py, while `@router.get('/follow-requests')` is declared at line 1056. FastAPI resolves in declaration order, so 'follow-requests' is captured as {username} and fails in get_user_by_username with a 404. Fix: move `@router.get('/follow-requests')` (and any other single-segment literal route that comes after {username}) ABOVE line 501. Same fix pattern as the already-working `/close-friend-ids` which is declared before {username}. This is a cookie-agnostic regression — affects both Bearer and cookie auth users. Fails the follow-request UI end-to-end.",
+        "priority": "HIGH"
+      }
+    ],
+    "minor": [
+      {
+        "endpoint": "POST /api/auth/login (invalid password)",
+        "issue": "Returns 500 instead of 401 for admin@ceibaa.in with a WRONG password — same root cause as the critical bug: bcrypt.checkpw raises ValueError before the handler's 401 path is reached. For non-admin users with a properly-hashed password, wrong password correctly returns 401."
+      },
+      {
+        "endpoint": "Recruitment admin & recruiter cookie flows",
+        "issue": "Could not be validated because no admin credentials exist in db.ceibaa_admins or db.recruiters (flagged as 'needs seeding' per the request). The code path was exercised only to the 401 path; set-cookie on success is not verified."
+      }
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_stage3_auth_regression.py",
+    "/app/test_reports/pytest/stage3_auth.xml"
+  ],
+  "action_items": [
+    "Re-seed admin@ceibaa.in in db.users with bcrypt hash of 'SuperAdmin@123' (currently SHA256 hex). Alternatively add a one-shot startup migration to rehash legacy digests on next successful password match.",
+    "Harden _authenticate_email_credentials in /app/backend/auth_routes.py to catch ValueError ('Invalid salt'/'Invalid hashed_password') from bcrypt.checkpw and return 401 instead of propagating a 500.",
+    "Move `@router.get('/follow-requests')` above `@router.get('/{username}')` in /app/backend/profile_routes.py (or add an explicit guard in the {username} route) so the literal route matches first. Audit all single-segment literal GETs declared after line 501.",
+    "Seed a recruitment admin (db.ceibaa_admins) and recruiter (db.recruiters) for future cookie-path regression tests; the endpoints themselves are reachable and return proper 401 on unknown creds."
+  ],
+  "critical_code_review_comments": [
+    "email_login: generic `except Exception as e: raise 500` hides real auth errors. bcrypt corruption, DB connectivity, and schema issues all collapse to an unhelpful 500. Prefer narrow except clauses; a ValueError from bcrypt is a credential issue, not an infra issue.",
+    "profile_routes.py:1076 has a name-shadowing bug: `for request in requests_data` shadows the `request: Request` parameter. Harmless today (the outer `request` is only used once, above the loop) but risky for future edits.",
+    "FastAPI route ordering in profile_routes.py is fragile: `/{username}` is a greedy catch-all declared mid-file. Any future single-segment literal route added below it will silently break with a 404. Consider converting `/{username}` to `/user/{username}` or moving all catch-all routes to end-of-file with an inline assertion.",
+    "auth_helpers._extract_token, social_feed_routes.get_user_id_from_request, account_security_routes._user_id_from_bearer, profile_routes.get_user_id_from_request, recruitment_admin_routes.get_admin — all dual-mode cookie/Bearer implementations verified working (cookie-only AND Bearer-only tests both pass on the endpoints I exercised).",
+    "Frontend Stage 3 migration is CLEAN: zero Bearer headers to migrated endpoints were observed on the browser smoke run; localStorage contains no token/auth_token/recruiter_token/admin_recruitment_token after login — only the non-sensitive `ceibaa_user` profile.",
+    "The login page checkbox `data-testid='stay-signed-in-checkbox'` renders and is checkable; axios.defaults.withCredentials=true is effective (cookie-only fetch('/api/auth/me') from DevTools returned 200 with the full user doc)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_stage3_auth_regression.py (new — 18 tests, reusable)"
+  ],
+  "success_rate": {
+    "backend": "61% (11/18 passed, 2 failed, 5 skipped-due-to-missing-seed). Excluding skip-by-design: 11/13 = 85%.",
+    "frontend": "100% (login flow, stay-signed-in checkbox, cookie-only /auth/me, no Bearer leakage, no localStorage JWT leakage — all green)"
+  },
+  "test_credentials": "demo1/demo1 works (demo-login). admin@ceibaa.in/SuperAdmin@123 is BROKEN at /api/auth/login due to bad hash. Recruitment admin/recruiter not seeded.",
+  "seed_data_creation": "None. Demo login was used; no new accounts were created.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "After main agent re-seeds admin password (bcrypt) and fixes the /follow-requests route ordering in profile_routes.py, re-run /app/backend/tests/test_stage3_auth_regression.py. The TestRememberMe class and TestEmailLogin.test_email_login_valid will automatically move from SKIPPED to PASSED once admin login works — they self-skip only on !=200. The two currently-failing assertions will then pass cleanly. Also seed a recruitment admin + recruiter to unblock TestRecruitmentAdminCookie and TestRecruiterCookie. All other auth dual-mode paths are verified working, so no re-test of those is needed unless the helpers change.",
+  "rca of the issue": "Bug 1 (admin 500): `admin@ceibaa.in`'s stored password in db.users is a 64-character lowercase hex string with no $-prefix — incompatible with bcrypt.checkpw which requires the '$2a$', '$2b$', or '$2y$' header. bcrypt raises ValueError('Invalid salt'), which email_login catches via `except Exception` and returns 500. Reproduction: `curl -X POST $BASE/api/auth/login -d '{\"email\":\"admin@ceibaa.in\",\"password\":\"ANY\"}'` → 500. Verified via direct DB probe: the hash is `d3535b78e2...` (64 chars, hex). Mitigation: overwrite the password field with bcrypt.hashpw output; harden _authenticate_email_credentials to map ValueError → 401. Bug 2 (follow-requests 404): FastAPI matches routes in declaration order. `@router.get('/{username}')` at line 501 captures the literal `/follow-requests` path as `{username}='follow-requests'`, then get_user_by_username 404s. Mitigation: move `@router.get('/follow-requests')` (line 1056) above line 501, or namespace the catch-all under `/user/{username}`. Reproduction: any authenticated GET to /api/profile/follow-requests → 404 'User not found'."
+}

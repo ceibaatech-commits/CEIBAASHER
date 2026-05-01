@@ -110,6 +110,7 @@ class SignupRequest(BaseModel):
 class EmailLoginRequest(BaseModel):
     email: str
     password: str
+    remember: Optional[bool] = False
 
 # Helper functions
 def create_access_token(data: dict):
@@ -537,18 +538,25 @@ def _issue_jwt(user_id: str, email: str) -> str:
     return jwt.encode(token_data, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def _set_auth_cookie(response: Response, token: str) -> None:
+def _set_auth_cookie(response: Response, token: str, remember: bool = False) -> None:
     """
     Set the auth token as an httpOnly cookie for dual-mode auth.
+
+    Args:
+        response: FastAPI Response object.
+        token: JWT to store.
+        remember: If True, the cookie persists for 30 days ("Stay signed in");
+                  otherwise ACCESS_TOKEN_EXPIRE_MINUTES is used.
 
     Backwards compatible: the legacy Bearer-token flow still works because the
     same value is also returned in the JSON body. The cookie is the preferred
     delivery mechanism for new code (safer against XSS).
     """
+    max_age_seconds = (30 * 24 * 60 * 60) if remember else (ACCESS_TOKEN_EXPIRE_MINUTES * 60)
     response.set_cookie(
         key="session_token",
         value=token,
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        max_age=max_age_seconds,
         httponly=True,
         secure=True,
         samesite="lax",
@@ -732,7 +740,7 @@ async def email_login(login_data: EmailLoginRequest, response: Response):
 
         # Issue token + set httpOnly cookie
         token = _issue_jwt(user["id"], email_lower)
-        _set_auth_cookie(response, token)
+        _set_auth_cookie(response, token, remember=bool(login_data.remember))
 
         return {
             "user": _build_user_response(user),

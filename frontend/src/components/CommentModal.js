@@ -17,23 +17,22 @@ export default function CommentModal({ postId, onClose }) {
 
   const fetchComments = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/posts/${postId}/comments`, { headers });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/posts/${postId}/comments`);
       setComments(data.comments || []);
     } catch {}
     finally { setLoading(false); }
   };
 
+  const isLoggedIn = () => !!localStorage.getItem('ceibaa_user');
+
   const handlePost = async () => {
     if (!text.trim()) return;
+    if (!isLoggedIn()) { toast.error('Please login to comment'); return; }
     setPosting(true);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) { toast.error('Please login to comment'); return; }
       const body = { text: text.trim() };
       if (replyTo) body.parent_id = replyTo.id;
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/comment`, body, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/comment`, body);
       if (replyTo) {
         setComments(prev => prev.map(c => c.id === replyTo.id ? { ...c, replies: [...(c.replies || []), data], replies_count: (c.replies_count || 0) + 1 } : c));
       } else {
@@ -45,10 +44,9 @@ export default function CommentModal({ postId, onClose }) {
   };
 
   const handleLikeComment = async (commentId) => {
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login'); return; }
+    if (!isLoggedIn()) { toast.error('Please login'); return; }
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/comments/${commentId}/like`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/comments/${commentId}/like`, {});
       const updateLike = (list) => list.map(c => {
         if (c.id === commentId) return { ...c, likes_count: data.likes_count, is_liked: data.liked };
         if (c.replies?.length) return { ...c, replies: updateLike(c.replies) };

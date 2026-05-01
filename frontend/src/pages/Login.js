@@ -19,6 +19,7 @@ const Login = () => {
   const { setUserData } = useAuth();
   const [demoUsername, setDemoUsername] = useState('');
   const [demoPassword, setDemoPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -57,7 +58,8 @@ const Login = () => {
         // Try email login first
         response = await axios.post(`${BACKEND_URL}/api/auth/login`, {
           email: demoUsername,
-          password: demoPassword
+          password: demoPassword,
+          remember: rememberMe
         });
       } else {
         // Try demo login for username-based login
@@ -82,9 +84,7 @@ const Login = () => {
       // For email-based logins, gate behind phone verification
       if (isEmail) {
         try {
-          const ps = await axios.get(`${BACKEND_URL}/api/auth/phone-status`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const ps = await axios.get(`${BACKEND_URL}/api/auth/phone-status`);
           if (ps.data?.needs_verification) {
             navigate('/verify-phone', { replace: true, state: { from: location.state?.from } });
             return;
@@ -170,6 +170,18 @@ const Login = () => {
                   required
                 />
               </div>
+
+              {/* Stay signed in (30-day cookie) */}
+              <label className="flex items-center gap-2 text-sm text-gray-600 select-none cursor-pointer" data-testid="stay-signed-in-label">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-500"
+                  data-testid="stay-signed-in-checkbox"
+                />
+                Stay signed in for 30 days
+              </label>
 
               {error && (
                 <Alert variant="destructive">

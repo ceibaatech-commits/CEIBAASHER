@@ -9,7 +9,10 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export default function RecruitmentCell() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('dashboard');
-  const [adminToken, setAdminToken] = useState(localStorage.getItem('admin_recruitment_token'));
+  // Stage 3: admin auth now lives in httpOnly session_token cookie.
+  // We keep non-sensitive `admin_recruitment_session` flag in localStorage
+  // only as a client-side UI gate — real auth is enforced server-side.
+  const [isAdmin, setIsAdmin] = useState(!!localStorage.getItem('admin_recruitment_session'));
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
@@ -21,16 +24,14 @@ export default function RecruitmentCell() {
   const [newRec, setNewRec] = useState({ company_name: '', email: '', password: '', industry: '', mobile: '' });
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
 
-  const headers = { Authorization: `Bearer ${adminToken}` };
-
-  useEffect(() => { if (adminToken) fetchAll(); }, [adminToken]);
+  useEffect(() => { if (isAdmin) fetchAll(); }, [isAdmin]);
 
   const handleLogin = async (e) => {
     e.preventDefault(); setLoginLoading(true); setLoginError('');
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment-admin/login`, loginForm);
-      localStorage.setItem('admin_recruitment_token', data.access_token);
-      setAdminToken(data.access_token);
+      await axios.post(`${BACKEND_URL}/api/recruitment-admin/login`, loginForm);
+      localStorage.setItem('admin_recruitment_session', '1');
+      setIsAdmin(true);
     } catch (err) { setLoginError(err.response?.data?.detail || 'Login failed'); }
     finally { setLoginLoading(false); }
   };
@@ -39,21 +40,21 @@ export default function RecruitmentCell() {
     setLoading(true);
     try {
       const [r, p, a] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/recruitment-admin/recruiters`, { headers }),
-        axios.get(`${BACKEND_URL}/api/recruitment-admin/pending-posts`, { headers }),
-        axios.get(`${BACKEND_URL}/api/recruitment-admin/analytics`, { headers }),
+        axios.get(`${BACKEND_URL}/api/recruitment-admin/recruiters`),
+        axios.get(`${BACKEND_URL}/api/recruitment-admin/pending-posts`),
+        axios.get(`${BACKEND_URL}/api/recruitment-admin/analytics`),
       ]);
       setRecruiters(r.data.recruiters || []);
       setPendingPosts(p.data.posts || []);
       setAnalytics(a.data);
-    } catch (err) { if (err.response?.status === 401) { setAdminToken(null); localStorage.removeItem('admin_recruitment_token'); } }
+    } catch (err) { if (err.response?.status === 401) { setIsAdmin(false); localStorage.removeItem('admin_recruitment_session'); } }
     finally { setLoading(false); }
   };
 
   const addRecruiter = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${BACKEND_URL}/api/recruitment-admin/recruiters`, newRec, { headers });
+      await axios.post(`${BACKEND_URL}/api/recruitment-admin/recruiters`, newRec);
       setShowAddRecruiter(false);
       setNewRec({ company_name: '', email: '', password: '', industry: '', mobile: '' });
       fetchAll();
@@ -62,26 +63,26 @@ export default function RecruitmentCell() {
   };
 
   const verifyRecruiter = async (id, field, val) => {
-    await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}/verify`, { [field]: val }, { headers });
+    await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}/verify`, { [field]: val });
     fetchAll();
   };
 
-  const revokeRecruiter = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}/revoke`, {}, { headers }); fetchAll(); };
-  const activateRecruiter = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}/activate`, {}, { headers }); fetchAll(); };
-  const approvePost = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/post/${id}/approve`, {}, { headers }); fetchAll(); toast.success('Post approved'); };
-  const rejectPost = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/post/${id}/reject`, { reason: 'Does not meet guidelines' }, { headers }); fetchAll(); };
+  const revokeRecruiter = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}/revoke`, {}); fetchAll(); };
+  const activateRecruiter = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}/activate`, {}); fetchAll(); };
+  const approvePost = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/post/${id}/approve`, {}); fetchAll(); toast.success('Post approved'); };
+  const rejectPost = async (id) => { await axios.put(`${BACKEND_URL}/api/recruitment-admin/post/${id}/reject`, { reason: 'Does not meet guidelines' }); fetchAll(); };
 
   const openRecruiterDetail = async (id) => {
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}`, { headers });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment-admin/recruiter/${id}`);
       setSelectedRecruiter(data);
     } catch { toast.error('Failed to load details'); }
   };
 
-  const logout = () => { localStorage.removeItem('admin_recruitment_token'); setAdminToken(null); };
+  const logout = () => { localStorage.removeItem('admin_recruitment_session'); setIsAdmin(false); };
 
   // ── LOGIN ──
-  if (!adminToken) {
+  if (!isAdmin) {
     return (
       <div className="min-h-screen bg-[#0d0f14] flex items-center justify-center px-4" data-testid="admin-login">
         <div className="bg-[#1a1e2e] border border-[#252a3d] rounded-2xl p-8 w-full max-w-md">
@@ -131,7 +132,7 @@ export default function RecruitmentCell() {
         {loading && <div className="text-center py-12 text-[#8892b0]">Loading...</div>}
 
         {/* ── Company Detail View ── */}
-        {selectedRecruiter && <CompanyDetailPanel rec={selectedRecruiter} headers={headers} onClose={() => { setSelectedRecruiter(null); fetchAll(); }} />}
+        {selectedRecruiter && <CompanyDetailPanel rec={selectedRecruiter} onClose={() => { setSelectedRecruiter(null); fetchAll(); }} />}
 
         {/* ── Dashboard ── */}
         {!selectedRecruiter && tab === 'dashboard' && analytics && (
@@ -262,7 +263,7 @@ export default function RecruitmentCell() {
 }
 
 /* ── Company Detail & Verification Panel ── */
-function CompanyDetailPanel({ rec, headers, onClose }) {
+function CompanyDetailPanel({ rec, onClose }) {
   const [form, setForm] = useState({
     gst_number: rec.gst_number || '', pan_number: rec.pan_number || '', cin_number: rec.cin_number || '',
     verified_email: rec.verified_email || false, verified_mobile: rec.verified_mobile || false,
@@ -275,7 +276,7 @@ function CompanyDetailPanel({ rec, headers, onClose }) {
   const saveVerification = async () => {
     setSaving(true);
     try {
-      await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${rec.id}/verification`, form, { headers });
+      await axios.put(`${BACKEND_URL}/api/recruitment-admin/recruiter/${rec.id}/verification`, form);
       toast.success('Verification updated');
     } catch (err) { toast.error('Failed to save'); }
     finally { setSaving(false); }
@@ -287,7 +288,7 @@ function CompanyDetailPanel({ rec, headers, onClose }) {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment-admin/recruiter/${rec.id}/upload-document?doc_type=${docType}`, fd, { headers });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment-admin/recruiter/${rec.id}/upload-document?doc_type=${docType}`, fd);
       toast.success(`${docType.replace(/_/g, ' ')} uploaded`);
       rec[`${docType}_url`] = data.url;
     } catch (err) { toast.error(err.response?.data?.detail || 'Upload failed'); }
@@ -296,7 +297,7 @@ function CompanyDetailPanel({ rec, headers, onClose }) {
 
   const sendVerifEmail = async () => {
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment-admin/recruiter/${rec.id}/send-verification-email`, {}, { headers });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment-admin/recruiter/${rec.id}/send-verification-email`, {});
       if (data.sent) toast.success('Verification email sent');
       else toast.info(`Email service sandbox mode. Code: ${data.code || 'N/A'}`);
     } catch { toast.error('Failed'); }
