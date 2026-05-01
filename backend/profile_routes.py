@@ -144,16 +144,27 @@ def decode_jwt_token(authorization: str) -> str:
 async def get_user_id_from_request(authorization: Optional[str], request: Request = None) -> str:
     """
     Get user_id from either session cookie (Emergent auth) or Authorization header (old JWT)
-    Supports both authentication methods for backward compatibility
+    Supports both authentication methods for backward compatibility.
+
+    Stage 3 fix: the session_token cookie may contain either an Emergent session
+    id OR a raw JWT (email/password login). Try both before 401-ing.
     """
-    # Try session cookie first (Emergent auth)
+    # Try session cookie first
     if request and hasattr(request, 'cookies'):
         session_token = request.cookies.get("session_token")
         if session_token:
             user_id = await get_user_from_session(session_token)
             if user_id:
                 return user_id
-    
+            # Fall back to JWT decode on the cookie value itself
+            try:
+                payload = jwt.decode(session_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                uid = payload.get("sub")
+                if uid:
+                    return uid
+            except JWTError:
+                pass
+
     # Try Authorization header with session token or JWT
     if authorization:
         if authorization.startswith("Bearer "):
@@ -164,7 +175,7 @@ async def get_user_id_from_request(authorization: Optional[str], request: Reques
                 return user_id
             # Fall back to JWT
             return decode_jwt_token(authorization)
-    
+
     raise HTTPException(status_code=401, detail="Not authenticated")
 
 async def get_user_by_id(user_id: str):

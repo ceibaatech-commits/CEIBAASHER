@@ -2,10 +2,15 @@ import os
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List
+from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request, Query
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
 from jose import jwt, JWTError
+from dotenv import load_dotenv
+
+# Load .env so JWT_SECRET matches auth_routes regardless of import order
+load_dotenv(Path(__file__).parent / '.env')
 
 router = APIRouter()
 
@@ -74,13 +79,18 @@ class Post(BaseModel):
 
 # Helper Functions
 def get_user_from_token(request: Request) -> dict:
-    """Extract user from JWT token"""
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    token = auth_header.replace("Bearer ", "")
-    
+    """Extract user from JWT token.
+
+    Dual-mode (Stage 3): prefers httpOnly session_token cookie, falls back
+    to Authorization: Bearer <token> header.
+    """
+    token = request.cookies.get("session_token")
+    if not token:
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        token = auth_header[len("Bearer "):]
+
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")

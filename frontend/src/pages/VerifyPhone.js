@@ -11,10 +11,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const BACKEND_URL = window.location.origin;
 
-const authHeader = () => {
-  const t = localStorage.getItem('token') || localStorage.getItem('auth_token');
-  return t ? { Authorization: `Bearer ${t}` } : {};
-};
+// Auth moved to httpOnly session_token cookie (Stage 3 migration).
+// Cookies are auto-sent via axios.defaults.withCredentials = true, so
+// no Bearer header is needed here.
 
 const VerifyPhone = () => {
   const navigate = useNavigate();
@@ -31,7 +30,7 @@ const VerifyPhone = () => {
   useEffect(() => {
     const run = async () => {
       try {
-        const res = await axios.get(`${BACKEND_URL}/api/auth/phone-status`, { headers: authHeader() });
+        const res = await axios.get(`${BACKEND_URL}/api/auth/phone-status`);
         if (!res.data?.needs_verification) {
           const from = location.state?.from || '/victory-lane';
           navigate(from, { replace: true });
@@ -57,8 +56,7 @@ const VerifyPhone = () => {
     try {
       const res = await axios.post(
         `${BACKEND_URL}/api/auth/phone/send-otp`,
-        { phone },
-        { headers: authHeader() }
+        { phone }
       );
       setDeliveryInfo(res.data?.message || 'Code sent.');
       setStep('otp');
@@ -76,8 +74,7 @@ const VerifyPhone = () => {
     try {
       await axios.post(
         `${BACKEND_URL}/api/auth/phone/verify-otp`,
-        { code },
-        { headers: authHeader() }
+        { code }
       );
       const from = location.state?.from || '/victory-lane';
       navigate(from, { replace: true });

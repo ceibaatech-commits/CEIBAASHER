@@ -57,14 +57,12 @@ const RoomDetail = () => {
       // Pre-fetch follow status for everyone in the leaderboard (excluding self)
       try {
         const lb = leaderboardResponse.data.leaderboard || [];
-        const token = localStorage.getItem('auth_token');
-        if (token) {
+        if (user) {
           const others = lb.filter(p => p.player_id && p.player_id !== user.id);
-          const headers = { Authorization: `Bearer ${token}` };
           const statusEntries = await Promise.all(
             others.map(async (p) => {
               try {
-                const r = await axios.get(`${BACKEND_URL}/api/profile/follow-status/${p.player_id}`, { headers });
+                const r = await axios.get(`${BACKEND_URL}/api/profile/follow-status/${p.player_id}`);
                 return [p.player_id, r.data?.status || null];
               } catch (_e) {
                 return [p.player_id, null];
@@ -86,19 +84,16 @@ const RoomDetail = () => {
 
   const handleFollow = async (targetUserId) => {
     if (!targetUserId || targetUserId === user?.id) return;
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
+    if (!user) {
       alert('Please login to follow users');
       navigate('/login');
       return;
     }
     setActionBusy((prev) => ({ ...prev, [`follow-${targetUserId}`]: true }));
     try {
-      const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.post(
         `${BACKEND_URL}/api/profile/follow`,
-        { target_user_id: targetUserId },
-        { headers }
+        { target_user_id: targetUserId }
       );
       if (res.data?.success !== false) {
         const newStatus = res.data?.status || 'approved';
@@ -116,19 +111,16 @@ const RoomDetail = () => {
 
   const handleMessage = async (targetUserId) => {
     if (!targetUserId || targetUserId === user?.id) return;
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
+    if (!user) {
       alert('Please login to message users');
       navigate('/login');
       return;
     }
     setActionBusy((prev) => ({ ...prev, [`msg-${targetUserId}`]: true }));
     try {
-      const headers = { Authorization: `Bearer ${token}` };
       const res = await axios.post(
         `${BACKEND_URL}/api/messages/conversations`,
-        { target_user_id: targetUserId },
-        { headers }
+        { target_user_id: targetUserId }
       );
       const convId = res.data?.conversation?.id;
       if (convId) {

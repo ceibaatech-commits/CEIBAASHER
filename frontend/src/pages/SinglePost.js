@@ -57,12 +57,11 @@ const SinglePost = () => {
 
   // Fetch close friend IDs + bookmark status
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token || !user) return;
-    axios.get(`${BACKEND_URL}/api/profile/close-friend-ids`, { headers: { Authorization: `Bearer ${token}` } })
+    if (!user) return;
+    axios.get(`${BACKEND_URL}/api/profile/close-friend-ids`)
       .then(res => { if (res.data.success) setCloseFriendIds(new Set(res.data.friend_ids)); })
       .catch(() => {});
-    axios.get(`${BACKEND_URL}/api/social/bookmarks`, { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${BACKEND_URL}/api/social/bookmarks`)
       .then(res => { if (res.data.success) setBookmarked(res.data.posts?.some(p => p.id === postId)); })
       .catch(() => {});
   }, [user, postId]);
@@ -89,10 +88,7 @@ const SinglePost = () => {
   const fetchPost = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      
-      const response = await axios.get(`${BACKEND_URL}/api/social/posts/${postId}`, { headers });
+      const response = await axios.get(`${BACKEND_URL}/api/social/posts/${postId}`);
       
       if (response.data.success) {
         setPost(response.data.post);
@@ -122,12 +118,10 @@ const SinglePost = () => {
     setLikesCount(prev => wasLiked ? prev - 1 : prev + 1);
     
     try {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
       if (wasLiked) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/like`, { headers });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/like`);
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, { headers });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {});
       }
     } catch (err) {
       setLiked(wasLiked);
@@ -147,16 +141,11 @@ const SinglePost = () => {
     setShareCount(prev => wasShared ? prev - 1 : prev + 1);
     
     try {
-      const token = localStorage.getItem('token');
       if (wasShared) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`);
         toast.success('Repost removed');
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {});
         toast.success('Reposted!');
       }
     } catch (err) {
@@ -172,11 +161,8 @@ const SinglePost = () => {
     
     setSubmittingComment(true);
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/comment`, {
         content: newComment
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data.success) {
@@ -195,10 +181,7 @@ const SinglePost = () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`);
       toast.success('Post deleted');
       navigate(-1);
     } catch (err) {
@@ -210,10 +193,7 @@ const SinglePost = () => {
     if (!window.confirm('Are you sure you want to undo this repost?')) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${post.original_post_id}/unshare`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${post.original_post_id}/unshare`);
       toast.success('Repost removed');
       navigate(-1);
     } catch (err) {
@@ -222,16 +202,15 @@ const SinglePost = () => {
   };
 
   const handleBookmark = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login to bookmark'); return; }
+    if (!isLoggedIn) { toast.error('Please login to bookmark'); return; }
     const wasBookmarked = bookmarked;
     setBookmarked(!wasBookmarked);
     try {
       if (wasBookmarked) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`);
         toast.success('Removed from bookmarks');
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {});
         toast.success('Added to bookmarks');
       }
     } catch {
@@ -249,10 +228,7 @@ const SinglePost = () => {
     if (!window.confirm('Delete this comment?')) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${BACKEND_URL}/api/social/comments/${commentId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND_URL}/api/social/comments/${commentId}`);
       setComments(prev => prev.filter(c => c.id !== commentId));
       toast.success('Comment deleted');
     } catch (err) {

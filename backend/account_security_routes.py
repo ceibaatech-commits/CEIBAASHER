@@ -27,7 +27,7 @@ from pathlib import Path
 
 import bcrypt
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Request
 from jose import jwt, JWTError
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr
@@ -68,10 +68,16 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
-async def _user_id_from_bearer(authorization: Optional[str]) -> str:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Authentication required")
-    token = authorization[len("Bearer "):]
+async def _user_id_from_bearer(authorization: Optional[str], request: Optional[Request] = None) -> str:
+    # Prefer httpOnly session_token cookie (Stage 3 dual-mode). Falls back
+    # to Authorization: Bearer <token> header for backward compatibility.
+    token = None
+    if request is not None:
+        token = request.cookies.get("session_token")
+    if not token:
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Authentication required")
+        token = authorization[len("Bearer "):]
     # Try Emergent session first
     session = await db.user_sessions.find_one({"session_token": token})
     if session and session.get("user_id"):
@@ -250,9 +256,9 @@ async def reset_password(req: ResetPasswordRequest):
 # ===================================================================
 
 @router.get("/auth/phone-status")
-async def phone_status(authorization: Optional[str] = Header(None)):
+async def phone_status(request: Request, authorization: Optional[str] = Header(None)):
     """Returns whether the logged-in user has a verified phone yet."""
-    user_id = await _user_id_from_bearer(authorization)
+    user_id = await _user_id_from_bearer(authorization, request)
     user = await db.users.find_one(
         {"id": user_id},
         {"_id": 0, "phone": 1, "phone_verified": 1},
@@ -268,11 +274,11 @@ async def phone_status(authorization: Optional[str] = Header(None)):
 
 
 @router.post("/auth/phone/send-otp")
-async def send_phone_otp(req: SendOTPRequest, authorization: Optional[str] = Header(None)):
+async def send_phone_otp(req: SendOTPRequest, request: Request, authorization: Optional[str] = Header(None)):
     """
     Save the phone number on the user profile and email a 6-digit OTP.
     """
-    user_id = await _user_id_from_bearer(authorization)
+    user_id = await _user_id_from_bearer(authorization, request)
     phone = req.phone.strip()
     if len(phone) < 7 or not any(c.isdigit() for c in phone):
         raise HTTPException(status_code=400, detail="Please enter a valid phone number")
@@ -310,9 +316,9 @@ async def send_phone_otp(req: SendOTPRequest, authorization: Optional[str] = Hea
 
 
 @router.post("/auth/phone/verify-otp")
-async def verify_phone_otp(req: VerifyOTPRequest, authorization: Optional[str] = Header(None)):
+async def verify_phone_otp(req: VerifyOTPRequest, request: Request, authorization: Optional[str] = Header(None)):
     """Confirm the 6-digit code and mark phone_verified = True."""
-    user_id = await _user_id_from_bearer(authorization)
+    user_id = await _user_id_from_bearer(authorization, request)
     code = req.code.strip()
     if not code.isdigit() or len(code) != 6:
         raise HTTPException(status_code=400, detail="Please enter the 6-digit code")
@@ -360,7 +366,7 @@ def _verify_bcrypt(plain: str, hashed: str) -> bool:
 
 
 @router.post("/auth/change-password")
-async def change_password(req: ChangePasswordRequest, authorization: Optional[str] = Header(None)):
+async def change_password(req: ChangePasswordRequest, request: Request, authorization: Optional[str] = Header(None)):
     """
     Logged-in password change. Requires the current password.
 
@@ -369,7 +375,7 @@ async def change_password(req: ChangePasswordRequest, authorization: Optional[st
       - invalidates every *other* active session (current token stays valid)
       - emails a "password was changed" notification
     """
-    user_id = await _user_id_from_bearer(authorization)
+    user_id = await _user_id_from_bearer(authorization, request)
 
     if len(req.new_password) < 6:
         raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
