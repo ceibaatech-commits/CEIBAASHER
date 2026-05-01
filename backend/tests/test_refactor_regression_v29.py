@@ -27,7 +27,7 @@ from conftest import (
 
 BASE_URL = os.environ.get(
     "REACT_APP_BACKEND_URL",
-    "https://profile-social-4.preview.emergentagent.com",
+    "https://ceibaa-integration.preview.emergentagent.com",
 ).rstrip("/")
 
 

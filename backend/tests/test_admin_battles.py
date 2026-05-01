@@ -9,7 +9,7 @@ import os
 import hashlib
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://profile-social-4.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ceibaa-integration.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials from requirements
 from conftest import ADMIN_EMAIL as ADMIN_USERNAME, ADMIN_PASSWORD

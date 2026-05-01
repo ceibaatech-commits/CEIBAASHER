@@ -136,8 +136,8 @@ const ModernExamSyllabus = () => {
               { icon: FileText, label: 'Qs', value: examData.total_questions },
               { icon: Clock, label: 'Time', value: examData.duration },
               { icon: BookOpen, label: 'Subjects', value: subjects.length }
-            ].map((stat, idx) => (
-              <div key={idx} className="bg-white/10 backdrop-blur-sm rounded-lg text-center" style={{ padding: '0.5rem' }}>
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/10 backdrop-blur-sm rounded-lg text-center" style={{ padding: '0.5rem' }}>
                 <stat.icon style={{ width: '1rem', height: '1rem' }} className="mx-auto mb-1" />
                 <p style={{ fontSize: '1rem' }} className="font-bold">{stat.value}</p>
                 <p className="opacity-80" style={{ fontSize: '0.625rem', marginTop: '0.125rem' }}>{stat.label}</p>
@@ -224,7 +224,7 @@ const ModernExamSyllabus = () => {
                   className="space-y-6"
                 >
                   {weightageData?.sections && weightageData.sections.map((section, idx) => (
-                    <div key={idx} className="border-l-4 border-blue-500 pl-4 mb-6">
+                    <div key={section.name || section.title || `section-${idx}`} className="border-l-4 border-blue-500 pl-4 mb-6">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-base font-bold text-gray-800">{section.section_name}</h4>
                         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
@@ -286,7 +286,7 @@ const ModernExamSyllabus = () => {
                             </thead>
                             <tbody>
                               {section.topics.map((topic, tidx) => (
-                                <tr key={tidx} className="border-t border-gray-100 hover:bg-gray-50">
+                                <tr key={topic.topic || `topic-${tidx}`} className="border-t border-gray-100 hover:bg-gray-50">
                                   <td className="py-2 px-3 text-gray-800">{topic.topic}</td>
                                   <td className="py-2 px-3 text-center font-semibold text-blue-600">{topic.questions}</td>
                                   <td className="py-2 px-3">
@@ -343,7 +343,7 @@ const ModernExamSyllabus = () => {
         {/* Topics Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredTopics.map((topic, idx) => (
-            <motion.div key={idx} whileHover={{ y: -4 }}
+            <motion.div key={`${topic.syllabus_topic || ''}-${topic.subject || idx}`} whileHover={{ y: -4 }}
               className={`bg-white ${examData?.game_mode ? 'language-game-card rounded-3xl' : 'rounded-xl'} shadow-md overflow-hidden hover:shadow-lg transition-all`}>
               <div className={`bg-gradient-to-br ${examData.color} p-4 relative`}>
                 {/* Dark overlay for better text contrast */}
@@ -376,7 +376,7 @@ const ModernExamSyllabus = () => {
                       </div>
                       <div className="space-y-2">
                         {topic.sub_topics && topic.sub_topics.map((sub, i) => (
-                          <div key={i} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-2 hover:from-blue-50 hover:to-blue-100 transition-all group">
+                          <div key={typeof sub === 'string' ? sub : `sub-${i}`} className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-2 hover:from-blue-50 hover:to-blue-100 transition-all group">
                             <div className="flex items-center justify-between">
                               <div className="flex items-start gap-2 flex-1">
                                 <CheckCircle className="w-3 h-3 text-teal-500 flex-shrink-0 mt-0.5 group-hover:text-blue-600 transition-colors" />
@@ -507,8 +507,8 @@ const ModernExamSyllabus = () => {
                 { icon: '📚', number: '5K+', label: 'Daily Active Users' },
                 { icon: '🎯', number: '87%', label: 'Complete Tests' },
                 { icon: '⭐', number: '4.6/5', label: 'User Rating' }
-              ].map((stat, index) => (
-                <div key={index} className="bg-white/20 backdrop-blur-xl rounded-xl p-4 text-center border border-white/30 hover:scale-105 transform transition-all">
+              ].map((stat) => (
+                <div key={stat.label} className="bg-white/20 backdrop-blur-xl rounded-xl p-4 text-center border border-white/30 hover:scale-105 transform transition-all">
                   <div className="text-3xl mb-1">{stat.icon}</div>
                   <p className="text-2xl font-black text-white mb-1">{stat.number}</p>
                   <p className="text-white/80 text-xs">{stat.label}</p>
@@ -519,7 +519,7 @@ const ModernExamSyllabus = () => {
             <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/30">
               <div className="flex items-center justify-center space-x-1 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                  <Star key={`hero-star-${i}`} className="w-5 h-5 text-yellow-400 fill-current" />
                 ))}
               </div>
               
@@ -543,7 +543,7 @@ const ModernExamSyllabus = () => {
               <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/30">
                 <div className="flex items-center space-x-1 mb-2">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    <Star key={`priya-star-${i}`} className="w-4 h-4 text-yellow-400 fill-current" />
                   ))}
                 </div>
                 <p className="text-white/90 text-sm mb-3">
@@ -555,7 +555,7 @@ const ModernExamSyllabus = () => {
               <div className="bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/30">
                 <div className="flex items-center space-x-1 mb-2">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    <Star key={`amit-star-${i}`} className="w-4 h-4 text-yellow-400 fill-current" />
                   ))}
                 </div>
                 <p className="text-white/90 text-sm mb-3">

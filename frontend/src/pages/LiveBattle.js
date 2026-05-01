@@ -8,7 +8,7 @@ import BattleVideoChat from '../components/BattleVideoChat';
 import { useAuth } from '../context/AuthContext';
 
 // Connect to battle server through the backend domain
-const BATTLE_SERVER_URL = window.location.origin || 'https://profile-social-4.preview.emergentagent.com';
+const BATTLE_SERVER_URL = window.location.origin || 'https://ceibaa-integration.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();
@@ -985,7 +985,7 @@ const LiveBattle = () => {
                   
                   return (
                     <button
-                      key={index}
+                      key={`${currentQuestion?.id || 'q'}-opt-${index}`}
                       onClick={() => handleAnswerSelect(index)}
                       disabled={selectedAnswer !== null || isPaused}
                       className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
@@ -1064,9 +1064,9 @@ const LiveBattle = () => {
                   { emoji: '💪', name: 'strong' },
                   { emoji: '🎯', name: 'target' },
                   { emoji: '🎉', name: 'party' }
-                ].map((reaction, index) => (
+                ].map((reaction) => (
                   <button
-                    key={index}
+                    key={reaction.emoji}
                     onClick={() => sendReaction(reaction.emoji)}
                     className="text-2xl hover:scale-125 transition-transform bg-white rounded-lg p-2 shadow-sm hover:shadow-md"
                     style={{ 

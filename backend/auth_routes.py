@@ -198,7 +198,7 @@ async def twitter_login(request: Request):
 @router.get("/auth/twitter/callback")
 async def twitter_callback(request: Request):
     try:
-        token = await oauth.twitter.authorize_access_token(request)
+        await oauth.twitter.authorize_access_token(request)
         
         # Get user info
         resp = await oauth.twitter.get('account/verify_credentials.json', params={'include_email': 'true'})
@@ -232,7 +232,7 @@ async def facebook_login(request: Request):
 @router.get("/auth/facebook/callback")
 async def facebook_callback(request: Request):
     try:
-        token = await oauth.facebook.authorize_access_token(request)
+        await oauth.facebook.authorize_access_token(request)
         
         # Get user info
         resp = await oauth.facebook.get('me?fields=id,name,email,picture.type(large)')

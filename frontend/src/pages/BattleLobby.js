@@ -6,7 +6,7 @@ import BattleVideoChat from '../components/BattleVideoChat';
 import Header from '../components/Header';
 
 // Connect to Socket.IO on main backend - Battle endpoint
-const BATTLE_SERVER_URL = window.location.origin || 'https://profile-social-4.preview.emergentagent.com';
+const BATTLE_SERVER_URL = window.location.origin || 'https://ceibaa-integration.preview.emergentagent.com';
 const SOCKET_PATH = '/api/battlews/socket.io'; // Battle Socket.IO path
 
 const BattleLobby = () => {

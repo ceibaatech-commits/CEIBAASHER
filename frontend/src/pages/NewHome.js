@@ -168,8 +168,8 @@ const NewHome = () => {
               { icon: Trophy, label: 'Daily Battles', value: '500+' },
               { icon: BookOpen, label: 'Practice Topics', value: '200+' },
               { icon: Award, label: 'Success Rate', value: '95%' }
-            ].map((stat, index) => (
-              <div key={index} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+            ].map((stat) => (
+              <div key={stat.label} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                 <stat.icon className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
                 <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
                 <div className="text-sm text-gray-300">{stat.label}</div>
@@ -227,9 +227,9 @@ const NewHome = () => {
                 desc: 'Solo practice, group battles, or timed challenges - your choice',
                 color: 'from-indigo-400 to-purple-500'
               }
-            ].map((feature, index) => (
+            ].map((feature) => (
               <div
-                key={index}
+                key={feature.title}
                 className="group bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:border-cyan-400/50 transition-all hover:scale-105"
               >
                 <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
@@ -260,9 +260,9 @@ const NewHome = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {exams.map((exam, index) => (
+              {exams.map((exam) => (
                 <button
-                  key={index}
+                  key={exam.id}
                   onClick={() => navigate(`/exam/${exam.id}`)}
                   className="group relative bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 hover:border-cyan-400/50 transition-all hover:scale-105 text-left overflow-hidden"
                 >

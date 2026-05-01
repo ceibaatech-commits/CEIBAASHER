@@ -30,7 +30,7 @@
     "demo_login": "username: demo1, password: demo1",
     "demo3_login": "username: demo3, password: demo3",
     "profile_url": "/profile/demostudent1",
-    "backend_url": "https://profile-social-4.preview.emergentagent.com"
+    "backend_url": "https://ceibaa-integration.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing demo users",
   "retest_needed": false,

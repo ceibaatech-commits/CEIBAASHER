@@ -31,7 +31,7 @@
   },
   "test_credentials": {
     "admin_login": "POST /api/admin/auth/login with {username: 'admin@ceibaa.in', password: 'SuperAdmin@123'}",
-    "backend_url": "https://profile-social-4.preview.emergentagent.com"
+    "backend_url": "https://ceibaa-integration.preview.emergentagent.com"
   },
   "seed_data_creation": "Test report created during testing (auto-cleaned by review action)",
   "retest_needed": false,

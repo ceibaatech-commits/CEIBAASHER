@@ -359,14 +359,7 @@ const Home = () => {
 
             <button
               type="button"
-              onClick={() => {
-                const drill = document.getElementById('skill-drill-section');
-                if (drill) {
-                  drill.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                  navigate('/chapter-tests');
-                }
-              }}
+              onClick={() => window.open('https://ceibaa.in/recruiter', '_blank', 'noopener,noreferrer')}
               className="col-span-2 relative text-left rounded-2xl px-4 py-4 shadow-[0_10px_24px_-10px_rgba(217,180,86,0.6)] active:scale-[0.98] transition-transform"
               style={{ backgroundColor: '#efc868', color: '#1f1505' }}
               data-testid="mobile-home-train-btn"
@@ -375,10 +368,10 @@ const Home = () => {
                 className="block text-[11px] font-semibold uppercase tracking-wider mb-1"
                 style={{ color: '#6b4e0d' }}
               >
-                Skill Forge:
+                Recruiters:
               </span>
               <span className="flex items-center gap-1.5 text-[20px] font-black leading-tight">
-                CBSE
+                Hire With Us
               </span>
               <Sparkles
                 className="absolute top-3 right-3 w-5 h-5"
@@ -406,8 +399,75 @@ const Home = () => {
                 style={{ color: '#0f172a' }}
                 data-testid="mobile-home-search-input"
               />
+              {searchQuery.trim() && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="ml-2 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </form>
+
+          {/* Inline search results dropdown */}
+          <AnimatePresence>
+            {searchQuery.trim() && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scaleY: 0.95 }}
+                animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                exit={{ opacity: 0, y: -8, scaleY: 0.95 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="absolute left-5 right-5 z-50 mt-2 rounded-2xl overflow-hidden"
+                style={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid rgba(15,23,42,0.10)',
+                  boxShadow: '0 16px 40px -12px rgba(15,23,42,0.28)',
+                  transformOrigin: 'top center',
+                }}
+                data-testid="mobile-home-search-dropdown"
+              >
+                {/* Header */}
+                <div className="px-4 py-3 flex items-center gap-2" style={{ backgroundColor: '#4c1d95' }}>
+                  <Search className="w-4 h-4 text-white/70" />
+                  <span className="text-white font-bold text-sm flex-1">
+                    {filteredExams.length} result{filteredExams.length !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
+                  </span>
+                </div>
+
+                {/* Result list */}
+                <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
+                  {filteredExams.length > 0 ? filteredExams.map((exam) => (
+                    <div
+                      key={exam.id}
+                      onClick={() => { setSearchQuery(''); navigate(`/exam/${exam.id}`); }}
+                      className="flex items-center gap-3 px-4 py-3 active:bg-purple-50 cursor-pointer transition-colors"
+                    >
+                      <div
+                        className={`bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-sm flex-shrink-0`}
+                        style={{ width: '2.25rem', height: '2.25rem' }}
+                      >
+                        {exam.icon?.startsWith('http') ? (
+                          <img src={exam.icon} alt={exam.name} className="w-5 h-5 object-contain" />
+                        ) : (
+                          <span className="text-base">{exam.icon}</span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-gray-900 text-sm truncate">{exam.name}</p>
+                        <p className="text-gray-500 text-[11px] truncate">{exam.full_name}</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    </div>
+                  )) : (
+                    <p className="text-center text-gray-500 py-6 text-sm">No exams found for &ldquo;{searchQuery}&rdquo;</p>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Stats strip — Exams / Questions / Active Battles Live */}
@@ -643,63 +703,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Mobile: Search Results */}
-      {searchQuery.trim() && (
-        <div className="md:hidden px-4 py-4 bg-white border-b">
-          <div className="bg-gradient-to-r from-slate-700 to-slate-900 rounded-xl p-4 text-white mb-4">
-            <div className="flex items-center gap-3">
-              <Search className="w-8 h-8" />
-              <div>
-                <h2 className="font-bold text-lg">Search Results</h2>
-                <p className="text-white/80 text-sm">Found {filteredExams.length} exams for "{searchQuery}"</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Search Result Cards */}
-          <div className="space-y-3">
-            {filteredExams.map((exam) => (
-              <div
-                key={exam.id}
-                onClick={() => navigate(`/exam/${exam.id}`)}
-                style={{ padding: '0.75rem' }}
-                className="bg-white border border-gray-200 rounded-xl shadow-sm active:scale-98 transition-transform cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div 
-                    className={`bg-gradient-to-br ${exam.color} rounded-xl flex items-center justify-center shadow-md`}
-                    style={{ width: '2.5rem', height: '2.5rem', minWidth: '2.5rem' }}
-                  >
-                    {exam.icon?.startsWith('http') ? (
-                      <img src={exam.icon} alt={exam.name} style={{ width: '1.5rem', height: '1.5rem' }} className="object-contain" />
-                    ) : (
-                      <span style={{ fontSize: '1.25rem' }}>{exam.icon}</span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900" style={{ fontSize: '0.875rem' }}>{exam.name}</h3>
-                    <p className="text-gray-500 truncate" style={{ fontSize: '0.75rem' }}>{exam.full_name}</p>
-                    <div className="flex items-center gap-3 mt-1 text-gray-500" style={{ fontSize: '0.625rem' }}>
-                      <span className="flex items-center gap-1">
-                        <FileText style={{ width: '0.75rem', height: '0.75rem' }} />
-                        {exam.total_questions} Qs
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock style={{ width: '0.75rem', height: '0.75rem' }} />
-                        {exam.duration}
-                      </span>
-                    </div>
-                  </div>
-                  <ChevronRight style={{ width: '1rem', height: '1rem' }} className="text-gray-400 flex-shrink-0" />
-                </div>
-              </div>
-            ))}
-            {filteredExams.length === 0 && (
-              <p className="text-center text-gray-500 py-8">No exams found matching "{searchQuery}"</p>
-            )}
-          </div>
-        </div>
-      )}
+
 
       {/* Mobile: Skill Drill - CBSE Classes Section */}
       {!searchQuery.trim() && !activeCategory && (
