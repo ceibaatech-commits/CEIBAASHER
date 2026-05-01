@@ -719,7 +719,15 @@ async def _authenticate_email_credentials(email_lower: str, password: str) -> di
             detail="This account uses Google login. Please use 'Continue with Google'.",
         )
 
-    if not verify_password(password, stored_password):
+    try:
+        ok = verify_password(password, stored_password)
+    except ValueError:
+        # Stored hash is not bcrypt (e.g. legacy SHA-256 digest). Treat as bad
+        # credential instead of crashing into a 500.
+        print(f"[auth] legacy/corrupt password hash for {email_lower}; rejecting as 401")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    if not ok:
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     return user

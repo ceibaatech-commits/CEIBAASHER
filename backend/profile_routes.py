@@ -498,6 +498,74 @@ async def get_mutual_followers(target_user_id: str, request: Request):
         return {"success": True, "mutual": []}
 
 
+# NOTE: Literal single-segment GET routes must be declared BEFORE
+# `@router.get("/{username}")` below — otherwise FastAPI matches them as
+# a username path parameter and returns 404 "User not found".
+
+@router.get("/follow-requests")
+async def get_follow_requests(
+    request: Request,
+    authorization: Optional[str] = Header(None)
+):
+    """Get pending follow requests for current user"""
+    try:
+        # Get user_id using hybrid authentication
+        user_id = await get_user_id_from_request(authorization, request)
+
+        # Get pending requests
+        requests_cursor = db.follows.find({
+            "following_id": user_id,
+            "status": "pending"
+        }).sort("created_at", -1)
+
+        requests_data = await requests_cursor.to_list(length=None)
+
+        # Get requester details
+        requests = []
+        for req_doc in requests_data:  # renamed from `request` to avoid shadowing the FastAPI param
+            requester = await db.users.find_one({"id": req_doc["follower_id"]})
+            if requester:
+                requester.pop("_id", None)
+
+                # Check for mutual followers (people who follow both current user and requester)
+                requester_followers = await db.follows.find({
+                    "following_id": req_doc["follower_id"],
+                    "status": "approved"
+                }, {"follower_id": 1, "_id": 0}).to_list(length=None)
+
+                requester_follower_ids = [f["follower_id"] for f in requester_followers]
+
+                if requester_follower_ids:
+                    mutual_count = await db.follows.count_documents({
+                        "follower_id": user_id,
+                        "following_id": {"$in": requester_follower_ids},
+                        "status": "approved"
+                    })
+                else:
+                    mutual_count = 0
+
+                requests.append({
+                    "request_id": req_doc["id"],
+                    "user_id": requester["id"],
+                    "username": requester.get("username"),
+                    "name": requester.get("name"),
+                    "profile_picture": requester.get("profile_picture"),
+                    "bio": requester.get("bio"),
+                    "requested_at": req_doc.get("created_at"),
+                    "mutual_followers": mutual_count
+                })
+
+        return {
+            "success": True,
+            "requests": requests,
+            "total": len(requests)
+        }
+
+    except Exception as e:
+        print(f"Error fetching follow requests: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error fetching follow requests: {str(e)}")
+
+
 @router.get("/{username}")
 async def get_user_profile(username: str, current_user_id: Optional[str] = None):
     """
@@ -1053,70 +1121,11 @@ async def get_following(
         print(f"Error fetching following: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error fetching following: {str(e)}")
 
-@router.get("/follow-requests")
-async def get_follow_requests(
-    request: Request,
-    authorization: Optional[str] = Header(None)
-):
-    """Get pending follow requests for current user"""
-    try:
-        # Get user_id using hybrid authentication
-        user_id = await get_user_id_from_request(authorization, request)
-        
-        # Get pending requests
-        requests_cursor = db.follows.find({
-            "following_id": user_id,
-            "status": "pending"
-        }).sort("created_at", -1)
-        
-        requests_data = await requests_cursor.to_list(length=None)
-        
-        # Get requester details
-        requests = []
-        for request in requests_data:
-            requester = await db.users.find_one({"id": request["follower_id"]})
-            if requester:
-                requester.pop("_id", None)
-                
-                # Check for mutual followers (people who follow both current user and requester)
-                # Get all followers of the requester
-                requester_followers = await db.follows.find({
-                    "following_id": request["follower_id"],
-                    "status": "approved"
-                }, {"follower_id": 1, "_id": 0}).to_list(length=None)
-                
-                requester_follower_ids = [f["follower_id"] for f in requester_followers]
-                
-                # Count how many of these followers the current user also follows
-                if requester_follower_ids:
-                    mutual_count = await db.follows.count_documents({
-                        "follower_id": user_id,
-                        "following_id": {"$in": requester_follower_ids},
-                        "status": "approved"
-                    })
-                else:
-                    mutual_count = 0
-                
-                requests.append({
-                    "request_id": request["id"],
-                    "user_id": requester["id"],
-                    "username": requester.get("username"),
-                    "name": requester.get("name"),
-                    "profile_picture": requester.get("profile_picture"),
-                    "bio": requester.get("bio"),
-                    "requested_at": request.get("created_at"),
-                    "mutual_followers": mutual_count
-                })
-        
-        return {
-            "success": True,
-            "requests": requests,
-            "total": len(requests)
-        }
-        
-    except Exception as e:
-        print(f"Error fetching follow requests: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error fetching follow requests: {str(e)}")
+
+# `/follow-requests` was moved ABOVE `/{username}` to fix FastAPI route-ordering
+# collision (the catch-all captured the literal path as a username). See
+# the earlier declaration for the actual handler.
+
 
 @router.get("/follow-status/{target_user_id}")
 async def get_follow_status(
