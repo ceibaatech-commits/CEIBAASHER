@@ -11,14 +11,15 @@ export default function RecruiterAnalytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('recruiter_token');
-    if (!token) { navigate('/recruiter'); return; }
-    fetchStats(token);
+    // Auth moved to httpOnly session_token cookie (Stage 3). Use recruiter_data
+    // as the client-side gate; real auth check happens server-side.
+    if (!localStorage.getItem('recruiter_data')) { navigate('/recruiter'); return; }
+    fetchStats();
   }, []);
 
-  const fetchStats = async (token) => {
+  const fetchStats = async () => {
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/analytics`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/analytics`);
       setStats(data);
     } catch (err) {
       if (err.response?.status === 401) navigate('/recruiter');

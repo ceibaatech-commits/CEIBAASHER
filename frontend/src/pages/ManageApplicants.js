@@ -23,8 +23,7 @@ export default function ManageApplicants() {
 
   const fetchApplicants = async () => {
     try {
-      const token = localStorage.getItem('recruiter_token');
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/applicants/${postId}`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/applicants/${postId}`);
       setApplicants(data.applicants || []);
       setPost(data.post);
     } catch (err) {
@@ -34,8 +33,7 @@ export default function ManageApplicants() {
 
   const updateStatus = async (appId, status) => {
     try {
-      const token = localStorage.getItem('recruiter_token');
-      await axios.put(`${BACKEND_URL}/api/recruitment/applicant/${appId}/status`, { status }, { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } });
+      await axios.put(`${BACKEND_URL}/api/recruitment/applicant/${appId}/status`, { status }, { headers: { 'Content-Type': 'application/json' } });
       setApplicants(prev => prev.map(a => a.id === appId ? { ...a, status } : a));
     } catch (err) { console.error(err); }
   };

@@ -70,43 +70,39 @@ const PostCard = ({ post, isOwn, onDelete, profile }) => {
 
   const toggleLike = async (e) => {
     e.stopPropagation();
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login to like posts'); return; }
+    if (!localStorage.getItem('ceibaa_user')) { toast.error('Please login to like posts'); return; }
     const next = !liked;
     setLiked(next);
     setLikes(l => next ? l + 1 : Math.max(0, l - 1));
     try {
       await axios[next ? 'post' : 'delete'](
         `${BACKEND_URL}/api/social/posts/${post.id}/like`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {}
       );
     } catch { setLiked(!next); setLikes(l => next ? l - 1 : l + 1); }
   };
 
   const toggleBookmark = async (e) => {
     e.stopPropagation();
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login to save posts'); return; }
+    if (!localStorage.getItem('ceibaa_user')) { toast.error('Please login to save posts'); return; }
     const next = !saved;
     setSaved(next);
     toast.success(next ? 'Post saved' : 'Removed from saved');
     try {
       if (next) {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/bookmark`, {});
       } else {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${post.id}/bookmark`, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${post.id}/bookmark`);
       }
     } catch { setSaved(!next); }
   };
 
   const handleRepost = async (e) => {
     e.stopPropagation();
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login to repost'); return; }
+    if (!localStorage.getItem('ceibaa_user')) { toast.error('Please login to repost'); return; }
     if (shared) { toast.info('Already reposted'); return; }
     try {
-      await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/share`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${BACKEND_URL}/api/social/posts/${post.id}/share`, {});
       setShared(true);
       toast.success('Reposted!');
     } catch { toast.error('Failed to repost'); }

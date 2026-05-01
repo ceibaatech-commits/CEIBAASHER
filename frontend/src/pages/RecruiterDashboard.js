@@ -16,18 +16,18 @@ export default function RecruiterDashboard() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('recruiter_token');
-    if (!token) { navigate('/recruiter'); return; }
-    fetchData(token);
+    // Auth now lives in httpOnly session_token cookie (Stage 3).
+    // Check non-sensitive recruiter_data for client-side gating only.
+    if (!localStorage.getItem('recruiter_data')) { navigate('/recruiter'); return; }
+    fetchData();
   }, []);
 
-  const fetchData = async (token) => {
-    const headers = { Authorization: `Bearer ${token}` };
+  const fetchData = async () => {
     try {
       const [me, myPosts, analytics] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/recruitment/recruiter/me`, { headers }),
-        axios.get(`${BACKEND_URL}/api/recruitment/posts/my`, { headers }),
-        axios.get(`${BACKEND_URL}/api/recruitment/analytics`, { headers }),
+        axios.get(`${BACKEND_URL}/api/recruitment/recruiter/me`),
+        axios.get(`${BACKEND_URL}/api/recruitment/posts/my`),
+        axios.get(`${BACKEND_URL}/api/recruitment/analytics`),
       ]);
       setRecruiter(me.data);
       setPosts(myPosts.data.posts || []);
@@ -43,21 +43,21 @@ export default function RecruiterDashboard() {
         employee_count: me.data.employee_count || '',
       });
     } catch (err) {
-      if (err.response?.status === 401) { localStorage.removeItem('recruiter_token'); navigate('/recruiter'); }
+      if (err.response?.status === 401) { localStorage.removeItem('recruiter_data'); navigate('/recruiter'); }
     } finally { setLoading(false); }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('recruiter_token');
     localStorage.removeItem('recruiter_data');
+    // Cookie is cleared server-side on /api/recruitment/recruiter/logout if you wire it;
+    // for now the cookie auto-expires and unauthenticated calls will 401.
     navigate('/recruiter');
   };
 
   const handleSaveProfile = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('recruiter_token');
-      await axios.put(`${BACKEND_URL}/api/recruitment/company/update`, profileForm, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${BACKEND_URL}/api/recruitment/company/update`, profileForm);
       setRecruiter(prev => ({ ...prev, ...profileForm }));
       setEditingProfile(false);
     } catch (err) { console.error(err); }

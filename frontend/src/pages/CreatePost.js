@@ -73,8 +73,7 @@ export default function CreatePost() {
     e.preventDefault();
     setLoading(true); setError('');
     try {
-      const token = localStorage.getItem('recruiter_token');
-      if (!token) { navigate('/recruiter'); return; }
+      if (!localStorage.getItem('recruiter_data')) { navigate('/recruiter'); return; }
       const body = { post_type: postType, title: form.title, description: form.description };
       if (postType === 'job') {
         Object.assign(body, { role_type: form.role_type, location: form.location, salary: form.salary, air_filter: form.air_filter ? parseInt(form.air_filter) : null, min_qualification: form.min_qualification, deadline: form.deadline, screening_questions: (form.screening_questions || []).filter(q => q.trim()) });
@@ -87,7 +86,7 @@ export default function CreatePost() {
       } else if (postType === 'event') {
         Object.assign(body, { event_type: form.event_type, event_date: form.event_date, platform: form.platform, registration_limit: form.registration_limit ? parseInt(form.registration_limit) : null });
       }
-      await axios.post(`${BACKEND_URL}/api/recruitment/posts`, body, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${BACKEND_URL}/api/recruitment/posts`, body);
       setSuccess(true);
     } catch (err) { setError(err.response?.data?.detail || 'Failed to create post'); }
     finally { setLoading(false); }

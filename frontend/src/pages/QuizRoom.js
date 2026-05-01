@@ -96,9 +96,6 @@ const QuizRoom = () => {
         const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
           params: {
             user_id: user.id
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
           }
         });
 
@@ -138,11 +135,7 @@ const QuizRoom = () => {
 
     const fetchLeaderboard = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/leaderboard`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}/leaderboard`);
 
         if (response.data.success) {
           setLeaderboard(response.data.leaderboard || []);
@@ -271,11 +264,6 @@ const QuizRoom = () => {
           score: finalScore,
           answers: finalAnswers,
           total_questions: questions.length
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
         }
       );
     } catch (error) {
@@ -308,8 +296,6 @@ const QuizRoom = () => {
       `\n\n#QuizResult #Ceibaa`;
 
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
-      
       await axios.post(`${BACKEND_URL}/api/social/posts`, {
         user_id: user.id,
         user_name: user.name || user.username || 'User',
@@ -321,10 +307,6 @@ const QuizRoom = () => {
           category: roomData?.category,
           score: finalScore,
           total_questions: questions.length
-        }
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
         }
       });
 

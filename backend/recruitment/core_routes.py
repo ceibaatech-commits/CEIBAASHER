@@ -5,7 +5,7 @@ import bcrypt
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 from collections import defaultdict
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Response
 from jose import jwt
 from database import db
 from utils.auth_helpers import get_current_student, get_current_recruiter, JWT_SECRET, JWT_ALGORITHM
@@ -35,7 +35,7 @@ def _clear_recruiter_attempts(ip, email):
 
 # === Recruiter Auth ===
 @router.post("/recruitment/recruiter/login")
-async def recruiter_login(data: RecruiterLogin, request: Request):
+async def recruiter_login(data: RecruiterLogin, request: Request, response: Response):
     email = data.email.strip().lower()
     client_ip = request.client.host if request.client else "unknown"
     _check_recruiter_rate_limit(client_ip, email)
@@ -50,6 +50,18 @@ async def recruiter_login(data: RecruiterLogin, request: Request):
         raise HTTPException(403, "Access revoked by CEIBAA admin")
     _clear_recruiter_attempts(client_ip, email)
     token = jwt.encode({"sub": rec["id"], "email": email, "role": "recruiter", "exp": datetime.now(timezone.utc) + timedelta(days=7)}, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    # Stage 3: Set JWT as httpOnly session_token cookie so frontend doesn't
+    # need to stash `recruiter_token` in localStorage. utils/auth_helpers
+    # is already dual-mode (cookie or Bearer header).
+    response.set_cookie(
+        key="session_token",
+        value=token,
+        max_age=7 * 24 * 60 * 60,  # 7 days
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/",
+    )
     rec_safe = {k: v for k, v in rec.items() if k != "password_hash"}
     return {"access_token": token, "token_type": "bearer", "recruiter": rec_safe}
 
