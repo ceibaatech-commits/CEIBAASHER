@@ -42,6 +42,153 @@ def init_socketio_db(database):
     asyncio.create_task(room_manager.init_db(database))
 
 
+# ==================== HELPERS: Extracted to reduce handler complexity ====================
+
+GIFT_COSTS = {'star': 50, 'diamond': 100, 'crown': 200, 'trophy': 500}
+
+
+def _validate_join_preconditions(room):
+    """Return error dict if room cannot be joined, else None."""
+    if not room:
+        return {'error': 'Room not found. Please check the PIN.', 'code': 'ROOM_NOT_FOUND', 'statusCode': 404}
+    if room.is_expired():
+        return {'error': 'Room expired. Please create a new room.', 'code': 'ROOM_EXPIRED', 'statusCode': 410}
+    if room.status == 'completed':
+        return {'error': 'Battle already completed.', 'code': 'BATTLE_COMPLETED', 'statusCode': 410}
+    return None
+
+
+def _handle_host_reconnect(room, sid, user_data):
+    """Reassign host socket id if an HTTP-created host is reconnecting via WS.
+    Returns True if this user is the actual host.
+    """
+    if user_data.get('isHost') is not True:
+        return False
+    for participant in room.participants:
+        if participant.user_id.startswith('http-') and participant.is_host:
+            room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
+            room.host.user_id = sid
+            room.host.username = user_data.get('username', room.host.username)
+            room.host.avatar = user_data.get('avatar', room.host.avatar)
+            return True
+    if room.host.user_id == sid:
+        return True
+    return False
+
+
+def _validate_start_preconditions(room):
+    """Return error dict if battle cannot be started, else None."""
+    if not room:
+        return {'error': 'Room not found', 'code': 'ROOM_NOT_FOUND'}
+    if room.is_expired():
+        return {'error': 'Room expired. Please create a new room.', 'code': 'ROOM_EXPIRED'}
+    if room.status == 'active':
+        return {'error': 'Battle already in progress', 'code': 'ALREADY_STARTED'}
+    if room.status == 'completed':
+        return {'error': 'Battle already completed', 'code': 'ALREADY_COMPLETED'}
+    if not room.questions or len(room.questions) == 0:
+        return {'error': 'No questions set for this room. Please add questions first.', 'code': 'NO_QUESTIONS'}
+    return None
+
+
+async def _persist_battle_start(room_id, room):
+    """Persist battle start record to live_battles and notify admins."""
+    try:
+        players_data = [{"user_id": p.user_id, "username": p.username, "score": p.score} for p in room.participants]
+        now_iso = datetime.now(timezone.utc).isoformat()
+        battle_doc = {
+            "id": room_id, "room_id": room_id, "type": "room", "status": "in_progress",
+            "players": players_data, "exam": room.exam or "", "subject": room.subject or "",
+            "total_questions": len(room.questions), "started_at": now_iso, "ended_at": None,
+            "is_demo": False, "created_at": now_iso, "updated_at": now_iso
+        }
+        await db.live_battles.update_one({"room_id": room_id}, {"$set": battle_doc}, upsert=True)
+        await notify_admins_battle_started(room_id, battle_doc)
+    except Exception as e:
+        print(f"[START] Failed to persist battle: {e}")
+
+
+async def _persist_battle_completion(room_id, room, leaderboard):
+    """Update live_battles record on completion and notify admins."""
+    try:
+        winner = leaderboard[0] if leaderboard else None
+        now_iso = datetime.now(timezone.utc).isoformat()
+        await db.live_battles.update_one(
+            {"room_id": room_id},
+            {"$set": {
+                "status": "completed", "ended_at": now_iso, "updated_at": now_iso,
+                "winner_id": winner.get("user_id") if winner else None,
+                "winner_name": winner.get("username") if winner else None,
+                "final_leaderboard": leaderboard
+            }},
+            upsert=True
+        )
+        await notify_admins_battle_ended(room_id, {"leaderboard": leaderboard})
+    except Exception as e:
+        print(f"[COMPLETE] Failed to update live_battles: {e}")
+
+
+async def _save_battle_history(room_id, room, leaderboard):
+    """Persist per-participant battle history rows for stats tracking."""
+    try:
+        for idx, participant in enumerate(leaderboard, 1):
+            user_id = participant.get('user_id') or participant.get('userId')
+            if not user_id:
+                continue
+            await db.user_battle_history.insert_one({
+                "user_id": user_id,
+                "user_name": participant.get('username', participant.get('playerName', 'Unknown')),
+                "battle_type": "room", "room_id": room_id,
+                "score": participant.get('score', 0),
+                "total_questions": room.current_question,
+                "rank": idx, "total_participants": len(room.participants),
+                "exam": room.exam or "", "subject": room.subject or "",
+                "completed_at": datetime.now(timezone.utc).isoformat()
+            })
+    except Exception as e:
+        print(f"[COMPLETE] Failed to save battle history: {str(e)}")
+
+
+async def _auto_post_battle_results(room_id, room, leaderboard):
+    """Auto-post top-5 battle results to social feed."""
+    try:
+        from social_auto_post import auto_post_battle_result
+        for idx, participant in enumerate(leaderboard[:5], 1):
+            user_id = participant.get('user_id') or participant.get('userId')
+            if not user_id:
+                continue
+            battle_data = {
+                "room_code": room_id,
+                "score": participant.get('score', 0),
+                "rank": idx,
+                "total_participants": len(room.participants),
+                "subject": room.subject or "",
+                "exam_category": room.exam or "",
+                "questions_answered": participant.get('score', 0),
+                "total_questions": room.current_question
+            }
+            await auto_post_battle_result(user_id, battle_data)
+    except Exception as e:
+        print(f"[COMPLETE] Failed to auto-post battle results: {str(e)}")
+
+
+def _validate_gift_request(room, sid, recipient_id, gift_type):
+    """Validate a gift send. Returns (cost, error_message_or_None)."""
+    if not room:
+        return None, 'Room not found'
+    if not recipient_id or recipient_id == sid:
+        return None, 'Invalid recipient'
+    if gift_type not in GIFT_COSTS:
+        return None, 'Invalid gift type'
+    cost = GIFT_COSTS[gift_type]
+    room.scores.setdefault(sid, 0)
+    room.scores.setdefault(recipient_id, 0)
+    if room.scores.get(sid, 0) < cost:
+        return None, 'Not enough points to send this gift'
+    return cost, None
+
+
+
 @sio.event
 async def connect(sid, environ):
     """Handle client connection with enhanced logging"""
@@ -163,44 +310,18 @@ async def join_room(sid, data):
 
         room = await room_manager.get_room(room_id)
 
-        if not room:
-            print(f"[JOIN ERROR] Room {room_id} not found")
-            await sio.emit('join_error', {
-                'error': 'Room not found. Please check the PIN.',
-                'code': 'ROOM_NOT_FOUND',
-                'statusCode': 404
-            }, room=sid)
-            return
-
-        # Check if expired (24 hour limit)
-        if room.is_expired():
-            print(f"[JOIN ERROR] Room {room_id} expired")
-            await sio.emit('join_error', {
-                'error': 'Room expired. Please create a new room.',
-                'code': 'ROOM_EXPIRED',
-                'statusCode': 410
-            }, room=sid)
-            return
-
-        # Check if completed
-        if room.status == 'completed':
-            print(f"[JOIN ERROR] Room {room_id} already completed")
-            await sio.emit('join_error', {
-                'error': 'Battle already completed.',
-                'code': 'BATTLE_COMPLETED',
-                'statusCode': 410
-            }, room=sid)
+        precondition_error = _validate_join_preconditions(room)
+        if precondition_error:
+            print(f"[JOIN ERROR] {precondition_error['error']} for room {room_id}")
+            await sio.emit('join_error', precondition_error, room=sid)
             return
 
         # Check if user is already a participant (allow reconnection)
         username = user_data.get('username', '')
-        is_existing_participant = any(
-            p.username == username for p in room.participants
-        )
+        is_existing_participant = any(p.username == username for p in room.participants)
 
         # For NEW participants, check if room is accepting
         if not is_existing_participant and not room.is_joinable():
-            # But allow joining active battles (not completed)
             if room.status != 'active':
                 print(f"[JOIN ERROR] Room {room_id} not joinable for new participant")
                 await sio.emit('join_error', {
@@ -210,53 +331,27 @@ async def join_room(sid, data):
                 }, room=sid)
                 return
 
-        # Track activity
+        # Track activity and persist session
         user_activity[sid] = datetime.now(timezone.utc).timestamp()
-        
-        # Store user data in session
         await sio.save_session(sid, {'userData': user_data})
 
-        # Determine if this user is the host
-        is_actual_host = False
-
-        # Handle host reconnection
-        if user_data.get('isHost') is True:
-            for participant in room.participants:
-                if participant.user_id.startswith('http-') and participant.is_host:
-                    print(f"[HOST RECONNECT] Replacing HTTP host for {user_data.get('username')}")
-                    room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
-                    room.host.user_id = sid
-                    room.host.username = user_data.get('username', room.host.username)
-                    room.host.avatar = user_data.get('avatar', room.host.avatar)
-                    is_actual_host = True
-                    break
-
-            if not is_actual_host and room.host.user_id == sid:
-                is_actual_host = True
-                print(f"[HOST] {user_data.get('username')} is the original room creator")
-
-        # Set correct host status
+        is_actual_host = _handle_host_reconnect(room, sid, user_data)
         user_data['isHost'] = is_actual_host
 
         # Add participant - NO APPROVAL NEEDED (instant join/reconnect)
         result = room.add_participant(sid, user_data)
-
         if not result.get('success'):
             error_msg = result.get('error', 'Failed to join room')
             error_code = result.get('code', 'JOIN_FAILED')
             print(f"[JOIN ERROR] {error_msg} for room {room_id}")
             await sio.emit('join_error', {
-                'error': error_msg,
-                'code': error_code,
-                'statusCode': 403
+                'error': error_msg, 'code': error_code, 'statusCode': 403
             }, room=sid)
             return
 
-        # Join Socket.IO room
+        # Join Socket.IO room + persist
         await sio.enter_room(sid, room_id)
         room_manager.user_rooms[sid] = room_id
-
-        # Save room state
         await room_manager.save_room_to_db(room)
 
         print(f"[JOIN SUCCESS] ✅ {user_data.get('username')} joined room {room_id} ({len(room.participants)} participants)")
@@ -274,7 +369,6 @@ async def join_room(sid, data):
         }, room=room_id)
 
         # Send room data to joiner
-        print(f"[EMIT] Sending room_joined to {sid}")
         await sio.emit('room_joined', {
             'success': True,
             'room': room.to_dict(),
@@ -287,7 +381,6 @@ async def join_room(sid, data):
             },
             'timeRemaining': room.get_time_remaining()
         }, room=sid)
-        print(f"[EMIT] ✅ room_joined sent to {sid}")
 
     except Exception as e:
         print(f"[ERROR] join_room: {str(e)}")
@@ -415,80 +508,20 @@ async def complete_battle(sid, data):
             return
 
         room.status = 'completed'
+        leaderboard = room.get_leaderboard()
 
         final_results = {
-            'leaderboard': room.get_leaderboard(),
+            'leaderboard': leaderboard,
             'totalQuestions': room.current_question,
             'participants': len(room.participants)
         }
 
         await sio.emit('battle_completed', final_results, room=room_id)
-
         print(f"[COMPLETE] Battle completed in room {room_id}")
 
-        # Update live_battles for admin panel
-        try:
-            leaderboard = room.get_leaderboard()
-            winner = leaderboard[0] if leaderboard else None
-            await db.live_battles.update_one(
-                {"room_id": room_id},
-                {"$set": {
-                    "status": "completed",
-                    "ended_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "winner_id": winner.get("user_id") if winner else None,
-                    "winner_name": winner.get("username") if winner else None,
-                    "final_leaderboard": leaderboard
-                }},
-                upsert=True
-            )
-            await notify_admins_battle_ended(room_id, {"leaderboard": leaderboard})
-        except Exception as e:
-            print(f"[COMPLETE] Failed to update live_battles: {e}")
-        
-        # Save battle history for all participants (for stats tracking)
-        try:
-            leaderboard = room.get_leaderboard()
-            for idx, participant in enumerate(leaderboard, 1):
-                user_id = participant.get('user_id') or participant.get('userId')
-                if user_id:
-                    await db.user_battle_history.insert_one({
-                        "user_id": user_id,
-                        "user_name": participant.get('username', participant.get('playerName', 'Unknown')),
-                        "battle_type": "room",
-                        "room_id": room_id,
-                        "score": participant.get('score', 0),
-                        "total_questions": room.current_question,
-                        "rank": idx,
-                        "total_participants": len(room.participants),
-                        "exam": room.exam or "",
-                        "subject": room.subject or "",
-                        "completed_at": datetime.now(timezone.utc).isoformat()
-                    })
-        except Exception as e:
-            print(f"[COMPLETE] Failed to save battle history: {str(e)}")
-        
-        # Auto-post battle results to social feed for all participants
-        try:
-            from social_auto_post import auto_post_battle_result
-            leaderboard = room.get_leaderboard()
-            
-            for idx, participant in enumerate(leaderboard[:5], 1):  # Top 5 only
-                user_id = participant.get('user_id') or participant.get('userId')
-                if user_id:
-                    battle_data = {
-                        "room_code": room_id,
-                        "score": participant.get('score', 0),
-                        "rank": idx,
-                        "total_participants": len(room.participants),
-                        "subject": room.subject or "",
-                        "exam_category": room.exam or "",
-                        "questions_answered": participant.get('score', 0),
-                        "total_questions": room.current_question
-                    }
-                    await auto_post_battle_result(user_id, battle_data)
-        except Exception as e:
-            print(f"[COMPLETE] Failed to auto-post battle results: {str(e)}")
+        await _persist_battle_completion(room_id, room, leaderboard)
+        await _save_battle_history(room_id, room, leaderboard)
+        await _auto_post_battle_results(room_id, room, leaderboard)
 
         # Schedule cleanup after 5 minutes
         async def cleanup():
@@ -515,80 +548,22 @@ async def start_battle(sid, data):
         room_id = data.get('roomId')
         room = await room_manager.get_room(room_id)
 
-        if not room:
-            await sio.emit('start_error', {
-                'error': 'Room not found',
-                'code': 'ROOM_NOT_FOUND'
-            }, room=sid)
-            return
-
-        # Check if room is expired
-        if room.is_expired():
-            await sio.emit('start_error', {
-                'error': 'Room expired. Please create a new room.',
-                'code': 'ROOM_EXPIRED'
-            }, room=sid)
-            return
-
-        # Check if already started or completed
-        if room.status in ['active', 'completed']:
-            status_msg = 'Battle already in progress' if room.status == 'active' else 'Battle already completed'
-            await sio.emit('start_error', {
-                'error': status_msg,
-                'code': 'ALREADY_STARTED' if room.status == 'active' else 'ALREADY_COMPLETED'
-            }, room=sid)
-            return
-
-        # Check if questions are set
-        if not room.questions or len(room.questions) == 0:
-            await sio.emit('start_error', {
-                'error': 'No questions set for this room. Please add questions first.',
-                'code': 'NO_QUESTIONS'
-            }, room=sid)
+        precondition_error = _validate_start_preconditions(room)
+        if precondition_error:
+            await sio.emit('start_error', precondition_error, room=sid)
             return
 
         # Start the room - NO HOST CHECK REQUIRED
         room.status = 'active'
         room.current_question = 0
         room.deactivate()  # Prevent new joins once started
-        
         await room_manager.save_room_to_db(room)
 
         # Get the username of who started
-        starter_name = 'Unknown'
-        for p in room.participants:
-            if p.user_id == sid:
-                starter_name = p.username
-                break
-
+        starter_name = next((p.username for p in room.participants if p.user_id == sid), 'Unknown')
         print(f"[START] Battle started in room {room_id} by {starter_name}")
 
-        # Persist to live_battles for admin panel
-        try:
-            players_data = [{"user_id": p.user_id, "username": p.username, "score": p.score} for p in room.participants]
-            battle_doc = {
-                "id": room_id,
-                "room_id": room_id,
-                "type": "room",
-                "status": "in_progress",
-                "players": players_data,
-                "exam": room.exam or "",
-                "subject": room.subject or "",
-                "total_questions": len(room.questions),
-                "started_at": datetime.now(timezone.utc).isoformat(),
-                "ended_at": None,
-                "is_demo": False,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }
-            await db.live_battles.update_one(
-                {"room_id": room_id},
-                {"$set": battle_doc},
-                upsert=True
-            )
-            await notify_admins_battle_started(room_id, battle_doc)
-        except Exception as e:
-            print(f"[START] Failed to persist battle: {e}")
+        await _persist_battle_start(room_id, room)
 
         # Notify all participants
         await sio.emit('battle_started', {
@@ -760,10 +735,6 @@ async def send_gift(sid, data):
     - 4 gift types: Star, Diamond, Crown, Trophy
     - Sender pays full cost, recipient gets 50% of cost as points
     - Leaderboard updates in real-time
-    - Events emitted:
-      - 'gift-sent' to sender
-      - 'gift-received' to recipient
-      - 'gift-error' to sender on error
     """
     try:
         room_id = data.get('pin') or data.get('roomId')
@@ -771,36 +742,10 @@ async def send_gift(sid, data):
         gift_type = (data.get('giftType') or '').lower()
 
         room = await room_manager.get_room(room_id)
-        if not room:
-            await sio.emit('gift-error', {'message': 'Room not found'}, room=sid)
-            return
 
-        if not recipient_id or recipient_id == sid:
-            await sio.emit('gift-error', {'message': 'Invalid recipient'}, room=sid)
-            return
-
-        # Define gift costs
-        gift_costs = {
-            'star': 50,
-            'diamond': 100,
-            'crown': 200,
-            'trophy': 500
-        }
-
-        if gift_type not in gift_costs:
-            await sio.emit('gift-error', {'message': 'Invalid gift type'}, room=sid)
-            return
-
-        cost = gift_costs[gift_type]
-
-        # Ensure both players have score entries
-        room.scores.setdefault(sid, 0)
-        room.scores.setdefault(recipient_id, 0)
-
-        # Check sender has enough points
-        sender_score = room.scores.get(sid, 0)
-        if sender_score < cost:
-            await sio.emit('gift-error', {'message': 'Not enough points to send this gift'}, room=sid)
+        cost, err = _validate_gift_request(room, sid, recipient_id, gift_type)
+        if err:
+            await sio.emit('gift-error', {'message': err}, room=sid)
             return
 
         # Apply transfer: sender pays full cost, recipient gets 50%
@@ -808,42 +753,24 @@ async def send_gift(sid, data):
         recipient_reward = int(cost * 0.5)
         room.update_score(recipient_id, recipient_reward)
 
-        # Recompute leaderboard
         leaderboard = room.get_leaderboard()
 
-        # Get usernames for nicer messages
         sender_name = next((p.username for p in room.participants if p.user_id == sid), 'You')
         recipient_name = next((p.username for p in room.participants if p.user_id == recipient_id), 'Player')
 
-        # Notify sender
-        await sio.emit('gift-sent', {
+        payload = {
             'roomId': room_id,
-            'fromUserId': sid,
-            'toUserId': recipient_id,
-            'fromUsername': sender_name,
-            'toUsername': recipient_name,
-            'giftType': gift_type,
-            'cost': cost,
+            'fromUserId': sid, 'toUserId': recipient_id,
+            'fromUsername': sender_name, 'toUsername': recipient_name,
+            'giftType': gift_type, 'cost': cost,
             'recipientReward': recipient_reward,
             'leaderboard': leaderboard
-        }, room=sid)
+        }
 
-        # Notify recipient
-        await sio.emit('gift-received', {
-            'roomId': room_id,
-            'fromUserId': sid,
-            'toUserId': recipient_id,
-            'fromUsername': sender_name,
-            'toUsername': recipient_name,
-            'giftType': gift_type,
-            'cost': cost,
-            'recipientReward': recipient_reward,
-            'leaderboard': leaderboard
-        }, room=recipient_id)
-
-        # Broadcast updated leaderboard to entire room
+        await sio.emit('gift-sent', payload, room=sid)
+        await sio.emit('gift-received', payload, room=recipient_id)
         await sio.emit('leaderboard_update', {'leaderboard': leaderboard}, room=room_id)
-        await room_manager.save_room_to_db(room) # Persist state
+        await room_manager.save_room_to_db(room)
 
         print(f"[GIFT] {sender_name} ({sid}) sent {gift_type} to {recipient_name} ({recipient_id}) in room {room_id}")
 
