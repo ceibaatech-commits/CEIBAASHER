@@ -328,7 +328,7 @@ const ChapterTestChapters = () => {
             <div className="md:hidden space-y-3">
               {chapters.map((chapter, idx) => (
                 <motion.div 
-                  key={idx} 
+                  key={chapter.chapter_number || chapter.chapter_name || `ch-m-${idx}`} 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.03 }}
@@ -392,7 +392,7 @@ const ChapterTestChapters = () => {
             <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {chapters.map((chapter, idx) => (
                 <motion.div 
-                  key={idx} 
+                  key={chapter.chapter_number || chapter.chapter_name || `ch-d-${idx}`} 
                   whileHover={{ y: -4 }}
                   className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all"
                 >

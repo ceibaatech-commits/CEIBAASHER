@@ -529,7 +529,7 @@ const Board = () => {
             {subjectMastery.length > 0 ? (
               <div className="space-y-4">
                 {subjectMastery.map((subject, index) => (
-                  <div key={index} className="group">
+                  <div key={subject.subject || `subj-${index}`} className="group">
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium text-white/90">{subject.subject}</span>
                       <span className="font-bold text-emerald-400">{subject.mastery}%</span>
@@ -577,7 +577,7 @@ const Board = () => {
               <div className="space-y-3">
                 {getTodaySchedule().sessions.slice(0, 4).map((session, index) => (
                   <div 
-                    key={index} 
+                    key={`${session.time || ''}-${session.topic || index}`} 
                     className="flex items-center gap-4 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group border border-white/10"
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold ${

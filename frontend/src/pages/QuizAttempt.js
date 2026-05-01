@@ -29,8 +29,7 @@ export default function QuizAttempt() {
 
   const startQuiz = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/quiz/${quizId}/start`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/quiz/${quizId}/start`);
       setQuiz(data.quiz);
       setTimeLeft((data.quiz.time_limit || 15) * 60);
     } catch (err) {
@@ -53,8 +52,7 @@ export default function QuizAttempt() {
     if (submitted) return;
     setSubmitted(true);
     try {
-      const token = localStorage.getItem('token');
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/quiz/${quizId}/submit`, { answers }, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/quiz/${quizId}/submit`, { answers });
       setResult(data);
       const lb = await axios.get(`${BACKEND_URL}/api/recruitment/quiz/${quizId}/leaderboard`);
       setLeaderboard(lb.data.leaderboard || []);

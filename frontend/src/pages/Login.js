@@ -73,14 +73,11 @@ const Login = () => {
         throw new Error('No valid token received from server');
       }
       
-      // Store tokens
-      localStorage.setItem('token', token);
-      localStorage.setItem('auth_token', token);
-      
+      // Auth token is set as an httpOnly session_token cookie by the backend
+      // (_set_auth_cookie). We no longer mirror it to localStorage — closing the
+      // XSS exposure flagged in the security review.
       const userData = response.data.user;
       setUserData(userData);
-      
-      console.log('[Login] Success - token stored for user:', userData?.name || userData?.email);
 
       // For email-based logins, gate behind phone verification
       if (isEmail) {

@@ -212,7 +212,7 @@ export default function CompanyChannel() {
               <h3 className="text-slate-900 font-bold text-sm mb-4 flex items-center gap-2"><Trophy className="w-4 h-4 text-amber-500" /> Quiz Leaderboard</h3>
               <p className="text-slate-400 text-xs mb-3">Top scorers on latest quiz</p>
               {leaderboard.length > 0 ? leaderboard.slice(0, 5).map((e, i) => (
-                <div key={i} className="flex items-center gap-2 py-1.5">
+                <div key={e.id || e.name || `lb-${i}`} className="flex items-center gap-2 py-1.5">
                   <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${i < 3 ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-500'}`}>{i + 1}</span>
                   <span className="flex-1 text-slate-800 text-sm truncate">{e.user_name}</span>
                   <span className="text-blue-600 text-xs font-bold">{e.score}/{e.total}</span>
@@ -240,7 +240,7 @@ export default function CompanyChannel() {
                 <h3 className="text-slate-900 font-bold text-sm mb-3 flex items-center gap-2"><Award className="w-4 h-4 text-violet-500" /> Your Badges</h3>
                 <div className="flex flex-wrap gap-1.5">
                   {(user.badges || ['CEIBAA Verified']).map((b, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-lg text-[10px] font-medium bg-violet-50 text-violet-600 border border-violet-200">{b}</span>
+                    <span key={b || `badge-${i}`} className="px-2.5 py-1 rounded-lg text-[10px] font-medium bg-violet-50 text-violet-600 border border-violet-200">{b}</span>
                   ))}
                 </div>
                 <div className="mt-3 bg-slate-50 rounded-lg p-2.5 border border-slate-200">

@@ -44,13 +44,7 @@ const PrivacySettings = () => {
 
   const fetchFollowRequests = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(
-        `${BACKEND_URL}/api/profile/follow-requests`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await axios.get(`${BACKEND_URL}/api/profile/follow-requests`);
 
       if (response.data.success) {
         setFollowRequests(response.data.requests || []);
@@ -63,14 +57,10 @@ const PrivacySettings = () => {
   const togglePrivacy = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.put(
         `${BACKEND_URL}/api/profile/privacy`,
         null,
-        {
-          params: { is_private: !isPrivate },
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        { params: { is_private: !isPrivate } }
       );
 
       if (response.data.success) {
@@ -86,13 +76,9 @@ const PrivacySettings = () => {
 
   const handleApprove = async (requestId) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.post(
         `${BACKEND_URL}/api/profile/follow-request/${requestId}/approve`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        {}
       );
 
       if (response.data.success) {
@@ -107,12 +93,8 @@ const PrivacySettings = () => {
 
   const handleDecline = async (requestId) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.delete(
-        `${BACKEND_URL}/api/profile/follow-request/${requestId}/decline`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        `${BACKEND_URL}/api/profile/follow-request/${requestId}/decline`
       );
 
       if (response.data.success) {

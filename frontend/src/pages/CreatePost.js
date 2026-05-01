@@ -204,11 +204,11 @@ export default function CreatePost() {
                       <p className="text-[#22c55e] text-sm font-medium flex items-center gap-1"><CheckCircle2 size={14} /> {generatedQuestions.length} questions generated</p>
                       <div className="mt-2 max-h-60 overflow-y-auto space-y-2 pr-1">
                         {generatedQuestions.map((q, i) => (
-                          <div key={i} className="bg-[#1a1e2e] rounded-lg p-3 text-sm">
+                          <div key={q.question || `gen-q-${i}`} className="bg-[#1a1e2e] rounded-lg p-3 text-sm">
                             <p className="text-[#e8eaf0] font-medium">Q{i + 1}. {q.question}</p>
                             <div className="grid grid-cols-2 gap-1 mt-1">
                               {q.options.map((opt, j) => (
-                                <span key={j} className={`text-xs px-2 py-1 rounded ${j === q.correct_answer ? 'bg-[#22c55e]/15 text-[#22c55e]' : 'text-[#8892b0]'}`}>
+                                <span key={`${q.question || 'gen'}-opt-${j}`} className={`text-xs px-2 py-1 rounded ${j === q.correct_answer ? 'bg-[#22c55e]/15 text-[#22c55e]' : 'text-[#8892b0]'}`}>
                                   {String.fromCharCode(65 + j)}. {opt} {j === q.correct_answer && ' ✓'}
                                 </span>
                               ))}
@@ -223,14 +223,14 @@ export default function CreatePost() {
                 <div className="space-y-3">
                   <p className="text-[#8892b0] text-xs">Max {MAX_QUESTIONS} questions. ({manualQuestions.length}/{MAX_QUESTIONS})</p>
                   {manualQuestions.map((q, i) => (
-                    <div key={i} className="bg-[#141720] border border-[#252a3d] rounded-xl p-4">
+                    <div key={q._id || `manual-q-${i}`} className="bg-[#141720] border border-[#252a3d] rounded-xl p-4">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-[#8892b0] text-xs">Question {i + 1}</p>
                         {manualQuestions.length > 1 && <button type="button" onClick={() => removeManualQ(i)} className="text-[#ef4444] hover:text-[#ef4444]/80"><Trash2 size={14} /></button>}
                       </div>
                       <input value={q.question} onChange={e => updateManualQ(i, 'question', e.target.value)} className={`${inputCls} mb-2`} placeholder="Enter question" />
                       {q.options.map((opt, j) => (
-                        <div key={j} className="flex items-center gap-2 mb-1">
+                        <div key={`${q._id || i}-mopt-${j}`} className="flex items-center gap-2 mb-1">
                           <input type="radio" name={`correct-${i}`} checked={q.correct_answer === j} onChange={() => updateManualQ(i, 'correct_answer', j)} className="accent-[#c084fc]" />
                           <input value={opt} onChange={e => updateManualQ(i, 'option', { idx: j, val: e.target.value })} className={`${inputCls} flex-1`} placeholder={`Option ${String.fromCharCode(65 + j)}`} />
                         </div>
