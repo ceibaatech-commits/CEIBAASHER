@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown, ArrowUpRight, Briefcase, Sparkles } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown, ArrowUpRight, Briefcase } from 'lucide-react';
 import axios from 'axios';
 import SEO from '../components/SEO';
 import CeibaaLogo from '../components/CeibaaLogo';
@@ -373,10 +373,12 @@ const Home = () => {
               <span className="flex items-center gap-1.5 text-[20px] font-black leading-tight">
                 Hire With Us
               </span>
-              <Sparkles
-                className="absolute top-3 right-3 w-5 h-5"
-                style={{ color: '#6b4e0d' }}
-                strokeWidth={2.25}
+              <img
+                src="/sarvam-logo-dark.svg"
+                alt="Ceibaa"
+                aria-hidden="true"
+                className="absolute top-3 right-3 w-5 h-5 object-contain pointer-events-none"
+                data-testid="hire-with-us-logo"
               />
             </button>
           </div>
@@ -710,7 +712,13 @@ const Home = () => {
         <div id="skill-drill-section" className="md:hidden px-4 py-6" style={{ backgroundColor: '#fdf9ee' }} data-testid="mobile-skill-drill-section">
           <div className="mb-4 flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#efc868' }}>
-              <Sparkles className="w-4 h-4" style={{ color: '#6b4e0d' }} strokeWidth={2.5} />
+              <img
+                src="/sarvam-logo-dark.svg"
+                alt="Ceibaa"
+                aria-hidden="true"
+                className="w-5 h-5 object-contain"
+                data-testid="skill-drill-logo"
+              />
             </div>
             <div>
               <h2 className="text-[20px] font-black" style={{ color: '#0f172a', letterSpacing: '-0.01em' }}>Skill Drill — CBSE Classes</h2>

@@ -295,6 +295,15 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Mobile UI: Sarvam logo replaces Gemini-style sparkle icons
+- [x] **Assets:** uploaded `sarvam-logo-white.svg` (16KB, 500×500 viewBox) saved to `/app/frontend/public/sarvam-logo-white.svg`. Auto-generated dark-tinted variant `/sarvam-logo-dark.svg` (replaces `#FCFCFC` / `#fff` fills with `#6b4e0d`) so the logo reads cleanly on the gold mobile cards.
+- [x] **`/app/frontend/src/pages/Home.js`:**
+  - Replaced the Lucide `Sparkles` icon on the **mobile "Recruiters: Hire With Us"** card (top-right corner) with `<img src="/sarvam-logo-dark.svg" />` at proper aspect ratio (`w-5 h-5 object-contain`).
+  - Replaced the Lucide `Sparkles` icon on the **mobile "Skill Drill — CBSE Classes"** header (gold circle on the left) with the same Sarvam logo.
+  - Removed unused `Sparkles` import from lucide-react.
+  - Both logos preserve original 1:1 proportion via `object-contain`. New `data-testid` hooks: `hire-with-us-logo`, `skill-drill-logo`.
+- [x] **Verification:** Both elements present in rendered DOM. Both SVG files served with HTTP 200 + `image/svg+xml` content-type. Lint clean. Visual confirmation requires real mobile device since the mobile branch is `md:hidden`.
+
 ### Feb 24, 2026 — 1v1 Battle Scoring: Unified equation + avg-score fix
 - [x] **Bug:** `dashboard_routes.py` line ~290 was computing `percentage = (score / total) * 100` for 1v1 battles where `score` is RAW POINTS (max ~900) and `total` is question count (10), producing percentages up to **9000%** that corrupted the user's `avg_score`.
 - [x] **Bug:** Frontend equation was `Math.max(10, timeLeft * 3)` — no penalty for wrong answers, no clear contract, max 900 pts.
