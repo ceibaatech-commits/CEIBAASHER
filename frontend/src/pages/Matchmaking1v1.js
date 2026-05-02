@@ -211,7 +211,7 @@ const Matchmaking1v1 = () => {
 
   // Dimensions for each VC size mode (used by drag-clamp + snap logic)
   const vcDims = useMemo(() => ({
-    mini: { w: 130, h: 180 },
+    mini: { w: 110, h: 150 },
     pip: { w: 300, h: 420 },
     full: { w: 0, h: 0 },   // dimensions irrelevant in fullscreen
   }), []);
@@ -408,60 +408,86 @@ const Matchmaking1v1 = () => {
     };
   }, [vcState]);
 
-  // ── Initialise PIP position to bottom-right when call goes active ──
+  // ── Initialise PIP at top-right corner in MINI mode when call goes active ──
+  // Default to the small bubble so the quiz remains fully usable from the
+  // moment the call connects. Users tap the bubble to expand to pip.
   useEffect(() => {
     if (vcState !== 'active') return;
-    const { w, h } = vcDims.pip;
+    const { w } = vcDims.mini;
     const margin = 12;
     setVcPos({
       x: Math.max(margin, window.innerWidth - w - margin),
-      y: Math.max(margin, window.innerHeight - h - margin - 20),
+      y: 100,   // sits below the quiz toolbar
     });
-    setVcSize('pip');
+    setVcSize('mini');
   }, [vcState, vcDims]);
 
-  // ── Drag handlers (mouse + touch). WhatsApp-style snap-to-edge on release. ──
+  // ── Drag handlers (mouse + touch). WhatsApp-style snap-to-edge on release.
+  //    Distinguishes a quick tap from a drag using a 5px movement threshold so
+  //    tapping the mini bubble cleanly expands it without triggering drag. ──
+  const wasDragRef = useRef(false);
+
   const onDragStart = useCallback((e) => {
     if (vcSizeRef.current === 'full') return;        // no drag in fullscreen
     if (e.target.closest?.('[data-vc-control]')) return;  // ignore clicks on toggle buttons
     const point = e.touches ? e.touches[0] : e;
     dragStateRef.current = {
-      dragging: true,
+      dragging: false,        // becomes true after movement threshold
+      moved: false,
       startX: point.clientX,
       startY: point.clientY,
       posX: vcPosRef.current.x,
       posY: vcPosRef.current.y,
     };
-    setIsDragging(true);
-    if (e.cancelable) e.preventDefault();
+    // No preventDefault — `touchAction: 'none'` on the overlay handles
+    // scroll/zoom suppression. Skipping preventDefault preserves the
+    // synthetic click event so tapping the mini bubble can expand it.
   }, []);
 
   const onDragMove = useCallback((e) => {
-    if (!dragStateRef.current.dragging) return;
+    const ds = dragStateRef.current;
+    if (!ds || !ds.startX) return;
     const point = e.touches ? e.touches[0] : e;
-    const dx = point.clientX - dragStateRef.current.startX;
-    const dy = point.clientY - dragStateRef.current.startY;
+    const dx = point.clientX - ds.startX;
+    const dy = point.clientY - ds.startY;
+    if (!ds.dragging && Math.hypot(dx, dy) > 5) {
+      ds.dragging = true;
+      ds.moved = true;
+      setIsDragging(true);
+    }
+    if (!ds.dragging) return;
     const { w, h } = vcDims[vcSizeRef.current] || vcDims.pip;
     const margin = 6;
-    const nx = Math.max(margin, Math.min(window.innerWidth - w - margin, dragStateRef.current.posX + dx));
-    const ny = Math.max(margin, Math.min(window.innerHeight - h - margin, dragStateRef.current.posY + dy));
+    const nx = Math.max(margin, Math.min(window.innerWidth - w - margin, ds.posX + dx));
+    const ny = Math.max(margin, Math.min(window.innerHeight - h - margin, ds.posY + dy));
     setVcPos({ x: nx, y: ny });
   }, [vcDims]);
 
   const onDragEnd = useCallback(() => {
-    if (!dragStateRef.current.dragging) return;
-    dragStateRef.current.dragging = false;
-    setIsDragging(false);
-    // Snap to nearest horizontal edge (WhatsApp/Instagram behaviour)
-    const { w, h } = vcDims[vcSizeRef.current] || vcDims.pip;
-    const margin = 12;
-    setVcPos((p) => {
-      const cx = p.x + w / 2;
-      const x = cx < window.innerWidth / 2 ? margin : window.innerWidth - w - margin;
-      const y = Math.max(margin, Math.min(window.innerHeight - h - margin, p.y));
-      return { x, y };
-    });
+    const ds = dragStateRef.current;
+    if (!ds) return;
+    if (ds.dragging) {
+      setIsDragging(false);
+      wasDragRef.current = true;   // suppress the next synthetic click
+      // Snap to nearest horizontal edge (WhatsApp/Instagram behaviour)
+      const { w, h } = vcDims[vcSizeRef.current] || vcDims.pip;
+      const margin = 12;
+      setVcPos((p) => {
+        const cx = p.x + w / 2;
+        const x = cx < window.innerWidth / 2 ? margin : window.innerWidth - w - margin;
+        const y = Math.max(margin, Math.min(window.innerHeight - h - margin, p.y));
+        return { x, y };
+      });
+    }
+    dragStateRef.current = { dragging: false, moved: false, startX: 0, startY: 0, posX: 0, posY: 0 };
   }, [vcDims]);
+
+  // Tap (not drag) on the overlay → expand mini bubble to pip
+  const onOverlayClick = useCallback((e) => {
+    if (wasDragRef.current) { wasDragRef.current = false; return; }
+    if (e.target.closest?.('[data-vc-control]')) return;
+    if (vcSizeRef.current === 'mini') setVcSize('pip');
+  }, []);
 
   // Attach global drag listeners while call is active
   useEffect(() => {
@@ -1073,6 +1099,7 @@ const Matchmaking1v1 = () => {
               data-vc-size={vcSize}
               onMouseDown={!isFull ? onDragStart : undefined}
               onTouchStart={!isFull ? onDragStart : undefined}
+              onClick={onOverlayClick}
               onDoubleClick={() => setVcSize(isFull ? 'pip' : 'full')}
               style={{
                 position: 'fixed',
@@ -1108,32 +1135,35 @@ const Matchmaking1v1 = () => {
                 </div>
               )}
 
-              {/* Maximize / Minimize button — top-left, like WhatsApp */}
-              <button
-                data-vc-control
-                data-testid="vc-toggle-size"
-                onClick={(e) => { e.stopPropagation(); setVcSize(isFull ? 'pip' : isMini ? 'pip' : 'full'); }}
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 8,
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  background: 'rgba(0,0,0,0.55)',
-                  backdropFilter: 'blur(6px)',
-                  border: 'none',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  zIndex: 9,
-                }}
-              >
-                {isFull ? <Minimize2 size={14} color="#fff" /> : <Maximize2 size={14} color="#fff" />}
-              </button>
+              {/* Maximize / Minimize button — top-left, like WhatsApp.
+                  Hidden in mini bubble (tap-to-expand handles that). */}
+              {!isMini && (
+                <button
+                  data-vc-control
+                  data-testid="vc-toggle-size"
+                  onClick={(e) => { e.stopPropagation(); setVcSize(isFull ? 'pip' : 'full'); }}
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 8,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    background: 'rgba(0,0,0,0.55)',
+                    backdropFilter: 'blur(6px)',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 9,
+                  }}
+                >
+                  {isFull ? <Minimize2 size={14} color="#fff" /> : <Maximize2 size={14} color="#fff" />}
+                </button>
+              )}
 
-              {/* Mini-toggle button — only in pip / full mode (collapse to bubble) */}
+              {/* Collapse-to-bubble button — only in pip / full mode */}
               {!isMini && (
                 <button
                   data-vc-control
@@ -1161,24 +1191,48 @@ const Matchmaking1v1 = () => {
                 </button>
               )}
 
-              {/* Mini bubble: pulsing live dot, tap to restore */}
+              {/* Mini bubble: pulsing live dot + tap-to-expand hint */}
               {isMini && (
-                <div
-                  data-vc-control
-                  style={{
-                    position: 'absolute',
-                    top: 6,
-                    right: 6,
-                    width: 10,
-                    height: 10,
-                    borderRadius: 5,
-                    background: '#22c55e',
-                    boxShadow: '0 0 0 0 rgba(34,197,94,0.7)',
-                    animation: 'vcPulse 1.4s infinite',
-                    zIndex: 9,
-                    pointerEvents: 'none',
-                  }}
-                />
+                <>
+                  <div
+                    data-vc-control
+                    style={{
+                      position: 'absolute',
+                      top: 6,
+                      right: 6,
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      background: '#22c55e',
+                      boxShadow: '0 0 0 0 rgba(34,197,94,0.7)',
+                      animation: 'vcPulse 1.4s infinite',
+                      zIndex: 9,
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  {/* Subtle "tap to expand" indicator at bottom */}
+                  <div
+                    data-vc-control
+                    style={{
+                      position: 'absolute',
+                      bottom: 6,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 28,
+                      height: 28,
+                      borderRadius: 14,
+                      background: 'rgba(0,0,0,0.55)',
+                      backdropFilter: 'blur(6px)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 9,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <Maximize2 size={12} color="#fff" />
+                  </div>
+                </>
               )}
             </div>
           );

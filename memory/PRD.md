@@ -298,13 +298,17 @@ components/
 ### Feb 24, 2026 — Draggable WhatsApp/Instagram-style PIP video overlay
 - [x] **File:** `/app/frontend/src/pages/Matchmaking1v1.js`
   - Three video-call layout modes:
-    - **`mini`** — 130×180 floating bubble, no Agora controls (just video), pulsing green "live" dot, draggable, double-tap to expand.
+    - **`mini`** — 110×150 floating bubble (DEFAULT after call connects), no Agora controls (just video), pulsing green "live" dot, expand-icon affordance, draggable, **single-tap to expand** to pip.
     - **`pip`** — 300×420 floating card with Agora's mute/camera/end-call controls, draggable, snaps to nearest horizontal edge on release (WhatsApp/Instagram behaviour).
     - **`full`** — fullscreen takeover, Agora controls visible, drag disabled.
-  - **Drag implementation:** mouse + touch (`touchAction: 'none'`, `passive: false`), bounded to viewport, snap-to-edge on `mouseup`/`touchend`, smooth 0.25s CSS transitions when not actively dragging.
-  - **Toggle controls (top-left of overlay):** Maximize/Minimize button (toggles full ↔ pip), and a separate "X" button to collapse to `mini` bubble. Buttons are flagged with `data-vc-control` so dragging ignores them.
-  - **Initial position:** bottom-right corner with 12px margin when call goes active; falls back gracefully if window is small.
-  - Local PIP (Agora's `minViewContainer`) auto-shrinks from 90×120 → 60×80 in `mini` mode for a clean bubble look.
+  - **Default mode = `mini`** so the quiz remains fully usable from the moment the call connects. Bubble starts top-right at y=100 (below the toolbar) so it never overlaps answer options.
+  - **Drag/tap separation:** 5px movement threshold distinguishes a quick tap from a drag. Tapping the mini bubble expands to pip; dragging it just relocates without expanding. Implemented via `wasDragRef` consumed on the next click.
+  - **Drag implementation:** mouse + touch (`touchAction: 'none'` for scroll suppression — no `preventDefault` so synthetic clicks still fire), bounded to viewport, snap-to-edge on release, smooth 0.25s CSS transitions when not dragging.
+  - **Toggle controls (top-left of overlay, hidden in mini):** Maximize/Minimize button (toggles full ↔ pip), and a separate "X" button to collapse to `mini` bubble. Buttons flagged `data-vc-control` so dragging ignores them.
   - Mini-bubble pulse animation (`@keyframes vcPulse`) for the live indicator.
-  - All testIDs preserved: `vc-pip`, plus new `vc-toggle-size`, `vc-toggle-mini`.
+  - All testIDs preserved: `vc-pip`, `vc-toggle-size`, `vc-toggle-mini`.
+- [x] **Agora 50/50 split fix:**
+  - Removed `display: flex; flex: 1` from outer floating overlay AND inner Agora wrapper — Agora's pinned layout no longer collapses to a vertical/horizontal split.
+  - Z-index hierarchy: remote `maxViewContainer`=1, local `minViewContainer`=15, controls=20.
+  - Scoped `<style>` injects `object-fit: cover; width:100%; height:100%` on every `<video>` under `[data-vc-stage]`, plus `position: absolute; inset: 0` on Agora's top-level children to prevent stretch/split.
 - [x] **Lint:** clean. **Smoke:** setup page renders without errors after `demo1` login.
