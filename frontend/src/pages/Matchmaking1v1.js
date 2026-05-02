@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -20,7 +20,7 @@ const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
    • Agora's built-in mute / camera-off / end-call buttons are SHOWN — these
      are the only call controls. Ceibaa renders no duplicate end-call button.
    • A separate Ceibaa "Report" flag stays in the quiz toolbar for abuse. */
-const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
+const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls = false }) => {
   const [videoCall, setVideoCall] = useState(true);
   const rtcProps = useMemo(() => ({
     appId,
@@ -41,6 +41,34 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
 
   if (!videoCall) return null;
 
+  // Toggle Agora's bottom control bar (mute/camera/end) per layout mode:
+  //   - mini bubble  → hidden (just video, like WhatsApp's PIP)
+  //   - pip / full   → visible
+  const localBtnContainer = hideControls
+    ? { display: 'none' }
+    : {
+        position: 'absolute',
+        bottom: 8,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 8,
+        zIndex: 7,
+        background: 'transparent',
+        padding: 0,
+        border: 'none',
+      };
+  const BtnTemplateStyles = hideControls
+    ? { display: 'none' }
+    : {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(0,0,0,0.55)',
+        backdropFilter: 'blur(6px)',
+      };
+
   return (
     <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
       <AgoraUIKit
@@ -54,8 +82,8 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
             position: 'absolute',
             top: 10,
             right: 10,
-            width: 90,
-            height: 120,
+            width: hideControls ? 60 : 90,
+            height: hideControls ? 80 : 120,
             borderRadius: 12,
             overflow: 'hidden',
             zIndex: 6,
@@ -64,27 +92,8 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
           },
           // REMOTE opponent → full-screen background (the quiz overlay container)
           maxViewContainer: { width: '100%', height: '100%' },
-          // Bottom control bar (mute / camera / end-call) — fully visible.
-          localBtnContainer: {
-            position: 'absolute',
-            bottom: 8,
-            left: 0,
-            right: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            gap: 8,
-            zIndex: 7,
-            background: 'transparent',
-            padding: 0,
-            border: 'none',
-          },
-          BtnTemplateStyles: {
-            width: 40,
-            height: 40,
-            borderRadius: 20,
-            backgroundColor: 'rgba(0,0,0,0.55)',
-            backdropFilter: 'blur(6px)',
-          },
+          localBtnContainer,
+          BtnTemplateStyles,
         }}
       />
     </div>
@@ -152,7 +161,13 @@ const Matchmaking1v1 = () => {
   const [agoraToken, setAgoraToken] = useState(null);
   const [agoraUid, setAgoraUid] = useState(0);
   const [vcReady, setVcReady] = useState(false);
-  // vcMinimized removed — per product requirement, no minimise/maximise toggle.
+  // ── WhatsApp/Instagram-style PIP behaviour ──
+  // 'mini'   — tiny draggable bubble (just video, no Agora controls)
+  // 'pip'    — medium floating card with Agora controls visible (default after VC starts)
+  // 'full'   — fullscreen takeover with Agora controls visible (drag disabled)
+  const [vcSize, setVcSize] = useState('pip');
+  const [vcPos, setVcPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
   const [vcRequester, setVcRequester] = useState('');
 
   // Report state
@@ -166,6 +181,20 @@ const Matchmaking1v1 = () => {
   const roomIdRef = useRef(null);
   const playerNameRef = useRef('');
   const socketRef = useRef(null);
+
+  // ── Drag refs (avoid re-creating handlers on every render) ──
+  const dragStateRef = useRef({ dragging: false, startX: 0, startY: 0, posX: 0, posY: 0 });
+  const vcSizeRef = useRef(vcSize);
+  const vcPosRef = useRef(vcPos);
+  useEffect(() => { vcSizeRef.current = vcSize; }, [vcSize]);
+  useEffect(() => { vcPosRef.current = vcPos; }, [vcPos]);
+
+  // Dimensions for each VC size mode (used by drag-clamp + snap logic)
+  const vcDims = useMemo(() => ({
+    mini: { w: 130, h: 180 },
+    pip: { w: 300, h: 420 },
+    full: { w: 0, h: 0 },   // dimensions irrelevant in fullscreen
+  }), []);
 
   useEffect(() => { roomIdRef.current = roomId; }, [roomId]);
   useEffect(() => { playerNameRef.current = playerName; }, [playerName]);
@@ -358,6 +387,78 @@ const Matchmaking1v1 = () => {
       navigator.vibrate(0);
     };
   }, [vcState]);
+
+  // ── Initialise PIP position to bottom-right when call goes active ──
+  useEffect(() => {
+    if (vcState !== 'active') return;
+    const { w, h } = vcDims.pip;
+    const margin = 12;
+    setVcPos({
+      x: Math.max(margin, window.innerWidth - w - margin),
+      y: Math.max(margin, window.innerHeight - h - margin - 20),
+    });
+    setVcSize('pip');
+  }, [vcState, vcDims]);
+
+  // ── Drag handlers (mouse + touch). WhatsApp-style snap-to-edge on release. ──
+  const onDragStart = useCallback((e) => {
+    if (vcSizeRef.current === 'full') return;        // no drag in fullscreen
+    if (e.target.closest?.('[data-vc-control]')) return;  // ignore clicks on toggle buttons
+    const point = e.touches ? e.touches[0] : e;
+    dragStateRef.current = {
+      dragging: true,
+      startX: point.clientX,
+      startY: point.clientY,
+      posX: vcPosRef.current.x,
+      posY: vcPosRef.current.y,
+    };
+    setIsDragging(true);
+    if (e.cancelable) e.preventDefault();
+  }, []);
+
+  const onDragMove = useCallback((e) => {
+    if (!dragStateRef.current.dragging) return;
+    const point = e.touches ? e.touches[0] : e;
+    const dx = point.clientX - dragStateRef.current.startX;
+    const dy = point.clientY - dragStateRef.current.startY;
+    const { w, h } = vcDims[vcSizeRef.current] || vcDims.pip;
+    const margin = 6;
+    const nx = Math.max(margin, Math.min(window.innerWidth - w - margin, dragStateRef.current.posX + dx));
+    const ny = Math.max(margin, Math.min(window.innerHeight - h - margin, dragStateRef.current.posY + dy));
+    setVcPos({ x: nx, y: ny });
+  }, [vcDims]);
+
+  const onDragEnd = useCallback(() => {
+    if (!dragStateRef.current.dragging) return;
+    dragStateRef.current.dragging = false;
+    setIsDragging(false);
+    // Snap to nearest horizontal edge (WhatsApp/Instagram behaviour)
+    const { w, h } = vcDims[vcSizeRef.current] || vcDims.pip;
+    const margin = 12;
+    setVcPos((p) => {
+      const cx = p.x + w / 2;
+      const x = cx < window.innerWidth / 2 ? margin : window.innerWidth - w - margin;
+      const y = Math.max(margin, Math.min(window.innerHeight - h - margin, p.y));
+      return { x, y };
+    });
+  }, [vcDims]);
+
+  // Attach global drag listeners while call is active
+  useEffect(() => {
+    if (vcState !== 'active') return undefined;
+    window.addEventListener('mousemove', onDragMove);
+    window.addEventListener('mouseup', onDragEnd);
+    window.addEventListener('touchmove', onDragMove, { passive: false });
+    window.addEventListener('touchend', onDragEnd);
+    window.addEventListener('touchcancel', onDragEnd);
+    return () => {
+      window.removeEventListener('mousemove', onDragMove);
+      window.removeEventListener('mouseup', onDragEnd);
+      window.removeEventListener('touchmove', onDragMove);
+      window.removeEventListener('touchend', onDragEnd);
+      window.removeEventListener('touchcancel', onDragEnd);
+    };
+  }, [vcState, onDragMove, onDragEnd]);
 
   // End VC when battle finishes
   useEffect(() => {
@@ -930,18 +1031,142 @@ const Matchmaking1v1 = () => {
         </div>
 
         {/* ── FLOATING VIDEO CALL OVERLAY ──
-            Pure Agora video stream rendered in a Ceibaa rounded container, fixed
-            bottom-right. Per spec: NO Minimise/Maximise toggle, NO Agora built-in
-            mute/camera/end controls. The Flag/Report button on the quiz toolbar
-            handles abuse reporting; the call ends automatically when the battle
-            completes or a player disconnects. */}
-        {vcState === 'active' && vcReady && (
-          <div
-            style={{ position: 'fixed', zIndex: 70, bottom: 80, right: 12, width: 320, height: 440, borderRadius: 18, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 12px 48px rgba(0,0,0,0.5)', display: 'flex' }}
-            data-testid="vc-pip"
-          >
-            <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} uid={agoraUid} onEnd={endVC} />
-          </div>
+            WhatsApp / Instagram-style draggable PIP with three modes:
+              • mini  — small bubble (130×180), no Agora controls, double-tap or
+                        maximize button to expand. Draggable.
+              • pip   — medium card (300×420), Agora controls visible. Draggable,
+                        snaps to nearest edge on release.
+              • full  — fullscreen takeover; Agora controls visible; drag disabled.
+            The Flag/Report button on the quiz toolbar handles abuse reporting;
+            the call ends via Agora's built-in end-call button. */}
+        {vcState === 'active' && vcReady && (() => {
+          const isFull = vcSize === 'full';
+          const isMini = vcSize === 'mini';
+          const dims = isFull
+            ? { left: 0, top: 0, width: '100vw', height: '100vh', borderRadius: 0 }
+            : isMini
+              ? { left: vcPos.x, top: vcPos.y, width: vcDims.mini.w, height: vcDims.mini.h, borderRadius: 22 }
+              : { left: vcPos.x, top: vcPos.y, width: vcDims.pip.w, height: vcDims.pip.h, borderRadius: 18 };
+          return (
+            <div
+              data-testid="vc-pip"
+              data-vc-size={vcSize}
+              onMouseDown={!isFull ? onDragStart : undefined}
+              onTouchStart={!isFull ? onDragStart : undefined}
+              onDoubleClick={() => setVcSize(isFull ? 'pip' : 'full')}
+              style={{
+                position: 'fixed',
+                zIndex: 70,
+                ...dims,
+                overflow: 'hidden',
+                border: isFull ? 'none' : '2px solid white',
+                backgroundColor: '#111',
+                boxShadow: isFull ? 'none' : '0 12px 48px rgba(0,0,0,0.5)',
+                display: 'flex',
+                cursor: isFull ? 'default' : (isDragging ? 'grabbing' : 'grab'),
+                touchAction: isFull ? 'auto' : 'none',
+                transition: isDragging ? 'none' : 'width 0.25s ease, height 0.25s ease, border-radius 0.25s ease, left 0.25s ease, top 0.25s ease',
+                userSelect: 'none',
+              }}
+            >
+              <StableAgoraVideo
+                appId={AGORA_APP_ID}
+                channel={sanitizedChannel}
+                token={agoraToken}
+                uid={agoraUid}
+                onEnd={endVC}
+                hideControls={isMini}
+              />
+
+              {/* Top-left drag grip (visual handle, dragging works on whole card) */}
+              {!isFull && !isMini && (
+                <div
+                  data-vc-control
+                  style={{ position: 'absolute', top: 6, left: '50%', transform: 'translateX(-50%)', zIndex: 9, padding: '4px 12px', borderRadius: 12, background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', pointerEvents: 'none' }}
+                >
+                  <GripHorizontal size={14} color="#fff" style={{ opacity: 0.7 }} />
+                </div>
+              )}
+
+              {/* Maximize / Minimize button — top-left, like WhatsApp */}
+              <button
+                data-vc-control
+                data-testid="vc-toggle-size"
+                onClick={(e) => { e.stopPropagation(); setVcSize(isFull ? 'pip' : isMini ? 'pip' : 'full'); }}
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  background: 'rgba(0,0,0,0.55)',
+                  backdropFilter: 'blur(6px)',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  zIndex: 9,
+                }}
+              >
+                {isFull ? <Minimize2 size={14} color="#fff" /> : <Maximize2 size={14} color="#fff" />}
+              </button>
+
+              {/* Mini-toggle button — only in pip / full mode (collapse to bubble) */}
+              {!isMini && (
+                <button
+                  data-vc-control
+                  data-testid="vc-toggle-mini"
+                  onClick={(e) => { e.stopPropagation(); setVcSize('mini'); }}
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    left: 46,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    background: 'rgba(0,0,0,0.55)',
+                    backdropFilter: 'blur(6px)',
+                    border: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 9,
+                  }}
+                  title="Collapse to bubble"
+                >
+                  <X size={14} color="#fff" />
+                </button>
+              )}
+
+              {/* Mini bubble: pulsing live dot, tap to restore */}
+              {isMini && (
+                <div
+                  data-vc-control
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    background: '#22c55e',
+                    boxShadow: '0 0 0 0 rgba(34,197,94,0.7)',
+                    animation: 'vcPulse 1.4s infinite',
+                    zIndex: 9,
+                    pointerEvents: 'none',
+                  }}
+                />
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Pulse keyframes for mini bubble live indicator */}
+        {vcState === 'active' && (
+          <style>{`@keyframes vcPulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7);} 70% { box-shadow: 0 0 0 8px rgba(34,197,94,0);} 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0);} }`}</style>
         )}
 
         {/* VC incoming request modal */}

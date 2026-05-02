@@ -294,3 +294,17 @@ components/
   - The Ceibaa "Report" flag button stays in the toolbar for abuse reporting (separate from call controls — kept per user request).
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
+
+### Feb 24, 2026 — Draggable WhatsApp/Instagram-style PIP video overlay
+- [x] **File:** `/app/frontend/src/pages/Matchmaking1v1.js`
+  - Three video-call layout modes:
+    - **`mini`** — 130×180 floating bubble, no Agora controls (just video), pulsing green "live" dot, draggable, double-tap to expand.
+    - **`pip`** — 300×420 floating card with Agora's mute/camera/end-call controls, draggable, snaps to nearest horizontal edge on release (WhatsApp/Instagram behaviour).
+    - **`full`** — fullscreen takeover, Agora controls visible, drag disabled.
+  - **Drag implementation:** mouse + touch (`touchAction: 'none'`, `passive: false`), bounded to viewport, snap-to-edge on `mouseup`/`touchend`, smooth 0.25s CSS transitions when not actively dragging.
+  - **Toggle controls (top-left of overlay):** Maximize/Minimize button (toggles full ↔ pip), and a separate "X" button to collapse to `mini` bubble. Buttons are flagged with `data-vc-control` so dragging ignores them.
+  - **Initial position:** bottom-right corner with 12px margin when call goes active; falls back gracefully if window is small.
+  - Local PIP (Agora's `minViewContainer`) auto-shrinks from 90×120 → 60×80 in `mini` mode for a clean bubble look.
+  - Mini-bubble pulse animation (`@keyframes vcPulse`) for the live indicator.
+  - All testIDs preserved: `vc-pip`, plus new `vc-toggle-size`, `vc-toggle-mini`.
+- [x] **Lint:** clean. **Smoke:** setup page renders without errors after `demo1` login.
