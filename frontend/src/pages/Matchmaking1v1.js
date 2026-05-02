@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, PhoneOff, Flag, X, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -14,10 +14,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 
 /* ── Stable Agora wrapper — prevents remount on parent re-renders.
-   Per product requirement: hide AgoraUIKit's built-in mic / camera-toggle /
-   end-call controls. Ceibaa keeps the rounded overlay container + report
-   modal; the user has no in-call buttons. The call ends when the quiz ends
-   or the partner disconnects. ── */
+   Per product requirement (Feb 2026 update):
+   • Remote opponent = full-size background (max view)
+   • Local user = small rounded PIP, top-right corner (min view)
+   • Agora's built-in mute / camera-off / end-call buttons are SHOWN — these
+     are the only call controls. Ceibaa renders no duplicate end-call button.
+   • A separate Ceibaa "Report" flag stays in the quiz toolbar for abuse. */
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
   const [videoCall, setVideoCall] = useState(true);
   const rtcProps = useMemo(() => ({
@@ -26,7 +28,7 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
     token: token || null,  // App ID-only mode → null is valid
     uid: uid || 0,
     role: 'host',
-    layout: 1,
+    layout: 1,             // Pinned: one max view + one min view PIP
     disableRtm: true,
     enableVideo: true,
     enableAudio: true,
@@ -40,21 +42,49 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
   if (!videoCall) return null;
 
   return (
-    <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0, overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
       <AgoraUIKit
         rtcProps={rtcProps}
         callbacks={callbacks}
         styleProps={{
-          // Hide the entire bottom controls bar (mute mic, mute cam, end call)
-          // — Ceibaa locks these for the duration of the 1v1 quiz battle.
-          localBtnContainer: { display: 'none' },
-          // Hide individual control buttons too (defence-in-depth — some Agora
-          // versions render these even when localBtnContainer is hidden).
-          BtnTemplateStyles: { display: 'none' },
-          UIKitContainer: { width: '100%', height: '100%', display: 'flex', flex: 1, position: 'relative' },
+          UIKitContainer: { width: '100%', height: '100%', display: 'flex', flex: 1, position: 'relative', backgroundColor: '#000' },
           videoMode: { max: 'cover', min: 'cover' },
-          minViewContainer: { position: 'absolute', top: 8, right: 8, width: 80, height: 100, borderRadius: 10, overflow: 'hidden', zIndex: 5, border: '2px solid white' },
+          // LOCAL user → small rounded PIP at TOP-RIGHT (per user spec)
+          minViewContainer: {
+            position: 'absolute',
+            top: 10,
+            right: 10,
+            width: 90,
+            height: 120,
+            borderRadius: 12,
+            overflow: 'hidden',
+            zIndex: 6,
+            border: '2px solid #fff',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+          },
+          // REMOTE opponent → full-screen background (the quiz overlay container)
           maxViewContainer: { width: '100%', height: '100%' },
+          // Bottom control bar (mute / camera / end-call) — fully visible.
+          localBtnContainer: {
+            position: 'absolute',
+            bottom: 8,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 8,
+            zIndex: 7,
+            background: 'transparent',
+            padding: 0,
+            border: 'none',
+          },
+          BtnTemplateStyles: {
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(6px)',
+          },
         }}
       />
     </div>
@@ -307,6 +337,27 @@ const Matchmaking1v1 = () => {
   }, [timeLeft, battleState, selectedAnswer, questions.length]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
+
+  // ── Phone-style vibration during ringing (1v1 video-call request) ──
+  // Pattern: 400ms vibrate, 200ms pause, repeat. Stops as soon as the call
+  // is accepted, declined, or cancelled.
+  useEffect(() => {
+    if (!('vibrate' in navigator)) return undefined;
+    const ringing = vcState === 'incoming' || vcState === 'requesting';
+    if (!ringing) {
+      navigator.vibrate(0);
+      return undefined;
+    }
+    // Initial pulse
+    navigator.vibrate([400, 200, 400, 200, 400]);
+    const interval = setInterval(() => {
+      navigator.vibrate([400, 200, 400, 200, 400]);
+    }, 1600);
+    return () => {
+      clearInterval(interval);
+      navigator.vibrate(0);
+    };
+  }, [vcState]);
 
   // End VC when battle finishes
   useEffect(() => {
@@ -628,9 +679,7 @@ const Matchmaking1v1 = () => {
               )}
               {vcState === 'requesting' && <span className="text-xs text-gray-400 animate-pulse">Calling...</span>}
               {vcState === 'active' && (
-                <button onClick={endVC} className="p-1.5 rounded-lg bg-red-500">
-                  <PhoneOff className="w-4 h-4 text-white" />
-                </button>
+                <span className="text-xs font-semibold animate-pulse" style={{ color: C.blue }}>● Live</span>
               )}
               <button onClick={() => setShowReport(true)} className="p-1.5 rounded-lg bg-gray-100"><Flag className="w-3.5 h-3.5 text-gray-400" /></button>
               <div className="px-3 py-1 rounded-full text-white text-sm font-bold" style={{ background: timeLeft <= 10 ? C.red : '#888' }}>{timeLeft}s</div>
@@ -830,9 +879,10 @@ const Matchmaking1v1 = () => {
                   )}
                   {vcState === 'requesting' && <div className="text-center py-2 text-sm text-gray-500 animate-pulse">Ringing opponent...</div>}
                   {vcState === 'active' && (
-                    <button onClick={endVC} className="w-full py-2 rounded-lg bg-red-500 text-white text-sm font-semibold flex items-center justify-center gap-2">
-                      <PhoneOff className="w-4 h-4" /> End Call
-                    </button>
+                    <div className="flex items-center justify-center gap-2 py-2 text-sm font-semibold" style={{ color: C.blue }}>
+                      <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: C.blue }} />
+                      Live — use video controls below
+                    </div>
                   )}
                   <button onClick={() => setShowReport(true)} className="w-full py-1.5 rounded-lg text-xs text-gray-400 hover:text-red-500 flex items-center justify-center gap-1">
                     <Flag className="w-3 h-3" /> Report
@@ -887,7 +937,7 @@ const Matchmaking1v1 = () => {
             completes or a player disconnects. */}
         {vcState === 'active' && vcReady && (
           <div
-            style={{ position: 'fixed', zIndex: 70, bottom: 72, right: 12, width: 220, height: 300, borderRadius: 16, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 10px 40px rgba(0,0,0,0.4)', display: 'flex' }}
+            style={{ position: 'fixed', zIndex: 70, bottom: 80, right: 12, width: 320, height: 440, borderRadius: 18, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 12px 48px rgba(0,0,0,0.5)', display: 'flex' }}
             data-testid="vc-pip"
           >
             <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} uid={agoraUid} onEnd={endVC} />

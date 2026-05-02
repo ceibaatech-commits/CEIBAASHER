@@ -281,3 +281,16 @@ components/
 - [ ] Facebook login UI button (backend already wired)
 - [ ] Decompose `ExamSheetManager.js` (1720), `ExamCategoryManager.js` (997), `Board.js` (872)
 - [ ] Migrate OTP from email to SMS (Twilio)
+
+
+### Feb 24, 2026 — 1v1 Video Call: Agora-only controls + ringing vibration
+- [x] **File:** `/app/frontend/src/pages/Matchmaking1v1.js`
+  - Reverted previous `display:none` hack on `localBtnContainer` & `BtnTemplateStyles` so AgoraUIKit's built-in **mute / camera-off / end-call** buttons are now visible — these are the only call controls.
+  - Layout per user spec: **REMOTE opponent = full background (max view)**, **LOCAL user = small rounded PIP at top-right** (90×120, 12px radius, white border, shadow).
+  - Enlarged the floating overlay from 220×300 → **320×440** so the Agora controls are usable.
+  - Removed the duplicate Ceibaa "End Call" buttons from both mobile and desktop quiz toolbars; replaced with a passive "● Live" indicator (the only way to end the call now is via Agora's built-in red end-call button or when the battle finishes).
+  - Cleaned up unused `PhoneOff` lucide-react import.
+  - **Vibration on ringing:** new `useEffect` that fires `navigator.vibrate([400,200,400,200,400])` every 1.6s while `vcState === 'incoming' || 'requesting'`. Stops when the call is accepted, declined, or ended. Gracefully no-ops on browsers without `navigator.vibrate`.
+  - The Ceibaa "Report" flag button stays in the toolbar for abuse reporting (separate from call controls — kept per user request).
+- [x] **Lint:** `Matchmaking1v1.js` — no issues.
+- [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
