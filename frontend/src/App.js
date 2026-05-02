@@ -49,8 +49,11 @@ import RoomDetail from "@/pages/RoomDetail";
 
 // 1v1 Live Battle with video — matchmaking flow
 import LiveBattleMode from "@/pages/LiveBattleMode";
-// Note: Matchmaking1v1 was an unfinished stub (empty JSX, no "Find Match" button)
-// superseded by LiveBattleMode. Route /matchmaking/... now resolves to LiveBattleMode.
+
+// 1v1 Matchmaking with video chat (rich UI restored from git 891bdb04 — the
+// previous "empty JSX stub" issue that broke the Battle button is fixed by
+// reinstating this proper component).
+import Matchmaking1v1 from "@/pages/Matchmaking1v1";
 
 // 404 Page
 import NotFound from "@/pages/NotFound";
@@ -207,10 +210,9 @@ function App() {
           {/* 1v1 Live Battle with video (matchmaking) */}
           <Route path="/live-battle-1v1/:examId/:subject/:topic" element={<LiveBattleMode />} />
 
-          {/* Backwards-compatible: pages link to /matchmaking/... — point it at the working
-              LiveBattleMode flow. The legacy Matchmaking1v1 component shipped with an empty
-              JSX stub (no Find Match button), which caused "click does nothing" reports. */}
-          <Route path="/matchmaking/:examId/:subject/:topic" element={<LiveBattleMode />} />
+          {/* 1v1 Matchmaking — restored rich UI (Find Match + searching state +
+              battle quiz + video chat) from git 891bdb04. */}
+          <Route path="/matchmaking/:examId/:subject/:topic" element={<Matchmaking1v1 />} />
           
           {/* Divya AI Tutor */}
           <Route path="/divya" element={<DivyaTutor />} />
