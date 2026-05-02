@@ -54,7 +54,7 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls
         display: 'flex',
         justifyContent: 'center',
         gap: 8,
-        zIndex: 7,
+        zIndex: 20,
         background: 'transparent',
         padding: 0,
         border: 'none',
@@ -70,14 +70,33 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls
       };
 
   return (
-    <div style={{ display: 'flex', flex: 1, width: '100%', height: '100%', minHeight: 0, overflow: 'hidden', position: 'relative' }}>
+    /* No flex on the wrapper — flex:1 was forcing AgoraUIKit's pinned
+       layout into a 50/50 split. Use plain block positioning so the
+       absolute children below stack correctly. */
+    <div
+      data-vc-stage
+      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', backgroundColor: '#000' }}
+    >
+      {/* Aggressive layout override — ensures Agora's internal video
+          elements always behave as Pinned (one full background + one
+          small overlay) regardless of which layout the SDK falls back to.
+          • Every <video> uses object-fit:cover to fill its frame cleanly.
+          • The top-level Agora container is forced to absolute fill.
+          • Direct video children stack with the FIRST = max (full bg) and
+            siblings = min (small PIP) via z-index. */}
+      <style>{`
+        [data-vc-stage] video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
+        [data-vc-stage] > div { position: absolute !important; inset: 0 !important; display: block !important; }
+        [data-vc-stage] > div > div { flex: none !important; }
+      `}</style>
       <AgoraUIKit
         rtcProps={rtcProps}
         callbacks={callbacks}
         styleProps={{
-          UIKitContainer: { width: '100%', height: '100%', display: 'flex', flex: 1, position: 'relative', backgroundColor: '#000' },
+          UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#000' },
           videoMode: { max: 'cover', min: 'cover' },
-          // LOCAL user → small rounded PIP at TOP-RIGHT (per user spec)
+          // LOCAL user → small rounded PIP at TOP-RIGHT (per user spec).
+          // High z-index so it always sits on top of the remote stream.
           minViewContainer: {
             position: 'absolute',
             top: 10,
@@ -86,12 +105,13 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls
             height: hideControls ? 80 : 120,
             borderRadius: 12,
             overflow: 'hidden',
-            zIndex: 6,
+            zIndex: 15,
             border: '2px solid #fff',
             boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+            backgroundColor: '#000',
           },
-          // REMOTE opponent → full-screen background (the quiz overlay container)
-          maxViewContainer: { width: '100%', height: '100%' },
+          // REMOTE opponent → full background, lowest layer.
+          maxViewContainer: { position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 },
           localBtnContainer,
           BtnTemplateStyles,
         }}
@@ -1062,7 +1082,7 @@ const Matchmaking1v1 = () => {
                 border: isFull ? 'none' : '2px solid white',
                 backgroundColor: '#111',
                 boxShadow: isFull ? 'none' : '0 12px 48px rgba(0,0,0,0.5)',
-                display: 'flex',
+                display: 'block',
                 cursor: isFull ? 'default' : (isDragging ? 'grabbing' : 'grab'),
                 touchAction: isFull ? 'auto' : 'none',
                 transition: isDragging ? 'none' : 'width 0.25s ease, height 0.25s ease, border-radius 0.25s ease, left 0.25s ease, top 0.25s ease',
