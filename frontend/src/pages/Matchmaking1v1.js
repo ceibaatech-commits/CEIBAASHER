@@ -17,10 +17,11 @@ const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
    Per product requirement (Feb 2026 update):
    • Remote opponent = full-size background (max view)
    • Local user = small rounded PIP, top-right corner (min view)
-   • Agora's built-in mute / camera-off / end-call buttons are SHOWN — these
-     are the only call controls. Ceibaa renders no duplicate end-call button.
+   • Agora's built-in mute / camera-off / end-call buttons are ALWAYS visible
+     across mini / pip / full modes — they auto-shrink in mini bubble so users
+     never lose access to call controls when the quiz takes priority.
    • A separate Ceibaa "Report" flag stays in the quiz toolbar for abuse. */
-const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls = false }) => {
+const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = false }) => {
   const [videoCall, setVideoCall] = useState(true);
   const rtcProps = useMemo(() => ({
     appId,
@@ -41,33 +42,28 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls
 
   if (!videoCall) return null;
 
-  // Toggle Agora's bottom control bar (mute/camera/end) per layout mode:
-  //   - mini bubble  → hidden (just video, like WhatsApp's PIP)
-  //   - pip / full   → visible
-  const localBtnContainer = hideControls
-    ? { display: 'none' }
-    : {
-        position: 'absolute',
-        bottom: 8,
-        left: 0,
-        right: 0,
-        display: 'flex',
-        justifyContent: 'center',
-        gap: 8,
-        zIndex: 20,
-        background: 'transparent',
-        padding: 0,
-        border: 'none',
-      };
-  const BtnTemplateStyles = hideControls
-    ? { display: 'none' }
-    : {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(0,0,0,0.55)',
-        backdropFilter: 'blur(6px)',
-      };
+  // Bottom control bar (mute / camera / end-call) — always visible.
+  // In compact (mini) mode, buttons + gaps shrink so they fit a small bubble.
+  const localBtnContainer = {
+    position: 'absolute',
+    bottom: compact ? 4 : 8,
+    left: 0,
+    right: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    gap: compact ? 4 : 8,
+    zIndex: 20,
+    background: 'transparent',
+    padding: 0,
+    border: 'none',
+  };
+  const BtnTemplateStyles = {
+    width: compact ? 28 : 40,
+    height: compact ? 28 : 40,
+    borderRadius: compact ? 14 : 20,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    backdropFilter: 'blur(6px)',
+  };
 
   return (
     /* No flex on the wrapper — flex:1 was forcing AgoraUIKit's pinned
@@ -101,8 +97,8 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, hideControls
             position: 'absolute',
             top: 10,
             right: 10,
-            width: hideControls ? 60 : 90,
-            height: hideControls ? 80 : 120,
+            width: compact ? 50 : 90,
+            height: compact ? 70 : 120,
             borderRadius: 12,
             overflow: 'hidden',
             zIndex: 15,
@@ -209,9 +205,11 @@ const Matchmaking1v1 = () => {
   useEffect(() => { vcSizeRef.current = vcSize; }, [vcSize]);
   useEffect(() => { vcPosRef.current = vcPos; }, [vcPos]);
 
-  // Dimensions for each VC size mode (used by drag-clamp + snap logic)
+  // Dimensions for each VC size mode (used by drag-clamp + snap logic).
+  // mini bubble height includes ~36px for the always-visible Agora control bar
+  // (mute / camera / end-call) so users can never lose access to them.
   const vcDims = useMemo(() => ({
-    mini: { w: 110, h: 150 },
+    mini: { w: 120, h: 190 },
     pip: { w: 300, h: 420 },
     full: { w: 0, h: 0 },   // dimensions irrelevant in fullscreen
   }), []);
@@ -1122,7 +1120,7 @@ const Matchmaking1v1 = () => {
                 token={agoraToken}
                 uid={agoraUid}
                 onEnd={endVC}
-                hideControls={isMini}
+                compact={isMini}
               />
 
               {/* Top-left drag grip (visual handle, dragging works on whole card) */}
@@ -1191,48 +1189,26 @@ const Matchmaking1v1 = () => {
                 </button>
               )}
 
-              {/* Mini bubble: pulsing live dot + tap-to-expand hint */}
+              {/* Mini bubble: pulsing live dot — Agora's mute/camera/end-call
+                  controls render at the bottom of the bubble, so users always
+                  have call controls without expanding. Tap empty area = expand. */}
               {isMini && (
-                <>
-                  <div
-                    data-vc-control
-                    style={{
-                      position: 'absolute',
-                      top: 6,
-                      right: 6,
-                      width: 10,
-                      height: 10,
-                      borderRadius: 5,
-                      background: '#22c55e',
-                      boxShadow: '0 0 0 0 rgba(34,197,94,0.7)',
-                      animation: 'vcPulse 1.4s infinite',
-                      zIndex: 9,
-                      pointerEvents: 'none',
-                    }}
-                  />
-                  {/* Subtle "tap to expand" indicator at bottom */}
-                  <div
-                    data-vc-control
-                    style={{
-                      position: 'absolute',
-                      bottom: 6,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: 28,
-                      height: 28,
-                      borderRadius: 14,
-                      background: 'rgba(0,0,0,0.55)',
-                      backdropFilter: 'blur(6px)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 9,
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    <Maximize2 size={12} color="#fff" />
-                  </div>
-                </>
+                <div
+                  data-vc-control
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    left: 6,
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    background: '#22c55e',
+                    boxShadow: '0 0 0 0 rgba(34,197,94,0.7)',
+                    animation: 'vcPulse 1.4s infinite',
+                    zIndex: 9,
+                    pointerEvents: 'none',
+                  }}
+                />
               )}
             </div>
           );
