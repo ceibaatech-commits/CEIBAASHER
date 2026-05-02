@@ -283,11 +283,18 @@ async def get_dashboard_stats(user_id: str):
                 all_scores.append(percentage)
         
         # Scores from 1v1 battles
+        # IMPORTANT: 1v1 battle `score` is RAW POINTS (max ~100/question, 1000/battle)
+        # — NOT a correct-count. So we normalize against (total × MAX_PER_QUESTION),
+        # not just `total`. Older entries created with the legacy equation may exceed
+        # the cap; we clamp to 100% so they don't pollute averages.
+        MAX_PER_QUESTION = 100
         for b in battle_results:
             score = b.get("score", 0)
             total = b.get("total_questions", 10)
-            if total > 0:
-                percentage = (score / total) * 100
+            if total and total > 0:
+                max_possible = total * MAX_PER_QUESTION
+                percentage = (score / max_possible) * 100 if max_possible > 0 else 0
+                percentage = max(0, min(100, percentage))
                 all_scores.append(percentage)
         
         avg_score = round(sum(all_scores) / len(all_scores), 1) if all_scores else 0

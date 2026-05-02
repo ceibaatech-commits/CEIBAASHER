@@ -13,6 +13,34 @@ import { toast } from 'sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 
+/* ── 1v1 Battle Scoring Equation (Feb 24, 2026) ──
+   Per-question scoring with a 30s timer:
+   • CORRECT → CORRECT_BASE + round(TIME_BONUS_MAX × timeLeft / TIME_LIMIT)
+                = 50–100 pts (instant=100, last sec=51)
+   • WRONG   → -WRONG_PENALTY  (-10 pts; light penalty for guessing)
+   • SKIPPED → 0 (no reward, no penalty)
+   • Final score is clamped to [0, totalQuestions × MAX_PER_QUESTION]
+   The same constants are mirrored on the backend (battle_socketio.py) for
+   server-side validation, so the client can never store a score outside
+   the legitimate range. ── */
+const SCORE = {
+  TIME_LIMIT: 30,
+  CORRECT_BASE: 50,
+  TIME_BONUS_MAX: 50,
+  WRONG_PENALTY: 10,
+  MAX_PER_QUESTION: 100,
+};
+
+function calcQuestionScore({ outcome, timeLeft }) {
+  // outcome: 'correct' | 'wrong' | 'skipped'
+  if (outcome === 'correct') {
+    const bonus = Math.round((SCORE.TIME_BONUS_MAX * Math.max(0, Math.min(SCORE.TIME_LIMIT, timeLeft))) / SCORE.TIME_LIMIT);
+    return SCORE.CORRECT_BASE + bonus;   // 50..100
+  }
+  if (outcome === 'wrong') return -SCORE.WRONG_PENALTY;
+  return 0;
+}
+
 /* ── Stable Agora wrapper — prevents remount on parent re-renders.
    Per product requirement (Feb 2026 update):
    • Remote opponent = full-size background (max view)
@@ -157,6 +185,8 @@ const Matchmaking1v1 = () => {
   const [opponentScore, setOpponentScore] = useState(0);
   const [answerResult, setAnswerResult] = useState(null);
   const [opponentAnswer, setOpponentAnswer] = useState(null);
+  // Per-outcome tally for the results breakdown card
+  const [tally, setTally] = useState({ correct: 0, wrong: 0, skipped: 0, timeBonus: 0 });
 
   // Chat state
   const [chatMessages, setChatMessages] = useState([]);
@@ -536,18 +566,40 @@ const Matchmaking1v1 = () => {
     if (typeof raw === 'string' && /^[A-Da-d]$/.test(raw)) ci = raw.toUpperCase().charCodeAt(0) - 65;
     else if (typeof raw === 'number') ci = raw;
     else ci = parseInt(raw) || 0;
-    const ok = index === ci;
-    const pts = ok ? Math.max(10, timeLeft * 3) : 0;
-    setAnswerResult({ isCorrect: ok, correctAnswer: ci, points: pts });
-    if (ok) setMyScore(p => p + pts);
+
+    // ── Scoring (unified equation, see SCORE / calcQuestionScore at top) ──
+    const isSkipped = index === -1;            // timer ran out, no answer chosen
+    const isCorrect = !isSkipped && index === ci;
+    const outcome = isSkipped ? 'skipped' : isCorrect ? 'correct' : 'wrong';
+    const pts = calcQuestionScore({ outcome, timeLeft });
+    // Track outcome tally for the results breakdown
+    const timeBonusEarned = outcome === 'correct'
+      ? Math.round((SCORE.TIME_BONUS_MAX * Math.max(0, Math.min(SCORE.TIME_LIMIT, timeLeft))) / SCORE.TIME_LIMIT)
+      : 0;
+    setTally(t => ({
+      correct: t.correct + (outcome === 'correct' ? 1 : 0),
+      wrong: t.wrong + (outcome === 'wrong' ? 1 : 0),
+      skipped: t.skipped + (outcome === 'skipped' ? 1 : 0),
+      timeBonus: t.timeBonus + timeBonusEarned,
+    }));
+
+    setAnswerResult({ isCorrect, correctAnswer: ci, points: pts, outcome });
+    // Always apply pts (positive for correct, negative for wrong, 0 for skipped).
+    // Clamp running score to [0, max] so the user never sees a negative total.
+    const maxBattleScore = (questions.length || 10) * SCORE.MAX_PER_QUESTION;
+    const newScore = Math.max(0, Math.min(maxBattleScore, myScore + pts));
+
+    setMyScore(newScore);
+
     if (socket && roomIdRef.current) {
       socket.emit('battle-answer', {
         roomId: roomIdRef.current,
         questionIndex: currentQuestionIndex,
         answer: index,
-        isCorrect: ok,
-        score: myScore + pts,
-        timeTaken: 30 - timeLeft,
+        isCorrect,
+        outcome,
+        score: newScore,
+        timeTaken: SCORE.TIME_LIMIT - timeLeft,
       });
     }
     setTimeout(() => {
@@ -556,13 +608,13 @@ const Matchmaking1v1 = () => {
         setSelectedAnswer(null);
         setAnswerResult(null);
         setOpponentAnswer(null);
-        setTimeLeft(30);
+        setTimeLeft(SCORE.TIME_LIMIT);
       } else {
         if (socket && roomIdRef.current) {
           socket.emit('battle-complete', {
             roomId: roomIdRef.current,
             playerName,
-            finalScore: myScore + pts,
+            finalScore: newScore,
             userId: user?.id || user?.user_id,
             totalQuestions: questions.length,
             exam: examId,
@@ -874,9 +926,19 @@ const Matchmaking1v1 = () => {
               })}
             </div>
             {answerResult && (
-              <div className={`mt-4 p-3 rounded-xl border-2 ${answerResult.isCorrect ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-400'}`}>
-                <p className={`font-bold text-sm ${answerResult.isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                  {answerResult.isCorrect ? `✓ Correct! +${answerResult.points} pts` : '✗ Incorrect!'}
+              <div className={`mt-4 p-3 rounded-xl border-2 ${
+                answerResult.outcome === 'correct' ? 'bg-green-50 border-green-400' :
+                answerResult.outcome === 'wrong' ? 'bg-red-50 border-red-400' :
+                'bg-amber-50 border-amber-400'
+              }`}>
+                <p className={`font-bold text-sm ${
+                  answerResult.outcome === 'correct' ? 'text-green-800' :
+                  answerResult.outcome === 'wrong' ? 'text-red-800' :
+                  'text-amber-800'
+                }`}>
+                  {answerResult.outcome === 'correct' && `✓ Correct! +${answerResult.points} pts`}
+                  {answerResult.outcome === 'wrong' && `✗ Incorrect — ${answerResult.points} pts`}
+                  {answerResult.outcome === 'skipped' && `⊘ Time's up — 0 pts`}
                 </p>
               </div>
             )}
@@ -998,9 +1060,19 @@ const Matchmaking1v1 = () => {
                   })}
                 </div>
                 {answerResult && (
-                  <div className={`mt-4 p-4 rounded-xl border-2 ${answerResult.isCorrect ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-400'}`}>
-                    <p className={`font-bold ${answerResult.isCorrect ? 'text-green-800' : 'text-red-800'}`}>
-                      {answerResult.isCorrect ? `✓ Correct! +${answerResult.points} pts` : '✗ Incorrect!'}
+                  <div className={`mt-4 p-4 rounded-xl border-2 ${
+                    answerResult.outcome === 'correct' ? 'bg-green-50 border-green-400' :
+                    answerResult.outcome === 'wrong' ? 'bg-red-50 border-red-400' :
+                    'bg-amber-50 border-amber-400'
+                  }`}>
+                    <p className={`font-bold ${
+                      answerResult.outcome === 'correct' ? 'text-green-800' :
+                      answerResult.outcome === 'wrong' ? 'text-red-800' :
+                      'text-amber-800'
+                    }`}>
+                      {answerResult.outcome === 'correct' && `✓ Correct! +${answerResult.points} pts`}
+                      {answerResult.outcome === 'wrong' && `✗ Incorrect — ${answerResult.points} pts`}
+                      {answerResult.outcome === 'skipped' && `⊘ Time's up — 0 pts`}
                     </p>
                   </div>
                 )}
@@ -1322,11 +1394,45 @@ const Matchmaking1v1 = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-xl p-4 mb-6">
+                <div className="bg-gray-50 rounded-xl p-4 mb-4">
                   <div className="grid grid-cols-3 gap-2 text-center text-xs">
                     <div><p className="text-gray-400">Questions</p><p className="font-bold text-gray-900">{questions.length}</p></div>
                     <div><p className="text-gray-400">Exam</p><p className="font-bold text-gray-900">{decodeURIComponent(examId)}</p></div>
                     <div><p className="text-gray-400">Subject</p><p className="font-bold text-gray-900">{decodeURIComponent(subject)}</p></div>
+                  </div>
+                </div>
+
+                {/* ── Score breakdown card (Feb 2026) ──
+                    Shows the user how their points were earned per the unified
+                    scoring equation: correct (50–100), wrong (-10), skipped (0). */}
+                <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6" data-testid="score-breakdown">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Score Breakdown</p>
+                    <p className="text-xs text-gray-400">out of {questions.length * SCORE.MAX_PER_QUESTION}</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs mb-3">
+                    <div className="rounded-lg bg-green-50 p-2">
+                      <p className="text-green-700 font-bold text-lg" data-testid="tally-correct">{tally.correct}</p>
+                      <p className="text-green-600">Correct</p>
+                    </div>
+                    <div className="rounded-lg bg-red-50 p-2">
+                      <p className="text-red-700 font-bold text-lg" data-testid="tally-wrong">{tally.wrong}</p>
+                      <p className="text-red-600">Wrong</p>
+                    </div>
+                    <div className="rounded-lg bg-amber-50 p-2">
+                      <p className="text-amber-700 font-bold text-lg" data-testid="tally-skipped">{tally.skipped}</p>
+                      <p className="text-amber-600">Skipped</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500 border-t pt-2">
+                    <span>⚡ Time bonus earned</span>
+                    <span className="font-bold text-gray-700" data-testid="tally-time-bonus">+{tally.timeBonus} pts</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+                    <span>📊 Accuracy</span>
+                    <span className="font-bold text-gray-700">
+                      {questions.length > 0 ? Math.round((tally.correct / questions.length) * 100) : 0}%
+                    </span>
                   </div>
                 </div>
 

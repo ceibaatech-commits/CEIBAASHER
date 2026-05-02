@@ -295,6 +295,28 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — 1v1 Battle Scoring: Unified equation + avg-score fix
+- [x] **Bug:** `dashboard_routes.py` line ~290 was computing `percentage = (score / total) * 100` for 1v1 battles where `score` is RAW POINTS (max ~900) and `total` is question count (10), producing percentages up to **9000%** that corrupted the user's `avg_score`.
+- [x] **Bug:** Frontend equation was `Math.max(10, timeLeft * 3)` — no penalty for wrong answers, no clear contract, max 900 pts.
+- [x] **Bug:** Backend `battle_complete` blindly trusted client's `finalScore` — a tampered/buggy client could persist any number.
+- [x] **Fix — Unified scoring equation (mirrored frontend + backend):**
+  - **Correct:** `50 + round(50 × timeLeft / 30)` → 50–100 pts (instant=100, last sec=51)
+  - **Wrong:** `-10` pts (light penalty discourages random guessing)
+  - **Skipped/timeout:** `0` pts (neutral)
+  - Final score clamped to `[0, total_questions × 100]` (max 1000 pts for 10 questions)
+- [x] **Frontend** (`Matchmaking1v1.js`):
+  - New `SCORE` constants block + `calcQuestionScore(outcome, timeLeft)` helper at top of file.
+  - `handleAnswerSelect` rewritten with the unified equation; tracks `tally` state (correct / wrong / skipped / timeBonus).
+  - Per-question feedback shows ✓ correct / ✗ wrong / ⊘ skipped colours + exact pts (positive for correct, negative for wrong).
+  - **Score Breakdown card** added to the results screen (`data-testid="score-breakdown"`) with tally tiles, total time-bonus earned, and accuracy %.
+  - `battle-answer` and `battle-complete` socket emits now use `newScore` (already clamped) so the backend can never receive a stale-closure stale value.
+- [x] **Backend `battle_socketio.py` — server-side validation:**
+  - Coerces `total_questions` (1..100) and `final_score` (int) safely, then clamps to `[0, total_questions × 100]` before persisting to `user_battle_history` and broadcasting `opponent-score-update`.
+- [x] **Backend `dashboard_routes.py`:**
+  - 1v1 percentage calc fixed: `(score / (total × 100)) × 100`, clamped 0–100. Old corrupt records are clamped at 100% so they don't pollute averages.
+- [x] **Tests:** `tests/test_battle_scoring.py` — 21 unit tests covering per-question scoring, clamp logic, dashboard percentage, and 3 full-battle simulations. **All 21 pass.**
+- [x] **Lint:** clean (frontend + backend). **Smoke:** dashboard endpoint returns valid `avg_score:0` for fresh demo1; setup page renders without errors.
+
 ### Feb 24, 2026 — Draggable WhatsApp/Instagram-style PIP video overlay
 - [x] **File:** `/app/frontend/src/pages/Matchmaking1v1.js`
   - Three video-call layout modes:

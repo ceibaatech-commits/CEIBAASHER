@@ -966,11 +966,27 @@ async def battle_complete(sid, data):
     try:
         room_id = data.get('roomId')
         player_name = data.get('playerName', 'Player')
-        final_score = data.get('finalScore', 0)
+        raw_final_score = data.get('finalScore', 0)
         user_id = data.get('userId')
         total_questions = data.get('totalQuestions', 10)
         exam = data.get('exam', '')
         subject = data.get('subject', '')
+
+        # ── Server-side score validation (Feb 2026) ──
+        # Mirrors the frontend scoring equation: max 100 pts/question.
+        # Anything outside [0, total_questions × 100] is clamped — prevents
+        # tampered or buggy clients from posting impossible scores.
+        try:
+            total_questions = int(total_questions) if total_questions else 10
+        except (TypeError, ValueError):
+            total_questions = 10
+        total_questions = max(1, min(100, total_questions))   # sanity bounds
+        max_battle_score = total_questions * 100              # MAX_PER_QUESTION
+        try:
+            final_score = int(raw_final_score)
+        except (TypeError, ValueError):
+            final_score = 0
+        final_score = max(0, min(max_battle_score, final_score))
         
         battle = matchmaking_manager.get_battle(room_id)
         if not battle:
