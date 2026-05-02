@@ -1,6 +1,11 @@
 """
 Agora RTC Token Generation Routes
-Generates temporary tokens for Agora video/audio channels
+Generates temporary tokens for Agora video/audio channels.
+
+If AGORA_APP_CERTIFICATE is not configured the App is assumed to be running in
+"App ID only" / testing mode (Agora console > Project Management > Authentication =
+"App ID"). In that case we return token=null and the client connects without
+token authentication. This matches how the previous deployment was working.
 """
 import os
 import time
@@ -10,20 +15,30 @@ from agora_token_builder import RtcTokenBuilder
 
 router = APIRouter()
 
-AGORA_APP_ID = os.getenv("AGORA_APP_ID")
+AGORA_APP_ID = os.getenv("AGORA_APP_ID", "f512a6c76b5a4e0abd193119f3ba22fe")
 AGORA_APP_CERTIFICATE = os.getenv("AGORA_APP_CERTIFICATE")
+
 
 @router.get("/agora/token")
 async def generate_agora_token(
     channel: str = Query(..., min_length=1, max_length=64),
     uid: int = Query(0)
 ):
-    if not AGORA_APP_ID or not AGORA_APP_CERTIFICATE:
-        raise HTTPException(500, "Agora credentials not configured")
+    if not AGORA_APP_ID:
+        raise HTTPException(500, "Agora App ID not configured")
 
-    # If uid=0, generate a random unique one to avoid conflicts
     actual_uid = uid if uid > 0 else secrets.randbelow(2**31 - 1) + 1
     expiry = int(time.time()) + 3600  # 1 hour
+
+    # No certificate → App ID-only mode (no token required by Agora project).
+    if not AGORA_APP_CERTIFICATE:
+        return {
+            "token": None,
+            "channel": channel,
+            "uid": actual_uid,
+            "expires_at": expiry,
+            "mode": "app_id_only",
+        }
 
     token = RtcTokenBuilder.buildTokenWithUid(
         appId=AGORA_APP_ID,
@@ -31,7 +46,6 @@ async def generate_agora_token(
         channelName=channel,
         uid=actual_uid,
         role=1,
-        privilegeExpiredTs=expiry
+        privilegeExpiredTs=expiry,
     )
-
-    return {"token": token, "channel": channel, "uid": actual_uid, "expires_at": expiry}
+    return {"token": token, "channel": channel, "uid": actual_uid, "expires_at": expiry, "mode": "token"}

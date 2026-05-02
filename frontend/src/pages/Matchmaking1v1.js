@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, PhoneOff, Flag, X, AlertTriangle, Minimize2 } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, PhoneOff, Flag, X, AlertTriangle } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -13,13 +13,17 @@ import { toast } from 'sonner';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
 
-/* ── Stable Agora wrapper — prevents remount on parent re-renders ── */
+/* ── Stable Agora wrapper — prevents remount on parent re-renders.
+   Per product requirement: hide AgoraUIKit's built-in mic / camera-toggle /
+   end-call controls. Ceibaa keeps the rounded overlay container + report
+   modal; the user has no in-call buttons. The call ends when the quiz ends
+   or the partner disconnects. ── */
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
   const [videoCall, setVideoCall] = useState(true);
   const rtcProps = useMemo(() => ({
     appId,
     channel,
-    token: token || '',
+    token: token || null,  // App ID-only mode → null is valid
     uid: uid || 0,
     role: 'host',
     layout: 1,
@@ -41,7 +45,12 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd }) => {
         rtcProps={rtcProps}
         callbacks={callbacks}
         styleProps={{
-          localBtnContainer: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 25, padding: 6, bottom: 8, gap: 12 },
+          // Hide the entire bottom controls bar (mute mic, mute cam, end call)
+          // — Ceibaa locks these for the duration of the 1v1 quiz battle.
+          localBtnContainer: { display: 'none' },
+          // Hide individual control buttons too (defence-in-depth — some Agora
+          // versions render these even when localBtnContainer is hidden).
+          BtnTemplateStyles: { display: 'none' },
           UIKitContainer: { width: '100%', height: '100%', display: 'flex', flex: 1, position: 'relative' },
           videoMode: { max: 'cover', min: 'cover' },
           minViewContainer: { position: 'absolute', top: 8, right: 8, width: 80, height: 100, borderRadius: 10, overflow: 'hidden', zIndex: 5, border: '2px solid white' },
@@ -113,7 +122,7 @@ const Matchmaking1v1 = () => {
   const [agoraToken, setAgoraToken] = useState(null);
   const [agoraUid, setAgoraUid] = useState(0);
   const [vcReady, setVcReady] = useState(false);
-  const [vcMinimized, setVcMinimized] = useState(false);
+  // vcMinimized removed — per product requirement, no minimise/maximise toggle.
   const [vcRequester, setVcRequester] = useState('');
 
   // Report state
@@ -161,12 +170,13 @@ const Matchmaking1v1 = () => {
     }
     setVcReady(false);
     try {
-      const authToken = localStorage.getItem('token');
-      const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
-      const { data } = await axios.get(`${BACKEND_URL}/api/agora/token?channel=${ch}`, { headers });
-      if (!data.token) throw new Error('Server returned empty Agora token');
-      console.log('[VC] Token fetched for channel:', ch, 'uid:', data.uid);
-      setAgoraToken(data.token);
+      // Auth lives in httpOnly session_token cookie (Stage 3) and is auto-sent
+      // via axios.defaults.withCredentials. No Bearer header needed here.
+      const { data } = await axios.get(`${BACKEND_URL}/api/agora/token?channel=${ch}`);
+      // data.token is null in App-ID-only mode (no AGORA_APP_CERTIFICATE configured)
+      // — that's valid and Agora will accept the connection without it.
+      console.log('[VC] Agora ready for channel:', ch, 'uid:', data.uid, 'mode:', data.mode || 'token');
+      setAgoraToken(data.token || null);
       setAgoraUid(data.uid || 0);
       setVcReady(true);
     } catch (err) {
@@ -870,23 +880,17 @@ const Matchmaking1v1 = () => {
         </div>
 
         {/* ── FLOATING VIDEO CALL OVERLAY ──
-            Single AgoraUIKit instance — only the container size changes.
-            Agora provides its own mic/cam/end controls. */}
-        {vcState === 'active' && vcReady && agoraToken && (
+            Pure Agora video stream rendered in a Ceibaa rounded container, fixed
+            bottom-right. Per spec: NO Minimise/Maximise toggle, NO Agora built-in
+            mute/camera/end controls. The Flag/Report button on the quiz toolbar
+            handles abuse reporting; the call ends automatically when the battle
+            completes or a player disconnects. */}
+        {vcState === 'active' && vcReady && (
           <div
-            style={vcMinimized
-              ? { position: 'fixed', zIndex: 70, bottom: 80, right: 12, width: 120, height: 160, borderRadius: 16, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 10px 40px rgba(0,0,0,0.4)', cursor: 'pointer', display: 'flex' }
-              : { position: 'fixed', zIndex: 70, bottom: 72, right: 12, width: 220, height: 300, borderRadius: 16, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 10px 40px rgba(0,0,0,0.4)', display: 'flex' }
-            }
-            onClick={vcMinimized ? () => setVcMinimized(false) : undefined}
+            style={{ position: 'fixed', zIndex: 70, bottom: 72, right: 12, width: 220, height: 300, borderRadius: 16, overflow: 'hidden', border: '2px solid white', backgroundColor: '#111', boxShadow: '0 10px 40px rgba(0,0,0,0.4)', display: 'flex' }}
             data-testid="vc-pip"
           >
             <StableAgoraVideo appId={AGORA_APP_ID} channel={sanitizedChannel} token={agoraToken} uid={agoraUid} onEnd={endVC} />
-            {!vcMinimized && (
-              <button onClick={(e) => { e.stopPropagation(); setVcMinimized(true); }} style={{ position: 'absolute', top: 8, right: 8, padding: 6, background: 'rgba(0,0,0,0.5)', borderRadius: '50%', zIndex: 10, border: 'none', cursor: 'pointer' }}>
-                <Minimize2 style={{ width: 14, height: 14, color: 'white' }} />
-              </button>
-            )}
           </div>
         )}
 
