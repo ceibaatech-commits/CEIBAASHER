@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal, Eye, EyeOff } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -43,9 +43,13 @@ function calcQuestionScore({ outcome, timeLeft }) {
 
 /* ── Stable Agora wrapper — prevents remount on parent re-renders.
    Per product requirement (Feb 24 2026):
-   • Each user sees ONLY the opponent (no self-view) — local stream is sent
+   • Each user sees ONLY the opponent by default — local stream is sent
      but never rendered locally, mimicking a "looking through a window"
      telepresence feel.
+   • A small "self-preview" eye-toggle button lets users briefly peek at
+     themselves (mirror check) without leaving the call. When toggled ON,
+     the local stream renders as a 90×120 (or 50×70 in compact) rounded
+     PIP at the top-right of the overlay.
    • The remote stream fills the overlay completely (no split / stacking
      artefacts on Android Chrome).
    • Agora's built-in mute / camera-off / end-call buttons are SHOWN.
@@ -55,13 +59,14 @@ function calcQuestionScore({ outcome, timeLeft }) {
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = false }) => {
   const [videoCall, setVideoCall] = useState(true);
   const [remoteJoined, setRemoteJoined] = useState(false);
+  const [selfPreview, setSelfPreview] = useState(false);
   const rtcProps = useMemo(() => ({
     appId,
     channel,
     token: token || null,  // App ID-only mode → null is valid
     uid: uid || 0,
     role: 'host',
-    layout: 1,             // Pinned (max view + small min). We hide the min.
+    layout: 1,             // Pinned (max view + min view PIP). We hide min by default.
     disableRtm: true,
     enableVideo: true,
     enableAudio: true,
@@ -98,36 +103,39 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
     backdropFilter: 'blur(6px)',
   };
 
+  // LOCAL self-view → hidden by default. When user enables `selfPreview`,
+  // the local stream renders as a small rounded PIP at top-right.
+  const minViewContainer = selfPreview
+    ? {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        width: compact ? 50 : 90,
+        height: compact ? 70 : 120,
+        borderRadius: 12,
+        overflow: 'hidden',
+        zIndex: 18,
+        border: '2px solid #fff',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+        backgroundColor: '#000',
+      }
+    : { display: 'none', width: 0, height: 0, opacity: 0, pointerEvents: 'none' };
+
   return (
     <div
       data-vc-stage
       style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', backgroundColor: '#0a0a0a' }}
     >
-      {/* ── Aggressive layout override (Android Chrome safe) ──
-          Agora-react-uikit's pinned layout inserts nested flex containers
-          that on Android Chrome stack the local + remote videos vertically
-          (a 50/50 split). We force every nested div to absolute-fill and
-          every <video> to object-fit cover so the visible frame is always
-          the single remote stream filling the entire overlay. */}
+      {/* ── Layout override (Android Chrome safe, surgical) ──
+          Only force <video> elements to object-fit cover. Container
+          positioning is handled by inline styleProps below — avoids
+          accidentally !important-overriding the `display:none` we apply
+          to the local view when self-preview is off. */}
       <style>{`
         [data-vc-stage] video {
           object-fit: cover !important;
           width: 100% !important;
           height: 100% !important;
-          position: absolute !important;
-          inset: 0 !important;
-        }
-        [data-vc-stage] > div,
-        [data-vc-stage] > div > div,
-        [data-vc-stage] > div > div > div {
-          position: absolute !important;
-          inset: 0 !important;
-          display: block !important;
-          flex: none !important;
-          width: 100% !important;
-          height: 100% !important;
-          min-width: 0 !important;
-          min-height: 0 !important;
         }
       `}</style>
       <AgoraUIKit
@@ -136,15 +144,47 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
         styleProps={{
           UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#0a0a0a' },
           videoMode: { max: 'cover', min: 'cover' },
-          // LOCAL self-view → completely hidden. Each user sees only the
-          // opponent. The local stream is still published over the wire.
-          minViewContainer: { display: 'none', visibility: 'hidden', width: 0, height: 0, opacity: 0, pointerEvents: 'none' },
-          // REMOTE opponent → fills the entire overlay.
+          minViewContainer,
           maxViewContainer: { position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 },
           localBtnContainer,
           BtnTemplateStyles,
         }}
       />
+
+      {/* ── Self-preview toggle ──
+          Small eye-icon button at BOTTOM-LEFT of the overlay (top-left has
+          the size/mini toggles; top-right is reserved for the self-preview
+          PIP itself; bottom-center has Agora's mute/cam/end controls).
+          Tap to briefly peek at your own camera; tap again to hide. */}
+      <button
+        data-vc-control
+        data-testid="vc-toggle-self-preview"
+        onClick={(e) => { e.stopPropagation(); setSelfPreview(v => !v); }}
+        aria-label={selfPreview ? 'Hide self preview' : 'Show self preview'}
+        title={selfPreview ? 'Hide self preview' : 'Show self preview'}
+        style={{
+          position: 'absolute',
+          bottom: compact ? 6 : 10,
+          left: compact ? 6 : 10,
+          width: compact ? 24 : 32,
+          height: compact ? 24 : 32,
+          borderRadius: compact ? 12 : 16,
+          background: selfPreview ? 'rgba(91,143,212,0.85)' : 'rgba(0,0,0,0.55)',
+          backdropFilter: 'blur(6px)',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          zIndex: 22,    // above remote video and self-preview PIP
+          transition: 'background 0.2s ease',
+          padding: 0,
+        }}
+      >
+        {selfPreview
+          ? <EyeOff size={compact ? 12 : 16} color="#fff" />
+          : <Eye size={compact ? 12 : 16} color="#fff" />}
+      </button>
 
       {/* ── "Connecting to opponent…" placeholder ──
           Shown until the remote `user-joined` / `user-published` event fires.

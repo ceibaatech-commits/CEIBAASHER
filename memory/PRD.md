@@ -295,6 +295,13 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Self-preview eye-toggle on video call
+- [x] **`StableAgoraVideo`** now has a third state `selfPreview` (default OFF). When toggled ON, the local stream renders as a 90×120 (or 50×70 in compact) rounded PIP at top-right. When OFF, local view is `display:none` — nothing rendered locally; stream still publishes to opponent.
+- [x] **Eye toggle button:** `Eye` / `EyeOff` icon at **bottom-LEFT** of the overlay (top-left has size/mini toggles, top-right is reserved for the self-preview PIP itself, bottom-center has Agora controls). Active state highlights the button in blue (`rgba(91,143,212,0.85)`). Auto-shrinks to 24×24 in compact / mini mode.
+- [x] **CSS surgery:** removed the broad `> div, > div > div, > div > div > div { display:block !important }` selector that was overriding the `display:none` on minViewContainer via `!important`. Now only `<video>` elements get the `object-fit: cover; width:100%; height:100%` override; container positioning is left to inline styleProps so toggling `selfPreview` cleanly switches between hidden ↔ small PIP.
+- [x] **TestID:** `vc-toggle-self-preview` (with proper `aria-label` switching between "Show self preview" / "Hide self preview").
+- [x] **Lint:** clean. **Smoke:** setup page renders cleanly.
+
 ### Feb 24, 2026 — Video Call: Hide self-view (each user sees only opponent) + Android Chrome layout fix
 - [x] **Bug:** On Android Chrome the AgoraUIKit pinned layout was rendering local + remote videos stacked vertically (50/50 split) instead of one full background. Users could see only themselves (local stream stuck in `maxView` when remote subscription was slow), creating a confusing "I see myself" experience.
 - [x] **Fix — Hide local self-view entirely** (`/app/frontend/src/pages/Matchmaking1v1.js → StableAgoraVideo`):
