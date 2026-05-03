@@ -295,6 +295,12 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Agora App Certificate wired (token-based auth, prod-ready)
+- [x] Added `AGORA_APP_CERTIFICATE=18b3fa58e6f74590a0d011a95f18fb93` to `/app/backend/.env`.
+- [x] Existing token-builder code in `agora_routes.py` automatically switched modes — `GET /api/agora/token?channel=test123&uid=12345` now returns `mode: token` with a real 139-char signed token (1-hour expiry).
+- [x] No frontend changes needed; the client already passes whatever the backend returns to AgoraUIKit. App-ID-only fallback removed naturally — every call now uses signed tokens.
+- [x] **Smoke:** curl confirmed `mode: token | token_len: 139`. Backend restarted cleanly.
+
 ### Feb 24, 2026 — Fix `CAN_NOT_GET_GATEWAY_SERVER: dynamic use static key`
 - [x] **Root cause:** Frontend was hard-coded to App ID `f512a6c76b5a4e0abd193119f3ba22fe` — this is a different Agora project (one that has Primary Certificate enabled, requiring tokens). User's actual Ceibaa project (per the App Builder export) is `77616f0f11d244aab4070def2bcb5f2e` and runs in **App-ID-only mode** (no certificate). Connecting to the wrong project caused Agora's gateway to reject with `dynamic use static key`.
 - [x] **Fix:**
