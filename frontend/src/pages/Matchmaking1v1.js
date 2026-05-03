@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
 import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
-import AgoraUIKit from 'agora-react-uikit';
+import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import Header from '../components/Header';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-const AGORA_APP_ID = process.env.REACT_APP_AGORA_APP_ID || '77616f0f11d244aab4070def2bcb5f2e';
+// ── ZegoCloud Video Call (Feb 24, 2026) ──
+// Replaced AgoraUIKit with ZegoUIKitPrebuilt. Auth uses App ID + Server
+// Secret (kit-token-for-test, generated in-browser). Acceptable for testing
+// per Zego docs; for prod, move token generation to backend.
+const ZEGO_APP_ID = parseInt(process.env.REACT_APP_ZEGO_APP_ID || '0', 10);
+const ZEGO_SERVER_SECRET = process.env.REACT_APP_ZEGO_SERVER_SECRET || '';
 
 /* ── VideoErrorBoundary ──
    Wraps the AgoraUIKit subtree so that any uncaught Agora SDK error
@@ -80,14 +85,17 @@ function calcQuestionScore({ outcome, timeLeft }) {
    • A "Connecting to opponent…" placeholder covers any brief moment before
      the remote feed actually arrives.
    • The Ceibaa "Report" flag stays in the quiz toolbar for abuse. */
-const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = false }) => {
-  const [videoCall, setVideoCall] = useState(true);
+const StableZegoVideo = memo(({ channel, userId, userName, onEnd, compact = false }) => {
+  const containerRef = useRef(null);
+  const zpRef = useRef(null);
+  const initRef = useRef(false);
+  const onEndRef = useRef(onEnd);
+  useEffect(() => { onEndRef.current = onEnd; }, [onEnd]);
+
+  // ── Local UI state ──
   const [remoteJoined, setRemoteJoined] = useState(false);
-  const [selfPreview, setSelfPreview] = useState(false);
-  // ── Call-duration timer (WhatsApp-style "MM:SS") ──
-  // Starts counting from the moment the remote opponent joins, not earlier,
-  // so the displayed time reflects actual time-in-conversation.
   const [callSeconds, setCallSeconds] = useState(0);
+  // Whisper-style call duration timer (starts when remote joins).
   useEffect(() => {
     if (!remoteJoined) return undefined;
     const id = setInterval(() => setCallSeconds(s => s + 1), 1000);
@@ -98,101 +106,114 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
     const ss = String(callSeconds % 60).padStart(2, '0');
     return `${mm}:${ss}`;
   }, [callSeconds]);
-  const rtcProps = useMemo(() => ({
-    appId,
-    channel,
-    token: token || null,  // App ID-only mode → null is valid
-    uid: uid || 0,
-    role: 'host',
-    layout: 1,             // Pinned (max view + min view PIP). We hide min by default.
-    disableRtm: true,
-    enableVideo: true,
-    enableAudio: true,
-  }), [appId, channel, token, uid]);
-  const callbacks = useMemo(() => ({
-    EndCall: () => { setVideoCall(false); if (onEnd) onEnd(); },
-    'user-joined': (user) => { console.log('[Agora] Remote joined:', user); setRemoteJoined(true); },
-    'user-published': (user, mediaType) => { console.log('[Agora] Remote published:', user, mediaType); setRemoteJoined(true); },
-    'user-left': (user) => { console.log('[Agora] Remote left:', user); setRemoteJoined(false); },
-  }), [onEnd]);
 
-  if (!videoCall) return null;
+  // ── Zego lifecycle: join on mount, leave on unmount ──
+  // The container ref must be set before joinRoom() runs. The init-guard ref
+  // prevents double-mount in React StrictMode dev from creating two clients.
+  useEffect(() => {
+    if (initRef.current) return undefined;
+    if (!containerRef.current) return undefined;
+    if (!ZEGO_APP_ID || !ZEGO_SERVER_SECRET) {
+      console.error('[Zego] Missing REACT_APP_ZEGO_APP_ID or REACT_APP_ZEGO_SERVER_SECRET');
+      try { toast.error('Video call config missing.'); } catch (_) { /* ignore */ }
+      if (onEndRef.current) onEndRef.current();
+      return undefined;
+    }
+    initRef.current = true;
 
-  // Bottom control bar (mute / camera / end-call) — always visible.
-  // In compact (mini) mode, buttons + gaps shrink so they fit a small bubble.
-  const localBtnContainer = {
-    position: 'absolute',
-    bottom: compact ? 4 : 8,
-    left: 0,
-    right: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    gap: compact ? 4 : 8,
-    zIndex: 30,
-    background: 'transparent',
-    padding: 0,
-    border: 'none',
-  };
-  const BtnTemplateStyles = {
-    width: compact ? 28 : 40,
-    height: compact ? 28 : 40,
-    borderRadius: compact ? 14 : 20,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    backdropFilter: 'blur(6px)',
-  };
-
-  // LOCAL self-view → hidden by default. When user enables `selfPreview`,
-  // the local stream renders as a small rounded PIP at top-right.
-  const minViewContainer = selfPreview
-    ? {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        width: compact ? 50 : 90,
-        height: compact ? 70 : 120,
-        borderRadius: 12,
-        overflow: 'hidden',
-        zIndex: 18,
-        border: '2px solid #fff',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-        backgroundColor: '#000',
+    let cancelled = false;
+    const start = async () => {
+      try {
+        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+          ZEGO_APP_ID,
+          ZEGO_SERVER_SECRET,
+          channel,
+          String(userId || `u_${Date.now()}`),
+          userName || 'Player',
+        );
+        if (cancelled) return;
+        const zp = ZegoUIKitPrebuilt.create(kitToken);
+        zpRef.current = zp;
+        await zp.joinRoom({
+          container: containerRef.current,
+          scenario: { mode: ZegoUIKitPrebuilt.OneONoneCall },
+          // Skip Zego's pre-join camera/mic test — quiz flow already handled it.
+          showPreJoinView: false,
+          showLeavingView: false,
+          showRoomTimer: false,           // we render our own MM:SS pill
+          showScreenSharingButton: false,
+          showAudioVideoSettingsButton: !compact,
+          showTextChat: false,            // quiz has its own chat
+          showUserList: false,
+          showRemoveUserButton: false,
+          // Built-in mute / camera-off / end-call buttons stay visible.
+          showMyCameraToggleButton: true,
+          showMyMicrophoneToggleButton: true,
+          showLeavingView: false,
+          turnOnCameraWhenJoining: true,
+          turnOnMicrophoneWhenJoining: true,
+          useSpeakerWhenJoining: true,
+          // Remote-joined detection + clean teardown wiring.
+          onUserJoin: (users) => {
+            console.log('[Zego] user-joined:', users);
+            if (Array.isArray(users) && users.length > 0) setRemoteJoined(true);
+          },
+          onUserLeave: (users) => {
+            console.log('[Zego] user-left:', users);
+            // After last remote leaves, return to Connecting placeholder.
+            setRemoteJoined(false);
+          },
+          onLeaveRoom: () => {
+            console.log('[Zego] onLeaveRoom');
+            if (onEndRef.current) onEndRef.current();
+          },
+        });
+        if (cancelled) {
+          try { zp.destroy(); } catch (_) { /* ignore */ }
+          zpRef.current = null;
+        }
+      } catch (err) {
+        console.error('[Zego] joinRoom failed:', err);
+        try { toast.error('Could not start video call.'); } catch (_) { /* ignore */ }
+        if (onEndRef.current) onEndRef.current();
       }
-    : { display: 'none', width: 0, height: 0, opacity: 0, pointerEvents: 'none' };
+    };
+    start();
+
+    return () => {
+      cancelled = true;
+      const zp = zpRef.current;
+      zpRef.current = null;
+      initRef.current = false;
+      if (zp) {
+        try { zp.destroy(); }
+        catch (e) { console.warn('[Zego] destroy() failed:', e); }
+      }
+    };
+    // Note: channel/userId/userName are stable for the lifetime of an active call,
+    // so the empty-deps semantics are intentional. We avoid eslint-disable directives
+    // here because the rule isn't configured in this CRA setup.
+  }, [channel, userId, userName]);
 
   return (
     <div
       data-vc-stage
       style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', backgroundColor: '#0a0a0a' }}
     >
-      {/* ── Layout override (Android Chrome safe, surgical) ──
-          Only force <video> elements to object-fit cover. Container
-          positioning is handled by inline styleProps below — avoids
-          accidentally !important-overriding the `display:none` we apply
-          to the local view when self-preview is off. */}
+      {/* Force Zego's <video> elements to object-fit:cover so they fill the
+          rounded floating overlay cleanly across iOS Safari + Android Chrome. */}
       <style>{`
-        [data-vc-stage] video {
-          object-fit: cover !important;
-          width: 100% !important;
-          height: 100% !important;
-        }
+        [data-vc-stage] video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
       `}</style>
-      <AgoraUIKit
-        rtcProps={rtcProps}
-        callbacks={callbacks}
-        styleProps={{
-          UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#0a0a0a' },
-          videoMode: { max: 'cover', min: 'cover' },
-          minViewContainer,
-          maxViewContainer: { position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 },
-          localBtnContainer,
-          BtnTemplateStyles,
-        }}
+
+      {/* Zego mounts its prebuilt UI here */}
+      <div
+        ref={containerRef}
+        data-testid="zego-container"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
       />
 
-      {/* ── Call-duration pill (WhatsApp-style) ──
-          Positioned top-center on the overlay. Only renders once the remote
-          opponent has joined (otherwise we're showing the "Connecting…"
-          placeholder anyway). Includes a pulsing red dot for "live" feel. */}
+      {/* ── Call-duration pill (WhatsApp-style) ── */}
       {remoteJoined && (
         <div
           data-testid="vc-call-duration"
@@ -217,60 +238,19 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
             pointerEvents: 'none',
           }}
         >
-          <span
-            style={{
-              width: compact ? 5 : 6,
-              height: compact ? 5 : 6,
-              borderRadius: '50%',
-              background: '#ef4444',
-              animation: 'vcDurPulse 1.4s infinite',
-            }}
-          />
+          <span style={{
+            width: compact ? 5 : 6,
+            height: compact ? 5 : 6,
+            borderRadius: '50%',
+            background: '#ef4444',
+            animation: 'vcDurPulse 1.4s infinite',
+          }} />
           <span>{formattedDuration}</span>
           <style>{`@keyframes vcDurPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
         </div>
       )}
 
-      {/* ── Self-preview toggle ──
-          Small eye-icon button at BOTTOM-LEFT of the overlay (top-left has
-          the size/mini toggles; top-right is reserved for the self-preview
-          PIP itself; bottom-center has Agora's mute/cam/end controls).
-          Tap to briefly peek at your own camera; tap again to hide. */}
-      <button
-        data-vc-control
-        data-testid="vc-toggle-self-preview"
-        onClick={(e) => { e.stopPropagation(); setSelfPreview(v => !v); }}
-        aria-label={selfPreview ? 'Hide self preview' : 'Show self preview'}
-        title={selfPreview ? 'Hide self preview' : 'Show self preview'}
-        style={{
-          position: 'absolute',
-          bottom: compact ? 6 : 10,
-          left: compact ? 6 : 10,
-          width: compact ? 24 : 32,
-          height: compact ? 24 : 32,
-          borderRadius: compact ? 12 : 16,
-          background: selfPreview ? 'rgba(91,143,212,0.85)' : 'rgba(0,0,0,0.55)',
-          backdropFilter: 'blur(6px)',
-          border: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          zIndex: 22,    // above remote video and self-preview PIP
-          transition: 'background 0.2s ease',
-          padding: 0,
-        }}
-      >
-        {selfPreview
-          ? <EyeOff size={compact ? 12 : 16} color="#fff" />
-          : <Eye size={compact ? 12 : 16} color="#fff" />}
-      </button>
-
-      {/* ── "Connecting to opponent…" placeholder ──
-          Shown until the remote `user-joined` / `user-published` event fires.
-          This hides the brief moment where AgoraUIKit's max view is the
-          LOCAL user (because no remote has connected yet) and prevents the
-          confusing "I see myself" experience on slow networks. */}
+      {/* ── "Connecting to opponent…" placeholder ── */}
       {!remoteJoined && (
         <div
           data-testid="vc-connecting-placeholder"
@@ -306,7 +286,7 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
     </div>
   );
 });
-StableAgoraVideo.displayName = 'StableAgoraVideo';
+StableZegoVideo.displayName = 'StableZegoVideo';
 
 /* ── Color Tokens ── */
 const C = {
@@ -429,33 +409,26 @@ const Matchmaking1v1 = () => {
 
   useEffect(() => { if (user?.name) setPlayerName(user.name); }, [user]);
 
-  // initAgora — reads roomIdRef so it is never stale regardless of when it's called.
-  // useCallback with [] so the function identity is stable across renders; safe because
-  // it only touches refs and setters (never captured state).
+  // initAgora (kept name for minimal-diff; now wraps Zego setup) — Zego's
+  // kit-token is generated client-side inside StableZegoVideo, so no backend
+  // call is needed. We just validate the channel and flip vcReady so the
+  // overlay mounts. Any actual Zego connection error bubbles up through
+  // VideoErrorBoundary and the StableZegoVideo's own error handling.
   const initAgora = useCallback(async () => {
     const ch = roomIdRef.current?.replace(/[^a-zA-Z0-9]/g, '').substring(0, 64);
     if (!ch) {
       console.warn('[VC] initAgora: roomIdRef.current is empty, aborting');
       return;
     }
-    setVcReady(false);
-    try {
-      // Auth lives in httpOnly session_token cookie (Stage 3) and is auto-sent
-      // via axios.defaults.withCredentials. No Bearer header needed here.
-      const { data } = await axios.get(`${BACKEND_URL}/api/agora/token?channel=${ch}`);
-      // data.token is null in App-ID-only mode (no AGORA_APP_CERTIFICATE configured)
-      // — that's valid and Agora will accept the connection without it.
-      console.log('[VC] Agora ready for channel:', ch, 'uid:', data.uid, 'mode:', data.mode || 'token');
-      setAgoraToken(data.token || null);
-      setAgoraUid(data.uid || 0);
-      setVcReady(true);
-    } catch (err) {
-      console.error('[VC] Token fetch failed:', err);
-      toast.error('Could not start video call. Please try again.');
+    if (!ZEGO_APP_ID || !ZEGO_SERVER_SECRET) {
+      console.error('[VC] Missing REACT_APP_ZEGO_APP_ID / REACT_APP_ZEGO_SERVER_SECRET');
+      toast.error('Video call config missing.');
       setVcState('idle');
       setVcReady(false);
-      setAgoraToken(null);
+      return;
     }
+    console.log('[VC] Zego ready for channel:', ch);
+    setVcReady(true);
   }, []);
 
   // Socket connection — empty dep array is intentional; all mutable values are read via refs
@@ -1350,11 +1323,10 @@ const Matchmaking1v1 = () => {
               }}
             >
               <VideoErrorBoundary onError={() => endVC()}>
-                <StableAgoraVideo
-                  appId={AGORA_APP_ID}
+                <StableZegoVideo
                   channel={sanitizedChannel}
-                  token={agoraToken}
-                  uid={agoraUid}
+                  userId={user?.id || user?.user_id || playerName}
+                  userName={playerName || 'Player'}
                   onEnd={endVC}
                   compact={isMini}
                 />

@@ -295,6 +295,22 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Migrated video calling: Agora → ZegoCloud
+- [x] **Why:** Agora projects had recurring auth headaches (`dynamic use static key` + `invalid token, authorized failed`) caused by App ID / Certificate mismatch on the user's account. User explicitly requested switch to Zego per their App Builder docs.
+- [x] **`/app/frontend/.env`** already had `REACT_APP_ZEGO_APP_ID=1386406296` + `REACT_APP_ZEGO_SERVER_SECRET=51b46b6…` (provided by user).
+- [x] **`/app/frontend/src/pages/Matchmaking1v1.js`:**
+  - Replaced `import AgoraUIKit from 'agora-react-uikit'` with `import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt'` (v2.17.3, already installed).
+  - New constants `ZEGO_APP_ID` (parsed int) + `ZEGO_SERVER_SECRET` (string) read from env.
+  - Renamed `StableAgoraVideo` → `StableZegoVideo`. New prop signature: `{ channel, userId, userName, onEnd, compact }`.
+  - On mount: generates `kitToken` via `ZegoUIKitPrebuilt.generateKitTokenForTest(appId, secret, roomId, userId, userName)` (acceptable for testing per Zego docs; should move to backend for prod), creates instance with `ZegoUIKitPrebuilt.create(kitToken)`, calls `joinRoom({ container, scenario.mode = OneONoneCall, showPreJoinView=false, showLeavingView=false, showRoomTimer=false, showScreenSharingButton=false, showTextChat=false, showUserList=false, ... })`.
+  - Wires `onUserJoin` / `onUserLeave` to flip our `remoteJoined` state (drives the duration timer + connecting placeholder).
+  - Wires `onLeaveRoom` to the existing `endVC()` so the quiz flow continues seamlessly when the user hits Zego's red end-call button.
+  - Clean teardown on unmount: calls `zp.destroy()` to release media + sockets; init-guard ref prevents double-mount in React StrictMode.
+  - **Preserved features:** outer floating PIP overlay (drag, snap-to-edge, pip/mini/full size toggles), `<VideoErrorBoundary>` (graceful crash handling), `MM:SS` call-duration pill, "Connecting to opponent…" placeholder.
+  - **Removed (no longer applicable to Zego):** `selfPreview` toggle (Zego's prebuilt manages its own self-PIP), `Eye`/`EyeOff` lucide imports.
+  - `initAgora` simplified to a no-op that only validates channel + flips `vcReady` (no more backend token fetch — Zego generates client-side).
+- [x] **Lint:** clean. **Compile:** webpack succeeded with 6 console-warning advisories (non-blocking). **Smoke:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders the 1v1 setup card cleanly post `demo1` login.
+
 ### Feb 24, 2026 — Agora App Certificate wired (token-based auth, prod-ready)
 - [x] Added `AGORA_APP_CERTIFICATE=18b3fa58e6f74590a0d011a95f18fb93` to `/app/backend/.env`.
 - [x] Existing token-builder code in `agora_routes.py` automatically switched modes — `GET /api/agora/token?channel=test123&uid=12345` now returns `mode: token` with a real 139-char signed token (1-hour expiry).
