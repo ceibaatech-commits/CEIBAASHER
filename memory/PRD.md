@@ -295,6 +295,15 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Video Call: Hide self-view (each user sees only opponent) + Android Chrome layout fix
+- [x] **Bug:** On Android Chrome the AgoraUIKit pinned layout was rendering local + remote videos stacked vertically (50/50 split) instead of one full background. Users could see only themselves (local stream stuck in `maxView` when remote subscription was slow), creating a confusing "I see myself" experience.
+- [x] **Fix — Hide local self-view entirely** (`/app/frontend/src/pages/Matchmaking1v1.js → StableAgoraVideo`):
+  - `minViewContainer` now uses `display: 'none'; visibility: 'hidden'; width:0; height:0; opacity:0; pointerEvents:'none'` — local stream is published over the wire but never rendered. Each user sees ONLY the opponent.
+- [x] **Android Chrome layout override:** stricter scoped CSS targets `[data-vc-stage] > div`, `> div > div`, `> div > div > div` and forces every nested container to `position:absolute; inset:0; display:block; flex:none; width/height:100%`. Every `<video>` element gets `object-fit:cover; position:absolute; inset:0` so the visible frame is always the single remote stream filling the entire overlay — no stacking, no split.
+- [x] **"Connecting to opponent…" placeholder:** absolute-positioned overlay with a CSS spinner shown until the AgoraUIKit `user-joined` / `user-published` callback fires. Hides the brief moment where AgoraUIKit's max view is the local user (because no remote has connected yet). Auto-disappears when `user-left` fires too. Compact spinner in `mini` mode (28px) vs full (56px).
+- [x] **TestIDs:** new `vc-connecting-placeholder`. Existing `vc-pip`, `vc-toggle-size`, `vc-toggle-mini` preserved.
+- [x] **Lint:** clean. **Smoke:** setup page renders cleanly post `demo1` login.
+
 ### Feb 24, 2026 — Mobile UI: Sarvam logo replaces Gemini-style sparkle icons
 - [x] **Assets:** uploaded `sarvam-logo-white.svg` (16KB, 500×500 viewBox) saved to `/app/frontend/public/sarvam-logo-white.svg`. Auto-generated dark-tinted variant `/sarvam-logo-dark.svg` (replaces `#FCFCFC` / `#fff` fills with `#6b4e0d`) so the logo reads cleanly on the gold mobile cards.
 - [x] **`/app/frontend/src/pages/Home.js`:**

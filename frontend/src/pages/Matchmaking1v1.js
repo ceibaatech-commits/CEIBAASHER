@@ -42,30 +42,35 @@ function calcQuestionScore({ outcome, timeLeft }) {
 }
 
 /* ── Stable Agora wrapper — prevents remount on parent re-renders.
-   Per product requirement (Feb 2026 update):
-   • Remote opponent = full-size background (max view)
-   • Local user = small rounded PIP, top-right corner (min view)
-   • Agora's built-in mute / camera-off / end-call buttons are ALWAYS visible
-     across mini / pip / full modes — they auto-shrink in mini bubble so users
-     never lose access to call controls when the quiz takes priority.
-   • A separate Ceibaa "Report" flag stays in the quiz toolbar for abuse. */
+   Per product requirement (Feb 24 2026):
+   • Each user sees ONLY the opponent (no self-view) — local stream is sent
+     but never rendered locally, mimicking a "looking through a window"
+     telepresence feel.
+   • The remote stream fills the overlay completely (no split / stacking
+     artefacts on Android Chrome).
+   • Agora's built-in mute / camera-off / end-call buttons are SHOWN.
+   • A "Connecting to opponent…" placeholder covers any brief moment before
+     the remote feed actually arrives.
+   • The Ceibaa "Report" flag stays in the quiz toolbar for abuse. */
 const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = false }) => {
   const [videoCall, setVideoCall] = useState(true);
+  const [remoteJoined, setRemoteJoined] = useState(false);
   const rtcProps = useMemo(() => ({
     appId,
     channel,
     token: token || null,  // App ID-only mode → null is valid
     uid: uid || 0,
     role: 'host',
-    layout: 1,             // Pinned: one max view + one min view PIP
+    layout: 1,             // Pinned (max view + small min). We hide the min.
     disableRtm: true,
     enableVideo: true,
     enableAudio: true,
   }), [appId, channel, token, uid]);
   const callbacks = useMemo(() => ({
     EndCall: () => { setVideoCall(false); if (onEnd) onEnd(); },
-    'user-joined': (user) => console.log('[Agora] Remote user joined:', user),
-    'user-published': (user, mediaType) => console.log('[Agora] Remote published:', user, mediaType),
+    'user-joined': (user) => { console.log('[Agora] Remote joined:', user); setRemoteJoined(true); },
+    'user-published': (user, mediaType) => { console.log('[Agora] Remote published:', user, mediaType); setRemoteJoined(true); },
+    'user-left': (user) => { console.log('[Agora] Remote left:', user); setRemoteJoined(false); },
   }), [onEnd]);
 
   if (!videoCall) return null;
@@ -80,7 +85,7 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
     display: 'flex',
     justifyContent: 'center',
     gap: compact ? 4 : 8,
-    zIndex: 20,
+    zIndex: 30,
     background: 'transparent',
     padding: 0,
     border: 'none',
@@ -94,52 +99,90 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
   };
 
   return (
-    /* No flex on the wrapper — flex:1 was forcing AgoraUIKit's pinned
-       layout into a 50/50 split. Use plain block positioning so the
-       absolute children below stack correctly. */
     <div
       data-vc-stage
-      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', backgroundColor: '#000' }}
+      style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative', backgroundColor: '#0a0a0a' }}
     >
-      {/* Aggressive layout override — ensures Agora's internal video
-          elements always behave as Pinned (one full background + one
-          small overlay) regardless of which layout the SDK falls back to.
-          • Every <video> uses object-fit:cover to fill its frame cleanly.
-          • The top-level Agora container is forced to absolute fill.
-          • Direct video children stack with the FIRST = max (full bg) and
-            siblings = min (small PIP) via z-index. */}
+      {/* ── Aggressive layout override (Android Chrome safe) ──
+          Agora-react-uikit's pinned layout inserts nested flex containers
+          that on Android Chrome stack the local + remote videos vertically
+          (a 50/50 split). We force every nested div to absolute-fill and
+          every <video> to object-fit cover so the visible frame is always
+          the single remote stream filling the entire overlay. */}
       <style>{`
-        [data-vc-stage] video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
-        [data-vc-stage] > div { position: absolute !important; inset: 0 !important; display: block !important; }
-        [data-vc-stage] > div > div { flex: none !important; }
+        [data-vc-stage] video {
+          object-fit: cover !important;
+          width: 100% !important;
+          height: 100% !important;
+          position: absolute !important;
+          inset: 0 !important;
+        }
+        [data-vc-stage] > div,
+        [data-vc-stage] > div > div,
+        [data-vc-stage] > div > div > div {
+          position: absolute !important;
+          inset: 0 !important;
+          display: block !important;
+          flex: none !important;
+          width: 100% !important;
+          height: 100% !important;
+          min-width: 0 !important;
+          min-height: 0 !important;
+        }
       `}</style>
       <AgoraUIKit
         rtcProps={rtcProps}
         callbacks={callbacks}
         styleProps={{
-          UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#000' },
+          UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#0a0a0a' },
           videoMode: { max: 'cover', min: 'cover' },
-          // LOCAL user → small rounded PIP at TOP-RIGHT (per user spec).
-          // High z-index so it always sits on top of the remote stream.
-          minViewContainer: {
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            width: compact ? 50 : 90,
-            height: compact ? 70 : 120,
-            borderRadius: 12,
-            overflow: 'hidden',
-            zIndex: 15,
-            border: '2px solid #fff',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
-            backgroundColor: '#000',
-          },
-          // REMOTE opponent → full background, lowest layer.
+          // LOCAL self-view → completely hidden. Each user sees only the
+          // opponent. The local stream is still published over the wire.
+          minViewContainer: { display: 'none', visibility: 'hidden', width: 0, height: 0, opacity: 0, pointerEvents: 'none' },
+          // REMOTE opponent → fills the entire overlay.
           maxViewContainer: { position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 },
           localBtnContainer,
           BtnTemplateStyles,
         }}
       />
+
+      {/* ── "Connecting to opponent…" placeholder ──
+          Shown until the remote `user-joined` / `user-published` event fires.
+          This hides the brief moment where AgoraUIKit's max view is the
+          LOCAL user (because no remote has connected yet) and prevents the
+          confusing "I see myself" experience on slow networks. */}
+      {!remoteJoined && (
+        <div
+          data-testid="vc-connecting-placeholder"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 25,
+            background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 12,
+            color: '#fff',
+            textAlign: 'center',
+            padding: compact ? 8 : 20,
+          }}
+        >
+          <div style={{
+            width: compact ? 28 : 56,
+            height: compact ? 28 : 56,
+            borderRadius: '50%',
+            border: '3px solid rgba(255,255,255,0.2)',
+            borderTopColor: '#5B8FD4',
+            animation: 'vcConnSpin 0.9s linear infinite',
+          }} />
+          <p style={{ fontSize: compact ? 10 : 13, fontWeight: 600, opacity: 0.9, margin: 0 }}>
+            {compact ? 'Connecting…' : 'Connecting to opponent…'}
+          </p>
+          <style>{`@keyframes vcConnSpin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      )}
     </div>
   );
 });
