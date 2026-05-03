@@ -15,7 +15,7 @@ from agora_token_builder import RtcTokenBuilder
 
 router = APIRouter()
 
-AGORA_APP_ID = os.getenv("AGORA_APP_ID", "f512a6c76b5a4e0abd193119f3ba22fe")
+AGORA_APP_ID = os.getenv("AGORA_APP_ID", "77616f0f11d244aab4070def2bcb5f2e")
 AGORA_APP_CERTIFICATE = os.getenv("AGORA_APP_CERTIFICATE")
 
 

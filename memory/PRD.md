@@ -295,6 +295,16 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Fix `CAN_NOT_GET_GATEWAY_SERVER: dynamic use static key`
+- [x] **Root cause:** Frontend was hard-coded to App ID `f512a6c76b5a4e0abd193119f3ba22fe` — this is a different Agora project (one that has Primary Certificate enabled, requiring tokens). User's actual Ceibaa project (per the App Builder export) is `77616f0f11d244aab4070def2bcb5f2e` and runs in **App-ID-only mode** (no certificate). Connecting to the wrong project caused Agora's gateway to reject with `dynamic use static key`.
+- [x] **Fix:**
+  - Added `AGORA_APP_ID=77616f0f11d244aab4070def2bcb5f2e` to `/app/backend/.env`
+  - Added `REACT_APP_AGORA_APP_ID=77616f0f11d244aab4070def2bcb5f2e` to `/app/frontend/.env`
+  - `agora_routes.py` default + frontend constant updated to read from env (with the new value as fallback)
+  - Backend `/api/agora/token?channel=test` now responds with `{"mode": "app_id_only", "token": null, ...}` — matches the project's auth mode.
+- [x] **Resilience:** wrapped `<StableAgoraVideo>` in a new `<VideoErrorBoundary>` (React class boundary). Any uncaught Agora SDK error (gateway, getUserMedia denied, network drop) now silently swallows the crash, calls `endVC()`, and shows a `toast.error('Video call dropped — quiz continues.')`. The quiz UI never gets the red runtime-error overlay again.
+- [x] **Lint:** clean. **Smoke:** `/api/agora/token` returns app_id_only mode; setup page renders without errors after demo1 login.
+
 ### Feb 24, 2026 — Call-duration timer (WhatsApp-style "MM:SS")
 - [x] **`StableAgoraVideo`** now displays a small live-call duration pill at the **top-center** of the overlay. Format: `MM:SS` with a pulsing red dot. Uses tabular-nums for stable digit width.
 - [x] **Counter starts when the remote opponent actually joins** (not earlier) — `useEffect` keyed on `remoteJoined` schedules a `setInterval` that increments every 1s and is cleaned up on unmount / call-end.

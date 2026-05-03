@@ -11,7 +11,31 @@ import Header from '../components/Header';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
-const AGORA_APP_ID = 'f512a6c76b5a4e0abd193119f3ba22fe';
+const AGORA_APP_ID = process.env.REACT_APP_AGORA_APP_ID || '77616f0f11d244aab4070def2bcb5f2e';
+
+/* ── VideoErrorBoundary ──
+   Wraps the AgoraUIKit subtree so that any uncaught Agora SDK error
+   (e.g. CAN_NOT_GET_GATEWAY_SERVER, network failures, getUserMedia
+   denied) gracefully ends the call and shows a small toast — instead
+   of crashing the entire quiz UI with React's red runtime-error overlay. */
+class VideoErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error, info) {
+    console.error('[VideoCall] Crashed:', error, info);
+    try { toast.error('Video call dropped — quiz continues.'); } catch (_) { /* ignore */ }
+    if (this.props.onError) this.props.onError(error);
+  }
+  render() {
+    if (this.state.hasError) return null;   // silent fallback — quiz continues
+    return this.props.children;
+  }
+}
 
 /* ── 1v1 Battle Scoring Equation (Feb 24, 2026) ──
    Per-question scoring with a 30s timer:
@@ -1325,14 +1349,16 @@ const Matchmaking1v1 = () => {
                 userSelect: 'none',
               }}
             >
-              <StableAgoraVideo
-                appId={AGORA_APP_ID}
-                channel={sanitizedChannel}
-                token={agoraToken}
-                uid={agoraUid}
-                onEnd={endVC}
-                compact={isMini}
-              />
+              <VideoErrorBoundary onError={() => endVC()}>
+                <StableAgoraVideo
+                  appId={AGORA_APP_ID}
+                  channel={sanitizedChannel}
+                  token={agoraToken}
+                  uid={agoraUid}
+                  onEnd={endVC}
+                  compact={isMini}
+                />
+              </VideoErrorBoundary>
 
               {/* Top-left drag grip (visual handle, dragging works on whole card) */}
               {!isFull && !isMini && (
