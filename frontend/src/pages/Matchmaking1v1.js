@@ -60,6 +60,20 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
   const [videoCall, setVideoCall] = useState(true);
   const [remoteJoined, setRemoteJoined] = useState(false);
   const [selfPreview, setSelfPreview] = useState(false);
+  // ── Call-duration timer (WhatsApp-style "MM:SS") ──
+  // Starts counting from the moment the remote opponent joins, not earlier,
+  // so the displayed time reflects actual time-in-conversation.
+  const [callSeconds, setCallSeconds] = useState(0);
+  useEffect(() => {
+    if (!remoteJoined) return undefined;
+    const id = setInterval(() => setCallSeconds(s => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [remoteJoined]);
+  const formattedDuration = useMemo(() => {
+    const mm = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+    const ss = String(callSeconds % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  }, [callSeconds]);
   const rtcProps = useMemo(() => ({
     appId,
     channel,
@@ -150,6 +164,48 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
           BtnTemplateStyles,
         }}
       />
+
+      {/* ── Call-duration pill (WhatsApp-style) ──
+          Positioned top-center on the overlay. Only renders once the remote
+          opponent has joined (otherwise we're showing the "Connecting…"
+          placeholder anyway). Includes a pulsing red dot for "live" feel. */}
+      {remoteJoined && (
+        <div
+          data-testid="vc-call-duration"
+          style={{
+            position: 'absolute',
+            top: compact ? 6 : 10,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: compact ? 4 : 6,
+            padding: compact ? '2px 8px' : '4px 12px',
+            borderRadius: 12,
+            background: 'rgba(0,0,0,0.55)',
+            backdropFilter: 'blur(6px)',
+            color: '#fff',
+            fontSize: compact ? 10 : 12,
+            fontWeight: 600,
+            fontVariantNumeric: 'tabular-nums',
+            letterSpacing: '0.02em',
+            zIndex: 22,
+            pointerEvents: 'none',
+          }}
+        >
+          <span
+            style={{
+              width: compact ? 5 : 6,
+              height: compact ? 5 : 6,
+              borderRadius: '50%',
+              background: '#ef4444',
+              animation: 'vcDurPulse 1.4s infinite',
+            }}
+          />
+          <span>{formattedDuration}</span>
+          <style>{`@keyframes vcDurPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
+        </div>
+      )}
 
       {/* ── Self-preview toggle ──
           Small eye-icon button at BOTTOM-LEFT of the overlay (top-left has

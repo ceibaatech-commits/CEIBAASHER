@@ -295,6 +295,14 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 24, 2026 — Call-duration timer (WhatsApp-style "MM:SS")
+- [x] **`StableAgoraVideo`** now displays a small live-call duration pill at the **top-center** of the overlay. Format: `MM:SS` with a pulsing red dot. Uses tabular-nums for stable digit width.
+- [x] **Counter starts when the remote opponent actually joins** (not earlier) — `useEffect` keyed on `remoteJoined` schedules a `setInterval` that increments every 1s and is cleaned up on unmount / call-end.
+- [x] Auto-shrinks in `compact` (mini bubble) mode: 10px font + 5px dot + tighter padding so it stays readable inside the small bubble.
+- [x] `pointer-events: none` so the pill doesn't intercept drag gestures on the overlay. zIndex 22 (above remote, below toggle buttons).
+- [x] **TestID:** `vc-call-duration`.
+- [x] **Lint:** clean. **Smoke:** setup page renders cleanly.
+
 ### Feb 24, 2026 — Self-preview eye-toggle on video call
 - [x] **`StableAgoraVideo`** now has a third state `selfPreview` (default OFF). When toggled ON, the local stream renders as a 90×120 (or 50×70 in compact) rounded PIP at top-right. When OFF, local view is `display:none` — nothing rendered locally; stream still publishes to opponent.
 - [x] **Eye toggle button:** `Eye` / `EyeOff` icon at **bottom-LEFT** of the overlay (top-left has size/mini toggles, top-right is reserved for the self-preview PIP itself, bottom-center has Agora controls). Active state highlights the button in blue (`rgba(91,143,212,0.85)`). Auto-shrinks to 24×24 in compact / mini mode.
