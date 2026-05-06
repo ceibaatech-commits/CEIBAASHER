@@ -295,6 +295,18 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — Google Ads Tag (gtag.js) installed for conversion tracking
+- [x] **Global Google tag** added to `/app/frontend/public/index.html` between `<head>` tags (after meta-robots, before SEO scripts):
+  - `<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18141875351"></script>`
+  - `gtag('config', 'AW-18141875351')`
+  - Single SPA shell → tag is present on every route automatically.
+  - `window.gtag` is exposed globally so any React component can fire events.
+- [x] **Sign-up conversion event** wired into `/app/frontend/src/pages/Signup.js` immediately after successful `/api/auth/signup` response (before `navigate('/victory-lane')`):
+  - `gtag('event', 'conversion', { send_to: 'AW-18141875351/2iH2CN62iKgcEJeZ3MpD' })`
+  - Guarded with `typeof window.gtag === 'function'` so ad-blockers / failed loads can't crash signup. Wrapped in try/catch with a console warning fallback.
+- [x] **Smoke verified:** curl on `/` returns the gtag script tags. Webpack compiled cleanly. Lint clean.
+- ⚠️ AMP instructions skipped — Ceibaa is a CRA React SPA, not an AMP site.
+
 ### Feb 25, 2026 — Switched back to Agora (new credentials, Agora QuickStart approach)
 - [x] **Why:** Zego had teardown crashes (`null is not an object: this.tracer.createSpan`) and "AddingRoom Failed" errors. User explicitly requested Agora again, with fresh credentials.
 - [x] **New Agora credentials wired:**

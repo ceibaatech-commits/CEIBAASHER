@@ -96,6 +96,18 @@ const Signup = () => {
       // Auth token is set as httpOnly cookie by the backend — safer against XSS.
       // We no longer mirror it to localStorage (Stage 3 migration).
       setUserData(response.data.user);
+
+      // ── Google Ads conversion tracking — Sign-up event ──
+      // Fires AW-18141875351/2iH2CN62iKgcEJeZ3MpD when a new account is
+      // successfully created. Guarded against ad-blockers / SSR via typeof.
+      if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+        try {
+          window.gtag('event', 'conversion', { send_to: 'AW-18141875351/2iH2CN62iKgcEJeZ3MpD' });
+        } catch (gtagErr) {
+          console.warn('[gtag] signup conversion failed:', gtagErr);
+        }
+      }
+
       navigate('/victory-lane', { replace: true });
       
     } catch (err) {
