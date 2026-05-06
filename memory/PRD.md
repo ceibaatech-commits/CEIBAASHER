@@ -295,6 +295,23 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — Battle chat: Facebook Messenger-style mobile popup + modernized input
+- [x] **`/app/frontend/src/pages/Matchmaking1v1.js`:**
+  - **Mobile chat:** rebuilt as a Messenger-style bottom-sheet modal that slides up over a backdrop (instead of an in-page drawer that shrunk the question area). Tap backdrop or X-button to close.
+    - Backdrop: `fixed inset-0 bg-black/40 backdrop-blur-[2px]` with `mcChatFade` animation
+    - Sheet: `420px` height, `borderTopLeftRadius: 22px` corners, slide-up keyframe `mcChatSlide` (cubic-bezier 0.32,0.72,0.28,1)
+    - Drag-handle pill at top, prominent header (avatar circle + opponent name + "In battle • Live" subtitle)
+    - Close: 36×36 circular grey button (replaces the previous tiny X icon — much bigger touch target)
+    - Auto-focused input on open
+    - Bubble messages: 18px rounded with tails (rounded-br-md for me, rounded-bl-md for opponent), shadow-sm, max-width 78%
+    - Empty state: centred icon + "Say hi to your opponent!" copy
+    - Safe-area inset bottom respected via `env(safe-area-inset-bottom)`
+  - **Modernized input bar (mobile + desktop):** replaced the cramped flat input with a Messenger-style **rounded pill input** (gray-100 bg, focus ring) + **circular send button** (40px mobile / 32px desktop) with disabled state (gray + low opacity → red + shadow when typed). `active:scale-95` on tap for tactile feedback.
+  - **Desktop chat list** also upgraded with the same chat-bubble styling (bg-white tails, rounded-16, shadow-sm) for consistency.
+  - New testIDs: `mobile-chat-popup`, `mobile-chat-close`, `mobile-chat-input`, `mobile-chat-send`, `desktop-chat-input`, `desktop-chat-send`.
+- [x] **Lint:** clean. **Smoke:** setup card renders post `demo1` login.
+- 📝 Visual verification of the popup itself requires an active battle (two real users matched).
+
 ### Feb 25, 2026 — Google Ads Tag (gtag.js) installed for conversion tracking
 - [x] **Global Google tag** added to `/app/frontend/public/index.html` between `<head>` tags (after meta-robots, before SEO scripts):
   - `<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18141875351"></script>`

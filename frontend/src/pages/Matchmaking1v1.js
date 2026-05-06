@@ -1057,36 +1057,113 @@ const Matchmaking1v1 = () => {
             )}
           </div>
 
-          {/* Mobile chat drawer — above score bar */}
+          {/* ── Mobile chat — Facebook Messenger-style popup ──
+              Slides up from the bottom over a semi-transparent backdrop.
+              Tap backdrop or close button to dismiss. Does NOT shrink the
+              quiz area (unlike a drawer); preserves the user's mental model
+              of the quiz state under the popup. */}
           {mobileChatOpen && (
-            <div className="bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex flex-col" style={{ height: '240px' }}>
-              <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
-                <div className="flex items-center gap-1.5">
-                  <MessageCircle className="w-3.5 h-3.5" style={{ color: C.blue }} />
-                  <span className="text-xs font-bold text-gray-700">Chat</span>
+            <div className="fixed inset-0 z-[60] flex items-end" data-testid="mobile-chat-popup">
+              {/* Backdrop — tap to close */}
+              <button
+                aria-label="Close chat"
+                onClick={() => setMobileChatOpen(false)}
+                className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+                style={{ animation: 'mcChatFade 0.18s ease-out' }}
+              />
+              {/* Chat sheet */}
+              <div
+                className="relative w-full bg-white shadow-[0_-12px_32px_rgba(0,0,0,0.18)] flex flex-col"
+                style={{
+                  maxHeight: '75vh',
+                  height: '420px',
+                  borderTopLeftRadius: 22,
+                  borderTopRightRadius: 22,
+                  animation: 'mcChatSlide 0.24s cubic-bezier(0.32,0.72,0.28,1)',
+                }}
+              >
+                <style>{`
+                  @keyframes mcChatSlide { from { transform: translateY(100%); } to { transform: translateY(0); } }
+                  @keyframes mcChatFade { from { opacity: 0; } to { opacity: 1; } }
+                `}</style>
+                {/* Drag handle */}
+                <div className="pt-2 pb-1 flex justify-center">
+                  <div className="w-10 h-1 rounded-full bg-gray-300" />
                 </div>
-                <button onClick={() => setMobileChatOpen(false)}><X className="w-4 h-4 text-gray-400" /></button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
-                {chatMessages.length === 0
-                  ? <p className="text-center text-gray-400 text-[10px] py-2">Say hi!</p>
-                  : chatMessages.map((m, i) => (
-                    <div key={i} className={`p-1.5 rounded-lg text-xs ${m.playerName === playerName ? 'ml-4 text-white' : 'mr-4 bg-gray-100 text-gray-800'}`}
-                      style={m.playerName === playerName ? { background: C.red } : {}}>
-                      <p className="opacity-70 text-[10px]">{m.playerName}</p>
-                      <p>{m.message}</p>
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blueLight }}>
+                      <MessageCircle className="w-4 h-4" style={{ color: C.blue }} />
                     </div>
-                  ))
-                }
-                <div ref={chatEndRef} />
+                    <div>
+                      <p className="text-sm font-bold text-gray-900 leading-tight">{oppName}</p>
+                      <p className="text-[10px] text-gray-500 leading-tight">In battle • Live</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setMobileChatOpen(false)}
+                    aria-label="Close chat"
+                    data-testid="mobile-chat-close"
+                    className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 active:bg-gray-200 transition-colors"
+                  >
+                    <X className="w-4 h-4 text-gray-600" />
+                  </button>
+                </div>
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2" style={{ background: '#fafafa' }}>
+                  {chatMessages.length === 0
+                    ? (
+                      <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-1">
+                        <MessageCircle className="w-7 h-7 opacity-30" />
+                        <p className="text-xs font-medium">No messages yet</p>
+                        <p className="text-[10px]">Say hi to your opponent!</p>
+                      </div>
+                    )
+                    : chatMessages.map((m, i) => {
+                      const mine = m.playerName === playerName;
+                      return (
+                        <div key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                          <div
+                            className={`max-w-[78%] px-3 py-2 text-sm leading-snug shadow-sm ${
+                              mine ? 'text-white rounded-[18px] rounded-br-md' : 'bg-white text-gray-800 rounded-[18px] rounded-bl-md'
+                            }`}
+                            style={mine ? { background: C.red } : {}}
+                          >
+                            {!mine && <p className="text-[10px] opacity-60 font-bold mb-0.5">{m.playerName}</p>}
+                            <p className="break-words">{m.message}</p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  }
+                  <div ref={chatEndRef} />
+                </div>
+                {/* Input bar — Messenger-style pill + circular send */}
+                <form onSubmit={sendChat} className="flex items-center gap-2 px-3 py-3 border-t border-gray-100 bg-white" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    placeholder="Aa"
+                    maxLength={100}
+                    autoFocus
+                    data-testid="mobile-chat-input"
+                    className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full text-sm focus:outline-none focus:bg-gray-50 focus:ring-2 focus:ring-offset-0 transition-all"
+                    style={{ '--tw-ring-color': C.red }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!chatInput.trim()}
+                    aria-label="Send message"
+                    data-testid="mobile-chat-send"
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md disabled:opacity-40 disabled:shadow-none transition-all active:scale-95"
+                    style={{ background: chatInput.trim() ? C.red : '#d1d5db' }}
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </form>
               </div>
-              <form onSubmit={sendChat} className="flex gap-1.5 p-2 border-t border-gray-100">
-                <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Message..." maxLength={100}
-                  className="flex-1 px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none" />
-                <button type="submit" disabled={!chatInput.trim()} className="p-1.5 text-white rounded-lg disabled:opacity-50" style={{ background: C.red }}>
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </form>
             </div>
           )}
 
@@ -1233,23 +1310,52 @@ const Matchmaking1v1 = () => {
                     <MessageCircle className="w-3.5 h-3.5" style={{ color: C.blue }} />
                     <span className="text-xs font-bold text-gray-700">Chat</span>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+                  <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2" style={{ background: '#fafafa' }}>
                     {chatMessages.length === 0
-                      ? <p className="text-center text-gray-400 text-[10px] py-2">Say hi!</p>
-                      : chatMessages.map((m, i) => (
-                        <div key={i} className={`p-1.5 rounded-lg text-xs ${m.playerName === playerName ? 'ml-4 text-white' : 'mr-4 bg-gray-100 text-gray-800'}`}
-                          style={m.playerName === playerName ? { background: C.red } : {}}>
-                          <p className="opacity-70 text-[10px]">{m.playerName}</p>
-                          <p>{m.message}</p>
+                      ? (
+                        <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-1 py-4">
+                          <MessageCircle className="w-6 h-6 opacity-30" />
+                          <p className="text-xs font-medium">No messages yet</p>
                         </div>
-                      ))
+                      )
+                      : chatMessages.map((m, i) => {
+                        const mine = m.playerName === playerName;
+                        return (
+                          <div key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                            <div
+                              className={`max-w-[80%] px-3 py-1.5 text-xs leading-snug shadow-sm ${
+                                mine ? 'text-white rounded-[16px] rounded-br-md' : 'bg-white text-gray-800 rounded-[16px] rounded-bl-md'
+                              }`}
+                              style={mine ? { background: C.red } : {}}
+                            >
+                              {!mine && <p className="text-[9px] opacity-60 font-bold mb-0.5">{m.playerName}</p>}
+                              <p className="break-words">{m.message}</p>
+                            </div>
+                          </div>
+                        );
+                      })
                     }
                     <div ref={chatEndRef} />
                   </div>
-                  <form onSubmit={sendChat} className="flex gap-1.5 p-2 border-t border-gray-100">
-                    <input type="text" value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="Message..." maxLength={100}
-                      className="flex-1 px-2 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-xs focus:outline-none" />
-                    <button type="submit" disabled={!chatInput.trim()} className="p-1.5 text-white rounded-lg disabled:opacity-50" style={{ background: C.red }}>
+                  {/* Input bar — Messenger-style pill + circular send (desktop) */}
+                  <form onSubmit={sendChat} className="flex items-center gap-2 px-3 py-2.5 border-t border-gray-100 bg-white">
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={e => setChatInput(e.target.value)}
+                      placeholder="Aa"
+                      maxLength={100}
+                      data-testid="desktop-chat-input"
+                      className="flex-1 px-3 py-2 bg-gray-100 rounded-full text-xs focus:outline-none focus:bg-gray-50 transition-all"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!chatInput.trim()}
+                      aria-label="Send message"
+                      data-testid="desktop-chat-send"
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-md disabled:opacity-40 disabled:shadow-none transition-all active:scale-95"
+                      style={{ background: chatInput.trim() ? C.red : '#d1d5db' }}
+                    >
                       <Send className="w-3.5 h-3.5" />
                     </button>
                   </form>
