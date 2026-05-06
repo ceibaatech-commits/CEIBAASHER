@@ -295,6 +295,23 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — Switched back to Agora (new credentials, Agora QuickStart approach)
+- [x] **Why:** Zego had teardown crashes (`null is not an object: this.tracer.createSpan`) and "AddingRoom Failed" errors. User explicitly requested Agora again, with fresh credentials.
+- [x] **New Agora credentials wired:**
+  - `AGORA_APP_ID="ea9b4118ab0943b5b216175785d0b871"` → `/app/backend/.env` + `REACT_APP_AGORA_APP_ID=…` in `/app/frontend/.env`
+  - `AGORA_APP_CERTIFICATE="136703190db74732889a269a774943e3"` → `/app/backend/.env`
+  - Per Agora QuickStart, this is the **token-based auth** path (App ID + Primary Certificate) — production-ready, the certificate never reaches the client.
+- [x] **`/app/frontend/src/pages/Matchmaking1v1.js`:**
+  - Removed `import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt'`. Re-added `import AgoraUIKit from 'agora-react-uikit'`.
+  - Replaced `StableZegoVideo` with `StableAgoraVideo` wrapper that mounts `<AgoraUIKit>` with `rtcProps={{ appId, channel, token, uid, role:'host', layout:1, disableRtm:true, enableVideo:true, enableAudio:true }}` and pinned-layout style overrides:
+    - `minViewContainer: { display:'none' }` — local self hidden so each user sees ONLY the opponent
+    - `maxViewContainer: { position:'absolute', inset:0, width:100%, height:100%, zIndex:1 }` — remote fills overlay
+    - `localBtnContainer` + `BtnTemplateStyles` keep mute / camera-off / end-call buttons visible (28×28 in compact, 40×40 in pip)
+    - Scoped CSS forces `[data-vc-stage] video { object-fit:cover; width:100%; height:100% }` — Android Chrome 50/50 split fix
+  - **Preserved features:** outer floating PIP overlay (drag, snap-to-edge, mini/pip/full toggles), `<VideoErrorBoundary>` (graceful crash handling → toast + endVC), MM:SS call-duration pill (top-center), "Connecting to opponent…" placeholder (driven by `user-joined`/`user-published`/`user-left` callbacks).
+  - `initAgora` restored to fetch `/api/agora/token?channel=…` via cookie auth → sets `agoraToken` + `agoraUid` → flips `vcReady`.
+- [x] **Lint:** clean. **Backend smoke:** `GET /api/agora/token?channel=test123&uid=12345` returns `mode: token, token_len: 139` with new creds. **Frontend smoke:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders the 1v1 setup card cleanly post `demo1` login.
+
 ### Feb 24, 2026 — Migrated video calling: Agora → ZegoCloud
 - [x] **Why:** Agora projects had recurring auth headaches (`dynamic use static key` + `invalid token, authorized failed`) caused by App ID / Certificate mismatch on the user's account. User explicitly requested switch to Zego per their App Builder docs.
 - [x] **`/app/frontend/.env`** already had `REACT_APP_ZEGO_APP_ID=1386406296` + `REACT_APP_ZEGO_SERVER_SECRET=51b46b6…` (provided by user).
