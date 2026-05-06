@@ -1020,8 +1020,15 @@ input[type="search"] {
   }
 }
 
-/* ===== Fix Main Header/Navbar Stability ===== */
-nav {
+/* ===== Fix Main Header/Navbar Stability =====
+   NOTE (Feb 25, 2026): The top navbar is a `<header>` element, not `<nav>`,
+   so this generic `nav { position: sticky !important }` rule was both
+   ineffective for its intended target AND breaking `MobileBottomNav`
+   (which IS a `<nav>` and needs `position:fixed; bottom:0`).
+   We keep the rule but scope it to ONLY the inner navs that actually
+   live inside the top `<header>` — `header > nav`. The mobile bottom
+   nav is unaffected. */
+header > nav {
   position: sticky !important;
   top: 0 !important;
   width: 100% !important;
@@ -1031,12 +1038,12 @@ nav {
 }
 
 @media (max-width: 640px) {
-  nav {
+  header > nav {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-  
-  nav > div {
+
+  header > nav > div {
     max-width: 100% !important;
     padding-left: 1rem !important;
     padding-right: 1rem !important;
@@ -1048,16 +1055,16 @@ nav {
     gap: 0.5rem !important;
   }
   
-  /* Ensure buttons don't overflow */
-  nav button,
-  nav a {
+  /* Ensure buttons don't overflow (top header only) */
+  header > nav button,
+  header > nav a {
     white-space: nowrap !important;
     font-size: 0.875rem !important;
   }
-  
-  /* Logo size control */
-  nav svg,
-  nav img {
+
+  /* Logo size control (top header only) */
+  header > nav svg,
+  header > nav img {
     max-width: 120px !important;
     height: auto !important;
   }

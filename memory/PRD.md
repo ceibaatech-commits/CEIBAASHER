@@ -295,6 +295,16 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — Mobile bottom nav now correctly fixed (CSS-specificity bug)
+- [x] **Bug:** `MobileBottomNav` had Tailwind classes `md:hidden fixed bottom-0 left-0 right-0 z-50` — should have been pinned to viewport bottom, but was actually rendering with `position: sticky; top: 0`. Verified via Playwright: `top: 3678 → 3178 → 2180` as user scrolled (= moving with the document, not fixed).
+- [x] **Root cause:** `/app/frontend/src/styles/exam-pages-mobile.css` line ~1024 had a generic `nav { position: sticky !important; top: 0 !important; ... }` rule intended for the top header. But the top header is a `<header>` element, not `<nav>` — so this rule was both (a) ineffective for its intended target and (b) hijacking the bottom nav (which IS a `<nav>`) into top-sticky positioning.
+- [x] **Fix:** rescoped every `nav` selector in that stylesheet to `header > nav` (and same for the inner button/svg/img rules). Now only the desktop header's inner nav gets the sticky/blur treatment; `MobileBottomNav` is unaffected and respects its Tailwind `fixed bottom-0` classes.
+- [x] **Verified post-fix on mobile (390×844):**
+  - `position: fixed`, `bottom: 0px` ✅
+  - `top: 779` (= viewport_h 844 − nav_h 65) at scroll 0, 500, AND 1500 ✅ — nav doesn't move when scrolling
+  - Visible in screenshot with category content scrolling behind it ✅
+- [x] **Lint:** no JS changes needed beyond CSS scoping; CSS validates.
+
 ### Feb 25, 2026 — Battle chat: Facebook Messenger-style mobile popup + modernized input
 - [x] **`/app/frontend/src/pages/Matchmaking1v1.js`:**
   - **Mobile chat:** rebuilt as a Messenger-style bottom-sheet modal that slides up over a backdrop (instead of an in-page drawer that shrunk the question area). Tap backdrop or X-button to close.
