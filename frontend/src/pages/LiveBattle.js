@@ -599,17 +599,27 @@ const LiveBattle = () => {
   };
 
   const pauseQuiz = () => {
-    socket.emit('pause-quiz', { pin });
+    if (!socket || !socket.connected) return;
+    socket.emit('pause_quiz', { pin });
   };
 
   const resumeQuiz = () => {
-    socket.emit('resume-quiz', { pin });
+    if (!socket || !socket.connected) return;
+    socket.emit('resume_quiz', { pin });
   };
 
   const skipQuestion = () => {
-    if (window.confirm('Skip to next question?')) {
-      socket.emit('skip-question', { pin });
-    }
+    setHostActionConfirm({
+      type: 'skip',
+      title: 'Skip this question?',
+      body: 'All players will jump to the next question. This cannot be undone.',
+      confirmLabel: 'Skip',
+    });
+  };
+
+  const performSkipQuestion = () => {
+    if (socket && socket.connected) socket.emit('skip_question', { pin });
+    setHostActionConfirm(null);
   };
 
   const nextQuestion = () => {
@@ -621,7 +631,7 @@ const LiveBattle = () => {
       setSelectedAnswer(null);
       setAnswerResult(null);
       setTimeLeft(30);
-      
+
       // Emit to all participants
       if (socket) {
         socket.emit('next_question', {
@@ -634,17 +644,24 @@ const LiveBattle = () => {
   };
 
   const endQuiz = () => {
-    if (window.confirm('End quiz now? All players will see results.')) {
-      socket.emit('complete_battle', { roomId: pin });
-      // Navigate to home page after ending
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-    }
+    setHostActionConfirm({
+      type: 'end',
+      title: 'End the quiz now?',
+      body: 'All players will see the final results immediately.',
+      confirmLabel: 'End Quiz',
+    });
+  };
+
+  const performEndQuiz = () => {
+    if (socket && socket.connected) socket.emit('complete_battle', { roomId: pin });
+    setHostActionConfirm(null);
+    setTimeout(() => navigate('/'), 1000);
   };
 
   // Confirmation modal state for "Quit & Back to Home"
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+  // Host action confirmation modal (Skip / End) — { type, title, body, confirmLabel }
+  const [hostActionConfirm, setHostActionConfirm] = useState(null);
 
   const performQuit = () => {
     // Best-effort cleanup; proceed to navigation regardless of socket state.
@@ -1511,6 +1528,46 @@ const LiveBattle = () => {
         opponentName={participants?.find(p => p.name !== user?.name)?.name || 'Opponent'}
         opponentId={participants?.find(p => p.name !== user?.name)?.id}
       />
+
+      {/* Host action confirmation modal — Skip / End Quiz */}
+      {hostActionConfirm && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 backdrop-blur-[2px] p-4"
+          data-testid="host-action-confirm-modal"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-[scaleIn_0.18s_ease-out]">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                {hostActionConfirm.type === 'skip'
+                  ? <SkipForward className="w-5 h-5 text-amber-600" />
+                  : <X className="w-5 h-5 text-red-600" />}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 leading-tight">{hostActionConfirm.title}</h3>
+                <p className="text-sm text-gray-600 mt-1 leading-snug">{hostActionConfirm.body}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setHostActionConfirm(null)}
+                data-testid="host-action-cancel-btn"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 font-semibold text-sm transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={hostActionConfirm.type === 'skip' ? performSkipQuestion : performEndQuiz}
+                data-testid="host-action-confirm-btn"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-semibold text-sm shadow-md transition-colors"
+              >
+                {hostActionConfirm.confirmLabel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quit & Back to Home — confirmation modal */}
       {showQuitConfirm && (

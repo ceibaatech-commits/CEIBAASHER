@@ -28,6 +28,8 @@ sio = socketio.AsyncServer(
 
 # Activity tracking to prevent timeout on active players
 user_activity = {}  # {sid: last_activity_timestamp}
+# Per-user reaction throttle — max 1 emoji per 600ms per sid (anti-spam).
+_reaction_last_emit_ms = {}  # {sid: last_emit_timestamp_ms}
 
 # Database will be injected
 db = None
@@ -728,14 +730,28 @@ async def send_message(sid, data):
 
 @sio.event
 async def send_reaction(sid, data):
-    """Send reaction/emoji"""
+    """Send reaction/emoji.
+
+    Per-user throttle: each socket can emit at most one reaction every
+    600ms. Excess events are silently dropped server-side so a single
+    user can't spam the floating-emoji layer.
+    """
     try:
         # Track activity
         user_activity[sid] = datetime.now(timezone.utc).timestamp()
-        
+
         room_id = data.get('roomId') or data.get('pin')
         # Frontend sends { roomId, emoji, sender }; keep both keys for robustness
         reaction = data.get('reaction') or data.get('emoji')
+        if not room_id or not reaction:
+            return
+
+        # ── Throttle (600 ms per user) ───────────────────────────
+        now_ms = datetime.now(timezone.utc).timestamp() * 1000
+        last_ms = _reaction_last_emit_ms.get(sid, 0)
+        if now_ms - last_ms < 600:
+            return
+        _reaction_last_emit_ms[sid] = now_ms
 
         room = await room_manager.get_room(room_id)
         if not room:

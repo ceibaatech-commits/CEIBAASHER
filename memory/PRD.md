@@ -295,6 +295,15 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — LiveBattle host controls + reactions throttle round-2
+- [x] **Bug fix:** Pause / Resume / Skip / End Quiz host buttons did nothing on mobile or desktop.
+  - **Root cause:** Frontend was emitting **kebab-case** event names (`pause-quiz`, `resume-quiz`, `skip-question`) but the python-socketio backend handlers were registered as **snake_case** (`pause_quiz`, etc.). `@sio.event` does NOT convert hyphens — events were silently dropped. The misleading comment in the backend ("Socket.IO converts hyphen event name to this function name") is wrong.
+  - **Fix:** changed every host-control emit on the frontend to snake_case to match the registered handler names. Backend payload extractors (`data.get('pin') or data.get('roomId')`) already accepted both keys, so no schema change needed.
+- [x] **Bug fix:** Skip / End Quiz used `window.confirm()` — same throttled-on-mobile issue as the Quit button. Replaced with a single reusable React modal `host-action-confirm-modal` (driven by `hostActionConfirm` state with `{type, title, body, confirmLabel}` shape). `performSkipQuestion` and `performEndQuiz` are the actual emitters; the buttons just open the modal. Animation reuses the existing `scaleIn` keyframe.
+- [x] **Reaction throttle (server-side, max 1 emoji per 600ms per sid):**
+  - Added module-level `_reaction_last_emit_ms = {}` dict to `battle_socketio.py`. `send_reaction` now compares `now_ms - last_ms < 600` and silently drops over-limit reactions before broadcasting. Prevents griefing / spam in active rooms.
+- [x] **Lint:** clean (frontend + backend). **Backend smoke:** restarted; WS connections accept; `/api/battle/async/rooms/<pin>/leaderboard` 200.
+
 ### Feb 25, 2026 — LiveBattle (room-by-code) bug round-up: reactions, host controls, quit button
 - [x] **Bug A — Quick-react emojis didn't appear in the floating layer.**
   - **Cause:** Backend emitted `{ reaction, username }` payload but the React listener stored it and rendered `reaction.emoji` / `reaction.playerName`. Property name mismatch → empty emoji bubble.
