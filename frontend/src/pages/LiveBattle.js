@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import MathText from '../components/MathText';
 import BattleVideoChat from '../components/BattleVideoChat';
+import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
 // Connect to battle server through the backend domain
@@ -834,8 +835,9 @@ const LiveBattle = () => {
   const myRank = leaderboard.findIndex(p => p.name === playerName) + 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-4">
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 pt-4">
         {/* Loading State - Questions are being downloaded */}
         {loading && (
           <div className="flex items-center justify-center min-h-screen">

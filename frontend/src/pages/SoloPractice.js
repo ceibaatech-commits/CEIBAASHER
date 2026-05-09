@@ -765,10 +765,13 @@ const SoloPractice = () => {
   // Loading screen
   if (quizState === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading questions...</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <Header />
+        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 64px)' }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600 text-lg">Loading questions...</p>
+          </div>
         </div>
       </div>
     );
@@ -782,31 +785,35 @@ const SoloPractice = () => {
   // If question has passage, render the PassageQuizLayout component
   if (hasPassage) {
     return (
-      <PassageQuizLayout
-        passage={currentQuestion.passage}
-        currentQuestion={currentQuestion}
-        questionIndex={currentQuestionIndex}
-        totalQuestions={questions.length}
-        selectedAnswer={selectedAnswer}
-        timeLeft={timeLeft}
-        onAnswerSelect={handleAnswerSelect}
-        onNext={handleNextQuestion}
-        onPrevious={() => {
-          if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(currentQuestionIndex - 1);
-            setSelectedAnswer(answers[currentQuestionIndex - 1]?.selectedOption ?? null);
-            setTimeLeft(30);
-          }
-        }}
-        showExplanation={false}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <Header />
+        <PassageQuizLayout
+          passage={currentQuestion.passage}
+          currentQuestion={currentQuestion}
+          questionIndex={currentQuestionIndex}
+          totalQuestions={questions.length}
+          selectedAnswer={selectedAnswer}
+          timeLeft={timeLeft}
+          onAnswerSelect={handleAnswerSelect}
+          onNext={handleNextQuestion}
+          onPrevious={() => {
+            if (currentQuestionIndex > 0) {
+              setCurrentQuestionIndex(currentQuestionIndex - 1);
+              setSelectedAnswer(answers[currentQuestionIndex - 1]?.selectedOption ?? null);
+              setTimeLeft(30);
+            }
+          }}
+          showExplanation={false}
+        />
+      </div>
     );
   }
 
   // Default quiz layout (for non-passage questions)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-8">
+      <Header />
+      <div className="max-w-4xl mx-auto px-4 pt-6">
         {/* Breadcrumb for class-based */}
         {isClassBased && classBasedData && (
           <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
