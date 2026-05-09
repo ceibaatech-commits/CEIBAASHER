@@ -295,6 +295,19 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — LiveBattle (room-by-code) bug round-up: reactions, host controls, quit button
+- [x] **Bug A — Quick-react emojis didn't appear in the floating layer.**
+  - **Cause:** Backend emitted `{ reaction, username }` payload but the React listener stored it and rendered `reaction.emoji` / `reaction.playerName`. Property name mismatch → empty emoji bubble.
+  - **Fix (backend `battle_socketio.py`):** payload now includes BOTH `reaction` & `emoji`, BOTH `username` & `playerName` for compat. Frontend reads `r.emoji || r.reaction` and `r.username || r.playerName`.
+  - Refreshed the picker UI to a **curated, battle-themed set**: 🔥 (on fire), ⚡ (lightning), 🎯 (bullseye), 💯 (hundred), 🧠 (big brain), 👏 (clap), 🤝 (gg), 😂 (lol). Pill chips, hover scale + active scale-95, gradient bg, `data-testid="react-<name>"` per chip.
+- [x] **Bug B — Host control buttons (pause / resume / skip / next / end) silently ignored.**
+  - **Cause:** Backend's `_handle_host_reconnect` only updated `room.host.user_id` for HTTP-placeholder hosts. When the host navigates `/board → /live-battle/:pin` they get a NEW socket SID. All host-only checks (`room.host.user_id != sid`) then evaluate to True and short-circuit — so every host command was rejected.
+  - **Fix:** added Case-3 to the helper — if the persisted `room.host.username` matches the incoming connection's username AND `isHost: true`, reassign the host SID to the new socket. Old roster entry for the stale SID is cleaned up.
+- [x] **Bug C — "Quit & Back to Home" button did nothing.**
+  - **Cause #1:** Used `window.confirm()` which some mobile browsers throttle/block. **Cause #2:** Read `localStorage.getItem('ceibaa_user')` to decide where to navigate, but auth migrated to httpOnly-cookie + AuthContext (Stage 3) so the localStorage key is always null → users always sent to `/` even when logged in.
+  - **Fix:** replaced with a custom React confirmation modal (`data-testid="quit-confirm-modal"` + Stay / Quit buttons), uses `isAuthenticated()` from AuthContext to route logged-in users to `/profile/board`. Socket cleanup wrapped in try/catch so a failed disconnect can't block navigation. Modal includes scaleIn animation.
+- [x] **Lint:** clean (frontend + backend). **Backend smoke:** restarted; 0 active rooms loaded; `/api/quiz/exams` responds 200.
+
 ### Feb 25, 2026 — Mobile bottom nav now correctly fixed (CSS-specificity bug)
 - [x] **Bug:** `MobileBottomNav` had Tailwind classes `md:hidden fixed bottom-0 left-0 right-0 z-50` — should have been pinned to viewport bottom, but was actually rendering with `position: sticky; top: 0`. Verified via Playwright: `top: 3678 → 3178 → 2180` as user scrolled (= moving with the document, not fixed).
 - [x] **Root cause:** `/app/frontend/src/styles/exam-pages-mobile.css` line ~1024 had a generic `nav { position: sticky !important; top: 0 !important; ... }` rule intended for the top header. But the top header is a `<header>` element, not `<nav>` — so this rule was both (a) ineffective for its intended target and (b) hijacking the bottom nav (which IS a `<nav>`) into top-sticky positioning.

@@ -59,11 +59,32 @@ def _validate_join_preconditions(room):
 
 
 def _handle_host_reconnect(room, sid, user_data):
-    """Reassign host socket id if an HTTP-created host is reconnecting via WS.
+    """Reassign host socket id when the host reconnects via WS.
+
+    The host's `room.host.user_id` is set to their original socket SID when
+    they create the room. But every page navigation (or browser refresh)
+    creates a NEW socket connection with a NEW sid — so subsequent host-only
+    commands (pause/resume/skip/end) would silently fail because
+    `room.host.user_id != sid` once the host moves between pages.
+
+    Resolution rules (in priority order):
+      1. SID already matches → no-op.
+      2. There's an HTTP-placeholder host (`http-…` user_id) AND user claims
+         `isHost: true` → reassign to this sid.
+      3. Same username as the persisted host AND user claims `isHost: true`
+         (or the persisted host's user_id is anything other than this sid) →
+         reassign to this sid. This covers the page-navigation case.
+
     Returns True if this user is the actual host.
     """
-    if user_data.get('isHost') is not True:
+    if room.host.user_id == sid:
+        return True
+
+    claims_host = user_data.get('isHost') is True
+    if not claims_host:
         return False
+
+    # Case 2: HTTP-placeholder cleanup
     for participant in room.participants:
         if participant.user_id.startswith('http-') and participant.is_host:
             room.participants = [p for p in room.participants if not p.user_id.startswith('http-')]
@@ -71,8 +92,18 @@ def _handle_host_reconnect(room, sid, user_data):
             room.host.username = user_data.get('username', room.host.username)
             room.host.avatar = user_data.get('avatar', room.host.avatar)
             return True
-    if room.host.user_id == sid:
+
+    # Case 3: Username-match reconnect (page navigation / refresh)
+    incoming_username = user_data.get('username', '')
+    if incoming_username and incoming_username == room.host.username:
+        old_sid = room.host.user_id
+        room.host.user_id = sid
+        room.host.avatar = user_data.get('avatar', room.host.avatar)
+        # Clean up stale roster entry for the old SID (it'll be re-added below).
+        room.participants = [p for p in room.participants if p.user_id != old_sid]
+        print(f"[HOST RECONNECT] Reassigned host '{incoming_username}' sid {old_sid} → {sid}")
         return True
+
     return False
 
 
@@ -717,8 +748,10 @@ async def send_reaction(sid, data):
         await sio.emit('new_reaction', {
             'userId': sid,
             'username': user_data.get('username', 'Anonymous'),
+            'playerName': user_data.get('username', 'Anonymous'),  # legacy alias
             'reaction': reaction,
-            'timestamp': datetime.now(timezone.utc).timestamp()
+            'emoji': reaction,                                      # match frontend prop
+            'timestamp': datetime.now(timezone.utc).timestamp(),
         }, room=room_id)
 
     except Exception as e:

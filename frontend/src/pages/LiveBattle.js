@@ -643,27 +643,30 @@ const LiveBattle = () => {
     }
   };
 
-  const quitQuiz = () => {
-    const confirmMessage = isHost 
-      ? 'Are you sure you want to leave? The room will continue for other players (24 hours). You can rejoin from your Board.'
-      : 'Are you sure you want to quit? Your progress will be lost.';
-    
-    if (window.confirm(confirmMessage)) {
-      // Simply disconnect from Socket.IO (room persists on server)
+  // Confirmation modal state for "Quit & Back to Home"
+  const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+
+  const performQuit = () => {
+    // Best-effort cleanup; proceed to navigation regardless of socket state.
+    try {
       if (socket) {
         socket.emit('leave_room', { roomId: pin });
         socket.disconnect();
       }
-      
-      // Navigate to Board if logged in, otherwise home
-      const user = localStorage.getItem('ceibaa_user');
-      if (user) {
-        navigate('/profile/board');
-      } else {
-        navigate('/');
-      }
+    } catch (err) {
+      console.warn('[quitQuiz] socket cleanup failed (ignored):', err);
+    }
+    setShowQuitConfirm(false);
+    // Auth source-of-truth is now the AuthContext (cookie-backed), not
+    // localStorage. The legacy `ceibaa_user` key is unreliable post-migration.
+    if (isAuthenticated && isAuthenticated()) {
+      navigate('/profile/board', { replace: true });
+    } else {
+      navigate('/', { replace: true });
     }
   };
+
+  const quitQuiz = () => setShowQuitConfirm(true);
 
   // Check follow status for all players
   const checkFollowStatus = async () => {
@@ -1055,38 +1058,35 @@ const LiveBattle = () => {
                 </div>
               )}
 
-              {/* Quick Reactions Bar */}
-              <div className="mt-4 flex items-center justify-center space-x-2 p-3 bg-gray-50 rounded-lg">
-                <Smile className="w-5 h-5 text-gray-500" />
-                <span className="text-sm text-gray-600 font-medium mr-2">Quick React:</span>
+              {/* Quick Reactions Bar — curated, battle-themed set */}
+              <div className="mt-4 flex items-center justify-center flex-wrap gap-2 p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200">
+                <div className="flex items-center gap-1.5 mr-1">
+                  <Smile className="w-4 h-4 text-gray-500" />
+                  <span className="text-xs text-gray-600 font-semibold uppercase tracking-wide">React</span>
+                </div>
                 {[
-                  { emoji: '👍', name: 'thumbs up' },
-                  { emoji: '🔥', name: 'fire' },
-                  { emoji: '😮', name: 'wow' },
-                  { emoji: '💪', name: 'strong' },
-                  { emoji: '🎯', name: 'target' },
-                  { emoji: '🎉', name: 'party' }
+                  { emoji: '🔥', name: 'on fire' },
+                  { emoji: '⚡', name: 'lightning' },
+                  { emoji: '🎯', name: 'bullseye' },
+                  { emoji: '💯', name: 'hundred' },
+                  { emoji: '🧠', name: 'big brain' },
+                  { emoji: '👏', name: 'clap' },
+                  { emoji: '🤝', name: 'gg' },
+                  { emoji: '😂', name: 'lol' },
                 ].map((reaction) => (
                   <button
                     key={reaction.emoji}
-                    onClick={() => sendReaction(reaction.emoji)}
-                    className="text-2xl hover:scale-125 transition-transform bg-white rounded-lg p-2 shadow-sm hover:shadow-md"
-                    style={{ 
-                      fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", "Twemoji Mozilla", sans-serif',
-                      lineHeight: '1',
-                      WebkitFontSmoothing: 'antialiased',
-                      MozOsxFontSmoothing: 'grayscale',
-                      textRendering: 'optimizeLegibility'
+                    onClick={() => sendReaction(reaction.emoji, reaction.name)}
+                    data-testid={`react-${reaction.name.replace(/\s+/g, '-')}`}
+                    className="text-xl hover:scale-125 active:scale-95 transition-transform bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-sm hover:shadow-md hover:bg-yellow-50"
+                    style={{
+                      fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji","EmojiOne Color","Android Emoji","Twemoji Mozilla",sans-serif',
+                      lineHeight: 1,
                     }}
                     aria-label={`React with ${reaction.name}`}
                     title={reaction.name}
                   >
-                    <span style={{
-                      display: 'inline-block',
-                      fontFamily: 'inherit'
-                    }}>
-                      {reaction.emoji}
-                    </span>
+                    {reaction.emoji}
                   </button>
                 ))}
               </div>
@@ -1105,20 +1105,16 @@ const LiveBattle = () => {
                   }}
                 >
                   <div className="bg-white rounded-full shadow-lg p-3">
-                    <div 
+                    <div
                       className="text-3xl"
-                      style={{ 
-                        fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", "Twemoji Mozilla", sans-serif',
-                        lineHeight: '1',
-                        WebkitFontSmoothing: 'antialiased',
-                        MozOsxFontSmoothing: 'grayscale',
-                        textRendering: 'optimizeLegibility',
-                        display: 'inline-block'
+                      style={{
+                        fontFamily: '"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji","EmojiOne Color","Android Emoji","Twemoji Mozilla",sans-serif',
+                        lineHeight: 1,
                       }}
                     >
-                      {reaction.emoji}
+                      {reaction.emoji || reaction.reaction}
                     </div>
-                    <div className="text-xs text-gray-600 text-center mt-1">{reaction.playerName}</div>
+                    <div className="text-xs text-gray-600 text-center mt-1">{reaction.username || reaction.playerName}</div>
                   </div>
                 </div>
               ))}
@@ -1515,6 +1511,51 @@ const LiveBattle = () => {
         opponentName={participants?.find(p => p.name !== user?.name)?.name || 'Opponent'}
         opponentId={participants?.find(p => p.name !== user?.name)?.id}
       />
+
+      {/* Quit & Back to Home — confirmation modal */}
+      {showQuitConfirm && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 backdrop-blur-[2px] p-4"
+          data-testid="quit-confirm-modal"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-[scaleIn_0.18s_ease-out]">
+            <style>{`@keyframes scaleIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }`}</style>
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <ArrowLeft className="w-5 h-5 text-red-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 leading-tight">
+                  {isHost ? 'Leave the room?' : 'Quit the battle?'}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1 leading-snug">
+                  {isHost
+                    ? 'The room stays open for 24 hours — you can rejoin from your Board anytime.'
+                    : 'Your current progress will be lost.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowQuitConfirm(false)}
+                data-testid="quit-cancel-btn"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 font-semibold text-sm transition-colors"
+              >
+                Stay
+              </button>
+              <button
+                onClick={performQuit}
+                data-testid="quit-confirm-btn"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 active:bg-red-700 text-white font-semibold text-sm shadow-md transition-colors"
+              >
+                {isHost ? 'Leave' : 'Quit'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
