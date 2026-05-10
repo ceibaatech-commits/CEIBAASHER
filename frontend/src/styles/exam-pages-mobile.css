@@ -205,9 +205,7 @@
 
 /* ===== Input Field Fixes ===== */
 .exam-search-input,
-.mobile-input-field,
-input[type="text"],
-input[type="search"] {
+.mobile-input-field {
   font-size: 16px !important;
   padding: 12px !important;
   background-color: #fff !important;
