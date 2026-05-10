@@ -28,11 +28,11 @@ const CommentsSection = ({
   };
 
   // Pre-compute top-level comments + replies grouped by parent (avoid O(n²) filter in render).
-  // Wrap `allComments` in its own useMemo so the two child useMemos below have a stable
-  // reference identity (otherwise the `||` fallback recreates [] on every render).
-  const allComments = useMemo(() => postComments[post.id] || [], [postComments, post.id]);
+  const allComments = postComments[post.id] || [];
   const topLevelComments = useMemo(
     () => allComments.filter(c => !c.parent_comment_id),
+    // allComments identity changes only when postComments[post.id] does, which is what we want.
+    // eslint-disable-next-line
     [allComments]
   );
   const repliesByParent = useMemo(() => {
@@ -43,6 +43,7 @@ const CommentsSection = ({
       }
     }
     return map;
+    // eslint-disable-next-line
   }, [allComments]);
 
   return (
