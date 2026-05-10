@@ -543,3 +543,30 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Decompose remaining oversized components: `ExamSheetManager.js` (1051), `ExamCategoryManager.js` (789), `Board.js` (726)
 - [ ] Stripe enrollment/payment flow
 - [ ] Real-time notifications on application status change
+
+
+### Feb 26, 2026 — Messages page: 4 bugs fixed (Profile→Message UX, infinite spinner, empty right panel, no empty state)
+- [x] **Root cause for all 4:** `Messages.js` and `messaging_socketio.py` both relied on a localStorage JWT (`localStorage.getItem('token')`) that no longer exists post Stage-3 cookie migration. `if (!token) return` short-circuited the conversation fetch (→ infinite spinner) and the messages fetch (→ empty right panel), and the socket `authenticate` event silently failed.
+- [x] **Bug 1 — Profile "Message" button now opens the right conversation:**
+  - `Profile.js` Message button navigates to `/messages?userId=<resolvedUserId>` (per user spec) instead of pre-creating the conversation client-side.
+  - `Messages.js` reads `?userId=` on mount → `POST /api/messages/conversations` (cookie-auth) → `navigate('/messages/{conversationId}', { replace: true })`. Auto-refreshes the sidebar so the new thread appears on the left immediately.
+- [x] **Bug 2 — Conversation list:**
+  - Dropped manual `Authorization: Bearer …` headers — axios sends the httpOnly `session_token` cookie automatically (`withCredentials = true` is global).
+  - Added explicit `convsError` state with retry button; differentiates 401 ("Please log in again") vs network/server errors ("Could not load conversations").
+  - Empty state preserved: "No conversations yet" with hint to start one from a profile.
+  - New testIDs: `conversations-loading`, `conversations-empty`, `conversations-error`, `conversations-retry`, `conversation-list`.
+- [x] **Bug 3 — Right panel:**
+  - Chat header (`chat-header` testID, `chat-header-name`), scrollable messages area (`messages-list`), and fixed input bar (`message-input-bar`) all wired through cookie-auth axios calls. Verified: blue gradient bubbles for "me" on the right, gray cards for "them" on the left, send button works, message persists round-trip.
+- [x] **Bug 4 — Empty state when no thread selected:**
+  - `messages-empty-state` placeholder ("Select a conversation to start chatting") shows whenever `conversationId` is absent, including after redirects.
+- [x] **Backend — `messaging_socketio.py`:**
+  - `connect(sid, environ)` parses `HTTP_COOKIE` → `session_token` → JWT → `sub`. Auto-binds the user, joins all their conversation rooms, no client-side `authenticate` call needed.
+  - Legacy `authenticate` event preserved as a no-op fallback when cookie auth already bound the sid.
+  - Frontend socket connection uses `withCredentials: true` so cookies flow through the WebSocket handshake.
+- [x] **E2E verified live (Playwright, demo1 → demostudent2 profile):**
+  - Message button click → URL becomes `/messages/<convId>` ✓
+  - chat-header / messages-list / message-input-bar / conversations-sidebar all present ✓
+  - 2 conversations visible in left panel ✓
+  - Sent "Hello from automated test!" → 4 bubbles render in thread ✓
+  - Visiting `/messages` directly → empty-state placeholder shown ✓
+- [x] **Lint:** clean (frontend + backend). Backend restarted cleanly.

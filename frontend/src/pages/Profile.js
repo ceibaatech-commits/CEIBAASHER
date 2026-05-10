@@ -832,18 +832,12 @@ const Profile = () => {
                   currentUser && (
                     <>
                       <button
-                        onClick={async () => {
-                          try {
-                            const res = await axios.post(
-                              `${BACKEND_URL}/api/messages/conversations`,
-                              { target_user_id: resolvedUserId }
-                            );
-                            if (res.data.success) {
-                              navigate(`/messages/${res.data.conversation.id}`);
-                            }
-                          } catch {
+                        onClick={() => {
+                          if (!resolvedUserId) {
                             toast.error('Could not start conversation');
+                            return;
                           }
+                          navigate(`/messages?userId=${encodeURIComponent(resolvedUserId)}`);
                         }}
                         className="px-4 py-2 rounded-full border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                         data-testid="message-btn"
