@@ -6,7 +6,9 @@ from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
+import os
 import uuid
+import jwt
 
 router = APIRouter()
 db = None
@@ -18,17 +20,33 @@ def init_db(database):
 
 
 # --------------- helpers ---------------
-async def _get_user_id(authorization: Optional[str] = None):
-    if not authorization or not authorization.startswith("Bearer "):
+def _extract_token(request: Optional[Request], authorization: Optional[str]) -> Optional[str]:
+    """Cookie-first, Bearer-fallback (matches utils.auth_helpers pattern)."""
+    if request is not None:
+        cookie_token = request.cookies.get("session_token")
+        if cookie_token:
+            return cookie_token
+    if authorization and authorization.startswith("Bearer "):
+        return authorization[len("Bearer "):]
+    return None
+
+
+async def _get_user_id(authorization: Optional[str] = None, request: Optional[Request] = None):
+    token = _extract_token(request, authorization)
+    if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    token = authorization.replace("Bearer ", "")
-    import jwt
-    import os
-    try:
-        payload = jwt.decode(token, os.getenv("JWT_SECRET", "ceibaa-secret-key"), algorithms=["HS256"])
-        return payload.get("sub")
-    except Exception:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    secret = os.getenv("JWT_SECRET", "ceibaa-secret-key")
+    # auth_routes uses "ceibaa-super-secret-key-2026" by default — try the env-configured secret first,
+    # then fall back to the legacy default so we don't break tokens minted before the secret unification.
+    for candidate in (secret, "ceibaa-super-secret-key-2026", "ceibaa-secret-key"):
+        try:
+            payload = jwt.decode(token, candidate, algorithms=["HS256"])
+            user_id = payload.get("sub")
+            if user_id:
+                return user_id
+        except Exception:
+            continue
+    raise HTTPException(status_code=401, detail="Invalid token")
 
 
 async def _enrich_user(user_id: str):
@@ -56,9 +74,9 @@ class SendMessageReq(BaseModel):
 # --------------- endpoints ---------------
 
 @router.post("/conversations")
-async def create_or_get_conversation(body: CreateConversationReq, authorization: Optional[str] = Header(None)):
+async def create_or_get_conversation(body: CreateConversationReq, request: Request, authorization: Optional[str] = Header(None)):
     """Create a 1-on-1 conversation or return existing one."""
-    user_id = await _get_user_id(authorization)
+    user_id = await _get_user_id(authorization, request)
     target_id = body.target_user_id
 
     if user_id == target_id:
@@ -92,9 +110,9 @@ async def create_or_get_conversation(body: CreateConversationReq, authorization:
 
 
 @router.get("/conversations")
-async def list_conversations(authorization: Optional[str] = Header(None)):
+async def list_conversations(request: Request, authorization: Optional[str] = Header(None)):
     """List all conversations for the current user, most recent first."""
-    user_id = await _get_user_id(authorization)
+    user_id = await _get_user_id(authorization, request)
 
     convs = await db.conversations.find(
         {"participants": user_id},
@@ -115,9 +133,9 @@ async def list_conversations(authorization: Optional[str] = Header(None)):
 
 
 @router.get("/conversations/{conversation_id}/messages")
-async def get_messages(conversation_id: str, limit: int = 50, before: Optional[str] = None, authorization: Optional[str] = Header(None)):
+async def get_messages(conversation_id: str, request: Request, limit: int = 50, before: Optional[str] = None, authorization: Optional[str] = Header(None)):
     """Get messages for a conversation (newest last)."""
-    user_id = await _get_user_id(authorization)
+    user_id = await _get_user_id(authorization, request)
 
     conv = await db.conversations.find_one({"id": conversation_id}, {"_id": 0})
     if not conv or user_id not in conv.get("participants", []):
@@ -139,9 +157,9 @@ async def get_messages(conversation_id: str, limit: int = 50, before: Optional[s
 
 
 @router.post("/conversations/{conversation_id}/messages")
-async def send_message(conversation_id: str, body: SendMessageReq, authorization: Optional[str] = Header(None)):
+async def send_message(conversation_id: str, body: SendMessageReq, request: Request, authorization: Optional[str] = Header(None)):
     """Send a text message."""
-    user_id = await _get_user_id(authorization)
+    user_id = await _get_user_id(authorization, request)
     text = body.text.strip()
     if not text:
         raise HTTPException(400, "Message cannot be empty")
@@ -185,9 +203,9 @@ async def send_message(conversation_id: str, body: SendMessageReq, authorization
 
 
 @router.put("/conversations/{conversation_id}/read")
-async def mark_read(conversation_id: str, authorization: Optional[str] = Header(None)):
+async def mark_read(conversation_id: str, request: Request, authorization: Optional[str] = Header(None)):
     """Mark all messages in a conversation as read for the current user."""
-    user_id = await _get_user_id(authorization)
+    user_id = await _get_user_id(authorization, request)
     await db.conversations.update_one(
         {"id": conversation_id},
         {"$set": {f"unread_counts.{user_id}": 0}}
@@ -200,9 +218,9 @@ async def mark_read(conversation_id: str, authorization: Optional[str] = Header(
 
 
 @router.get("/unread-count")
-async def unread_count(authorization: Optional[str] = Header(None)):
+async def unread_count(request: Request, authorization: Optional[str] = Header(None)):
     """Get total unread message count across all conversations."""
-    user_id = await _get_user_id(authorization)
+    user_id = await _get_user_id(authorization, request)
     pipeline = [
         {"$match": {"participants": user_id}},
         {"$group": {"_id": None, "total": {"$sum": f"$unread_counts.{user_id}"}}}

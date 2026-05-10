@@ -14,11 +14,7 @@ export const ParentsModePanel = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
-        if (!token) return;
-        const res = await axios.get(`${BACKEND_URL}/api/user/parents-mode/status`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await axios.get(`${BACKEND_URL}/api/user/parents-mode/status`);
         if (res.data.success) {
           setParentsModeActive(res.data.parents_mode_active);
           setParentsModeTimeRemaining(res.data.time_remaining_seconds || 0);
@@ -49,11 +45,7 @@ export const ParentsModePanel = () => {
   const enableParentsMode = async () => {
     setEnabling(true);
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('ceibaa_token');
-      if (!token) { toast.error('Please log in'); return; }
-      const res = await axios.post(`${BACKEND_URL}/api/user/parents-mode/enable`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.post(`${BACKEND_URL}/api/user/parents-mode/enable`, {});
       if (res.data.success) {
         setParentsModeActive(true);
         setParentsModeTimeRemaining(res.data.time_remaining_seconds);

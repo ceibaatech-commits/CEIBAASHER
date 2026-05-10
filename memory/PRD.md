@@ -522,3 +522,24 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
   - Z-index hierarchy: remote `maxViewContainer`=1, local `minViewContainer`=15, controls=20.
   - Scoped `<style>` injects `object-fit: cover; width:100%; height:100%` on every `<video>` under `[data-vc-stage]`, plus `position: absolute; inset: 0` on Agora's top-level children to prevent stretch/split.
 - [x] **Lint:** clean. **Smoke:** setup page renders without errors after `demo1` login.
+
+
+### Feb 26, 2026 — 3 P0 regressions fixed (cookie-auth migration leftovers + mobile confirm bug)
+- [x] **Bug 1 — Profile "Message" button did nothing.**
+  - **Root cause:** `messaging_routes.py::_get_user_id` only read `Authorization: Bearer …`. Post Stage-3 cookie migration the frontend sends only the httpOnly `session_token` cookie → backend returned 401 → frontend `catch` showed a silent toast.
+  - **Fix:** added `_extract_token(request, authorization)` (cookie-first, Bearer-fallback) to `messaging_routes.py`. Updated all 6 endpoints (`POST/GET /conversations`, `GET/POST /conversations/{id}/messages`, `PUT /conversations/{id}/read`, `GET /unread-count`) to accept `request: Request` and pass it through.
+  - **Verified:** cookie-only POST `/api/messages/conversations` now returns 200 with the conversation. Bearer-only mode still works (backwards-compat).
+- [x] **Bug 2 — Parents Mode panel inert (button + countdown never showed up).**
+  - **Root cause:** `ParentsModePanel.js` & `Matchmaking1v1.js` read `localStorage.getItem('token')` to build a manual `Authorization` header. Post Stage-3 there is no JS-readable JWT in localStorage, so the early `if (!token) return` meant `/status` was never called. Backend `parents_mode_routes.py::get_user_from_token` also only honored the Bearer header.
+  - **Fix:** dropped manual token reads on the frontend (axios sends the cookie automatically via `axios.defaults.withCredentials = true`). Backend now also uses the same `_extract_token` cookie-first helper. All 3 endpoints (`/status`, `/enable`, `/check-battle-access`) take `request: Request`.
+  - **Verified:** cookie-only `/api/user/parents-mode/status` returns the real status payload; `/api/user/parents-mode/check-battle-access` returns `can_access_battle: true` for an unblocked user.
+- [x] **Bug 3 — Solo Practice quiz "Back" button did nothing on mobile.**
+  - **Root cause:** Same `window.confirm()` mobile-throttling we already fixed for LiveBattle's Quit button. iOS Safari + several Android browsers silently drop synchronous `confirm()` triggered from a click handler when the page is busy with timers (the 1-second quiz countdown was running).
+  - **Fix:** introduced `solo-quit-confirm-modal` React modal with `Stay` / `Quit` buttons. Quiz back button only opens the modal when there's progress (`selectedAnswer !== null || currentQuestionIndex > 0`); otherwise it navigates immediately. Extracted `computeBackUrl()` so the destination logic is shared between the `Stay`-skipped path and the modal-confirmed path.
+- [x] **Lint:** clean (frontend + backend). Backend restarted cleanly. Webpack hot-reloaded.
+
+### Deferred (carry-overs)
+- [ ] Twitter/Facebook login UI buttons on `Login.js` (recurring; needs Twitter API key + secret)
+- [ ] Decompose remaining oversized components: `ExamSheetManager.js` (1051), `ExamCategoryManager.js` (789), `Board.js` (726)
+- [ ] Stripe enrollment/payment flow
+- [ ] Real-time notifications on application status change

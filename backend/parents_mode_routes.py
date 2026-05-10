@@ -3,7 +3,7 @@ Parents Mode Routes
 Allows parents to temporarily disable 1v1 Battle Mode for their children.
 The mode auto-disables after 12 hours.
 """
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone, timedelta
@@ -25,13 +25,23 @@ JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 PARENTS_MODE_DURATION_HOURS = 12
 
 
-async def get_user_from_token(authorization: Optional[str]) -> dict:
-    """Get user from authorization token"""
-    if not authorization:
+def _extract_token(request: Optional[Request], authorization: Optional[str]) -> Optional[str]:
+    """Cookie-first, Bearer-fallback (matches utils.auth_helpers pattern)."""
+    if request is not None:
+        cookie_token = request.cookies.get("session_token")
+        if cookie_token:
+            return cookie_token
+    if authorization and authorization.startswith("Bearer "):
+        return authorization[len("Bearer "):]
+    return None
+
+
+async def get_user_from_token(authorization: Optional[str], request: Optional[Request] = None) -> dict:
+    """Get user from authorization (cookie-first, Bearer-fallback)"""
+    token = _extract_token(request, authorization)
+    if not token:
         raise HTTPException(status_code=401, detail="Authentication required")
-    
-    token = authorization.replace("Bearer ", "")
-    
+
     try:
         # Try session token first
         session = await db.user_sessions.find_one({"session_token": token})
@@ -94,12 +104,12 @@ def is_parents_mode_active(user: dict) -> tuple:
 
 
 @router.get("/status")
-async def get_parents_mode_status(authorization: Optional[str] = Header(None)):
+async def get_parents_mode_status(request: Request, authorization: Optional[str] = Header(None)):
     """
     Get current parents mode status for the user.
     Returns whether it's active and time remaining.
     """
-    user = await get_user_from_token(authorization)
+    user = await get_user_from_token(authorization, request)
     
     is_active, time_remaining, expires_at = is_parents_mode_active(user)
     
@@ -128,14 +138,14 @@ async def get_parents_mode_status(authorization: Optional[str] = Header(None)):
 
 
 @router.post("/enable")
-async def enable_parents_mode(authorization: Optional[str] = Header(None)):
+async def enable_parents_mode(request: Request, authorization: Optional[str] = Header(None)):
     """
     Enable parents mode. This will:
     - Block access to 1v1 Battle Mode
     - Auto-disable after 12 hours
     - Cannot be manually disabled by the user
     """
-    user = await get_user_from_token(authorization)
+    user = await get_user_from_token(authorization, request)
     user_id = user.get("id") or user.get("user_id")
     
     # Check if already active
@@ -187,12 +197,12 @@ async def enable_parents_mode(authorization: Optional[str] = Header(None)):
 
 
 @router.get("/check-battle-access")
-async def check_battle_access(authorization: Optional[str] = Header(None)):
+async def check_battle_access(request: Request, authorization: Optional[str] = Header(None)):
     """
     Quick check if user can access 1v1 Battle Mode.
     Used by frontend before allowing navigation to battle pages.
     """
-    user = await get_user_from_token(authorization)
+    user = await get_user_from_token(authorization, request)
     
     is_active, time_remaining, expires_at = is_parents_mode_active(user)
     

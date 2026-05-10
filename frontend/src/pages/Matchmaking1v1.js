@@ -365,9 +365,7 @@ const Matchmaking1v1 = () => {
   useEffect(() => {
     const check = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        const r = await axios.get(`${BACKEND_URL}/api/user/parents-mode/check-battle-access`, { headers: { Authorization: `Bearer ${token}` } });
+        const r = await axios.get(`${BACKEND_URL}/api/user/parents-mode/check-battle-access`);
         if (r.data.success && !r.data.can_access_battle) {
           setParentsModeBlocked(true);
           setParentsModeTimeRemaining(r.data.time_remaining_seconds || 0);

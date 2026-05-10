@@ -151,6 +151,27 @@ const SoloPractice = () => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [score, setScore] = useState(null);
   const [results, setResults] = useState(null);
+  const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+
+  // Compute the destination URL for back/quit navigation (kept in sync with classBasedData/exam)
+  const computeBackUrl = () => {
+    if (isClassBased && classBasedData) {
+      const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+      const subjectSlug = classBasedData.subject
+        .toLowerCase()
+        .replace(/ - /g, '---')
+        .replace(/\s+/g, '-');
+      if ((classNum === '11' || classNum === '12') && classBasedData.stream) {
+        return `/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}/${subjectSlug}`;
+      }
+      if (classNum === '11' || classNum === '12') {
+        return `/chapter-tests/class-${classNum}/select-stream`;
+      }
+      return `/chapter-tests/class-${classNum}/${subjectSlug}`;
+    }
+    if (exam) return `/exam/${exam}`;
+    return '/';
+  };
 
   useEffect(() => {
     // Reset state when URL params change
@@ -813,6 +834,39 @@ const SoloPractice = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-8">
       <Header />
+
+      {/* Quit-Confirm Modal (replaces unreliable window.confirm on mobile) */}
+      {showQuitConfirm && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          data-testid="solo-quit-confirm-modal"
+        >
+          <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Quit this quiz?</h3>
+            <p className="text-gray-600 mb-6">Your progress will be lost. Are you sure you want to leave?</p>
+            <div className="flex gap-3">
+              <button
+                data-testid="solo-quit-stay"
+                onClick={() => setShowQuitConfirm(false)}
+                className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition"
+              >
+                Stay
+              </button>
+              <button
+                data-testid="solo-quit-confirm"
+                onClick={() => {
+                  setShowQuitConfirm(false);
+                  navigate(computeBackUrl());
+                }}
+                className="flex-1 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition"
+              >
+                Quit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto px-4 pt-6">
         {/* Breadcrumb for class-based */}
         {isClassBased && classBasedData && (
@@ -854,32 +908,13 @@ const SoloPractice = () => {
           <div className="flex items-center justify-between px-3 py-3 md:px-6 md:py-4 border-b border-gray-100">
             {/* Left: Back button with subject */}
             <button
+              data-testid="solo-quiz-back-btn"
               onClick={() => {
                 const hasProgress = selectedAnswer !== null || currentQuestionIndex > 0;
-                if (!hasProgress || window.confirm('Are you sure you want to quit this quiz? Your progress will be lost.')) {
-                  if (isClassBased && classBasedData) {
-                    const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
-                    // Convert subject to URL slug: "Hindi - Malhar" -> "hindi---malhar"
-                    const subjectSlug = classBasedData.subject
-                      .toLowerCase()
-                      .replace(/ - /g, '---')  // " - " becomes "---"
-                      .replace(/\s+/g, '-');   // spaces become "-"
-                    
-                    // For Class 11 and 12, include stream in the path
-                    if ((classNum === '11' || classNum === '12') && classBasedData.stream) {
-                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}/${subjectSlug}`);
-                    } else if (classNum === '11' || classNum === '12') {
-                      // No stream info, go to stream selection
-                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
-                    } else {
-                      // For Class 6-10, go directly to subject
-                      navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
-                    }
-                  } else if (exam) {
-                    navigate(`/exam/${exam}`);
-                  } else {
-                    navigate('/');
-                  }
+                if (!hasProgress) {
+                  navigate(computeBackUrl());
+                } else {
+                  setShowQuitConfirm(true);
                 }
               }}
               className="flex items-center text-gray-700 hover:text-gray-900 min-w-0"
