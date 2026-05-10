@@ -1529,6 +1529,40 @@ const LiveBattle = () => {
         opponentId={participants?.find(p => p.name !== user?.name)?.id}
       />
 
+      {/* Paused-by-host overlay (non-hosts only) — gives a clear visual
+          signal that the timer freeze is intentional, not a bug. The host
+          already sees a "Resume" button so doesn't need this overlay. */}
+      {isPaused && !isHost && (
+        <div
+          className="fixed inset-0 z-[75] flex items-center justify-center bg-black/40 backdrop-blur-[3px] pointer-events-none"
+          data-testid="paused-by-host-overlay"
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            className="bg-white/95 rounded-2xl shadow-2xl px-6 py-5 flex items-center gap-3 max-w-xs animate-[scaleIn_0.18s_ease-out]"
+            style={{ pointerEvents: 'none' }}
+          >
+            <div className="relative w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+              <Pause className="w-5 h-5 text-amber-700" />
+              <span
+                className="absolute inset-0 rounded-full"
+                style={{ animation: 'pausePulse 1.6s ease-out infinite', boxShadow: '0 0 0 0 rgba(217,119,6,0.4)' }}
+              />
+              <style>{`@keyframes pausePulse {
+                0% { box-shadow: 0 0 0 0 rgba(217,119,6,0.45); }
+                70% { box-shadow: 0 0 0 14px rgba(217,119,6,0); }
+                100% { box-shadow: 0 0 0 0 rgba(217,119,6,0); }
+              }`}</style>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-gray-900 leading-tight">Paused by host</p>
+              <p className="text-xs text-gray-600 leading-snug mt-0.5">The quiz will resume in a moment.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Host action confirmation modal — Skip / End Quiz */}
       {hostActionConfirm && (
         <div

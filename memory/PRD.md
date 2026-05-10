@@ -295,6 +295,17 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — "Paused by host" overlay for non-host players
+- [x] **`/app/frontend/src/pages/LiveBattle.js`:** when the host pauses the quiz, non-host players now see a clean centered card overlay with:
+  - Semi-transparent black/40 backdrop + 3px blur
+  - White rounded card with a pause icon in an amber circle
+  - Pulsing amber halo around the icon (`@keyframes pausePulse`, 1.6s ease-out infinite)
+  - "Paused by host" + "The quiz will resume in a moment." copy
+  - `data-testid="paused-by-host-overlay"`, `role="status"`, `aria-live="polite"`
+  - Hidden for host (they already see the Resume button — no double-cue)
+  - `pointer-events: none` so it doesn't block host actions or accidental taps; auto-disappears when `quiz-resumed` fires
+- [x] **Lint:** clean.
+
 ### Feb 25, 2026 — LiveBattle host controls + reactions throttle round-2
 - [x] **Bug fix:** Pause / Resume / Skip / End Quiz host buttons did nothing on mobile or desktop.
   - **Root cause:** Frontend was emitting **kebab-case** event names (`pause-quiz`, `resume-quiz`, `skip-question`) but the python-socketio backend handlers were registered as **snake_case** (`pause_quiz`, etc.). `@sio.event` does NOT convert hyphens — events were silently dropped. The misleading comment in the backend ("Socket.IO converts hyphen event name to this function name") is wrong.
