@@ -63,14 +63,25 @@ export default function Messages() {
   // ---------- Socket — cookie auto-auth on connect (server-side) ----------
   useEffect(() => {
     if (!user) return;
-    const sock = io(`${BACKEND_URL}/api/messagews`, {
-      transports: ['websocket', 'polling'],
-      path: '/socket.io',
+    const sock = io(BACKEND_URL, {
+      path: '/api/messagews/socket.io/',
+      transports: ['polling', 'websocket'],
       withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
     });
     socketRef.current = sock;
 
+    sock.on('connect', () => {
+      console.log('[messages] socket connected, sid=', sock.id);
+    });
+    sock.on('connect_error', (err) => {
+      console.error('[messages] socket connect_error:', err && err.message);
+    });
+
     sock.on('new_message', (msg) => {
+      console.log('[messages] event new_message', msg && msg.id);
       setMessages(prev => (prev.some(m => m.id === msg.id) ? prev : [...prev, msg]));
       setConversations(prev => prev.map(c =>
         c.id === msg.conversation_id
@@ -80,6 +91,32 @@ export default function Messages() {
     });
     sock.on('user_typing', () => setOtherTyping(true));
     sock.on('user_stop_typing', () => setOtherTyping(false));
+
+    // Presence: green-dot on conversation list when the other user is online
+    sock.on('presence_update', ({ user_id: pUid, online }) => {
+      console.log('[messages] event presence_update', pUid, online);
+      setConversations(prev => prev.map(c =>
+        c.other_user?.id === pUid
+          ? { ...c, other_user: { ...c.other_user, online } }
+          : c
+      ));
+    });
+
+    // Receipts: flip bubble checkmarks live
+    sock.on('message_delivered', ({ message_ids }) => {
+      console.log('[messages] event message_delivered', message_ids);
+      if (!Array.isArray(message_ids) || message_ids.length === 0) return;
+      const ids = new Set(message_ids);
+      setMessages(prev => prev.map(m => (ids.has(m.id) ? { ...m, delivered: true } : m)));
+    });
+    sock.on('messages_read', ({ message_ids, reader_id }) => {
+      console.log('[messages] event messages_read', message_ids, 'reader=', reader_id);
+      if (!Array.isArray(message_ids) || message_ids.length === 0) return;
+      // Only flip messages I sent (don't mutate the other party's incoming msgs)
+      if (reader_id === user?.id) return;
+      const ids = new Set(message_ids);
+      setMessages(prev => prev.map(m => (ids.has(m.id) ? { ...m, delivered: true, read: true } : m)));
+    });
 
     return () => { sock.disconnect(); };
   }, [user]);
@@ -137,6 +174,17 @@ export default function Messages() {
       socketRef.current?.emit('leave_conversation', { conversation_id: conversationId });
     };
   }, [conversationId, user]);
+
+  // Auto-mark new incoming messages as read while the conversation is open
+  useEffect(() => {
+    if (!conversationId || !user) return;
+    const hasUnreadIncoming = messages.some(m => m.sender_id !== user.id && !m.read);
+    if (!hasUnreadIncoming) return;
+    // Fire-and-forget; backend emits `messages_read` so the sender sees double-cyan
+    axios.put(`${BACKEND_URL}/api/messages/conversations/${conversationId}/read`).catch(() => {});
+    // Optimistic local update
+    setMessages(prev => prev.map(m => (m.sender_id !== user.id && !m.read ? { ...m, read: true, delivered: true } : m)));
+  }, [messages, conversationId, user]);
 
   // Auto-scroll
   useEffect(() => {
@@ -299,6 +347,13 @@ export default function Messages() {
                         size="md"
                         clickable={false}
                       />
+                      {conv.other_user?.online && (
+                        <span
+                          data-testid={`presence-dot-${conv.other_user.id}`}
+                          aria-label="Online"
+                          className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-gray-950"
+                        />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
@@ -353,10 +408,24 @@ export default function Messages() {
                     className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
                     onClick={() => navigate(`/profile/${otherUser.username}`)}
                   >
-                    <UserAvatar profilePicture={otherUser.avatar} name={otherUser.name} size="sm" clickable={false} />
+                    <div className="relative shrink-0">
+                      <UserAvatar profilePicture={otherUser.avatar} name={otherUser.name} size="sm" clickable={false} />
+                      {otherUser.online && (
+                        <span
+                          data-testid="chat-header-presence-dot"
+                          aria-label="Online"
+                          className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-gray-950"
+                        />
+                      )}
+                    </div>
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-white truncate" data-testid="chat-header-name">{otherUser.name}</p>
-                      <p className="text-[11px] text-gray-500">@{otherUser.username}</p>
+                      <p
+                        data-testid="chat-header-presence-text"
+                        className={`text-[11px] ${otherUser.online ? 'text-emerald-400' : 'text-gray-500'}`}
+                      >
+                        {otherUser.online ? 'Online' : `@${otherUser.username}`}
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -401,11 +470,19 @@ export default function Messages() {
                         </div>
                         <div className={`flex items-center gap-1 mt-0.5 px-1 ${isMine ? 'justify-end' : 'justify-start'}`}>
                           <span className="text-[10px] text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">{formatMsgTime(msg.timestamp)}</span>
-                          {isMine && (
-                            msg.read
-                              ? <CheckCheck className="w-3 h-3 text-cyan-400" />
-                              : <Check className="w-3 h-3 text-gray-600" />
-                          )}
+                          {isMine && (() => {
+                            // Tri-state receipts (WhatsApp / Messenger style):
+                            //   read       → double-check, cyan
+                            //   delivered  → double-check, gray
+                            //   sent (default) → single check, gray
+                            if (msg.read) {
+                              return <CheckCheck data-testid={`receipt-read-${msg.id}`} aria-label="Read" className="w-3.5 h-3.5 text-cyan-400" />;
+                            }
+                            if (msg.delivered) {
+                              return <CheckCheck data-testid={`receipt-delivered-${msg.id}`} aria-label="Delivered" className="w-3.5 h-3.5 text-gray-400" />;
+                            }
+                            return <Check data-testid={`receipt-sent-${msg.id}`} aria-label="Sent" className="w-3.5 h-3.5 text-gray-500" />;
+                          })()}
                         </div>
                       </div>
                     </div>

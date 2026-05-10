@@ -119,12 +119,19 @@ async def list_conversations(request: Request, authorization: Optional[str] = He
         {"_id": 0}
     ).sort("last_message_at", -1).to_list(50)
 
-    # Enrich with other user's info
+    # Lazy import keeps the route module decoupled from socketio bootstrap order
+    try:
+        from messaging_socketio import is_user_online
+    except Exception:
+        is_user_online = lambda _uid: False  # noqa: E731
+
+    # Enrich with other user's info + online status
     enriched = []
     for c in convs:
         other_id = [p for p in c["participants"] if p != user_id]
         other_id = other_id[0] if other_id else user_id
         other_user = await _enrich_user(other_id)
+        other_user["online"] = is_user_online(other_id)
         c["other_user"] = other_user
         c["unread"] = c.get("unread_counts", {}).get(user_id, 0)
         enriched.append(c)
@@ -147,11 +154,37 @@ async def get_messages(conversation_id: str, request: Request, limit: int = 50, 
 
     msgs = await db.messages.find(query, {"_id": 0}).sort("timestamp", 1).to_list(limit)
 
-    # Mark read
+    # Mark conversation read for this user + flip messages to read=True.
+    # Broadcasts `messages_read` so the sender sees double-cyan checks live.
     await db.conversations.update_one(
         {"id": conversation_id},
         {"$set": {f"unread_counts.{user_id}": 0}}
     )
+    just_read = await db.messages.find(
+        {"conversation_id": conversation_id, "sender_id": {"$ne": user_id}, "read": False},
+        {"_id": 0, "id": 1}
+    ).to_list(500)
+    read_ids = [m["id"] for m in just_read]
+    if read_ids:
+        await db.messages.update_many(
+            {"id": {"$in": read_ids}},
+            {"$set": {"read": True, "delivered": True}}
+        )
+        try:
+            from messaging_socketio import messaging_sio
+            await messaging_sio.emit("messages_read", {
+                "conversation_id": conversation_id,
+                "reader_id": user_id,
+                "message_ids": read_ids,
+            }, room=conversation_id)
+        except Exception:
+            pass
+        # Patch the in-flight response so the caller sees the new state
+        read_set = set(read_ids)
+        for m in msgs:
+            if m.get("id") in read_set:
+                m["read"] = True
+                m["delivered"] = True
 
     return {"success": True, "messages": msgs, "conversation": conv}
 
@@ -169,19 +202,28 @@ async def send_message(conversation_id: str, body: SendMessageReq, request: Requ
         raise HTTPException(403, "Access denied")
 
     now = datetime.now(timezone.utc).isoformat()
+    # Determine recipient + initial delivered state (true iff the OTHER party
+    # has any active socket — they will receive `new_message` immediately).
+    other_id = [p for p in conv["participants"] if p != user_id]
+    other_id = other_id[0] if other_id else user_id
+    try:
+        from messaging_socketio import is_user_online
+        delivered_now = bool(is_user_online(other_id))
+    except Exception:
+        delivered_now = False
+
     msg = {
         "id": str(uuid.uuid4()),
         "conversation_id": conversation_id,
         "sender_id": user_id,
         "text": text,
         "timestamp": now,
+        "delivered": delivered_now,
         "read": False,
     }
     await db.messages.insert_one({**msg, "_id": msg["id"]})
 
     # Update conversation metadata
-    other_id = [p for p in conv["participants"] if p != user_id]
-    other_id = other_id[0] if other_id else user_id
     await db.conversations.update_one(
         {"id": conversation_id},
         {"$set": {
@@ -196,6 +238,13 @@ async def send_message(conversation_id: str, body: SendMessageReq, request: Requ
         from messaging_socketio import messaging_sio
         sender_info = await _enrich_user(user_id)
         await messaging_sio.emit("new_message", {**msg, "sender": sender_info}, room=conversation_id)
+        # Also notify the sender (their other tabs / the just-emitted message)
+        # if the recipient was online so the bubble flips to "delivered" instantly.
+        if delivered_now:
+            await messaging_sio.emit("message_delivered", {
+                "conversation_id": conversation_id,
+                "message_ids": [msg["id"]],
+            }, room=conversation_id)
     except Exception:
         pass
 
@@ -204,17 +253,41 @@ async def send_message(conversation_id: str, body: SendMessageReq, request: Requ
 
 @router.put("/conversations/{conversation_id}/read")
 async def mark_read(conversation_id: str, request: Request, authorization: Optional[str] = Header(None)):
-    """Mark all messages in a conversation as read for the current user."""
+    """Mark all messages in a conversation as read for the current user.
+    Emits `messages_read` to the room so the SENDER's UI updates the
+    bubble checkmarks to read (cyan, double-check) in real time.
+    """
     user_id = await _get_user_id(authorization, request)
     await db.conversations.update_one(
         {"id": conversation_id},
         {"$set": {f"unread_counts.{user_id}": 0}}
     )
-    await db.messages.update_many(
+
+    # Snapshot which messages just transitioned to read so we can broadcast
+    # only those IDs (lighter payload, safer client-side merge).
+    just_read = await db.messages.find(
         {"conversation_id": conversation_id, "sender_id": {"$ne": user_id}, "read": False},
-        {"$set": {"read": True}}
-    )
-    return {"success": True}
+        {"_id": 0, "id": 1}
+    ).to_list(500)
+    read_ids = [m["id"] for m in just_read]
+
+    if read_ids:
+        await db.messages.update_many(
+            {"id": {"$in": read_ids}},
+            {"$set": {"read": True, "delivered": True}}
+        )
+        # Best-effort socket fan-out
+        try:
+            from messaging_socketio import messaging_sio
+            await messaging_sio.emit("messages_read", {
+                "conversation_id": conversation_id,
+                "reader_id": user_id,
+                "message_ids": read_ids,
+            }, room=conversation_id)
+        except Exception:
+            pass
+
+    return {"success": True, "read_count": len(read_ids)}
 
 
 @router.get("/unread-count")

@@ -138,12 +138,6 @@ const QuizRoomModal = ({ isOpen, onClose, user, onSuccess }) => {
       return;
     }
 
-    const token = localStorage.getItem('token');
-    if (!token || token === 'undefined' || token === 'null') {
-      toast.error('Please log in again to create a quiz room');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       // Step 1: Create the battle room
@@ -179,8 +173,6 @@ const QuizRoomModal = ({ isOpen, onClose, user, onSuccess }) => {
             host_name: user?.name || 'Quiz Host',
             host_id: user?.id
           }
-        }, {
-          headers: { Authorization: `Bearer ${token}` }
         });
 
         if (postResponse.data.success) {

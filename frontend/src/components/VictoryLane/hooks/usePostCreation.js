@@ -304,12 +304,6 @@ const usePostCreation = (user, fetchFeed) => {
   const handleCreatePost = async () => {
     if (!newPostContent.trim() || !user) return;
 
-    const token = localStorage.getItem('token');
-    if (!token || token === 'undefined' || token === 'null') {
-      toast.error('Please log in again to create a post');
-      return;
-    }
-
     try {
       let mediaUrls = [];
       
@@ -329,8 +323,6 @@ const usePostCreation = (user, fetchFeed) => {
         post_type: 'general',
         content: newPostContent,
         media_urls: mediaUrls.length > 0 ? mediaUrls : null
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {
@@ -343,7 +335,11 @@ const usePostCreation = (user, fetchFeed) => {
       }
     } catch (error) {
       console.error('Post error:', error);
-      toast.error(error.response?.data?.detail || 'Failed to create post');
+      if (error.response?.status === 401) {
+        toast.error('Please log in again to create a post');
+      } else {
+        toast.error(error.response?.data?.detail || 'Failed to create post');
+      }
     }
   };
 
@@ -351,18 +347,10 @@ const usePostCreation = (user, fetchFeed) => {
   const handleCreateQuestion = async (questionText) => {
     if (!questionText.trim() || !user) return;
 
-    const token = localStorage.getItem('token');
-    if (!token || token === 'undefined' || token === 'null') {
-      toast.error('Please log in again to create a post');
-      return;
-    }
-
     try {
       const response = await axios.post(`${BACKEND_URL}/api/social/posts`, {
         post_type: 'question',
         content: questionText
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {
@@ -371,7 +359,11 @@ const usePostCreation = (user, fetchFeed) => {
       }
     } catch (error) {
       console.error('Error creating question:', error);
-      toast.error('Failed to create question');
+      if (error.response?.status === 401) {
+        toast.error('Please log in again to post');
+      } else {
+        toast.error('Failed to create question');
+      }
       throw error;
     }
   };
@@ -379,12 +371,6 @@ const usePostCreation = (user, fetchFeed) => {
   // Create academic question post
   const handleCreateAcademicQuestion = async ({ class_name, subject, chapter, question }) => {
     if (!question.trim() || !user) return;
-
-    const token = localStorage.getItem('token');
-    if (!token || token === 'undefined' || token === 'null') {
-      toast.error('Please log in again to create a post');
-      return;
-    }
 
     try {
       const hashtags = [
@@ -400,8 +386,6 @@ const usePostCreation = (user, fetchFeed) => {
         academic_class: class_name,
         academic_subject: subject,
         academic_chapter: chapter
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.data.success) {

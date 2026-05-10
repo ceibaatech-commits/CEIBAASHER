@@ -57,14 +57,39 @@ def _cookie_token_from_environ(environ) -> Optional[str]:
         return None
 
 
+async def _user_conversation_ids(uid: str):
+    """Return the conversation IDs the user participates in (or empty list)."""
+    if not db:
+        return []
+    convs = await db.conversations.find({"participants": uid}, {"_id": 0, "id": 1}).to_list(200)
+    return [c["id"] for c in convs]
+
+
+def is_user_online(uid: str) -> bool:
+    return bool(uid and uid in online_users and online_users[uid])
+
+
+async def _broadcast_presence(uid: str, online: bool) -> None:
+    """Emit presence_update to every room (= conversation) the user is in."""
+    if not uid:
+        return
+    rooms = await _user_conversation_ids(uid)
+    payload = {"user_id": uid, "online": online}
+    for room in rooms:
+        await messaging_sio.emit("presence_update", payload, room=room)
+
+
 async def _bind_user_to_sid(sid: str, uid: str) -> None:
+    was_online = is_user_online(uid)
     sid_user[sid] = uid
     online_users.setdefault(uid, set()).add(sid)
     # Auto-join all active conversation rooms
-    if db:
-        convs = await db.conversations.find({"participants": uid}, {"_id": 0, "id": 1}).to_list(100)
-        for c in convs:
-            messaging_sio.enter_room(sid, c["id"])
+    rooms = await _user_conversation_ids(uid)
+    for cid in rooms:
+        messaging_sio.enter_room(sid, cid)
+    # Only broadcast when this is the user's first active socket
+    if not was_online:
+        await _broadcast_presence(uid, True)
 
 
 @messaging_sio.event
@@ -87,6 +112,8 @@ async def disconnect(sid):
         online_users[uid].discard(sid)
         if not online_users[uid]:
             del online_users[uid]
+            # User just went fully offline — notify their conversation partners
+            await _broadcast_presence(uid, False)
 
 
 @messaging_sio.event
