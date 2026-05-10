@@ -14,6 +14,7 @@ import TestHistoryTable from '../components/TestHistoryTable';
 import { GoalSelectionModal } from '../components/GoalSelectionModal';
 import { ParentsModePanel } from '../components/ParentsModePanel';
 import BoardInsights from '../components/board/BoardInsights';
+import BoardProfileHeader from '../components/board/BoardProfileHeader';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -403,74 +404,13 @@ const Board = () => {
         <ParentsModePanel />
 
         {/* Profile Header Card - Glassmorphism */}
-        {/* Profile Header Card - Glassmorphism */}
-        <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 md:p-8 mb-8 border border-white/20 shadow-2xl">
-          <div className="flex flex-col md:flex-row items-center gap-6">
-            {/* Avatar - Use profile picture if available */}
-            <div className="relative">
-              {user?.profile_picture || user?.avatar ? (
-                <img 
-                  src={user.profile_picture || user.avatar}
-                  alt={user.name}
-                  className="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-4 border-emerald-400/50 shadow-xl"
-                />
-              ) : (
-                <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-3xl md:text-4xl font-bold shadow-xl border-4 border-emerald-400/50">
-                  {user?.name?.charAt(0).toUpperCase() || 'U'}
-                </div>
-              )}
-              <div className={`absolute -bottom-2 -right-2 px-3 py-1.5 rounded-full bg-gradient-to-r ${LEVEL_COLORS[learnerLevel]} text-white text-xs font-bold shadow-lg border-2 border-white/30`}>
-                {learnerLevel}
-              </div>
-            </div>
-            
-            {/* User Info */}
-            <div className="text-center md:text-left flex-1">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{user?.name || 'Student'}</h2>
-              <p className="text-emerald-200/70 mb-3">{user?.email}</p>
-              <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                <span className="px-4 py-1.5 backdrop-blur-md bg-emerald-500/20 text-emerald-200 rounded-full text-sm font-medium border border-emerald-400/30">
-                  📚 {dashboardStats.tests_completed} Tests
-                </span>
-                <span className="px-4 py-1.5 backdrop-blur-md bg-blue-500/20 text-blue-200 rounded-full text-sm font-medium border border-blue-400/30">
-                  ⭐ {dashboardStats.avg_score}% Avg
-                </span>
-                <span className="px-4 py-1.5 backdrop-blur-md bg-orange-500/20 text-orange-200 rounded-full text-sm font-medium border border-orange-400/30">
-                  🔥 {dashboardStats.streak} Day Streak
-                </span>
-              </div>
-            </div>
-            
-            {/* Study Goal Badge */}
-            <div className="text-center md:text-right">
-              {goalInfo ? (
-                <div className="inline-flex flex-col items-center md:items-end">
-                  <span className="text-xs text-emerald-200/60 mb-1.5">Preparing for</span>
-                  <div className={`px-5 py-2.5 rounded-xl bg-gradient-to-r ${
-                    goalInfo.type === 'competitive' ? 'from-purple-500 to-indigo-600' : 'from-emerald-500 to-teal-600'
-                  } text-white font-semibold shadow-lg flex items-center gap-2 border border-white/20`}>
-                    {goalInfo.type === 'competitive' ? <GraduationCap className="w-5 h-5" /> : <School className="w-5 h-5" />}
-                    {goalInfo.category_name}
-                  </div>
-                  <button 
-                    onClick={() => setShowGoalModal(true)}
-                    className="text-xs text-emerald-300/70 hover:text-emerald-200 mt-2 flex items-center gap-1 transition-colors"
-                  >
-                    <Settings className="w-3 h-3" /> Change Goal
-                  </button>
-                </div>
-              ) : (
-                <button 
-                  onClick={() => setShowGoalModal(true)}
-                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2 border border-white/20"
-                >
-                  <Target className="w-5 h-5" />
-                  Set Study Goal
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+        <BoardProfileHeader
+          user={user}
+          learnerLevel={learnerLevel}
+          dashboardStats={dashboardStats}
+          goalInfo={goalInfo}
+          onChangeGoal={() => setShowGoalModal(true)}
+        />
 
         {/* Stats Cards - Glassmorphism Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">

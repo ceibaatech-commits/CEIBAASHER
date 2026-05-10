@@ -295,6 +295,17 @@ components/
 - [x] **Lint:** `Matchmaking1v1.js` — no issues.
 - [x] **Smoke test:** `/matchmaking/SSC%20CGL/General%20Awareness/History` renders cleanly post-login (Find Opponent screen). The actual PIP overlay only mounts during an active call — requires two browsers on real devices with mic/cam permission to fully verify the video stream + Agora-controls layout.
 
+### Feb 25, 2026 — Decompose oversized files + drop unused Zego dep
+- [x] `yarn remove @zegocloud/zego-uikit-prebuilt` — package gone, smaller bundle.
+- [x] **Board.js** (872 → 726 lines, **-146**):
+  - Extracted glass-morphism profile header → `/app/frontend/src/components/board/BoardProfileHeader.js` (120 lines). Avatar, level badge, quick stats, study-goal pill — all driven by props.
+  - testID `board-profile-header` + sub-testIDs preserved.
+- [x] **ExamCategoryManager.js** (997 → 789 lines, **-208**):
+  - Extracted 4-stat summary grid → `/app/frontend/src/components/admin/ExamCategoryStatsGrid.js` (41 lines).
+- [x] **ExamSheetManager.js** (1720 → 1051 lines, **-669**, the biggest win):
+  - Extracted full Manual Question entry form → `/app/frontend/src/components/admin/ManualQuestionForm.js` (208 lines). All state still lives in the parent — pure presentational shell with prop-driven handlers (image uploads, set correct, submit).
+- [x] All three files: lint clean, webpack compiled cleanly. Existing PRD entries on prior decomposition (extracted `examDataMaps.js`, `BoardInsights.js`, `ExamCategoryModal.js`) are preserved.
+
 ### Feb 25, 2026 — "Paused by host" overlay for non-host players
 - [x] **`/app/frontend/src/pages/LiveBattle.js`:** when the host pauses the quiz, non-host players now see a clean centered card overlay with:
   - Semi-transparent black/40 backdrop + 3px blur

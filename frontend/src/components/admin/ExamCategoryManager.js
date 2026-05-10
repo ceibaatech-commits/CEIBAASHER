@@ -5,6 +5,7 @@ import {
   AlertCircle, CheckCircle, Filter, GraduationCap
 } from 'lucide-react';
 import ExamCategoryModal from './ExamCategoryModal';
+import ExamCategoryStatsGrid from './ExamCategoryStatsGrid';
 
 const BACKEND_URL = window.location.origin;
 
@@ -349,44 +350,7 @@ const ExamCategoryManager = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-blue-50 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-blue-600 font-medium">Total Exams</p>
-              <p className="text-2xl font-bold text-blue-700">{stats.exams}</p>
-            </div>
-            <BookOpen className="w-8 h-8 text-blue-500" />
-          </div>
-        </div>
-        <div className="bg-purple-50 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-purple-600 font-medium">Categories</p>
-              <p className="text-2xl font-bold text-purple-700">{stats.categories}</p>
-            </div>
-            <Layers className="w-8 h-8 text-purple-500" />
-          </div>
-        </div>
-        <div className="bg-green-50 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-green-600 font-medium">Chapters</p>
-              <p className="text-2xl font-bold text-green-700">{stats.chapters}</p>
-            </div>
-            <FileText className="w-8 h-8 text-green-500" />
-          </div>
-        </div>
-        <div className="bg-orange-50 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-orange-600 font-medium">Questions</p>
-              <p className="text-2xl font-bold text-orange-700">{stats.questions}</p>
-            </div>
-            <FileText className="w-8 h-8 text-orange-500" />
-          </div>
-        </div>
-      </div>
+      <ExamCategoryStatsGrid stats={stats} />
 
       {/* Action Bar */}
       <div className="flex items-center justify-between mb-6">
