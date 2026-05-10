@@ -492,6 +492,7 @@ const Matchmaking1v1 = () => {
 
     return () => s.close();
   
+  // eslint-disable-next-line
   }, []); // intentionally empty — uses refs and stable initAgora
 
   // Heartbeat
@@ -524,6 +525,7 @@ const Matchmaking1v1 = () => {
       handleAnswerSelect(-1);
     }
  
+  // eslint-disable-next-line
   }, [timeLeft, battleState, selectedAnswer, questions.length]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);

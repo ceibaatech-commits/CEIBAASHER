@@ -36,6 +36,7 @@ const PublicProfile = () => {
 
   useEffect(() => {
     fetchProfile();
+  // eslint-disable-next-line
   }, [username, user?.id]);
 
   const fetchProfile = async () => {
@@ -284,6 +285,7 @@ const PublicProfile = () => {
     if (profile && canView) {
       fetchUserContent(activeTab);
     }
+  // eslint-disable-next-line
   }, [activeTab, profile, canView]);
 
   // Note: Removed redirect to dashboard for own profile

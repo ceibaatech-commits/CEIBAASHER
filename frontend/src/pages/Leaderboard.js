@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Trophy, Medal, Crown, Flame, Filter } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const Leaderboard = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
   const [timeFilter, setTimeFilter] = useState('all');
   const [examFilter, setExamFilter] = useState('all');
+
+  const handleLogin = () => navigate('/login');
+  const handleLogout = () => { logout(); navigate('/'); };
 
   const leaders = [
     { rank: 1, name: 'Raj Kumar', avatar: 'RK', rating: 2450, wins: 245, streak: 15, exam: 'NEET', badge: 'Legend' },
@@ -29,16 +35,7 @@ const Leaderboard = () => {
       case 'Pro': return 'from-green-500 to-emerald-500';
       default: return 'from-gray-500 to-gray-600';
     }
-  };  const handleLogin = () => {
-    navigate('/login');
   };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100">

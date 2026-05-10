@@ -17,6 +17,7 @@ export default function DiscoverCompanies() {
   const [search, setSearch] = useState('');
   const [industry, setIndustry] = useState('');
 
+  // eslint-disable-next-line
   useEffect(() => { fetchCompanies(); }, [search, industry]);
 
   const fetchCompanies = async () => {

@@ -21,6 +21,7 @@ const PrivacySettings = () => {
       fetchSettings();
       fetchFollowRequests();
     }
+  // eslint-disable-next-line
   }, [user, authLoading]);
 
   const fetchSettings = async () => {

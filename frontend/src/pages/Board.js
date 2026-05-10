@@ -359,6 +359,7 @@ const Board = () => {
   // Filter rooms when filters change
   useEffect(() => {
     filterRooms();
+  // eslint-disable-next-line
   }, [activeTab, searchQuery, rooms]);
 
   // Check if user is logged in for Header

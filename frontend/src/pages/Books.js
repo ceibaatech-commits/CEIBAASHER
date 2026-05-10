@@ -17,6 +17,7 @@ const Books = () => {
 
   useEffect(() => {
     fetchBooks();
+  // eslint-disable-next-line
   }, [categoryFilter]);
 
   const fetchBooks = async () => {

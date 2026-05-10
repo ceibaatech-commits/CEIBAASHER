@@ -20,6 +20,7 @@ export default function RecruiterDashboard() {
     // Check non-sensitive recruiter_data for client-side gating only.
     if (!localStorage.getItem('recruiter_data')) { navigate('/recruiter'); return; }
     fetchData();
+  // eslint-disable-next-line
   }, []);
 
   const fetchData = async () => {

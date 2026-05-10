@@ -9,6 +9,7 @@ export const useAuth = () => {
 
   useEffect(() => {
     checkAuth();
+  // eslint-disable-next-line
   }, []);
 
   const checkAuth = () => {

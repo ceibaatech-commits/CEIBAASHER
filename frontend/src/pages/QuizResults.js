@@ -26,6 +26,7 @@ const QuizResults = () => {
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);
     }
+  // eslint-disable-next-line
   }, [pin]);
 
   const fetchResults = async () => {

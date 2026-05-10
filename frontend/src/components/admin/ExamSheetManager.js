@@ -243,6 +243,7 @@ const ExamSheetManager = () => {
       setSubjects([]);
       setSubTopics([]);
     }
+  // eslint-disable-next-line
   }, [examForm.exam_name, examMetadata.loaded]);
 
   useEffect(() => {
@@ -259,6 +260,7 @@ const ExamSheetManager = () => {
       }));
       setSubTopics([]);
     }
+  // eslint-disable-next-line
   }, [examForm.syllabus_topic, examMetadata.loaded]);
 
   useEffect(() => {
@@ -273,6 +275,7 @@ const ExamSheetManager = () => {
         sub_topic: ''
       }));
     }
+  // eslint-disable-next-line
   }, [examForm.subject, examMetadata.loaded]);
 
   useEffect(() => {

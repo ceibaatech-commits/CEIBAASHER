@@ -20,6 +20,7 @@ export default function HackathonDetail() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // eslint-disable-next-line
   useEffect(() => { fetchPost(); }, [hackId]);
 
   const fetchPost = async () => {

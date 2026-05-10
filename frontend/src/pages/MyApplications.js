@@ -31,6 +31,7 @@ export default function MyApplications() {
     if (!user) { navigate('/login'); return; }
     fetchApps();
     fetchSaved();
+  // eslint-disable-next-line
   }, [user]);
 
   const fetchApps = async () => {

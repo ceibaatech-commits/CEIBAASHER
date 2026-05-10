@@ -120,6 +120,7 @@ const LiveBattle = () => {
     };
     
     joinViaREST();
+  // eslint-disable-next-line
   }, [autoJoin, questions, pin, playerName]);
 
   // AUTO-START: Set quiz start time and begin immediately when questions are available
@@ -129,6 +130,7 @@ const LiveBattle = () => {
       setQuizStarted(true);
       console.log('🚀 AUTO-START: Quiz started for host immediately!');
     }
+  // eslint-disable-next-line
   }, [questions]);
 
   useEffect(() => {
@@ -338,6 +340,7 @@ const LiveBattle = () => {
     return () => {
       if (newSocket) newSocket.close();
     };
+  // eslint-disable-next-line
   }, []);
   
   // HYBRID: REST Polling for leaderboard (fallback if Socket.IO unavailable)
@@ -438,6 +441,7 @@ const LiveBattle = () => {
     } else if (timeLeft === 0 && selectedAnswer === null && currentQuestion) {
       handleAnswerSelect(-1);
     }
+  // eslint-disable-next-line
   }, [timeLeft, selectedAnswer, isPaused, currentQuestion]);
 
   // Auto-scroll chat to bottom
@@ -450,6 +454,7 @@ const LiveBattle = () => {
     if (leaderboard.length > 0 && isAuthenticated()) {
       checkFollowStatus();
     }
+  // eslint-disable-next-line
   }, [leaderboard, user]);
 
   const handleAnswerSelect = (index) => {
@@ -527,9 +532,10 @@ const LiveBattle = () => {
         console.log('🏁 Last question completed');
         // Submit all answers via REST API
         setTimeout(async () => {
+          // Declared outside try so the catch block can reference it on submit-failure navigation.
+          const totalTime = Math.floor((Date.now() - quizStartTime) / 1000);
           try {
             console.log('📤 HYBRID: Submitting all answers via REST API');
-            const totalTime = Math.floor((Date.now() - quizStartTime) / 1000);
             
             // Get user ID from localStorage
             const userStr = localStorage.getItem('ceibaa_user');

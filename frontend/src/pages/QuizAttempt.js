@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
@@ -25,6 +25,9 @@ export default function QuizAttempt() {
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
     startQuiz();
+    // startQuiz/navigate/user are intentionally omitted — startQuiz only depends on
+    // quizId (closed-over via param), and we redirect on a single mount-time auth check.
+    // eslint-disable-next-line
   }, [quizId]);
 
   const startQuiz = async () => {
@@ -37,15 +40,23 @@ export default function QuizAttempt() {
     } finally { setLoading(false); }
   };
 
+  // Stable ref to the latest handleSubmit so the timer below isn't recreated
+  // every render (and never goes stale when `submitted` / `answers` update).
+  const handleSubmitRef = useRef();
+  useEffect(() => { handleSubmitRef.current = handleSubmit; }, [handleSubmit]);
+
   useEffect(() => {
     if (!quiz || submitted || timeLeft <= 0) return;
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) { handleSubmit(); return 0; }
+        if (prev <= 1) { handleSubmitRef.current?.(); return 0; }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
+    // timeLeft intentionally omitted: it changes every second; including it
+    // would re-create the timer on each tick. handleSubmit accessed via ref.
+    // eslint-disable-next-line
   }, [quiz, submitted]);
 
   const handleSubmit = useCallback(async () => {

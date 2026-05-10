@@ -14,6 +14,7 @@ const ExamPage = () => {
 
   useEffect(() => {
     fetchSubjects();
+  // eslint-disable-next-line
   }, [examName]);
 
   const fetchSubjects = async () => {

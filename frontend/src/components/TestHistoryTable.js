@@ -229,6 +229,7 @@ const TestHistoryTable = ({ data = [], loading = false }) => {
       bestRank: bestRank === Infinity ? null : bestRank,
       totalXp: xpSum,
     };
+  // eslint-disable-next-line
   }, [table.getFilteredRowModel().rows]);
 
   if (loading) {

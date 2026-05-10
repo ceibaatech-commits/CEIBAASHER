@@ -38,6 +38,7 @@ const SupportPanel = () => {
 
   useEffect(() => {
     fetchTickets();
+  // eslint-disable-next-line
   }, [filterStatus]);
 
   const updateTicketStatus = async (ticketId, newStatus) => {

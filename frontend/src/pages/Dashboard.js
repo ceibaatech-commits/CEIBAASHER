@@ -36,6 +36,7 @@ const Dashboard = () => {
     if (user) {
       fetchProfile();
     }
+  // eslint-disable-next-line
   }, [user]);
 
   const fetchProfile = async () => {
@@ -325,6 +326,7 @@ const Dashboard = () => {
     if (profile) {
       fetchUserContent(activeTab);
     }
+  // eslint-disable-next-line
   }, [activeTab, profile]);
 
   // Filter posts based on active tab

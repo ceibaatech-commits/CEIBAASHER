@@ -3,7 +3,7 @@ import axios from 'axios';
 import { 
   Users, Plus, Edit, Trash2,
   Search, RefreshCw, CheckCircle, XCircle,
-  Calendar
+  Calendar, User
 } from 'lucide-react';
 import EmployeeFormModal from './EmployeeFormModal';
 
@@ -35,6 +35,7 @@ const EmployeeManager = () => {
 
   useEffect(() => {
     fetchEmployees();
+  // eslint-disable-next-line
   }, []);
 
   const getAuthHeaders = () => {

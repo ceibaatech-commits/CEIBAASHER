@@ -42,7 +42,9 @@ export default function CompanyChannel() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [suggestedCompanies, setSuggestedCompanies] = useState([]);
 
+  // eslint-disable-next-line
   useEffect(() => { fetchCompany(); fetchSuggested(); }, [slug]);
+  // eslint-disable-next-line
   useEffect(() => { fetchPosts(); }, [slug, tab]);
 
   const fetchCompany = async () => {

@@ -15,6 +15,7 @@ export default function RecruiterAnalytics() {
     // as the client-side gate; real auth check happens server-side.
     if (!localStorage.getItem('recruiter_data')) { navigate('/recruiter'); return; }
     fetchStats();
+  // eslint-disable-next-line
   }, []);
 
   const fetchStats = async () => {

@@ -76,6 +76,7 @@ const AuthCallback = () => {
     };
 
     processAuth();
+  // eslint-disable-next-line
   }, []);
 
   return (

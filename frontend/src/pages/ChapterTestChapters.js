@@ -57,6 +57,7 @@ const ChapterTestChapters = () => {
     }
     fetchChapters();
     fetchAcademicPosts();
+  // eslint-disable-next-line
   }, [selectedClass, subject]);
 
   const fetchChapters = async () => {

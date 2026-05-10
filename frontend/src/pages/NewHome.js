@@ -309,7 +309,7 @@ const NewHome = () => {
       <footer className="bg-black/50 backdrop-blur-md border-t border-white/10 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <CeibaaLogo size="sm" />
+            <StunningCeibaaLogo size="sm" />
             <div className="text-gray-400 text-sm mt-4 md:mt-0">
               © 2024 Ceibaa. Empowering students to achieve excellence.
             </div>

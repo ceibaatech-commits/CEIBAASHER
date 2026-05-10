@@ -10,12 +10,17 @@ const API_URL = window.location.origin;
 const BookDetails = () => {
   const { bookId } = useParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
   const [book, setBook] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleLogin = () => navigate('/login');
+  const handleLogout = () => { logout(); navigate('/'); };
+
   useEffect(() => {
     fetchBookDetails();
+  // eslint-disable-next-line
   }, [bookId]);
 
   const fetchBookDetails = async () => {
@@ -43,24 +48,15 @@ const BookDetails = () => {
     });
   };
 
-  if (loading) {  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header 
-        isLoggedIn={isAuthenticated()}
-        user={user}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
+        <Header
+          isLoggedIn={isAuthenticated()}
+          user={user}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+        />
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -71,24 +67,15 @@ const BookDetails = () => {
     );
   }
 
-  if (!book) {  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-
+  if (!book) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header 
-        isLoggedIn={isAuthenticated()}
-        user={user}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
+        <Header
+          isLoggedIn={isAuthenticated()}
+          user={user}
+          onLogin={handleLogin}
+          onLogout={handleLogout}
+        />
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -103,16 +90,7 @@ const BookDetails = () => {
         </div>
       </div>
     );
-  }  const handleLogin = () => {
-    navigate('/login');
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

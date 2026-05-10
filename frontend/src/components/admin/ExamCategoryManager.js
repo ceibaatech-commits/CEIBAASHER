@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, Edit2, Trash2, ChevronDown, ChevronRight, 
   BookOpen, Layers, FileText, Search,
-  AlertCircle, CheckCircle, Filter, GraduationCap
+  AlertCircle, CheckCircle, Filter, GraduationCap,
+  X, Loader2
 } from 'lucide-react';
 import ExamCategoryModal from './ExamCategoryModal';
 import ExamCategoryStatsGrid from './ExamCategoryStatsGrid';

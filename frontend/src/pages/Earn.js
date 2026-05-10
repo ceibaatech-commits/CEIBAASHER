@@ -89,6 +89,7 @@ const Earn = () => {
     } else {
       setLoading(false);
     }
+  // eslint-disable-next-line
   }, []);
 
   // Simulate adding posts

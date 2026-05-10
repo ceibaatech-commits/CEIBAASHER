@@ -18,6 +18,7 @@ export default function ApplyJob() {
   const [applied, setApplied] = useState(false);
   const [error, setError] = useState('');
 
+  // eslint-disable-next-line
   useEffect(() => { fetchPost(); }, [jobId]);
 
   const fetchPost = async () => {

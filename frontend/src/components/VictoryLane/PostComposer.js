@@ -33,14 +33,15 @@ const PostComposer = ({
   setShowQuizModal,
   setShowQuestionModal
 }) => {
+  // Hooks must run unconditionally before any early return (rules-of-hooks).
+  const handleContentChange = useCallback((e) => {
+    setNewPostContent(e.target.value);
+  }, [setNewPostContent]);
+
   if (!user) return null;
 
   const canPostImages = mediaSettings.allow_media && mediaSettings.can_post_images;
   const canPostVideos = mediaSettings.allow_media && mediaSettings.can_post_videos;
-
-  const handleContentChange = useCallback((e) => {
-    setNewPostContent(e.target.value);
-  }, [setNewPostContent]);
 
   // Get button state
   const buttonState = getPostButtonState ? getPostButtonState() : { disabled: !newPostContent.trim(), text: 'Post' };

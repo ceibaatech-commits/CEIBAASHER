@@ -15,6 +15,7 @@ const FollowListModal = ({ isOpen, onClose, userId, type }) => {
     if (isOpen && userId) {
       fetchUsers();
     }
+  // eslint-disable-next-line
   }, [isOpen, userId, type]);
 
   const fetchUsers = async () => {

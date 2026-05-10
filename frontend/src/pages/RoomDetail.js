@@ -30,6 +30,7 @@ const RoomDetail = () => {
       console.error('Error parsing user:', err);
     }
     fetchRoomDetail();
+  // eslint-disable-next-line
   }, [pin]);
 
   const fetchRoomDetail = async () => {

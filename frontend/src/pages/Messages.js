@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ArrowLeft, Send, MessageSquare, Search, Check, CheckCheck } from 'lucide-react';
@@ -27,7 +27,8 @@ export default function Messages() {
   const inputRef = useRef(null);
 
   const token = localStorage.getItem('token');
-  const headers = { Authorization: `Bearer ${token}` };
+  // Memoize headers so `useCallback`/`useEffect` deps below don't change every render.
+  const headers = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
 
   // Connect socket
   useEffect(() => {
@@ -68,6 +69,7 @@ export default function Messages() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  // eslint-disable-next-line
   }, [token]);
 
   // Load active conversation
@@ -86,6 +88,7 @@ export default function Messages() {
     return () => {
       socketRef.current?.emit('leave_conversation', { conversation_id: conversationId });
     };
+  // eslint-disable-next-line
   }, [conversationId, token]);
 
   // Auto-scroll

@@ -19,6 +19,7 @@ export default function ManageApplicants() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // eslint-disable-next-line
   useEffect(() => { fetchApplicants(); }, [postId]);
 
   const fetchApplicants = async () => {

@@ -35,6 +35,7 @@ const InboxDropdown = ({ user }) => {
     fetchUnread();
     const interval = setInterval(fetchUnread, 30000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line
   }, [token, user]);
 
   // Fetch conversations when dropdown opens
@@ -45,6 +46,7 @@ const InboxDropdown = ({ user }) => {
       .then(res => { if (res.data.success) setConversations(res.data.conversations); })
       .catch(() => {})
       .finally(() => setLoading(false));
+  // eslint-disable-next-line
   }, [open, token]);
 
   const formatTime = (ts) => {

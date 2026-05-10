@@ -510,7 +510,7 @@ const SheetManager = () => {
       }
 
       const response = await axios.post(
-        `${BACKEND_URL}/api/extract-questions-from-image`,
+        `${API_URL}/api/extract-questions-from-image`,
         formDataToSend,
         {
           headers: {

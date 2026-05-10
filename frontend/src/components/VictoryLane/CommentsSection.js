@@ -27,8 +27,10 @@ const CommentsSection = ({
     return !!user;
   };
 
-  // Pre-compute top-level comments + replies grouped by parent (avoid O(n²) filter in render)
-  const allComments = postComments[post.id] || [];
+  // Pre-compute top-level comments + replies grouped by parent (avoid O(n²) filter in render).
+  // Wrap `allComments` in its own useMemo so the two child useMemos below have a stable
+  // reference identity (otherwise the `||` fallback recreates [] on every render).
+  const allComments = useMemo(() => postComments[post.id] || [], [postComments, post.id]);
   const topLevelComments = useMemo(
     () => allComments.filter(c => !c.parent_comment_id),
     [allComments]

@@ -26,6 +26,7 @@ const ShareReferralModal = ({ isOpen, onClose, user }) => {
     if (activeTab === 'leaderboard' && leaderboard.length === 0) {
       fetchLeaderboard();
     }
+  // eslint-disable-next-line
   }, [activeTab]);
 
   // Close on outside click

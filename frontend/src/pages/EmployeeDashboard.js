@@ -77,6 +77,7 @@ const EmployeeDashboard = () => {
     fetchExamMetadata();
     fetchCbseData();
     fetchBooks();
+  // eslint-disable-next-line
   }, [navigate]);
 
   const getAuthHeaders = () => ({

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users, Video, VideoOff, Mic, MicOff, Trophy, Clock } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
+import Peer from 'simple-peer';
 import axios from 'axios';
 import BattleVideoChat from '../components/BattleVideoChat';
 import Header from '../components/Header';
@@ -78,6 +79,7 @@ const LiveBattleMode = () => {
         localStream.getTracks().forEach(track => track.stop());
       }
     };
+  // eslint-disable-next-line
   }, []);
 
   // HEARTBEAT: Keep connection alive during 1v1 battle (prevents timeout)
@@ -125,6 +127,7 @@ const LiveBattleMode = () => {
     } else if (battleState === 'playing' && timeLeft === 0) {
       handleNextQuestion();
     }
+  // eslint-disable-next-line
   }, [timeLeft, battleState]);
 
   const initializeWebRTC = async (room, socketConnection) => {

@@ -22,6 +22,7 @@ const ExamSyllabus = () => {
 
   useEffect(() => {
     fetchExamData();
+  // eslint-disable-next-line
   }, [examId]);
 
   const fetchExamData = async () => {

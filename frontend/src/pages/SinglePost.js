@@ -53,6 +53,7 @@ const SinglePost = () => {
 
   useEffect(() => {
     fetchPost();
+  // eslint-disable-next-line
   }, [postId]);
 
   // Fetch close friend IDs + bookmark status

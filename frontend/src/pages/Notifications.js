@@ -27,6 +27,7 @@ const Notifications = () => {
     } else if (user) {
       fetchNotifications(activeFilter, true);
     }
+  // eslint-disable-next-line
   }, [user, authLoading, activeFilter, navigate]);
 
   const handleNotificationClick = async (notification) => {

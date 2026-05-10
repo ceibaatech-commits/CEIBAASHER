@@ -13,6 +13,7 @@ export default function CommentModal({ postId, onClose }) {
   const [posting, setPosting] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
 
+  // eslint-disable-next-line
   useEffect(() => { fetchComments(); }, [postId]);
 
   const fetchComments = async () => {

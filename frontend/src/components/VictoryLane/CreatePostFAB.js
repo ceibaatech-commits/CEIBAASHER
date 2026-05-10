@@ -39,14 +39,18 @@ const CreatePostFAB = ({
   getPostButtonState,
   clearMedia,
 }) => {
+  // ── Hooks MUST be called unconditionally before any early return ──
+  // (react-hooks/rules-of-hooks). The previous code placed `if (!user) return null`
+  // BEFORE `useCallback` which would skip the hook on null users → React
+  // Hook order mismatch crash.
+  const handleContentChange = useCallback((e) => {
+    setNewPostContent(e.target.value);
+  }, [setNewPostContent]);
+
   if (!user) return null;
 
   const canPostImages = mediaSettings.allow_media && mediaSettings.can_post_images;
   const canPostVideos = mediaSettings.allow_media && mediaSettings.can_post_videos;
-
-  const handleContentChange = useCallback((e) => {
-    setNewPostContent(e.target.value);
-  }, [setNewPostContent]);
 
   const handleClose = () => {
     setShowQuickPostModal(false);
