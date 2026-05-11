@@ -7,7 +7,7 @@ import CeibaaLogo from '../components/CeibaaLogo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import HomeBannerCarousel from '../components/HomeBannerCarousel';
-import useHomeData, { SKILL_DRILL_CLASSES } from '../hooks/useHomeData';
+import useHomeData, { CATEGORIES, SKILL_DRILL_CLASSES } from '../hooks/useHomeData';
 import HomeDesktopSections from '../components/home/HomeDesktopSections';
 
 const Home = () => {
@@ -22,6 +22,8 @@ const Home = () => {
 
   const filteredExams = getFilteredExams();
   const skillDrillClasses = SKILL_DRILL_CLASSES;
+  const categories = CATEGORIES;
+  const mobileCategories = CATEGORIES;
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 pb-0 md:pb-0">
