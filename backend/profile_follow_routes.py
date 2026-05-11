@@ -11,7 +11,7 @@ from jose import jwt, JWTError
 from profile_routes import (
     db, get_user_id_from_request, get_user_by_id, get_user_by_username,
     check_follow_relationship, get_follow_counts, create_notification,
-    JWT_SECRET, JWT_ALGORITHM,
+    JWT_SECRET, JWT_ALGORITHM, ProfileUpdate, FollowRequest,
 )
 
 router = APIRouter()

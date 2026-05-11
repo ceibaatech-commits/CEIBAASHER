@@ -36,7 +36,7 @@ export const SKILL_DRILL_CLASSES = [
 const CATEGORY_MAP = {
   admission: { ids: ['CUET', 'CAT', 'CLAT', 'IPM', 'JEE', 'NEET', 'GATE', 'UGC_NET'], categories: ['Admission Tests'] },
   medical: { ids: ['NEET'], categories: ['Medical Entrance', 'Medical'] },
-  defence: { ids: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'], categories: ['Defence', 'Defence Examinations'] },
+  defence: { ids: ['NDA', 'Agniveer', 'CDS', 'CAPF', 'AFCAT'], categories: ['Defence Exams', 'Defence', 'Defence Examinations'] },
   banking: { ids: ['IBPS_PO', 'SBI_PO', 'RBI_Grade_B'], categories: ['Banking Examinations', 'Banking'] },
   university: { ids: ['LLB', 'BCOM', 'BCA'], categories: ['University & Degree Exams', 'University & Degree'] },
   teaching: { ids: ['CTET', 'UGC_NET'], categories: ['Teaching Examinations', 'Teaching'] },

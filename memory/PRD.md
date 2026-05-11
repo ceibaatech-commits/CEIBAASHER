@@ -554,6 +554,15 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — Critical hotfix: Backend down + duplicate Home component declaration
+- [x] **Bug — Backend crash:** `profile_follow_routes.py` was using `ProfileUpdate` + `FollowRequest` Pydantic models without importing them after the recent decomposition split. Backend crashed on startup with `NameError: name 'ProfileUpdate' is not defined` → `/api/quiz/exams` returned nothing → every exam-category drawer rendered "0 exams available / No exams in this category".
+  - **Fix:** added `ProfileUpdate, FollowRequest` to the `from profile_routes import (...)` block.
+- [x] **Bug — Webpack syntax error:** `HomeDesktopSections.js` had its entire file content duplicated (lines 1–344 = correct version using real DB category strings; lines 346–638 = older draft using `e.id` filters). Babel rejected the duplicate `const EXAM_SECTIONS` declaration.
+  - **Fix:** removed lines 346–638. Also dropped unused `ALL_KNOWN_CATEGORIES` constant. Lint clean.
+- [x] **Bug — Defence category empty:** `useHomeData.js` CATEGORY_MAP for `defence` was looking for `'Defence' | 'Defence Examinations'` but backend serves `'Defence Exams'`. Added the missing name to the list.
+- [x] **Mobile Search Results positioning verified:** dropdown sits 21px directly below the mobile search input (inside the same `<div className="relative px-5 pb-3">`, using `absolute mt-2`), before the stats/category grids. NEET typed → "1 result for NEET" card renders correctly above the category grid. Recurring 3-session bug — visually confirmed resolved.
+- [x] **Smoke tests:** `GET /api/quiz/exams` returns 60 exams across 13 categories; mobile home → tap "Admission Tests" → drawer reveals 8 exam cards (NEET, GATE, CUET UG, etc.) instead of "0 exams available".
+
 ### Feb 26, 2026 — Messages page: 4 bugs fixed (Profile→Message UX, infinite spinner, empty right panel, no empty state)
 - [x] **Root cause for all 4:** `Messages.js` and `messaging_socketio.py` both relied on a localStorage JWT (`localStorage.getItem('token')`) that no longer exists post Stage-3 cookie migration. `if (!token) return` short-circuited the conversation fetch (→ infinite spinner) and the messages fetch (→ empty right panel), and the socket `authenticate` event silently failed.
 - [x] **Bug 1 — Profile "Message" button now opens the right conversation:**
