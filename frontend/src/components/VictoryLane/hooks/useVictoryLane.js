@@ -613,9 +613,3 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
 };
 
 export default useVictoryLane;
-/ Quiz
-    handleJoinRoom,
-  };
-};
-
-export default useVictoryLane;

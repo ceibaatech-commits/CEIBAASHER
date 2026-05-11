@@ -181,12 +181,5 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
   );
 };
 
-export default BattleVideoChat;v>
-          )}
-        </div>
-      </div>
-    </>
-  );
-};
 
 export default BattleVideoChat;

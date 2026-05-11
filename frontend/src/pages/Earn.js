@@ -659,12 +659,3 @@ const Earn = () => {
 };
 
 export default Earn;
-    </div>
-      )}
-
-      <Footer />
-    </div>
-  );
-};
-
-export default Earn;
