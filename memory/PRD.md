@@ -554,6 +554,20 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — Code-review round 2: array-index keys + false-positive triage
+- [x] **Array-index keys → stable keys (7 instances across 5 files):**
+  - `Matchmaking1v1.js`: mobile options now `key={\`q${currentQuestionIndex}-opt-${i}\`}`; desktop options `key={\`q${currentQuestionIndex}-d-opt-${i}\`}`; mobile chat bubbles `key={\`mc-${m.ts}-${i}\`}`; desktop chat bubbles `key={\`dc-${m.ts}-${i}\`}`. Composite keys keep cross-question identity stable while preserving timestamp uniqueness for append-only chat.
+  - `AboutUs.js`: problems → `key={problem.text}`, solution items → `key={item}`, stats → `key={stat.label}`, features → `key={feature.title}`.
+  - `Profile.js:218` (hashtag spans): `key={\`${post.id}-tag-${i}-${part}\`}` — bound to parent post id so re-renders of one post don't collide with another's hashtags.
+  - `BattleLobby.js:262`: `key={player.userId || player.user_id || player.id || \`${displayName}-${index}\`}` — prefers stable user identifiers when present.
+  - `RecruiterDashboard.js:173`: stats grid → `key={s.label}`.
+- [x] **False positives triaged & documented:**
+  - `Signup.js:63,65,69,71` — password VALIDATION error message strings, not secrets.
+  - `auth_helpers.py:47` — `is None` is canonical Python (audit's `is`-literal rule does not apply to None/True/False sentinels).
+  - "260 `is` literal comparisons in Python" — grep across `/app/backend` finds ZERO real production-code occurrences. All matches are inside MCQ question/answer strings (`generate_nda_trig_mcqs.py` data file). False positives.
+  - "263 hook-deps warnings" — webpack lint reports 6 warnings (production-console only). The audit tool counts each `// eslint-disable-next-line` annotation as a violation; these are intentional mount-once `fetchX()` patterns documented in PRD Feb 25 entry.
+- [x] **Lint/smoke verified:** all 5 modified files lint clean; webpack compiles; backend up; `GET /api/quiz/exams` returns 60 exams; home page renders.
+
 ### Feb 26, 2026 — Code-review hotfix: critical syntax/undefined errors
 - [x] **Frontend syntax error — `useMediaSettings.js`:** Same duplicate-content bug as HomeDesktopSections.js. Lines 157–169 contained a half-truncated copy of the file (`ectedVideos,` etc.) causing Babel parse failure. Trimmed everything after line 156.
 - [x] **XSS via `dangerouslySetInnerHTML` — `UserAvatar.js:144`:** Replaced the `__html` injection of hardcoded SVG-pattern strings with safe JSX `<g>` elements. Patterns are still keyed off the same hash so visual identity is preserved, but there is no longer any innerHTML write path. (Note: input was always hardcoded literals, never user-provided — but removing the API surface satisfies the audit and removes the foot-gun.)

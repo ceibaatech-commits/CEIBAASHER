@@ -170,7 +170,7 @@ export default function RecruiterDashboard() {
               { label: 'Followers', value: stats.followers, color: '#c084fc' },
               { label: 'Active Posts', value: stats.approved_posts, color: '#4f7cff' },
             ].map((s, i) => (
-              <div key={i} className="bg-[#1a1e2e] border border-[#252a3d] rounded-xl p-4">
+              <div key={s.label} className="bg-[#1a1e2e] border border-[#252a3d] rounded-xl p-4">
                 <p className="text-[#8892b0] text-xs uppercase tracking-wider">{s.label}</p>
                 <p className="text-3xl font-bold mt-1" style={{ color: s.color }}>{s.value}</p>
               </div>

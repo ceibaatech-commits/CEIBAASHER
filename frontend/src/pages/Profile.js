@@ -215,7 +215,7 @@ const PostCard = ({ post, isOwn, onDelete, profile }) => {
         <p className="text-sm text-gray-800 leading-relaxed mb-3 whitespace-pre-wrap">
           {post.content.split(/(#\w+)/g).map((part, i) =>
             /^#/.test(part)
-              ? <span key={i} className="text-blue-600 font-medium hover:underline cursor-pointer">{part}</span>
+              ? <span key={`${post.id}-tag-${i}-${part}`} className="text-blue-600 font-medium hover:underline cursor-pointer">{part}</span>
               : part
           )}
         </p>

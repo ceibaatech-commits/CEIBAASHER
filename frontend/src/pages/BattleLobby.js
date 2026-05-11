@@ -259,7 +259,7 @@ const BattleLobby = () => {
                 const displayName = player.username || player.name || 'Player';
                 return (
                 <div
-                  key={index}
+                  key={player.userId || player.user_id || player.id || `${displayName}-${index}`}
                   className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-blue-200"
                 >
                   <div className="flex items-center justify-between">

@@ -1044,7 +1044,7 @@ const Matchmaking1v1 = () => {
                 if (isOpp && !answerResult) { border = C.blue; bg = C.blueLight; badge = oppName; }
                 if (isMine && isOpp && !answerResult) { border = '#8b5cf6'; bg = '#f5f3ff'; }
                 return (
-                  <button key={i} onClick={() => handleAnswerSelect(i)} disabled={selectedAnswer !== null}
+                  <button key={`q${currentQuestionIndex}-opt-${i}`} onClick={() => handleAnswerSelect(i)} disabled={selectedAnswer !== null}
                     className="w-full text-left p-4 rounded-xl border-2 transition-all relative" style={{ borderColor: border, background: bg }}>
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm"
@@ -1147,7 +1147,7 @@ const Matchmaking1v1 = () => {
                     : chatMessages.map((m, i) => {
                       const mine = m.playerName === playerName;
                       return (
-                        <div key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                        <div key={`mc-${m.ts}-${i}`} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                           <div
                             className={`max-w-[78%] px-3 py-2 text-sm leading-snug shadow-sm ${
                               mine ? 'text-white rounded-[18px] rounded-br-md' : 'bg-white text-gray-800 rounded-[18px] rounded-bl-md'
@@ -1255,7 +1255,7 @@ const Matchmaking1v1 = () => {
                     } else if (isMine) { border = C.red; bg = C.redLight; badge = 'You'; }
                     if (isOpp && !answerResult) { border = C.blue; bg = C.blueLight; badge = oppName; }
                     return (
-                      <button key={i} onClick={() => handleAnswerSelect(i)} disabled={selectedAnswer !== null}
+                      <button key={`q${currentQuestionIndex}-d-opt-${i}`} onClick={() => handleAnswerSelect(i)} disabled={selectedAnswer !== null}
                         className="text-left p-4 rounded-xl border-2 transition-all hover:shadow-md relative" style={{ borderColor: border, background: bg }}>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
@@ -1345,7 +1345,7 @@ const Matchmaking1v1 = () => {
                       : chatMessages.map((m, i) => {
                         const mine = m.playerName === playerName;
                         return (
-                          <div key={i} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
+                          <div key={`dc-${m.ts}-${i}`} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                             <div
                               className={`max-w-[80%] px-3 py-1.5 text-xs leading-snug shadow-sm ${
                                 mine ? 'text-white rounded-[16px] rounded-br-md' : 'bg-white text-gray-800 rounded-[16px] rounded-bl-md'
