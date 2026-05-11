@@ -1,6 +1,6 @@
 import os
 import logging
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -80,10 +80,23 @@ class EnquiryCreate(BaseModel):
 
 # --- Helpers ---
 
-async def verify_admin(authorization: Optional[str] = None):
-    if not authorization:
+async def _resolve_admin_token(request: Optional[Request], authorization: Optional[str]) -> str:
+    """Cookie-first (ceibaa_admin_token), Authorization-Bearer fallback."""
+    if request is not None:
+        cookie = request.cookies.get("ceibaa_admin_token")
+        if cookie:
+            return cookie
+    if authorization:
+        if authorization.lower().startswith("bearer "):
+            return authorization[7:].strip()
+        return authorization
+    return ""
+
+
+async def verify_admin(authorization: Optional[str] = None, request: Optional[Request] = None):
+    token = await _resolve_admin_token(request, authorization)
+    if not token:
         raise HTTPException(status_code=401, detail="Authentication required")
-    token = authorization.replace("Bearer ", "")
     try:
         session = await db.admin_sessions.find_one({"token": token})
         if session:
@@ -155,8 +168,8 @@ async def submit_enquiry(enquiry: EnquiryCreate):
 # --- Admin Routes ---
 
 @router.post("/admin/programs")
-async def create_program(program: ProgramCreate, authorization: Optional[str] = Header(None)):
-    await verify_admin(authorization)
+async def create_program(program: ProgramCreate, request: Request, authorization: Optional[str] = Header(None)):
+    await verify_admin(authorization, request)
     doc = program.dict()
     doc["id"] = str(uuid.uuid4())
     doc["slug"] = program.slug or make_slug(program.title)
@@ -170,8 +183,8 @@ async def create_program(program: ProgramCreate, authorization: Optional[str] = 
 
 
 @router.put("/admin/programs/{program_id}")
-async def update_program(program_id: str, updates: ProgramUpdate, authorization: Optional[str] = Header(None)):
-    await verify_admin(authorization)
+async def update_program(program_id: str, updates: ProgramUpdate, request: Request, authorization: Optional[str] = Header(None)):
+    await verify_admin(authorization, request)
     update_data = {k: v for k, v in updates.dict().items() if v is not None}
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
@@ -183,8 +196,8 @@ async def update_program(program_id: str, updates: ProgramUpdate, authorization:
 
 
 @router.delete("/admin/programs/{program_id}")
-async def delete_program(program_id: str, authorization: Optional[str] = Header(None)):
-    await verify_admin(authorization)
+async def delete_program(program_id: str, request: Request, authorization: Optional[str] = Header(None)):
+    await verify_admin(authorization, request)
     result = await db.programs.delete_one({"id": program_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Program not found")
@@ -193,13 +206,14 @@ async def delete_program(program_id: str, authorization: Optional[str] = Header(
 
 @router.get("/admin/programs/enquiries")
 async def list_enquiries(
+    request: Request,
     authorization: Optional[str] = Header(None),
     status: Optional[str] = None,
     program_id: Optional[str] = None,
     page: int = 1,
     limit: int = 50
 ):
-    await verify_admin(authorization)
+    await verify_admin(authorization, request)
     query = {}
     if status:
         query["status"] = status
@@ -216,8 +230,8 @@ async def list_enquiries(
 
 
 @router.put("/admin/programs/enquiries/{enquiry_id}")
-async def update_enquiry(enquiry_id: str, authorization: Optional[str] = Header(None), status: str = "contacted"):
-    await verify_admin(authorization)
+async def update_enquiry(enquiry_id: str, request: Request, authorization: Optional[str] = Header(None), status: str = "contacted"):
+    await verify_admin(authorization, request)
     result = await db.program_enquiries.update_one(
         {"id": enquiry_id},
         {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}

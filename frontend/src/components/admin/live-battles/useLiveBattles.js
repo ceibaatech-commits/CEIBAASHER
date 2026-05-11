@@ -5,10 +5,10 @@ import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-const getToken = () =>
-  localStorage.getItem('token') || localStorage.getItem('ceibaa_admin_token');
-
-const authHeader = () => ({ Authorization: `Bearer ${getToken()}` });
+// Cookie-based auth — `ceibaa_admin_token` httpOnly cookie is auto-attached
+// by axios because of `axios.defaults.withCredentials = true` in index.js.
+// `authConfig()` returns the per-request config so callsites stay unchanged.
+const authConfig = () => ({ withCredentials: true });
 
 export function useLiveBattles() {
   const [liveBattles, setLiveBattles] = useState([]);
@@ -30,7 +30,7 @@ export function useLiveBattles() {
   // ---- Fetchers ----
   const fetchLiveBattles = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/admin/battles/live`, { headers: authHeader() });
+      const res = await axios.get(`${API_URL}/api/admin/battles/live`, authConfig());
       if (res.data.success) setLiveBattles(res.data.live_battles || []);
     } catch (err) {
       console.error('Error fetching live battles:', err);
@@ -41,7 +41,7 @@ export function useLiveBattles() {
   const fetchBattleHistory = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/api/admin/battles/history`, {
-        headers: authHeader(),
+        ...authConfig(),
         params: { page, limit: 50, status: filterStatus !== 'all' ? filterStatus : undefined },
       });
       if (res.data.success) setBattleHistory(res.data.battles || []);
@@ -53,7 +53,7 @@ export function useLiveBattles() {
   const fetchReports = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/api/admin/battles/reports`, {
-        headers: authHeader(), params: { page: 1, limit: 50 },
+        ...authConfig(), params: { page: 1, limit: 50 },
       });
       if (res.data.success) setReports(res.data.reports || []);
     } catch (err) {
@@ -63,7 +63,7 @@ export function useLiveBattles() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/admin/battles/stats`, { headers: authHeader() });
+      const res = await axios.get(`${API_URL}/api/admin/battles/stats`, authConfig());
       if (res.data.success) setStats(res.data.stats);
     } catch (err) {
       console.error('Error fetching stats:', err);
@@ -71,16 +71,17 @@ export function useLiveBattles() {
   }, []);
 
   // ---- Socket for real-time updates ----
+  // NOTE: The httpOnly ceibaa_admin_token cookie is sent via the websocket
+  // handshake when `withCredentials: true`. Backend admin handlers read the
+  // session from `environ.HTTP_COOKIE`. Falls back to 30s polling if the
+  // socket cannot authenticate.
   useEffect(() => {
-    const token = getToken();
-    if (!token) return;
-
     const newSocket = io(`${API_URL}/api/battlews`, {
       transports: ['websocket', 'polling'],
-      auth: { token },
+      withCredentials: true,
     });
 
-    newSocket.on('connect', () => newSocket.emit('admin_join_monitor', { token }));
+    newSocket.on('connect', () => newSocket.emit('admin_join_monitor', {}));
     newSocket.on('admin_joined', () => toast.success('Connected to live battle monitor'));
     newSocket.on('admin_battle_started', (data) => {
       setLiveBattles(prev => [data.battle, ...prev]);
@@ -94,10 +95,10 @@ export function useLiveBattles() {
       setReports(prev => [data.report, ...prev]);
       toast.warning('New battle report submitted');
     });
-    newSocket.on('admin_error', (data) => toast.error(data.error));
+    newSocket.on('admin_error', () => { /* silent — polling will catch up */ });
 
     return () => {
-      newSocket.emit('admin_leave_monitor');
+      try { newSocket.emit('admin_leave_monitor'); } catch (e) { /* ignore */ }
       newSocket.disconnect();
     };
   }, [fetchStats]);
@@ -126,7 +127,7 @@ export function useLiveBattles() {
       const res = await axios.post(
         `${API_URL}/api/admin/battles/detail/${battleId}/terminate`,
         { reason: 'Admin terminated' },
-        { headers: authHeader() }
+        authConfig()
       );
       if (res.data.success) {
         toast.success('Battle terminated');
@@ -142,7 +143,7 @@ export function useLiveBattles() {
       const res = await axios.put(
         `${API_URL}/api/admin/battles/reports/${reportId}/review`,
         { status, action_taken: actionTaken, admin_notes: '' },
-        { headers: authHeader() }
+        authConfig()
       );
       if (res.data.success) {
         toast.success('Report reviewed');

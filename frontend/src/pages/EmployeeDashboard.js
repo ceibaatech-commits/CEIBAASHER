@@ -59,20 +59,26 @@ const EmployeeDashboard = () => {
 
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 (Science)', 'Class 11 (Commerce)', 'Class 11 (Humanities)', 'Class 12 (Science)', 'Class 12 (Commerce)', 'Class 12 (Humanities)'];
 
-  // Check authentication
+  // Check authentication — uses httpOnly `ceibaa_employee_token` cookie.
+  // localStorage `employee_data` is kept as a non-sensitive UI blob only.
   useEffect(() => {
-    const token = localStorage.getItem('employee_token');
     const employeeData = localStorage.getItem('employee_data');
-    
-    if (!token || !employeeData) {
+
+    if (!employeeData) {
       navigate('/employee');
       return;
     }
-    
-    setEmployee(JSON.parse(employeeData));
+
+    try {
+      setEmployee(JSON.parse(employeeData));
+    } catch (e) {
+      navigate('/employee');
+      return;
+    }
     setLoading(false);
-    
-    // Fetch sheets and metadata
+
+    // Fetch sheets and metadata (cookies are sent automatically because of
+    // axios.defaults.withCredentials = true in /app/frontend/src/index.js)
     fetchSheets();
     fetchExamMetadata();
     fetchCbseData();
@@ -80,11 +86,9 @@ const EmployeeDashboard = () => {
   // eslint-disable-next-line
   }, [navigate]);
 
-  const getAuthHeaders = () => ({
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('employee_token')}`
-    }
-  });
+  // Cookie-based auth — no Authorization header needed.
+  // Kept as a thin pass-through so existing callsites don't break.
+  const getAuthHeaders = () => ({ withCredentials: true });
 
   const fetchSheets = async () => {
     setLoadingSheets(true);
@@ -142,8 +146,10 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('employee_token');
+  const handleLogout = async () => {
+    try {
+      await axios.post(`${API_URL}/api/employee/logout`, {}, { withCredentials: true });
+    } catch (e) { /* ignore */ }
     localStorage.removeItem('employee_data');
     navigate('/employee');
   };

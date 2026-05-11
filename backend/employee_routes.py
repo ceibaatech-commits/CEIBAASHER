@@ -1,8 +1,9 @@
 """
 Employee Routes for Ceibaa Platform
 Handles employee authentication and management by admin
+Dual-mode auth: HttpOnly cookie (preferred) + Authorization Bearer (legacy)
 """
-from fastapi import APIRouter, HTTPException, Header, Depends
+from fastapi import APIRouter, HTTPException, Header, Depends, Request, Response
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -19,9 +20,41 @@ db = None
 
 JWT_SECRET = os.environ["JWT_SECRET"]
 
+# Cookie configuration
+EMPLOYEE_COOKIE_NAME = "ceibaa_employee_token"
+EMPLOYEE_COOKIE_MAX_AGE_SEC = 24 * 60 * 60  # 24 hours
+ADMIN_COOKIE_NAME = "ceibaa_admin_token"  # shared with admin_auth_routes
+
+
 def init_db(database):
     global db
     db = database
+
+
+def _set_employee_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key=EMPLOYEE_COOKIE_NAME,
+        value=token,
+        max_age=EMPLOYEE_COOKIE_MAX_AGE_SEC,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        path="/",
+    )
+
+
+def _clear_employee_cookie(response: Response) -> None:
+    response.delete_cookie(key=EMPLOYEE_COOKIE_NAME, path="/", samesite="lax")
+
+
+def _extract_token(request: Request, authorization: Optional[str], cookie_name: str) -> str:
+    """Cookie-first, Authorization-header fallback."""
+    token = request.cookies.get(cookie_name) if request else None
+    if token:
+        return token
+    if authorization and authorization.lower().startswith("bearer "):
+        return authorization[7:].strip()
+    return ""
 
 
 # ==================== MODELS ====================
@@ -65,18 +98,18 @@ def generate_employee_token(employee: dict) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
 
-async def verify_employee_token(authorization: str = Header(None)):
-    """Verify employee JWT token"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Authorization header required")
-    
+async def verify_employee_token(request: Request, authorization: str = Header(None)):
+    """Verify employee JWT token (cookie-first, Bearer fallback)"""
+    token = _extract_token(request, authorization, EMPLOYEE_COOKIE_NAME)
+    if not token:
+        raise HTTPException(status_code=401, detail="Authorization required")
+
     try:
-        token = authorization.replace("Bearer ", "")
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        
+
         if payload.get("type") != "employee":
             raise HTTPException(status_code=403, detail="Not an employee token")
-        
+
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
@@ -84,28 +117,44 @@ async def verify_employee_token(authorization: str = Header(None)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-async def verify_admin_token(authorization: str = Header(None)):
-    """Verify admin JWT token for employee management"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Authorization header required")
-    
+async def verify_admin_token(request: Request, authorization: str = Header(None)):
+    """Verify admin authentication for employee management (cookie-first, Bearer fallback).
+
+    Accepts BOTH:
+      - The new `ceibaa_admin_token` cookie / Bearer header (DB-backed admin session)
+      - Legacy JWT tokens where the `role` field on the user doc is "admin"
+    """
+    token = _extract_token(request, authorization, ADMIN_COOKIE_NAME)
+    if not token:
+        raise HTTPException(status_code=401, detail="Authorization required")
+
     try:
-        token = authorization.replace("Bearer ", "")
-        
-        # Accept hardcoded admin token from frontend
+        # 1) Try admin_sessions table (set on admin login)
+        admin_session = await db.admin_sessions.find_one({"token": token})
+        if admin_session:
+            return {
+                "id": admin_session.get("user_id"),
+                "user_id": admin_session.get("user_id"),
+                "username": admin_session.get("username"),
+                "role": admin_session.get("role", "admin"),
+            }
+
+        # 2) Legacy admin_authenticated placeholder
         if token == "admin_authenticated":
             return {"id": "admin", "user_id": "admin", "role": "admin"}
-        
+
+        # 3) Legacy JWT
         payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-        
-        # Check if user is admin
-        user_id = payload.get("id") or payload.get("user_id")
+
+        user_id = payload.get("id") or payload.get("user_id") or payload.get("sub")
         if user_id:
             user = await db.users.find_one({"id": user_id}, {"_id": 0})
-            if user and user.get("role") == "admin":
+            if user and (user.get("is_admin") or user.get("role") in ["admin", "super_admin"]):
                 return payload
-        
+
         raise HTTPException(status_code=403, detail="Admin access required")
+    except HTTPException:
+        raise
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
@@ -115,8 +164,8 @@ async def verify_admin_token(authorization: str = Header(None)):
 # ==================== EMPLOYEE AUTH ROUTES ====================
 
 @router.post("/employee/login")
-async def employee_login(credentials: EmployeeLogin):
-    """Employee login endpoint"""
+async def employee_login(credentials: EmployeeLogin, response: Response):
+    """Employee login endpoint — dual-mode (cookie + JSON token)"""
     try:
         # Find employee by employee_id
         employee = await db.employees.find_one(
@@ -144,7 +193,10 @@ async def employee_login(credentials: EmployeeLogin):
         
         # Generate token
         token = generate_employee_token(employee)
-        
+
+        # Dual-mode: set httpOnly cookie + return token in JSON
+        _set_employee_cookie(response, token)
+
         return {
             "success": True,
             "token": token,
@@ -159,6 +211,13 @@ async def employee_login(credentials: EmployeeLogin):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/employee/logout")
+async def employee_logout(response: Response):
+    """Logout employee — clears cookie."""
+    _clear_employee_cookie(response)
+    return {"success": True, "message": "Logged out"}
 
 
 @router.get("/employee/me")

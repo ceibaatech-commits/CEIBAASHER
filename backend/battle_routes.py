@@ -61,82 +61,86 @@ async def get_active_rooms():
     }
 
 
+def _build_host_data(host_name: str) -> dict:
+    """Construct host participant payload for an HTTP-created room."""
+    return {
+        "userId": f"http-{host_name}-{datetime.now().timestamp()}",
+        "username": host_name,
+        "avatar": "👑",
+        "isHost": True,
+    }
+
+
+def _build_room_config(request: 'CreateRoomRequest') -> dict:
+    return {
+        "maxParticipants": request.maxParticipants,
+        "timePerQuestion": request.timePerQuestion,
+        "category": request.category or request.subject or "",
+        "subject": request.subject or "",
+        "examId": request.examId or "",
+    }
+
+
+async def _reserve_custom_room_id(custom_room_id: str) -> str:
+    """Validate and reserve a custom room id. Raises 400 if already taken & live."""
+    existing = await room_manager.get_room(custom_room_id)
+    if existing:
+        if existing.is_expired():
+            await room_manager.remove_room(custom_room_id)
+        else:
+            raise HTTPException(status_code=400, detail="Room ID already exists")
+    return custom_room_id
+
+
+async def _create_room_with_custom_id(room_id: str, host_data: dict, config: dict):
+    """Build a BattleRoom with an explicit room_id and register it with the manager."""
+    from battle_rooms import BattleRoom, Participant, RoomConfig
+    host = Participant(
+        user_id=host_data["userId"],
+        username=host_data["username"],
+        avatar=host_data["avatar"],
+        is_host=True,
+    )
+    room_config = RoomConfig(
+        max_participants=config["maxParticipants"],
+        time_per_question=config["timePerQuestion"],
+        category=config["category"],
+        subject=config["subject"],
+        exam_id=config["examId"],
+    )
+    room = BattleRoom(room_id, host, room_config)
+    room_manager.rooms[room_id] = room
+    room_manager.user_rooms[host.user_id] = room_id
+    await room_manager.save_room_to_db(room)
+    return room
+
+
 @router.post("/create-room")
 async def create_room_http(request: CreateRoomRequest):
-    """
-    Create a battle room via HTTP.
-    Room will be active for 24 hours after creation.
-    """
+    """Create a battle room via HTTP (24h TTL)."""
     try:
-        # Create host data
-        host_data = {
-            "userId": f"http-{request.hostName}-{datetime.now().timestamp()}",
-            "username": request.hostName,
-            "avatar": "👑",
-            "isHost": True
-        }
-        
-        # Create room config
-        config = {
-            "maxParticipants": request.maxParticipants,
-            "timePerQuestion": request.timePerQuestion,
-            "category": request.category or request.subject or "",
-            "subject": request.subject or "",
-            "examId": request.examId or ""
-        }
-        
-        # Use custom room ID if provided
+        host_data = _build_host_data(request.hostName)
+        config = _build_room_config(request)
+
         if request.customRoomId:
-            existing = await room_manager.get_room(request.customRoomId)
-            if existing:
-                if existing.is_expired():
-                    await room_manager.remove_room(request.customRoomId)
-                else:
-                    raise HTTPException(status_code=400, detail="Room ID already exists")
-            room_id = request.customRoomId
-        else:
-            room_id = None
-        
-        # Create room
-        if room_id:
-            from battle_rooms import BattleRoom, Participant, RoomConfig
-            
-            host = Participant(
-                user_id=host_data["userId"],
-                username=host_data["username"],
-                avatar=host_data["avatar"],
-                is_host=True
-            )
-            
-            room_config = RoomConfig(
-                max_participants=config["maxParticipants"],
-                time_per_question=config["timePerQuestion"],
-                category=config["category"],
-                subject=config["subject"],
-                exam_id=config["examId"]
-            )
-            
-            room = BattleRoom(room_id, host, room_config)
-            room_manager.rooms[room_id] = room
-            room_manager.user_rooms[host.user_id] = room_id
-            await room_manager.save_room_to_db(room)
+            room_id = await _reserve_custom_room_id(request.customRoomId)
+            room = await _create_room_with_custom_id(room_id, host_data, config)
         else:
             room = await room_manager.create_room(host_data, config)
-        
-        # Set questions if provided
+
         if request.questions:
             room.questions = request.questions
             await room_manager.save_room_to_db(room)
-        
+
         return {
             "success": True,
             "roomId": room.room_id,
             "pin": room.room_id,
             "room": room.to_dict(),
             "expiresAt": room.expires_at,
-            "timeRemaining": room.get_time_remaining()
+            "timeRemaining": room.get_time_remaining(),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:

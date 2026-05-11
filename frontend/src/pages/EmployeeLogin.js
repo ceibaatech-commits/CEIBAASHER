@@ -27,11 +27,11 @@ const EmployeeLogin = () => {
       const response = await axios.post(`${API_URL}/api/employee/login`, {
         employee_id: employeeId,
         password: password
-      });
+      }, { withCredentials: true });
 
       if (response.data.success) {
-        // Store employee token and data
-        localStorage.setItem('employee_token', response.data.token);
+        // Auth now lives in httpOnly `ceibaa_employee_token` cookie (set by backend).
+        // Only persist non-sensitive employee profile blob in localStorage for UI hydration.
         localStorage.setItem('employee_data', JSON.stringify(response.data.employee));
         
         // Navigate to employee dashboard

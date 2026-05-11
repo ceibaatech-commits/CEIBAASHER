@@ -123,12 +123,15 @@ def mask_ip_address(ip: str) -> str:
         return f"{parts[0]}.{parts[1]}.xxx.xxx"
     return ip[:len(ip)//2] + "xxx"
 
-async def verify_super_admin(authorization: Optional[str] = Header(None)) -> dict:
-    """Verify user is an Admin or Super Admin"""
-    if not authorization:
+async def verify_super_admin(request: Request, authorization: Optional[str] = Header(None)) -> dict:
+    """Verify user is an Admin or Super Admin (cookie-first, Bearer fallback)"""
+    # Cookie-first: try the ceibaa_admin_token cookie before falling back to Authorization header
+    token = request.cookies.get("ceibaa_admin_token", "") if request else ""
+    if not token and authorization:
+        token = authorization.replace("Bearer ", "").strip()
+
+    if not token:
         raise HTTPException(status_code=401, detail="Authentication required")
-    
-    token = authorization.replace("Bearer ", "")
     
     try:
         user_id = None
@@ -213,7 +216,7 @@ async def get_live_battles(
     Get all currently active battles (real-time).
     Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         # Get battles that are in progress or waiting from database
@@ -270,6 +273,7 @@ async def get_live_battles(
 
 @router.get("/history")
 async def get_battle_history(
+    request: Request,
     authorization: Optional[str] = Header(None),
     page: int = 1,
     limit: int = 50,
@@ -281,7 +285,7 @@ async def get_battle_history(
     Get historical battle data with filters.
     Super Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         # Build filter
@@ -323,13 +327,14 @@ async def get_battle_history(
 @router.get("/detail/{battle_id}")
 async def get_battle_details(
     battle_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
     Get detailed information about a specific battle.
     Super Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         battle = await db.live_battles.find_one({"id": battle_id}, {"_id": 0})
@@ -363,6 +368,7 @@ async def get_battle_details(
 @router.post("/detail/{battle_id}/terminate")
 async def terminate_battle(
     battle_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None),
     reason: Optional[str] = "Admin terminated"
 ):
@@ -370,7 +376,7 @@ async def terminate_battle(
     Force terminate an active battle.
     Super Admin only.
     """
-    admin = await verify_super_admin(authorization)
+    admin = await verify_super_admin(request, authorization)
     
     try:
         # Update in database
@@ -594,6 +600,7 @@ async def create_battle_report(
 
 @router.get("/reports")
 async def get_battle_reports(
+    request: Request,
     authorization: Optional[str] = Header(None),
     status: Optional[str] = None,
     page: int = 1,
@@ -603,7 +610,7 @@ async def get_battle_reports(
     Get all battle reports.
     Super Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         query = {}
@@ -639,13 +646,14 @@ async def get_battle_reports(
 @router.get("/reports/{report_id}")
 async def get_report_details(
     report_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
     Get detailed report information.
     Super Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         report = await db.battle_reports.find_one({"id": report_id}, {"_id": 0})
@@ -688,13 +696,14 @@ async def get_report_details(
 async def review_battle_report(
     report_id: str,
     review: BattleReportReview,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
     Review and take action on a battle report.
     Super Admin only.
     """
-    admin = await verify_super_admin(authorization)
+    admin = await verify_super_admin(request, authorization)
     
     try:
         valid_statuses = ["reviewed", "action_taken", "dismissed"]
@@ -763,6 +772,7 @@ async def review_battle_report(
 
 @router.get("/demo")
 async def get_demo_battles(
+    request: Request,
     authorization: Optional[str] = Header(None),
     page: int = 1,
     limit: int = 50
@@ -771,7 +781,7 @@ async def get_demo_battles(
     Get demo/test battles.
     Super Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         skip = (page - 1) * limit
@@ -802,13 +812,14 @@ async def get_demo_battles(
 @router.post("/super-admin/grant")
 async def grant_super_admin(
     user_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
     Grant Super Admin privileges to a user.
     Existing Super Admin only.
     """
-    admin = await verify_super_admin(authorization)
+    admin = await verify_super_admin(request, authorization)
     
     try:
         result = await db.users.update_one(
@@ -839,13 +850,14 @@ async def grant_super_admin(
 @router.post("/super-admin/revoke")
 async def revoke_super_admin(
     user_id: str,
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
     Revoke Super Admin privileges from a user.
     Existing Super Admin only.
     """
-    admin = await verify_super_admin(authorization)
+    admin = await verify_super_admin(request, authorization)
     
     # Prevent self-revoke
     admin_id = admin.get("id") or admin.get("user_id")
@@ -882,13 +894,14 @@ async def revoke_super_admin(
 
 @router.get("/stats")
 async def get_battle_stats(
+    request: Request,
     authorization: Optional[str] = Header(None)
 ):
     """
     Get battle statistics overview.
     Super Admin only.
     """
-    await verify_super_admin(authorization)
+    await verify_super_admin(request, authorization)
     
     try:
         now = datetime.now(timezone.utc)

@@ -554,6 +554,46 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — Admin/Employee localStorage → HttpOnly cookie cutover + Python complexity refactor
+
+#### Backend — dual-mode cookie auth across admin/employee surfaces
+- **`admin_auth_routes.py`**: New `_set_admin_cookie()` / `_clear_admin_cookie()` / `_extract_admin_token()` helpers. `POST /admin/auth/login` now sets `ceibaa_admin_token` httpOnly + secure + lax cookie (24h) ALONGSIDE the JSON `token`. `POST /admin/auth/logout` clears cookie + DB session. `GET /admin/auth/verify` and the new `GET /admin/auth/me` are cookie-first with Bearer-header fallback for legacy clients.
+- **`employee_routes.py`**: Same dual-mode pattern. `POST /employee/login` sets `ceibaa_employee_token` cookie; `POST /employee/logout` (new) clears it. `verify_employee_token` and `verify_admin_token` rewritten to accept `Request` so they can read the cookie. `verify_admin_token` now also accepts DB-backed admin sessions (any admin who logged in via `/admin/auth/login` can manage employees).
+- **`programs_routes.py`**: `verify_admin()` rewritten to accept `Request`, prefer cookie over header. All 5 admin endpoints updated to pass `request` through. Now supports both admin_sessions and user_sessions JWTs.
+- **`live_battles_admin_routes.py`**: `verify_super_admin()` made cookie-first. All 13 endpoint signatures updated to include `request: Request` (with `Header(None)` still working as fallback).
+
+#### Frontend — removed all 8 raw localStorage token reads/writes
+- **`AdminLogin.js`**: removed `localStorage.setItem('ceibaa_admin_token')` — only persists the non-sensitive `ceibaa_admin_user` blob for UI hydration.
+- **`AdminDashboard.js`**: useEffect now calls `GET /api/admin/auth/verify` to validate the cookie (rather than reading the token). `handleLogout` calls `POST /api/admin/auth/logout` to clear server cookie.
+- **`EmployeeLogin.js`**: removed `localStorage.setItem('employee_token')`. `withCredentials: true` on the login axios call so the cookie is accepted.
+- **`EmployeeDashboard.js`**: `useEffect` checks for non-sensitive `employee_data` only. `getAuthHeaders` now returns `{ withCredentials: true }`. `handleLogout` calls `POST /api/employee/logout`.
+- **`useLiveBattles.js`**: `getToken()` + `authHeader()` deleted. Replaced with `authConfig()` returning `{ withCredentials: true }`. Socket.IO now uses `withCredentials: true` and reads cookies via WS handshake (`environ.HTTP_COOKIE`). Polling (30s) still active as fallback.
+- **`ProgramsManager.js`**: `getToken()` + `authHeaders()` deleted; `authConfig()` returns `{ withCredentials: true }`. All 6 callsites updated via single replace_all.
+- **`EmployeeManager.js`**: `getAuthHeaders()` returns `{ withCredentials: true }` instead of a Bearer header.
+- **Net result**: ZERO raw `localStorage.getItem('ceibaa_admin_token')` or `localStorage.getItem('employee_token')` calls remain. Only non-sensitive user-display blobs (`ceibaa_admin_user`, `employee_data`) persist for instant UI hydration.
+
+#### Python complexity refactor — 4 high-CC functions decomposed
+- **`battle_complete()` (battle_social_handlers.py)**: CC 20 → ~5, length 96 → 28 LOC. Extracted 4 helpers: `_validate_and_clamp_score`, `_apply_score_to_battle`, `_resolve_opponent_name`, `_save_user_battle_history`, `_mark_live_battle_completed`. Each absorbs its own exceptions so the orchestrator stays linear.
+- **`find_match()` (battle_social_handlers.py)**: 74 → 22 LOC. Extracted `_build_live_battle_doc`, `_emit_match_found`, `_persist_live_battle`, `_emit_waiting`. Decorator-duplication bug avoided.
+- **`create_room_http()` (battle_routes.py)**: CC 12 → ~4, length 79 → 23 LOC. Extracted `_build_host_data`, `_build_room_config`, `_reserve_custom_room_id`, `_create_room_with_custom_id`.
+- **`join_room()` socket handler (battle_socketio.py)**: 93 → 47 LOC. Extracted `_check_join_capacity`, `_emit_room_joined_payloads`. Tracebacks preserved.
+
+#### Tests
+- **New `/app/backend/tests/test_admin_cookie_cutover.py`** — 7 tests:
+  1. `/admin/auth/verify` returns legacy=true for no-token clients (grace period)
+  2. `/admin/auth/logout` is idempotent (clears cookie even when not logged in)
+  3. `/admin/auth/me` returns 401 when unauthenticated
+  4. `/employee/logout` is idempotent
+  5. Failed employee login does NOT leak a session cookie
+  6. Bogus cookie on /verify returns `{valid: false}` (no 500)
+  7. Bogus Bearer on /verify returns `{valid: false}` (no 500)
+  **All 7 pass.**
+- Stage3 auth regression (16/18 pass — 2 skip for unseeded routes), v28/v29 refactor regressions (29/30 pass — 1 pre-existing SHA-256/bcrypt mismatch on `/admin/auth/login`, NOT my regression).
+
+#### Verification
+- Webpack compile: clean (zero overlay). Admin Portal page renders correctly.
+- Backend cookie: `_set_admin_cookie()` writes `httpOnly + Secure + SameSite=Lax` → not JS-readable, not sent on cross-site requests.
+
 ### Feb 26, 2026 — Code-review round 2: array-index keys + false-positive triage
 - [x] **Array-index keys → stable keys (7 instances across 5 files):**
   - `Matchmaking1v1.js`: mobile options now `key={\`q${currentQuestionIndex}-opt-${i}\`}`; desktop options `key={\`q${currentQuestionIndex}-d-opt-${i}\`}`; mobile chat bubbles `key={\`mc-${m.ts}-${i}\`}`; desktop chat bubbles `key={\`dc-${m.ts}-${i}\`}`. Composite keys keep cross-question identity stable while preserving timestamp uniqueness for append-only chat.

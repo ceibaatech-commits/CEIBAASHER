@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { 
   LayoutDashboard, Users, FileText, DollarSign, Settings, 
   LogOut, Menu, X, TrendingUp, Activity, Shield, Bell,
@@ -26,28 +27,39 @@ const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('overview');
   const [adminUser, setAdminUser] = useState(null);
 
-  // Check authentication
+  // Check authentication — cookie-based (httpOnly ceibaa_admin_token).
+  // Falls back to localStorage user blob only for INSTANT UI hydration.
   useEffect(() => {
-    const token = localStorage.getItem('ceibaa_admin_token');
-    const user = localStorage.getItem('ceibaa_admin_user');
-    
-    if (!token) {
-      navigate('/admin');
-      return;
+    let cancelled = false;
+    const cachedUser = localStorage.getItem('ceibaa_admin_user');
+    if (cachedUser) {
+      try { setAdminUser(JSON.parse(cachedUser)); } catch (e) { /* ignore */ }
     }
-    
-    if (user) {
-      try {
-        setAdminUser(JSON.parse(user));
-      } catch(e) {
+    // Verify session via the httpOnly cookie. If invalid → boot to /admin.
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+    axios.get(`${BACKEND_URL}/api/admin/auth/verify`, { withCredentials: true })
+      .then(res => {
+        if (cancelled) return;
+        if (!res.data || res.data.valid === false) {
+          localStorage.removeItem('ceibaa_admin_user');
+          navigate('/admin');
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        localStorage.removeItem('ceibaa_admin_user');
         navigate('/admin');
-      }
-    }
+      });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line
   }, [navigate]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      localStorage.removeItem('ceibaa_admin_token');
+      try {
+        const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+        await axios.post(`${BACKEND_URL}/api/admin/auth/logout`, {}, { withCredentials: true });
+      } catch (e) { /* ignore */ }
       localStorage.removeItem('ceibaa_admin_user');
       navigate('/admin');
     }

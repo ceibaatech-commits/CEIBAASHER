@@ -25,8 +25,9 @@ const AdminLogin = () => {
       });
 
       if (response.data.success) {
-        // Store secure token
-        localStorage.setItem('ceibaa_admin_token', response.data.token);
+        // Auth now lives in httpOnly `ceibaa_admin_token` cookie (set by backend).
+        // We keep ONLY the non-sensitive user blob in localStorage so the dashboard
+        // can render the admin's name/role immediately on mount.
         localStorage.setItem('ceibaa_admin_user', JSON.stringify(response.data.user));
         
         // Navigate to admin dashboard

@@ -8,8 +8,9 @@ import {
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
-const getToken = () => localStorage.getItem('ceibaa_admin_token') || '';
-const authHeaders = () => ({ headers: { Authorization: `Bearer ${getToken()}` } });
+// Cookie-based auth (httpOnly `ceibaa_admin_token`) — sent automatically by
+// axios because `axios.defaults.withCredentials = true` is set globally.
+const authConfig = () => ({ withCredentials: true });
 
 const DOMAIN_CONFIG = {
   competition:      { label: 'Competition',   color: 'bg-amber-100 text-amber-800',   icon: Trophy },
@@ -52,10 +53,10 @@ const ProgramsManager = () => {
       const params = new URLSearchParams({ page, limit: 20 });
       if (enquiryFilter !== 'all') params.append('status', enquiryFilter);
       if (programFilter !== 'all') params.append('program_id', programFilter);
-      const res = await axios.get(`${API_URL}/api/admin/programs/enquiries?${params}`, authHeaders());
+      const res = await axios.get(`${API_URL}/api/admin/programs/enquiries?${params}`, authConfig());
       setEnquiries(res.data.enquiries || []);
       setEnquiryPagination({ page, total: res.data.pagination?.total || 0 });
-      const newRes = await axios.get(`${API_URL}/api/admin/programs/enquiries?status=new&limit=1`, authHeaders());
+      const newRes = await axios.get(`${API_URL}/api/admin/programs/enquiries?status=new&limit=1`, authConfig());
       setPendingCount(newRes.data.pagination?.total || 0);
     } catch { toast.error('Failed to load enquiries'); }
   }, [enquiryFilter, programFilter]);
@@ -71,7 +72,7 @@ const ProgramsManager = () => {
 
   const updateEnquiryStatus = async (id, status) => {
     try {
-      await axios.put(`${API_URL}/api/admin/programs/enquiries/${id}?status=${status}`, {}, authHeaders());
+      await axios.put(`${API_URL}/api/admin/programs/enquiries/${id}?status=${status}`, {}, authConfig());
       toast.success(`Marked as ${status}`);
       fetchEnquiries(enquiryPagination.page);
     } catch { toast.error('Failed to update'); }
@@ -80,7 +81,7 @@ const ProgramsManager = () => {
   const deleteProgram = async (id) => {
     if (!window.confirm('Delete this program? This cannot be undone.')) return;
     try {
-      await axios.delete(`${API_URL}/api/admin/programs/${id}`, authHeaders());
+      await axios.delete(`${API_URL}/api/admin/programs/${id}`, authConfig());
       toast.success('Program deleted');
       fetchPrograms();
     } catch { toast.error('Failed to delete'); }
@@ -346,10 +347,10 @@ function ProgramFormModal({ program, onClose, onSave }) {
         related_exams: form.related_exams ? form.related_exams.split(',').map(s => s.trim()).filter(Boolean) : [],
       };
       if (program) {
-        await axios.put(`${API_URL}/api/admin/programs/${program.id}`, payload, authHeaders());
+        await axios.put(`${API_URL}/api/admin/programs/${program.id}`, payload, authConfig());
         toast.success('Program updated');
       } else {
-        await axios.post(`${API_URL}/api/admin/programs`, payload, authHeaders());
+        await axios.post(`${API_URL}/api/admin/programs`, payload, authConfig());
         toast.success('Program created');
       }
       onSave();

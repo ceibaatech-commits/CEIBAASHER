@@ -118,10 +118,54 @@ async def create_room(sid, config):
         await sio.emit('error', {'message': str(e)}, room=sid)
 
 
+async def _check_join_capacity(sid, room, username):
+    """Return True if join can proceed, False if already-rejected error was sent."""
+    is_existing = any(p.username == username for p in room.participants)
+    if is_existing or room.is_joinable():
+        return True, is_existing
+    if room.status != 'active':
+        print(f"[JOIN ERROR] Room {room.room_id} not joinable for new participant")
+        await sio.emit('join_error', {
+            'error': 'Room is not accepting participants.',
+            'code': 'ROOM_CLOSED',
+            'statusCode': 403,
+        }, room=sid)
+        return False, is_existing
+    return True, is_existing
+
+
+async def _emit_room_joined_payloads(sid, room_id, room, sid_for_user, user_data, is_host, participant):
+    """Emit participant_joined to the room + room_joined to the new socket."""
+    joined_at = getattr(participant, 'joined_at', None) if participant else None
+    await sio.emit('participant_joined', {
+        'participant': {
+            'userId': sid_for_user,
+            'username': user_data.get('username'),
+            'avatar': user_data.get('avatar'),
+            'isHost': is_host,
+            'joinedAt': joined_at,
+        },
+        'room': room.to_dict(),
+    }, room=room_id)
+
+    await sio.emit('room_joined', {
+        'success': True,
+        'room': room.to_dict(),
+        'questions': room.questions,
+        'isHost': is_host,
+        'hostInfo': {
+            'userId': room.host.user_id,
+            'username': room.host.username,
+            'avatar': room.host.avatar,
+        },
+        'timeRemaining': room.get_time_remaining(),
+    }, room=sid)
+
+
 @sio.event
 async def join_room(sid, data):
     """Join an existing battle room - NO HOST APPROVAL REQUIRED.
-    
+
     Refactored flow:
     1. Anyone with valid PIN can join instantly
     2. Room must not be expired (24 hours from creation)
@@ -131,8 +175,8 @@ async def join_room(sid, data):
     try:
         room_id = data.get('roomId')
         user_data = data.get('userData', {})
-
-        print(f"[JOIN ATTEMPT] {user_data.get('username')} trying to join room {room_id}")
+        username = user_data.get('username', '')
+        print(f"[JOIN ATTEMPT] {username} trying to join room {room_id}")
 
         room = await room_manager.get_room(room_id)
 
@@ -142,71 +186,35 @@ async def join_room(sid, data):
             await sio.emit('join_error', precondition_error, room=sid)
             return
 
-        # Check if user is already a participant (allow reconnection)
-        username = user_data.get('username', '')
-        is_existing_participant = any(p.username == username for p in room.participants)
+        can_join, _ = await _check_join_capacity(sid, room, username)
+        if not can_join:
+            return
 
-        # For NEW participants, check if room is accepting
-        if not is_existing_participant and not room.is_joinable():
-            if room.status != 'active':
-                print(f"[JOIN ERROR] Room {room_id} not joinable for new participant")
-                await sio.emit('join_error', {
-                    'error': 'Room is not accepting participants.',
-                    'code': 'ROOM_CLOSED',
-                    'statusCode': 403
-                }, room=sid)
-                return
-
-        # Track activity and persist session
         user_activity[sid] = datetime.now(timezone.utc).timestamp()
         await sio.save_session(sid, {'userData': user_data})
 
         is_actual_host = _handle_host_reconnect(room, sid, user_data)
         user_data['isHost'] = is_actual_host
 
-        # Add participant - NO APPROVAL NEEDED (instant join/reconnect)
         result = room.add_participant(sid, user_data)
         if not result.get('success'):
-            error_msg = result.get('error', 'Failed to join room')
-            error_code = result.get('code', 'JOIN_FAILED')
-            print(f"[JOIN ERROR] {error_msg} for room {room_id}")
+            print(f"[JOIN ERROR] {result.get('error')} for room {room_id}")
             await sio.emit('join_error', {
-                'error': error_msg, 'code': error_code, 'statusCode': 403
+                'error': result.get('error', 'Failed to join room'),
+                'code': result.get('code', 'JOIN_FAILED'),
+                'statusCode': 403,
             }, room=sid)
             return
 
-        # Join Socket.IO room + persist
         await sio.enter_room(sid, room_id)
         room_manager.user_rooms[sid] = room_id
         await room_manager.save_room_to_db(room)
 
-        print(f"[JOIN SUCCESS] ✅ {user_data.get('username')} joined room {room_id} ({len(room.participants)} participants)")
+        print(f"[JOIN SUCCESS] ✅ {username} joined room {room_id} ({len(room.participants)} participants)")
 
-        # Notify all participants
-        await sio.emit('participant_joined', {
-            'participant': {
-                'userId': sid,
-                'username': user_data.get('username'),
-                'avatar': user_data.get('avatar'),
-                'isHost': is_actual_host,
-                'joinedAt': result.get('participant', {}).joined_at if hasattr(result.get('participant', {}), 'joined_at') else None
-            },
-            'room': room.to_dict()
-        }, room=room_id)
-
-        # Send room data to joiner
-        await sio.emit('room_joined', {
-            'success': True,
-            'room': room.to_dict(),
-            'questions': room.questions,
-            'isHost': is_actual_host,
-            'hostInfo': {
-                'userId': room.host.user_id,
-                'username': room.host.username,
-                'avatar': room.host.avatar
-            },
-            'timeRemaining': room.get_time_remaining()
-        }, room=sid)
+        await _emit_room_joined_payloads(
+            sid, room_id, room, sid, user_data, is_actual_host, result.get('participant'),
+        )
 
     except Exception as e:
         print(f"[ERROR] join_room: {str(e)}")

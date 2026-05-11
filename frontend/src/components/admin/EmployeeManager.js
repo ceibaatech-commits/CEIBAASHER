@@ -38,15 +38,11 @@ const EmployeeManager = () => {
   // eslint-disable-next-line
   }, []);
 
-  const getAuthHeaders = () => {
-    // Use admin token stored during admin login
-    const token = localStorage.getItem('ceibaa_admin_token');
-    return {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    };
-  };
+  // Cookie-based auth — the httpOnly `ceibaa_admin_token` cookie is sent
+  // automatically because `axios.defaults.withCredentials = true` is set
+  // globally in index.js. Kept as a thin per-request config object so
+  // existing callsites stay unchanged.
+  const getAuthHeaders = () => ({ withCredentials: true });
 
   const fetchEmployees = async () => {
     setLoading(true);

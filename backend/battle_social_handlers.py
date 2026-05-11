@@ -168,9 +168,57 @@ async def leave_room(sid, data):
 
 # ==================== MATCHMAKING EVENTS ====================
 
+
+def _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject):
+    """Build the live_battles document. Pure function — no I/O."""
+    now_iso = datetime.now(timezone.utc).isoformat()
+    return {
+        "id": room_id, "room_id": room_id, "type": "1v1", "status": "in_progress",
+        "players": [
+            {"user_id": sid, "username": player_name, "score": 0},
+            {"user_id": opponent.socket_id, "username": opponent.player_name, "score": 0},
+        ],
+        "exam": exam, "subject": subject,
+        "total_questions": 10, "duration_seconds": 0,
+        "started_at": now_iso, "ended_at": None,
+        "winner_id": None, "is_demo": False,
+        "created_at": now_iso, "updated_at": now_iso,
+    }
+
+
+async def _emit_match_found(sid, opponent, room_id, player_name, exam, subject):
+    """Create the socket-io room, emit match-found event."""
+    await sio.enter_room(sid, room_id)
+    await sio.enter_room(opponent.socket_id, room_id)
+    await sio.emit('match-found', {
+        'roomId': room_id,
+        'players': [{'playerName': player_name}, {'playerName': opponent.player_name}],
+        'exam': exam, 'subject': subject,
+    }, room=room_id)
+
+
+async def _persist_live_battle(room_id, battle_doc):
+    """Persist the doc + notify admins. Best-effort — does not break match flow."""
+    try:
+        await db.live_battles.insert_one(battle_doc.copy())
+        await notify_admins_battle_started(room_id, battle_doc)
+    except Exception as e:
+        print(f"[MATCHMAKING] Failed to persist battle: {e}")
+
+
+async def _emit_waiting(sid, exam, subject):
+    """Inform a player they're in the queue."""
+    queue_size = matchmaking_manager.get_queue_size(exam, subject)
+    await sio.emit('waiting', {
+        'message': 'Looking for opponent...',
+        'queueSize': queue_size,
+        'timeout': 30,
+    }, room=sid)
+
+
 @sio.on('find-match')
 async def find_match(sid, data):
-    """Find a match for quiz battle — optimized with bucket queues"""
+    """Find a match for quiz battle — optimized with bucket queues."""
     print(f"[MATCHMAKING] find-match from {sid}")
     try:
         player_name = data.get('playerName', 'Player')
@@ -179,67 +227,22 @@ async def find_match(sid, data):
         # topic is available but not used for matching (we match on exam level)
         _ = data.get('topic', '')
 
-        # O(1) match lookup via bucket queue
         opponent = matchmaking_manager.add_to_queue(sid, player_name, exam, subject)
+        if not opponent:
+            await _emit_waiting(sid, exam, subject)
+            return
 
-        if opponent:
-            # Instant match — create room immediately
-            room_id = f"room_{int(datetime.now(timezone.utc).timestamp())}_{generate_random_id()}"
+        # Instant match — create room immediately
+        room_id = f"room_{int(datetime.now(timezone.utc).timestamp())}_{generate_random_id()}"
+        player1_data = {'socketId': sid, 'playerName': player_name, 'score': 0}
+        player2_data = {'socketId': opponent.socket_id, 'playerName': opponent.player_name, 'score': 0}
+        matchmaking_manager.create_battle(room_id, player1_data, player2_data, exam, subject)
 
-            player1_data = {'socketId': sid, 'playerName': player_name, 'score': 0}
-            player2_data = {'socketId': opponent.socket_id, 'playerName': opponent.player_name, 'score': 0}
+        await _emit_match_found(sid, opponent, room_id, player_name, exam, subject)
+        print(f"[MATCHMAKING] Instant match: Room {room_id}")
 
-            matchmaking_manager.create_battle(room_id, player1_data, player2_data, exam, subject)
-
-            await sio.enter_room(sid, room_id)
-            await sio.enter_room(opponent.socket_id, room_id)
-
-            await sio.emit('match-found', {
-                'roomId': room_id,
-                'players': [
-                    {'playerName': player_name},
-                    {'playerName': opponent.player_name}
-                ],
-                'exam': exam,
-                'subject': subject
-            }, room=room_id)
-
-            print(f"[MATCHMAKING] Instant match: Room {room_id}")
-
-            # Persist to live_battles collection for admin panel
-            battle_doc = {
-                "id": room_id,
-                "room_id": room_id,
-                "type": "1v1",
-                "status": "in_progress",
-                "players": [
-                    {"user_id": sid, "username": player_name, "score": 0},
-                    {"user_id": opponent.socket_id, "username": opponent.player_name, "score": 0}
-                ],
-                "exam": exam,
-                "subject": subject,
-                "total_questions": 10,
-                "duration_seconds": 0,
-                "started_at": datetime.now(timezone.utc).isoformat(),
-                "ended_at": None,
-                "winner_id": None,
-                "is_demo": False,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
-            }
-            try:
-                await db.live_battles.insert_one(battle_doc.copy())
-                await notify_admins_battle_started(room_id, battle_doc)
-            except Exception as e:
-                print(f"[MATCHMAKING] Failed to persist battle: {e}")
-        else:
-            # Send queue info so frontend can show position
-            queue_size = matchmaking_manager.get_queue_size(exam, subject)
-            await sio.emit('waiting', {
-                'message': 'Looking for opponent...',
-                'queueSize': queue_size,
-                'timeout': 30
-            }, room=sid)
+        battle_doc = _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject)
+        await _persist_live_battle(room_id, battle_doc)
 
     except Exception as e:
         print(f"[ERROR] find_match: {str(e)}")
@@ -322,102 +325,120 @@ async def battle_chat(sid, data):
         print(f"[ERROR] battle_chat: {str(e)}")
 
 
+# ─── battle_complete() helpers ─────────────────────────────────────────────
+# Split out from battle_complete() to reduce CC from 20 → ~5 and length from
+# 96 → ~25 LOC. Each helper has a single responsibility and absorbs its own
+# exceptions so the orchestrator stays linear.
+
+def _validate_and_clamp_score(raw_final_score, total_questions):
+    """Server-side score validation — clamp into [0, total_questions × 100].
+    Prevents tampered clients from posting impossible scores.
+    """
+    try:
+        tq = int(total_questions) if total_questions else 10
+    except (TypeError, ValueError):
+        tq = 10
+    tq = max(1, min(100, tq))  # sanity bounds
+    max_score = tq * 100
+    try:
+        score = int(raw_final_score)
+    except (TypeError, ValueError):
+        score = 0
+    return max(0, min(max_score, score)), tq
+
+
+def _apply_score_to_battle(battle, sid, final_score, user_id):
+    """Mutate battle in-place with the player's final score. Returns resolved user_id."""
+    if battle.player1['socketId'] == sid:
+        battle.player1['finalScore'] = final_score
+        return user_id or battle.player1.get('userId')
+    if battle.player2['socketId'] == sid:
+        battle.player2['finalScore'] = final_score
+        return user_id or battle.player2.get('userId')
+    return user_id
+
+
+def _resolve_opponent_name(battle, sid):
+    return battle.player2['playerName'] if battle.player1['socketId'] == sid else battle.player1['playerName']
+
+
+async def _save_user_battle_history(user_id, room_id, battle, sid, final_score, total_questions,
+                                    exam, subject, player_name):
+    """Persist user_battle_history record. Swallow errors — battle UX must continue."""
+    if not user_id:
+        return
+    try:
+        user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1})
+        u_name = user_doc.get("name", player_name) if user_doc else player_name
+        await db.user_battle_history.insert_one({
+            "user_id": user_id,
+            "user_name": u_name,
+            "battle_type": "1v1",
+            "room_id": room_id,
+            "score": final_score,
+            "total_questions": total_questions or 10,
+            "exam": exam or getattr(battle, 'exam', '') or "",
+            "subject": subject or getattr(battle, 'subject', '') or "",
+            "opponent_name": _resolve_opponent_name(battle, sid),
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+        })
+        print(f"[BATTLE_COMPLETE] Saved history for {user_id}")
+    except Exception as e:
+        print(f"[BATTLE_COMPLETE] Failed to save history: {str(e)}")
+
+
+async def _mark_live_battle_completed(room_id, user_id, player_name, final_score):
+    """Update live_battles doc and notify admins. Swallow errors — best-effort."""
+    try:
+        now_iso = datetime.now(timezone.utc).isoformat()
+        await db.live_battles.update_one(
+            {"room_id": room_id},
+            {
+                "$set": {"status": "completed", "ended_at": now_iso, "updated_at": now_iso},
+                "$push": {"player_sessions": {
+                    "user_id": user_id,
+                    "username": player_name,
+                    "final_score": final_score,
+                    "completed_at": now_iso,
+                }},
+            },
+        )
+        await notify_admins_battle_ended(room_id, {"player_name": player_name, "final_score": final_score})
+    except Exception as e:
+        print(f"[BATTLE_COMPLETE] Failed to update live_battles: {e}")
+
+
 @sio.on('battle-complete')
 async def battle_complete(sid, data):
-    """Handle battle completion for 1v1 matchmaking"""
+    """Handle battle completion for 1v1 matchmaking — orchestrator only."""
     try:
         room_id = data.get('roomId')
         player_name = data.get('playerName', 'Player')
-        raw_final_score = data.get('finalScore', 0)
         user_id = data.get('userId')
-        total_questions = data.get('totalQuestions', 10)
-        exam = data.get('exam', '')
-        subject = data.get('subject', '')
+        final_score, total_questions = _validate_and_clamp_score(
+            data.get('finalScore', 0), data.get('totalQuestions', 10)
+        )
 
-        # ── Server-side score validation (Feb 2026) ──
-        # Mirrors the frontend scoring equation: max 100 pts/question.
-        # Anything outside [0, total_questions × 100] is clamped — prevents
-        # tampered or buggy clients from posting impossible scores.
-        try:
-            total_questions = int(total_questions) if total_questions else 10
-        except (TypeError, ValueError):
-            total_questions = 10
-        total_questions = max(1, min(100, total_questions))   # sanity bounds
-        max_battle_score = total_questions * 100              # MAX_PER_QUESTION
-        try:
-            final_score = int(raw_final_score)
-        except (TypeError, ValueError):
-            final_score = 0
-        final_score = max(0, min(max_battle_score, final_score))
-        
         battle = matchmaking_manager.get_battle(room_id)
         if not battle:
             return
-            
-        # Update final score
-        if battle.player1['socketId'] == sid:
-            battle.player1['finalScore'] = final_score
-            user_id = user_id or battle.player1.get('userId')
-        elif battle.player2['socketId'] == sid:
-            battle.player2['finalScore'] = final_score
-            user_id = user_id or battle.player2.get('userId')
-        
-        # Save to user_battle_history for stats tracking
-        if user_id:
-            try:
-                # Fetch user name
-                user_doc = await db.users.find_one({"id": user_id}, {"_id": 0, "name": 1})
-                u_name = user_doc.get("name", player_name) if user_doc else player_name
-                
-                await db.user_battle_history.insert_one({
-                    "user_id": user_id,
-                    "user_name": u_name,
-                    "battle_type": "1v1",
-                    "room_id": room_id,
-                    "score": final_score,
-                    "total_questions": total_questions or 10,
-                    "exam": exam or battle.exam or "",
-                    "subject": subject or battle.subject or "",
-                    "opponent_name": battle.player2['playerName'] if battle.player1['socketId'] == sid else battle.player1['playerName'],
-                    "completed_at": datetime.now(timezone.utc).isoformat()
-                })
-                print(f"[BATTLE_COMPLETE] Saved history for {user_id}")
-            except Exception as e:
-                print(f"[BATTLE_COMPLETE] Failed to save history: {str(e)}")
-            
+
+        user_id = _apply_score_to_battle(battle, sid, final_score, user_id)
+
+        await _save_user_battle_history(
+            user_id, room_id, battle, sid, final_score, total_questions,
+            data.get('exam', ''), data.get('subject', ''), player_name,
+        )
+
         # Notify opponent
-        await sio.emit('opponent-score-update', {
-            'playerName': player_name,
-            'score': final_score
-        }, room=room_id, skip_sid=sid)
-        
+        await sio.emit('opponent-score-update',
+                       {'playerName': player_name, 'score': final_score},
+                       room=room_id, skip_sid=sid)
+
         print(f"[BATTLE_COMPLETE] {player_name} finished with {final_score} pts in {room_id}")
 
-        # Update live_battles in DB for admin panel
-        try:
-            await db.live_battles.update_one(
-                {"room_id": room_id},
-                {"$set": {
-                    "status": "completed",
-                    "ended_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_at": datetime.now(timezone.utc).isoformat()
-                },
-                "$push": {
-                    "player_sessions": {
-                        "user_id": user_id,
-                        "username": player_name,
-                        "final_score": final_score,
-                        "completed_at": datetime.now(timezone.utc).isoformat()
-                    }
-                }}
-            )
-            await notify_admins_battle_ended(room_id, {
-                "player_name": player_name,
-                "final_score": final_score
-            })
-        except Exception as e:
-            print(f"[BATTLE_COMPLETE] Failed to update live_battles: {e}")
-        
+        await _mark_live_battle_completed(room_id, user_id, player_name, final_score)
+
     except Exception as e:
         print(f"[ERROR] battle_complete: {str(e)}")
 
