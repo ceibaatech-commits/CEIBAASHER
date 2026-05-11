@@ -1199,7 +1199,7 @@ const LiveBattle = () => {
                                     : 'bg-gray-100 text-gray-600'
                                 }`}
                               >
-                                {String.fromCharCode(65 + optIdx)}. {opt.substring(0, 20)}...
+                                {String.fromCharCode(65 + optIdx)}. {typeof opt === 'string' ? opt.substring(0, 20) : String(opt ?? '').substring(0, 20)}...
                               </div>
                             ))}
                           </div>
