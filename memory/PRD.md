@@ -16,6 +16,15 @@ Build and enhance the "Ceibaa" educational platform — a full-stack app (React,
 backend/
 ├── server.py                    # FastAPI app + route registration
 ├── database.py                  # Centralized MongoDB connection
+├── exam_data.py                 # Exam helper functions (79 lines — data in exam_data_store.py)
+├── exam_data_store.py           # Hardcoded EXAM_DATA dict (data-only)
+├── profile_routes.py            # Core profile CRUD + helpers (274 lines)
+├── profile_follow_routes.py     # Follow/unfollow/requests/block/close-friend (921 lines)
+├── profile_content_routes.py    # User posts, quiz-rooms, liked posts, reposts (350 lines)
+├── battle_shared.py             # Shared sio instance, globals, helpers (434 lines)
+├── battle_socketio.py           # Core room/game handlers + ASGI app (494 lines)
+├── battle_social_handlers.py    # Chat, reactions, gifts, matchmaking (425 lines)
+├── battle_webrtc_handlers.py    # WebRTC + VC signaling (141 lines)
 ├── recruitment_routes.py        # Thin aggregator (imports sub-routers)
 ├── recruitment/
 │   ├── core_routes.py           # Auth, companies, feed, applications, posts CRUD (319 lines)

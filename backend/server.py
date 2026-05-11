@@ -31,8 +31,12 @@ import ceep_routes
 import admin_routes
 from chapter_test_routes import router as chapter_test_router
 from profile_routes import router as profile_router
+from profile_follow_routes import router as profile_follow_router
+from profile_content_routes import router as profile_content_router
 from notification_routes import router as notification_router
 import profile_routes
+import profile_follow_routes
+import profile_content_routes
 import notification_routes
 from books_routes import router as books_router
 import books_routes
@@ -73,6 +77,8 @@ social_feed_routes.init_db(db)
 ceep_routes.init_db(db)
 admin_routes.init_db(db)
 profile_routes.init_db(db)
+profile_follow_routes.db = profile_routes.db  # shared db reference after init
+profile_content_routes.db = profile_routes.db
 notification_routes.init_db(db)
 books_routes.init_db(db)
 exam_structure_routes.init_db(db)
@@ -196,6 +202,8 @@ fastapi_app.include_router(ceep_router, prefix="/api/ceep")
 fastapi_app.include_router(admin_router, prefix="/api")
 fastapi_app.include_router(chapter_test_router)
 fastapi_app.include_router(profile_router, prefix="/api/profile")
+fastapi_app.include_router(profile_follow_router, prefix="/api/profile")
+fastapi_app.include_router(profile_content_router, prefix="/api/profile")
 fastapi_app.include_router(notification_router, prefix="/api")
 fastapi_app.include_router(search_router)
 fastapi_app.include_router(books_router)
