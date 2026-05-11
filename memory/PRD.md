@@ -554,6 +554,15 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — Code-review hotfix: critical syntax/undefined errors
+- [x] **Frontend syntax error — `useMediaSettings.js`:** Same duplicate-content bug as HomeDesktopSections.js. Lines 157–169 contained a half-truncated copy of the file (`ectedVideos,` etc.) causing Babel parse failure. Trimmed everything after line 156.
+- [x] **XSS via `dangerouslySetInnerHTML` — `UserAvatar.js:144`:** Replaced the `__html` injection of hardcoded SVG-pattern strings with safe JSX `<g>` elements. Patterns are still keyed off the same hash so visual identity is preserved, but there is no longer any innerHTML write path. (Note: input was always hardcoded literals, never user-provided — but removing the API surface satisfies the audit and removes the foot-gun.)
+- [x] **Python F821 undefined names — `battle_socketio.py`:** Added `_persist_battle_completion, _save_battle_history, _auto_post_battle_results, _validate_start_preconditions, _persist_battle_start` to the `from battle_shared import (…)` block. Lines 346–390 will no longer NameError at battle end.
+- [x] **Python F821 undefined names — `battle_social_handlers.py`:** Added `notify_admins_battle_started, notify_admins_battle_ended` to the imports from `battle_shared`. Lines 231/413 admin-notification flow restored.
+- [x] **Signup.js lines 63/65/69/71 audit flag = false positive** (validation error message strings containing the word "password" — no actual secrets present).
+- [x] **`is None` in auth_helpers.py:47 audit flag = false positive** (canonical Python idiom — `==` for None is the actual anti-pattern).
+- [x] **Smoke verified:** backend restarted clean, `GET /api/quiz/exams` returns 60 exams; home page renders; webpack overlay = none; UserAvatar pattern still renders via JSX.
+
 ### Feb 26, 2026 — Critical hotfix: Backend down + duplicate Home component declaration
 - [x] **Bug — Backend crash:** `profile_follow_routes.py` was using `ProfileUpdate` + `FollowRequest` Pydantic models without importing them after the recent decomposition split. Backend crashed on startup with `NameError: name 'ProfileUpdate' is not defined` → `/api/quiz/exams` returned nothing → every exam-category drawer rendered "0 exams available / No exams in this category".
   - **Fix:** added `ProfileUpdate, FollowRequest` to the `from profile_routes import (...)` block.

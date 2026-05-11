@@ -30,16 +30,33 @@ const GRADIENT_PRESETS = [
   'from-rose-500 to-pink-600',
 ];
 
-// Pattern SVGs for more interesting avatars
+// Pattern SVGs for more interesting avatars — rendered as safe JSX (no innerHTML).
+// Returning <g> element keeps the parent <svg> viewBox intact.
 const PATTERNS = [
-  // Circles pattern
-  `<circle cx="10" cy="10" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.1)"/>`,
-  // Dots pattern
-  `<circle cx="5" cy="5" r="1.5" fill="rgba(255,255,255,0.15)"/><circle cx="15" cy="15" r="1.5" fill="rgba(255,255,255,0.15)"/><circle cx="25" cy="25" r="1.5" fill="rgba(255,255,255,0.15)"/><circle cx="35" cy="35" r="1.5" fill="rgba(255,255,255,0.15)"/>`,
-  // Diagonal lines
-  `<line x1="0" y1="40" x2="40" y2="0" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>`,
-  // None (solid gradient)
-  '',
+  // 0 — Circles
+  (
+    <g key="circles">
+      <circle cx="10" cy="10" r="3" fill="rgba(255,255,255,0.1)" />
+      <circle cx="30" cy="30" r="3" fill="rgba(255,255,255,0.1)" />
+    </g>
+  ),
+  // 1 — Dots
+  (
+    <g key="dots">
+      <circle cx="5" cy="5" r="1.5" fill="rgba(255,255,255,0.15)" />
+      <circle cx="15" cy="15" r="1.5" fill="rgba(255,255,255,0.15)" />
+      <circle cx="25" cy="25" r="1.5" fill="rgba(255,255,255,0.15)" />
+      <circle cx="35" cy="35" r="1.5" fill="rgba(255,255,255,0.15)" />
+    </g>
+  ),
+  // 2 — Diagonal lines
+  (
+    <g key="lines">
+      <line x1="0" y1="40" x2="40" y2="0" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
+    </g>
+  ),
+  // 3 — Solid (no pattern)
+  null,
 ];
 
 // Generate consistent hash from string
@@ -136,13 +153,15 @@ const UserAvatar = ({
         textShadow: '0 1px 2px rgba(0,0,0,0.2)',
       }}
     >
-      {/* Pattern overlay */}
+      {/* Pattern overlay — safe JSX, no innerHTML */}
       {avatarStyle.pattern && (
-        <svg 
-          className="absolute inset-0 w-full h-full opacity-30" 
+        <svg
+          className="absolute inset-0 w-full h-full opacity-30"
           viewBox="0 0 40 40"
-          dangerouslySetInnerHTML={{ __html: avatarStyle.pattern }}
-        />
+          aria-hidden="true"
+        >
+          {avatarStyle.pattern}
+        </svg>
       )}
       {/* Initials */}
       <span className={`${config.fontSize} relative z-10`}>

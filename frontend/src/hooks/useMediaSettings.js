@@ -154,15 +154,3 @@ export const useMediaSettings = (user) => {
 };
 
 export default useMediaSettings;
-ectedVideos,
-    uploading,
-    addImage,
-    removeImage,
-    addVideo,
-    removeVideo,
-    clearMedia,
-    uploadMedia
-  };
-};
-
-export default useMediaSettings;

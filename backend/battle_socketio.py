@@ -5,6 +5,8 @@ from battle_shared import (
     sio, db, user_activity, room_manager, matchmaking_manager,
     _validate_join_preconditions, _handle_host_reconnect,
     _validate_gift_request,
+    _persist_battle_completion, _save_battle_history, _auto_post_battle_results,
+    _validate_start_preconditions, _persist_battle_start,
     generate_random_id, handle_user_leave, init_socketio_db, start_matchmaking_sweep,
 )
 from datetime import datetime, timezone
