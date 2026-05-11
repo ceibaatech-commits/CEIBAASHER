@@ -2,6 +2,7 @@
 Exam Structure Routes - Database-Driven Exam Hierarchy
 This replaces hardcoded exam_data.py with dynamic database queries
 """
+import re
 from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any, Optional
 import os

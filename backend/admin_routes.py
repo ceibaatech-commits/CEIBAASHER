@@ -2,6 +2,7 @@
 Admin Routes for Ceibaa Platform
 Handles admin panel operations like user management, analytics, etc.
 """
+import re
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 from typing import Optional, List

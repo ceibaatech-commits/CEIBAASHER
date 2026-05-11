@@ -1,4 +1,5 @@
 """Recruitment: Core routes — Auth, Companies, Feed, Applications, Posts CRUD"""
+import re
 import os
 import uuid
 import bcrypt

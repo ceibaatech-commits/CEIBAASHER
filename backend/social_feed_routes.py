@@ -28,6 +28,7 @@ db.social_posts.createIndex({ "created_at": -1 })
 db.post_likes.createIndex({ "user_id": 1, "post_id": 1 }, { unique: true })
 db.quiz_rooms.createIndex({ "room_code": 1 }, { unique: true })
 """
+import re
 from fastapi import APIRouter, HTTPException, Header, Query, Request
 from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Literal

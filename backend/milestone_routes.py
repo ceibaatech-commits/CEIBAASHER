@@ -12,6 +12,7 @@ MONETIZATION:
 - Local vendor ads targeted by city/district
 - Impressions-based revenue
 """
+import re
 from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel
 from typing import Optional, List, Literal
