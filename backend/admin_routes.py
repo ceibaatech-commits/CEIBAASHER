@@ -312,9 +312,9 @@ async def search_users(query: str, limit: int = 20):
         # Build search query
         search_filter = {
             "$or": [
-                {"name": {"$regex": query, "$options": "i"}},
-                {"email": {"$regex": query, "$options": "i"}},
-                {"id": {"$regex": query, "$options": "i"}}
+                {"name": {"$regex": re.escape(query), "$options": "i"}},
+                {"email": {"$regex": re.escape(query), "$options": "i"}},
+                {"id": {"$regex": re.escape(query), "$options": "i"}}
             ]
         }
         
@@ -525,11 +525,11 @@ async def search_sheets(query: str):
     try:
         search_filter = {
             "$or": [
-                {"exam_name": {"$regex": query, "$options": "i"}},
-                {"class_name": {"$regex": query, "$options": "i"}},
-                {"subject": {"$regex": query, "$options": "i"}},
-                {"syllabus_topic": {"$regex": query, "$options": "i"}},
-                {"chapter": {"$regex": query, "$options": "i"}}
+                {"exam_name": {"$regex": re.escape(query), "$options": "i"}},
+                {"class_name": {"$regex": re.escape(query), "$options": "i"}},
+                {"subject": {"$regex": re.escape(query), "$options": "i"}},
+                {"syllabus_topic": {"$regex": re.escape(query), "$options": "i"}},
+                {"chapter": {"$regex": re.escape(query), "$options": "i"}}
             ]
         }
         

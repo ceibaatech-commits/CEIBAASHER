@@ -436,12 +436,12 @@ async def get_academic_posts(
         if class_name:
             # For Class 11/12, also match with stream suffix like "Class 11 (Science)"
             if class_name in ["Class 11", "Class 12"]:
-                query["academic_class"] = {"$regex": f"^{class_name}", "$options": "i"}
+                query["academic_class"] = {"$regex": f"^{re.escape(class_name)}", "$options": "i"}
             else:
                 query["academic_class"] = class_name
         if subject:
             # Use regex for flexible matching (handles display names vs slugs)
-            query["academic_subject"] = {"$regex": subject.replace("-", ".*").replace("  ", " "), "$options": "i"}
+            query["academic_subject"] = {"$regex": ".*".join(re.escape(p) for p in subject.split("-")), "$options": "i"}
         if chapter:
             query["academic_chapter"] = chapter
         
@@ -2232,11 +2232,11 @@ async def browse_mcqs(
         # Build query
         query = {}
         if exam:
-            query["exam_name"] = {"$regex": exam, "$options": "i"}
+            query["exam_name"] = {"$regex": re.escape(exam), "$options": "i"}
         if subject:
-            query["syllabus_topic"] = {"$regex": subject, "$options": "i"}
+            query["syllabus_topic"] = {"$regex": re.escape(subject), "$options": "i"}
         if topic:
-            query["subject"] = {"$regex": topic, "$options": "i"}
+            query["subject"] = {"$regex": re.escape(topic), "$options": "i"}
         
         # Fetch questions
         questions = await db.questions.find(query, {"_id": 0}).limit(limit).to_list(limit)

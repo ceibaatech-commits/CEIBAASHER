@@ -437,7 +437,7 @@ async def get_monetization_dashboard(
         # Get available ads for user's city
         available_ads = await db.ad_campaigns.find(
             {
-                "city": {"$regex": user_city, "$options": "i"},
+                "city": {"$regex": re.escape(user_city), "$options": "i"},
                 "status": "active",
                 "end_date": {"$gte": datetime.now(timezone.utc).isoformat()}
             },
@@ -738,7 +738,7 @@ async def get_available_ads(
     try:
         ads = await db.ad_campaigns.find(
             {
-                "city": {"$regex": city, "$options": "i"},
+                "city": {"$regex": re.escape(city), "$options": "i"},
                 "status": "active"
             },
             {"_id": 0, "budget": 0, "spent": 0}  # Hide sensitive data

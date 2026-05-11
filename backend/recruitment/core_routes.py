@@ -84,9 +84,9 @@ async def update_company(data: CompanyUpdate, request: Request):
 async def list_companies(industry: Optional[str] = None, search: Optional[str] = None, page: int = 1, limit: int = 20):
     query = {"status": {"$ne": "revoked"}}
     if industry:
-        query["industry"] = {"$regex": industry, "$options": "i"}
+        query["industry"] = {"$regex": re.escape(industry), "$options": "i"}
     if search:
-        query["$or"] = [{"company_name": {"$regex": search, "$options": "i"}}, {"industry": {"$regex": search, "$options": "i"}}]
+        query["$or"] = [{"company_name": {"$regex": re.escape(search), "$options": "i"}}, {"industry": {"$regex": re.escape(search), "$options": "i"}}]
     skip = (page - 1) * limit
     companies = await db.recruiters.find(query, {"_id": 0, "password_hash": 0}).sort("company_name", 1).skip(skip).limit(limit).to_list(limit)
     total = await db.recruiters.count_documents(query)

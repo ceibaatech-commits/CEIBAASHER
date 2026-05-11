@@ -79,7 +79,7 @@ async def get_exam(exam_id: str):
     
     # First, check CRUD exams collection
     crud_exam = await db.exams.find_one({
-        "name": {"$regex": f"^{exam_id}$", "$options": "i"},
+        "name": {"$regex": f"^{re.escape(exam_id)}$", "$options": "i"},
         "is_active": True
     })
     
@@ -184,7 +184,7 @@ async def get_all_topics(exam_id: str):
         # ========== STEP 1: Get CRUD-created chapters ==========
         # First, find the exam in the exams collection
         crud_exam = await db.exams.find_one({
-            "name": {"$regex": f"^{exam_id}", "$options": "i"},
+            "name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"},
             "is_active": True
         })
         
@@ -235,7 +235,7 @@ async def get_all_topics(exam_id: str):
         # ========== STEP 2: Get legacy exam_sheets structure ==========
         sheets = await db.exam_sheets.find({
             "type": "exam",
-            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
+            "exam_name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"}
         }).to_list(length=1000)
         
         if sheets:
@@ -270,8 +270,8 @@ async def get_all_topics(exam_id: str):
             {
                 "$match": {
                     "$or": [
-                        {"exam_id": {"$regex": f"^{exam_id}", "$options": "i"}},
-                        {"exam_name": {"$regex": f"^{exam_id}", "$options": "i"}}
+                        {"exam_id": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"}},
+                        {"exam_name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"}}
                     ]
                 }
             },
@@ -452,7 +452,6 @@ async def start_quiz(request: QuizStartRequest):
         # Use regex to match chapter name with or without number prefix
         # Database stores: "1. Components of Food", "2. Is Matter Around Us Pure"
         # Frontend sends: "Components of Food", "Is Matter Around Us Pure"
-        import re
         
         # Normalize the chapter name for fuzzy matching
         chapter_clean = request.chapter
@@ -501,7 +500,7 @@ async def start_quiz(request: QuizStartRequest):
         
         # Handle exam name variations (e.g., "JEE" vs "JEE Main", "NEET" vs "NEET UG")
         # Use regex to match exam names flexibly
-        exam_pattern = exam if exam.startswith("^") else f"^{exam}"
+        exam_pattern = exam if exam.startswith("^") else f"^{re.escape(exam)}"
         
         query = {
             "exam_name": {"$regex": exam_pattern, "$options": "i"},  # Case-insensitive regex
@@ -565,7 +564,6 @@ async def start_quiz(request: QuizStartRequest):
     # Try to fetch from questions collection in MongoDB
     if not questions:
         try:
-            import re as regex_module
             
             # Check if this is a class-based quiz (Classes 6-12)
             if request.isClassBased and request.class_name and request.chapter:
@@ -595,17 +593,17 @@ async def start_quiz(request: QuizStartRequest):
                 # 2. Without number prefix: "Chapter Name"
                 # 3. Case-insensitive
                 # 4. Allow optional trailing 's' for pluralization variations
-                escaped_chapter = regex_module.escape(chapter_clean)
-                chapter_pattern = regex_module.compile(
+                escaped_chapter = re.escape(chapter_clean)
+                chapter_pattern = re.compile(
                     f"^(\\d+\\.\\s*)?{escaped_chapter}s?$",
-                    regex_module.IGNORECASE
+                    re.IGNORECASE
                 )
                 
                 # Build class_name pattern to match both "Class 11" and "Class 11 (Science)" formats
                 # Database may store: "Class 11", "Class 11 (Science)", "Class 11 (Commerce)", etc.
-                class_name_pattern = regex_module.compile(
-                    f"^{regex_module.escape(request.class_name)}(\\s*\\(.*\\))?$",
-                    regex_module.IGNORECASE
+                class_name_pattern = re.compile(
+                    f"^{re.escape(request.class_name)}(\\s*\\(.*\\))?$",
+                    re.IGNORECASE
                 )
                 
                 query_filter = {
@@ -627,7 +625,7 @@ async def start_quiz(request: QuizStartRequest):
                         },
                         # Old format from sheets (exam_name matches + syllabus_topic + subject)
                         {
-                            "exam_name": {"$regex": f"^{exam}", "$options": "i"},
+                            "exam_name": {"$regex": f"^{re.escape(exam)}", "$options": "i"},
                             "syllabus_topic": subject,
                             **({"subject": topic} if topic else {})
                         }
@@ -645,7 +643,7 @@ async def start_quiz(request: QuizStartRequest):
                                 "subtopic": sub_topic
                             },
                             {
-                                "exam_name": {"$regex": f"^{exam}", "$options": "i"},
+                                "exam_name": {"$regex": f"^{re.escape(exam)}", "$options": "i"},
                                 "syllabus_topic": subject,
                                 **({"subject": topic} if topic else {}),
                                 "sub_topic": sub_topic

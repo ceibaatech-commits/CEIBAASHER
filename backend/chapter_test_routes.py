@@ -1,3 +1,4 @@
+import re
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
@@ -151,7 +152,7 @@ async def get_chapter_questions(
         if 'poorvi' in subject.lower():
             query["subject"] = {"$regex": "poorvi", "$options": "i"}
         else:
-            query["subject"] = {"$regex": normalized_subject, "$options": "i"}
+            query["subject"] = {"$regex": re.escape(normalized_subject), "$options": "i"}
         
         # Get questions from database
         questions_cursor = db.questions.find(query, {"_id": 0})

@@ -1,3 +1,4 @@
+import re
 import os
 import uuid
 from datetime import datetime, timedelta
@@ -447,7 +448,7 @@ async def search_user(name: str):
         
         # Try case-insensitive match
         user = await db.users.find_one(
-            {"name": {"$regex": f"^{name}$", "$options": "i"}},
+            {"name": {"$regex": f"^{re.escape(name)}$", "$options": "i"}},
             {"_id": 0, "id": 1}
         )
         if user:

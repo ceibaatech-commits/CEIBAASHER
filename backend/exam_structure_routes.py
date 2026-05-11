@@ -121,7 +121,7 @@ async def get_exam_structure_from_db(exam_name: str) -> Dict[str, Any]:
     # NOTE: Not filtering by questions_imported to show all registered sheets
     sheets = await db.exam_sheets.find({
         "type": "exam",
-        "exam_name": {"$regex": f"^{exam_name}", "$options": "i"}
+        "exam_name": {"$regex": f"^{re.escape(exam_name)}", "$options": "i"}
     }).to_list(length=1000)
     
     if not sheets:
@@ -175,7 +175,7 @@ async def get_exam_topics(exam_id: str):
             {
                 "$match": {
                     "type": "exam",
-                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
+                    "exam_name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"}
                     # NOTE: Not filtering by questions_imported
                 }
             },
@@ -215,7 +215,7 @@ async def get_topic_subjects(exam_id: str, topic: str):
             {
                 "$match": {
                     "type": "exam",
-                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
+                    "exam_name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"},
                     "syllabus_topic": topic
                 }
             },
@@ -263,7 +263,7 @@ async def get_subject_subtopics(exam_id: str, topic: str, subject: str):
             {
                 "$match": {
                     "type": "exam",
-                    "exam_name": {"$regex": f"^{exam_id}", "$options": "i"},
+                    "exam_name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"},
                     "syllabus_topic": topic,
                     "subject": subject
                 }
@@ -311,7 +311,7 @@ async def validate_exam_data(exam_id: str):
     try:
         count = await db.exam_sheets.count_documents({
             "type": "exam",
-            "exam_name": {"$regex": f"^{exam_id}", "$options": "i"}
+            "exam_name": {"$regex": f"^{re.escape(exam_id)}", "$options": "i"}
         })
         
         return {
