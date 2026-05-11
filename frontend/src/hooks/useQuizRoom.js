@@ -162,7 +162,6 @@ export const useQuizRoom = (user) => {
     }
     
     setIsSubmitting(true);
-    const token = localStorage.getItem('token');
     
     try {
       const response = await axios.post(`${BACKEND_URL}/api/battle/create-room`, {
@@ -179,8 +178,6 @@ export const useQuizRoom = (user) => {
         })),
         host_id: user?.id,
         host_name: user?.name || user?.username
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data.success) {

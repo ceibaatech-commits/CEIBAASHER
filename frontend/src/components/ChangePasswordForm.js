@@ -8,10 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const BACKEND_URL = window.location.origin;
 
-const authHeader = () => {
-  const t = localStorage.getItem('token') || localStorage.getItem('auth_token');
-  return t ? { Authorization: `Bearer ${t}` } : {};
-};
+const authHeader = () => ({});
 
 /**
  * Shared "Change Password" form used by the dedicated Settings page AND the

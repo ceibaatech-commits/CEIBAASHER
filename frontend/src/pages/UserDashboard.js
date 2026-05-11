@@ -144,7 +144,6 @@ const UserDashboard = () => {
         isLoggedIn={true} 
         user={user} 
         onLogout={() => {
-          localStorage.removeItem('auth_token');
           localStorage.removeItem('ceibaa_user');
           navigate('/login');
         }}

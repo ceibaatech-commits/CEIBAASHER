@@ -55,8 +55,7 @@ const Dashboard = () => {
       try {
         await axios.patch(
           `${BACKEND_URL}/api/users/${user.id}`,
-          { username: generatedUsername },
-          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+          { username: generatedUsername }
         );
         
         // Update user object with the new username
@@ -113,14 +112,10 @@ const Dashboard = () => {
     setLoadingContent(true);
     try {
       if (tab === 'posts' || tab === 'reposts') {
-        const token = localStorage.getItem('token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        
         const response = await axios.get(
           `${BACKEND_URL}/api/profile/${user.username}/posts`,
           {
-            params: { current_user_id: user.id },
-            headers
+            params: { current_user_id: user.id }
           }
         );
         if (response.data.success) {
@@ -178,10 +173,7 @@ const Dashboard = () => {
     }));
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {});
     } catch (error) {
       // Revert on error
       setLikedPosts(prev => {
@@ -220,16 +212,11 @@ const Dashboard = () => {
     }));
 
     try {
-      const token = localStorage.getItem('token');
-      if (isShared) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        if (isShared) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`);
         toast.success('Repost removed');
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {});
         toast.success('Post shared!');
       }
     } catch (error) {
@@ -263,10 +250,7 @@ const Dashboard = () => {
     });
 
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {});
       toast.success(isBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks');
     } catch (error) {
       // Revert on error
@@ -285,10 +269,7 @@ const Dashboard = () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     
     try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}`);
       setPosts(prev => prev.filter(post => post.id !== postId));
       toast.success('Post deleted');
     } catch (error) {
@@ -309,11 +290,7 @@ const Dashboard = () => {
     });
     
     try {
-      const token = localStorage.getItem('token');
-      // Use the original_post_id for the unshare endpoint
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${originalPostId}/unshare`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${originalPostId}/unshare`);
       toast.success('Repost removed');
     } catch (error) {
       // Revert on error - refetch posts

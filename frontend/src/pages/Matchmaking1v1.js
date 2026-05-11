@@ -782,7 +782,6 @@ const Matchmaking1v1 = () => {
     if (!reportReason) return;
     setReportSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
       await axios.post(
         `${BACKEND_URL}/api/admin/battles/report`,
         {
@@ -793,8 +792,7 @@ const Matchmaking1v1 = () => {
           reason: reportReason,
           description: reportDesc,
           chat_messages: [],
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
       setReportDone(true);
     } catch {

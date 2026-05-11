@@ -36,8 +36,6 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
       }
       
       const headers = {};
-      const token = localStorage.getItem('token');
-      if (token) headers.Authorization = `Bearer ${token}`;
       
       const response = await axios.get(endpoint, { headers });
       
@@ -117,13 +115,10 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
     }
     
     const isLiked = likedPosts.has(postId);
-    const token = localStorage.getItem('token');
     
     try {
       if (isLiked) {
-        await axios.delete(`${BACKEND_URL}/api/posts/${postId}/like`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/posts/${postId}/like`);
         setLikedPosts(prev => {
           const newSet = new Set(prev);
           newSet.delete(postId);
@@ -133,9 +128,7 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
           p.id === postId ? { ...p, likes_count: Math.max(0, (p.likes_count || 0) - 1) } : p
         ));
       } else {
-        await axios.post(`${BACKEND_URL}/api/posts/${postId}/like`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/posts/${postId}/like`, {});
         setLikedPosts(prev => new Set([...prev, postId]));
         setPosts(prev => prev.map(p => 
           p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p
@@ -155,13 +148,10 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
     }
     
     const isBookmarked = bookmarkedPosts.has(postId);
-    const token = localStorage.getItem('token');
     
     try {
       if (isBookmarked) {
-        await axios.delete(`${BACKEND_URL}/api/posts/${postId}/bookmark`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/posts/${postId}/bookmark`);
         setBookmarkedPosts(prev => {
           const newSet = new Set(prev);
           newSet.delete(postId);
@@ -169,9 +159,7 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
         });
         toast.success('Removed from bookmarks');
       } else {
-        await axios.post(`${BACKEND_URL}/api/posts/${postId}/bookmark`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/posts/${postId}/bookmark`, {});
         setBookmarkedPosts(prev => new Set([...prev, postId]));
         toast.success('Added to bookmarks');
       }
@@ -188,12 +176,9 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
       return;
     }
     
-    const token = localStorage.getItem('token');
     
     try {
-      await axios.post(`${BACKEND_URL}/api/posts/${postId}/repost`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.post(`${BACKEND_URL}/api/posts/${postId}/repost`, {});
       setSharedPosts(prev => new Set([...prev, postId]));
       setPosts(prev => prev.map(p => 
         p.id === postId ? { ...p, reposts_count: (p.reposts_count || 0) + 1 } : p
@@ -213,13 +198,10 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
     }
     
     const isFollowing = followingList.has(targetUserId);
-    const token = localStorage.getItem('token');
     
     try {
       if (isFollowing) {
-        await axios.delete(`${BACKEND_URL}/api/social/unfollow/${targetUserId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/social/unfollow/${targetUserId}`);
         setFollowingList(prev => {
           const newSet = new Set(prev);
           newSet.delete(targetUserId);
@@ -227,9 +209,7 @@ export const useVictoryLanePosts = (user, activeTab, selectedTag, searchQuery) =
         });
         toast.success('Unfollowed');
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/follow/${targetUserId}`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/social/follow/${targetUserId}`, {});
         setFollowingList(prev => new Set([...prev, targetUserId]));
         toast.success('Following!');
       }

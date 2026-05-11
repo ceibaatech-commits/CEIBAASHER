@@ -20,10 +20,7 @@ export const useComments = (user) => {
     setLoadingComments(prev => ({ ...prev, [postId]: true }));
     
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${BACKEND_URL}/api/posts/${postId}/comments`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+      const response = await axios.get(`${BACKEND_URL}/api/posts/${postId}/comments`, {});
       
       if (response.data.success) {
         setPostComments(prev => ({
@@ -66,13 +63,11 @@ export const useComments = (user) => {
       return;
     }
     
-    const token = localStorage.getItem('token');
     
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/posts/${postId}/comment`,
-        { content: content.trim() },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { content: content.trim() }
       );
       
       if (response.data.success) {
@@ -118,7 +113,6 @@ export const useComments = (user) => {
       return;
     }
     
-    const token = localStorage.getItem('token');
     
     try {
       const response = await axios.post(
@@ -126,8 +120,7 @@ export const useComments = (user) => {
         { 
           content: content.trim(),
           parent_comment_id: parentCommentId
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
       
       if (response.data.success) {
@@ -149,12 +142,9 @@ export const useComments = (user) => {
   const deleteComment = useCallback(async (postId, commentId) => {
     if (!user?.id) return;
     
-    const token = localStorage.getItem('token');
     
     try {
-      await axios.delete(`${BACKEND_URL}/api/posts/${postId}/comments/${commentId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND_URL}/api/posts/${postId}/comments/${commentId}`);
       
       setPostComments(prev => ({
         ...prev,

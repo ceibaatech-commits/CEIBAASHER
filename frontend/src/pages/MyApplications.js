@@ -36,8 +36,7 @@ export default function MyApplications() {
 
   const fetchApps = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-applications`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-applications`);
       setApps(data.applications || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -45,16 +44,14 @@ export default function MyApplications() {
 
   const fetchSaved = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-bookmarks`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-bookmarks`);
       setSavedPosts(data.posts || []);
     } catch (err) { console.error(err); }
   };
 
   const handleUnsave = async (postId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/bookmark`, {});
       setSavedPosts(prev => prev.filter(p => p.id !== postId));
     } catch (err) {
       console.error('Failed to unsave post:', err);

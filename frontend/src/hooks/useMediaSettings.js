@@ -20,15 +20,7 @@ export const useMediaSettings = (user) => {
   useEffect(() => {
     const fetchMediaSettings = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setMediaSettings({ allow_media: false, can_post_images: false, can_post_videos: false });
-          return;
-        }
-        
-        const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`);
         
         if (response.data.success) {
           setMediaSettings(response.data.permissions || {
@@ -98,7 +90,6 @@ export const useMediaSettings = (user) => {
     }
 
     setUploading(true);
-    const token = localStorage.getItem('token');
     const uploadedImages = [];
     const uploadedVideos = [];
 
@@ -111,7 +102,6 @@ export const useMediaSettings = (user) => {
         
         const response = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
         });
@@ -129,7 +119,6 @@ export const useMediaSettings = (user) => {
         
         const response = await axios.post(`${BACKEND_URL}/api/media/upload`, formData, {
           headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
           }
         });
@@ -154,6 +143,18 @@ export const useMediaSettings = (user) => {
     canPostVideos,
     selectedImages,
     selectedVideos,
+    uploading,
+    addImage,
+    removeImage,
+    addVideo,
+    removeVideo,
+    clearMedia,
+    uploadMedia
+  };
+};
+
+export default useMediaSettings;
+ectedVideos,
     uploading,
     addImage,
     removeImage,

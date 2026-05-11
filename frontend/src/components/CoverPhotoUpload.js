@@ -35,13 +35,9 @@ const CoverPhotoUpload = ({ currentCover, onUploadComplete }) => {
 
         // Upload to backend
         try {
-          const token = localStorage.getItem('token');
           const response = await axios.put(
             `${BACKEND_URL}/api/profile/update`,
-            { cover_photo: base64Image },
-            {
-              headers: { Authorization: `Bearer ${token}` }
-            }
+            { cover_photo: base64Image }
           );
 
           if (response.data.success) {

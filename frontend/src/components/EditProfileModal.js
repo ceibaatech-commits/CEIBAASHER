@@ -94,24 +94,12 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
-      
       // Debug logging
-      console.log('Token from localStorage:', token);
       console.log('Form data being sent:', formData);
-      
-      if (!token) {
-        alert('You are not logged in. Please log in again.');
-        setLoading(false);
-        return;
-      }
       
       const response = await axios.put(
         `${BACKEND_URL}/api/profile/update`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        formData
       );
 
       if (response.data.success) {

@@ -181,7 +181,7 @@ const RoomDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
-        <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('auth_token'); localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
+        <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
         <div className="flex items-center justify-center py-32">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600"></div>
         </div>
@@ -192,7 +192,7 @@ const RoomDetail = () => {
   if (!roomData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
-        <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('auth_token'); localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
+        <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
         <div className="flex items-center justify-center py-32">
           <div className="text-center">
             <p className="text-xl text-gray-700 mb-4">Room not found</p>
@@ -211,7 +211,7 @@ const RoomDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
-      <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('auth_token'); localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
+      <Header isLoggedIn={!!user} user={user} onLogout={() => { localStorage.removeItem('ceibaa_user'); navigate('/login'); }} />
       <div className="max-w-6xl mx-auto py-8 px-4" data-testid="room-detail-container">
         <div className="mb-6 flex items-center justify-between">
           <button

@@ -30,8 +30,6 @@ export const AuthProvider = ({ children }) => {
 
           if (isAuthMe && looksExpired) {
             localStorage.removeItem('ceibaa_user');
-            localStorage.removeItem('token');
-            localStorage.removeItem('auth_token');
             setUser(null);
             toast.error('Session expired. Please login again.');
             if (window.location.pathname !== '/login') {
@@ -107,15 +105,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    // Clear all auth-related data from localStorage
     localStorage.removeItem('ceibaa_user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('auth_token');
-    
-    // Clear React state
     setUser(null);
-    
-    console.log('[AuthContext] Logout complete - all tokens cleared');
+    console.log('[AuthContext] Logout complete');
   };
 
   const updateUser = (userData) => {

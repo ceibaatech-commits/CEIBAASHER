@@ -14,9 +14,6 @@ const InboxDropdown = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const ref = useRef(null);
 
-  const token = localStorage.getItem('token');
-  const headers = { Authorization: `Bearer ${token}` };
-
   // Close on outside click
   useEffect(() => {
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
@@ -26,9 +23,9 @@ const InboxDropdown = ({ user }) => {
 
   // Fetch unread count periodically
   useEffect(() => {
-    if (!token || !user) return;
+    if (!user) return;
     const fetchUnread = () => {
-      axios.get(`${BACKEND_URL}/api/messages/unread-count`, { headers })
+      axios.get(`${BACKEND_URL}/api/messages/unread-count`)
         .then(res => { if (res.data.success) setUnreadTotal(res.data.unread_count || 0); })
         .catch(() => {});
     };
@@ -36,18 +33,18 @@ const InboxDropdown = ({ user }) => {
     const interval = setInterval(fetchUnread, 30000);
     return () => clearInterval(interval);
   // eslint-disable-next-line
-  }, [token, user]);
+  }, [user]);
 
   // Fetch conversations when dropdown opens
   useEffect(() => {
-    if (!open || !token) return;
+    if (!open) return;
     setLoading(true);
-    axios.get(`${BACKEND_URL}/api/messages/conversations`, { headers })
+    axios.get(`${BACKEND_URL}/api/messages/conversations`)
       .then(res => { if (res.data.success) setConversations(res.data.conversations); })
       .catch(() => {})
       .finally(() => setLoading(false));
   // eslint-disable-next-line
-  }, [open, token]);
+  }, [open]);
 
   const formatTime = (ts) => {
     if (!ts) return '';

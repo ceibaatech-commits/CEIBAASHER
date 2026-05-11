@@ -44,9 +44,7 @@ const Login = () => {
     setError('');
 
     try {
-      // CRITICAL: Clear any existing tokens before login to prevent stale data
-      localStorage.removeItem('token');
-      localStorage.removeItem('auth_token');
+      // CRITICAL: Clear any existing user data before login to prevent stale data
       localStorage.removeItem('ceibaa_user');
       
       let response;

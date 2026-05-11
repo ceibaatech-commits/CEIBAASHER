@@ -35,9 +35,7 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
     
     const fetchToken = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
-        const { data } = await axios.get(`${API_URL}/api/agora/token?channel=${sanitizedChannel}`, { headers });
+      const { data } = await axios.get(`${API_URL}/api/agora/token?channel=${sanitizedChannel}`);
         
         if (isMounted) {
           if (data && data.token) {
@@ -84,7 +82,6 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
     if (!reportReason) { toast.error('Please select a reason'); return; }
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.post(
         `${API_URL}/api/admin/battles/report`,
         {
@@ -92,8 +89,7 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
           reported_user_id: opponentId || 'unknown',
           reported_username: opponentName || 'Opponent',
           reason: reportReason, description: reportDesc, chat_messages: [],
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
       if (res.data.success) { setReportId(res.data.report_id); setReportDone(true); }
     } catch (e) {
@@ -178,6 +174,14 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
                 <p>Establishing secure connection...</p>
               </div>
             </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default BattleVideoChat;v>
           )}
         </div>
       </div>

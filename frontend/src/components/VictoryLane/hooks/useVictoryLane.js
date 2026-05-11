@@ -478,10 +478,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     if (!postToDelete || !user) return;
     setDeletingPost(true);
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
-      await axios.delete(`${BACKEND_URL}/api/social/posts/${postToDelete.id}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      await axios.delete(`${BACKEND_URL}/api/social/posts/${postToDelete.id}`);
       setPosts(prev => prev.filter(post => post.id !== postToDelete.id));
       toast.success('Post deleted successfully');
       setShowDeleteModal(false);
@@ -531,14 +528,10 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     const checkAuth = () => typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
     if (!checkAuth() || !user) { toast.error('Please login to comment'); return; }
 
-    const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
-    if (!token) { toast.error('Session expired. Please login again.'); return; }
-
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/social/posts/${postId}/comment`,
-        { content: commentText, parent_comment_id: parentCommentId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { content: commentText, parent_comment_id: parentCommentId }
       );
 
       if (response.data.success) {
@@ -581,9 +574,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
   const handleJoinRoom = async (roomCode) => {
     if (!roomCode) { toast.error('Invalid room code'); return; }
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await axios.get(`${BACKEND_URL}/api/social/quiz-rooms/${roomCode}`);
       if (!response.data.success) {
         toast.error('Room not found or expired');
         fetchFeed();
@@ -617,6 +608,12 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     // Socket
     isConnected,
     // Quiz
+    handleJoinRoom,
+  };
+};
+
+export default useVictoryLane;
+/ Quiz
     handleJoinRoom,
   };
 };

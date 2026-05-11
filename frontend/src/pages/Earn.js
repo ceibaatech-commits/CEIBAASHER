@@ -31,15 +31,7 @@ const Earn = () => {
   // Fetch milestone data
   const fetchMilestoneData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      const response = await axios.get(`${BACKEND_URL}/api/milestones/progress`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(`${BACKEND_URL}/api/milestones/progress`);
 
       if (response.data.success) {
         setMilestoneData(response.data);
@@ -54,14 +46,9 @@ const Earn = () => {
   // Fetch simulation data
   const fetchSimulationData = async () => {
     try {
-      const token = localStorage.getItem('token');
       const [milestoneRes, earningsRes] = await Promise.all([
-        axios.get(`${BACKEND_URL}/api/milestones/simulation`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${BACKEND_URL}/api/monetization/simulation`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        axios.get(`${BACKEND_URL}/api/milestones/simulation`),
+        axios.get(`${BACKEND_URL}/api/monetization/simulation`)
       ]);
 
       if (milestoneRes.data.success) {
@@ -96,11 +83,9 @@ const Earn = () => {
   const simulateAddPosts = async () => {
     setIsSimulating(true);
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.post(
         `${BACKEND_URL}/api/milestones/simulate?action=add_post`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {}
       );
 
       if (response.data.success) {
@@ -121,11 +106,9 @@ const Earn = () => {
   const simulateAddFollowers = async () => {
     setIsSimulating(true);
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.post(
         `${BACKEND_URL}/api/milestones/simulate?action=add_followers`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {}
       );
 
       if (response.data.success) {
@@ -146,11 +129,9 @@ const Earn = () => {
   const simulateEarnings = async (impressions = 1000) => {
     setIsSimulating(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
+        const response = await axios.post(
         `${BACKEND_URL}/api/monetization/simulate-earnings?impressions=${impressions}&cpm_rate=50`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data.success) {
@@ -170,14 +151,9 @@ const Earn = () => {
   // Reset simulation
   const resetSimulation = async () => {
     try {
-      const token = localStorage.getItem('token');
       await Promise.all([
-        axios.post(`${BACKEND_URL}/api/milestones/simulate?action=reset`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.post(`${BACKEND_URL}/api/monetization/reset-simulation`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+        axios.post(`${BACKEND_URL}/api/milestones/simulate?action=reset`, {}),
+        axios.post(`${BACKEND_URL}/api/monetization/reset-simulation`, {})
       ]);
 
       setSimData({ posts: 0, followers: 0 });
@@ -191,11 +167,9 @@ const Earn = () => {
   // Select badge
   const handleSelectBadge = async (badgeType) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.post(
         `${BACKEND_URL}/api/milestones/select-badge`,
-        { badge_type: badgeType },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { badge_type: badgeType }
       );
 
       if (response.data.success) {
@@ -677,6 +651,15 @@ const Earn = () => {
             </button>
           </div>
         </div>
+      )}
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Earn;
+    </div>
       )}
 
       <Footer />

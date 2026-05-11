@@ -49,9 +49,7 @@ export default function CompanyChannel() {
 
   const fetchCompany = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/company/${slug}`, { headers });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/company/${slug}`);
       setCompany(data);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
@@ -77,8 +75,7 @@ export default function CompanyChannel() {
   const handleFollow = async () => {
     if (!company) return;
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/recruitment/follow/${company.id}`, {}, { headers: { Authorization: `Bearer ${token}` }});
+      await axios.post(`${BACKEND_URL}/api/recruitment/follow/${company.id}`, {});
       setCompany(prev => ({ ...prev, is_following: !prev.is_following, followers_count: prev.is_following ? prev.followers_count - 1 : prev.followers_count + 1 }));
     } catch (err) { console.error(err); }
   };

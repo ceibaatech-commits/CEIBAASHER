@@ -33,43 +33,35 @@ export default function JobsFeed() {
 
   const fetchFeed = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/feed?page=1&limit=50`, { headers });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/feed?page=1&limit=50`);
       setPosts(data.posts || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
 
   const fetchInteractions = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-interactions`, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/my-interactions`);
       setLikedIds(new Set(data.liked_post_ids || []));
       setBookmarkedIds(new Set(data.bookmarked_post_ids || []));
     } catch {}
   };
 
   const handleLike = useCallback(async (postId) => {
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login to like posts'); navigate('/login'); return; }
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/like`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/like`, {});
       setLikedIds(prev => { const s = new Set(prev); data.liked ? s.add(postId) : s.delete(postId); return s; });
       setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: data.likes_count } : p));
     } catch { toast.error('Failed to like'); }
-  }, [navigate]);
+  }, []);
 
   const handleBookmark = useCallback(async (postId) => {
-    const token = localStorage.getItem('token');
-    if (!token) { toast.error('Please login to save posts'); navigate('/login'); return; }
     try {
-      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/bookmark`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/posts/${postId}/bookmark`, {});
       setBookmarkedIds(prev => { const s = new Set(prev); data.bookmarked ? s.add(postId) : s.delete(postId); return s; });
       toast.success(data.bookmarked ? 'Post saved' : 'Post unsaved');
     } catch { toast.error('Failed to save'); }
-  }, [navigate]);
+  }, []);
 
   const handleShare = useCallback(async (post) => {
     const url = `${window.location.origin}/apply/${post.id}`;

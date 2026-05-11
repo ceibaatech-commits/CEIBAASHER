@@ -381,7 +381,6 @@ const Board = () => {
         user={user}
         onLogout={() => {
           localStorage.removeItem('ceibaa_user');
-          localStorage.removeItem('ceibaa_token');
           navigate('/login');
         }}
       />

@@ -34,8 +34,7 @@ export default function HackathonDetail() {
   const handleRegister = async () => {
     if (!user) { navigate('/login'); return; }
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/recruitment/hackathon/${hackId}/register`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${BACKEND_URL}/api/recruitment/hackathon/${hackId}/register`, {});
       setRegistered(true);
     } catch (err) { setError(err.response?.data?.detail || 'Registration failed'); }
   };
@@ -44,8 +43,7 @@ export default function HackathonDetail() {
     if (!projectLink) return;
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/recruitment/hackathon/${hackId}/submit`, { project_link: projectLink, description: projDesc }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${BACKEND_URL}/api/recruitment/hackathon/${hackId}/submit`, { project_link: projectLink, description: projDesc });
       setError('');
       alert('Submission successful!');
     } catch (err) { setError(err.response?.data?.detail || 'Submission failed'); }

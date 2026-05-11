@@ -24,15 +24,8 @@ export const NotificationProvider = ({ children }) => {
 
   const fetchUnreadCount = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setUnreadCount(0);
-        return;
-      }
-
       const response = await axios.get(
-        `${BACKEND_URL}/api/notifications/unread-count`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${BACKEND_URL}/api/notifications/unread-count`
       );
 
       if (response.data.success) {
@@ -51,9 +44,6 @@ export const NotificationProvider = ({ children }) => {
       setLoadingMore(true);
     }
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
       const page = reset ? 0 : currentPage;
       const params = {
         skip: page * PAGE_SIZE,
@@ -65,7 +55,7 @@ export const NotificationProvider = ({ children }) => {
 
       const response = await axios.get(
         `${BACKEND_URL}/api/notifications`,
-        { headers: { Authorization: `Bearer ${token}` }, params }
+        { params }
       );
 
       if (response.data.success) {
@@ -90,13 +80,9 @@ export const NotificationProvider = ({ children }) => {
 
   const markAsRead = useCallback(async (notificationId) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
-
       await axios.put(
         `${BACKEND_URL}/api/notifications/${notificationId}/read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {}
       );
 
       // Update local state
@@ -115,13 +101,9 @@ export const NotificationProvider = ({ children }) => {
 
   const markAllAsRead = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
-
       await axios.put(
         `${BACKEND_URL}/api/notifications/mark-all-read`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        {}
       );
 
       // Update local state
@@ -138,15 +120,11 @@ export const NotificationProvider = ({ children }) => {
 
   const deleteNotification = useCallback(async (notificationId) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return false;
-
       // Check if notification was unread before deleting
       const wasUnread = notifications.find(n => n.id === notificationId && !n.is_read);
 
       await axios.delete(
-        `${BACKEND_URL}/api/notifications/${notificationId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${BACKEND_URL}/api/notifications/${notificationId}`
       );
 
       // Update local state

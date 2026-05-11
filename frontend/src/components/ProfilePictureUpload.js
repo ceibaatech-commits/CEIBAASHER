@@ -35,13 +35,9 @@ const ProfilePictureUpload = ({ currentPicture, onUploadComplete, size = 'large'
 
         // Upload to backend
         try {
-          const token = localStorage.getItem('token');
           const response = await axios.put(
             `${BACKEND_URL}/api/profile/update`,
-            { profile_picture: base64Image },
-            {
-              headers: { Authorization: `Bearer ${token}` }
-            }
+            { profile_picture: base64Image }
           );
 
           if (response.data.success) {

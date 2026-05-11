@@ -43,16 +43,13 @@ const Home = () => {
   }, []);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('auth_token');
     const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (token && storedUser) {
+    if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
         setIsLoggedIn(true);
       } catch (error) {
         console.error('Error parsing user data:', error);
-        localStorage.removeItem('auth_token');
         localStorage.removeItem('ceibaa_user');
       }
     }
@@ -76,7 +73,6 @@ const Home = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token');
     localStorage.removeItem('ceibaa_user');
     setUser(null);
     setIsLoggedIn(false);

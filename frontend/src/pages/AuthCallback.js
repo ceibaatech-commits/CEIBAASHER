@@ -48,18 +48,11 @@ const AuthCallback = () => {
 
         if (response.data.success) {
           const userData = response.data.user;
-          const jwtToken = response.data.access_token;
-          const sessionToken = response.data.session_token;
 
           localStorage.removeItem('token');
           localStorage.removeItem('auth_token');
           localStorage.removeItem('ceibaa_user');
 
-          const tokenToStore = jwtToken || sessionToken;
-          if (tokenToStore && tokenToStore !== 'undefined') {
-            localStorage.setItem('token', tokenToStore);
-            localStorage.setItem('auth_token', tokenToStore);
-          }
           localStorage.setItem('ceibaa_user', JSON.stringify(userData));
 
           setUserData(userData);

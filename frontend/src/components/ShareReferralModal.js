@@ -48,10 +48,7 @@ const ShareReferralModal = ({ isOpen, onClose, user }) => {
   const fetchReferralData = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${BACKEND_URL}/api/referral/my-code`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.get(`${BACKEND_URL}/api/referral/my-code`);
       if (res.data.success) setReferralData(res.data);
     } catch (err) {
       console.error('Error fetching referral data:', err);

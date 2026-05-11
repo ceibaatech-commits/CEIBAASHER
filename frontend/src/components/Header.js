@@ -34,9 +34,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
       onLogout();
     } else {
       // Fallback: clear localStorage manually
-      localStorage.removeItem('auth_token');
       localStorage.removeItem('ceibaa_user');
-      localStorage.removeItem('token');
       window.location.href = '/';
     }
   };

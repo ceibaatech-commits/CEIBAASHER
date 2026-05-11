@@ -34,8 +34,7 @@ export default function ApplyJob() {
     setApplying(true);
     setError('');
     try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${BACKEND_URL}/api/recruitment/apply/${jobId}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${BACKEND_URL}/api/recruitment/apply/${jobId}`, {});
       setApplied(true);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to apply');

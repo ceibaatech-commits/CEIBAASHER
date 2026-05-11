@@ -177,11 +177,8 @@ const FollowButton = ({
     if (initialStatus !== null) { setLoading(false); return; }
     (async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) { setLoading(false); return; }
         const res = await axios.get(
-          `${BACKEND_URL}/api/profile/follow-status/${targetUserId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          `${BACKEND_URL}/api/profile/follow-status/${targetUserId}`
         );
         if (res.data.success) setStatus(res.data.status);
       } catch { /* ignore */ } finally { setLoading(false); }
@@ -205,11 +202,9 @@ const FollowButton = ({
     setLoading(true);
     setPopup(null);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.post(
         `${BACKEND_URL}/api/profile/follow`,
-        { target_user_id: targetUserId, follow_type: type },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { target_user_id: targetUserId, follow_type: type }
       );
       if (res.data.success) {
         const newStatus = type === 'close_friend' ? 'close_friend' : res.data.status;
@@ -218,8 +213,7 @@ const FollowButton = ({
         if (type === 'close_friend') {
           await axios.post(
             `${BACKEND_URL}/api/profile/close-friend`,
-            { target_user_id: targetUserId, action: 'add' },
-            { headers: { Authorization: `Bearer ${token}` } }
+            { target_user_id: targetUserId, action: 'add' }
           ).catch(() => {});
         }
       }
@@ -233,10 +227,8 @@ const FollowButton = ({
     setLoading(true);
     setPopup(null);
     try {
-      const token = localStorage.getItem('token');
       await axios.delete(
-        `${BACKEND_URL}/api/profile/unfollow/${targetUserId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${BACKEND_URL}/api/profile/unfollow/${targetUserId}`
       );
       setStatus(null);
       onFollowChange?.(null);
@@ -252,11 +244,9 @@ const FollowButton = ({
     setStatus(nextStatus);
     onFollowChange?.(nextStatus);
     try {
-      const token = localStorage.getItem('token');
       await axios.post(
         `${BACKEND_URL}/api/profile/close-friend`,
-        { target_user_id: targetUserId, action: isNowClose ? 'add' : 'remove' },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { target_user_id: targetUserId, action: isNowClose ? 'add' : 'remove' }
       ).catch(() => {});
     } catch { /* already optimistic */ }
   }, [status, targetUserId, onFollowChange]);
@@ -266,11 +256,9 @@ const FollowButton = ({
     if (!window.confirm(`Block @${targetUsername}? They won't be able to see your profile.`)) return;
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.post(
         `${BACKEND_URL}/api/profile/block`,
-        { target_user_id: targetUserId },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { target_user_id: targetUserId }
       );
       if (res.data.success) {
         setStatus(null);

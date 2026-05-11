@@ -36,14 +36,7 @@ const usePostCreation = (user, fetchFeed) => {
   useEffect(() => {
     const fetchMediaSettings = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setMediaSettings({ allow_media: false, can_post_images: false, can_post_videos: false });
-          return;
-        }
-        const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`);
         setMediaSettings({
           allow_media: !response.data.media_disabled_globally,
           can_post_images: response.data.can_post_images || false,

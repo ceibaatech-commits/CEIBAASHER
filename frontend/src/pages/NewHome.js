@@ -19,16 +19,13 @@ const NewHome = () => {
   }, []);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
+    const storedUser = localStorage.getItem('ceibaa_user');
+    if (storedUser) {
       try {
-        const response = await axios.get(`${API_URL}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setUser(response.data);
+        setUser(JSON.parse(storedUser));
         setIsLoggedIn(true);
       } catch (error) {
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('ceibaa_user');
       }
     }
   };
@@ -51,7 +48,7 @@ const NewHome = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('ceibaa_user');
     setUser(null);
     setIsLoggedIn(false);
   };

@@ -28,10 +28,8 @@ const Contact = () => {
   }, []);
 
   const checkAuth = () => {
-    const token = localStorage.getItem('auth_token');
     const storedUser = localStorage.getItem('ceibaa_user');
-    
-    if (token && storedUser) {
+    if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
         setIsLoggedIn(true);
@@ -42,7 +40,6 @@ const Contact = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token');
     localStorage.removeItem('ceibaa_user');
     setUser(null);
     setIsLoggedIn(false);
