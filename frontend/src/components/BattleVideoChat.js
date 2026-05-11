@@ -1,4 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
+
+// Catches Agora SDK errors (invalid token, gateway failures) so they don't
+// crash the entire page — shows a "Video unavailable" fallback instead.
+class AgoraErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { crashed: false, msg: '' }; }
+  static getDerivedStateFromError(err) {
+    return { crashed: true, msg: err?.message || 'Video unavailable' };
+  }
+  componentDidCatch(err) { console.warn('[AgoraErrorBoundary]', err?.message); }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-white text-xs px-4 text-center space-y-1">
+          <span>📵</span>
+          <p>Video unavailable</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import AgoraUIKit from 'agora-react-uikit';
 import { Flag, X, AlertTriangle, Minimize2, Maximize2 } from 'lucide-react';
 import axios from 'axios';
@@ -166,7 +187,9 @@ const BattleVideoChat = ({ socket, roomId, playerName, opponentName, opponentId 
           style={{ width: minimised ? '140px' : '340px', height: minimised ? '105px' : '280px' }}
         >
           {vcReady && agoraToken ? (
-            <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
+            <AgoraErrorBoundary key={agoraToken}>
+              <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
+            </AgoraErrorBoundary>
           ) : (
             <div className="flex items-center justify-center h-full text-white text-xs px-4 text-center">
               <div className="space-y-2">

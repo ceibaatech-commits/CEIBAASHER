@@ -1,4 +1,28 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo, Component } from 'react';
+
+// Error boundary that catches Agora SDK crashes (invalid token, gateway errors)
+// so they don't tear down the entire LiveBattle/Matchmaking page.
+class AgoraErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { crashed: false, msg: '' }; }
+  static getDerivedStateFromError(err) {
+    return { crashed: true, msg: err?.message || 'Video call unavailable' };
+  }
+  componentDidCatch(err) {
+    console.warn('[AgoraErrorBoundary] caught:', err?.message);
+  }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0a0a0a', color: '#aaa', fontSize: 13, gap: 8, padding: 16, textAlign: 'center' }}>
+          <span style={{ fontSize: 24 }}>📵</span>
+          <span>Video unavailable</span>
+          <span style={{ fontSize: 11, opacity: 0.6 }}>{this.state.msg}</span>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
@@ -168,21 +192,23 @@ const StableAgoraVideo = memo(({ appId, channel, token, uid, onEnd, compact = fa
       <style>{`
         [data-vc-stage] video { object-fit: cover !important; width: 100% !important; height: 100% !important; }
       `}</style>
-      <AgoraUIKit
-        rtcProps={rtcProps}
-        callbacks={callbacks}
-        styleProps={{
-          UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#0a0a0a' },
-          videoMode: { max: 'cover', min: 'cover' },
-          // LOCAL self-view → hidden. The local stream still publishes, but
-          // is not rendered locally — each user sees only the opponent.
-          minViewContainer: { display: 'none', width: 0, height: 0, opacity: 0, pointerEvents: 'none' },
-          // REMOTE opponent → fills the entire overlay.
-          maxViewContainer: { position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 },
-          localBtnContainer,
-          BtnTemplateStyles,
-        }}
-      />
+      <AgoraErrorBoundary key={`${channel}-${token}`}>
+        <AgoraUIKit
+          rtcProps={rtcProps}
+          callbacks={callbacks}
+          styleProps={{
+            UIKitContainer: { width: '100%', height: '100%', position: 'absolute', inset: 0, backgroundColor: '#0a0a0a' },
+            videoMode: { max: 'cover', min: 'cover' },
+            // LOCAL self-view → hidden. The local stream still publishes, but
+            // is not rendered locally — each user sees only the opponent.
+            minViewContainer: { display: 'none', width: 0, height: 0, opacity: 0, pointerEvents: 'none' },
+            // REMOTE opponent → fills the entire overlay.
+            maxViewContainer: { position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 },
+            localBtnContainer,
+            BtnTemplateStyles,
+          }}
+        />
+      </AgoraErrorBoundary>
 
       {/* ── Call-duration pill (WhatsApp-style) ── */}
       {remoteJoined && (
