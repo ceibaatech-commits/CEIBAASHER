@@ -554,6 +554,20 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — `/api/admin/auth/login` SHA-256 → bcrypt migration with auto-upgrade
+- **Root cause:** `/api/admin/auth/login` used `hash_password()` returning SHA-256 hex against the doc's `password` field. The main `/api/auth/login` stores bcrypt in `password_hash`. The seeded admin (`admin@ceibaa.in`) only had the bcrypt hash → admin portal login was permanently broken (the pre-existing `test_admin_auth.py::test_login_with_correct_email_and_password` failure).
+- **Fix per integration playbook (passlib/bcrypt):**
+  - Imported `bcrypt`. `hash_password()` rewritten to produce bcrypt (now aligned with `/api/auth/login`).
+  - New `_legacy_sha256()` helper preserves SHA-256 for backwards-compat verification.
+  - New `_verify_admin_password(plain, user) -> (is_match, used_legacy)` tries 3 formats in priority order: (1) bcrypt in `password_hash` (canonical), (2) bcrypt in `password` (drift), (3) SHA-256 hex in `password` (legacy). Bad hashes are swallowed silently.
+  - New `_upgrade_admin_password_to_bcrypt()` runs on the FIRST successful legacy login: rewrites `password_hash` with bcrypt and `$unset`s the `password` field. Best-effort — if Mongo write fails, login still succeeds.
+- **Tests added — `/app/backend/tests/test_admin_bcrypt_migration.py` (3 tests, all pass):**
+  1. bcrypt-in-`password_hash` (canonical) authenticates ✓
+  2. legacy SHA-256-in-`password` authenticates AND the doc is automatically upgraded to bcrypt, with the legacy field cleared; subsequent login with the same plaintext still works against the new hash ✓
+  3. wrong password against bcrypt-in-`password_hash` returns 401 ✓
+- **Regression run:** **47/47 pass, 5 skip** across `test_admin_auth.py`, `test_admin_cookie_cutover.py`, `test_admin_bcrypt_migration.py`, `test_refactor_regression_v29.py`, `test_stage3_auth_regression.py`. The pre-existing `test_admin_login_success` now passes ✓.
+- **End-to-end verified:** `curl POST /api/admin/auth/login` with `admin@ceibaa.in / SuperAdmin@123` → 200 + httpOnly `ceibaa_admin_token` cookie + user payload.
+
 ### Feb 26, 2026 — Admin/Employee localStorage → HttpOnly cookie cutover + Python complexity refactor
 
 #### Backend — dual-mode cookie auth across admin/employee surfaces

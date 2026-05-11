@@ -2,14 +2,17 @@
 Admin Authentication Routes
 Secure admin login with database authentication
 Dual-mode auth: HttpOnly cookie (preferred) + Authorization Bearer (legacy)
+Dual-mode password verification: bcrypt (canonical) + legacy SHA-256 with
+auto-upgrade to bcrypt on first successful login.
 """
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
-from typing import Optional
+from typing import Optional, Tuple
 import hashlib
 import uuid
 import os
+import bcrypt
 
 router = APIRouter(prefix="/admin/auth", tags=["Admin Auth"])
 
@@ -67,8 +70,81 @@ class AdminLoginResponse(BaseModel):
 
 
 def hash_password(password: str) -> str:
-    """Hash password using SHA256"""
+    """Hash password using bcrypt (canonical — aligned with /api/auth/login)."""
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+
+
+def _legacy_sha256(password: str) -> str:
+    """Legacy SHA-256 hex hash (pre-Feb-2026)."""
     return hashlib.sha256(password.encode()).hexdigest()
+
+
+def _is_bcrypt_hash(value: str) -> bool:
+    """bcrypt hashes always start with $2a$, $2b$, $2y$ — quick sniff."""
+    return isinstance(value, str) and value.startswith("$2") and len(value) >= 50
+
+
+def _verify_admin_password(plain: str, user: dict) -> Tuple[bool, bool]:
+    """Verify an admin's plaintext password against either format.
+
+    Returns (is_match, used_legacy_format).
+    `used_legacy_format=True` means the caller should upgrade the doc to bcrypt
+    on next write to retire the SHA-256 field.
+
+    Order of preference:
+      1. bcrypt in `password_hash` (canonical — matches /api/auth/login)
+      2. bcrypt in `password` (some older docs store bcrypt here)
+      3. SHA-256 hex in `password` (legacy — auto-upgrade flag returned)
+    """
+    if not plain:
+        return False, False
+
+    plain_bytes = plain.encode("utf-8")
+
+    # 1) bcrypt in password_hash (canonical)
+    canonical = user.get("password_hash") or ""
+    if _is_bcrypt_hash(canonical):
+        try:
+            if bcrypt.checkpw(plain_bytes, canonical.encode("utf-8")):
+                return True, False
+        except (ValueError, TypeError):
+            pass  # malformed hash — fall through to other checks
+
+    # 2) bcrypt accidentally stored under password
+    legacy_field = user.get("password") or ""
+    if _is_bcrypt_hash(legacy_field):
+        try:
+            if bcrypt.checkpw(plain_bytes, legacy_field.encode("utf-8")):
+                return True, True  # treat as legacy so we normalize the field name
+        except (ValueError, TypeError):
+            pass
+
+    # 3) Legacy SHA-256 hex in password
+    if legacy_field and legacy_field == _legacy_sha256(plain):
+        return True, True
+
+    return False, False
+
+
+async def _upgrade_admin_password_to_bcrypt(user: dict, plain: str) -> None:
+    """One-shot migration: rewrite password_hash with bcrypt and clear legacy fields.
+    Called only on a successful legacy-format login. Best-effort — swallow errors.
+    """
+    try:
+        new_hash = hash_password(plain)
+        uid_match = {"$or": [
+            {"id": user.get("id")},
+            {"user_id": user.get("user_id") or user.get("id")},
+            {"email": user.get("email")},
+        ]}
+        await db.users.update_one(
+            uid_match,
+            {"$set": {"password_hash": new_hash},
+             "$unset": {"password": ""}},
+        )
+    except Exception as e:
+        print(f"[ADMIN_AUTH] Failed to upgrade password to bcrypt: {e}")
 
 
 def _client_ip(request: Request) -> str:
@@ -149,10 +225,15 @@ async def admin_login(request: Request, response: Response, credentials: AdminLo
             await _log_admin_login_attempt(credentials.username, ip, False, reason="user_not_found")
             raise HTTPException(status_code=401, detail="Invalid credentials")
 
-        if user.get("password", "") != hash_password(credentials.password):
+        matched, used_legacy = _verify_admin_password(credentials.password, user)
+        if not matched:
             await _log_admin_login_attempt(credentials.username, ip, False,
                                            reason="wrong_password", user_id=user.get("id"))
             raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        # Opportunistic upgrade — silent, best-effort.
+        if used_legacy:
+            await _upgrade_admin_password_to_bcrypt(user, credentials.password)
 
         admin_token = await _create_admin_session(user, ip)
         await _log_admin_login_attempt(credentials.username, ip, True, user_id=user.get("id"))
