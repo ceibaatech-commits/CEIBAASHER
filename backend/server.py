@@ -106,7 +106,7 @@ fastapi_app.add_middleware(
     allow_headers=["*"],
 )
 # Add session middleware for OAuth
-fastapi_app.add_middleware(SessionMiddleware, secret_key=os.getenv("JWT_SECRET", "ceibaa-secret-key"))
+fastapi_app.add_middleware(SessionMiddleware, secret_key=os.environ["JWT_SECRET"])
 
 # Import and mount Battle Socket.IO (Python-based real-time battle server)
 from battle_socketio import socket_app as battle_socket_app, init_socketio_db, start_matchmaking_sweep

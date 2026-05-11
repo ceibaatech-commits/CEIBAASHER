@@ -29,7 +29,7 @@ load_dotenv(ROOT_DIR / '.env')
 import os
 from jose import jwt, JWTError
 
-JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 router = APIRouter()
@@ -304,7 +304,7 @@ async def toggle_close_friend(request: Request):
 
         token = authorization.replace("Bearer ", "")
         import jwt
-        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production"), algorithms=["HS256"])
+        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=["HS256"])
         user_id = payload.get("sub")
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
@@ -348,7 +348,7 @@ async def block_user(request: Request):
 
         token = authorization.replace("Bearer ", "")
         import jwt
-        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production"), algorithms=["HS256"])
+        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=["HS256"])
         user_id = payload.get("sub")
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
@@ -465,7 +465,7 @@ async def get_mutual_followers(target_user_id: str, request: Request):
 
         token = authorization.replace("Bearer ", "")
         import jwt
-        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "ceibaa-super-secret-key-2024-change-in-production"), algorithms=["HS256"])
+        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=["HS256"])
         user_id = payload.get("sub")
         if not user_id:
             return {"success": True, "mutual": []}

@@ -35,7 +35,7 @@ def _decode_token(token: str) -> Optional[str]:
     if not token:
         return None
     import jwt
-    secret = os.getenv("JWT_SECRET", "ceibaa-secret-key")
+    secret = os.environ["JWT_SECRET"]
     try:
         payload = jwt.decode(token, secret, algorithms=["HS256"])
         return payload.get("sub")

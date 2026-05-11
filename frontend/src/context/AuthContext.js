@@ -11,14 +11,24 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const logoutRef = useRef(null);
 
-  // Global Axios interceptor for expired tokens
+  // Global Axios interceptor for expired tokens.
+  // Only triggers a full logout when the request that 401'd was for the
+  // session-validation endpoint (/api/auth/me). Other 401s (e.g. a single
+  // legacy Bearer-only endpoint that hasn't been migrated to cookie-auth)
+  // must NOT log the user out — they should fail in-place and surface their
+  // own error UI. This narrowing is what unblocks Google OAuth users from
+  // being kicked out the moment any background request returns 401.
   useEffect(() => {
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
         if (error.response?.status === 401) {
+          const url = error.config?.url || '';
+          const isAuthMe = url.includes('/api/auth/me');
           const detail = error.response?.data?.detail || '';
-          if (detail.includes('expired') || detail.includes('Invalid token')) {
+          const looksExpired = detail.includes('expired') || detail.includes('Invalid token');
+
+          if (isAuthMe && looksExpired) {
             localStorage.removeItem('ceibaa_user');
             localStorage.removeItem('token');
             localStorage.removeItem('auth_token');

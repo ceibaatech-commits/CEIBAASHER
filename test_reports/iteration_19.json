@@ -29,7 +29,7 @@
   "test_credentials": {
     "demo_login": "username: demo1, password: demo1",
     "profile_url": "/profile/demostudent1",
-    "backend_url": "https://ceibaa-integration.preview.emergentagent.com"
+    "backend_url": "https://mobile-search-fix-1.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing demo users",
   "retest_needed": false,

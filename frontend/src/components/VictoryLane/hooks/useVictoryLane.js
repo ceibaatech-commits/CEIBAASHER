@@ -57,15 +57,13 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
   // Fetch close friend IDs
   useEffect(() => {
     if (!user) return;
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    axios.get(`${BACKEND_URL}/api/profile/close-friend-ids`, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => {
-      if (res.data.success && res.data.friend_ids) {
-        setCloseFriendIds(new Set(res.data.friend_ids));
-      }
-    }).catch(() => {});
+    axios.get(`${BACKEND_URL}/api/profile/close-friend-ids`)
+      .then(res => {
+        if (res.data.success && res.data.friend_ids) {
+          setCloseFriendIds(new Set(res.data.friend_ids));
+        }
+      })
+      .catch(() => {});
   }, [user]);
 
   // --- Socket handlers ---
@@ -161,11 +159,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
       if (activeTab === 'trending') endpoint = `${BACKEND_URL}/api/social/feed/trending?skip=${skip}&limit=${limit}`;
       if (activeTab === 'following' && user) endpoint = `${BACKEND_URL}/api/social/feed/following?user_id=${user.id}&skip=${skip}&limit=${limit}`;
 
-      const headers = {};
-      const token = localStorage.getItem('token');
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const response = await axios.get(endpoint, { headers });
+      const response = await axios.get(endpoint);
       if (response.data.success) {
         const postsData = response.data.posts || [];
         setHasMore(response.data.has_more || false);
@@ -323,18 +317,11 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     });
 
     try {
-      const token = localStorage.getItem('token');
       if (isFollowing) {
-        await axios.delete(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true
-        });
+        await axios.delete(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`);
         toast.success('Unfollowed successfully');
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true
-        });
+        await axios.post(`${BACKEND_URL}/api/social/user/follow/${targetUserId}`, {});
         toast.success('Following!');
       }
     } catch (error) {
@@ -378,13 +365,9 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
 
     try {
       if (isLiked) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/like`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/like`);
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {}, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {});
       }
     } catch (error) {
       setLikedPosts(prev => {
@@ -424,15 +407,10 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
 
     // Persist bookmark to backend
     try {
-      const token = localStorage.getItem('token');
       if (isBookmarked) {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`);
       } else {
-        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/bookmark`, {});
       }
     } catch {
       // Revert on failure
@@ -456,9 +434,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
         post.id === postId ? { ...post, shares_count: Math.max((post.shares_count || 1) - 1, 0) } : post
       ));
       try {
-        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/unshare`);
         toast.success('Repost removed');
       } catch (error) {
         setSharedPosts(prev => { const s = new Set(prev); s.add(postId); return s; });
@@ -475,9 +451,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
       post.id === postId ? { ...post, shares_count: (post.shares_count || 0) + 1 } : post
     ));
     try {
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/share`, {});
       toast.success('Post shared successfully!');
     } catch (error) {
       setSharedPosts(prev => { const s = new Set(prev); s.delete(postId); return s; });

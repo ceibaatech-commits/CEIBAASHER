@@ -35,17 +35,14 @@ async def _get_user_id(authorization: Optional[str] = None, request: Optional[Re
     token = _extract_token(request, authorization)
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
-    secret = os.getenv("JWT_SECRET", "ceibaa-secret-key")
-    # auth_routes uses "ceibaa-super-secret-key-2026" by default — try the env-configured secret first,
-    # then fall back to the legacy default so we don't break tokens minted before the secret unification.
-    for candidate in (secret, "ceibaa-super-secret-key-2026", "ceibaa-secret-key"):
-        try:
-            payload = jwt.decode(token, candidate, algorithms=["HS256"])
-            user_id = payload.get("sub")
-            if user_id:
-                return user_id
-        except Exception:
-            continue
+    secret = os.environ["JWT_SECRET"]
+    try:
+        payload = jwt.decode(token, secret, algorithms=["HS256"])
+        user_id = payload.get("sub")
+        if user_id:
+            return user_id
+    except Exception:
+        pass
     raise HTTPException(status_code=401, detail="Invalid token")
 
 

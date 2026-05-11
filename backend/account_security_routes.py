@@ -40,7 +40,7 @@ from utils.email_service import send_email
 router = APIRouter()
 
 # ---------- Config ----------
-JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key")
+JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 

@@ -27,7 +27,7 @@
   },
   "test_credentials": {
     "demo_login": "username: demo1, password: demo1",
-    "backend_url": "https://ceibaa-integration.preview.emergentagent.com"
+    "backend_url": "https://mobile-search-fix-1.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing demo1 user with 40 test history records",
   "retest_needed": false,

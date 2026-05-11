@@ -9,7 +9,7 @@ import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 
 // Connect to battle server through the backend domain
-const BATTLE_SERVER_URL = window.location.origin || 'https://ceibaa-integration.preview.emergentagent.com';
+const BATTLE_SERVER_URL = window.location.origin || 'https://mobile-search-fix-1.preview.emergentagent.com';
 
 const LiveBattle = () => {
   const { pin } = useParams();

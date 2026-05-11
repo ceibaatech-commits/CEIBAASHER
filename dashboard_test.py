@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://ceibaa-integration.preview.emergentagent.com")
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://mobile-search-fix-1.preview.emergentagent.com")
 
 class DashboardTester:
     def __init__(self):

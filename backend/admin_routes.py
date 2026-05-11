@@ -226,7 +226,7 @@ async def _resolve_user_id_from_auth(authorization: Optional[str]) -> Optional[s
     try:
         payload = jwt.decode(
             token,
-            _os.getenv("JWT_SECRET", "ceibaa-super-secret-key"),
+            _os.environ["JWT_SECRET"],
             algorithms=[_os.getenv("JWT_ALGORITHM", "HS256")],
         )
         return payload.get("sub")

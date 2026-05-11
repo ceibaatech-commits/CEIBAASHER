@@ -17,7 +17,7 @@ router = APIRouter()
 # Global db instance (will be set from server.py)
 db = None
 
-JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-secret-key")
+JWT_SECRET = os.environ["JWT_SECRET"]
 
 def init_db(database):
     global db

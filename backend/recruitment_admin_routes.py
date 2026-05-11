@@ -19,7 +19,7 @@ from database import db
 
 router = APIRouter()
 
-JWT_SECRET = os.getenv("JWT_SECRET", "ceibaa-super-secret-key-2026")
+JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 # Email

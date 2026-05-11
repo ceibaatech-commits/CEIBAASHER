@@ -14,7 +14,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 db = None
-JWT_SECRET = os.environ.get("JWT_SECRET", "ceibaa-secret-key-2024")
+JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = "HS256"
 
 def init_db(database):

@@ -31,7 +31,7 @@
     "demo_login": "username: demo1, password: demo1",
     "expected_name": "Demo Student 1",
     "expected_id": "demo1-uuid",
-    "backend_url": "https://ceibaa-integration.preview.emergentagent.com"
+    "backend_url": "https://mobile-search-fix-1.preview.emergentagent.com"
   },
   "seed_data_creation": "Quiz submissions created during testing (auto-saved to quiz_history)",
   "retest_needed": false,
