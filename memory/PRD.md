@@ -554,6 +554,18 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — Undefined-name import bug fix + recruitment admin verification
+- **Real undefined-name bug (the audit's #1 of "3 possibly undefined"):**
+  `live_battles_admin_routes.py:584` imported `notify_admins_new_report` from `battle_socketio`, but the function actually lives in `battle_shared`. The `except Exception` swallowed the `ImportError` silently — every battle-report submission since the Aug 2025 `battle_socketio.py` decomposition was failing to notify admins. **Fixed:** changed import to `from battle_shared import notify_admins_new_report`.
+- **Other 2 "undefined" flags = false positives** (triaged across pyflakes, pylint, flake8, mypy):
+  - `image_extraction_routes.py:116/261` "response_text used in except" — `response_text` is always assigned at line 102, BEFORE the inner try. Not an undefined-use.
+  - `profile_follow_routes.py:325`, `profile_content_routes.py:28/138/208` "user used in except" — same pattern; `user` is always assigned at the top of the outer try block. Not an undefined-use.
+- **Recruitment admin seeded & verified:**
+  - `db.ceibaa_admins.findOne({email: "admin@ceibaa.in"})` → 1 doc with bcrypt password_hash.
+  - `db.recruiters.count()` → 5 (TCS, Infosys, Google, Flipkart, Razorpay).
+  - `POST /api/recruitment-admin/login` with `admin@ceibaa.in / admin123` → 200 + httpOnly `session_token` cookie (7-day TTL).
+- **Documented in test_credentials.md:** Recruitment Admin credentials, 5 recruiter logins, sample student login.
+
 ### Feb 26, 2026 — `/api/admin/auth/login` SHA-256 → bcrypt migration with auto-upgrade
 - **Root cause:** `/api/admin/auth/login` used `hash_password()` returning SHA-256 hex against the doc's `password` field. The main `/api/auth/login` stores bcrypt in `password_hash`. The seeded admin (`admin@ceibaa.in`) only had the bcrypt hash → admin portal login was permanently broken (the pre-existing `test_admin_auth.py::test_login_with_correct_email_and_password` failure).
 - **Fix per integration playbook (passlib/bcrypt):**

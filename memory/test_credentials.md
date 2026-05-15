@@ -23,17 +23,25 @@
 - Frontend `localStorage.employee_data` stores only the non-sensitive employee profile blob.
 - No seeded employee in this environment — insert via `db.employees`.
 
-## Recruitment Admin (Stage 3 migrated — cookie based)
+## Recruitment Admin (Stage 3 migrated — cookie based) — SEEDED & VERIFIED Feb 26, 2026
+- Email: `admin@ceibaa.in`
+- Password: `admin123`
 - API: `POST /api/recruitment-admin/login`
-- On success: sets httpOnly `session_token` cookie. Frontend then stores
+- On success: sets httpOnly `session_token` cookie (7-day TTL). Frontend then stores
   non-sensitive `admin_recruitment_session=1` flag in localStorage as UI gate.
-- **NOT seeded** in this environment. To test, insert a record into `db.ceibaa_admins`
-  with `email`, `name`, and `password_hash` (bcrypt of the password).
+- Seed file: `/app/backend/recruitment_seed.py` (auto-runs on startup if `db.recruiters` is empty).
+- DB record: `db.ceibaa_admins.findOne({email: "admin@ceibaa.in"})` — bcrypt hash in `password_hash`.
 
-## Recruiter
+## Recruiter (seeded — verified Feb 26, 2026)
+- Email: `hr@tcs.com` / Password: `tcs123` (TCS)
+- Other recruiters: `hr@infosys.com / infosys123`, `hr@google.com / google123`, `hr@flipkart.com / flipkart123`, `hr@razorpay.com / razorpay123`
 - API: `POST /api/recruitment/recruiter/login`
-- Also sets `session_token` cookie on success.
-- **NOT seeded**. Insert into `db.recruiters` to test.
+- Sets `session_token` cookie on success.
+- DB: `db.recruiters` (5 seeded companies, all bcrypt).
+
+## Recruitment Sample Student
+- Email: `arjun@ceibaa.in` / Password: `student123`
+- 8 sample students seeded with AIR ranks (`db.users` with `air_rank` field).
 
 ## Notes for testing agent
 - **Auth is cookie-first, Bearer-fallback** across all helpers (`utils/auth_helpers`, `auth_routes`, `social_feed_routes`, `account_security_routes`, `recruitment_admin_routes`, `profile_routes`).

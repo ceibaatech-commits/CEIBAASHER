@@ -581,7 +581,10 @@ async def create_battle_report(
         
         # Notify admins in real-time
         try:
-            from battle_socketio import notify_admins_new_report
+            # `notify_admins_new_report` lives in battle_shared (not battle_socketio).
+            # Importing from the wrong module silently swallowed every report
+            # notification until Feb 26 2026.
+            from battle_shared import notify_admins_new_report
             import asyncio
             asyncio.create_task(notify_admins_new_report(report_doc))
         except Exception as notify_err:
