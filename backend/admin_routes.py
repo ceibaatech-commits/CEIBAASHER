@@ -98,14 +98,26 @@ class UserPermissionsModel(BaseModel):
     is_disabled: Optional[bool] = False
 
 @router.get("/admin/users")
-async def get_all_users():
+async def get_all_users(limit: int = 5000, skip: int = 0):
     """
     Get all users with their details for admin panel
     Returns: List of users with id, name, email, status, permissions
+
+    Pagination via `limit` (default 5000, capped at 50000) and `skip` (default 0).
+    Organic signups are returned first, imported leads after — so the admin sees
+    real users without scrolling through the imported list.
     """
     try:
-        # Fetch all users from database (exclude sensitive fields)
-        users = await db.users.find({}, {"_id": 0, "password": 0, "token": 0, "secret": 0}).to_list(1000)
+        limit = max(1, min(int(limit), 50000))
+        skip = max(0, int(skip))
+        # Sort: imported=false (organic) before imported=true. Tiebreak by created_at desc.
+        users = await (
+            db.users.find({}, {"_id": 0, "password": 0, "token": 0, "secret": 0})
+            .sort([("imported", 1), ("created_at", -1)])
+            .skip(skip)
+            .limit(limit)
+            .to_list(limit)
+        )
         
         # Enrich user data with status and permissions
         for user in users:
@@ -135,7 +147,9 @@ async def get_all_users():
         return {
             "success": True,
             "users": users,
-            "count": len(users)
+            "count": len(users),
+            "limit": limit,
+            "skip": skip,
         }
         
     except Exception as e:

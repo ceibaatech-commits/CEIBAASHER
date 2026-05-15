@@ -126,7 +126,13 @@ export function useUserManagement() {
       );
     }
     if (filterStatus !== 'all') {
-      filtered = filtered.filter(u => u.status === filterStatus);
+      if (filterStatus === 'imported') {
+        filtered = filtered.filter(u => u.imported === true);
+      } else if (filterStatus === 'organic') {
+        filtered = filtered.filter(u => !u.imported);
+      } else {
+        filtered = filtered.filter(u => u.status === filterStatus);
+      }
     }
     filtered.sort((a, b) => {
       let aVal, bVal;

@@ -29,9 +29,11 @@ export const UserFiltersBar = ({
           className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           data-testid="user-status-filter"
         >
-          <option value="all">All Status</option>
+          <option value="all">All Users</option>
           <option value="online">Online</option>
           <option value="offline">Offline</option>
+          <option value="imported">Imported Leads</option>
+          <option value="organic">Organic Signups</option>
         </select>
 
         <select
