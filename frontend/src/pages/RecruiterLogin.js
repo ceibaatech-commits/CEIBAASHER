@@ -1,22 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { ShieldCheck, Mail, Lock, Eye, EyeOff, ArrowRight, Zap, Star } from 'lucide-react';
 import { toast } from 'sonner';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function RecruiterLogin() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Welcome back to the Partner Portal");
+    setError('');
+    try {
+      // Real backend call — sets httpOnly `session_token` cookie on success.
+      // axios.defaults.withCredentials = true (set globally in index.js)
+      // ensures the cookie is stored AND attached on subsequent requests.
+      const res = await axios.post(`${BACKEND_URL}/api/recruitment/recruiter/login`, {
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      });
+
+      // Non-sensitive recruiter profile cached for instant UI hydration on the dashboard.
+      // The dashboard reads `recruiter_data` as its gate-check — match that key.
+      if (res.data && res.data.recruiter) {
+        localStorage.setItem('recruiter_session', '1');
+        localStorage.setItem('recruiter_data', JSON.stringify(res.data.recruiter));
+      }
+      toast.success('Welcome back to the Partner Portal');
       navigate('/recruiter/dashboard');
-    }, 1500);
+    } catch (err) {
+      const msg = err.response?.data?.detail || err.message || 'Invalid credentials.';
+      setError(typeof msg === 'string' ? msg : 'Login failed. Please try again.');
+      toast.error(typeof msg === 'string' ? msg : 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,7 +105,15 @@ export default function RecruiterLogin() {
             <p className="text-slate-500 text-sm">Enter your credentials to manage your desk</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" data-testid="recruiter-login-form">
+            {error && (
+              <div
+                data-testid="recruiter-login-error"
+                className="text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-3"
+              >
+                {error}
+              </div>
+            )}
             {/* Segmented Email Input */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-slate-700 ml-1">Business Email</label>
@@ -92,6 +124,7 @@ export default function RecruiterLogin() {
                 <input 
                   type="email" 
                   required
+                  data-testid="recruiter-login-email"
                   placeholder="admin@company.com"
                   className="flex-1 px-4 bg-transparent text-slate-900 text-base outline-none"
                   value={formData.email}
@@ -114,6 +147,7 @@ export default function RecruiterLogin() {
                   <input 
                     type={showPassword ? "text" : "password"} 
                     required
+                    data-testid="recruiter-login-password"
                     placeholder="••••••••"
                     className="w-full px-4 bg-transparent text-slate-900 text-base outline-none"
                     value={formData.password}
@@ -133,6 +167,7 @@ export default function RecruiterLogin() {
             <button 
               type="submit" 
               disabled={loading}
+              data-testid="recruiter-login-submit"
               className="w-full h-12 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
               {loading ? (

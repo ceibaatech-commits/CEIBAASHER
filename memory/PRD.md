@@ -554,6 +554,15 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — `/recruiter` login: completely broken (was a 1.5s `setTimeout` stub)
+- **Bug:** `RecruiterLogin.js:handleSubmit` was a placeholder — it did `setTimeout(1500ms)` then navigated to `/recruiter/dashboard` regardless of email/password input. ANY credentials "worked" client-side but the dashboard's `useEffect` then bounced the user back to `/recruiter` because the auth cookie was never set. This was the root cause of the "/recruiter with correct credentials is logging in" complaint (logging in then immediately logging out).
+- **Fix:** Wired `handleSubmit` to real `POST /api/recruitment/recruiter/login` (axios, cookies via global `withCredentials`). On success, backend sets httpOnly `session_token` cookie + we cache the non-sensitive recruiter profile under `localStorage.recruiter_data` (the key the dashboard's gate-check reads). On failure, shows inline `data-testid="recruiter-login-error"` + toast.
+- **Added `data-testid`s** for testing agent: `recruiter-login-form`, `recruiter-login-email`, `recruiter-login-password`, `recruiter-login-submit`, `recruiter-login-error`.
+- **Verified end-to-end via Playwright:**
+  - wrong password → "Invalid credentials" error shown, URL stays on `/recruiter` ✓
+  - correct password → navigates to `/recruiter/dashboard` → TCS dashboard renders (2 posts, 2 applications, 1 shortlisted, 9 followers) ✓
+  - `/recruitment-admin` login with `admin@ceibaa.in / admin123` → admin dashboard renders (6 recruiters, 6 listings, 5 applications) ✓
+
 ### Feb 26, 2026 — Undefined-name import bug fix + recruitment admin verification
 - **Real undefined-name bug (the audit's #1 of "3 possibly undefined"):**
   `live_battles_admin_routes.py:584` imported `notify_admins_new_report` from `battle_socketio`, but the function actually lives in `battle_shared`. The `except Exception` swallowed the `ImportError` silently — every battle-report submission since the Aug 2025 `battle_socketio.py` decomposition was failing to notify admins. **Fixed:** changed import to `from battle_shared import notify_admins_new_report`.
