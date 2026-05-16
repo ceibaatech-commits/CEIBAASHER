@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import asyncio, os, string, secrets, socketio as _sio_mod
 
 # ASGI app — mounted at /api/battlews in server.py
-socket_app = _sio_mod.ASGIApp(sio)
+socket_app = _sio_mod.ASGIApp(sio, socketio_path='')
 
 @sio.event
 async def connect(sid, environ):
