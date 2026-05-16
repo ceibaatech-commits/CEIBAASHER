@@ -89,7 +89,7 @@ const CreatePostFAB = ({
         )}
       </AnimatePresence>
 
-      {/* Quick Action Menu - Mobile Only */}
+      {/* Quick Action Menu — Mobile Only */}
       <AnimatePresence mode="wait">
         {showCreateMenu && (
           <motion.div 
@@ -97,51 +97,55 @@ const CreatePostFAB = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed bottom-24 left-4 sm:left-8 z-50 flex flex-col gap-2"
+            className="md:hidden fixed right-4 z-50 flex flex-col gap-3 w-64"
+            style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 170px)' }}
           >
-            {/* Academic Question Button */}
+            {/* Academic Question */}
             <button
               onClick={() => {
                 setShowAcademicModal(true);
                 setShowCreateMenu(false);
               }}
-              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
+              className="flex items-center gap-3 px-4 py-3 bg-white rounded-2xl shadow-[0_6px_20px_rgba(0,0,0,0.12)] active:scale-95 transition border border-gray-100"
               data-testid="create-academic-btn"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/icons/requirements_person_checklist.svg" alt="Academic" className="w-10 h-10 object-cover" />
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 text-xl">📝</div>
+              <div className="flex flex-col items-start text-left">
+                <span className="font-semibold text-gray-900 text-sm">Ask a Question</span>
+                <span className="text-[11px] text-gray-500">Academic doubt or query</span>
               </div>
-              <span className="font-medium text-gray-800 text-sm">Academic Question</span>
             </button>
 
-            {/* Quiz Room Button */}
+            {/* Quiz Room */}
             <button
               onClick={() => {
                 setShowQuizModal(true);
                 setShowCreateMenu(false);
               }}
-              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
+              className="flex items-center gap-3 px-4 py-3 bg-white rounded-2xl shadow-[0_6px_20px_rgba(0,0,0,0.12)] active:scale-95 transition border border-gray-100"
               data-testid="create-quiz-btn"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/icons/integration_network_animated.svg" alt="Quiz Room" className="w-10 h-10 object-cover" />
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-xl">🎯</div>
+              <div className="flex flex-col items-start text-left">
+                <span className="font-semibold text-gray-900 text-sm">Post a Quiz Room</span>
+                <span className="text-[11px] text-gray-500">Invite friends to battle</span>
               </div>
-              <span className="font-medium text-gray-800 text-sm">Quiz Room</span>
             </button>
 
-            {/* Quick Post Button */}
+            {/* Quick Post */}
             <button
               onClick={() => {
                 setShowQuickPostModal(true);
                 setShowCreateMenu(false);
               }}
-              className="flex items-center gap-3 px-4 py-3 bg-white rounded-xl shadow-lg hover:bg-gray-50 transition border border-gray-100"
+              className="flex items-center gap-3 px-4 py-3 bg-white rounded-2xl shadow-[0_6px_20px_rgba(0,0,0,0.12)] active:scale-95 transition border border-gray-100"
               data-testid="create-quick-post-btn"
             >
-              <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                <img src="/images/icons/talk_animated.svg" alt="Quick Post" className="w-10 h-10 object-cover" />
+              <div className="w-10 h-10 rounded-xl bg-fuchsia-50 flex items-center justify-center text-fuchsia-600 text-xl">✨</div>
+              <div className="flex flex-col items-start text-left">
+                <span className="font-semibold text-gray-900 text-sm">Quick Post</span>
+                <span className="text-[11px] text-gray-500">Share an update or media</span>
               </div>
-              <span className="font-medium text-gray-800 text-sm">Quick Post</span>
             </button>
           </motion.div>
         )}
@@ -298,25 +302,51 @@ const CreatePostFAB = ({
         )}
       </AnimatePresence>
 
-      {/* Main FAB Button - Mobile Only - Animated Icon */}
-      <button
+      {/* Main FAB Button — Mobile Only — visible, on-brand, lifts above bottom nav */}
+      <motion.button
         onClick={() => setShowCreateMenu(!showCreateMenu)}
-        className={`md:hidden fixed bottom-6 left-4 sm:left-8 z-50 w-16 h-16 bg-white hover:bg-gray-50 rounded-full shadow-lg hover:shadow-2xl transition-all flex items-center justify-center border-2 border-purple-200 ${
-          showCreateMenu ? 'scale-90' : 'scale-100'
-        }`}
-        style={{ padding: 0 }}
+        initial={{ scale: 0, rotate: -90 }}
+        animate={{ scale: 1, rotate: 0 }}
+        whileTap={{ scale: 0.92 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+        className={`md:hidden fixed right-4 z-50 w-16 h-16 rounded-full shadow-[0_8px_28px_rgba(124,58,237,0.55)] flex items-center justify-center
+          ${showCreateMenu
+            ? 'bg-white border-2 border-purple-300'
+            : 'bg-gradient-to-br from-fuchsia-500 via-purple-600 to-indigo-600'}
+        `}
+        style={{
+          // Lift above the bottom nav (~72px) with extra breathing room.
+          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+          padding: 0,
+        }}
+        aria-label={showCreateMenu ? 'Close create menu' : 'Create a post'}
         data-testid="create-post-fab"
       >
-        {showCreateMenu ? (
-          <X className="w-7 h-7 text-purple-600" />
-        ) : (
-          <img 
-            src="/images/create_animated_cycle.svg" 
-            alt="Create" 
-            className="w-12 h-12 object-contain"
+        {/* Pulsing aura so it's never missed */}
+        {!showCreateMenu && (
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 rounded-full bg-purple-500/40 animate-ping"
           />
         )}
-      </button>
+        {showCreateMenu ? (
+          <X className="w-7 h-7 text-purple-600 relative" />
+        ) : (
+          <svg
+            className="w-7 h-7 text-white relative drop-shadow"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+        )}
+      </motion.button>
     </>
   );
 };

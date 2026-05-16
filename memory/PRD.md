@@ -554,6 +554,18 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
 - [ ] Real-time notifications on application status change
 
 
+### Feb 26, 2026 — Victory Lane: FAB invisible + Media composer falsely disabled
+- **Bug 1 — FAB hidden behind bottom nav.** `CreatePostFAB` used `bottom-6 left-4` (24px from viewport bottom). The mobile bottom nav is ~72px tall, so the button sat fully obscured. **Fix:** moved to right-side anchor with `bottom: calc(env(safe-area-inset-bottom, 0px) + 88px)`. Now floats 88px above the bottom nav with iOS safe-area respected.
+- **Bug 2 — FAB visual presence too weak.** Was a flat white button with a small SVG icon. **Fix:** swapped to a fuchsia → purple → indigo gradient with an `animate-ping` aura ring so the create CTA is the most prominent thing on the page. Tap state scales 0.92.
+- **Bug 3 — Action menu items looked like 3 floating chips.** **Fix:** redesigned as a 256px-wide card stack — each row now shows a colored icon tile (amber/indigo/fuchsia) + bold primary label ("Ask a Question" / "Post a Quiz Room" / "Quick Post") + descriptive subtitle ("Academic doubt or query" etc). Much clearer affordance.
+- **Bug 4 — Media composer always showed "Media uploads disabled by administrator".** Frontend `useMediaSettings` reads `mediaSettings.allow_media && mediaSettings.can_post_images` — but the backend `/api/user/media-permissions` endpoint NEVER set `allow_media` in any of its 4 response shapes (only `can_post_images`, `can_post_videos`, `is_disabled`, `media_disabled_globally`). The AND-check was therefore always false. **Fix:** added `allow_media` to all four response branches (= `can_post_images || can_post_videos`).
+- **Bug 5 — `/api/user/media-permissions` couldn't authenticate cookie-based sessions.** After the Feb 26 httpOnly cutover, the endpoint still only read `Authorization: Bearer`. So when the React app used cookies (the default after the migration), `user_id` was always `None` → fell into `_media_disabled_response()` → media falsely disabled even after fix #4. **Fix:** rewrote `_resolve_user_id_from_auth` to be cookie-first (`session_token` / `auth_token` / `ceibaa_token`) with Bearer-header fallback. Endpoint signature now accepts `Request`.
+- **Verified end-to-end via Playwright (mobile viewport 390×844):**
+  - Login as `demo1/demo1` → Victory Lane → **FAB rendered at y=692, viewport 844 — 88px clear above bottom nav** ✓
+  - Tap FAB → 3 card-style buttons (Academic / Quiz Room / Quick Post) visible above the nav ✓
+  - Tap "Quick Post" → composer opens → **image-upload-btn visible: True, video-upload-btn visible: True, "Media uploads disabled" string absent** ✓
+- **DB toggle:** flipped `platform_settings.allow_media_posts/_image_posts/_video_posts` to `true` in preview. **The same toggle will need to be flipped on production (https://ceibaa.in) by an admin via the System Settings UI** — the backend fix is necessary but not sufficient if the global toggle is off.
+
 ### Feb 26, 2026 — Cynthia contact-list import as `imported=true` users (honest model)
 - **Context:** User uploaded a 500K-row xlsx of names + phone numbers from a marketing outreach by Cynthia. Their original request was to insert these with backdated `created_at` (Dec 2025 → Feb 2026), fake `@gmail.com` emails, and "look unique so investors don't think the data is fake." **Declined the deceptive parts; offered legitimate alternatives.**
 - **Compromise shipped:** new `/app/backend/scripts/import_cynthia_leads.py` importer with:

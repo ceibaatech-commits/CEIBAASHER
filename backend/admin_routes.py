@@ -3,7 +3,7 @@ Admin Routes for Ceibaa Platform
 Handles admin panel operations like user management, analytics, etc.
 """
 import re
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
@@ -218,6 +218,7 @@ async def get_user_permissions(user_id: str):
 
 def _media_disabled_response(globally_disabled: bool = False) -> dict:
     return {
+        "allow_media": False,           # Frontend hook reads this flag.
         "can_post_images": False,
         "can_post_videos": False,
         "is_disabled": False,
@@ -225,14 +226,29 @@ def _media_disabled_response(globally_disabled: bool = False) -> dict:
     }
 
 
-async def _resolve_user_id_from_auth(authorization: Optional[str]) -> Optional[str]:
-    """Extract user_id from either session token or JWT in Authorization header."""
+async def _resolve_user_id_from_auth(authorization: Optional[str], request: Optional[Request] = None) -> Optional[str]:
+    """Extract user_id from either httpOnly session cookie or Authorization Bearer JWT.
+
+    Cookie-first (matches the Feb 26 2026 auth cutover). Falls back to Bearer
+    header for any legacy mobile clients still on token-based auth.
+    """
     from jose import jwt, JWTError
     import os as _os
 
-    if not authorization:
+    token = None
+    # Cookie-first.
+    if request is not None:
+        token = (
+            request.cookies.get("session_token")
+            or request.cookies.get("auth_token")
+            or request.cookies.get("ceibaa_token")
+        )
+    # Authorization header fallback.
+    if not token and authorization:
+        token = authorization.replace("Bearer ", "").strip()
+
+    if not token:
         return None
-    token = authorization.replace("Bearer ", "")
 
     session = await db.user_sessions.find_one({"session_token": token})
     if session and session.get("user_id"):
@@ -253,6 +269,7 @@ def _user_media_permissions(user: dict, global_images: bool, global_videos: bool
     """Compose per-user media permissions given the user doc and global toggles."""
     if user.get("is_disabled", False) or user.get("media_disabled", False):
         return {
+            "allow_media": False,
             "can_post_images": False,
             "can_post_videos": False,
             "is_disabled": True,
@@ -262,14 +279,18 @@ def _user_media_permissions(user: dict, global_images: bool, global_videos: bool
     user_images = user.get("can_post_images")
     user_videos = user.get("can_post_videos")
     if user_images is False or user_videos is False:
+        can_img = global_images and user_images is not False
+        can_vid = global_videos and user_videos is not False
         return {
-            "can_post_images": global_images and user_images is not False,
-            "can_post_videos": global_videos and user_videos is not False,
+            "allow_media": can_img or can_vid,
+            "can_post_images": can_img,
+            "can_post_videos": can_vid,
             "is_disabled": False,
             "media_disabled_globally": False,
         }
 
     return {
+        "allow_media": global_images or global_videos,
         "can_post_images": global_images,
         "can_post_videos": global_videos,
         "is_disabled": False,
@@ -279,13 +300,16 @@ def _user_media_permissions(user: dict, global_images: bool, global_videos: bool
 
 # Public endpoint to get current user's media permissions
 @router.get("/user/media-permissions")
-async def get_current_user_media_permissions(authorization: Optional[str] = Header(None)):
+async def get_current_user_media_permissions(request: Request, authorization: Optional[str] = Header(None)):
     """
     Get current logged-in user's media posting permissions.
 
     Logic:
     - If global media is DISABLED -> no one can post media
     - If global media is ENABLED -> all authenticated users can post unless specifically disabled
+
+    Auth is cookie-first (httpOnly `session_token`) with Bearer-header fallback
+    for legacy mobile clients.
     """
     try:
         global_settings = await db.platform_settings.find_one({"type": "victory_lane"}, {"_id": 0}) or {}
@@ -296,7 +320,7 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         if not global_media:
             return _media_disabled_response(globally_disabled=True)
 
-        user_id = await _resolve_user_id_from_auth(authorization)
+        user_id = await _resolve_user_id_from_auth(authorization, request)
         if not user_id:
             return _media_disabled_response()
 
@@ -309,6 +333,7 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
 
         # Valid token but user row not found — still allow when global is on
         return {
+            "allow_media": global_images or global_videos,
             "can_post_images": global_images,
             "can_post_videos": global_videos,
             "is_disabled": False,
@@ -316,7 +341,7 @@ async def get_current_user_media_permissions(authorization: Optional[str] = Head
         }
     except Exception as e:
         print(f"Error fetching media permissions: {e}")
-        return {"can_post_images": False, "can_post_videos": False, "is_disabled": False}
+        return {"allow_media": False, "can_post_images": False, "can_post_videos": False, "is_disabled": False}
 
 @router.get("/admin/users/search")
 async def search_users(query: str, limit: int = 20):
