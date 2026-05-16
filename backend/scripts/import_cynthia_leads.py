@@ -40,9 +40,11 @@ SURNAMES = [
 ]
 
 # Deterministic Mulberry32 — same input row always gets the same surname so
-# re-runs don't churn the data.
+# re-runs don't churn the data. SHA-256 (not MD5) per Feb 26, 2026 audit — even
+# though the use is non-cryptographic (just deriving an array index from a
+# phone number), SHA-256 is the canonical replacement.
 def _deterministic_index(seed: str, modulo: int) -> int:
-    h = int(hashlib.md5(seed.encode("utf-8")).hexdigest()[:8], 16)
+    h = int(hashlib.sha256(seed.encode("utf-8")).hexdigest()[:8], 16)
     return h % modulo
 
 
