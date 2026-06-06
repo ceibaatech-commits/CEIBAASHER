@@ -10,10 +10,6 @@ import ModernExamSyllabus from "@/pages/ModernExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
 import Login from "@/pages/Login";
-import ForgotPassword from "@/pages/ForgotPassword";
-import ResetPassword from "@/pages/ResetPassword";
-import VerifyPhone from "@/pages/VerifyPhone";
-import Settings from "@/pages/Settings";
 import Signup from "@/pages/Signup";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
@@ -47,12 +43,10 @@ import QuizResults from "@/pages/QuizResults";
 import Board from "@/pages/Board";
 import RoomDetail from "@/pages/RoomDetail";
 
-// 1v1 Live Battle with video — matchmaking flow
+// 1v1 Live Battle with video (Original matchmaking)
 import LiveBattleMode from "@/pages/LiveBattleMode";
 
-// 1v1 Matchmaking with video chat (rich UI restored from git 891bdb04 — the
-// previous "empty JSX stub" issue that broke the Battle button is fixed by
-// reinstating this proper component).
+// 1v1 Matchmaking without audio/video (New simplified version)
 import Matchmaking1v1 from "@/pages/Matchmaking1v1";
 
 // 404 Page
@@ -86,22 +80,6 @@ import ChapterTestChapters from "@/pages/ChapterTestChapters";
 // Single Post View
 import SinglePost from "@/pages/SinglePost";
 import DivyaTutor from "@/pages/DivyaTutor";
-import Messages from "@/pages/Messages";
-
-// Recruitment Portal
-import RecruitmentCell from "@/pages/RecruitmentCell";
-import RecruiterLogin from "@/pages/RecruiterLogin";
-import RecruiterDashboard from "@/pages/RecruiterDashboard";
-import RecruiterAnalytics from "@/pages/RecruiterAnalytics";
-import CreatePost from "@/pages/CreatePost";
-import ManageApplicants from "@/pages/ManageApplicants";
-import JobsFeed from "@/pages/JobsFeed";
-import DiscoverCompanies from "@/pages/DiscoverCompanies";
-import CompanyChannel from "@/pages/CompanyChannel";
-import ApplyJob from "@/pages/ApplyJob";
-import QuizAttempt from "@/pages/QuizAttempt";
-import HackathonDetail from "@/pages/HackathonDetail";
-import MyApplications from "@/pages/MyApplications";
 
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -142,10 +120,6 @@ function App() {
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-phone" element={<VerifyPhone />} />
-          <Route path="/settings" element={<Settings />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth-callback" element={<AuthCallback />} />
@@ -153,7 +127,9 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/earn" element={<Earn />} />
           <Route path="/home" element={<Navigate to="/" replace />} />
-          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/profile/:username" element={<PublicProfile />} />
+          <Route path="/inbox" element={<Notifications />} />
+          <Route path="/messages" element={<Notifications />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings/privacy" element={<PrivacySettings />} />
           
@@ -209,35 +185,15 @@ function App() {
           
           {/* 1v1 Live Battle with video (matchmaking) */}
           <Route path="/live-battle-1v1/:examId/:subject/:topic" element={<LiveBattleMode />} />
-
-          {/* 1v1 Matchmaking — restored rich UI (Find Match + searching state +
-              battle quiz + video chat) from git 891bdb04. */}
+          
+          {/* 1v1 Matchmaking without audio/video */}
           <Route path="/matchmaking/:examId/:subject/:topic" element={<Matchmaking1v1 />} />
           
           {/* Divya AI Tutor */}
           <Route path="/divya" element={<DivyaTutor />} />
           
-          {/* Messaging */}
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/messages/:conversationId" element={<Messages />} />
-          
           {/* Sitemap */}
           <Route path="/sitemap" element={<Sitemap />} />
-          
-          {/* Recruitment Portal Routes */}
-          <Route path="/recruitment-admin" element={<RecruitmentCell />} />
-          <Route path="/recruiter" element={<RecruiterLogin />} />
-          <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
-          <Route path="/recruiter/analytics" element={<RecruiterAnalytics />} />
-          <Route path="/recruiter/post" element={<CreatePost />} />
-          <Route path="/recruiter/applicants/:postId" element={<ManageApplicants />} />
-          <Route path="/jobs" element={<JobsFeed />} />
-          <Route path="/discover" element={<DiscoverCompanies />} />
-          <Route path="/company/:slug" element={<CompanyChannel />} />
-          <Route path="/apply/:jobId" element={<ApplyJob />} />
-          <Route path="/quiz-recruit/:quizId" element={<QuizAttempt />} />
-          <Route path="/hackathon/:hackId" element={<HackathonDetail />} />
-          <Route path="/my-applications" element={<MyApplications />} />
           
           {/* 404 Catch-All */}
           <Route path="*" element={<NotFound />} />

@@ -93,7 +93,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
     <>
       <header className="fixed top-0 left-0 right-0 z-50 shadow-lg border-b border-gray-200" style={{ background: '#ffffff', color: '#1f2937', height: '64px' }}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-full">
-          <div className="flex items-center h-full gap-6 lg:gap-8 relative">
+          <div className="flex items-center h-full gap-4 lg:gap-8 relative">
           {/* Logo & Brand */}
           <div 
             className="cursor-pointer flex items-center flex-shrink-0"
@@ -107,7 +107,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
           </div>
 
           {/* Desktop Navigation - Centered */}
-          <nav className="hidden lg:flex items-center space-x-5 xl:space-x-7 flex-1 ml-4">
+          <nav className="hidden xl:flex items-center space-x-5 2xl:space-x-7 flex-1 min-w-0 ml-4">
             <button onClick={() => navigate('/')} className="text-gray-700 hover:text-cyan-600 transition-all duration-200 font-semibold text-sm whitespace-nowrap py-2 px-1 hover:scale-105 relative group flex items-center gap-1.5">
               <Home className="w-4 h-4 shrink-0 text-cyan-500" />
               Home

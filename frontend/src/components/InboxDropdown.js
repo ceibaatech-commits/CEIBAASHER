@@ -58,13 +58,13 @@ const InboxDropdown = ({ user }) => {
   };
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative flex-shrink-0">
       <button
         data-testid="inbox-dropdown-btn"
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+         className="relative w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
       >
-        <MessageSquare className="w-5 h-5" />
+        <MessageSquare className="w-6 h-6" />
         {unreadTotal > 0 && (
           <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 text-[10px] font-bold text-white px-1">
             {unreadTotal > 9 ? '9+' : unreadTotal}

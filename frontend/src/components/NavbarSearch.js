@@ -24,9 +24,19 @@ const NavbarSearch = ({ onExpandChange }) => {
     }
   }, [isExpanded, onExpandChange]);
 
-  // Handle click outside to collapse - disabled to allow clicks
+  // Handle click outside to collapse - while keeping clicks active
   useEffect(() => {
-    // Disabled to prevent interference
+ if (!isExpanded) return;
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsExpanded(false);
+        setShowResults(false);
+        setQuery('');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isExpanded]);
 
   // Handle Escape key

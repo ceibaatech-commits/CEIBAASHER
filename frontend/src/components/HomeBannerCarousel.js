@@ -80,7 +80,7 @@ const HeroBanner = () => {
                 <span className="text-teal-300 text-sm font-medium">India's #1 Social Learning Platform</span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-4">
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-4">
                 Learn.
                 <span className="text-teal-400"> Compete.</span>
                 <br />
@@ -89,7 +89,7 @@ const HeroBanner = () => {
                 </span>
               </h1>
               
-              <p className="text-slate-400 text-lg mb-8 max-w-md">
+              <p className="text-slate-400 text-lg mb-8 max-w-md leading-relaxed">
                 Master your exams with unlimited practice, live battles, and a community of 50,000+ students.
               </p>
               
@@ -102,7 +102,7 @@ const HeroBanner = () => {
                 <div className="w-px h-12 bg-slate-700"></div>
                 <div>
                   <div className="text-3xl font-black text-white">50K+</div>
-                  <div className="text-slate-500 text-sm">Students</div>
+                  <div className="-slate-500 text-sm">Students</div>
                 </div>
                 <div className="w-px h-12 bg-slate-700"></div>
                 <div>
