@@ -176,3 +176,9 @@ async def process_referral(referral_code: str, new_user_id: str, new_user_email:
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.notifications.insert_one(notification_doc)
+    # Best-effort real-time badge push (replaces 30s polling)
+    try:
+        from social_socketio import emit_unread_notifications_count
+        await emit_unread_notifications_count(referrer["id"])
+    except Exception:
+        pass

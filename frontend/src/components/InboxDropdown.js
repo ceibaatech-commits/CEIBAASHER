@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
 import axios from 'axios';
 import UserAvatar from './UserAvatar';
+import { getMessagingSocket } from '../lib/messagingSocket';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -21,18 +22,25 @@ const InboxDropdown = ({ user }) => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Fetch unread count periodically
+  // Real-time unread count via Socket.IO (server pushes on connect and on
+  // every send/read) — replaces the old 30-second polling loop.
   useEffect(() => {
     if (!user) return;
-    const fetchUnread = () => {
-      axios.get(`${BACKEND_URL}/api/messages/unread-count`)
-        .then(res => { if (res.data.success) setUnreadTotal(res.data.unread_count || 0); })
-        .catch(() => {});
+    // One-time fetch as a safety net for the initial render
+    axios.get(`${BACKEND_URL}/api/messages/unread-count`)
+      .then(res => { if (res.data.success) setUnreadTotal(res.data.unread_count || 0); })
+      .catch(() => {});
+
+    const sock = getMessagingSocket();
+    const onCount = (data) => setUnreadTotal(data?.unread_count || 0);
+    const onConnect = () => sock.emit('request_unread_messages_count');
+    sock.on('unread_messages_count', onCount);
+    sock.on('connect', onConnect);
+    if (sock.connected) onConnect();
+    return () => {
+      sock.off('unread_messages_count', onCount);
+      sock.off('connect', onConnect);
     };
-    fetchUnread();
-    const interval = setInterval(fetchUnread, 30000);
-    return () => clearInterval(interval);
-  // eslint-disable-next-line
   }, [user]);
 
   // Fetch conversations when dropdown opens

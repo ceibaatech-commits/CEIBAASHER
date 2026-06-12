@@ -3,7 +3,8 @@ Social Feed Socket.IO - Real-time updates for social feed
 Handles live likes, comments, posts, and notifications
 """
 import socketio
-from typing import Dict, Set
+from http.cookies import SimpleCookie
+from typing import Dict, Set, Optional
 from datetime import datetime, timezone
 
 # Create Socket.IO server
@@ -34,10 +35,48 @@ def init_social_socketio_db(database):
     db = database
 
 
+async def _uid_from_environ(environ) -> Optional[str]:
+    """Resolve the user from the httpOnly session_token cookie sent with the
+    websocket handshake. Supports both JWTs (custom login) and opaque
+    Emergent-OAuth session tokens (Google login)."""
+    raw = environ.get("HTTP_COOKIE", "") if environ else ""
+    if not raw:
+        return None
+    try:
+        jar = SimpleCookie()
+        jar.load(raw)
+        m = jar.get("session_token")
+        token = m.value if m else None
+    except Exception:
+        return None
+    if not token:
+        return None
+    try:
+        from utils.auth_helpers import _resolve_user_id
+        return await _resolve_user_id(token)
+    except Exception:
+        return None
+
+
+async def _register_user(sid: str, uid: str):
+    """Track the connection, join the user's private room, then push the
+    current unread-notification count so the bell badge is correct
+    immediately — replaces the 30-second polling loop."""
+    connected_users.setdefault(uid, set()).add(sid)
+    await social_sio.enter_room(sid, f"user_{uid}")
+    try:
+        count = await _compute_unread_notifications_count(uid)
+        await social_sio.emit('unread_notifications_count', {'unread_count': count}, room=sid)
+    except Exception:
+        pass
+
+
 @social_sio.event
 async def connect(sid, environ):
-    """Handle client connection"""
-    print(f"[SOCIAL] Client connected: {sid}")
+    """Handle client connection — cookie-based auto-auth when available."""
+    uid = await _uid_from_environ(environ)
+    if uid:
+        await _register_user(sid, uid)
     return True
 
 
@@ -58,14 +97,11 @@ async def disconnect(sid):
 
 @social_sio.event
 async def authenticate(sid, data):
-    """Authenticate user and track their connection"""
-    user_id = data.get('user_id')
+    """Legacy explicit-auth fallback. Harmless re-registration when
+    cookie-auth already bound this sid in `connect`."""
+    user_id = (data or {}).get('user_id')
     if user_id:
-        if user_id not in connected_users:
-            connected_users[user_id] = set()
-        connected_users[user_id].add(sid)
-        await social_sio.enter_room(sid, f"user_{user_id}")
-        print(f"[SOCIAL] User {user_id} authenticated on {sid}")
+        await _register_user(sid, user_id)
         await social_sio.emit('authenticated', {'status': 'ok'}, room=sid)
 
 
@@ -139,8 +175,41 @@ async def broadcast_post_shared(post_id: str, shares_count: int):
 async def send_notification(user_id: str, notification: dict):
     """Send real-time notification to specific user"""
     if user_id in connected_users:
-        await social_sio.emit('notification', notification, room=f"user_{user_id}")
+        # Strip Mongo's ObjectId — it isn't JSON serializable over Socket.IO
+        payload = {k: v for k, v in notification.items() if k != '_id'}
+        await social_sio.emit('notification', payload, room=f"user_{user_id}")
         print(f"[SOCIAL] Sent notification to user: {user_id}")
+    # Badge count changed regardless of whether the doc payload was delivered
+    await emit_unread_notifications_count(user_id)
+
+
+async def _compute_unread_notifications_count(uid: str) -> int:
+    if db is None or not uid:
+        return 0
+    return await db.notifications.count_documents({"user_id": uid, "is_read": False})
+
+
+async def emit_unread_notifications_count(uid: str) -> None:
+    """Push the user's current unread-notification count to all their open
+    sockets. Best-effort no-op when the user is offline — replaces the
+    30-second `/api/notifications/unread-count` polling loop."""
+    if not uid or uid not in connected_users or not connected_users[uid]:
+        return
+    try:
+        count = await _compute_unread_notifications_count(uid)
+        await social_sio.emit('unread_notifications_count', {'unread_count': count}, room=f"user_{uid}")
+    except Exception:
+        pass
+
+
+@social_sio.event
+async def request_unread_notifications_count(sid, data=None):
+    """Client-driven sync after (re)connect."""
+    for uid, sids in connected_users.items():
+        if sid in sids:
+            count = await _compute_unread_notifications_count(uid)
+            await social_sio.emit('unread_notifications_count', {'unread_count': count}, room=sid)
+            return
 
 
 async def broadcast_user_followed(follower_id: str, following_id: str, follower_name: str):

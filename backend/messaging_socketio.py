@@ -59,7 +59,7 @@ def _cookie_token_from_environ(environ) -> Optional[str]:
 
 async def _user_conversation_ids(uid: str):
     """Return the conversation IDs the user participates in (or empty list)."""
-    if not db:
+    if db is None:
         return []
     convs = await db.conversations.find({"participants": uid}, {"_id": 0, "id": 1}).to_list(200)
     return [c["id"] for c in convs]
@@ -86,10 +86,32 @@ async def _bind_user_to_sid(sid: str, uid: str) -> None:
     # Auto-join all active conversation rooms
     rooms = await _user_conversation_ids(uid)
     for cid in rooms:
-        messaging_sio.enter_room(sid, cid)
+        await messaging_sio.enter_room(sid, cid)
     # Only broadcast when this is the user's first active socket
     if not was_online:
         await _broadcast_presence(uid, True)
+    # Push current unread count to the newly-connected socket so the badge
+    # is correct immediately — replaces the 30-second polling loop.
+    try:
+        total = await _compute_unread_messages_count(uid)
+        await messaging_sio.emit("unread_messages_count", {"unread_count": total}, room=sid)
+    except Exception:
+        pass
+
+
+async def _resolve_uid(token: Optional[str]) -> Optional[str]:
+    """JWT first (custom login), then opaque Emergent-OAuth session lookup
+    (Google login)."""
+    if not token:
+        return None
+    uid = _decode_token(token)
+    if uid:
+        return uid
+    try:
+        from utils.auth_helpers import _user_id_from_session
+        return await _user_id_from_session(token)
+    except Exception:
+        return None
 
 
 @messaging_sio.event
@@ -99,7 +121,7 @@ async def connect(sid, environ):
     # explicitly call `authenticate` (which required a localStorage JWT that
     # no longer exists post Stage-3 migration).
     token = _cookie_token_from_environ(environ)
-    uid = _decode_token(token)
+    uid = await _resolve_uid(token)
     if uid:
         await _bind_user_to_sid(sid, uid)
     return True
@@ -123,7 +145,7 @@ async def authenticate(sid, data):
     """
     if sid in sid_user:
         return
-    uid = _decode_token((data or {}).get("token", ""))
+    uid = await _resolve_uid((data or {}).get("token", ""))
     if uid:
         await _bind_user_to_sid(sid, uid)
 
@@ -133,14 +155,14 @@ async def join_conversation(sid, data):
     """Explicitly join a conversation room."""
     conv_id = data.get("conversation_id")
     if conv_id:
-        messaging_sio.enter_room(sid, conv_id)
+        await messaging_sio.enter_room(sid, conv_id)
 
 
 @messaging_sio.event
 async def leave_conversation(sid, data):
     conv_id = data.get("conversation_id")
     if conv_id:
-        messaging_sio.leave_room(sid, conv_id)
+        await messaging_sio.leave_room(sid, conv_id)
 
 
 @messaging_sio.event
@@ -158,3 +180,45 @@ async def stop_typing(sid, data):
     uid = sid_user.get(sid)
     if conv_id and uid:
         await messaging_sio.emit("user_stop_typing", {"user_id": uid, "conversation_id": conv_id}, room=conv_id, skip_sid=sid)
+
+
+# ============ PUSH HELPERS (called from routes) ============
+
+async def _compute_unread_messages_count(uid: str) -> int:
+    """Aggregate the user's total unread across all their conversations."""
+    if db is None or not uid:
+        return 0
+    pipeline = [
+        {"$match": {"participants": uid}},
+        {"$group": {"_id": None, "total": {"$sum": f"$unread_counts.{uid}"}}},
+    ]
+    result = await db.conversations.aggregate(pipeline).to_list(1)
+    return result[0]["total"] if result else 0
+
+
+async def emit_unread_messages_count(uid: str) -> None:
+    """Push the user's current unread-message count to every socket they have
+    open. No-op if the user has no live sockets.
+    """
+    if not uid or uid not in online_users or not online_users[uid]:
+        return
+    total = await _compute_unread_messages_count(uid)
+    payload = {"unread_count": total}
+    # Emit to every sid (cheaper than enter_room for a per-user broadcast).
+    for sid in list(online_users[uid]):
+        try:
+            await messaging_sio.emit("unread_messages_count", payload, room=sid)
+        except Exception:
+            pass
+
+
+@messaging_sio.event
+async def request_unread_messages_count(sid, data=None):
+    """Client-driven sync — fetch once on connect so we don't miss anything
+    that happened while the socket was disconnected.
+    """
+    uid = sid_user.get(sid)
+    if not uid:
+        return
+    total = await _compute_unread_messages_count(uid)
+    await messaging_sio.emit("unread_messages_count", {"unread_count": total}, room=sid)

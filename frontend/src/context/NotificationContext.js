@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { useAuth } from './AuthContext';
+import { getSocialSocket } from '../hooks/useSocialSocket';
 
 const BACKEND_URL = window.location.origin;
 
@@ -14,6 +16,7 @@ export const useNotifications = () => {
 };
 
 export const NotificationProvider = ({ children }) => {
+  const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -142,21 +145,31 @@ export const NotificationProvider = ({ children }) => {
     }
   }, [notifications]);
 
-  // Poll for new notifications every 30 seconds
+  // Real-time unread count via Socket.IO — the server pushes
+  // `unread_notifications_count` on connect and whenever a notification is
+  // created, read or deleted. Replaces the old 30-second polling loop.
   useEffect(() => {
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000);
-    return () => clearInterval(interval);
-  }, [fetchUnreadCount]);
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+    fetchUnreadCount(); // one-time fetch for the initial render
 
-  // Refresh count when user changes
-  useEffect(() => {
-    const handleStorageChange = () => {
-      fetchUnreadCount();
+    const socket = getSocialSocket();
+    const onCount = (data) => setUnreadCount(data?.unread_count || 0);
+    const onConnect = () => {
+      // Legacy room-join fallback for sessions the cookie handshake misses
+      socket.emit('authenticate', { user_id: user.id });
+      socket.emit('request_unread_notifications_count');
     };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [fetchUnreadCount]);
+    socket.on('unread_notifications_count', onCount);
+    socket.on('connect', onConnect);
+    if (socket.connected) onConnect();
+    return () => {
+      socket.off('unread_notifications_count', onCount);
+      socket.off('connect', onConnect);
+    };
+  }, [user, fetchUnreadCount]);
 
   const value = {
     unreadCount,

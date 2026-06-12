@@ -232,7 +232,7 @@ async def send_message(conversation_id: str, body: SendMessageReq, request: Requ
 
     # Emit via socket (best-effort)
     try:
-        from messaging_socketio import messaging_sio
+        from messaging_socketio import messaging_sio, emit_unread_messages_count
         sender_info = await _enrich_user(user_id)
         await messaging_sio.emit("new_message", {**msg, "sender": sender_info}, room=conversation_id)
         # Also notify the sender (their other tabs / the just-emitted message)
@@ -242,6 +242,8 @@ async def send_message(conversation_id: str, body: SendMessageReq, request: Requ
                 "conversation_id": conversation_id,
                 "message_ids": [msg["id"]],
             }, room=conversation_id)
+        # Push fresh unread-count to the recipient — replaces the 30s poll.
+        await emit_unread_messages_count(other_id)
     except Exception:
         pass
 
@@ -283,6 +285,13 @@ async def mark_read(conversation_id: str, request: Request, authorization: Optio
             }, room=conversation_id)
         except Exception:
             pass
+
+    # Push refreshed unread total so header badges clear across all tabs.
+    try:
+        from messaging_socketio import emit_unread_messages_count
+        await emit_unread_messages_count(user_id)
+    except Exception:
+        pass
 
     return {"success": True, "read_count": len(read_ids)}
 

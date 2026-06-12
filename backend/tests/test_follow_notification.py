@@ -35,8 +35,19 @@ def _get_user_id():
 
 TEST_USER_1_ID = _get_user_id()
 
-TEST_USER_2_ID = os.getenv("TEST_USER_2_ID", "80e98208-953b-484b-af3c-917265eeb871")
-TEST_USER_2_USERNAME = os.getenv("TEST_USER_2_USERNAME", "sher")
+def _get_user2():
+    """Resolve a real second user (demo3) instead of a hardcoded stale UUID."""
+    from conftest import DEMO3_USERNAME, DEMO3_PASSWORD
+    resp = requests.post(f"{BASE_URL}/api/auth/demo-login",
+                         json={"username": DEMO3_USERNAME, "password": DEMO3_PASSWORD})
+    if resp.status_code == 200:
+        u = resp.json().get("user", {})
+        return u.get("id", ""), u.get("username") or DEMO3_USERNAME
+    return "", DEMO3_USERNAME
+
+_u2_id, _u2_username = _get_user2()
+TEST_USER_2_ID = os.getenv("TEST_USER_2_ID", _u2_id)
+TEST_USER_2_USERNAME = os.getenv("TEST_USER_2_USERNAME", _u2_username)
 
 
 class TestFollowSystemCleanup:

@@ -267,6 +267,12 @@ async def create_notification(
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.notifications.insert_one(notification)
+    # Best-effort real-time badge push (replaces 30s polling)
+    try:
+        from social_socketio import emit_unread_notifications_count
+        await emit_unread_notifications_count(user_id)
+    except Exception:
+        pass
     return notification
 
 # ==================== PROFILE ENDPOINTS ====================

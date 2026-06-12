@@ -2,7 +2,7 @@
 Notification System Routes
 Handles all notification types and delivery
 """
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException, Header, Request
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -17,6 +17,39 @@ def init_db(database):
     """Initialize database connection"""
     global db
     db = database
+
+
+async def _resolve_uid(request: Optional[Request], authorization: Optional[str]) -> Optional[str]:
+    """Dual-mode user resolution: httpOnly session cookie first (JWT or
+    opaque Google-OAuth session), then Authorization Bearer header."""
+    token = request.cookies.get("session_token") if request else None
+    if not token and authorization:
+        token = authorization.replace("Bearer ", "")
+    if not token:
+        return None
+    try:
+        from utils.auth_helpers import _resolve_user_id
+        uid = await _resolve_user_id(token)
+        if uid:
+            return uid
+    except Exception:
+        pass
+    # Legacy fallback: unverified decode kept for old clients
+    try:
+        import jwt
+        payload = jwt.decode(token, options={"verify_signature": False})
+        return payload.get("sub") or token
+    except Exception:
+        return token
+
+
+async def _emit_unread_count(user_id: str) -> None:
+    """Best-effort push of the new unread total over Socket.IO."""
+    try:
+        from social_socketio import emit_unread_notifications_count
+        await emit_unread_notifications_count(user_id)
+    except Exception:
+        pass
 
 # ==================== MODELS ====================
 
@@ -72,6 +105,7 @@ async def create_notification(
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.notifications.insert_one(notification)
+    await _emit_unread_count(user_id)
     return notification
 
 # ==================== NOTIFICATION ENDPOINTS ====================
@@ -82,24 +116,17 @@ async def get_notifications(
     skip: int = 0,
     limit: int = 50,
     unread_only: bool = False,
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """
     Get notifications for current user
     Can filter by type and unread status
     """
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Build query
         query = {"user_id": user_id}
@@ -142,21 +169,14 @@ async def get_notifications(
 
 @router.get("/notifications/unread-count")
 async def get_unread_count(
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Get count of unread notifications"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             return {"success": True, "count": 0}
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token
         
         count = await db.notifications.count_documents({
             "user_id": user_id,
@@ -175,21 +195,14 @@ async def get_unread_count(
 @router.put("/notifications/{notification_id}/read")
 async def mark_notification_read(
     notification_id: str,
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Mark a notification as read"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Update notification
         result = await db.notifications.update_one(
@@ -203,6 +216,7 @@ async def mark_notification_read(
         if result.modified_count == 0:
             raise HTTPException(status_code=404, detail="Notification not found")
         
+        await _emit_unread_count(user_id)
         return {
             "success": True,
             "message": "Notification marked as read"
@@ -216,21 +230,14 @@ async def mark_notification_read(
 
 @router.put("/notifications/mark-all-read")
 async def mark_all_notifications_read(
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Mark all notifications as read"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Update all unread notifications
         result = await db.notifications.update_many(
@@ -241,6 +248,7 @@ async def mark_all_notifications_read(
             {"$set": {"is_read": True}}
         )
         
+        await _emit_unread_count(user_id)
         return {
             "success": True,
             "message": f"Marked {result.modified_count} notifications as read",
@@ -254,21 +262,14 @@ async def mark_all_notifications_read(
 @router.delete("/notifications/{notification_id}")
 async def delete_notification(
     notification_id: str,
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Delete a notification"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Delete notification
         result = await db.notifications.delete_one({
@@ -279,6 +280,7 @@ async def delete_notification(
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Notification not found")
         
+        await _emit_unread_count(user_id)
         return {
             "success": True,
             "message": "Notification deleted"
@@ -293,21 +295,14 @@ async def delete_notification(
 @router.delete("/notifications/old")
 async def delete_old_notifications(
     days: int = 30,
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Delete notifications older than specified days"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Calculate cutoff date
         from datetime import timedelta
@@ -319,6 +314,7 @@ async def delete_old_notifications(
             "created_at": {"$lt": cutoff_date.isoformat()}
         })
         
+        await _emit_unread_count(user_id)
         return {
             "success": True,
             "message": f"Deleted {result.deleted_count} old notifications",
@@ -333,21 +329,14 @@ async def delete_old_notifications(
 
 @router.get("/notifications/preferences")
 async def get_notification_preferences(
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Get notification preferences for current user"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Get preferences from database
         prefs = await db.notification_preferences.find_one({"user_id": user_id})
@@ -386,21 +375,14 @@ async def get_notification_preferences(
 @router.put("/notifications/preferences")
 async def update_notification_preferences(
     preferences: NotificationPreferences,
-    authorization: Optional[str] = Header(None)
+    authorization: Optional[str] = Header(None),
+    request: Request = None
 ):
     """Update notification preferences"""
     try:
-        if not authorization:
+        user_id = await _resolve_uid(request, authorization)
+        if not user_id:
             raise HTTPException(status_code=401, detail="Not authenticated")
-        
-        # Decode JWT token to get user_id
-        token = authorization.replace("Bearer ", "")
-        try:
-            import jwt
-            payload = jwt.decode(token, options={"verify_signature": False})
-            user_id = payload.get("sub")
-        except:
-            user_id = token  # Fallback for simple tokens
         
         # Update preferences
         prefs_data = preferences.dict()

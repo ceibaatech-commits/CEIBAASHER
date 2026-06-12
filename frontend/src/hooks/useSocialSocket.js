@@ -7,15 +7,17 @@ import { io } from 'socket.io-client';
 
 const BACKEND_URL = window.location.origin;
 
-// Singleton socket instance for the entire app
+// Singleton socket instance for the entire app.
+// Kept alive for the app's lifetime: NotificationContext relies on it for
+// real-time unread-count pushes (replaces the 30s polling loop).
 let globalSocket = null;
-let connectionCount = 0;
 
-const getSocket = () => {
+export const getSocialSocket = () => {
   if (!globalSocket) {
     globalSocket = io(BACKEND_URL, {
       path: '/api/socialws/socket.io/',
       transports: ['polling', 'websocket'],
+      withCredentials: true,
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
@@ -25,6 +27,8 @@ const getSocket = () => {
   }
   return globalSocket;
 };
+
+const getSocket = getSocialSocket;
 
 export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, onNewComment, onNotification) => {
   const [isConnected, setIsConnected] = useState(false);
@@ -41,7 +45,6 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
 
   useEffect(() => {
     const socket = getSocket();
-    connectionCount++;
 
     const handleConnect = () => {
       console.log('[Social Socket] Connected');
@@ -122,8 +125,6 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
     }
 
     return () => {
-      connectionCount--;
-      
       // Remove event handlers
       socket.off('connect', handleConnect);
       socket.off('disconnect', handleDisconnect);
@@ -134,12 +135,6 @@ export const useSocialSocket = (userId, onNewPost, onPostLiked, onPostUnliked, o
       socket.off('new_comment', handleNewCommentEvent);
       socket.off('notification', handleNotificationEvent);
       socket.off('connect_error', handleConnectError);
-      
-      // Only disconnect if no more connections
-      if (connectionCount === 0 && globalSocket) {
-        globalSocket.disconnect();
-        globalSocket = null;
-      }
     };
   }, [userId]);
 
