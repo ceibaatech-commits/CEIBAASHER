@@ -714,3 +714,6 @@ Stood up a proper flat ESLint config (`/app/frontend/eslint.config.js`) with `re
   - Sent "Hello from automated test!" → 4 bubbles render in thread ✓
   - Visiting `/messages` directly → empty-state placeholder shown ✓
 - [x] **Lint:** clean (frontend + backend). Backend restarted cleanly.
+
+---
+**NOTE (Jun 12, 2026):** This file exceeded 700 lines and is now frozen as historical record. New session entries → `/app/memory/CHANGELOG.md`. Prioritized backlog → `/app/memory/ROADMAP.md`.
