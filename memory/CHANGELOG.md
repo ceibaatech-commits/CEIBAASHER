@@ -39,3 +39,11 @@
 
 ### Jun 13, 2026 — AWS access key rotated
 - [x] Swapped to new key `AKIAQ5UKW5AWQQRPBSZ2` in backend/.env; live S3 upload + delete re-verified on `ceibaa.e4`. User instructed to deactivate/delete old key `AKIAQ5UKW5AW36DWVE5Y` in IAM.
+
+### Jun 13, 2026 — Test History wired into gameplay + "Tests" tab on profile (COMPLETE)
+- [x] **New `test_history_service.py`:** `record_test_attempt()` — best-effort Mongo insert + S3 archive, never breaks gameplay. Scoring conventions: solo/quiz-room = 1 mark/question; battles = points (max 100/question → total_marks = questions×100).
+- [x] **Auto-save hooks:** `quiz_routes.py` `/quiz/submit` (solo/chapter, with single-topic breakdown), `social_feed_routes.py` quiz-room/battle-room submit, `battle_shared.py` `_save_battle_history` (live room battles, per participant), `battle_social_handlers.py` `_save_user_battle_history` (1v1, with opponent_user_id).
+- [x] **BUG FIX (pre-existing):** `battle_social_handlers.py` did `from battle_shared import db` at import time → bound `None` forever (init rebinds only battle_shared.db) → ALL db writes in that module silently failed, incl. 1v1 battle history. Now imports live `database.db`.
+- [x] **Auth upgrade:** test-history endpoints use `resolve_user_id` dependency — explicit `?user_id=` param wins (tests/internal), else httpOnly cookie / Bearer JWT (incl. opaque Google sessions). No auth → 401.
+- [x] **Frontend:** new `components/profile/TestHistoryTab.js` (All/Solo/Battles filters, expandable cards: marks, 5-stat grid, topic breakdown, delete, load-more pagination, full data-testids). Wired into `PublicProfile.js` ("Tests" tab, own profile only). NOTE: `/profile/:username` routes to `PublicProfile.js`; `pages/Profile.js` is imported in App.js but NOT routed (dead code, candidate for cleanup).
+- [x] **Tested:** quiz e2e (start→submit→history entry with 60% + S3 file in user folder), both battle hooks simulated (correct pct 72/81.25/51.25, opponent id, S3), 10/10 pytest regression, UI screenshot verified (tab, filters, expanded card). Testing agent not used — flows covered by scripted self-tests.

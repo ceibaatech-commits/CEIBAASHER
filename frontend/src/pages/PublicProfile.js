@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Trash2, MoreHorizontal, Gift, UserPlus } from 'lucide-react';
+import { MapPin, Calendar, Award, Lock, FileText, Trophy, ArrowLeft, Heart, MessageCircle, Repeat2, Trash2, MoreHorizontal, Gift, UserPlus, ClipboardList } from 'lucide-react';
 import FollowButton from '../components/FollowButton';
 import FollowListModal from '../components/FollowListModal';
 import ShareReferralModal from '../components/ShareReferralModal';
 import Header from '../components/Header';
 import MathText from '../components/MathText';
 import VideoPost from '../components/VictoryLane/VideoPost';
+import TestHistoryTab from '../components/profile/TestHistoryTab';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -96,6 +97,7 @@ const PublicProfile = () => {
 
   const fetchUserContent = async (tab) => {
     if (!profile || !canView) return;
+    if (tab === 'tests') return; // TestHistoryTab fetches its own data
     
     setLoadingContent(true);
     try {
@@ -656,6 +658,22 @@ const PublicProfile = () => {
                 Reposts
               </div>
             </button>
+            {user && profile && user.id === profile.id && (
+              <button
+                onClick={() => setActiveTab('tests')}
+                data-testid="tab-tests"
+                className={`flex-1 py-2.5 md:py-3 px-2 md:px-6 font-medium text-sm md:text-base transition-colors ${
+                  activeTab === 'tests'
+                    ? 'border-b-2 border-purple-600 text-purple-600'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-1.5">
+                  <ClipboardList className="w-4 h-4" />
+                  <span>Tests</span>
+                </div>
+              </button>
+            )}
           </div>
 
           {/* Tab Content */}
@@ -925,6 +943,9 @@ const PublicProfile = () => {
                       )}
                     </div>
                   )
+                )}
+                {activeTab === 'tests' && user && profile && user.id === profile.id && (
+                  <TestHistoryTab />
                 )}
                 {activeTab === 'quizzes' && (
                   quizRooms.length > 0 ? (

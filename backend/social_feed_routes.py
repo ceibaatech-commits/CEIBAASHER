@@ -1965,6 +1965,27 @@ async def submit_quiz_results(
                 "source": "quiz_room"
             }
             await db.quiz_history.insert_one(history_entry)
+
+            # Canonical test-history record (Mongo + per-attempt S3 archive)
+            from test_history_service import record_test_attempt
+            attempted = len(result_data.answers or [])
+            await record_test_attempt(
+                db,
+                user_id=user_id,
+                test_id=room_code.upper() if room_collection == "quiz_rooms" else room_code,
+                test_name=room.get("title") or room.get("name") or "Quiz Room",
+                subject=room.get("subject", "Mixed"),
+                exam_category=room.get("category", room.get("exam_category", "Quiz Room")),
+                time_spent_seconds=sum(a.get("time_taken", 0) for a in (result_data.answers or [])),
+                total_marks=total_q,
+                marks_obtained=correct_count,
+                questions_total=total_q,
+                questions_attempted=attempted,
+                questions_correct=correct_count,
+                questions_wrong=max(0, attempted - correct_count),
+                questions_skipped=max(0, total_q - attempted),
+                is_battle=(room_collection == "battle_rooms"),
+            )
         except Exception as e:
             print(f"[QUIZ_ROOM] Failed to save to quiz_history: {str(e)}")
         

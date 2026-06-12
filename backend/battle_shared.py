@@ -167,6 +167,8 @@ async def _persist_battle_completion(room_id, room, leaderboard):
 async def _save_battle_history(room_id, room, leaderboard):
     """Persist per-participant battle history rows for stats tracking."""
     try:
+        from test_history_service import record_test_attempt
+        total_q = room.current_question or 0
         for idx, participant in enumerate(leaderboard, 1):
             user_id = participant.get('user_id') or participant.get('userId')
             if not user_id:
@@ -181,6 +183,19 @@ async def _save_battle_history(room_id, room, leaderboard):
                 "exam": room.exam or "", "subject": room.subject or "",
                 "completed_at": datetime.now(timezone.utc).isoformat()
             })
+            # Canonical test-history record (battle points: max 100/question)
+            await record_test_attempt(
+                db,
+                user_id=user_id,
+                test_id=room_id,
+                test_name=f"Live Battle — {room.exam or 'Quiz'}",
+                subject=room.subject or "Mixed",
+                exam_category=room.exam or "Battle",
+                total_marks=total_q * 100,
+                marks_obtained=participant.get('score', 0),
+                questions_total=total_q,
+                is_battle=True,
+            )
     except Exception as e:
         print(f"[COMPLETE] Failed to save battle history: {str(e)}")
 

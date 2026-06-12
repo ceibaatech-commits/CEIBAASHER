@@ -850,6 +850,32 @@ async def submit_quiz(request: QuizSubmitRequest):
             }
             await db.quiz_history.insert_one(history_doc)
             print(f"[QUIZ] Saved quiz history for user {user_name} ({user_id}) - Score: {score}%")
+
+            # Canonical test-history record (Mongo + per-attempt S3 archive)
+            from test_history_service import record_test_attempt
+            await record_test_attempt(
+                db,
+                user_id=user_id,
+                test_id=quiz_id,
+                test_name=f"{session.get('exam', 'Practice')} — {session.get('topic') or session.get('subject', 'General')}",
+                subject=session.get("subject", "General"),
+                exam_category=session.get("exam", "Practice"),
+                total_marks=len(questions),
+                marks_obtained=correct_answers,
+                questions_total=len(questions),
+                questions_attempted=correct_answers + wrong_answers,
+                questions_correct=correct_answers,
+                questions_wrong=wrong_answers,
+                questions_skipped=skipped,
+                topic_breakdown=[{
+                    "topic": session.get("topic") or session.get("subject", "General"),
+                    "chapter": session.get("topic") or "",
+                    "questions_total": len(questions),
+                    "questions_attempted": correct_answers + wrong_answers,
+                    "questions_correct": correct_answers,
+                    "score": correct_answers,
+                }],
+            )
         except Exception as e:
             print(f"[QUIZ] Failed to save quiz history: {str(e)}")
     

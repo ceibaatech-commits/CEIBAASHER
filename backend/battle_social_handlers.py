@@ -1,12 +1,16 @@
 """battle_social_handlers.py — chat, reactions, gifts, matchmaking.
 """
 from battle_shared import (
-    sio, db, user_activity, _reaction_last_emit_ms, GIFT_COSTS,
+    sio, user_activity, _reaction_last_emit_ms, GIFT_COSTS,
     room_manager, matchmaking_manager,
     _validate_gift_request, generate_random_id, handle_user_leave,
     _matchmaking_timeout_sweep,
     notify_admins_battle_started, notify_admins_battle_ended,
 )
+# NOTE: do NOT `from battle_shared import db` — that binds None at import time
+# (init_socketio_db rebinds battle_shared.db AFTER this module is imported),
+# which silently broke every db write in this file. database.db is always live.
+from database import db
 from datetime import datetime, timezone
 import asyncio, os, string, secrets
 
@@ -382,6 +386,25 @@ async def _save_user_battle_history(user_id, room_id, battle, sid, final_score, 
             "opponent_name": _resolve_opponent_name(battle, sid),
             "completed_at": datetime.now(timezone.utc).isoformat(),
         })
+        # Canonical test-history record (1v1 points: max 100/question)
+        from test_history_service import record_test_attempt
+        total_q = total_questions or 10
+        opponent_uid = (battle.player2.get('userId')
+                        if battle.player1['socketId'] == sid
+                        else battle.player1.get('userId'))
+        await record_test_attempt(
+            db,
+            user_id=user_id,
+            test_id=room_id,
+            test_name=f"1v1 Duel — {exam or getattr(battle, 'exam', '') or 'Quiz'}",
+            subject=subject or getattr(battle, 'subject', '') or "Mixed",
+            exam_category=exam or getattr(battle, 'exam', '') or "Battle",
+            total_marks=total_q * 100,
+            marks_obtained=final_score,
+            questions_total=total_q,
+            is_battle=True,
+            opponent_user_id=opponent_uid,
+        )
         print(f"[BATTLE_COMPLETE] Saved history for {user_id}")
     except Exception as e:
         print(f"[BATTLE_COMPLETE] Failed to save history: {str(e)}")

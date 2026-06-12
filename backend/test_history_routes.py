@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.concurrency import run_in_threadpool
 
 from test_history_models import TestHistoryCreate, TestHistoryEntry
@@ -28,6 +28,23 @@ def get_db():
     return db
 
 
+async def resolve_user_id(
+    request: Request,
+    user_id: Optional[str] = Query(None, description="Explicit user id (tests/internal). Omit to resolve from auth."),
+) -> str:
+    """Dual-mode: explicit `user_id` param wins (back-compat for internal/test
+    callers), otherwise resolve from the httpOnly session cookie / Bearer JWT
+    (supports both custom JWT and opaque Google-OAuth sessions)."""
+    if user_id:
+        return user_id
+    from utils.auth_helpers import _extract_token, _resolve_user_id
+    token = _extract_token(request)
+    uid = await _resolve_user_id(token) if token else None
+    if not uid:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return uid
+
+
 def _public(doc: dict) -> dict:
     doc.pop("_id", None)
     return doc
@@ -36,7 +53,7 @@ def _public(doc: dict) -> dict:
 @router.post("/")
 async def save_test_attempt(
     payload: TestHistoryCreate,
-    user_id: str = Query(..., description="Temporary plain param — will move to JWT auth"),
+    user_id: str = Depends(resolve_user_id),
     db=Depends(get_db),
 ):
     """Save a completed test, then archive it as an individual JSON file on S3
@@ -67,7 +84,7 @@ async def save_test_attempt(
 
 @router.get("/")
 async def list_test_history(
-    user_id: str = Query(...),
+    user_id: str = Depends(resolve_user_id),
     subject: Optional[str] = None,
     exam_category: Optional[str] = None,
     is_battle: Optional[bool] = None,
@@ -106,7 +123,7 @@ async def list_test_history(
 @router.get("/{entry_id}")
 async def get_test_attempt(
     entry_id: str,
-    user_id: str = Query(...),
+    user_id: str = Depends(resolve_user_id),
     db=Depends(get_db),
 ):
     doc = await db.test_history.find_one({"id": entry_id, "user_id": user_id})
@@ -118,7 +135,7 @@ async def get_test_attempt(
 @router.delete("/{entry_id}")
 async def delete_test_attempt_entry(
     entry_id: str,
-    user_id: str = Query(...),
+    user_id: str = Depends(resolve_user_id),
     db=Depends(get_db),
 ):
     doc = await db.test_history.find_one({"id": entry_id, "user_id": user_id})
