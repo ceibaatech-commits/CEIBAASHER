@@ -63,8 +63,14 @@ class TestTestHistoryCRUD:
         assert entry["percentage"] == 75.0  # 150/200 auto-calculated
         assert len(entry["topic_breakdown"]) == 2
         assert entry["topic_breakdown"][0]["topic"] == "Kinematics"
-        # No AWS creds in this env -> graceful degradation
-        assert data["s3_uploaded"] is False
+        # S3 status must be self-consistent: uploaded => key present, else None.
+        # (True with live AWS creds; False if creds/policy are absent.)
+        if data["s3_uploaded"]:
+            assert data["s3_key"] == entry["s3_key"]
+            assert data["s3_key"].startswith(f"{USER_ID}/")
+            assert data["s3_key"].endswith(".json")
+        else:
+            assert data["s3_key"] is None and entry["s3_key"] is None
         TestTestHistoryCRUD.entry_id = entry["id"]
 
     def test_02_create_battle_and_chemistry_entries(self):
