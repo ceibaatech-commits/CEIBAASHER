@@ -271,6 +271,10 @@ fastapi_app.include_router(recruitment_admin_router, prefix="/api")
 # Agora RTC Token Routes
 from agora_routes import router as agora_router
 fastapi_app.include_router(agora_router, prefix="/api")
+
+# Test History Routes (MongoDB + per-attempt S3 JSON archive)
+from test_history_routes import router as test_history_router
+fastapi_app.include_router(test_history_router, prefix="/api/test-history")
  
 # Configure logging
 logging.basicConfig(
@@ -291,6 +295,11 @@ async def startup_matchmaking():
 async def seed_recruitment():
     from recruitment_seed import seed_recruitment_data
     await seed_recruitment_data(db)
+
+@fastapi_app.on_event("startup")
+async def startup_test_history_indexes():
+    from indexes import ensure_test_history_indexes
+    await ensure_test_history_indexes(db)
  
 app = fastapi_app
  
