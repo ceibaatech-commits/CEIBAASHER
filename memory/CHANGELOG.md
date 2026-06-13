@@ -2,6 +2,21 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 13, 2026 — Divya Tutor Phase 2 (progress storage) + Phase 4 (Quiz Mode) — COMPLETE
+- [x] **New backend file `/app/backend/divya_progress_routes.py`** — prefix `/divya/progress`, hybrid cookie+bearer auth via `get_user_id_from_request` from `profile_routes`. Endpoints:
+  - `POST /session/start` — create `divya_sessions` row, returns `{session_id}`
+  - `POST /session/end` — set `ended_at` + `duration_seconds`
+  - `POST /session/log-message` — `$inc` `message_count` (silent no-op for unknown ids)
+  - `POST /quiz` — persist `divya_quiz_attempts` row with computed `percentage`. **Validates that the supplied `session_id` (if any) belongs to the caller — 400 otherwise** (defence-in-depth per testing-agent review).
+  - `GET /stats` — aggregate response: `messages.{today,week,all_time}`, `sessions.{count,total_seconds}`, `streak_days`, deduped `topics` list (`exam · subject · topic`), latest 50 `quizzes`
+- [x] **New backend endpoint `POST /api/divya/live/quiz`** in `divya_routes.py` — Gemini generates one MCQ JSON (4 options + correct_index 0..3 + explanation in target language), Sarvam TTS speaks the question. Accepts `tutor`, `language`, `context` (PDF), `exam/subject/topic` for context-aware questions, `question_number`, `total_questions`, `previous_qa` (so the LLM doesn't repeat).
+- [x] **Frontend `DivyaTutor.js`:**
+  - New `QuizPanel` component with progress bar, MCQ UI (A/B/C/D pills), correct/wrong colour feedback, "Why?" explanation block, Next button, final score screen
+  - `LiveTutor` now: calls `/session/start` on tutor pick, `/session/log-message` on every user+tutor exchange, `/session/end` on close, `/quiz` on final attempt
+  - "Quiz" pill button (`data-testid="start-quiz-btn"`) in the chat header
+- [x] **Mounted in `server.py`** at `/api/divya/progress/*`
+- [x] **Test report `/app/test_reports/iteration_33.json`** — 14/14 backend pytest cases pass, Sarvam-WAV header verified for both English + Hindi quiz audio, demo1 cookie auth validated, streak/topics aggregation verified, test data cleaned up. Pytest file at `/app/backend/tests/test_divya_progress_quiz.py`.
+
 ### Feb 13, 2026 — Divya Tutor Phase 1: Sarvam TTS migration (COMPLETE & verified)
 - [x] **Removed `divya_live_routes.py`** (dead duplicate after consolidation into `divya_routes.py`).
 - [x] **Fixed `divya_routes.py` per the new Sarvam spec:**

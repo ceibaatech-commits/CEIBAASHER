@@ -141,6 +141,15 @@ async def save_quiz_attempt(
     user_id = await get_user_id_from_request(authorization, request)
     if body.total_questions <= 0 or body.score < 0 or body.score > body.total_questions:
         raise HTTPException(status_code=400, detail="Invalid score / total_questions")
+    # If a session_id is provided, it MUST belong to this user (defence-in-depth
+    # — otherwise stats joins downstream get polluted).
+    if body.session_id:
+        owns = await _db.divya_sessions.find_one(
+            {"id": body.session_id, "user_id": user_id},
+            {"_id": 0, "id": 1},
+        )
+        if not owns:
+            raise HTTPException(status_code=400, detail="Invalid session_id for this user")
     doc = {
         "id": str(uuid.uuid4()),
         "user_id": user_id,
