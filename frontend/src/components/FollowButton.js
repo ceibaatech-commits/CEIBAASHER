@@ -92,8 +92,8 @@ const FollowSheet = ({ username, onFollow, onClose }) => {
   );
 };
 
-// Following Popup (already following)
-const FollowingPopup = ({
+// Following Bottom Sheet (already following) — Threads/Meta-style
+const FollowingSheet = ({
   username,
   isCloseFriend,
   onToggleCloseFriend,
@@ -101,86 +101,134 @@ const FollowingPopup = ({
   onBlock,
   onShareProfile,
   onClose,
-  anchorRef,
-}) => (
-  <div
-    className="absolute top-full mt-2 right-0 z-50 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
-    style={{ minWidth: 260 }}
-    ref={anchorRef}
-  >
-    <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-      <div>
-        <p className="text-sm font-semibold text-gray-900">@{username}</p>
-        <p className="text-xs text-gray-500">You are following this account</p>
+}) => {
+  // Lock body scroll while sheet is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center"
+      data-testid="following-bottom-sheet"
+    >
+      {/* Backdrop */}
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 bg-black/60 animate-in fade-in duration-200"
+        data-testid="following-sheet-backdrop"
+      />
+
+      {/* Sheet */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full sm:max-w-md bg-white rounded-t-3xl shadow-2xl pb-[max(env(safe-area-inset-bottom),1rem)] animate-in slide-in-from-bottom duration-300"
+      >
+        {/* Grabber */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1.5 rounded-full bg-gray-300" />
+        </div>
+
+        {/* Header */}
+        <div className="px-5 pb-3 border-b border-gray-100 flex items-center justify-between">
+          <div className="min-w-0">
+            <p className="text-base font-semibold text-gray-900 truncate">@{username}</p>
+            <p className="text-xs text-gray-500 mt-0.5">You are following this account</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 -mr-2 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Toggle Close Friend */}
+        <button
+          onClick={onToggleCloseFriend}
+          className="w-full flex items-center gap-3 px-5 py-4 active:bg-teal-50 transition-colors text-left"
+          data-testid="toggle-close-friend-btn"
+        >
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${isCloseFriend ? 'bg-teal-100' : 'bg-gray-100'}`}>
+            {isCloseFriend
+              ? <StarOff className="w-5 h-5 text-teal-600" />
+              : <Star className="w-5 h-5 text-gray-500" />}
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-900">
+              {isCloseFriend ? 'Remove from close friends' : 'Add to close friends'}
+            </p>
+            <p className="text-xs text-gray-500">
+              {isCloseFriend ? 'Revert to normal following' : 'Priority feed + full notifications'}
+            </p>
+          </div>
+        </button>
+
+        {/* Share profile */}
+        <button
+          onClick={onShareProfile}
+          className="w-full flex items-center gap-3 px-5 py-4 active:bg-gray-50 transition-colors text-left border-t border-gray-50"
+          data-testid="share-profile-btn"
+        >
+          <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+            <Link2 className="w-5 h-5 text-amber-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-900">Share profile</p>
+            <p className="text-xs text-gray-500">Copy profile link to clipboard</p>
+          </div>
+        </button>
+
+        {/* Unfollow */}
+        <button
+          onClick={onUnfollow}
+          className="w-full flex items-center gap-3 px-5 py-4 active:bg-red-50 transition-colors text-left border-t border-gray-50"
+          data-testid="unfollow-btn"
+        >
+          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+            <UserMinus className="w-5 h-5 text-red-500" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-red-600">Unfollow</p>
+            <p className="text-xs text-gray-500">Stop seeing their posts</p>
+          </div>
+        </button>
+
+        {/* Block */}
+        <button
+          onClick={onBlock}
+          className="w-full flex items-center gap-3 px-5 py-4 active:bg-red-50 transition-colors text-left border-t border-gray-50"
+          data-testid="block-user-btn"
+        >
+          <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+            <ShieldOff className="w-5 h-5 text-red-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-red-600">Block user</p>
+            <p className="text-xs text-gray-500">They won&apos;t see your profile or posts</p>
+          </div>
+        </button>
+
+        {/* Cancel */}
+        <div className="px-5 pt-3">
+          <button
+            onClick={onClose}
+            data-testid="following-sheet-cancel"
+            className="w-full py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-semibold text-gray-700 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
-      <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100 transition-colors">
-        <X className="w-4 h-4 text-gray-400" />
-      </button>
     </div>
-
-    <button
-      onClick={onToggleCloseFriend}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-teal-50 transition-colors text-left"
-      data-testid="toggle-close-friend-btn"
-    >
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isCloseFriend ? 'bg-teal-100' : 'bg-gray-100'}`}>
-        {isCloseFriend
-          ? <StarOff className="w-4 h-4 text-teal-600" />
-          : <Star className="w-4 h-4 text-gray-500" />}
-      </div>
-      <div>
-        <p className="text-sm font-medium text-gray-900">
-          {isCloseFriend ? 'Remove from close friends' : 'Add to close friends'}
-        </p>
-        <p className="text-xs text-gray-500">
-          {isCloseFriend ? 'Revert to normal following' : 'Priority feed + full notifications'}
-        </p>
-      </div>
-    </button>
-
-    <button
-      onClick={onShareProfile}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-t border-gray-100"
-      data-testid="share-profile-btn"
-    >
-      <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
-        <Link2 className="w-4 h-4 text-amber-600" />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-gray-900">Share profile</p>
-        <p className="text-xs text-gray-500">Copy profile link to clipboard</p>
-      </div>
-    </button>
-
-    <button
-      onClick={onUnfollow}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left border-t border-gray-100"
-      data-testid="unfollow-btn"
-    >
-      <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
-        <UserMinus className="w-4 h-4 text-red-500" />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-red-600">Unfollow</p>
-        <p className="text-xs text-gray-500">Stop seeing their posts</p>
-      </div>
-    </button>
-
-    <button
-      onClick={onBlock}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left border-t border-gray-100"
-      data-testid="block-user-btn"
-    >
-      <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
-        <ShieldOff className="w-4 h-4 text-red-600" />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-red-600">Block user</p>
-        <p className="text-xs text-gray-500">They won't see your profile or posts</p>
-      </div>
-    </button>
-  </div>
-);
+  );
+};
 
 // Main FollowButton
 const FollowButton = ({
@@ -314,30 +362,31 @@ const FollowButton = ({
   };
 
   const btnProps = (() => {
+    const base = 'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm w-full sm:w-auto cursor-pointer active:scale-95 transition-all';
     if (status === 'close_friend') return {
-      className: 'inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm bg-teal-50 border border-teal-200 text-teal-700 cursor-pointer active:scale-95 transition-all',
+      className: `${base} bg-teal-50 border border-teal-200 text-teal-700`,
       icon: <Heart className="w-4 h-4" />,
       label: 'Close friend',
     };
     if (status === 'approved') return {
-      className: 'inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm bg-blue-50 border border-blue-200 text-blue-700 cursor-pointer active:scale-95 transition-all',
+      className: `${base} bg-blue-50 border border-blue-200 text-blue-700`,
       icon: <UserCheck className="w-4 h-4" />,
       label: 'Following',
     };
     if (status === 'pending') return {
-      className: 'inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm bg-amber-50 border border-amber-200 text-amber-700 cursor-pointer active:scale-95 transition-all',
+      className: `${base} bg-amber-50 border border-amber-200 text-amber-700`,
       icon: <Clock className="w-4 h-4" />,
       label: 'Requested',
     };
     return {
-      className: 'inline-flex items-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm bg-gray-900 text-white hover:bg-gray-800 cursor-pointer active:scale-95 transition-all',
+      className: `${base} bg-gray-900 text-white hover:bg-gray-800`,
       icon: <UserPlus className="w-4 h-4" />,
       label: 'Follow',
     };
   })();
 
   return (
-    <div className="relative inline-block" ref={wrapRef}>
+    <div className="w-full sm:inline-block" ref={wrapRef}>
       <button
         onClick={handleClick}
         disabled={loading}
@@ -357,7 +406,7 @@ const FollowButton = ({
       )}
 
       {popup === 'following' && (
-        <FollowingPopup
+        <FollowingSheet
           username={targetUsername}
           isCloseFriend={status === 'close_friend'}
           onToggleCloseFriend={apiToggleCloseFriend}
@@ -365,7 +414,6 @@ const FollowButton = ({
           onBlock={apiBlock}
           onShareProfile={shareProfile}
           onClose={() => setPopup(null)}
-          anchorRef={wrapRef}
         />
       )}
     </div>

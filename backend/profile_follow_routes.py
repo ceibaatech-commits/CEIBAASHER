@@ -878,14 +878,7 @@ async def get_follow_status(
 ):
     """Check follow status between current user and target user"""
     try:
-        if not authorization:
-            return {
-                "success": True,
-                "following": False,
-                "status": None
-            }
-        
-        # Get user_id using hybrid authentication
+        # Get user_id using hybrid authentication (cookie OR bearer)
         try:
             user_id = await get_user_id_from_request(authorization, request)
         except HTTPException:
