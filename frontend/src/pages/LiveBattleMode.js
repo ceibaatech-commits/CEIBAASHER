@@ -27,6 +27,10 @@ const LiveBattleMode = () => {
   const [socket, setSocket] = useState(null);
   const [roomId, setRoomId] = useState(null);
   const [opponent, setOpponent] = useState(null);
+  // Rematch state: 'idle' | 'pending' (I requested) | 'requested' (opponent requested)
+  const [rematchState, setRematchState] = useState('idle');
+  const roomIdRef = useRef(null);
+  useEffect(() => { roomIdRef.current = roomId; }, [roomId]);
   
   // Quiz state
   const [questions, setQuestions] = useState([]);
@@ -70,19 +74,32 @@ const LiveBattleMode = () => {
 
     newSocket.on('match-found', async (data) => {
       console.log('Match found!', data);
+      // Reset per-battle state so rematches start clean
+      setMyScore(0);
+      setOpponentScore(0);
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setTimeLeft(30);
+      setRematchState('idle');
+
       setRoomId(data.roomId);
       // Backend now sends a per-socket payload: players[0]=self, players[1]=opponent
       // Fall back to legacy name-based filtering for safety.
       const opp = data.players[1] || data.players.find(p => p.playerName !== playerName);
       setOpponent(opp);
       setBattleState('matched');
-      
+
       // Start quiz
       await startBattleQuiz();
-      
+
       // Initialize WebRTC
       initializeWebRTC(data.roomId, newSocket);
     });
+
+    newSocket.on('rematch-pending', () => setRematchState('pending'));
+    newSocket.on('rematch-requested', () => setRematchState('requested'));
+    newSocket.on('rematch-declined', () => setRematchState('idle'));
+    newSocket.on('rematch-timeout', () => setRematchState('idle'));
 
     newSocket.on('opponent-disconnected', () => {
       alert('Opponent disconnected!');
@@ -597,15 +614,42 @@ const LiveBattleMode = () => {
             </div>
 
             <div className="space-y-3">
+              {rematchState === 'requested' ? (
+                <div className="rounded-xl p-3 bg-purple-50 border-2 border-purple-300" data-testid="rematch-incoming-banner">
+                  <p className="text-sm font-bold text-gray-900 mb-2 text-center">{opponent?.playerName} wants a rematch!</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => { socket?.emit('rematch-accept', { roomId: roomIdRef.current }); setRematchState('idle'); }}
+                      data-testid="rematch-accept-btn"
+                      className="py-2.5 rounded-lg bg-purple-600 text-white font-bold text-sm hover:bg-purple-700 active:scale-95 transition-all"
+                    >Accept</button>
+                    <button
+                      onClick={() => { socket?.emit('rematch-decline', { roomId: roomIdRef.current }); setRematchState('idle'); }}
+                      data-testid="rematch-decline-btn"
+                      className="py-2.5 rounded-lg bg-gray-200 text-gray-700 font-semibold text-sm active:scale-95 transition-all"
+                    >Decline</button>
+                  </div>
+                </div>
+              ) : opponent?.userId ? (
+                <button
+                  onClick={() => { socket?.emit('rematch-request', { roomId: roomIdRef.current }); setRematchState('pending'); }}
+                  disabled={rematchState === 'pending'}
+                  data-testid="rematch-btn"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {rematchState === 'pending' ? `Waiting for ${opponent?.playerName}...` : `Rematch with ${opponent?.playerName}`}
+                </button>
+              ) : null}
               <button
                 onClick={() => window.location.reload()}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all"
+                className="w-full bg-white text-gray-700 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all"
+                data-testid="battle-again-btn"
               >
-                Battle Again
+                Find new opponent
               </button>
               <button
                 onClick={() => navigate(`/exam/${examId}`)}
-                className="w-full bg-white text-gray-700 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-all"
+                className="w-full text-gray-500 py-2 text-sm hover:text-gray-700"
               >
                 Back to {examId}
               </button>

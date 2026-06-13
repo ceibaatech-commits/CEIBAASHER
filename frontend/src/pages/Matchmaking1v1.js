@@ -335,6 +335,10 @@ const Matchmaking1v1 = () => {
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const chatEndRef = useRef(null);
 
+  // Rematch state — drives the "Rematch" button + incoming-request banner on results screen
+  // Values: 'idle' | 'pending' (I asked, awaiting opponent) | 'requested' (opponent asked, I decide)
+  const [rematchState, setRematchState] = useState('idle');
+
   // Video Call state
   // KEY FIX: we use `vcReady` as the gate for mounting AgoraUIKit, not `agoraToken !== null`.
   // Previously: agoraToken was initialised to null, overlay condition was `agoraToken !== null`.
@@ -461,12 +465,24 @@ const Matchmaking1v1 = () => {
 
     s.on('match-found', async (d) => {
       setSearchTimedOut(false);
+      // Reset per-battle state so rematches start clean
+      setMyScore(0);
+      setOpponentScore(0);
+      setCurrentQuestionIndex(0);
+      setSelectedAnswer(null);
+      setOpponentAnswer(null);
+      setAnswerResult(null);
+      setTimeLeft(30);
+      setTally({ correct: 0, wrong: 0, skipped: 0, timeBonus: 0 });
+      setChatMessages([]);
+      setRematchState('idle');
       // Update both state AND ref immediately so any code below can use the ref
       setRoomId(d.roomId);
       roomIdRef.current = d.roomId;
-      const opp = d.players.find(p => p.playerName !== playerNameRef.current);
+      const opp = d.players[1] || d.players.find(p => p.playerName !== playerNameRef.current);
       setOpponent(opp);
       setBattleState('matched');
+      if (d.rematch) toast.success('Rematch starting!');
 
       const fetchQ = async () => {
         const decodedExam = decodeURIComponent(examId);
@@ -505,6 +521,24 @@ const Matchmaking1v1 = () => {
     s.on('chat-message', (d) => setChatMessages(prev => [...prev, { playerName: d.playerName, message: d.message, ts: Date.now() }]));
     s.on('opponent-disconnected', () => { toast.error('Opponent disconnected! You win.'); setBattleState('results'); });
     s.on('battle-ended', () => setBattleState('results'));
+
+    // ── Rematch events ──
+    s.on('rematch-pending', () => {
+      toast('Waiting for opponent to accept...');
+      setRematchState('pending');
+    });
+    s.on('rematch-requested', (d) => {
+      toast(`${d.requesterName || 'Your opponent'} wants a rematch!`);
+      setRematchState('requested');
+    });
+    s.on('rematch-declined', (d) => {
+      toast.error(d?.reason || 'Rematch declined');
+      setRematchState('idle');
+    });
+    s.on('rematch-timeout', () => {
+      toast.error('Opponent didn\'t respond');
+      setRematchState('idle');
+    });
 
     // VC socket events
     s.on('vc_request', (d) => { setVcRequester(d.playerName); setVcState('incoming'); });
@@ -1752,7 +1786,41 @@ const Matchmaking1v1 = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <button onClick={() => window.location.reload()} className="w-full text-white py-3.5 rounded-xl font-bold hover:shadow-xl transition-all" style={{ background: C.red }}>Battle Again</button>
+                  {rematchState === 'requested' ? (
+                    <div className="rounded-xl p-3 border-2 mb-1" style={{ background: C.blueLight, borderColor: C.blue }} data-testid="rematch-incoming-banner">
+                      <p className="text-sm font-bold text-gray-900 mb-2 text-center">{oppName} wants a rematch!</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => { socket?.emit('rematch-accept', { roomId: roomIdRef.current }); setRematchState('idle'); }}
+                          data-testid="rematch-accept-btn"
+                          className="py-2.5 rounded-lg text-white font-bold text-sm active:scale-95 transition-all"
+                          style={{ background: C.blue }}
+                        >Accept</button>
+                        <button
+                          onClick={() => { socket?.emit('rematch-decline', { roomId: roomIdRef.current }); setRematchState('idle'); }}
+                          data-testid="rematch-decline-btn"
+                          className="py-2.5 rounded-lg bg-gray-200 text-gray-700 font-semibold text-sm active:scale-95 transition-all"
+                        >Decline</button>
+                      </div>
+                    </div>
+                  ) : opponent?.userId ? (
+                    <button
+                      onClick={() => { socket?.emit('rematch-request', { roomId: roomIdRef.current }); setRematchState('pending'); }}
+                      disabled={rematchState === 'pending'}
+                      data-testid="rematch-btn"
+                      className="w-full text-white py-3.5 rounded-xl font-bold hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      style={{ background: C.red }}
+                    >
+                      {rematchState === 'pending' ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Waiting for {oppName}...</>
+                      ) : (
+                        <><Swords className="w-5 h-5" /> Rematch with {oppName}</>
+                      )}
+                    </button>
+                  ) : (
+                    <button onClick={() => window.location.reload()} className="w-full text-white py-3.5 rounded-xl font-bold hover:shadow-xl transition-all" style={{ background: C.red }} data-testid="battle-again-btn">Battle Again</button>
+                  )}
+                  <button onClick={() => window.location.reload()} className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200" data-testid="battle-again-other">Find new opponent</button>
                   <button onClick={() => navigate('/victory-lane')} className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200">Victory Lane</button>
                   <button onClick={() => navigate('/')} className="w-full text-gray-500 py-2 text-sm hover:text-gray-700">Home</button>
                 </div>

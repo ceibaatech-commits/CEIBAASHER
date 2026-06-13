@@ -52,6 +52,24 @@ async def disconnect(sid):
     # Cleanup matchmaking (1v1 battles)
     matchmaking_manager.cleanup_player(sid)
 
+    # Cleanup any pending rematch requests involving this socket
+    try:
+        from battle_social_handlers import pending_rematches  # late import to avoid cycle
+        stale = [rid for rid, p in pending_rematches.items() if p.get('requester_sid') == sid or p.get('opponent_sid') == sid]
+        for rid in stale:
+            p = pending_rematches.pop(rid, None)
+            if not p:
+                continue
+            task = p.get('timeout_task')
+            if task:
+                task.cancel()
+            # Notify the other side
+            other = p['opponent_sid'] if p.get('requester_sid') == sid else p.get('requester_sid')
+            if other:
+                await sio.emit('rematch-declined', {'roomId': rid, 'reason': 'Opponent disconnected'}, room=other)
+    except Exception as e:
+        print(f"[DISCONNECT] rematch cleanup error: {e}")
+
     # Find battle room and notify opponent if in matched battle
     battle = matchmaking_manager.get_player_battle(sid)
     if battle:

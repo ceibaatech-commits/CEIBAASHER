@@ -2,7 +2,14 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
-### Feb 13, 2026 — Battle 1v1: block-aware matchmaking + follow-on-chat + gated opponent profile (COMPLETE)
+### Feb 13, 2026 — 1v1 Rematch flow (COMPLETE)
+- [x] **Backend `battle_social_handlers.py`:** new socket events `rematch-request`, `rematch-accept`, `rematch-decline` plus broadcast events `rematch-pending`, `rematch-requested`, `rematch-declined`, `rematch-timeout`. Module-level `pending_rematches` map with 30s timeout via `asyncio.create_task`. Auto-confirms on mutual consent (if both players click rematch within the window). Helper `_create_rematch_room` bypasses the queue: generates a fresh `room_id`, re-uses the two existing socket players (zeroes scores), emits per-socket `match-found` with `rematch: true`, persists a new `live_battles` doc with `is_rematch: true` and `parent_room_id`.
+- [x] **Backend `battle_socketio.py`:** disconnect handler cleans up any pending rematch involving the leaving socket and notifies the surviving party with `rematch-declined: 'Opponent disconnected'`.
+- [x] **Frontend `Matchmaking1v1.js`:** new `rematchState` ('idle' | 'pending' | 'requested'). `match-found` listener now resets all per-battle state (scores, tally, chat, current question, etc.) so rematches start clean. Results screen swaps the "Battle Again" button for a `Rematch with {opponent}` CTA when `opponent.userId` exists; while pending, shows `Waiting for {opponent}...` spinner; when opponent requests, shows accept/decline banner. Toast feedback for all 4 outcomes. Data-testids: `rematch-btn`, `rematch-incoming-banner`, `rematch-accept-btn`, `rematch-decline-btn`.
+- [x] **Frontend `LiveBattleMode.js`:** same rematch UI on its results screen (`rematchState` + listeners + accept/decline banner) plus a fresh-state reset on every `match-found`.
+- [x] **Smoke-tested:** backend startup clean; both 1v1 setup pages render with no compile/runtime errors. Full two-player rematch dance can only be e2e-verified with two concurrent sessions — defer to live QA.
+
+### Feb 13, 2026 — Battle 1v1: block-aware matchmaking + follow-on-chat + gated opponent profile + LiveBattleMode parity (COMPLETE)
 - [x] **Backend `matchmaking.py`:** `WaitingPlayer` now carries `user_id` + `username`. `add_to_queue(...)` accepts a `blocked_user_ids: set` argument and **skips** any waiting candidate whose `user_id` is in that set; skipped candidates are re-queued at the front so they don't lose priority for other players.
 - [x] **Backend `battle_social_handlers.py`:** `find-match` handler now reads the authenticated `user_id`/`username` from `sio.get_session(sid)` (set via the `authenticate` event), queries `db.blocks` for bi-directional blocks, and passes both into matchmaking. `_emit_match_found` now sends a **per-socket** payload with `socketId`, `playerName`, `userId`, `username` for both self and opponent. `_build_live_battle_doc` also persists user_ids on each player record.
 - [x] **Frontend `Matchmaking1v1.js`:**
