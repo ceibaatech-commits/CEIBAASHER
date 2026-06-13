@@ -2,6 +2,36 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 13, 2026 — Follow / Unfollow / Block / Share end-to-end fixes (P0 — COMPLETE)
+- [x] **Backend — `profile_follow_routes.py`:**
+  - `POST /block` migrated from header-only auth to hybrid `get_user_id_from_request` (cookie+bearer). Returns **400** for self-block, **404** for missing user, atomically wipes both-way follow + close_friend rows.
+  - `DELETE /unfollow/{id}` adds **400** self-unfollow guard and best-effort close_friend cleanup.
+  - `POST /close-friend` migrated to hybrid auth (same header-only bug).
+  - `GET /{username}` now reads `current_user_id` from cookie/bearer when not in the query string, then injects an `is_blocked_between` check before returning the profile. Blocked viewers (either direction) receive `{is_blocked:true, message:"This account is not available"}`.
+  - New shared helpers `get_blocked_user_ids(user_id)` (bi-directional set) and `is_blocked_between(viewer, target)`.
+- [x] **Backend — `social_feed_routes.py`:** new `get_blocked_user_ids_for_feed(user_id)` helper injected into:
+  - `GET /feed/for-you` — drops posts whose author is in the blocked set.
+  - `GET /feed/trending` — added optional auth header so the filter applies for logged-in viewers.
+  - `GET /feed/following` — block filter applied to the `following_ids` list before the posts query.
+- [x] **Frontend — `FollowButton.js`:**
+  - `shareProfile()` rewritten: `navigator.share({title,url})` first (mobile/Web Share API), clipboard fallback (`navigator.clipboard.writeText` + legacy `execCommand` fallback) on desktop. Replaced `alert` with **Sonner** `toast.success('Profile link copied!')` / `toast.error('Could not copy link')`. Cancellation (AbortError) handled silently.
+  - `apiBlock()` / `apiUnfollow()` / `apiFollow()` — all `alert(...)` calls replaced with Sonner `toast.success/error`. Block now surfaces "Blocked @username" toast and invokes `onBlock` callback.
+- [x] **Frontend — `PublicProfile.js`:**
+  - New `handleBlock` callback → `navigate('/victory-lane', {replace:true})` so the user is bounced from a profile they just blocked.
+  - New `isBlocked` state → renders a dedicated "This account is not available" card (`data-testid='profile-unavailable'`) with a Back-to-Feed button (`data-testid='profile-unavailable-back'`) when backend returns `is_blocked:true`.
+  - **Race fix:** added `profileReqIdRef` monotonic ID so stale `fetchProfile()` responses can't overwrite newer state when AuthContext hydrates after the initial render (root cause from iteration_32 frontend FAIL).
+  - `onBlock={handleBlock}` wired into both `<FollowButton>` instances (private + public profile blocks).
+- [x] **Test report:** `/app/test_reports/iteration_32.json` — backend 8/8 pytest pass, frontend 7/7 after race fix.
+
+### Feb 13, 2026 — App.js route restoration + InboxDropdown group display + Follow bottom sheet (COMPLETE)
+- [x] Restored 13 routes + imports in `App.js` (`/jobs`, `/settings`, `/forgot-password`, `/reset-password`, `/verify-phone`, `/recruitment-admin`, `/recruiter*`, `/discover`, `/company/:slug`, `/apply/:jobId`, `/quiz-recruit/:quizId`, `/hackathon/:hackId`, `/my-applications`).
+- [x] `InboxDropdown.js` group-chat name bug — was always "Unknown" because `conv.other_user` is `null` for groups. Fixed to mirror Messages.js: `conv.is_group ? (conv.name||'Group') : (conv.other_user?.name||'Unknown')` + group avatar (Users icon).
+- [x] `FollowButton.js` rewrote as Threads/Meta-style bottom sheet (`FollowSheet` + `FollowingSheet`) — `rounded-t-3xl`, dark backdrop, `slide-in-from-bottom` animation, body scroll lock, safe-area inset. Fixed `relative inline-block` → `w-full sm:inline-block` so the pill stretches on mobile.
+- [x] Backend `GET /api/profile/follow-status/{id}` was returning `following:false` whenever the Authorization header was missing — never checked the cookie. Replaced with the standard hybrid auth pattern (`get_user_id_from_request`). Same fix as the later `/block` + `/close-friend` fixes.
+- [x] `PublicProfile.js` mobile redesign: posts go edge-to-edge (`-mx-4 md:mx-0` on Tabs Section + `px-0 md:p-6` on tab content), flat card style on mobile (no rounded card wrapper, `divide-y divide-gray-100` between posts), Twitter/X-style action bar.
+
+> Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
+
 ### Jun 12, 2026 — Real-time unread counts: Socket.IO push replaces 30s polling (P0 — COMPLETE)
 - [x] **Backend — `social_socketio.py`:**
   - Cookie auto-auth on connect (`_uid_from_environ` → `utils.auth_helpers._resolve_user_id`, supports JWT + opaque Google-OAuth session tokens).

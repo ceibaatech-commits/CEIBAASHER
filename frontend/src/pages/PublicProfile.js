@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
@@ -36,12 +36,18 @@ const PublicProfile = () => {
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
   const [showShareModal, setShowShareModal] = useState(false);
 
+  // Monotonic request-id so older fetchProfile() responses can't clobber
+  // state set by a newer in-flight request (fixes race when AuthContext
+  // hydrates after the initial render).
+  const profileReqIdRef = useRef(0);
+
   useEffect(() => {
     fetchProfile();
   // eslint-disable-next-line
   }, [username, user?.id]);
 
   const fetchProfile = async () => {
+    const reqId = ++profileReqIdRef.current;
     setLoading(true);
     try {
       const response = await axios.get(
@@ -51,6 +57,9 @@ const PublicProfile = () => {
         }
       );
 
+      // Discard stale responses (a newer request has been fired)
+      if (reqId !== profileReqIdRef.current) return;
+
       if (response.data.success) {
         setProfile(response.data.profile);
         setCanView(response.data.can_view !== false);
@@ -58,13 +67,14 @@ const PublicProfile = () => {
         setIsBlocked(response.data.is_blocked === true);
       }
     } catch (error) {
+      if (reqId !== profileReqIdRef.current) return;
       console.error('Error fetching profile:', error);
       if (error.response?.status === 404) {
         // Profile not found
         setProfile(null);
       }
     } finally {
-      setLoading(false);
+      if (reqId === profileReqIdRef.current) setLoading(false);
     }
   };
 
