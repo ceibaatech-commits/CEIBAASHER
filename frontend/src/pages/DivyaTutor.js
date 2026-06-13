@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Upload, Mic, FileText, X, Loader2, VolumeX,
   Send, LogIn, ChevronLeft, Languages, Sparkles, StopCircle,
-  Radio, Headphones, Play, Pause, SkipBack, SkipForward, ImagePlus, Volume2
+  Radio, Headphones, Play, Pause, SkipBack, SkipForward, ImagePlus, Volume2,
+  Brain, CheckCircle2, XCircle, Trophy
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -173,6 +174,122 @@ const DivyaTutor = () => {
 };
 
 /* ══════════════════════════════════════
+   QUIZ PANEL (Phase 4)
+   ══════════════════════════════════════ */
+const QuizPanel = ({ tutor, totalQuestions, quizQuestion, quizPicked, quizScore, quizLoading, onPick, onNext, onExit }) => {
+  if (quizLoading && !quizQuestion) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50" data-testid="quiz-loading">
+        <Loader2 className="w-8 h-8 animate-spin text-gray-400 mb-3" />
+        <p className="text-sm text-gray-500">Cooking up a question...</p>
+      </div>
+    );
+  }
+  if (!quizQuestion) return null;
+
+  if (quizQuestion.complete) {
+    const pct = Math.round((quizScore / totalQuestions) * 100);
+    const congrats = pct >= 80 ? '🎉 Brilliant!' : pct >= 60 ? '👍 Nice work!' : pct >= 40 ? '🙂 Keep going!' : '📚 Keep practicing!';
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 px-6 text-center" data-testid="quiz-results">
+        <div className={`w-20 h-20 rounded-full bg-gradient-to-r ${tutor.bg} flex items-center justify-center mb-4`}>
+          <Trophy className="w-10 h-10 text-white" />
+        </div>
+        <p className="text-3xl font-black text-gray-900 mb-1" data-testid="quiz-final-score">{quizScore} / {totalQuestions}</p>
+        <p className="text-sm text-gray-500 mb-1">{pct}% — {congrats}</p>
+        <p className="text-xs text-gray-400 mb-6">Saved to your progress dashboard.</p>
+        <button
+          onClick={onExit}
+          data-testid="quiz-exit-btn"
+          className={`px-6 py-2.5 rounded-full bg-gradient-to-r ${tutor.bg} text-white text-sm font-bold shadow-lg active:scale-95 transition-all`}
+        >
+          Back to Chat
+        </button>
+      </div>
+    );
+  }
+
+  const answered = quizPicked !== null;
+  const correctIdx = quizQuestion.correct_index;
+
+  return (
+    <div className="flex-1 overflow-y-auto bg-gray-50 px-4 py-4" data-testid="quiz-panel">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-xs font-semibold text-gray-500">
+          Question {quizQuestion.question_number} of {totalQuestions}
+        </div>
+        <button onClick={onExit} data-testid="quiz-exit-mid" className="text-xs text-gray-400 hover:text-gray-600">
+          Exit quiz
+        </button>
+      </div>
+      <div className="w-full h-1.5 rounded-full bg-gray-200 mb-4 overflow-hidden">
+        <div
+          className={`h-full bg-gradient-to-r ${tutor.bg} transition-all`}
+          style={{ width: `${(quizQuestion.question_number / totalQuestions) * 100}%` }}
+        />
+      </div>
+
+      <div className="bg-white rounded-2xl p-4 mb-4 shadow-sm" data-testid="quiz-question">
+        <p className="text-base font-semibold text-gray-900 leading-snug">{quizQuestion.question}</p>
+      </div>
+
+      <div className="space-y-2.5">
+        {quizQuestion.options.map((opt, idx) => {
+          let style = 'bg-white border border-gray-200 hover:border-gray-300 text-gray-900';
+          let icon = null;
+          if (answered) {
+            if (idx === correctIdx) {
+              style = 'bg-emerald-50 border border-emerald-300 text-emerald-900';
+              icon = <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />;
+            } else if (idx === quizPicked) {
+              style = 'bg-rose-50 border border-rose-300 text-rose-900';
+              icon = <XCircle className="w-5 h-5 text-rose-500 shrink-0" />;
+            } else {
+              style = 'bg-gray-50 border border-gray-200 text-gray-400';
+            }
+          }
+          return (
+            <button
+              key={idx}
+              onClick={() => onPick(idx)}
+              disabled={answered}
+              data-testid={`quiz-option-${idx}`}
+              className={`w-full px-4 py-3 rounded-xl flex items-center justify-between gap-3 text-sm font-medium text-left active:scale-[0.99] transition-all ${style}`}
+            >
+              <span className="flex items-center gap-3 min-w-0">
+                <span className="shrink-0 w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-xs font-bold flex items-center justify-center">
+                  {String.fromCharCode(65 + idx)}
+                </span>
+                <span className="min-w-0">{opt}</span>
+              </span>
+              {icon}
+            </button>
+          );
+        })}
+      </div>
+
+      {answered && (
+        <div className="mt-4">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3" data-testid="quiz-explanation">
+            <p className="text-xs font-bold text-amber-800 mb-1">Why?</p>
+            <p className="text-xs text-amber-900 leading-relaxed">{quizQuestion.explanation}</p>
+          </div>
+          <button
+            onClick={onNext}
+            disabled={quizLoading}
+            data-testid="quiz-next-btn"
+            className={`w-full bg-gradient-to-r ${tutor.bg} text-white py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2`}
+          >
+            {quizLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+            {quizQuestion.question_number >= totalQuestions ? 'See Results' : 'Next Question'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════
    LIVE TUTOR
    ══════════════════════════════════════ */
 const LiveTutor = ({ onSessionChange }) => {
@@ -188,6 +305,18 @@ const LiveTutor = ({ onSessionChange }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [inputText, setInputText] = useState('');
+
+  // Phase 2 — session_id returned by /api/divya/progress/session/start
+  const sessionIdRef = useRef(null);
+
+  // Phase 4 — Quiz mode
+  const QUIZ_TOTAL = 5;
+  const [quizMode, setQuizMode] = useState(false);
+  const [quizQuestion, setQuizQuestion] = useState(null); // {question, options, correct_index, explanation, audio_base64, question_number}
+  const [quizScore, setQuizScore] = useState(0);
+  const [quizPicked, setQuizPicked] = useState(null);     // selected option index after answer
+  const [quizLoading, setQuizLoading] = useState(false);
+  const quizHistoryRef = useRef([]);                       // [{question, user_answer, correct}]
 
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
@@ -226,7 +355,7 @@ const LiveTutor = ({ onSessionChange }) => {
   const removeFiles = () => { setPdfContext(''); setUploadedFiles([]); if (fileInputRef.current) fileInputRef.current.value = ''; };
 
   /* ─── Session ─── */
-  const startSession = (tutor) => {
+  const startSession = async (tutor) => {
     audioMgr.warmUp();
     setSelectedTutor(tutor);
     setSessionActive(true);
@@ -237,9 +366,106 @@ const LiveTutor = ({ onSessionChange }) => {
         ? `Namaste! I'm Divya. ${pdfContext ? "I've read your material — ask me anything!" : "Upload a file or ask me any question!"}`
         : `Hey! I'm Sher. ${pdfContext ? "I've reviewed your material — let's ace those exams!" : "Upload a file or fire your doubts!"}`,
     }]);
+    // Phase 2 — start a backend-tracked session (best-effort, anonymous-safe)
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/divya/progress/session/start`,
+        { tutor, language: selectedLang, pdf_name: uploadedFiles[0] || null },
+        { withCredentials: true });
+      if (res.data?.session_id) sessionIdRef.current = res.data.session_id;
+    } catch { /* not logged in or backend down — ignore, continue without tracking */ }
   };
 
-  const endSession = () => { audioMgr.stop(); stopRecording(); setSessionActive(false); onSessionChange?.(false); setSelectedTutor(null); setMessages([]); setIsProcessing(false); };
+  const endSession = async () => {
+    audioMgr.stop(); stopRecording();
+    const sid = sessionIdRef.current;
+    sessionIdRef.current = null;
+    setSessionActive(false);
+    onSessionChange?.(false);
+    setSelectedTutor(null);
+    setMessages([]);
+    setIsProcessing(false);
+    setQuizMode(false);
+    setQuizQuestion(null);
+    setQuizScore(0);
+    setQuizPicked(null);
+    quizHistoryRef.current = [];
+    if (sid) {
+      try { await axios.post(`${BACKEND_URL}/api/divya/progress/session/end`, { session_id: sid }, { withCredentials: true }); } catch { /* ignore */ }
+    }
+  };
+
+  /* ─── Phase 4: Quiz Mode ─── */
+  const fetchQuizQuestion = async (qNumber) => {
+    setQuizLoading(true);
+    setQuizPicked(null);
+    setQuizQuestion(null);
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/divya/live/quiz`, {
+        tutor: selectedTutor,
+        language: selectedLang,
+        context: pdfContext || '',
+        question_number: qNumber,
+        total_questions: QUIZ_TOTAL,
+        previous_qa: quizHistoryRef.current,
+      }, { timeout: 60000 });
+      if (res.data?.success) {
+        setQuizQuestion(res.data);
+        if (res.data.audio_base64) playMessageAudio(res.data.audio_base64);
+      } else {
+        toast.error('Could not load question — try again');
+      }
+    } catch {
+      toast.error('Quiz failed. Try again?');
+    } finally {
+      setQuizLoading(false);
+    }
+  };
+
+  const startQuiz = async () => {
+    audioMgr.warmUp();
+    setQuizMode(true);
+    setQuizScore(0);
+    setQuizPicked(null);
+    quizHistoryRef.current = [];
+    await fetchQuizQuestion(1);
+  };
+
+  const pickQuizOption = (idx) => {
+    if (quizPicked !== null || !quizQuestion) return;
+    setQuizPicked(idx);
+    const correct = idx === quizQuestion.correct_index;
+    if (correct) setQuizScore((s) => s + 1);
+    quizHistoryRef.current = [
+      ...quizHistoryRef.current,
+      { question: quizQuestion.question, user_answer: quizQuestion.options[idx], correct },
+    ];
+  };
+
+  const nextQuizQuestion = async () => {
+    const nextNum = (quizQuestion?.question_number || 0) + 1;
+    if (nextNum > QUIZ_TOTAL) {
+      // Quiz complete — persist attempt (best-effort, requires auth)
+      try {
+        await axios.post(`${BACKEND_URL}/api/divya/progress/quiz`, {
+          session_id: sessionIdRef.current,
+          tutor: selectedTutor,
+          language: selectedLang,
+          score: quizScore,
+          total_questions: QUIZ_TOTAL,
+        }, { withCredentials: true });
+      } catch { /* ignore */ }
+      setQuizQuestion({ ...quizQuestion, complete: true });
+      return;
+    }
+    await fetchQuizQuestion(nextNum);
+  };
+
+  const exitQuiz = () => {
+    audioMgr.stop();
+    setQuizMode(false);
+    setQuizQuestion(null);
+    setQuizPicked(null);
+  };
 
   /* ─── Play audio for a specific message ─── */
   const playMessageAudio = async (audioB64) => {
@@ -276,6 +502,12 @@ const LiveTutor = ({ onSessionChange }) => {
         const audioB64 = res.data.audio_base64 || null;
         setMessages(prev => [...prev, { role: 'tutor', text: res.data.text, audio: audioB64 }]);
         if (audioB64) playMessageAudio(audioB64);
+        // Phase 2 — log this exchange (user + tutor = 2 messages)
+        const sid = sessionIdRef.current;
+        if (sid) {
+          axios.post(`${BACKEND_URL}/api/divya/progress/session/log-message`, { session_id: sid, role: 'user' }, { withCredentials: true }).catch(() => {});
+          axios.post(`${BACKEND_URL}/api/divya/progress/session/log-message`, { session_id: sid, role: 'tutor' }, { withCredentials: true }).catch(() => {});
+        }
       }
     } catch {
       setMessages(prev => [...prev, { role: 'tutor', text: "Sorry, couldn't process that. Try again?" }]);
@@ -359,6 +591,16 @@ const LiveTutor = ({ onSessionChange }) => {
           <h3 className="text-sm font-bold text-gray-800">{tutor.name}</h3>
           <p className="text-[10px] text-gray-400">{isSpeaking ? 'Speaking...' : isProcessing ? 'Thinking...' : 'Listening'}</p>
         </div>
+        {!quizMode && (
+          <button
+            onClick={startQuiz}
+            disabled={isProcessing}
+            data-testid="start-quiz-btn"
+            className="px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 flex items-center gap-1.5 active:scale-95 transition-all disabled:opacity-50"
+          >
+            <Brain className="w-3.5 h-3.5" /> Quiz
+          </button>
+        )}
         {isSpeaking && (
           <button onClick={() => audioMgr.stop()} className="p-2 bg-red-50 hover:bg-red-100 rounded-lg" data-testid="stop-audio-btn">
             <VolumeX className="w-4 h-4 text-red-500" />
@@ -366,6 +608,21 @@ const LiveTutor = ({ onSessionChange }) => {
         )}
       </div>
 
+      {/* Quiz overlay — replaces chat when active */}
+      {quizMode ? (
+        <QuizPanel
+          tutor={tutor}
+          totalQuestions={QUIZ_TOTAL}
+          quizQuestion={quizQuestion}
+          quizPicked={quizPicked}
+          quizScore={quizScore}
+          quizLoading={quizLoading}
+          onPick={pickQuizOption}
+          onNext={nextQuizQuestion}
+          onExit={exitQuiz}
+        />
+      ) : (
+      <>
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50" data-testid="chat-messages">
         {messages.map((msg, idx) => (
@@ -414,6 +671,8 @@ const LiveTutor = ({ onSessionChange }) => {
           </button>
         </div>
       </div>
+      </>
+      )}
       </div>
     </div>
   );

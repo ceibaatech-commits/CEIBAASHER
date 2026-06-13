@@ -449,6 +449,125 @@ async def transcribe_audio(
             os.remove(tmp_path)
         except OSError:
             pass
+
+
+# ─── Quiz Mode ───────────────────────────────────────────────────────────────
+class LiveQuizRequest(BaseModel):
+    tutor: str = "divya"
+    language: str = "en-IN"
+    context: str = ""
+    exam: Optional[str] = None
+    subject: Optional[str] = None
+    topic: Optional[str] = None
+    question_number: int = 1
+    total_questions: int = 5
+    previous_qa: List[dict] = []  # [{question, user_answer, correct}, ...]
+
+
+@live_router.post("/quiz")
+async def generate_quiz_question(req: LiveQuizRequest):
+    """Generate one MCQ + speak the question via Sarvam TTS. Returns:
+    {question, options[4], correct_index, explanation, audio_base64}
+    """
+    if not EMERGENT_KEY:
+        raise HTTPException(status_code=500, detail="AI service not configured")
+
+    tutor = req.tutor.lower() if req.tutor.lower() in TUTOR_PROMPTS else "divya"
+    language = _normalize_lang(req.language)
+    language_name = LANGUAGE_NAMES[language]
+    speaker = SARVAM_VOICE_MAP.get(tutor, SARVAM_DEFAULT_SPEAKER)
+
+    # Build context block — exam/subject/topic if provided, plus optional PDF context
+    context_lines = []
+    if req.exam:
+        context_lines.append(f"Exam: {req.exam}")
+    if req.subject:
+        context_lines.append(f"Subject: {req.subject}")
+    if req.topic:
+        context_lines.append(f"Topic: {req.topic}")
+    if req.context:
+        context_lines.append(f"Reference material:\n{req.context[:2000]}")
+    ctx_block = "\n".join(context_lines) or "General knowledge appropriate for a student."
+
+    # Avoid repeating prior questions
+    prev_questions = "\n".join(f"- {p.get('question','')}" for p in req.previous_qa if p.get("question"))
+    avoid_block = f"\nAlready asked (do NOT repeat or paraphrase these):\n{prev_questions}" if prev_questions else ""
+
+    system_msg = (
+        f"You are {tutor.capitalize()}, an educational tutor creating quiz questions. "
+        f"You MUST respond in {language_name} for the question, options, and explanation. "
+        f"Reply with STRICT JSON only (no markdown fences, no commentary)."
+    )
+    user_msg = (
+        f"Generate question {req.question_number} of {req.total_questions} as a single multiple-choice question.\n"
+        f"{ctx_block}\n{avoid_block}\n\n"
+        f"Output JSON shape:\n"
+        f'{{"question": "<question text in {language_name}>",\n'
+        f' "options": ["<A>", "<B>", "<C>", "<D>"],\n'
+        f' "correct_index": <0|1|2|3>,\n'
+        f' "explanation": "<one-sentence explanation in {language_name}>"}}\n'
+        f"Exactly four options. Make the question educational and unambiguous."
+    )
+
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        chat = LlmChat(
+            api_key=EMERGENT_KEY,
+            session_id=f"quiz-{uuid.uuid4().hex[:8]}",
+            system_message=system_msg,
+        ).with_model("gemini", "gemini-2.5-flash")
+        raw = await chat.send_message(UserMessage(text=user_msg))
+        raw = (raw or "").strip()
+
+        # Strip ```json fences if present
+        if raw.startswith("```"):
+            raw = raw.strip("`")
+            if raw.lower().startswith("json"):
+                raw = raw[4:].lstrip()
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start == -1 or end == -1 or end < start:
+            raise ValueError("LLM returned no JSON object")
+        import json as _json
+        data = _json.loads(raw[start: end + 1])
+
+        question = (data.get("question") or "").strip()
+        options = data.get("options") or []
+        correct_index = data.get("correct_index")
+        explanation = (data.get("explanation") or "").strip()
+
+        if not question or not isinstance(options, list) or len(options) != 4:
+            raise ValueError("Malformed quiz payload from LLM")
+        try:
+            correct_index = int(correct_index)
+        except Exception:
+            raise ValueError("correct_index must be 0-3")
+        if correct_index < 0 or correct_index > 3:
+            raise ValueError("correct_index out of range")
+
+        # Speak just the question (keep audio short — options shown on screen)
+        try:
+            wav_bytes = await _sarvam_tts(question, speaker, language)
+            audio_b64 = base64.b64encode(wav_bytes).decode("ascii")
+        except Exception as tts_err:
+            print(f"[DIVYA-QUIZ] TTS failed: {tts_err}")
+            audio_b64 = None
+
+        return {
+            "success": True,
+            "question": question,
+            "options": options,
+            "correct_index": correct_index,
+            "explanation": explanation,
+            "audio_base64": audio_b64,
+            "question_number": req.question_number,
+            "total_questions": req.total_questions,
+            "tutor": tutor,
+            "language": language,
+        }
+    except Exception as e:
+        print(f"[DIVYA-QUIZ] Failed to generate question: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate quiz question: {str(e)}")
  
  
 # ══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,33 @@
+{
+  "summary": "Backend-only validation of Divya Tutor Phase 2 (progress storage in MongoDB) + Phase 4 (Live Quiz endpoint). All 14 pytest cases passed against the public preview URL. Verified Sarvam TTS produces real WAV bytes (RIFF header) for both English and Hindi quiz audio, demo1 cookie-auth resolves to the expected user_id, session lifecycle (start/log/end) persists correctly, quiz attempts validate score/total bounds and compute percentage, and /stats returns the full shape with topic dedupe and streak_days>=1 when a session exists for today. Demo1 test data was cleaned up at module teardown.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/divya/progress/session/log-message", "issue": "Endpoint silently returns success=true,tracked=false even for completely bogus session_ids belonging to no user. Documented as intentional (anonymous-flow no-op) but means clients get no signal when they accidentally use the wrong session_id. Consider returning tracked=false only when the session exists but isn't owned, vs 404 when truly unknown."},
+      {"endpoint": "/api/divya/progress/quiz", "issue": "Accepts session_id that does not exist or belongs to another user without validation. Attempt is still saved with the bad session_id, which could pollute stats joins downstream. Consider a soft check that session_id (if provided) belongs to the caller."}
+    ]
+  },
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [
+    "/app/backend/tests/test_divya_progress_quiz.py",
+    "/app/test_reports/pytest/divya_phase2_phase4.xml"
+  ],
+  "action_items": [
+    "(Optional) Tighten /divya/progress/quiz to validate session ownership before insert.",
+    "(Optional) Consider returning a clearer error (or at least a distinct flag) when log-message receives a session_id that does not exist anywhere, vs one that exists but is owned by another user."
+  ],
+  "critical_code_review_comments": [
+    "divya_progress_routes.py creates its own AsyncIOMotorClient using os.environ[\"MONGO_URL\"]/[\"DB_NAME\"] instead of reusing the shared db handle from server.py. Works but doubles the pool count per worker — minor; consider an init_db(db) pattern like profile_routes.py.",
+    "stats endpoint streaks scans every session doc for the user every call (no aggregation). Fine for now, but for power-users this will get slow — consider a $group by day pipeline or a maintained daily marker.",
+    "topics aggregation uses python-side dedupe with no upper-bound on the underlying Mongo cursor — capped only by the inner break at 100 unique labels. Heavy users could fetch many docs; an aggregation with $group on (exam,subject,topic) and $sort by max(started_at) would be cheaper.",
+    "log-message intentionally swallows unknown session_ids — combined with no auth-scoped validation on /quiz session_id, two related endpoints accept silently-wrong session_ids, which can mask client bugs.",
+    "divya_routes.py: LANGUAGE_NAMES is referenced by _normalize_lang() defined *above* it (line 51 before LANGUAGE_NAMES at line 56). Works because lookup happens at call-time, but is fragile readability-wise."
+  ],
+  "updated_files": ["/app/backend/tests/test_divya_progress_quiz.py"],
+  "success_rate": {"backend": "100%", "frontend": "N/A (skipped per request)"},
+  "test_credentials": "demo1 / demo1 via POST /api/auth/demo-login (sets session_token cookie → user_id ab3581a5-23e6-407d-a7ac-21e0f4da2b4f)",
+  "seed_data_creation": "Created and then deleted demo1 test sessions/quiz attempts; cleaned up at module teardown via pymongo.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Pytest file /app/backend/tests/test_divya_progress_quiz.py covers all Phase 2 + Phase 4 backend endpoints and auto-cleans demo1 rows. Sarvam TTS hit was real (RIFF WAV verified). If Sarvam ever rate-limits (429/503), the quiz tests will skip rather than fail — by design from the review request."
+}

@@ -62,6 +62,7 @@ import messaging_routes
  
 # ── Divya AI Tutor (merged: podcast + live tutor, Sarvam TTS) ─────────────────
 from divya_routes import router as divya_router, live_router as divya_live_router
+from divya_progress_routes import router as divya_progress_router
  
  
 ROOT_DIR = Path(__file__).parent
@@ -240,6 +241,7 @@ fastapi_app.include_router(test_router, prefix="/api")
 # ── Divya AI Tutor routes (podcast + live, Sarvam TTS) ────────────────────────
 fastapi_app.include_router(divya_router,      prefix="/api")  # /api/divya/*
 fastapi_app.include_router(divya_live_router, prefix="/api")  # /api/divya/live/*
+fastapi_app.include_router(divya_progress_router, prefix="/api")  # /api/divya/progress/*
  
 # Live Battles Admin Routes
 from live_battles_admin_routes import router as live_battles_admin_router
