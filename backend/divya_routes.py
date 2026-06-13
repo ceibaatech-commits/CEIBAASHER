@@ -31,8 +31,9 @@ live_router = APIRouter(prefix="/divya/live", tags=["divya-live"])
 # ── Constants ─────────────────────────────────────────────────────────────────
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
  
-# Sarvam voice mapping (per the key's allowed speakers — bulbul:v2)
-SARVAM_VOICE_MAP = {"divya": "anushka", "sher": "neha"}
+# Sarvam voice mapping (only speakers compatible with bulbul:v2 per the live API:
+# anushka, abhilash, manisha, vidya, arya, karun, hitesh).
+SARVAM_VOICE_MAP = {"divya": "anushka", "sher": "manisha"}
 SARVAM_DEFAULT_SPEAKER = "anushka"
 
 # Frontend may send short language codes ("en", "hi"); map to Sarvam's full codes
@@ -478,7 +479,7 @@ async def _generate_dialogue(file_paths: List[str], mime_types: List[str], user_
  
 async def _podcast_audio_sarvam(dialogue: List[dict], language: str = "en-IN") -> bytes:
     """Generate full podcast audio from dialogue using Sarvam TTS. Returns WAV bytes."""
-    voice_map = {"Divya": "anushka", "Sher": "neha"}
+    voice_map = {"Divya": "anushka", "Sher": "manisha"}
     wav_parts: List[bytes] = []
  
     for line in dialogue:
