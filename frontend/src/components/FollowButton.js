@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 import {
   UserPlus, UserCheck, UserMinus, Clock, Loader2,
   Heart, Link2, ShieldOff, X, Star, StarOff
@@ -286,10 +287,12 @@ const FollowButton = ({
             { target_user_id: targetUserId, action: 'add' }
           ).catch(() => {});
         }
+      } else if (res.data.message) {
+        toast.error(res.data.message);
       }
     } catch (err) {
       const msg = err.response?.data?.detail || err.response?.data?.message || 'Failed to follow.';
-      alert(msg);
+      toast.error(msg);
     } finally { setLoading(false); }
   }, [targetUserId, onFollowChange]);
 
@@ -302,8 +305,9 @@ const FollowButton = ({
       );
       setStatus(null);
       onFollowChange?.(null);
+      toast.success('Unfollowed');
     } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to unfollow.');
+      toast.error(err.response?.data?.detail || 'Failed to unfollow.');
     } finally { setLoading(false); }
   }, [targetUserId, onFollowChange]);
 
@@ -333,22 +337,50 @@ const FollowButton = ({
       if (res.data.success) {
         setStatus(null);
         onFollowChange?.(null);
+        toast.success(`Blocked @${targetUsername}`);
         onBlock?.();
       }
     } catch (err) {
-      alert(err.response?.data?.detail || 'Failed to block user');
+      toast.error(err.response?.data?.detail || 'Failed to block user');
     } finally { setLoading(false); }
   }, [targetUserId, targetUsername, onFollowChange, onBlock]);
 
-  const shareProfile = useCallback(() => {
+  const shareProfile = useCallback(async () => {
     setPopup(null);
-    const url = `${window.location.origin}/profile/${targetUserId}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(() => alert('Profile link copied!'));
-    } else {
-      alert(`Profile link: ${url}`);
+    const url = `${window.location.origin}/profile/${targetUsername || targetUserId}`;
+    const title = targetUsername ? `@${targetUsername}` : 'Profile';
+
+    // Prefer the native Web Share API on mobile / supported browsers
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch (err) {
+        // User cancelled or share failed — fall through to clipboard fallback
+        if (err && err.name === 'AbortError') return;
+      }
     }
-  }, [targetUserId]);
+
+    // Clipboard fallback for desktop / unsupported browsers
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        // Legacy fallback for very old browsers
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      toast.success('Profile link copied!');
+    } catch {
+      toast.error('Could not copy link');
+    }
+  }, [targetUsername, targetUserId]);
 
   const handleClick = () => {
     if (loading) return;

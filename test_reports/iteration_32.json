@@ -1,0 +1,58 @@
+{
+  "summary": "Tested follow/unfollow/block/share-profile end-to-end. Backend: 8/8 pytest cases pass (cookie-only auth on follow/unfollow/block/close-friend, self-block 400, missing-user 404, profile is_blocked payload, all three feeds filter blocked author). Frontend: 6/7 sub-flows pass — share-profile copies URL + sonner toast, unfollow flips Following->Follow, follow flips back, block triggers confirm() -> success toast + navigation to /victory-lane. ONE bug found: after navigating back to /profile/ceibaatech the 'profile-unavailable' screen does NOT render because PublicProfile.js fires fetchProfile() before user?.id from AuthContext hydrates, sending the request without current_user_id (which bypasses the backend block check). A 2nd request with current_user_id is fired moments later (correctly returns is_blocked:true) but the in-flight 1st response races and overwrites state.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "PublicProfile.js (useEffect/fetchProfile race)",
+        "issue": "fetchProfile() fires on mount before user?.id hydrates from AuthContext / localStorage. The first request goes to /api/profile/{username} WITHOUT current_user_id, so backend skips the block check and returns the full profile. A second request fires after user?.id hydrates (correctly returns is_blocked:true), but the first response can resolve last and overwrite state — meaning the data-testid='profile-unavailable' card never renders for blocked viewers. Manual fetch to /api/profile/ceibaatech?current_user_id=<demo1_id> correctly returns is_blocked:true; the bug is purely frontend ordering.",
+        "selector": "[data-testid='profile-unavailable']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Profile load with block",
+        "issue": "fetchProfile dispatched without current_user_id when AuthContext not yet ready; later setState from earlier race can clobber the is_blocked:true state.",
+        "affected_selectors": ["[data-testid='profile-unavailable']", "[data-testid='profile-unavailable-back']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_results": {
+    "backend_pytest": "8/8 PASS (test_follow_block_share_v32.py)",
+    "frontend_login": "PASS",
+    "frontend_initial_following_button": "PASS — shows 'Following'",
+    "frontend_following_sheet_opens": "PASS",
+    "frontend_share_profile_clipboard_toast": "PASS — clipboard contains profile URL, sonner toast 'Profile link copied!' rendered",
+    "frontend_unfollow_flow": "PASS — button toggles to 'Follow'",
+    "frontend_follow_sheet_opens": "PASS",
+    "frontend_follow_normal_re_follows": "PASS — button returns to 'Following'",
+    "frontend_block_flow": "PASS — confirm() accepted, sonner success toast appeared, page navigated to /victory-lane, blocks doc in MongoDB persisted",
+    "frontend_blocked_profile_unavailable_render": "FAIL — race condition: first fetch (no current_user_id) wins and renders full profile instead of unavailable card"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_follow_block_share_v32.py",
+    "/app/test_reports/pytest/iter32_follow_block.xml"
+  ],
+  "action_items": [
+    "Fix PublicProfile.js fetchProfile race: either (a) early-return when user?.id is undefined, (b) re-run only after auth is ready and ignore stale responses via an AbortController / request-id, or (c) await an auth-hydrated flag from AuthContext before mounting fetchProfile.",
+    "Suggested minimal fix: in fetchProfile, capture a local 'requestId' from a useRef counter; only commit setProfile/setIsBlocked if requestId === currentRef.current. Also skip the call entirely when user is not yet hydrated (treat undefined user as 'wait')."
+  ],
+  "critical_code_review_comments": [
+    "PublicProfile.js relies on user?.id being available synchronously at mount, but AuthContext hydration is asynchronous (reads ceibaa_user from localStorage on mount). The current useEffect dep array [username, user?.id] correctly re-fires when user.id arrives, BUT both fetches run in parallel without cancellation — a classic race.",
+    "Backend /api/profile/{username} accepts current_user_id only as a query param. Consider also reading it from the cookie/Authorization (hybrid auth) so block filtering still works even when the frontend forgets to include the param.",
+    "profile_follow_routes.py block helpers correctly use {_id:0} projection so no ObjectId leaks — good.",
+    "profile_follow_routes.py POST /block — flat 500 on generic exception is fine but the broad 'except Exception' could mask validation failures. Consider narrower except clauses."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_follow_block_share_v32.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "~86% (6/7)"},
+  "test_credentials": "demo1/demo1 via /api/auth/demo-login (cookie + JWT) — id ab3581a5-23e6-407d-a7ac-21e0f4da2b4f.",
+  "seed_data_creation": "Test created/removed a follow row + a block row between demo1 and ceibaatech (608f1a3d-3891-444b-ac23-7dfe815e817e). Cleanup performed: all blocks deleted; follow row demo1->ceibaatech restored to 'approved' status post-test.",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All 8 backend pytests in test_follow_block_share_v32.py are green. The only frontend issue is the PublicProfile.js race between fetchProfile() and AuthContext hydration. The actual block API + feed filtering + share/unfollow/follow/block UI flows all work. After main agent fixes the race, re-run only the frontend step that navigates to /profile/ceibaatech after a block and verifies data-testid='profile-unavailable'.",
+  "rca_of_the_issue": "PublicProfile.js fires fetchProfile() on mount with user?.id possibly undefined. The HTTP request omits ?current_user_id, so backend cannot evaluate is_blocked_between and returns the unblocked full profile. AuthContext then hydrates user from localStorage; useEffect re-runs with the correct user.id and the second fetch returns is_blocked:true. However, no cancellation is applied to the in-flight first request, so whichever Promise resolves last wins, and in this environment the first (no-user_id) request consistently resolves last, clobbering setIsBlocked(true) with setIsBlocked(false). Mitigation: add an AbortController + early-return when user is unhydrated."
+}

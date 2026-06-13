@@ -15,6 +15,39 @@ from profile_routes import (
 )
 
 router = APIRouter()
+
+
+# ---------- Block helpers (shared across feed/profile/etc) ----------
+async def get_blocked_user_ids(user_id: str) -> set:
+    """Return set of user_ids that have a block relationship with `user_id`
+    in EITHER direction (current user blocked them OR they blocked current user).
+    Used to filter posts/profiles/matchmaking results.
+    """
+    if not user_id:
+        return set()
+    blocked = set()
+    async for b in db.blocks.find(
+        {"$or": [{"blocker_id": user_id}, {"blocked_id": user_id}]},
+        {"_id": 0, "blocker_id": 1, "blocked_id": 1},
+    ):
+        blocked.add(b["blocked_id"] if b["blocker_id"] == user_id else b["blocker_id"])
+    blocked.discard(user_id)
+    return blocked
+
+
+async def is_blocked_between(viewer_id: Optional[str], target_id: str) -> bool:
+    """True iff either party has blocked the other."""
+    if not viewer_id or viewer_id == target_id:
+        return False
+    doc = await db.blocks.find_one({
+        "$or": [
+            {"blocker_id": viewer_id, "blocked_id": target_id},
+            {"blocker_id": target_id, "blocked_id": viewer_id},
+        ]
+    }, {"_id": 0, "blocker_id": 1})
+    return doc is not None
+
+
 @router.get("/close-friend-ids")
 async def get_close_friend_ids(request: Request, authorization: Optional[str] = Header(None)):
     """Get list of close friend user IDs for the current user."""
@@ -34,23 +67,18 @@ async def get_close_friend_ids(request: Request, authorization: Optional[str] = 
 
 # --- Close friend endpoint ---
 @router.post("/close-friend")
-async def toggle_close_friend(request: Request):
+async def toggle_close_friend(
+    request: Request,
+    authorization: Optional[str] = Header(None)
+):
     """Add or remove a user from close friends list."""
     try:
         body = await request.json()
         target_user_id = body.get("target_user_id")
         action = body.get("action", "add")  # 'add' or 'remove'
 
-        authorization = request.headers.get("authorization")
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
-
-        token = authorization.replace("Bearer ", "")
-        import jwt
-        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=["HS256"])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        # Hybrid auth (cookie OR bearer)
+        user_id = await get_user_id_from_request(authorization, request)
 
         if action == "add":
             await db.close_friends.update_one(
@@ -79,31 +107,37 @@ async def toggle_close_friend(request: Request):
 
 # --- Block user endpoint ---
 @router.post("/block")
-async def block_user(request: Request):
+async def block_user(
+    request: Request,
+    authorization: Optional[str] = Header(None)
+):
     """Block a user."""
     try:
         body = await request.json()
         target_user_id = body.get("target_user_id")
+        if not target_user_id:
+            raise HTTPException(status_code=400, detail="target_user_id is required")
 
-        authorization = request.headers.get("authorization")
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Not authenticated")
+        # Hybrid auth (cookie OR bearer)
+        user_id = await get_user_id_from_request(authorization, request)
 
-        token = authorization.replace("Bearer ", "")
-        import jwt
-        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=["HS256"])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        # Can't block yourself
+        if user_id == target_user_id:
+            raise HTTPException(status_code=400, detail="Cannot block yourself")
 
-        # Add to blocks
+        # Target user must exist
+        target = await db.users.find_one({"id": target_user_id}, {"_id": 0, "id": 1})
+        if not target:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # Add to blocks (atomic upsert)
         await db.blocks.update_one(
             {"blocker_id": user_id, "blocked_id": target_user_id},
             {"$set": {"blocker_id": user_id, "blocked_id": target_user_id, "created_at": datetime.now(timezone.utc).isoformat()}},
             upsert=True
         )
 
-        # Remove any follow relationship
+        # Remove any follow relationship (both directions)
         await db.follows.delete_many({
             "$or": [
                 {"follower_id": user_id, "following_id": target_user_id},
@@ -111,7 +145,7 @@ async def block_user(request: Request):
             ]
         })
 
-        # Remove from close friends
+        # Remove from close friends (both directions)
         await db.close_friends.delete_many({
             "$or": [
                 {"user_id": user_id, "friend_id": target_user_id},
@@ -349,6 +383,24 @@ async def get_user_profile(username: str, current_user_id: Optional[str] = None)
                 "follow_status": None,
                 "is_disabled": True
             }
+
+        # Block check: hide the profile from either side if a block exists
+        if current_user_id and current_user_id != user["id"]:
+            if await is_blocked_between(current_user_id, user["id"]):
+                return {
+                    "success": True,
+                    "profile": {
+                        "id": user["id"],
+                        "user_id": user["id"],
+                        "username": user.get("username"),
+                        "name": user.get("name"),
+                        "is_unavailable": True,
+                        "can_view": False,
+                    },
+                    "follow_status": None,
+                    "is_blocked": True,
+                    "message": "This account is not available",
+                }
         
         # Get follow counts
         followers_count, following_count = await get_follow_counts(user["id"])
@@ -617,21 +669,31 @@ async def unfollow_user(
     try:
         # Get user_id using hybrid authentication
         follower_id = await get_user_id_from_request(authorization, request)
-        
+
+        # Can't unfollow yourself
+        if follower_id == target_user_id:
+            raise HTTPException(status_code=400, detail="Cannot unfollow yourself")
+
         # Delete follow relationship
         result = await db.follows.delete_one({
             "follower_id": follower_id,
             "following_id": target_user_id
         })
-        
+
+        # Also drop any close-friend mapping (idempotent)
+        await db.close_friends.delete_one({
+            "user_id": follower_id,
+            "friend_id": target_user_id
+        })
+
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Follow relationship not found")
-        
+
         return {
             "success": True,
             "message": "Unfollowed successfully"
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:

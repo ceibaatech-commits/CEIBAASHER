@@ -53,6 +53,23 @@ def init_db(database):
 
 # ==================== HELPER FUNCTIONS ====================
 
+async def get_blocked_user_ids_for_feed(user_id: Optional[str]) -> set:
+    """Return user_ids that should be hidden from `user_id`'s feeds:
+    anyone who blocked them OR anyone they blocked.
+    Empty set for anonymous users.
+    """
+    if not user_id:
+        return set()
+    blocked = set()
+    async for b in db.blocks.find(
+        {"$or": [{"blocker_id": user_id}, {"blocked_id": user_id}]},
+        {"_id": 0, "blocker_id": 1, "blocked_id": 1},
+    ):
+        blocked.add(b["blocked_id"] if b["blocker_id"] == user_id else b["blocker_id"])
+    blocked.discard(user_id)
+    return blocked
+
+
 async def get_user_from_session(session_token: str) -> Optional[str]:
     """Get user_id from session token (Emergent auth)"""
     try:
@@ -722,7 +739,12 @@ async def get_for_you_feed(
         
         # Filter expired quiz rooms
         mixed_posts = await filter_expired_quiz_posts(mixed_posts)
-        
+
+        # Filter out posts authored by blocked users (either direction)
+        blocked_ids = await get_blocked_user_ids_for_feed(user_id)
+        if blocked_ids:
+            mixed_posts = [p for p in mixed_posts if p.get("user_id") not in blocked_ids]
+
         # Sort by created_at with proper date parsing
         def parse_date(post):
             try:
@@ -839,13 +861,24 @@ async def get_for_you_feed(
         raise HTTPException(status_code=500, detail=f"Error fetching feed: {str(e)}")
 
 @router.get("/feed/trending")
-async def get_trending_feed(skip: int = 0, limit: int = 10):
+async def get_trending_feed(
+    request: Request,
+    skip: int = 0,
+    limit: int = 10,
+    authorization: Optional[str] = Header(None),
+):
     """Get trending posts - sorted by recency and engagement"""
     try:
         # Get posts with limit for performance
         posts = await db.social_posts.find({}, {"_id": 0}).sort("created_at", -1).limit(200).to_list(200)
         posts = await filter_expired_quiz_posts(posts)
-        
+
+        # Filter out posts authored by blocked users (either direction)
+        viewer_id = await get_optional_user_id_async(authorization, request)
+        blocked_ids = await get_blocked_user_ids_for_feed(viewer_id)
+        if blocked_ids:
+            posts = [p for p in posts if p.get("user_id") not in blocked_ids]
+
         # Sort by created_at in Python to handle mixed date formats
         def parse_date(post):
             try:
@@ -941,7 +974,12 @@ async def get_following_feed(
         ).to_list(length=1000)
         
         following_ids = [f["following_id"] for f in follows if f.get("following_id")]
-        
+
+        # Exclude blocked users (either direction) from the following list
+        blocked_ids = await get_blocked_user_ids_for_feed(user_id)
+        if blocked_ids:
+            following_ids = [fid for fid in following_ids if fid not in blocked_ids]
+
         if not following_ids:
             return {"success": True, "posts": [], "count": 0, "has_more": False}
         

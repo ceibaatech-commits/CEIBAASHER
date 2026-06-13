@@ -21,6 +21,7 @@ const PublicProfile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [canView, setCanView] = useState(true);
+  const [isBlocked, setIsBlocked] = useState(false);
   const [followStatus, setFollowStatus] = useState(null);
   const [activeTab, setActiveTab] = useState('posts');
   const [showFollowModal, setShowFollowModal] = useState(false);
@@ -54,6 +55,7 @@ const PublicProfile = () => {
         setProfile(response.data.profile);
         setCanView(response.data.can_view !== false);
         setFollowStatus(response.data.follow_status);
+        setIsBlocked(response.data.is_blocked === true);
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -79,6 +81,11 @@ const PublicProfile = () => {
         followers_count: Math.max(0, (prev.followers_count || 0) + delta)
       }));
     }
+  };
+
+  const handleBlock = () => {
+    // After blocking, navigate away from the blocked user's profile
+    navigate('/victory-lane', { replace: true });
   };
 
   const handleFollowersClick = () => {
@@ -344,6 +351,31 @@ const PublicProfile = () => {
     navigate('/login');
   };
 
+  // Blocked profile — either viewer blocked target, or target blocked viewer
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
+        <Header isLoggedIn={!!user} user={user} onLogout={logout} />
+        <div className="max-w-md mx-auto py-16 px-4" data-testid="profile-unavailable">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <Lock className="w-14 h-14 mx-auto text-gray-400 mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">This account is not available</h1>
+            <p className="text-gray-600 mb-6">
+              You can&apos;t view this profile.
+            </p>
+            <button
+              onClick={() => navigate('/victory-lane')}
+              data-testid="profile-unavailable-back"
+              className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold transition-all shadow-md"
+            >
+              Back to Feed
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Private account with no access
   if (profile.is_private && !canView) {
     return (
@@ -398,6 +430,7 @@ const PublicProfile = () => {
                   targetUsername={profile.username}
                   initialStatus={followStatus}
                   onFollowChange={handleFollowChange}
+                  onBlock={handleBlock}
                 />
               </div>
             )}
@@ -491,6 +524,7 @@ const PublicProfile = () => {
                       targetUsername={profile.username}
                       initialStatus={followStatus}
                       onFollowChange={handleFollowChange}
+                      onBlock={handleBlock}
                       className="w-full sm:w-auto"
                     />
                   </div>
