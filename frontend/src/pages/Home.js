@@ -181,10 +181,10 @@ const Home = () => {
 
             <button
               type="button"
-              onClick={() => window.open('https://ceibaa.in/recruiter', '_blank', 'noopener,noreferrer')}
+              onClick={() => navigate('/recruiter')}
               className="col-span-2 relative text-left rounded-2xl px-4 py-4 shadow-[0_10px_24px_-10px_rgba(217,180,86,0.6)] active:scale-[0.98] transition-transform"
               style={{ backgroundColor: '#efc868', color: '#1f1505' }}
-              data-testid="mobile-home-train-btn"
+              data-testid="mobile-home-hire-with-us-btn"
             >
               <span
                 className="block text-[11px] font-semibold uppercase tracking-wider mb-1"

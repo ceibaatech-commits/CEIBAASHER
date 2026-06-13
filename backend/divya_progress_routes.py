@@ -252,3 +252,57 @@ async def get_progress_stats(
         "topics": topics,
         "quizzes": quizzes_raw,
     }
+
+
+# ---------- Weakest topics (proactive drill suggestions) ----------
+@router.get("/weakest-topics")
+async def get_weakest_topics(
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    limit: int = 3,
+    min_attempts: int = 1,
+):
+    """Return the user's bottom-N topics by average quiz percentage.
+
+    Used at session-start so Divya/Sher can proactively offer a drill:
+      "Your Mechanics avg is 40% — want a quick refresher?"
+
+    Returns: { weakest: [{exam, subject, topic, label, avg_percentage, attempts}] }
+    """
+    user_id = await get_user_id_from_request(authorization, request)
+    limit = max(1, min(limit, 10))
+
+    pipeline = [
+        {"$match": {
+            "user_id": user_id,
+            "topic": {"$ne": None, "$exists": True},
+        }},
+        {"$group": {
+            "_id": {"exam": "$exam", "subject": "$subject", "topic": "$topic"},
+            "avg_percentage": {"$avg": "$percentage"},
+            "attempts": {"$sum": 1},
+            "last_attempt": {"$max": "$completed_at"},
+        }},
+        {"$match": {"attempts": {"$gte": max(1, min_attempts)}}},
+        {"$sort": {"avg_percentage": 1, "attempts": -1}},
+        {"$limit": limit},
+    ]
+    rows = await _db.divya_quiz_attempts.aggregate(pipeline).to_list(limit)
+
+    weakest = []
+    for r in rows:
+        exam = r["_id"].get("exam")
+        subject = r["_id"].get("subject")
+        topic = r["_id"].get("topic")
+        label = " · ".join(x for x in [exam, subject, topic] if x)
+        weakest.append({
+            "exam": exam,
+            "subject": subject,
+            "topic": topic,
+            "label": label,
+            "avg_percentage": round(r.get("avg_percentage") or 0.0, 1),
+            "attempts": r.get("attempts", 0),
+            "last_attempt": r.get("last_attempt"),
+        })
+
+    return {"success": True, "weakest": weakest}

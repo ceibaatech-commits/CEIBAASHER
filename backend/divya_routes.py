@@ -4,6 +4,7 @@ Divya AI Tutor — Combined routes:
   • /divya/*       — Podcast generation, Ask, Mind-map (also Sarvam TTS)
 """
 import os
+import asyncio
 import uuid
 import base64
 import io
@@ -597,21 +598,29 @@ async def _generate_dialogue(file_paths: List[str], mime_types: List[str], user_
  
  
 async def _podcast_audio_sarvam(dialogue: List[dict], language: str = "en-IN") -> bytes:
-    """Generate full podcast audio from dialogue using Sarvam TTS. Returns WAV bytes."""
+    """Generate full podcast audio from dialogue using Sarvam TTS. Returns WAV bytes.
+
+    TTS calls run in parallel with a small concurrency cap so the whole podcast
+    completes before upstream proxy timeouts (~60s on Cloudflare edges). Serial
+    generation of 20-30 lines blows past that. Concurrency=6 stays well under
+    Sarvam's per-key rate limits.
+    """
     voice_map = {"Divya": "anushka", "Sher": "manisha"}
-    wav_parts: List[bytes] = []
- 
-    for line in dialogue:
-        speaker_voice = voice_map.get(line["speaker"], SARVAM_DEFAULT_SPEAKER)
-        chunk_bytes = await _sarvam_tts(line["text"], speaker_voice, language)
-        wav_parts.append(chunk_bytes)
- 
-    if not wav_parts:
+    if not dialogue:
         return b""
+
+    sem = asyncio.Semaphore(6)
+
+    async def _line_wav(line: dict) -> bytes:
+        speaker_voice = voice_map.get(line.get("speaker"), SARVAM_DEFAULT_SPEAKER)
+        async with sem:
+            return await _sarvam_tts(line.get("text", ""), speaker_voice, language)
+
+    wav_parts: List[bytes] = await asyncio.gather(*(_line_wav(l) for l in dialogue))
+
     if len(wav_parts) == 1:
         return wav_parts[0]
- 
-    # Concatenate all WAV parts
+
     output = io.BytesIO()
     with wave.open(output, "wb") as out_wav:
         for i, wav_bytes in enumerate(wav_parts):

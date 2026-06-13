@@ -360,12 +360,12 @@ const LiveTutor = ({ onSessionChange }) => {
     setSelectedTutor(tutor);
     setSessionActive(true);
     onSessionChange?.(true);
-    setMessages([{
-      role: 'tutor',
-      text: tutor === 'divya'
-        ? `Namaste! I'm Divya. ${pdfContext ? "I've read your material — ask me anything!" : "Upload a file or ask me any question!"}`
-        : `Hey! I'm Sher. ${pdfContext ? "I've reviewed your material — let's ace those exams!" : "Upload a file or fire your doubts!"}`,
-    }]);
+
+    const baseGreeting = tutor === 'divya'
+      ? `Namaste! I'm Divya. ${pdfContext ? "I've read your material — ask me anything!" : "Upload a file or ask me any question!"}`
+      : `Hey! I'm Sher. ${pdfContext ? "I've reviewed your material — let's ace those exams!" : "Upload a file or fire your doubts!"}`;
+    setMessages([{ role: 'tutor', text: baseGreeting }]);
+
     // Phase 2 — start a backend-tracked session (best-effort, anonymous-safe)
     try {
       const res = await axios.post(`${BACKEND_URL}/api/divya/progress/session/start`,
@@ -373,6 +373,18 @@ const LiveTutor = ({ onSessionChange }) => {
         { withCredentials: true });
       if (res.data?.session_id) sessionIdRef.current = res.data.session_id;
     } catch { /* not logged in or backend down — ignore, continue without tracking */ }
+
+    // Weakest-topic drill suggestion (silent if no quiz history yet)
+    try {
+      const w = await axios.get(`${BACKEND_URL}/api/divya/progress/weakest-topics?limit=1`, { withCredentials: true });
+      const weak = w.data?.weakest?.[0];
+      if (weak && weak.label && weak.avg_percentage < 75) {
+        const suggestion = tutor === 'divya'
+          ? `Hey — I noticed your ${weak.label} average is ${weak.avg_percentage}% across ${weak.attempts} quiz${weak.attempts === 1 ? '' : 'zes'}. Want me to drill you on it? Just tap the Quiz button up top whenever you're ready! 💪`
+          : `Quick heads-up champ — your ${weak.label} avg is sitting at ${weak.avg_percentage}% (${weak.attempts} attempt${weak.attempts === 1 ? '' : 's'}). Tap Quiz to drill it now — that's how you climb the ranks. 🎯`;
+        setMessages(prev => [...prev, { role: 'tutor', text: suggestion, drill: true }]);
+      }
+    } catch { /* not logged in or no history — ignore */ }
   };
 
   const endSession = async () => {
