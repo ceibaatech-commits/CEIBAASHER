@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Users } from 'lucide-react';
 import axios from 'axios';
 import UserAvatar from './UserAvatar';
 import { getMessagingSocket } from '../lib/messagingSocket';
@@ -112,6 +112,9 @@ const InboxDropdown = ({ user }) => {
             ) : (
               conversations.slice(0, 6).map(conv => {
                 const unread = conv.unread || 0;
+                const displayName = conv.is_group
+                  ? (conv.name || 'Group')
+                  : (conv.other_user?.name || 'Unknown');
                 return (
                   <button
                     key={conv.id}
@@ -120,12 +123,21 @@ const InboxDropdown = ({ user }) => {
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-900/60 transition-colors border-b border-gray-800/20"
                   >
                     <div className="shrink-0">
-                      <UserAvatar profilePicture={conv.other_user?.avatar} name={conv.other_user?.name} size="sm" clickable={false} />
+                      {conv.is_group ? (
+                        <div
+                          data-testid={`inbox-group-avatar-${conv.id}`}
+                          className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/25 to-purple-600/25 border border-cyan-500/30 flex items-center justify-center"
+                        >
+                          <Users className="w-4 h-4 text-cyan-300" />
+                        </div>
+                      ) : (
+                        <UserAvatar profilePicture={conv.other_user?.avatar} name={conv.other_user?.name} size="sm" clickable={false} />
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
                         <span className={`text-sm font-semibold truncate ${unread > 0 ? 'text-white' : 'text-gray-400'}`}>
-                          {conv.other_user?.name || 'Unknown'}
+                          {displayName}
                         </span>
                         <span className="text-[10px] text-gray-600 shrink-0 ml-2">{formatTime(conv.last_message_at)}</span>
                       </div>
