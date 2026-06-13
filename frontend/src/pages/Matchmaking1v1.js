@@ -32,6 +32,7 @@ import MathText from '../components/MathText';
 import { useAuth } from '../context/AuthContext';
 import AgoraUIKit from 'agora-react-uikit';
 import Header from '../components/Header';
+import FollowButton from '../components/FollowButton';
 import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
@@ -366,6 +367,7 @@ const Matchmaking1v1 = () => {
   // Refs so socket listeners always read live values (prevents stale closures)
   const roomIdRef = useRef(null);
   const playerNameRef = useRef('');
+  const userRef = useRef(null);
   const socketRef = useRef(null);
 
   // ── Drag refs (avoid re-creating handlers on every render) ──
@@ -386,6 +388,7 @@ const Matchmaking1v1 = () => {
 
   useEffect(() => { roomIdRef.current = roomId; }, [roomId]);
   useEffect(() => { playerNameRef.current = playerName; }, [playerName]);
+  useEffect(() => { userRef.current = user; }, [user]);
 
   // Check Parents Mode
   useEffect(() => {
@@ -444,7 +447,15 @@ const Matchmaking1v1 = () => {
     setSocket(s);
     socketRef.current = s;
 
-    s.on('connect', () => console.log('[Socket] Connected to battle server'));
+    s.on('connect', () => {
+      console.log('[Socket] Connected to battle server');
+      // Send authenticated user data so backend can read user_id from session
+      // (used by matchmaking to skip blocked opponents + emit user info to peers)
+      const u = userRef.current;
+      if (u && u.id) {
+        s.emit('authenticate', { userData: { id: u.id, username: u.username, name: u.name } });
+      }
+    });
 
     s.on('waiting', (d) => { if (d.timeout) setSearchCountdown(d.timeout); });
 
@@ -1116,14 +1127,35 @@ const Matchmaking1v1 = () => {
                 </div>
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: C.blueLight }}>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: C.blueLight }}>
                       <MessageCircle className="w-4 h-4" style={{ color: C.blue }} />
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-900 leading-tight">{oppName}</p>
-                      <p className="text-[10px] text-gray-500 leading-tight">In battle • Live</p>
+                    <div className="min-w-0">
+                      {opponent?.userId && (battleState === 'results' || battleState === 'setup') ? (
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
+                          data-testid="chat-opponent-name-link"
+                          className="text-sm font-bold text-gray-900 leading-tight hover:underline truncate block max-w-[110px] text-left"
+                        >
+                          {oppName}
+                        </button>
+                      ) : (
+                        <p className="text-sm font-bold text-gray-900 leading-tight truncate max-w-[110px]" data-testid="chat-opponent-name">{oppName}</p>
+                      )}
+                      <p className="text-[10px] text-gray-500 leading-tight">
+                        {battleState === 'playing' ? 'In battle • Live' : battleState === 'results' ? 'Battle ended' : 'Live'}
+                      </p>
                     </div>
+                    {opponent?.userId && (
+                      <div className="ml-1" data-testid="chat-opponent-follow">
+                        <FollowButton
+                          targetUserId={opponent.userId}
+                          targetUsername={opponent.username || opponent.playerName}
+                        />
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => setMobileChatOpen(false)}
@@ -1297,8 +1329,27 @@ const Matchmaking1v1 = () => {
                 {/* Opponent card */}
                 <div className="rounded-2xl p-4 text-center" style={{ background: C.pink }}>
                   <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2" style={{ background: C.blue }}>{oppName.charAt(0).toUpperCase()}</div>
-                  <p className="font-bold text-gray-900 text-sm">{oppName}</p>
+                  {opponent?.userId && (battleState === 'results' || battleState === 'setup') ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
+                      data-testid="desktop-opponent-name-link"
+                      className="font-bold text-gray-900 text-sm hover:underline"
+                    >
+                      {oppName}
+                    </button>
+                  ) : (
+                    <p className="font-bold text-gray-900 text-sm" data-testid="desktop-opponent-name">{oppName}</p>
+                  )}
                   <p className="text-xs text-gray-500">{decodeURIComponent(examId)}</p>
+                  {opponent?.userId && (
+                    <div className="mt-2 flex justify-center" data-testid="desktop-opponent-follow">
+                      <FollowButton
+                        targetUserId={opponent.userId}
+                        targetUsername={opponent.username || opponent.playerName}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* VC controls */}
@@ -1634,8 +1685,27 @@ const Matchmaking1v1 = () => {
                   <div className="flex items-center justify-center"><span className="text-gray-300 font-black text-xl">VS</span></div>
                   <div className="p-4 rounded-xl text-center" style={{ background: C.blueLight, border: !isWinner && !isTie ? `2px solid ${C.blue}` : '2px solid transparent' }}>
                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-2" style={{ background: C.blue }}>{oppName.charAt(0).toUpperCase()}</div>
-                    <p className="text-xs text-gray-600 mb-1">{oppName.split(' ')[0]}</p>
+                    {opponent?.userId ? (
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
+                        data-testid="results-opponent-name-link"
+                        className="text-xs text-gray-600 mb-1 hover:underline font-medium"
+                      >
+                        {oppName.split(' ')[0]}
+                      </button>
+                    ) : (
+                      <p className="text-xs text-gray-600 mb-1">{oppName.split(' ')[0]}</p>
+                    )}
                     <p className="text-2xl font-black" style={{ color: C.blue }}>{opponentScore}</p>
+                    {opponent?.userId && (
+                      <div className="mt-2 flex justify-center" data-testid="results-opponent-follow">
+                        <FollowButton
+                          targetUserId={opponent.userId}
+                          targetUsername={opponent.username || opponent.playerName}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -7,6 +7,8 @@ import Peer from 'simple-peer';
 import axios from 'axios';
 import BattleVideoChat from '../components/BattleVideoChat';
 import Header from '../components/Header';
+import FollowButton from '../components/FollowButton';
+import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = window.location.origin || 'http://localhost:8001';
 const API_URL = BACKEND_URL;
@@ -16,6 +18,9 @@ const SOCKET_URL = BACKEND_URL; // Socket.IO integrated with FastAPI on port 800
 const LiveBattleMode = () => {
   const { examId, subject, topic } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userRef = useRef(user);
+  useEffect(() => { userRef.current = user; }, [user]);
   
   const [battleState, setBattleState] = useState('setup'); // setup, searching, matched, playing, results
   const [playerName, setPlayerName] = useState('');
@@ -51,6 +56,14 @@ const LiveBattleMode = () => {
     });
     setSocket(newSocket);
 
+    // Authenticate immediately so backend knows user_id (used for block filter + match-found enrichment)
+    newSocket.on('connect', () => {
+      const u = userRef.current;
+      if (u && u.id) {
+        newSocket.emit('authenticate', { userData: { id: u.id, username: u.username, name: u.name } });
+      }
+    });
+
     newSocket.on('waiting', (data) => {
       console.log('Waiting for opponent:', data.message);
     });
@@ -58,7 +71,10 @@ const LiveBattleMode = () => {
     newSocket.on('match-found', async (data) => {
       console.log('Match found!', data);
       setRoomId(data.roomId);
-      setOpponent(data.players.find(p => p.playerName !== playerName));
+      // Backend now sends a per-socket payload: players[0]=self, players[1]=opponent
+      // Fall back to legacy name-based filtering for safety.
+      const opp = data.players[1] || data.players.find(p => p.playerName !== playerName);
+      setOpponent(opp);
       setBattleState('matched');
       
       // Start quiz
@@ -456,6 +472,29 @@ const LiveBattleMode = () => {
                   {opponent?.playerName} ({opponentScore} pts)
                 </div>
               </div>
+              {/* Follow opponent during/after battle. Profile link gated to non-playing states. */}
+              {opponent?.userId && (
+                <div className="flex items-center justify-between gap-2 mt-1" data-testid="live-opponent-actions">
+                  {battleState === 'results' || battleState === 'setup' ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
+                      data-testid="live-opponent-name-link"
+                      className="text-sm font-semibold text-gray-700 hover:underline truncate"
+                    >
+                      @{opponent.username || opponent.playerName}
+                    </button>
+                  ) : (
+                    <span className="text-sm font-semibold text-gray-500 truncate" data-testid="live-opponent-name">
+                      @{opponent.username || opponent.playerName}
+                    </span>
+                  )}
+                  <FollowButton
+                    targetUserId={opponent.userId}
+                    targetUsername={opponent.username || opponent.playerName}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
@@ -533,8 +572,27 @@ const LiveBattleMode = () => {
                 <div className="text-4xl font-bold text-blue-600">{myScore}</div>
               </div>
               <div className="bg-purple-50 p-6 rounded-xl">
-                <div className="text-sm text-gray-600 mb-1">{opponent?.playerName}</div>
+                {opponent?.userId ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
+                    data-testid="live-results-opponent-link"
+                    className="text-sm text-gray-600 mb-1 hover:underline"
+                  >
+                    {opponent?.playerName}
+                  </button>
+                ) : (
+                  <div className="text-sm text-gray-600 mb-1">{opponent?.playerName}</div>
+                )}
                 <div className="text-4xl font-bold text-purple-600">{opponentScore}</div>
+                {opponent?.userId && (
+                  <div className="mt-3 flex justify-center" data-testid="live-results-opponent-follow">
+                    <FollowButton
+                      targetUserId={opponent.userId}
+                      targetUsername={opponent.username || opponent.playerName}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

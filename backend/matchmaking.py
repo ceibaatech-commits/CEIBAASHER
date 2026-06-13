@@ -21,6 +21,8 @@ class WaitingPlayer:
     player_name: str
     exam: str
     subject: str  # Keep for display, but match by exam only
+    user_id: Optional[str] = None  # Authenticated user_id (None for anonymous)
+    username: Optional[str] = None
     joined_at: float = field(default_factory=lambda: datetime.now(timezone.utc).timestamp())
 
 
@@ -59,11 +61,21 @@ class MatchmakingManager:
 
     # ── Queue operations ──
 
-    def add_to_queue(self, socket_id: str, player_name: str, exam: str, subject: str) -> Optional[WaitingPlayer]:
+    def add_to_queue(
+        self,
+        socket_id: str,
+        player_name: str,
+        exam: str,
+        subject: str,
+        user_id: Optional[str] = None,
+        username: Optional[str] = None,
+        blocked_user_ids: Optional[set] = None,
+    ) -> Optional[WaitingPlayer]:
         """
         Add player to queue. Returns opponent if instant match found, else None.
         Matches by EXAM only, not subject — enabling cross-topic battles.
-        Example: NDA Economics vs NDA History
+        Skips candidates that the current player has blocked OR who have
+        blocked the current player (via `blocked_user_ids`).
         """
         if socket_id in self._player_keys:
             return None
@@ -71,8 +83,13 @@ class MatchmakingManager:
         key = self._normalize_exam(exam)
         bucket = self._queues[key]
         now = datetime.now(timezone.utc).timestamp()
+        blocked_user_ids = blocked_user_ids or set()
 
-        # Scan for first valid opponent (skip self, skip stale entries)
+        # Candidates we skipped (blocked) — must be re-queued at the front so
+        # they don't lose their place when a different player joins.
+        skipped: list = []
+
+        opponent: Optional[WaitingPlayer] = None
         while bucket:
             candidate = bucket[0]
             if now - candidate.joined_at > STALE_THRESHOLD_SECONDS:
@@ -83,14 +100,29 @@ class MatchmakingManager:
                 bucket.popleft()
                 self._player_keys.pop(candidate.socket_id, None)
                 continue
+            # Skip if either side has a block relationship
+            if candidate.user_id and candidate.user_id in blocked_user_ids:
+                skipped.append(bucket.popleft())
+                continue
             # Match found — pop and return
             opponent = bucket.popleft()
             self._player_keys.pop(opponent.socket_id, None)
             print(f"[MATCHMAKING] Match found: {player_name} ({subject}) <-> {opponent.player_name} ({opponent.subject}) on exam={key}")
+            break
+
+        # Re-queue skipped (blocked) candidates at the FRONT so they keep priority
+        for sp in reversed(skipped):
+            bucket.appendleft(sp)
+            self._player_keys[sp.socket_id] = key
+
+        if opponent is not None:
             return opponent
 
         # No match — enqueue
-        player = WaitingPlayer(socket_id=socket_id, player_name=player_name, exam=exam, subject=subject)
+        player = WaitingPlayer(
+            socket_id=socket_id, player_name=player_name, exam=exam, subject=subject,
+            user_id=user_id, username=username,
+        )
         bucket.append(player)
         self._player_keys[socket_id] = key
         print(f"[MATCHMAKING] Queued {player_name} ({subject}) in exam={key} (queue size: {len(bucket)})")

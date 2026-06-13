@@ -173,14 +173,14 @@ async def leave_room(sid, data):
 # ==================== MATCHMAKING EVENTS ====================
 
 
-def _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject):
+def _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject, my_user_id=None, my_username=None):
     """Build the live_battles document. Pure function — no I/O."""
     now_iso = datetime.now(timezone.utc).isoformat()
     return {
         "id": room_id, "room_id": room_id, "type": "1v1", "status": "in_progress",
         "players": [
-            {"user_id": sid, "username": player_name, "score": 0},
-            {"user_id": opponent.socket_id, "username": opponent.player_name, "score": 0},
+            {"socket_id": sid, "user_id": my_user_id, "username": my_username or player_name, "player_name": player_name, "score": 0},
+            {"socket_id": opponent.socket_id, "user_id": opponent.user_id, "username": opponent.username or opponent.player_name, "player_name": opponent.player_name, "score": 0},
         ],
         "exam": exam, "subject": subject,
         "total_questions": 10, "duration_seconds": 0,
@@ -190,15 +190,29 @@ def _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject):
     }
 
 
-async def _emit_match_found(sid, opponent, room_id, player_name, exam, subject):
+async def _emit_match_found(sid, opponent, room_id, player_name, exam, subject, my_user_id=None, my_username=None):
     """Create the socket-io room, emit match-found event."""
     await sio.enter_room(sid, room_id)
     await sio.enter_room(opponent.socket_id, room_id)
+    # Per-player payload so each side knows both their own + opponent ids
+    p_self = {
+        'socketId': sid, 'playerName': player_name,
+        'userId': my_user_id, 'username': my_username,
+    }
+    p_opp = {
+        'socketId': opponent.socket_id, 'playerName': opponent.player_name,
+        'userId': opponent.user_id, 'username': opponent.username,
+    }
     await sio.emit('match-found', {
         'roomId': room_id,
-        'players': [{'playerName': player_name}, {'playerName': opponent.player_name}],
+        'players': [p_self, p_opp],
         'exam': exam, 'subject': subject,
-    }, room=room_id)
+    }, room=sid)
+    await sio.emit('match-found', {
+        'roomId': room_id,
+        'players': [p_opp, p_self],
+        'exam': exam, 'subject': subject,
+    }, room=opponent.socket_id)
 
 
 async def _persist_live_battle(room_id, battle_doc):
@@ -231,21 +245,55 @@ async def find_match(sid, data):
         # topic is available but not used for matching (we match on exam level)
         _ = data.get('topic', '')
 
-        opponent = matchmaking_manager.add_to_queue(sid, player_name, exam, subject)
+        # Pull authenticated user info from session (set via `authenticate` event)
+        my_user_id = None
+        my_username = None
+        try:
+            session = await sio.get_session(sid)
+            user_data = (session or {}).get('userData') or {}
+            my_user_id = user_data.get('id') or user_data.get('user_id') or user_data.get('userId')
+            my_username = user_data.get('username') or user_data.get('name')
+        except Exception:
+            pass
+
+        # Fetch blocked user ids (both directions) so matchmaking skips them
+        blocked_user_ids: set = set()
+        if my_user_id:
+            try:
+                async for b in db.blocks.find(
+                    {"$or": [{"blocker_id": my_user_id}, {"blocked_id": my_user_id}]},
+                    {"_id": 0, "blocker_id": 1, "blocked_id": 1},
+                ):
+                    blocked_user_ids.add(b["blocked_id"] if b["blocker_id"] == my_user_id else b["blocker_id"])
+                blocked_user_ids.discard(my_user_id)
+            except Exception as e:
+                print(f"[MATCHMAKING] Failed to load blocks for {my_user_id}: {e}")
+
+        opponent = matchmaking_manager.add_to_queue(
+            sid, player_name, exam, subject,
+            user_id=my_user_id, username=my_username,
+            blocked_user_ids=blocked_user_ids,
+        )
         if not opponent:
             await _emit_waiting(sid, exam, subject)
             return
 
         # Instant match — create room immediately
         room_id = f"room_{int(datetime.now(timezone.utc).timestamp())}_{generate_random_id()}"
-        player1_data = {'socketId': sid, 'playerName': player_name, 'score': 0}
-        player2_data = {'socketId': opponent.socket_id, 'playerName': opponent.player_name, 'score': 0}
+        player1_data = {
+            'socketId': sid, 'playerName': player_name, 'score': 0,
+            'userId': my_user_id, 'username': my_username,
+        }
+        player2_data = {
+            'socketId': opponent.socket_id, 'playerName': opponent.player_name, 'score': 0,
+            'userId': opponent.user_id, 'username': opponent.username,
+        }
         matchmaking_manager.create_battle(room_id, player1_data, player2_data, exam, subject)
 
-        await _emit_match_found(sid, opponent, room_id, player_name, exam, subject)
+        await _emit_match_found(sid, opponent, room_id, player_name, exam, subject, my_user_id, my_username)
         print(f"[MATCHMAKING] Instant match: Room {room_id}")
 
-        battle_doc = _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject)
+        battle_doc = _build_live_battle_doc(room_id, sid, player_name, opponent, exam, subject, my_user_id, my_username)
         await _persist_live_battle(room_id, battle_doc)
 
     except Exception as e:

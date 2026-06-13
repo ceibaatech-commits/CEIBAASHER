@@ -2,6 +2,19 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 13, 2026 — Battle 1v1: block-aware matchmaking + follow-on-chat + gated opponent profile (COMPLETE)
+- [x] **Backend `matchmaking.py`:** `WaitingPlayer` now carries `user_id` + `username`. `add_to_queue(...)` accepts a `blocked_user_ids: set` argument and **skips** any waiting candidate whose `user_id` is in that set; skipped candidates are re-queued at the front so they don't lose priority for other players.
+- [x] **Backend `battle_social_handlers.py`:** `find-match` handler now reads the authenticated `user_id`/`username` from `sio.get_session(sid)` (set via the `authenticate` event), queries `db.blocks` for bi-directional blocks, and passes both into matchmaking. `_emit_match_found` now sends a **per-socket** payload with `socketId`, `playerName`, `userId`, `username` for both self and opponent. `_build_live_battle_doc` also persists user_ids on each player record.
+- [x] **Frontend `Matchmaking1v1.js`:**
+  - Imports `FollowButton`; tracks `userRef` so the socket's `connect` handler can `emit('authenticate', {userData})` with the live user
+  - Mobile chat header + desktop sidebar opponent card + results screen all render a `<FollowButton targetUserId={opponent.userId} targetUsername={opponent.username||opponent.playerName} />` whenever the opponent is authenticated
+  - Opponent's name becomes a clickable link to `/profile/{username}` **only** when `battleState ∈ {results, setup}` — during `searching`/`matched`/`playing` the name is plain text (prevents distraction during live battle). New data-testids: `chat-opponent-name-link`, `chat-opponent-name`, `chat-opponent-follow`, `desktop-opponent-name-link`, `desktop-opponent-follow`, `results-opponent-name-link`, `results-opponent-follow`.
+- [x] **Regression tests:** `/app/backend/tests/test_matchmaking_block_filter.py` — 4 cases (basic match / blocked skip / unrelated still matches / anonymous players still work) all passing.
+
+### Feb 13, 2026 — Blocked accounts in Settings (COMPLETE)
+- [x] Backend: `GET /api/profile/blocked-users` (enriched list with name/username/avatar/blocked_at) and `DELETE /api/profile/block/{target_user_id}` (unblock, 400 for self, 404 if no block)
+- [x] Frontend: `/app/frontend/src/components/settings/BlockedAccountsCard.js` mounted on the `/settings` page with loading + empty states, confirm dialog, Sonner toast feedback
+
 ### Feb 13, 2026 — Follow / Unfollow / Block / Share end-to-end fixes (P0 — COMPLETE)
 - [x] **Backend — `profile_follow_routes.py`:**
   - `POST /block` migrated from header-only auth to hybrid `get_user_id_from_request` (cookie+bearer). Returns **400** for self-block, **404** for missing user, atomically wipes both-way follow + close_friend rows.
