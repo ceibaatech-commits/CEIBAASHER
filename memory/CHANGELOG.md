@@ -2,6 +2,20 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 13, 2026 — Divya Tutor Phase 1: Sarvam TTS migration (COMPLETE pending API key)
+- [x] **Removed `divya_live_routes.py`** (dead duplicate after consolidation into `divya_routes.py`).
+- [x] **Fixed `divya_routes.py` per the new Sarvam spec:**
+  - Removed the **hardcoded fallback Sarvam key** on the env read (security fix — was a leaked-looking string)
+  - Voice map flipped to the correct allowed speakers: **Divya → `anushka`, Sher → `neha`** (was `meera`/`pavithra` which the user's key doesn't support)
+  - Model bumped to **`bulbul:v2`** (was `bulbul:v1`)
+  - Default-speaker fallback unified via `SARVAM_DEFAULT_SPEAKER = "anushka"`
+  - Added `SHORT_TO_FULL_LANG` map + `_normalize_lang(lang)` helper so the backend now accepts both short codes (`"en"`, `"hi"`) AND full Sarvam codes (`"en-IN"`, `"hi-IN"`). Applied to `/divya/live/ask`, `/divya/live/transcribe`, and `/divya/generate-podcast`.
+- [x] **Frontend `DivyaTutor.js`:**
+  - Two `audio/mpeg` → `audio/wav` swaps (Blob constructor + base64 data-URI for podcast playback)
+  - `transcribeAndSend` now appends `selectedLang` to the form so Whisper transcribes in the right language
+- [x] **`backend/.env`:** appended an empty `SARVAM_API_KEY=` placeholder — user just needs to paste their key.
+- [x] **Verified live:** `POST /api/divya/ask` returns a proper Hinglish Gemini response 200 OK. `POST /api/divya/live/ask` reaches the TTS step and fails cleanly with `"SARVAM_API_KEY is not configured"` — entire pipeline is wired correctly, just waiting on the key value.
+
 ### Feb 13, 2026 — 1v1 Rematch flow (COMPLETE)
 - [x] **Backend `battle_social_handlers.py`:** new socket events `rematch-request`, `rematch-accept`, `rematch-decline` plus broadcast events `rematch-pending`, `rematch-requested`, `rematch-declined`, `rematch-timeout`. Module-level `pending_rematches` map with 30s timeout via `asyncio.create_task`. Auto-confirms on mutual consent (if both players click rematch within the window). Helper `_create_rematch_room` bypasses the queue: generates a fresh `room_id`, re-uses the two existing socket players (zeroes scores), emits per-socket `match-found` with `rematch: true`, persists a new `live_battles` doc with `is_rematch: true` and `parent_room_id`.
 - [x] **Backend `battle_socketio.py`:** disconnect handler cleans up any pending rematch involving the leaving socket and notifies the surviving party with `rematch-declined: 'Opponent disconnected'`.

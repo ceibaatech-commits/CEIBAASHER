@@ -19,7 +19,7 @@ load_dotenv()
  
 # ── Keys ──────────────────────────────────────────────────────────────────────
 EMERGENT_KEY = os.environ.get("EMERGENT_LLM_KEY")
-SARVAM_KEY   = os.environ.get("SARVAM_API_KEY", "sk_9ujhv6mu_0EIZ7390FS9ZFhCX7FxVUwto")
+SARVAM_KEY   = os.environ.get("SARVAM_API_KEY")
  
 UPLOAD_DIR = "/tmp/divya_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -31,8 +31,25 @@ live_router = APIRouter(prefix="/divya/live", tags=["divya-live"])
 # ── Constants ─────────────────────────────────────────────────────────────────
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
  
-# Sarvam voice mapping
-SARVAM_VOICE_MAP = {"divya": "meera", "sher": "pavithra"}
+# Sarvam voice mapping (per the key's allowed speakers — bulbul:v2)
+SARVAM_VOICE_MAP = {"divya": "anushka", "sher": "neha"}
+SARVAM_DEFAULT_SPEAKER = "anushka"
+
+# Frontend may send short language codes ("en", "hi"); map to Sarvam's full codes
+SHORT_TO_FULL_LANG = {
+    "en": "en-IN", "hi": "hi-IN", "ta": "ta-IN", "te": "te-IN",
+    "ml": "ml-IN", "kn": "kn-IN", "bn": "bn-IN", "mr": "mr-IN",
+    "gu": "gu-IN", "pa": "pa-IN", "od": "od-IN",
+}
+
+
+def _normalize_lang(lang: Optional[str]) -> str:
+    """Accept short ('en') or full ('en-IN') codes and return a valid Sarvam code."""
+    if not lang:
+        return "en-IN"
+    if lang in LANGUAGE_NAMES:
+        return lang
+    return SHORT_TO_FULL_LANG.get(lang.lower(), "en-IN")
  
 # Language code → human-readable name (used in system prompts)
 LANGUAGE_NAMES = {
@@ -189,7 +206,7 @@ async def _sarvam_tts(text: str, speaker: str, language: str) -> bytes:
                     "inputs": [chunk],
                     "target_language_code": language,
                     "speaker": speaker,
-                    "model": "bulbul:v1",
+                    "model": "bulbul:v2",
                     "enable_preprocessing": True,
                     "speech_sample_rate": 22050,
                 },
@@ -291,9 +308,9 @@ async def live_ask(req: LiveAskRequest):
         raise HTTPException(status_code=500, detail="AI service not configured")
  
     tutor = req.tutor.lower() if req.tutor.lower() in TUTOR_PROMPTS else "divya"
-    language = req.language if req.language in LANGUAGE_NAMES else "en-IN"
+    language = _normalize_lang(req.language)
     language_name = LANGUAGE_NAMES[language]
-    sarvam_speaker = SARVAM_VOICE_MAP.get(tutor, "meera")
+    sarvam_speaker = SARVAM_VOICE_MAP.get(tutor, SARVAM_DEFAULT_SPEAKER)
  
     system_prompt = TUTOR_PROMPTS[tutor].format(language_name=language_name)
  
@@ -393,7 +410,7 @@ async def transcribe_audio(
     if len(content) > 25 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="Audio file too large (max 25MB)")
  
-    whisper_lang = WHISPER_LANG_MAP.get(language, "en")
+    whisper_lang = WHISPER_LANG_MAP.get(_normalize_lang(language), "en")
     ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else "webm"
     tmp_path = f"/tmp/divya_audio_{uuid.uuid4().hex[:8]}.{ext}"
     with open(tmp_path, "wb") as f:
@@ -461,11 +478,11 @@ async def _generate_dialogue(file_paths: List[str], mime_types: List[str], user_
  
 async def _podcast_audio_sarvam(dialogue: List[dict], language: str = "en-IN") -> bytes:
     """Generate full podcast audio from dialogue using Sarvam TTS. Returns WAV bytes."""
-    voice_map = {"Divya": "meera", "Sher": "pavithra"}
+    voice_map = {"Divya": "anushka", "Sher": "neha"}
     wav_parts: List[bytes] = []
  
     for line in dialogue:
-        speaker_voice = voice_map.get(line["speaker"], "meera")
+        speaker_voice = voice_map.get(line["speaker"], SARVAM_DEFAULT_SPEAKER)
         chunk_bytes = await _sarvam_tts(line["text"], speaker_voice, language)
         wav_parts.append(chunk_bytes)
  
@@ -528,8 +545,8 @@ async def generate_podcast(
         saved_paths.append(fpath)
         mime_types.append(mime)
  
-    # Normalise language
-    lang = language if language in LANGUAGE_NAMES else "en-IN"
+    # Normalise language (accept short or full codes)
+    lang = _normalize_lang(language)
  
     try:
         raw_dialogue = await _generate_dialogue(saved_paths, mime_types, prompt or "")

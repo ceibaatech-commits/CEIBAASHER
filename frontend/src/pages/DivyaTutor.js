@@ -71,7 +71,7 @@ class AudioManager {
     const raw = atob(base64Audio);
     const bytes = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
-    const blob = new Blob([bytes], { type: 'audio/mpeg' });
+    const blob = new Blob([bytes], { type: 'audio/wav' });
     const blobUrl = URL.createObjectURL(blob);
 
     // Strategy 1: AudioContext + MediaElementSource (most reliable for autoplay)
@@ -319,6 +319,9 @@ const LiveTutor = ({ onSessionChange }) => {
     try {
       const fd = new FormData();
       fd.append('file', audioBlob, 'recording.webm');
+      // Send the selected language so Whisper transcribes in the right tongue.
+      // Backend accepts both short codes ("en") and Sarvam codes ("en-IN").
+      if (selectedLang) fd.append('language', selectedLang);
       const res = await axios.post(`${BACKEND_URL}/api/divya/live/transcribe`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' }, timeout: 30000,
       });
@@ -449,7 +452,7 @@ const PodcastMode = () => {
       });
       if (res.data.audio_base64 || res.data.audio_url) {
         let src = res.data.audio_url;
-        if (res.data.audio_base64) src = `data:audio/mpeg;base64,${res.data.audio_base64}`;
+        if (res.data.audio_base64) src = `data:audio/wav;base64,${res.data.audio_base64}`;
         else if (src && !src.startsWith('http')) src = `${BACKEND_URL}${src}`;
         setPodcast({ audio_src: src, dialogue: res.data.dialogue || [] });
         toast.success('Podcast generated!');
