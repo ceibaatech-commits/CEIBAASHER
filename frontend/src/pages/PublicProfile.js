@@ -616,7 +616,7 @@ const PublicProfile = () => {
         </div>
 
         {/* Tabs Section */}
-        <div className="mt-4 bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="mt-4 bg-white md:rounded-2xl md:shadow-xl overflow-hidden -mx-4 md:mx-0">
           {/* Tab Headers - Compact on mobile */}
           <div className="flex border-b border-gray-200">
             <button
@@ -677,7 +677,7 @@ const PublicProfile = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="p-6 min-h-[400px]">
+          <div className="px-0 md:p-6 py-2 md:py-6 min-h-[400px]">
             {loadingContent ? (
               <div className="text-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
@@ -687,14 +687,14 @@ const PublicProfile = () => {
               <>
                 {(activeTab === 'posts' || activeTab === 'reposts') && (
                   filteredPosts.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="divide-y divide-gray-100 md:divide-y-0 md:space-y-4">
                       {filteredPosts
                         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                         .map(post => (
-                        <div key={post.id} className="bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors overflow-hidden">
+                        <div key={post.id} className="bg-white md:rounded-xl md:border md:border-gray-200 md:hover:border-gray-300 transition-colors overflow-hidden">
                           {/* Repost Indicator */}
                           {post.is_retweet === true && (
-                            <div className="flex items-center gap-2 text-xs text-gray-500 px-4 pt-3 pb-1">
+                            <div className="flex items-center gap-2 text-xs text-gray-500 px-4 pt-3 pb-0.5">
                               <Repeat2 className="w-3.5 h-3.5" />
                               <span className="font-medium">{profile.name} reposted</span>
                             </div>
@@ -702,13 +702,13 @@ const PublicProfile = () => {
                           
                           {/* Comment Indicator */}
                           {post.is_comment && (
-                            <div className="flex items-center gap-2 text-xs text-blue-600 px-4 pt-3 pb-1">
+                            <div className="flex items-center gap-2 text-xs text-blue-600 px-4 pt-3 pb-0.5">
                               <MessageCircle className="w-3.5 h-3.5" />
                               <span className="font-medium">{profile.name} commented</span>
                             </div>
                           )}
 
-                          <div className="px-3 py-3 md:px-4 md:py-4">
+                          <div className="px-4 py-3 md:py-4">
                             {/* Modern Header Row - Avatar, User Info, Date, Tags all inline */}
                             <div className="flex items-start gap-2.5 mb-2">
                               {/* Avatar */}

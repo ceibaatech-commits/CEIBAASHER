@@ -2,73 +2,95 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import {
   UserPlus, UserCheck, UserMinus, Clock, Loader2,
-  Heart, Share2, Link2, ShieldOff, X, Star, StarOff
+  Heart, Link2, ShieldOff, X, Star, StarOff
 } from 'lucide-react';
 
 const BACKEND_URL = window.location.origin;
 
-// Follow Popup (not yet following)
-const FollowPopup = ({ username, onFollow, onBlock, onClose, anchorRef }) => (
-  <div
-    className="absolute top-full mt-2 right-0 z-50 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
-    style={{ minWidth: 260 }}
-    ref={anchorRef}
-  >
-    <div className="px-4 py-3 border-b border-gray-100">
-      <p className="text-sm font-semibold text-gray-900">Follow @{username}</p>
-      <p className="text-xs text-gray-500 mt-0.5">Choose how you want to follow</p>
+// Follow Bottom Sheet (not yet following) — Threads/Meta-style
+const FollowSheet = ({ username, onFollow, onClose }) => {
+  // Lock body scroll while sheet is open
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-end justify-center"
+      data-testid="follow-bottom-sheet"
+    >
+      {/* Backdrop */}
+      <button
+        type="button"
+        aria-label="Close"
+        onClick={onClose}
+        className="absolute inset-0 bg-black/60 animate-in fade-in duration-200"
+        data-testid="follow-sheet-backdrop"
+      />
+
+      {/* Sheet */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative w-full sm:max-w-md bg-white rounded-t-3xl shadow-2xl pb-[max(env(safe-area-inset-bottom),1rem)] animate-in slide-in-from-bottom duration-300"
+      >
+        {/* Grabber */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1.5 rounded-full bg-gray-300" />
+        </div>
+
+        {/* Header */}
+        <div className="px-5 pb-3 border-b border-gray-100">
+          <p className="text-base font-semibold text-gray-900">Follow @{username}</p>
+          <p className="text-xs text-gray-500 mt-0.5">Choose how you want to follow</p>
+        </div>
+
+        {/* Follow */}
+        <button
+          onClick={() => onFollow('approved')}
+          className="w-full flex items-center gap-3 px-5 py-4 active:bg-gray-50 transition-colors text-left"
+          data-testid="follow-normal-btn"
+        >
+          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+            <UserPlus className="w-5 h-5 text-blue-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-900">Follow</p>
+            <p className="text-xs text-gray-500">See their posts in your feed</p>
+          </div>
+        </button>
+
+        {/* Follow + Close friend */}
+        <button
+          onClick={() => onFollow('close_friend')}
+          className="w-full flex items-center gap-3 px-5 py-4 active:bg-teal-50 transition-colors text-left border-t border-gray-50"
+          data-testid="follow-close-friend-btn"
+        >
+          <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center flex-shrink-0">
+            <Heart className="w-5 h-5 text-teal-600" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-900">Follow + Close friends</p>
+            <p className="text-xs text-gray-500">Priority feed + all notifications</p>
+          </div>
+        </button>
+
+        {/* Cancel */}
+        <div className="px-5 pt-3">
+          <button
+            onClick={onClose}
+            data-testid="follow-sheet-cancel"
+            className="w-full py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-semibold text-gray-700 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
-
-    <button
-      onClick={() => onFollow('approved')}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
-      data-testid="follow-normal-btn"
-    >
-      <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-        <UserPlus className="w-4 h-4 text-blue-600" />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-gray-900">Follow</p>
-        <p className="text-xs text-gray-500">See their posts in your feed</p>
-      </div>
-    </button>
-
-    <button
-      onClick={() => onFollow('close_friend')}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-teal-50 transition-colors text-left border-t border-gray-100"
-      data-testid="follow-close-friend-btn"
-    >
-      <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
-        <Heart className="w-4 h-4 text-teal-600" />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-gray-900">Follow + Close friend</p>
-        <p className="text-xs text-gray-500">Priority feed + all notifications</p>
-      </div>
-    </button>
-
-    <button
-      onClick={onBlock}
-      className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left border-t border-gray-100"
-      data-testid="block-user-btn-popup"
-    >
-      <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center flex-shrink-0">
-        <ShieldOff className="w-4 h-4 text-red-600" />
-      </div>
-      <div>
-        <p className="text-sm font-medium text-red-600">Block user</p>
-        <p className="text-xs text-gray-500">They won't see your profile or posts</p>
-      </div>
-    </button>
-
-    <button
-      onClick={onClose}
-      className="w-full py-2.5 text-sm text-gray-500 hover:bg-gray-50 border-t border-gray-100 transition-colors"
-    >
-      Cancel
-    </button>
-  </div>
-);
+  );
+};
 
 // Following Popup (already following)
 const FollowingPopup = ({
@@ -327,12 +349,10 @@ const FollowButton = ({
       </button>
 
       {popup === 'follow' && (
-        <FollowPopup
+        <FollowSheet
           username={targetUsername}
           onFollow={apiFollow}
-          onBlock={apiBlock}
           onClose={() => setPopup(null)}
-          anchorRef={wrapRef}
         />
       )}
 
