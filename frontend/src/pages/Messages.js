@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft, Send, MessageSquare, Search, Check, CheckCheck, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Send, MessageSquare, Search, Check, CheckCheck, AlertCircle, Users, UserPlus } from 'lucide-react';
 import axios from 'axios';
 import io from 'socket.io-client';
 import UserAvatar from '../components/UserAvatar';
 import Header from '../components/Header';
+import GroupModal from '../components/messages/GroupModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -25,6 +26,8 @@ export default function Messages() {
   const [otherTyping, setOtherTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [convsRefreshKey, setConvsRefreshKey] = useState(0);
+  const [groupModal, setGroupModal] = useState(null); // 'create' | 'add' | null
+  const [groupMembers, setGroupMembers] = useState([]);
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -91,6 +94,9 @@ export default function Messages() {
     });
     sock.on('user_typing', () => setOtherTyping(true));
     sock.on('user_stop_typing', () => setOtherTyping(false));
+
+    // Group created / added to a group → refresh sidebar so it appears live
+    sock.on('conversations_refresh', () => setConvsRefreshKey(k => k + 1));
 
     // Presence: green-dot on conversation list when the other user is online
     sock.on('presence_update', ({ user_id: pUid, online }) => {
@@ -226,6 +232,17 @@ export default function Messages() {
   const otherUser = activeConv
     ? conversations.find(c => c.id === activeConv.id)?.other_user
     : null;
+  const isGroup = !!activeConv?.is_group;
+
+  // Load member list for the active group (header count + add-member picker)
+  useEffect(() => {
+    if (!isGroup || !conversationId) { setGroupMembers([]); return; }
+    let cancelled = false;
+    axios.get(`${BACKEND_URL}/api/messages/groups/${conversationId}/members`)
+      .then(res => { if (!cancelled && res.data?.success) setGroupMembers(res.data.members || []); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isGroup, conversationId, convsRefreshKey]);
 
   const formatTime = (ts) => {
     if (!ts) return '';
@@ -245,9 +262,10 @@ export default function Messages() {
 
   const filteredConversations = conversations.filter(c => {
     if (!searchQuery) return true;
-    const name = c.other_user?.name || '';
+    const q = searchQuery.toLowerCase();
+    const name = c.is_group ? (c.name || '') : (c.other_user?.name || '');
     const uname = c.other_user?.username || '';
-    return name.toLowerCase().includes(searchQuery.toLowerCase()) || uname.toLowerCase().includes(searchQuery.toLowerCase());
+    return name.toLowerCase().includes(q) || uname.toLowerCase().includes(q);
   });
 
   if (!user) {
@@ -277,7 +295,16 @@ export default function Messages() {
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <h1 className="text-xl font-bold text-white tracking-tight">Messages</h1>
+              <h1 className="text-xl font-bold text-white tracking-tight flex-1">Messages</h1>
+              <button
+                data-testid="new-group-btn"
+                onClick={() => setGroupModal('create')}
+                title="New group"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/15 to-purple-600/15 border border-cyan-500/30 text-cyan-300 text-xs font-semibold hover:from-cyan-500/25 hover:to-purple-600/25 transition-all"
+              >
+                <Users className="w-3.5 h-3.5" />
+                New group
+              </button>
             </div>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-500/60 pointer-events-none z-10" />
@@ -341,24 +368,38 @@ export default function Messages() {
                     }`}
                   >
                     <div className="relative shrink-0">
-                      <UserAvatar
-                        profilePicture={conv.other_user?.avatar}
-                        name={conv.other_user?.name}
-                        size="md"
-                        clickable={false}
-                      />
-                      {conv.other_user?.online && (
-                        <span
-                          data-testid={`presence-dot-${conv.other_user.id}`}
-                          aria-label="Online"
-                          className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-gray-950"
-                        />
+                      {conv.is_group ? (
+                        <div
+                          data-testid={`group-avatar-${conv.id}`}
+                          className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/25 to-purple-600/25 border border-cyan-500/30 flex items-center justify-center"
+                        >
+                          <Users className="w-5 h-5 text-cyan-300" />
+                        </div>
+                      ) : (
+                        <>
+                          <UserAvatar
+                            profilePicture={conv.other_user?.avatar}
+                            name={conv.other_user?.name}
+                            size="md"
+                            clickable={false}
+                          />
+                          {conv.other_user?.online && (
+                            <span
+                              data-testid={`presence-dot-${conv.other_user.id}`}
+                              aria-label="Online"
+                              className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 ring-2 ring-gray-950"
+                            />
+                          )}
+                        </>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
                         <span className={`text-sm font-semibold truncate ${unread > 0 ? 'text-white' : 'text-gray-300'}`}>
-                          {conv.other_user?.name || 'Unknown'}
+                          {conv.is_group ? (conv.name || 'Group') : (conv.other_user?.name || 'Unknown')}
+                          {conv.is_group && (
+                            <span className="ml-1.5 text-[10px] font-normal text-gray-500">{conv.member_count} members</span>
+                          )}
                         </span>
                         <span className="text-[11px] text-gray-500 shrink-0 ml-2">{formatTime(conv.last_message_at)}</span>
                       </div>
@@ -403,7 +444,30 @@ export default function Messages() {
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
-                {otherUser ? (
+                {isGroup ? (
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/25 to-purple-600/25 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                      <Users className="w-4 h-4 text-cyan-300" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-white truncate" data-testid="chat-header-name">{activeConv?.name || 'Group'}</p>
+                      <p className="text-[11px] text-gray-500" data-testid="chat-header-members">
+                        {groupMembers.length > 0
+                          ? `${groupMembers.length} members · ${groupMembers.map(m => m.name?.split(' ')[0]).slice(0, 4).join(', ')}${groupMembers.length > 4 ? '…' : ''}`
+                          : 'Group chat'}
+                      </p>
+                    </div>
+                    <button
+                      data-testid="add-member-btn"
+                      onClick={() => setGroupModal('add')}
+                      title="Add members"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-900 border border-gray-800 text-gray-300 text-xs font-semibold hover:border-cyan-500/40 hover:text-cyan-300 transition-all shrink-0"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Add</span>
+                    </button>
+                  </div>
+                ) : otherUser ? (
                   <div
                     className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer"
                     onClick={() => navigate(`/profile/${otherUser.username}`)}
@@ -443,8 +507,16 @@ export default function Messages() {
                   </div>
                 )}
                 {messages.map((msg, idx) => {
+                  if (msg.system) {
+                    return (
+                      <div key={msg.id} className="flex justify-center py-1" data-testid={`system-message-${msg.id}`}>
+                        <span className="text-[11px] text-gray-500 bg-gray-900 border border-gray-800/80 rounded-full px-3 py-1">{msg.text}</span>
+                      </div>
+                    );
+                  }
                   const isMine = msg.sender_id === user?.id;
                   const showAvatar = !isMine && (idx === 0 || messages[idx - 1]?.sender_id !== msg.sender_id);
+                  const senderInfo = isGroup ? msg.sender : otherUser;
                   return (
                     <div
                       key={msg.id}
@@ -453,12 +525,17 @@ export default function Messages() {
                     >
                       {!isMine && (
                         <div className="w-7 shrink-0">
-                          {showAvatar && otherUser && (
-                            <UserAvatar profilePicture={otherUser.avatar} name={otherUser.name} size="xs" clickable={false} />
+                          {showAvatar && senderInfo && (
+                            <UserAvatar profilePicture={senderInfo.avatar} name={senderInfo.name} size="xs" clickable={false} />
                           )}
                         </div>
                       )}
                       <div className={`group max-w-[75%] ${isMine ? 'items-end' : 'items-start'}`}>
+                        {isGroup && !isMine && showAvatar && senderInfo?.name && (
+                          <p className="text-[10px] font-semibold text-cyan-400/80 mb-0.5 px-1" data-testid={`sender-name-${msg.id}`}>
+                            {senderInfo.name}
+                          </p>
+                        )}
                         <div
                           className={`px-3.5 py-2 rounded-2xl text-sm leading-relaxed break-words ${
                             isMine
@@ -531,6 +608,21 @@ export default function Messages() {
           )}
         </main>
       </div>
+
+      {/* Group create / add-member modal */}
+      {groupModal && (
+        <GroupModal
+          mode={groupModal}
+          conversationId={conversationId}
+          existingMemberIds={new Set(groupMembers.map(m => m.id))}
+          onClose={() => setGroupModal(null)}
+          onCreated={(conv) => {
+            setConvsRefreshKey(k => k + 1);
+            navigate(`/messages/${conv.id}`);
+          }}
+          onAdded={() => setConvsRefreshKey(k => k + 1)}
+        />
+      )}
     </div>
   );
 }

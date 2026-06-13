@@ -10,11 +10,14 @@ import ModernExamSyllabus from "@/pages/ModernExamSyllabus";
 import SoloPractice from "@/pages/SoloPractice";
 import Leaderboard from "@/pages/Leaderboard";
 import Login from "@/pages/Login";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
+import VerifyPhone from "@/pages/VerifyPhone";
+import Settings from "@/pages/Settings";
 import Signup from "@/pages/Signup";
 import AuthCallback from "@/pages/AuthCallback";
 import SheetManager from "@/pages/SheetManager";
 import VictoryLane from "@/pages/VictoryLane";
-import Profile from "@/pages/Profile";
 import Books from "@/pages/Books";
 import BookDetails from "@/pages/BookDetails";
 import Courses from "@/pages/Courses";
@@ -27,6 +30,7 @@ import UserDashboard from "@/pages/UserDashboard";
 import Dashboard from "@/pages/Dashboard";
 import PublicProfile from "@/pages/PublicProfile";
 import Notifications from "@/pages/Notifications";
+import Messages from "@/pages/Messages";
 import PrivacySettings from "@/pages/PrivacySettings";
 import TermsOfService from "@/pages/TermsOfService";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
@@ -81,8 +85,24 @@ import ChapterTestChapters from "@/pages/ChapterTestChapters";
 import SinglePost from "@/pages/SinglePost";
 import DivyaTutor from "@/pages/DivyaTutor";
 
+// Recruitment Portal
+import RecruitmentCell from "@/pages/RecruitmentCell";
+import RecruiterLogin from "@/pages/RecruiterLogin";
+import RecruiterDashboard from "@/pages/RecruiterDashboard";
+import RecruiterAnalytics from "@/pages/RecruiterAnalytics";
+import CreatePost from "@/pages/CreatePost";
+import ManageApplicants from "@/pages/ManageApplicants";
+import JobsFeed from "@/pages/JobsFeed";
+import DiscoverCompanies from "@/pages/DiscoverCompanies";
+import CompanyChannel from "@/pages/CompanyChannel";
+import ApplyJob from "@/pages/ApplyJob";
+import QuizAttempt from "@/pages/QuizAttempt";
+import HackathonDetail from "@/pages/HackathonDetail";
+import MyApplications from "@/pages/MyApplications";
+
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -90,6 +110,7 @@ function App() {
     <AuthProvider>
       <NotificationProvider>
         <div className="App" style={{ paddingTop: '64px' }}>
+          <Toaster position="top-center" richColors closeButton />
           <BrowserRouter>
             <ScrollRestoration />
             <div className="pb-16 md:pb-0"> {/* Add padding bottom for mobile nav */}
@@ -120,6 +141,10 @@ function App() {
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/verify-phone" element={<VerifyPhone />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth-callback" element={<AuthCallback />} />
@@ -129,7 +154,8 @@ function App() {
           <Route path="/home" element={<Navigate to="/" replace />} />
           <Route path="/profile/:username" element={<PublicProfile />} />
           <Route path="/inbox" element={<Notifications />} />
-          <Route path="/messages" element={<Notifications />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:conversationId" element={<Messages />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings/privacy" element={<PrivacySettings />} />
           
@@ -194,6 +220,21 @@ function App() {
           
           {/* Sitemap */}
           <Route path="/sitemap" element={<Sitemap />} />
+          
+          {/* Recruitment Portal Routes */}
+          <Route path="/recruitment-admin" element={<RecruitmentCell />} />
+          <Route path="/recruiter" element={<RecruiterLogin />} />
+          <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} />
+          <Route path="/recruiter/analytics" element={<RecruiterAnalytics />} />
+          <Route path="/recruiter/post" element={<CreatePost />} />
+          <Route path="/recruiter/applicants/:postId" element={<ManageApplicants />} />
+          <Route path="/jobs" element={<JobsFeed />} />
+          <Route path="/discover" element={<DiscoverCompanies />} />
+          <Route path="/company/:slug" element={<CompanyChannel />} />
+          <Route path="/apply/:jobId" element={<ApplyJob />} />
+          <Route path="/quiz-recruit/:quizId" element={<QuizAttempt />} />
+          <Route path="/hackathon/:hackId" element={<HackathonDetail />} />
+          <Route path="/my-applications" element={<MyApplications />} />
           
           {/* 404 Catch-All */}
           <Route path="*" element={<NotFound />} />

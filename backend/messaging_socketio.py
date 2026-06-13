@@ -69,6 +69,20 @@ def is_user_online(uid: str) -> bool:
     return bool(uid and uid in online_users and online_users[uid])
 
 
+async def join_users_to_conversation(conversation_id: str, user_ids) -> None:
+    """Join all active sockets of the given users to a (new) conversation room
+    and nudge their UI to refresh the sidebar — used when groups are created
+    or members are added so they get realtime messages without reconnecting."""
+    for uid in user_ids:
+        for sid in list(online_users.get(uid, set())):
+            try:
+                await messaging_sio.enter_room(sid, conversation_id)
+                await messaging_sio.emit("conversations_refresh",
+                                         {"conversation_id": conversation_id}, room=sid)
+            except Exception:
+                pass
+
+
 async def _broadcast_presence(uid: str, online: bool) -> None:
     """Emit presence_update to every room (= conversation) the user is in."""
     if not uid:
