@@ -160,9 +160,79 @@ async def block_user(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# --- User stats endpoint ---
-@router.get("/stats/{user_id}")
-async def get_user_stats(user_id: str):
+# --- List users blocked by the current user ---
+@router.get("/blocked-users")
+async def list_blocked_users(
+    request: Request,
+    authorization: Optional[str] = Header(None),
+):
+    """Return the list of users that the current user has blocked, with
+    enough user info to render in a Settings list."""
+    try:
+        user_id = await get_user_id_from_request(authorization, request)
+
+        # Newest blocks first
+        block_docs = await db.blocks.find(
+            {"blocker_id": user_id},
+            {"_id": 0, "blocked_id": 1, "created_at": 1},
+        ).sort("created_at", -1).to_list(500)
+
+        if not block_docs:
+            return {"success": True, "blocked_users": []}
+
+        blocked_ids = [b["blocked_id"] for b in block_docs if b.get("blocked_id")]
+        users = await db.users.find(
+            {"id": {"$in": blocked_ids}},
+            {"_id": 0, "id": 1, "username": 1, "name": 1, "profile_picture": 1, "avatar": 1},
+        ).to_list(len(blocked_ids))
+        user_map = {u["id"]: u for u in users}
+
+        # Preserve the newest-first ordering from block_docs
+        blocked_users = []
+        for b in block_docs:
+            u = user_map.get(b["blocked_id"]) or {}
+            blocked_users.append({
+                "id": b["blocked_id"],
+                "username": u.get("username"),
+                "name": u.get("name") or "Unknown user",
+                "avatar": u.get("profile_picture") or u.get("avatar"),
+                "blocked_at": b.get("created_at"),
+            })
+
+        return {"success": True, "blocked_users": blocked_users}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# --- Unblock a previously blocked user ---
+@router.delete("/block/{target_user_id}")
+async def unblock_user(
+    target_user_id: str,
+    request: Request,
+    authorization: Optional[str] = Header(None),
+):
+    """Remove a block relationship. Returns 404 if no block existed."""
+    try:
+        user_id = await get_user_id_from_request(authorization, request)
+
+        if user_id == target_user_id:
+            raise HTTPException(status_code=400, detail="Cannot unblock yourself")
+
+        result = await db.blocks.delete_one({
+            "blocker_id": user_id,
+            "blocked_id": target_user_id,
+        })
+
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Block relationship not found")
+
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     """Get quiz/battle stats for a user."""
     try:
         # Resolve all possible user IDs (handle demo user ID mismatch)

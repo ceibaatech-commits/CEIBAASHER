@@ -2,6 +2,7 @@ import React from 'react';
 import { Lock, Shield, User as UserIcon } from 'lucide-react';
 import Header from '../components/Header';
 import ChangePasswordForm from '../components/ChangePasswordForm';
+import BlockedAccountsCard from '../components/settings/BlockedAccountsCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const getStoredUser = () => {
@@ -74,6 +75,8 @@ const Settings = () => {
               </a>
             </CardContent>
           </Card>
+
+          <BlockedAccountsCard />
         </div>
       </div>
     </div>
