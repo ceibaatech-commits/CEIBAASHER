@@ -917,48 +917,54 @@ const PublicProfile = () => {
                               </div>
                             )}
                             
-                            {/* Modern Interaction Bar - Higher contrast icons */}
-                            <div className="flex items-center justify-between pl-[46px] md:pl-[52px] pt-1 mt-1">
-                              <div className="flex items-center -ml-2">
+                            {/* Modern Interaction Bar — X / Threads style */}
+                            <div className="pl-[46px] md:pl-[52px] pt-3 mt-1">
+                              <div className="grid grid-cols-3 max-w-[320px] -ml-2">
                                 {/* Like Button */}
-                                <button 
+                                <button
+                                  type="button"
+                                  data-testid={`post-like-btn-${post.id}`}
                                   onClick={(e) => { e.stopPropagation(); handleLike(post.id); }}
-                                  className={`group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 ${
-                                    likedPosts.has(post.id) 
-                                      ? 'text-rose-500' 
+                                  className={`group flex items-center gap-2 px-2 py-1.5 rounded-full transition-colors duration-200 ${
+                                    likedPosts.has(post.id)
+                                      ? 'text-rose-500'
                                       : 'text-gray-500 hover:text-rose-500'
                                   }`}
                                 >
-                                  <div className={`p-0.5 rounded-full transition-all duration-200 group-hover:bg-rose-50 ${likedPosts.has(post.id) ? 'bg-rose-50' : ''}`}>
-                                    <Heart className={`w-4 h-4 transition-transform group-hover:scale-110 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} />
-                                  </div>
-                                  <span className="text-xs font-medium tabular-nums">{post.likes_count || 0}</span>
+                                  <span className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200 group-hover:bg-rose-50 group-active:bg-rose-100 ${likedPosts.has(post.id) ? 'bg-rose-50' : ''}`}>
+                                    <Heart className={`w-[18px] h-[18px] transition-transform duration-150 group-hover:scale-110 ${likedPosts.has(post.id) ? 'fill-current' : ''}`} strokeWidth={2} />
+                                  </span>
+                                  <span className="text-sm font-medium tabular-nums">{post.likes_count || 0}</span>
                                 </button>
-                                
-                                {/* Comment Button - navigates to single post */}
-                                <button 
-                                  onClick={() => navigate(`/post/${post.id}`)}
-                                  className="group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 text-gray-500 hover:text-blue-500"
+
+                                {/* Comment Button — navigates to single post */}
+                                <button
+                                  type="button"
+                                  data-testid={`post-comment-btn-${post.id}`}
+                                  onClick={(e) => { e.stopPropagation(); navigate(`/post/${post.id}`); }}
+                                  className="group flex items-center gap-2 px-2 py-1.5 rounded-full transition-colors duration-200 text-gray-500 hover:text-blue-500"
                                 >
-                                  <div className="p-0.5 rounded-full transition-all duration-200 group-hover:bg-blue-50">
-                                    <MessageCircle className="w-4 h-4 transition-transform group-hover:scale-110" />
-                                  </div>
-                                  <span className="text-xs font-medium tabular-nums">{post.comments_count || 0}</span>
+                                  <span className="flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200 group-hover:bg-blue-50 group-active:bg-blue-100">
+                                    <MessageCircle className="w-[18px] h-[18px] transition-transform duration-150 group-hover:scale-110" strokeWidth={2} />
+                                  </span>
+                                  <span className="text-sm font-medium tabular-nums">{post.comments_count || 0}</span>
                                 </button>
-                                
+
                                 {/* Share/Repost Button */}
-                                <button 
+                                <button
+                                  type="button"
+                                  data-testid={`post-repost-btn-${post.id}`}
                                   onClick={(e) => { e.stopPropagation(); handleShare(post.id); }}
-                                  className={`group flex items-center gap-1 px-2 py-1 rounded-full transition-all duration-200 ${
-                                    sharedPosts.has(post.id) 
-                                      ? 'text-emerald-500' 
+                                  className={`group flex items-center gap-2 px-2 py-1.5 rounded-full transition-colors duration-200 ${
+                                    sharedPosts.has(post.id)
+                                      ? 'text-emerald-500'
                                       : 'text-gray-500 hover:text-emerald-500'
                                   }`}
                                 >
-                                  <div className={`p-0.5 rounded-full transition-all duration-200 group-hover:bg-emerald-50 ${sharedPosts.has(post.id) ? 'bg-emerald-50' : ''}`}>
-                                    <Repeat2 className={`w-4 h-4 transition-transform group-hover:scale-110 ${sharedPosts.has(post.id) ? 'rotate-180' : ''}`} />
-                                  </div>
-                                  <span className="text-xs font-medium tabular-nums">{post.shares_count || 0}</span>
+                                  <span className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors duration-200 group-hover:bg-emerald-50 group-active:bg-emerald-100 ${sharedPosts.has(post.id) ? 'bg-emerald-50' : ''}`}>
+                                    <Repeat2 className={`w-[18px] h-[18px] transition-transform duration-150 group-hover:scale-110 ${sharedPosts.has(post.id) ? 'rotate-180' : ''}`} strokeWidth={2} />
+                                  </span>
+                                  <span className="text-sm font-medium tabular-nums">{post.shares_count || 0}</span>
                                 </button>
                               </div>
                             </div>
