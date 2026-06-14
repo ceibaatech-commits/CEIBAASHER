@@ -185,7 +185,11 @@ const PublicProfile = () => {
     }));
 
     try {
-      await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {});
+      if (isLiked) {
+        await axios.delete(`${BACKEND_URL}/api/social/posts/${postId}/like`);
+      } else {
+        await axios.post(`${BACKEND_URL}/api/social/posts/${postId}/like`, {});
+      }
     } catch (error) {
       // Revert on error
       setLikedPosts(prev => {

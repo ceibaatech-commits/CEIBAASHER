@@ -16,9 +16,21 @@ from profile_routes import (
 
 router = APIRouter()
 @router.get("/{username}/posts")
-async def get_user_posts(username: str, current_user_id: Optional[str] = None):
+async def get_user_posts(
+    username: str,
+    request: Request,
+    current_user_id: Optional[str] = None,
+    authorization: Optional[str] = Header(None),
+):
     """Get all posts by a specific user, including their comments on other posts"""
     try:
+        # Resolve current viewer (cookie/Bearer aware) — fallback to query param
+        viewer_id = current_user_id
+        if not viewer_id:
+            try:
+                viewer_id = await get_user_id_from_request(authorization, request)
+            except Exception:
+                viewer_id = None
         # Get user by username first, then try by ID if that fails
         try:
             user = await get_user_by_username(username)
@@ -113,7 +125,37 @@ async def get_user_posts(username: str, current_user_id: Optional[str] = None):
             return str(created_at)
         
         posts.sort(key=get_sort_key, reverse=True)
-        
+
+        # Enrich posts with viewer-specific interaction state so refresh keeps
+        # heart/repost fill + counters in sync with the DB.
+        if viewer_id and posts:
+            real_post_ids = [p.get("id") for p in posts if p.get("id") and not p.get("is_comment")]
+            # Liked posts by viewer
+            liked_ids = set()
+            if real_post_ids:
+                async for row in db.post_likes.find(
+                    {"user_id": viewer_id, "post_id": {"$in": real_post_ids}},
+                    {"_id": 0, "post_id": 1},
+                ):
+                    liked_ids.add(row.get("post_id"))
+            # Reposts by viewer — collect original_post_ids viewer has retweeted
+            shared_original_ids = set()
+            async for row in db.social_posts.find(
+                {"user_id": viewer_id, "is_retweet": True},
+                {"_id": 0, "original_post_id": 1},
+            ):
+                if row.get("original_post_id"):
+                    shared_original_ids.add(row["original_post_id"])
+
+            for p in posts:
+                pid = p.get("id")
+                p["liked_by_user"] = pid in liked_ids
+                p["shared_by_user"] = pid in shared_original_ids
+        else:
+            for p in posts:
+                p.setdefault("liked_by_user", False)
+                p.setdefault("shared_by_user", False)
+
         return {
             "success": True,
             "posts": posts
