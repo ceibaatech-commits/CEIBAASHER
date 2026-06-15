@@ -579,6 +579,20 @@ async def battle_chat(sid, data):
         print(f"[ERROR] battle_chat: {str(e)}")
 
 
+@sio.on('battle-chat-typing')
+async def battle_chat_typing(sid, data):
+    """Relay typing indicator to the opponent in the room. Chat-only, never gates game state."""
+    try:
+        room_id = data.get('roomId')
+        is_typing = bool(data.get('isTyping', False))
+        if not room_id:
+            return
+        await sio.emit('chat-typing', {'isTyping': is_typing}, room=room_id, skip_sid=sid)
+    except Exception as e:
+        print(f"[ERROR] battle_chat_typing: {str(e)}")
+
+
+
 # ─── battle_complete() helpers ─────────────────────────────────────────────
 # Split out from battle_complete() to reduce CC from 20 → ~5 and length from
 # 96 → ~25 LOC. Each helper has a single responsibility and absorbs its own

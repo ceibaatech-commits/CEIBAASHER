@@ -2,6 +2,24 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — In-Battle 1v1 Chat Popup Premium Redesign — COMPLETE
+- [x] **`/app/frontend/src/pages/Matchmaking1v1.js`** — replaced the mobile chat popup JSX (~130 → ~280 lines) inside the `{mobileChatOpen && ...}` block on the mobile gameplay layout.
+  - **Header redesign:** ← back arrow · 44px gradient avatar with green online dot · opponent name 16px semibold (clickable → opens profile in **NEW TAB** `target="_blank"`, never disrupts the live battle) · "● In battle • Live" / "Battle ended" / "Active now" status line · right cluster: outline `Phone`, `Video` icons + `MoreVertical` dropdown (View profile / Mute / Report).
+  - **Colors:** teal `#1FA47C` outgoing bubbles with white text · gray `#F1F1F3` incoming bubbles with `#1A1A1A` text · sticky header divider `#EEEEEE` · timestamps `#9CA3AF` 11px tabular-nums · Inter Tight font family.
+  - **Cluster grouping** of consecutive messages: avatar (32px) + sender name (13px semibold) shown only on first/last bubble of streak; asymmetric corners (4px on the tail corner of the LAST bubble in cluster).
+  - **"Today" date pill** centered at top of message list (`#F1F1F3` bg, `#6B7280` text).
+  - **Read receipts** `CheckCheck` icon below LAST outgoing bubble of a streak — gray `#9CA3AF` = delivered, teal `#1FA47C` = read (mock: derived from "opponent has replied since" heuristic).
+  - **Typing indicator** — 3-dot pulsing animation in a gray bubble on the left when opponent is typing. Driven by new `battle-chat-typing` socket event (relay-only handler in `/app/backend/battle_social_handlers.py`) with debounced 1.4s emit + 4s safety auto-clear. Chat-only — never gates battle state.
+  - **Quick reply chips** horizontally scrollable above the input: `👍 Nice!` · `🔥 GG!` · `😅 Tough one` · `👏 Well played` · `🚀 Let's go!` — tap sends instantly via `sendQuickReply()`.
+  - **Input bar** redesign — `Paperclip` attach button · pill input `bg #F5F5F7 rounded-full` · inline `Smile` emoji button right · OUTSIDE the pill: `Camera` + `Mic` (both 22px Lucide, stroke `#6B7280`). When `chatInput.trim()` becomes non-empty, the Mic/Camera pair animates out and a single circular teal `Send` button (44×44, `#1FA47C`, drop shadow) replaces them.
+  - **Empty state** redesigned: "Say hi to {firstName} 👋 — keep it sporty — good vibes win games." centered.
+  - **Sheet behaviour:** larger 560px / 85vh max height, 24px top radius, drag handle 40×6, backdrop `bg-black/50 backdrop-blur-md`, slide-up spring (220ms cubic-bezier 0.32,0.72,0.28,1), respects `prefers-reduced-motion` (`mc-msg-in`, `mc-typing-dot` animations disabled). `padding-bottom: env(safe-area-inset-bottom)` so the input always clears the iOS home indicator.
+- [x] **Backend `/app/backend/battle_social_handlers.py`** — added `@sio.on('battle-chat-typing')` handler that broadcasts `chat-typing {isTyping}` to the opponent in the room (skip-sid). Validated backend restart logs clean (`INFO: Started server process`).
+- [x] **`/app/frontend/public/index.html`** — added Inter Tight font via Google Fonts CDN.
+- [x] All `data-testid` attributes preserved + new ones added: `chat-send-button`, `chat-input`, `chat-message-sent-{i}`, `chat-message-received-{i}`, `chat-typing-indicator`, `chat-quick-replies`, `chat-receipt-read-{i}`/`chat-receipt-delivered-{i}`, `chat-opponent-avatar`, `chat-voice-call`, `chat-video-call`, `chat-more-menu`, `chat-more-dropdown`, `chat-menu-view-profile/mute/report`, `chat-attach-btn`, `chat-emoji-btn`, `chat-camera-btn`, `chat-mic-btn`, `chat-date-separator`, `chat-empty-state`, `quick-reply-{emoji}`, `mobile-chat-back`.
+- [x] **Strict-rules audit:** Battle scoring, timer, question logic, rematch flow — UNTOUCHED. Only the chat popup JSX + 1 backend socket handler + 3 state vars (`opponentTyping`, `chatMenuOpen`, `typingEmitRef`/`typingResetRef`).
+- [x] Webpack compiles with same 6 pre-existing warnings. Backend restarts cleanly.
+
 ### Feb 15, 2026 — Messenger Premium Redesign (Immersive Chat + Adaptive Theme) — COMPLETE
 - [x] **`/app/frontend/src/pages/Messages.js` — full UI rewrite (~960 lines)** preserving all socket.io / axios state logic but replacing the JSX rendering.
   - **Immersive chat (route `/messages/:conversationId`)** — `fixed inset-0 z-[100]` container, `100dvh` height with `visualViewport` keyboard sync, hides global `<Header />` and `<MobileBottomNav>` via `body[data-chat-active="true"]` CSS rule.

@@ -24,7 +24,7 @@ class AgoraErrorBoundary extends Component {
   }
 }
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
+import { ArrowLeft, Users, Trophy, Clock, Send, MessageCircle, Swords, Loader2, Shield, Phone, Flag, X, AlertTriangle, Maximize2, Minimize2, GripHorizontal, Video, MoreVertical, Paperclip, Smile, Camera, Mic, CheckCheck } from 'lucide-react';
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import io from 'socket.io-client';
 import axios from 'axios';
@@ -333,7 +333,11 @@ const Matchmaking1v1 = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
+  const [opponentTyping, setOpponentTyping] = useState(false);
+  const [chatMenuOpen, setChatMenuOpen] = useState(false);
   const chatEndRef = useRef(null);
+  const typingEmitRef = useRef(null);
+  const typingResetRef = useRef(null);
 
   // Rematch state — drives the "Rematch" button + incoming-request banner on results screen
   // Values: 'idle' | 'pending' (I asked, awaiting opponent) | 'requested' (opponent asked, I decide)
@@ -519,6 +523,14 @@ const Matchmaking1v1 = () => {
     });
     s.on('opponent-score-update', (d) => setOpponentScore(d.score));
     s.on('chat-message', (d) => setChatMessages(prev => [...prev, { playerName: d.playerName, message: d.message, ts: Date.now() }]));
+    s.on('chat-typing', (d) => {
+      setOpponentTyping(!!d?.isTyping);
+      // Safety: auto-clear after 4s of silence
+      clearTimeout(typingResetRef.current);
+      if (d?.isTyping) {
+        typingResetRef.current = setTimeout(() => setOpponentTyping(false), 4000);
+      }
+    });
     s.on('opponent-disconnected', () => { toast.error('Opponent disconnected! You win.'); setBattleState('results'); });
     s.on('battle-ended', () => setBattleState('results'));
 
@@ -597,7 +609,7 @@ const Matchmaking1v1 = () => {
   // eslint-disable-next-line
   }, [timeLeft, battleState, selectedAnswer, questions.length]);
 
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages, opponentTyping]);
 
   // ── Phone-style vibration during ringing (1v1 video-call request) ──
   // Pattern: 400ms vibrate, 200ms pause, repeat. Stops as soon as the call
@@ -816,7 +828,39 @@ const Matchmaking1v1 = () => {
       socket.emit('battle-chat', { roomId: roomIdRef.current, playerName, message: chatInput });
       setChatMessages(p => [...p, { playerName, message: chatInput, ts: Date.now() }]);
       setChatInput('');
+      // Stop typing immediately after send
+      socket.emit('battle-chat-typing', { roomId: roomIdRef.current, isTyping: false });
     }
+  };
+
+  // Send a quick-reply chip directly (bypass input field)
+  const sendQuickReply = (text) => {
+    if (!socket || !roomIdRef.current || !text) return;
+    socket.emit('battle-chat', { roomId: roomIdRef.current, playerName, message: text });
+    setChatMessages(p => [...p, { playerName, message: text, ts: Date.now() }]);
+  };
+
+  // Typing indicator emitter — debounced; sends `isTyping: false` after 1.4s of silence
+  const handleChatInputChange = (e) => {
+    const v = e.target.value;
+    setChatInput(v);
+    if (!socket || !roomIdRef.current) return;
+    if (v) {
+      socket.emit('battle-chat-typing', { roomId: roomIdRef.current, isTyping: true });
+      clearTimeout(typingEmitRef.current);
+      typingEmitRef.current = setTimeout(() => {
+        socket.emit('battle-chat-typing', { roomId: roomIdRef.current, isTyping: false });
+      }, 1400);
+    } else {
+      clearTimeout(typingEmitRef.current);
+      socket.emit('battle-chat-typing', { roomId: roomIdRef.current, isTyping: false });
+    }
+  };
+
+  // Always open profile in a NEW TAB so the live battle isn't disrupted
+  const openProfileNewTab = (target) => {
+    if (!target) return;
+    window.open(`/profile/${target}`, '_blank', 'noopener,noreferrer');
   };
 
   const requestVC = () => {
@@ -1126,132 +1170,366 @@ const Matchmaking1v1 = () => {
             )}
           </div>
 
-          {/* ── Mobile chat — Facebook Messenger-style popup ──
-              Slides up from the bottom over a semi-transparent backdrop.
-              Tap backdrop or close button to dismiss. Does NOT shrink the
-              quiz area (unlike a drawer); preserves the user's mental model
-              of the quiz state under the popup. */}
+          {/* ── Mobile chat — Premium messaging-app redesign (Feb 15, 2026)
+              Slides up from bottom with backdrop blur. Drag-handle.
+              Teal-green sent bubbles, gray received bubbles, cluster grouping,
+              ✓✓ read receipts, typing indicator, quick-reply chips, NEW-TAB
+              profile links so the live battle is never disrupted. Chat-only —
+              does NOT touch battle scoring, timer, or question logic. */}
           {mobileChatOpen && (
             <div className="fixed inset-0 z-[60] flex items-end" data-testid="mobile-chat-popup">
               {/* Backdrop — tap to close */}
               <button
                 aria-label="Close chat"
                 onClick={() => setMobileChatOpen(false)}
-                className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
+                className="absolute inset-0 bg-black/50 backdrop-blur-md"
                 style={{ animation: 'mcChatFade 0.18s ease-out' }}
               />
               {/* Chat sheet */}
               <div
-                className="relative w-full bg-white shadow-[0_-12px_32px_rgba(0,0,0,0.18)] flex flex-col"
+                className="relative w-full bg-white shadow-[0_-12px_40px_rgba(0,0,0,0.22)] flex flex-col"
                 style={{
-                  maxHeight: '75vh',
-                  height: '420px',
-                  borderTopLeftRadius: 22,
-                  borderTopRightRadius: 22,
-                  animation: 'mcChatSlide 0.24s cubic-bezier(0.32,0.72,0.28,1)',
+                  maxHeight: '85vh',
+                  height: '560px',
+                  borderTopLeftRadius: 24,
+                  borderTopRightRadius: 24,
+                  animation: 'mcChatSlide 0.28s cubic-bezier(0.32,0.72,0.28,1)',
+                  fontFamily: '"Inter Tight", "Geist", "SF Pro Display", system-ui, sans-serif',
+                  paddingBottom: 'env(safe-area-inset-bottom)',
                 }}
               >
                 <style>{`
                   @keyframes mcChatSlide { from { transform: translateY(100%); } to { transform: translateY(0); } }
                   @keyframes mcChatFade { from { opacity: 0; } to { opacity: 1; } }
+                  @keyframes mcMsgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+                  .mc-msg-in { animation: mcMsgIn 0.18s ease-out; }
+                  @keyframes mcTypingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.6; } 30% { transform: translateY(-4px); opacity: 1; } }
+                  .mc-typing-dot { animation: mcTypingBounce 1.2s infinite; }
+                  @media (prefers-reduced-motion: reduce) { .mc-msg-in, .mc-typing-dot { animation: none; } }
                 `}</style>
+
                 {/* Drag handle */}
-                <div className="pt-2 pb-1 flex justify-center">
-                  <div className="w-10 h-1 rounded-full bg-gray-300" />
+                <div className="pt-2.5 pb-1.5 flex justify-center shrink-0">
+                  <div className="w-10 h-1.5 rounded-full" style={{ background: '#D1D5DB' }} />
                 </div>
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 pb-3 border-b border-gray-100">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: C.blueLight }}>
-                      <MessageCircle className="w-4 h-4" style={{ color: C.blue }} />
-                    </div>
-                    <div className="min-w-0">
-                      {opponent?.userId && (battleState === 'results' || battleState === 'setup') ? (
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
-                          data-testid="chat-opponent-name-link"
-                          className="text-sm font-bold text-gray-900 leading-tight hover:underline truncate block max-w-[110px] text-left"
-                        >
-                          {oppName}
-                        </button>
-                      ) : (
-                        <p className="text-sm font-bold text-gray-900 leading-tight truncate max-w-[110px]" data-testid="chat-opponent-name">{oppName}</p>
-                      )}
-                      <p className="text-[10px] text-gray-500 leading-tight">
-                        {battleState === 'playing' ? 'In battle • Live' : battleState === 'results' ? 'Battle ended' : 'Live'}
-                      </p>
-                    </div>
-                    {opponent?.userId && (
-                      <div className="ml-1" data-testid="chat-opponent-follow">
-                        <FollowButton
-                          targetUserId={opponent.userId}
-                          targetUsername={opponent.username || opponent.playerName}
-                        />
-                      </div>
-                    )}
-                  </div>
+
+                {/* Header — opponent identity + actions */}
+                <div className="flex items-center gap-2 px-4 pb-3 shrink-0" style={{ borderBottom: '1px solid #EEEEEE' }}>
                   <button
                     onClick={() => setMobileChatOpen(false)}
-                    aria-label="Close chat"
-                    data-testid="mobile-chat-close"
-                    className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 active:bg-gray-200 transition-colors"
+                    aria-label="Back"
+                    data-testid="mobile-chat-back"
+                    className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
                   >
-                    <X className="w-4 h-4 text-gray-600" />
+                    <ArrowLeft className="w-5 h-5 text-gray-700" />
                   </button>
-                </div>
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2" style={{ background: '#fafafa' }}>
-                  {chatMessages.length === 0
-                    ? (
-                      <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-1">
-                        <MessageCircle className="w-7 h-7 opacity-30" />
-                        <p className="text-xs font-medium">No messages yet</p>
-                        <p className="text-[10px]">Say hi to your opponent!</p>
-                      </div>
-                    )
-                    : chatMessages.map((m, i) => {
-                      const mine = m.playerName === playerName;
-                      return (
-                        <div key={`mc-${m.ts}-${i}`} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                          <div
-                            className={`max-w-[78%] px-3 py-2 text-sm leading-snug shadow-sm ${
-                              mine ? 'text-white rounded-[18px] rounded-br-md' : 'bg-white text-gray-800 rounded-[18px] rounded-bl-md'
-                            }`}
-                            style={mine ? { background: C.red } : {}}
+                  {/* Avatar with online dot */}
+                  <button
+                    onClick={() => openProfileNewTab(opponent?.username || opponent?.userId)}
+                    aria-label="View opponent profile"
+                    data-testid="chat-opponent-avatar"
+                    className="relative shrink-0 active:scale-95 transition-transform"
+                  >
+                    <div
+                      className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-base"
+                      style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.red})` }}
+                    >
+                      {oppName?.charAt(0).toUpperCase() || '?'}
+                    </div>
+                    {/* Online dot */}
+                    <span
+                      className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full"
+                      style={{ background: '#22C55E', boxShadow: '0 0 0 2px #ffffff' }}
+                      aria-label="Online"
+                    />
+                  </button>
+                  {/* Name + status */}
+                  <div className="min-w-0 flex-1">
+                    {opponent?.userId ? (
+                      <button
+                        type="button"
+                        onClick={() => openProfileNewTab(opponent.username || opponent.userId)}
+                        data-testid="chat-opponent-name-link"
+                        className="text-[16px] font-semibold text-gray-900 leading-tight truncate block text-left hover:underline"
+                      >
+                        {oppName}
+                      </button>
+                    ) : (
+                      <p className="text-[16px] font-semibold text-gray-900 leading-tight truncate" data-testid="chat-opponent-name">{oppName}</p>
+                    )}
+                    <p className="text-[12px] leading-tight mt-0.5" style={{ color: battleState === 'playing' ? '#1FA47C' : '#9CA3AF' }}>
+                      {battleState === 'playing' ? '● In battle • Live' : battleState === 'results' ? 'Battle ended' : 'Active now'}
+                    </p>
+                  </div>
+
+                  {/* Right actions: Phone · Video · More */}
+                  <button
+                    onClick={requestVC}
+                    aria-label="Voice call"
+                    data-testid="chat-voice-call"
+                    className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
+                  >
+                    <Phone className="w-5 h-5" style={{ color: '#6B7280' }} strokeWidth={1.75} />
+                  </button>
+                  <button
+                    onClick={requestVC}
+                    aria-label="Video call"
+                    data-testid="chat-video-call"
+                    className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
+                  >
+                    <Video className="w-5 h-5" style={{ color: '#6B7280' }} strokeWidth={1.75} />
+                  </button>
+                  <div className="relative">
+                    <button
+                      onClick={() => setChatMenuOpen(o => !o)}
+                      aria-label="More options"
+                      data-testid="chat-more-menu"
+                      className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
+                    >
+                      <MoreVertical className="w-5 h-5" style={{ color: '#6B7280' }} strokeWidth={1.75} />
+                    </button>
+                    {chatMenuOpen && (
+                      <>
+                        <button
+                          aria-label="Close menu"
+                          onClick={() => setChatMenuOpen(false)}
+                          className="fixed inset-0 z-[1] cursor-default"
+                        />
+                        <div
+                          className="absolute right-0 top-11 w-44 bg-white rounded-2xl shadow-2xl overflow-hidden z-[2]"
+                          style={{ border: '1px solid #EEEEEE' }}
+                          data-testid="chat-more-dropdown"
+                        >
+                          <button
+                            onClick={() => {
+                              setChatMenuOpen(false);
+                              openProfileNewTab(opponent?.username || opponent?.userId);
+                            }}
+                            disabled={!opponent?.userId}
+                            data-testid="chat-menu-view-profile"
+                            className="w-full px-4 py-3 text-left text-[14px] font-medium text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
                           >
-                            {!mine && <p className="text-[10px] opacity-60 font-bold mb-0.5">{m.playerName}</p>}
-                            <p className="break-words">{m.message}</p>
+                            View profile
+                          </button>
+                          <button
+                            onClick={() => { setChatMenuOpen(false); toast.info('Opponent muted for this battle'); }}
+                            data-testid="chat-menu-mute"
+                            className="w-full px-4 py-3 text-left text-[14px] font-medium text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                          >
+                            Mute
+                          </button>
+                          <button
+                            onClick={() => { setChatMenuOpen(false); toast.info('Use the Report button in battle header'); }}
+                            data-testid="chat-menu-report"
+                            className="w-full px-4 py-3 text-left text-[14px] font-medium text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors"
+                            style={{ borderTop: '1px solid #F3F4F6' }}
+                          >
+                            Report
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Messages area */}
+                <div className="flex-1 overflow-y-auto px-3 py-3" style={{ background: '#FFFFFF' }}>
+                  {chatMessages.length === 0 && !opponentTyping ? (
+                    <div className="h-full flex flex-col items-center justify-center text-center px-6 gap-2" data-testid="chat-empty-state">
+                      <div className="text-3xl">👋</div>
+                      <p className="text-[14px] font-semibold text-gray-900">Say hi to {oppName?.split(' ')[0] || 'your opponent'}</p>
+                      <p className="text-[12px] text-gray-500">Keep it sporty — good vibes win games.</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Today date pill */}
+                      <div className="flex justify-center mb-3" data-testid="chat-date-separator">
+                        <span
+                          className="text-[11px] font-medium px-3 py-1 rounded-full"
+                          style={{ background: '#F1F1F3', color: '#6B7280' }}
+                        >
+                          Today
+                        </span>
+                      </div>
+
+                      {/* Messages — cluster-grouped */}
+                      {chatMessages.map((m, i) => {
+                        const mine = m.playerName === playerName;
+                        const prev = i > 0 ? chatMessages[i - 1] : null;
+                        const next = i < chatMessages.length - 1 ? chatMessages[i + 1] : null;
+                        const isFirstInCluster = !prev || prev.playerName !== m.playerName;
+                        const isLastInCluster = !next || next.playerName !== m.playerName;
+                        const time = m.ts ? new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                        // Mock read state: assume opponent has read all but the LAST of my messages (until typing/answer arrives)
+                        const opponentHasReplied = chatMessages.slice(i + 1).some(x => x.playerName !== m.playerName);
+                        const isRead = mine && opponentHasReplied;
+                        return (
+                          <div
+                            key={`mc-${m.ts}-${i}`}
+                            className={`flex items-end gap-2 mc-msg-in ${mine ? 'justify-end' : 'justify-start'}`}
+                            style={{ marginTop: isFirstInCluster ? 12 : 2 }}
+                            data-testid={mine ? `chat-message-sent-${i}` : `chat-message-received-${i}`}
+                          >
+                            {/* Avatar slot (received only, only on LAST in cluster for proximity) */}
+                            {!mine && (
+                              <div className="w-8 shrink-0">
+                                {isLastInCluster && (
+                                  <div
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
+                                    style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.red})` }}
+                                  >
+                                    {m.playerName?.charAt(0).toUpperCase() || '?'}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            <div className={`max-w-[75%] flex flex-col ${mine ? 'items-end' : 'items-start'}`}>
+                              {/* Sender name on FIRST received message in cluster */}
+                              {!mine && isFirstInCluster && (
+                                <p className="text-[13px] font-semibold text-gray-900 mb-1 px-1">{m.playerName}</p>
+                              )}
+                              <div
+                                className="px-3.5 py-2 text-[15px] leading-[1.4] break-words"
+                                style={{
+                                  background: mine ? '#1FA47C' : '#F1F1F3',
+                                  color: mine ? '#FFFFFF' : '#1A1A1A',
+                                  borderRadius: mine
+                                    ? `18px 18px ${isLastInCluster ? '4px' : '18px'} 18px`
+                                    : `18px 18px 18px ${isLastInCluster ? '4px' : '18px'}`,
+                                }}
+                              >
+                                {m.message}
+                              </div>
+                              {/* Timestamp + read receipt on LAST in cluster */}
+                              {isLastInCluster && (
+                                <div className={`flex items-center gap-1 mt-1 px-1 ${mine ? 'justify-end' : 'justify-start'}`}>
+                                  <span className="text-[11px] tabular-nums" style={{ color: '#9CA3AF' }}>{time}</span>
+                                  {mine && (
+                                    <CheckCheck
+                                      className="w-3.5 h-3.5"
+                                      style={{ color: isRead ? '#1FA47C' : '#9CA3AF' }}
+                                      data-testid={isRead ? `chat-receipt-read-${i}` : `chat-receipt-delivered-${i}`}
+                                      aria-label={isRead ? 'Read' : 'Delivered'}
+                                    />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      {/* Typing indicator */}
+                      {opponentTyping && (
+                        <div className="flex items-end gap-2 mt-2" data-testid="chat-typing-indicator">
+                          <div className="w-8 shrink-0" />
+                          <div
+                            className="flex items-center gap-1 px-3 py-2.5 rounded-2xl rounded-bl-[4px]"
+                            style={{ background: '#F1F1F3' }}
+                          >
+                            <span className="mc-typing-dot w-1.5 h-1.5 rounded-full" style={{ background: '#6B7280', animationDelay: '0ms' }} />
+                            <span className="mc-typing-dot w-1.5 h-1.5 rounded-full" style={{ background: '#6B7280', animationDelay: '150ms' }} />
+                            <span className="mc-typing-dot w-1.5 h-1.5 rounded-full" style={{ background: '#6B7280', animationDelay: '300ms' }} />
                           </div>
                         </div>
-                      );
-                    })
-                  }
+                      )}
+                    </>
+                  )}
                   <div ref={chatEndRef} />
                 </div>
-                {/* Input bar — Messenger-style pill + circular send */}
-                <form onSubmit={sendChat} className="flex items-center gap-2 px-3 py-3 border-t border-gray-100 bg-white" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-                  <input
-                    type="text"
-                    value={chatInput}
-                    onChange={e => setChatInput(e.target.value)}
-                    placeholder="Aa"
-                    maxLength={100}
-                    autoFocus
-                    data-testid="mobile-chat-input"
-                    className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full text-sm focus:outline-none focus:bg-gray-50 focus:ring-2 focus:ring-offset-0 transition-all"
-                    style={{ '--tw-ring-color': C.red }}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!chatInput.trim()}
-                    aria-label="Send message"
-                    data-testid="mobile-chat-send"
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-md disabled:opacity-40 disabled:shadow-none transition-all active:scale-95"
-                    style={{ background: chatInput.trim() ? C.red : '#d1d5db' }}
+
+                {/* Quick reply chips (scrollable) */}
+                <div className="px-3 py-2 shrink-0" style={{ borderTop: '1px solid #EEEEEE', background: '#FFFFFF' }}>
+                  <div
+                    className="flex items-center gap-2 overflow-x-auto pb-1"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    data-testid="chat-quick-replies"
                   >
-                    <Send className="w-4 h-4" />
+                    <style>{`[data-testid="chat-quick-replies"]::-webkit-scrollbar { display: none; }`}</style>
+                    {['👍 Nice!', '🔥 GG!', '😅 Tough one', '👏 Well played', '🚀 Let\u2019s go!'].map((qr) => (
+                      <button
+                        key={qr}
+                        type="button"
+                        onClick={() => sendQuickReply(qr)}
+                        data-testid={`quick-reply-${qr.split(' ')[0]}`}
+                        className="shrink-0 px-3 h-8 rounded-full text-[13px] font-medium whitespace-nowrap active:scale-95 transition-transform"
+                        style={{ background: '#F1F1F3', color: '#1A1A1A' }}
+                      >
+                        {qr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Input bar */}
+                <form
+                  onSubmit={sendChat}
+                  className="flex items-center gap-2 px-3 py-2.5 shrink-0 bg-white"
+                  style={{ borderTop: '1px solid #EEEEEE' }}
+                >
+                  <button
+                    type="button"
+                    aria-label="Attach"
+                    data-testid="chat-attach-btn"
+                    onClick={() => toast.info('Attachments coming soon')}
+                    className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors shrink-0"
+                  >
+                    <Paperclip className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
                   </button>
+                  <div className="flex-1 flex items-center gap-1 rounded-full px-3" style={{ background: '#F5F5F7' }}>
+                    <input
+                      type="text"
+                      value={chatInput}
+                      onChange={handleChatInputChange}
+                      placeholder="Write your message…"
+                      maxLength={140}
+                      autoFocus
+                      data-testid="chat-input"
+                      className="flex-1 bg-transparent text-[15px] py-2.5 focus:outline-none"
+                      style={{ color: '#1A1A1A' }}
+                    />
+                    <button
+                      type="button"
+                      aria-label="Emoji"
+                      data-testid="chat-emoji-btn"
+                      onClick={() => toast.info('Emoji picker coming soon')}
+                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                    >
+                      <Smile className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
+                    </button>
+                  </div>
+                  {chatInput.trim() ? (
+                    <button
+                      type="submit"
+                      aria-label="Send message"
+                      data-testid="chat-send-button"
+                      className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md transition-all active:scale-95 shrink-0"
+                      style={{ background: '#1FA47C', boxShadow: '0 4px 12px rgba(31,164,124,0.32)' }}
+                    >
+                      <Send className="w-[18px] h-[18px]" />
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Camera"
+                        data-testid="chat-camera-btn"
+                        onClick={() => toast.info('Camera coming soon')}
+                        className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors shrink-0"
+                      >
+                        <Camera className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Voice message"
+                        data-testid="chat-mic-btn"
+                        onClick={() => toast.info('Voice messages coming soon')}
+                        className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors shrink-0"
+                      >
+                        <Mic className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
+                      </button>
+                    </>
+                  )}
                 </form>
               </div>
             </div>
