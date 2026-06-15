@@ -109,7 +109,7 @@ function App() {
     <HelmetProvider>
     <AuthProvider>
       <NotificationProvider>
-        <div className="App" style={{ paddingTop: '64px' }}>
+        <div className="App" style={{ paddingTop: '72px' }}>
           <Toaster position="top-center" richColors closeButton />
           <BrowserRouter>
             <ScrollRestoration />

@@ -32,7 +32,7 @@ module.exports = {
   	extend: {
   		screens: {
   			'xs': '475px',
-  			// ... existing screens
+  			'2xl': '1440px',
   		},
   		spacing: {
   			'safe-top': 'env(safe-area-inset-top)',
