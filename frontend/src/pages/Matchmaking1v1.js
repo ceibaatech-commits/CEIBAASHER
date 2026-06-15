@@ -900,18 +900,36 @@ const Matchmaking1v1 = () => {
       await axios.post(
         `${BACKEND_URL}/api/admin/battles/report`,
         {
-          battle_id: roomIdRef.current,
-          room_id: roomIdRef.current,
-          reported_user_id: opponent?.socketId || 'unknown',
-          reported_username: opponent?.playerName || 'Opponent',
+          battle_id: roomIdRef.current || 'unknown',
+          room_id: roomIdRef.current || 'unknown',
+          reported_user_id: opponent?.userId || opponent?.socketId || 'unknown',
+          reported_username: opponent?.playerName || opponent?.username || 'Opponent',
           reason: reportReason,
           description: reportDesc,
-          chat_messages: [],
-        }
+          // Pass last 50 chat messages as evidence so the admin team can review
+          chat_messages: chatMessages.slice(-50).map(m => ({
+            sender: m.playerName,
+            text: m.message,
+            ts: m.ts,
+          })),
+        },
+        { withCredentials: true }
       );
       setReportDone(true);
-    } catch {
-      toast.error('Failed to submit report');
+      toast.success('Report submitted. Our team will review it shortly.');
+    } catch (err) {
+      console.error('[REPORT] submit failed:', err?.response?.status, err?.response?.data || err?.message);
+      const status = err?.response?.status;
+      const detail = err?.response?.data?.detail;
+      if (status === 401) {
+        toast.error('Please log in again to submit a report.');
+      } else if (status === 400) {
+        toast.error(typeof detail === 'string' ? detail : 'Invalid report — please pick a reason.');
+      } else if (status === 500) {
+        toast.error('Server error while submitting report. Please retry in a moment.');
+      } else {
+        toast.error('Failed to submit report. Please check your connection.');
+      }
     } finally {
       setReportSubmitting(false);
     }
@@ -1319,7 +1337,7 @@ const Matchmaking1v1 = () => {
                             Mute
                           </button>
                           <button
-                            onClick={() => { setChatMenuOpen(false); toast.info('Use the Report button in battle header'); }}
+                            onClick={() => { setChatMenuOpen(false); setMobileChatOpen(false); setShowReport(true); }}
                             data-testid="chat-menu-report"
                             className="w-full px-4 py-3 text-left text-[14px] font-medium text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors"
                             style={{ borderTop: '1px solid #F3F4F6' }}

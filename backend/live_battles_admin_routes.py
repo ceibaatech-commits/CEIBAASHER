@@ -505,40 +505,65 @@ async def create_battle_report(
 ):
     """
     Report a battle for offensive content or inappropriate behavior.
-    Any authenticated user can report.
+    Any authenticated user can report. Auth via either session cookie OR Bearer token.
     """
-    if not authorization:
+    # ── Resolve reporter from cookie OR bearer token ────────────────
+    reporter_id = None
+    reporter_name = "Anonymous"
+    
+    # 1) Try session_token cookie (cookie-based auth — primary flow)
+    try:
+        session_token = request.cookies.get("session_token") if request else None
+        if session_token:
+            sess = await db.user_sessions.find_one({"session_token": session_token})
+            if sess:
+                reporter_id = sess.get("user_id")
+            if not reporter_id:
+                # Cookie may carry a raw JWT
+                try:
+                    payload = jwt.decode(session_token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                    reporter_id = payload.get("sub")
+                except JWTError:
+                    pass
+    except Exception:
+        pass
+    
+    # 2) Try Authorization header (bearer JWT or admin session)
+    if not reporter_id and authorization:
+        token = authorization.replace("Bearer ", "").strip()
+        if token:
+            admin_session = await db.admin_sessions.find_one({"token": token})
+            if admin_session:
+                reporter_id = admin_session.get("user_id")
+            if not reporter_id:
+                session = await db.user_sessions.find_one({"session_token": token})
+                if session:
+                    reporter_id = session.get("user_id")
+            if not reporter_id:
+                try:
+                    payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+                    reporter_id = payload.get("sub")
+                except Exception:
+                    pass
+    
+    if not reporter_id:
         raise HTTPException(status_code=401, detail="Authentication required")
     
     try:
-        # Get reporter info
-        token = authorization.replace("Bearer ", "")
-        reporter_id = None
-        reporter_name = "Anonymous"
+        # Resolve reporter name
+        user = await db.users.find_one({"$or": [{"id": reporter_id}, {"user_id": reporter_id}]})
+        if user:
+            reporter_name = user.get("name") or user.get("username", "Anonymous")
         
-        admin_session = await db.admin_sessions.find_one({"token": token})
-        if admin_session:
-            reporter_id = admin_session.get("user_id")
-        
-        if not reporter_id:
-            session = await db.user_sessions.find_one({"session_token": token})
-            if session:
-                reporter_id = session.get("user_id")
-        
-        if not reporter_id:
-            try:
-                payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-                reporter_id = payload.get("sub")
-            except Exception:
-                pass
-        
-        if reporter_id:
-            user = await db.users.find_one({"$or": [{"id": reporter_id}, {"user_id": reporter_id}]})
-            if user:
-                reporter_name = user.get("name") or user.get("username", "Anonymous")
-        
-        # Validate reason
-        valid_reasons = ["offensive_content", "harassment", "cheating", "inappropriate_behavior", "other"]
+        # Validate reason (kept in sync with the frontend REPORT_REASONS list)
+        valid_reasons = [
+            "nudity",
+            "offensive_content",
+            "harassment",
+            "cheating",
+            "inappropriate_behavior",
+            "other",
+        ]
         if report.reason not in valid_reasons:
             raise HTTPException(status_code=400, detail=f"Invalid reason. Must be one of: {valid_reasons}")
         

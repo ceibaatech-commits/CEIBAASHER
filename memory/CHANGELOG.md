@@ -2,6 +2,21 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — Bug fix: Report user not working on Battle screen — RESOLVED (3 root causes)
+- [x] **Root cause #1 — Auth mismatch (401 always).** `/api/admin/battles/report` required `Authorization: Bearer <token>` header, but the Ceibaa frontend uses **cookie-based session auth** (`axios.defaults.withCredentials = true`, `session_token` cookie set by `_set_auth_cookie`). It never sent a bearer header, so the endpoint 401-ed every submit silently. **Fix in `/app/backend/live_battles_admin_routes.py` `create_battle_report()`**: refactored the auth block to try the `session_token` cookie FIRST (`db.user_sessions.find_one` then raw-JWT fallback), then fall back to Authorization header (admin session / user session / JWT). Returns 401 only when both fail.
+- [x] **Root cause #2 — Reason whitelist out of sync.** Frontend offers `nudity` as a report reason, backend's `valid_reasons` whitelist did NOT include it — so picking "Nudity / Sexual Content" returned **400 Invalid reason**. **Fix**: added `"nudity"` to the backend whitelist so the full UI list now passes validation.
+- [x] **Root cause #3 — Chat-menu "Report" item was a misleading toast.** The new in-battle chat popup's `⋮ → Report` menu item only showed `toast.info('Use the Report button in battle header')` without actually opening the report modal. **Fix in `/app/frontend/src/pages/Matchmaking1v1.js`**: rewired `data-testid="chat-menu-report"` to `setChatMenuOpen(false); setMobileChatOpen(false); setShowReport(true)` so it directly opens the existing report modal.
+- [x] **Polish on `submitReport()` in `Matchmaking1v1.js`**:
+  - Sends the **last 50 chat messages as evidence** (`sender/text/ts`) so admins can review the actual offending exchange (was always empty `[]` before).
+  - Prefers `opponent.userId` over the volatile `opponent.socketId` for `reported_user_id` so reports survive socket reconnects.
+  - **Replaced silent `catch {}` with proper error handling**: logs `status + detail` to console; toasts a meaningful message per status (401 → "Please log in again", 400 → backend's `detail`, 500 → "Server error, retry", else → "Check your connection").
+  - Adds `withCredentials: true` explicitly (defence-in-depth; axios global default is already set but the explicit flag makes the auth contract clear at the call-site).
+- [x] **Verified end-to-end via curl + cookie jar** (after backend restart):
+  - `POST /api/auth/demo-login {username:'demo1', password:'demo1'}` → 200, session_token cookie set.
+  - `POST /api/admin/battles/report` with cookie only (no Bearer) → **200 `{success:true}`** (was 401 before).
+  - Same endpoint with `reason: "nudity"` → **200 `{success:true}`** (was 400 before).
+  - Test reports cleaned from `battle_reports` collection (3 docs removed).
+
 ### Feb 15, 2026 — In-Battle 1v1 Chat Popup Premium Redesign — COMPLETE
 - [x] **`/app/frontend/src/pages/Matchmaking1v1.js`** — replaced the mobile chat popup JSX (~130 → ~280 lines) inside the `{mobileChatOpen && ...}` block on the mobile gameplay layout.
   - **Header redesign:** ← back arrow · 44px gradient avatar with green online dot · opponent name 16px semibold (clickable → opens profile in **NEW TAB** `target="_blank"`, never disrupts the live battle) · "● In battle • Live" / "Battle ended" / "Active now" status line · right cluster: outline `Phone`, `Video` icons + `MoreVertical` dropdown (View profile / Mute / Report).
