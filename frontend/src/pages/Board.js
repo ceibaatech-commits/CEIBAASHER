@@ -14,7 +14,7 @@ import TestHistoryTable from '../components/TestHistoryTable';
 import { GoalSelectionModal } from '../components/GoalSelectionModal';
 import { ParentsModePanel } from '../components/ParentsModePanel';
 import BoardInsights from '../components/board/BoardInsights';
-import BoardProfileHeader from '../components/board/BoardProfileHeader';
+import BoardFigmaHero from '../components/board/BoardFigmaHero';
 import BoardStreakHero from '../components/board/BoardStreakHero';
 import { toast } from 'sonner';
 
@@ -411,16 +411,18 @@ const Board = () => {
         {/* Parents Mode Panel — extracted component */}
         <ParentsModePanel />
 
-        {/* Profile Header Card - Glassmorphism */}
-        <BoardProfileHeader
+        {/* Figma-inspired purple profile hero (replaces BoardProfileHeader + the 3-card stat grid) */}
+        <BoardFigmaHero
           user={user}
+          stats={dashboardStats}
           learnerLevel={learnerLevel}
-          dashboardStats={dashboardStats}
+          subjectMastery={subjectMastery}
+          roomsCreated={stats.created}
           goalInfo={goalInfo}
           onChangeGoal={() => setShowGoalModal(true)}
         />
 
-        {/* Figma-inspired streak hero (replaces the standalone streak card) */}
+        {/* Figma-inspired streak hero with milestone rewards */}
         <BoardStreakHero
           streak={dashboardStats.streak}
           nextMilestone={dashboardStats.next_milestone}
@@ -432,38 +434,7 @@ const Board = () => {
           milestoneTiers={dashboardStats.milestone_tiers}
         />
 
-        {/* Stats Cards — 3-up (Tests / Avg / Study Hours). Streak lives in the hero above. */}
-        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-8">
-          <div data-testid="board-stat-tests" className="backdrop-blur-xl bg-white/10 rounded-2xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Target className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
-              </div>
-              <span className="text-2xl md:text-3xl font-bold text-white">{dashboardStats.tests_completed}</span>
-            </div>
-            <div className="text-xs md:text-sm text-slate-200/70 font-medium">Tests Completed</div>
-          </div>
-
-          <div data-testid="board-stat-avg" className="backdrop-blur-xl bg-white/10 rounded-2xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-sky-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-sky-400" />
-              </div>
-              <span className="text-2xl md:text-3xl font-bold text-white">{dashboardStats.avg_score}%</span>
-            </div>
-            <div className="text-xs md:text-sm text-slate-200/70 font-medium">Average Score</div>
-          </div>
-
-          <div data-testid="board-stat-hours" className="backdrop-blur-xl bg-white/10 rounded-2xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Clock className="w-5 h-5 md:w-6 md:h-6 text-violet-400" />
-              </div>
-              <span className="text-2xl md:text-3xl font-bold text-white">{dashboardStats.study_hours}</span>
-            </div>
-            <div className="text-xs md:text-sm text-slate-200/70 font-medium">Study Hours</div>
-          </div>
-        </div>
+        {/* Stats are now surfaced inside <BoardFigmaHero/> — no duplication here. */}
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
