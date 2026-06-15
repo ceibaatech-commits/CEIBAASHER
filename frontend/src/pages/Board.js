@@ -393,13 +393,7 @@ const Board = () => {
         }}
       />
       
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
-        {/* Page Title */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">My Board</h1>
-          <p className="text-slate-500">Track your progress and achieve your goals</p>
-        </div>
-
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Goal Selection Modal */}
         <GoalSelectionModal 
           isOpen={showGoalModal} 
@@ -408,7 +402,7 @@ const Board = () => {
           currentGoal={userGoal}
         />
 
-        {/* 1. Figma-inspired profile hero */}
+        {/* 1. Premium profile hero */}
         <BoardFigmaHero
           user={user}
           stats={dashboardStats}
