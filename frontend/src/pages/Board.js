@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Trophy, Clock, Users, Search, Play, CheckCircle,
-  Target, Flame, BookOpen, TrendingUp, Calendar,
+  Target, BookOpen, TrendingUp, Calendar,
   ChevronRight, RefreshCw,
   X, Settings, BarChart3, GraduationCap, School
 } from 'lucide-react';
@@ -15,6 +15,7 @@ import { GoalSelectionModal } from '../components/GoalSelectionModal';
 import { ParentsModePanel } from '../components/ParentsModePanel';
 import BoardInsights from '../components/board/BoardInsights';
 import BoardProfileHeader from '../components/board/BoardProfileHeader';
+import BoardStreakHero from '../components/board/BoardStreakHero';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
@@ -46,7 +47,14 @@ const Board = () => {
     tests_completed: 0,
     avg_score: 0,
     streak: 0,
-    study_hours: 0
+    study_hours: 0,
+    weekly_activity: [],
+    next_milestone: 7,
+    days_to_milestone: 7,
+    next_reward: 'Study Planner',
+    next_reward_wingman: 1,
+    current_wingman: 1,
+    milestone_tiers: [],
   });
   const [subjectMastery, setSubjectMastery] = useState([]);
   const [learnerLevel, setLearnerLevel] = useState('Beginner');
@@ -367,14 +375,14 @@ const Board = () => {
 
   if (loading || loadingDashboard) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-400"></div>
+      <div className="min-h-screen bg-[#0b1220] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900 to-teal-900">
+    <div className="min-h-screen bg-[#0b1220] bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.12),_transparent_60%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.08),_transparent_55%)]">
       {/* Header */}
       <Header 
         isLoggedIn={isLoggedIn}
@@ -389,7 +397,7 @@ const Board = () => {
         {/* Page Title */}
         <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">My Board</h1>
-          <p className="text-emerald-200/70">Track your progress and achieve your goals</p>
+          <p className="text-slate-300/70">Track your progress and achieve your goals</p>
         </div>
 
         {/* Goal Selection Modal */}
@@ -412,46 +420,48 @@ const Board = () => {
           onChangeGoal={() => setShowGoalModal(true)}
         />
 
-        {/* Stats Cards - Glassmorphism Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
+        {/* Figma-inspired streak hero (replaces the standalone streak card) */}
+        <BoardStreakHero
+          streak={dashboardStats.streak}
+          nextMilestone={dashboardStats.next_milestone}
+          daysToMilestone={dashboardStats.days_to_milestone}
+          weeklyActivity={dashboardStats.weekly_activity}
+          nextReward={dashboardStats.next_reward}
+          currentWingman={dashboardStats.current_wingman}
+          nextRewardWingman={dashboardStats.next_reward_wingman}
+          milestoneTiers={dashboardStats.milestone_tiers}
+        />
+
+        {/* Stats Cards — 3-up (Tests / Avg / Study Hours). Streak lives in the hero above. */}
+        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-8">
+          <div data-testid="board-stat-tests" className="backdrop-blur-xl bg-white/10 rounded-2xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Target className="w-6 h-6 text-emerald-400" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Target className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
               </div>
-              <span className="text-3xl font-bold text-white">{dashboardStats.tests_completed}</span>
+              <span className="text-2xl md:text-3xl font-bold text-white">{dashboardStats.tests_completed}</span>
             </div>
-            <div className="text-sm text-emerald-200/70 font-medium">Tests Completed</div>
+            <div className="text-xs md:text-sm text-slate-200/70 font-medium">Tests Completed</div>
           </div>
-          
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
+
+          <div data-testid="board-stat-avg" className="backdrop-blur-xl bg-white/10 rounded-2xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-6 h-6 text-blue-400" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-sky-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-sky-400" />
               </div>
-              <span className="text-3xl font-bold text-white">{dashboardStats.avg_score}%</span>
+              <span className="text-2xl md:text-3xl font-bold text-white">{dashboardStats.avg_score}%</span>
             </div>
-            <div className="text-sm text-blue-200/70 font-medium">Average Score</div>
+            <div className="text-xs md:text-sm text-slate-200/70 font-medium">Average Score</div>
           </div>
-          
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
+
+          <div data-testid="board-stat-hours" className="backdrop-blur-xl bg-white/10 rounded-2xl p-4 md:p-5 border border-white/15 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Flame className="w-6 h-6 text-orange-400" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-violet-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Clock className="w-5 h-5 md:w-6 md:h-6 text-violet-400" />
               </div>
-              <span className="text-3xl font-bold text-white">{dashboardStats.streak}</span>
+              <span className="text-2xl md:text-3xl font-bold text-white">{dashboardStats.study_hours}</span>
             </div>
-            <div className="text-sm text-orange-200/70 font-medium">Day Streak 🔥</div>
-          </div>
-          
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all hover:scale-[1.02] cursor-pointer group">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Clock className="w-6 h-6 text-purple-400" />
-              </div>
-              <span className="text-3xl font-bold text-white">{dashboardStats.study_hours}</span>
-            </div>
-            <div className="text-sm text-purple-200/70 font-medium">Study Hours</div>
+            <div className="text-xs md:text-sm text-slate-200/70 font-medium">Study Hours</div>
           </div>
         </div>
 

@@ -355,6 +355,39 @@ async def get_dashboard_stats(user_id: str):
         while current_date in activity_dates:
             streak += 1
             current_date -= timedelta(days=1)
+
+        # ==================== CURRENT-WEEK ACTIVITY CALENDAR ====================
+        # Build a 7-day window ending today so the Board can render the
+        # Figma-style check-mark strip (Sa Su Mo Tu We Th Fr).
+        DAY_LABELS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]
+        weekly_activity = []
+        for offset in range(6, -1, -1):  # 6 days ago → today, left→right
+            day = today - timedelta(days=offset)
+            weekly_activity.append({
+                "date": day.isoformat(),
+                "day_label": DAY_LABELS[day.weekday()],
+                "active": day in activity_dates,
+                "is_today": day == today,
+            })
+
+        # ==================== NEXT STREAK MILESTONE ====================
+        # Drives the "You're N days away!" + reward banner copy.
+        # Each milestone unlocks a tangible feature/badge so streaks feel rewarding.
+        MILESTONE_TIERS = [
+            {"days": 7,   "reward": "Study Planner",      "wingman": 1},
+            {"days": 14,  "reward": "Smart Review Mode",  "wingman": 3},
+            {"days": 30,  "reward": "Exam Analytics",     "wingman": 4},
+            {"days": 60,  "reward": "Personal AI Tutor",  "wingman": 5},
+            {"days": 100, "reward": "Elite Insights",     "wingman": 5},
+            {"days": 365, "reward": "Master Badge",       "wingman": 5},
+        ]
+        next_tier = next((t for t in MILESTONE_TIERS if t["days"] > streak), MILESTONE_TIERS[-1])
+        # Mascot for the *current* tier the user is in (the highest already-cleared one,
+        # or the first tier if no milestone has been hit yet)
+        cleared_tiers = [t for t in MILESTONE_TIERS if streak >= t["days"]]
+        current_tier = cleared_tiers[-1] if cleared_tiers else MILESTONE_TIERS[0]
+        next_milestone = next_tier["days"]
+        days_to_milestone = max(next_milestone - streak, 0)
         
         # ==================== CALCULATE STUDY HOURS ====================
         
@@ -442,6 +475,16 @@ async def get_dashboard_stats(user_id: str):
                 "avg_score": avg_score,
                 "streak": streak,
                 "study_hours": study_hours,
+                "weekly_activity": weekly_activity,
+                "next_milestone": next_milestone,
+                "days_to_milestone": days_to_milestone,
+                "next_reward": next_tier["reward"],
+                "next_reward_wingman": next_tier["wingman"],
+                "current_wingman": current_tier["wingman"],
+                "milestone_tiers": [
+                    {"days": t["days"], "reward": t["reward"], "wingman": t["wingman"], "cleared": streak >= t["days"]}
+                    for t in MILESTONE_TIERS
+                ],
                 # Detailed breakdown (optional, for debugging)
                 "breakdown": {
                     "quizzes": quiz_count,

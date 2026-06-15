@@ -55,23 +55,12 @@ const BoardProfileHeader = ({
           </div>
         </div>
 
-        {/* User info + quick stats */}
+        {/* User info */}
         <div className="text-center md:text-left flex-1">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-1" data-testid="board-user-name">
             {user?.name || 'Student'}
           </h2>
-          <p className="text-emerald-200/70 mb-3">{user?.email}</p>
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-            <span className="px-4 py-1.5 backdrop-blur-md bg-emerald-500/20 text-emerald-200 rounded-full text-sm font-medium border border-emerald-400/30">
-              📚 {dashboardStats.tests_completed} Tests
-            </span>
-            <span className="px-4 py-1.5 backdrop-blur-md bg-blue-500/20 text-blue-200 rounded-full text-sm font-medium border border-blue-400/30">
-              ⭐ {dashboardStats.avg_score}% Avg
-            </span>
-            <span className="px-4 py-1.5 backdrop-blur-md bg-orange-500/20 text-orange-200 rounded-full text-sm font-medium border border-orange-400/30">
-              🔥 {dashboardStats.streak} Day Streak
-            </span>
-          </div>
+          <p className="text-emerald-200/70">{user?.email}</p>
         </div>
 
         {/* Study-goal badge */}
