@@ -85,6 +85,19 @@ code {
         source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+/* Typography utility classes for premium UI */
+.font-bricolage {
+    font-family: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
+    font-feature-settings: "ss01", "ss02";
+}
+.font-fraunces {
+    font-family: "Fraunces", "Georgia", serif;
+    font-feature-settings: "ss01";
+}
+.font-geist {
+    font-family: "Geist", system-ui, -apple-system, sans-serif;
+}
+
 @layer base {
     :root {
         --background: 0 0% 100%;

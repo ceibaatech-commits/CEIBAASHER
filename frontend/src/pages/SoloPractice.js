@@ -419,24 +419,109 @@ const SoloPractice = () => {
     const correctCount = results?.filter(r => r.isCorrect).length || 0;
     const totalCount = results?.length || 0;
     const percentage = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
-    
-    // Determine performance level for styling
-    const getPerformanceColor = () => {
-      if (percentage >= 80) return 'from-green-500 to-emerald-600';
-      if (percentage >= 60) return 'from-blue-500 to-indigo-600';
-      if (percentage >= 40) return 'from-yellow-500 to-orange-500';
-      return 'from-red-500 to-pink-600';
-    };
 
-    const getPerformanceMessage = () => {
-      if (percentage >= 80) return '🎉 Excellent Work!';
-      if (percentage >= 60) return '👍 Good Job!';
-      if (percentage >= 40) return '💪 Keep Practicing!';
-      return '📚 Need More Practice';
+    // ---- Dynamic Score-Based Themes ----
+    // High (≥75%) → "Forest Focus" Deep Green
+    // Average (45-74%) → "Japandi" Sage
+    // Low (<45%) → "Sunset Academic" Ink Black
+    const getResultTheme = () => {
+      if (percentage >= 75) {
+        return {
+          tier: 'high',
+          // Page
+          pageBg: 'bg-[#F5F3EC]',
+          // Hero card
+          heroBg: 'bg-[#0F2A1D]',
+          heroAccent: 'bg-[#1A3D2A]',
+          heroRing: 'ring-[#C9D9B4]/30',
+          scoreText: 'text-[#E9F0DC]',
+          scoreAccent: 'text-[#A8C695]',
+          eyebrowChip: 'bg-[#1A3D2A] text-[#C9D9B4] ring-1 ring-[#A8C695]/30',
+          headline: 'You mastered this.',
+          subhead: 'Forest focus — your accuracy is on point.',
+          headlineColor: 'text-[#E9F0DC]',
+          subheadColor: 'text-[#A8C695]',
+          metaColor: 'text-[#A8C695]/80',
+          // Action buttons
+          primaryBtn: 'bg-[#0F2A1D] text-[#E9F0DC] hover:bg-[#1A3D2A] active:scale-[0.98] ring-1 ring-[#A8C695]/40',
+          secondaryBtn: 'bg-white text-[#0F2A1D] hover:bg-[#EFEEE7] ring-1 ring-[#0F2A1D]/15 active:scale-[0.98]',
+          // Review header chip + accents
+          reviewChip: 'bg-[#0F2A1D] text-[#C9D9B4]',
+          sectionHeading: 'text-[#0F2A1D]',
+          sectionSub: 'text-[#5B6F4F]',
+          // Decorative
+          glow1: 'bg-[#A8C695]/15',
+          glow2: 'bg-[#C9D9B4]/10',
+        };
+      }
+      if (percentage >= 45) {
+        return {
+          tier: 'avg',
+          pageBg: 'bg-[#F2EFE8]',
+          heroBg: 'bg-[#9CAE8C]',
+          heroAccent: 'bg-[#85997A]',
+          heroRing: 'ring-[#1A1A1A]/10',
+          scoreText: 'text-[#1A1A1A]',
+          scoreAccent: 'text-[#F5F1E6]',
+          eyebrowChip: 'bg-[#1A1A1A]/10 text-[#1A1A1A] ring-1 ring-[#1A1A1A]/15',
+          headline: 'Solid effort — refine the gaps.',
+          subhead: 'Japandi rhythm — quiet progress, steady wins.',
+          headlineColor: 'text-[#1A1A1A]',
+          subheadColor: 'text-[#3D3D3D]',
+          metaColor: 'text-[#1A1A1A]/70',
+          primaryBtn: 'bg-[#1A1A1A] text-[#F5F1E6] hover:bg-[#2A2A2A] active:scale-[0.98] ring-1 ring-[#1A1A1A]/40',
+          secondaryBtn: 'bg-white text-[#1A1A1A] hover:bg-[#EFEDE5] ring-1 ring-[#1A1A1A]/15 active:scale-[0.98]',
+          reviewChip: 'bg-[#9CAE8C] text-[#1A1A1A]',
+          sectionHeading: 'text-[#1A1A1A]',
+          sectionSub: 'text-[#5B5B55]',
+          glow1: 'bg-[#F5F1E6]/30',
+          glow2: 'bg-[#1A1A1A]/5',
+        };
+      }
+      return {
+        tier: 'low',
+        pageBg: 'bg-[#F7F1E8]',
+        heroBg: 'bg-[#1B1A18]',
+        heroAccent: 'bg-[#2A2925]',
+        heroRing: 'ring-[#E8B27A]/25',
+        scoreText: 'text-[#F2E4CC]',
+        scoreAccent: 'text-[#E8B27A]',
+        eyebrowChip: 'bg-[#2A2925] text-[#E8B27A] ring-1 ring-[#E8B27A]/30',
+        headline: 'Every expert was once a beginner.',
+        subhead: 'Sunset reset — show up, run it again.',
+        headlineColor: 'text-[#F2E4CC]',
+        subheadColor: 'text-[#E8B27A]',
+        metaColor: 'text-[#F2E4CC]/70',
+        primaryBtn: 'bg-[#1B1A18] text-[#F2E4CC] hover:bg-[#2A2925] active:scale-[0.98] ring-1 ring-[#E8B27A]/40',
+        secondaryBtn: 'bg-white text-[#1B1A18] hover:bg-[#EFE9DC] ring-1 ring-[#1B1A18]/15 active:scale-[0.98]',
+        reviewChip: 'bg-[#1B1A18] text-[#E8B27A]',
+        sectionHeading: 'text-[#1B1A18]',
+        sectionSub: 'text-[#5F5648]',
+        glow1: 'bg-[#E8B27A]/15',
+        glow2: 'bg-[#F2E4CC]/10',
+      };
+    };
+    const theme = getResultTheme();
+
+    const handleMoreTopics = () => {
+      if (isClassBased && classBasedData) {
+        const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+        if (classNum === '11' || classNum === '12') {
+          if (classBasedData.stream) {
+            navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+          } else {
+            navigate(`/chapter-tests/class-${classNum}/select-stream`);
+          }
+        } else {
+          navigate(`/chapter-tests/class-${classNum}`);
+        }
+      } else {
+        navigate(`/exam/${exam}`);
+      }
     };
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className={`min-h-screen ${theme.pageBg}`} data-testid="solo-practice-results">
         <Header 
           isLoggedIn={isUserAuthenticated}
           user={user}
@@ -446,65 +531,121 @@ const SoloPractice = () => {
         <div className="max-w-3xl mx-auto px-4">
           {/* Back Button */}
           <button
-            onClick={() => {
-              if (isClassBased && classBasedData) {
-                const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
-                
-                // For Class 11 and 12, navigate to stream selection
-                if (classNum === '11' || classNum === '12') {
-                  // If we have stream info, go to subjects for that stream
-                  if (classBasedData.stream) {
-                    navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
-                  } else {
-                    // Otherwise go to stream selection
-                    navigate(`/chapter-tests/class-${classNum}/select-stream`);
-                  }
-                } else {
-                  // For Class 6-10, go directly to subjects
-                  navigate(`/chapter-tests/class-${classNum}`);
-                }
-              } else {
-                navigate(`/exam/${exam}`);
-              }
-            }}
-            className="flex items-center text-gray-600 hover:text-gray-900 mb-4 text-sm"
+            data-testid="results-back-btn"
+            onClick={handleMoreTopics}
+            className={`inline-flex items-center gap-1.5 mb-4 text-sm font-medium font-geist ${theme.sectionSub} hover:${theme.sectionHeading} transition-colors`}
           >
-            <ArrowLeft className="w-4 h-4 mr-1" />
+            <ArrowLeft className="w-4 h-4" />
             Back to {isClassBased ? `${classBasedData?.class_name} Topics` : `${exam} Topics`}
           </button>
 
-          {/* Score Card - Modern Design */}
-          <div className={`bg-gradient-to-br ${getPerformanceColor()} rounded-2xl shadow-lg p-6 mb-6 text-white`}>
-            <div className="text-center">
-              <div className="text-lg font-medium opacity-90 mb-1">{getPerformanceMessage()}</div>
-              <div className="text-6xl font-bold mb-2">{score || percentage}%</div>
-              <div className="flex items-center justify-center gap-2 text-white/90">
-                <CheckCircle className="w-5 h-5" />
-                <span className="text-lg">{correctCount} of {totalCount} correct</span>
+          {/* HERO — Score Card with dynamic theme */}
+          <div
+            data-testid="results-hero-card"
+            className={`relative ${theme.heroBg} rounded-3xl shadow-[0_24px_60px_-24px_rgba(0,0,0,0.45)] p-7 md:p-10 mb-6 overflow-hidden ring-1 ${theme.heroRing}`}
+          >
+            {/* Decorative blobs */}
+            <div className={`pointer-events-none absolute -top-20 -right-20 w-72 h-72 rounded-full blur-3xl ${theme.glow1}`} />
+            <div className={`pointer-events-none absolute -bottom-24 -left-16 w-72 h-72 rounded-full blur-3xl ${theme.glow2}`} />
+
+            <div className="relative">
+              {/* Eyebrow chip */}
+              <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] uppercase tracking-[0.14em] font-geist font-semibold ${theme.eyebrowChip}`}>
+                <Trophy className="w-3.5 h-3.5" />
+                {theme.tier === 'high' && 'Forest Focus'}
+                {theme.tier === 'avg' && 'Japandi'}
+                {theme.tier === 'low' && 'Sunset Reset'}
               </div>
-              <div className="mt-3 text-sm opacity-80">
-                {isClassBased 
-                  ? `${classBasedData?.class_name} • ${classBasedData?.subject} • ${classBasedData?.chapter}`
-                  : `${exam} • ${subject}${topic ? ` • ${topic}` : ''}`
-                }
+
+              {/* Big Score (Bricolage / Fraunces) */}
+              <div className="mt-5 flex items-end gap-3 leading-none">
+                <span
+                  data-testid="results-score-number"
+                  className={`font-fraunces font-medium tracking-[-0.04em] text-[88px] sm:text-[112px] md:text-[128px] ${theme.scoreText}`}
+                  style={{ fontVariationSettings: '"opsz" 144' }}
+                >
+                  {score ?? percentage}
+                </span>
+                <span className={`pb-3 sm:pb-4 md:pb-5 font-bricolage font-semibold text-3xl md:text-4xl ${theme.scoreAccent}`}>
+                  %
+                </span>
+              </div>
+
+              {/* Headline + subhead */}
+              <div className="mt-4 max-w-xl">
+                <h1
+                  data-testid="results-headline"
+                  className={`font-bricolage font-semibold tracking-[-0.02em] text-2xl sm:text-3xl md:text-[34px] leading-[1.15] ${theme.headlineColor}`}
+                >
+                  {theme.headline}
+                </h1>
+                <p className={`mt-2 font-geist text-sm md:text-base ${theme.subheadColor}`}>
+                  {theme.subhead}
+                </p>
+              </div>
+
+              {/* Meta row */}
+              <div className={`mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-geist text-sm ${theme.metaColor}`}>
+                <span className="inline-flex items-center gap-1.5">
+                  <CheckCircle className="w-4 h-4" />
+                  <span data-testid="results-correct-count" className="tabular-nums">
+                    {correctCount} / {totalCount}
+                  </span>
+                  <span className="opacity-80">correct</span>
+                </span>
+                <span className="opacity-50">·</span>
+                <span className="truncate">
+                  {isClassBased 
+                    ? `${classBasedData?.class_name} • ${classBasedData?.subject} • ${classBasedData?.chapter}`
+                    : `${exam} • ${subject}${topic ? ` • ${topic}` : ''}`
+                  }
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Review Answers Section */}
-          <div className="mb-4">
-            <h2 className="text-lg font-bold text-gray-800 mb-1">Review Your Answers</h2>
-            <p className="text-sm text-gray-500">Tap on each question to see the explanation</p>
+          {/* Action Buttons — fixed standardized sizes, top placement for thumb reach */}
+          <div className="grid grid-cols-2 gap-3 mb-7">
+            <button
+              data-testid="practice-again-btn"
+              onClick={() => window.location.reload()}
+              className={`h-12 rounded-2xl font-bricolage font-semibold text-[15px] tracking-tight inline-flex items-center justify-center gap-2 transition-all shadow-sm ${theme.primaryBtn}`}
+            >
+              <RotateCcw className="w-4 h-4" />
+              Practice Again
+            </button>
+            <button
+              data-testid="more-topics-btn"
+              onClick={handleMoreTopics}
+              className={`h-12 rounded-2xl font-bricolage font-semibold text-[15px] tracking-tight inline-flex items-center justify-center gap-2 transition-all shadow-sm ${theme.secondaryBtn}`}
+            >
+              More Topics
+            </button>
           </div>
 
-          {/* Results Details - Redesigned */}
+          {/* Review Answers Section */}
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className={`font-bricolage font-semibold tracking-tight text-lg md:text-xl ${theme.sectionHeading}`}>
+                Review your answers
+              </h2>
+              <p className={`text-sm font-geist mt-0.5 ${theme.sectionSub}`}>
+                Tap on each question to see the explanation
+              </p>
+            </div>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-geist font-semibold uppercase tracking-wider ${theme.reviewChip}`}>
+              {totalCount} Q
+            </span>
+          </div>
+
+          {/* Results Details */}
           <div className="space-y-4">
             {results?.map((result, index) => {
               const correctIndex = letterToIndex(result.correctAnswer);
               const userIndex = letterToIndex(result.userAnswer || result.selectedOption);
               
               return (
-                <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                   {/* Question Header */}
                   <div className={`px-4 py-3 flex items-start gap-3 ${
                     result.isCorrect ? 'bg-green-50 border-b border-green-100' : 'bg-red-50 border-b border-red-100'
@@ -519,8 +660,8 @@ const SoloPractice = () => {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-gray-500 mb-1">Question {index + 1}</div>
-                      <h3 className="font-medium text-gray-900 text-sm leading-relaxed">
+                      <div className="text-xs font-geist font-medium text-gray-500 mb-1 uppercase tracking-wider">Question {index + 1}</div>
+                      <h3 className="font-bricolage font-medium text-gray-900 text-sm md:text-base leading-relaxed">
                         <MathText text={result.question} />
                       </h3>
                     </div>
@@ -583,7 +724,7 @@ const SoloPractice = () => {
                             <span className="text-white text-xs">💡</span>
                           </div>
                           <div>
-                            <div className="text-xs font-semibold text-blue-800 mb-1">Explanation</div>
+                            <div className="text-xs font-geist font-semibold text-blue-800 mb-1 uppercase tracking-wider">Explanation</div>
                             <p className="text-sm text-blue-900 leading-relaxed">
                               <MathText text={result.explanation} />
                             </p>
@@ -597,34 +738,20 @@ const SoloPractice = () => {
             })}
           </div>
 
-          {/* Action Buttons */}
-          <div className="mt-6 flex gap-3 sticky bottom-4">
+          {/* Sticky Bottom Action Buttons (mobile thumb zone) */}
+          <div className="mt-7 grid grid-cols-2 gap-3">
             <button
+              data-testid="practice-again-btn-bottom"
               onClick={() => window.location.reload()}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+              className={`h-12 rounded-2xl font-bricolage font-semibold text-[15px] tracking-tight inline-flex items-center justify-center gap-2 transition-all shadow-sm ${theme.primaryBtn}`}
             >
-              <RotateCcw className="w-5 h-5" />
+              <RotateCcw className="w-4 h-4" />
               Practice Again
             </button>
             <button
-              onClick={() => {
-                if (isClassBased && classBasedData) {
-                  const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
-                  // For Class 11 and 12, navigate to stream selection
-                  if (classNum === '11' || classNum === '12') {
-                    if (classBasedData.stream) {
-                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
-                    } else {
-                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
-                    }
-                  } else {
-                    navigate(`/chapter-tests/class-${classNum}`);
-                  }
-                } else {
-                  navigate(`/exam/${exam}`);
-                }
-              }}
-              className="flex-1 bg-white border-2 border-gray-200 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-50 transition-all"
+              data-testid="more-topics-btn-bottom"
+              onClick={handleMoreTopics}
+              className={`h-12 rounded-2xl font-bricolage font-semibold text-[15px] tracking-tight inline-flex items-center justify-center gap-2 transition-all shadow-sm ${theme.secondaryBtn}`}
             >
               More Topics
             </button>
