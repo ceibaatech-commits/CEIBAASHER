@@ -385,6 +385,13 @@ async def employee_add_sheet(sheet_data: dict, employee: dict = Depends(verify_e
             {"id": employee["id"]},
             {"$inc": {"sheets_added": 1}}
         )
+
+        # Bust any cached parses for this sheet link.
+        try:
+            from quiz_routes import invalidate_questions_cache
+            await invalidate_questions_cache(db, sheet_url=sheet_data.get("sheet_link"))
+        except Exception as cache_err:
+            print(f"⚠️ Cache invalidation skipped: {cache_err}")
         
         return {
             "success": True,
@@ -432,6 +439,15 @@ async def employee_delete_sheet(sheet_id: str, employee: dict = Depends(verify_e
                 {"id": employee["id"]},
                 {"$inc": {"sheets_added": -1}}
             )
+
+        # Bust any cached parses for this sheet link.
+        sheet_url = sheet.get("sheet_link")
+        if sheet_url:
+            try:
+                from quiz_routes import invalidate_questions_cache
+                await invalidate_questions_cache(db, sheet_url=sheet_url)
+            except Exception as cache_err:
+                print(f"⚠️ Cache invalidation skipped: {cache_err}")
         
         return {"success": True, "message": "Sheet deleted successfully"}
     except HTTPException:

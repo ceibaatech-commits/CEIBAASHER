@@ -498,6 +498,12 @@ async def create_sheet(sheet: ExamSheet):
 
         try:
             imported = await _import_sheet_questions(sheet, sheet_id)
+            # Bust any cached questions for this sheet URL so quizzes see the new data immediately.
+            try:
+                from quiz_routes import invalidate_questions_cache
+                await invalidate_questions_cache(db, sheet_url=sheet.sheet_link)
+            except Exception as cache_err:
+                print(f"⚠️ Cache invalidation skipped: {cache_err}")
             if imported == 0:
                 return {
                     "success": True,
@@ -536,6 +542,10 @@ async def delete_sheet(sheet_id: str):
     Delete an exam sheet AND all its associated questions
     """
     try:
+        # Capture sheet_link BEFORE delete so we can invalidate the question cache afterwards.
+        sheet_doc = await db.exam_sheets.find_one({"id": sheet_id}, {"_id": 0, "sheet_link": 1})
+        sheet_url = (sheet_doc or {}).get("sheet_link")
+
         # First, delete all questions associated with this sheet
         questions_result = await db.questions.delete_many({"sheet_id": sheet_id})
         print(f"🗑️ Deleted {questions_result.deleted_count} questions for sheet {sheet_id}")
@@ -545,6 +555,14 @@ async def delete_sheet(sheet_id: str):
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Sheet not found")
+
+        # Bust the parsed-questions cache so subsequent quiz starts don't serve stale data.
+        if sheet_url:
+            try:
+                from quiz_routes import invalidate_questions_cache
+                await invalidate_questions_cache(db, sheet_url=sheet_url)
+            except Exception as cache_err:
+                print(f"⚠️ Cache invalidation skipped: {cache_err}")
         
         return {
             "success": True,
@@ -654,6 +672,13 @@ async def import_sheet_questions(sheet_id: str):
                 "last_import": datetime.now(timezone.utc).isoformat(),
             }},
         )
+
+        # Re-import means the underlying CSV may have changed — flush cached parses for this URL.
+        try:
+            from quiz_routes import invalidate_questions_cache
+            await invalidate_questions_cache(db, sheet_url=sheet["sheet_link"])
+        except Exception as cache_err:
+            print(f"⚠️ Cache invalidation skipped: {cache_err}")
 
         return {
             "success": True,
