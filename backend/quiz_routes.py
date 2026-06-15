@@ -1,8 +1,9 @@
 import re
+import time
 import requests
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import secrets
 import random
 import uuid
@@ -32,6 +33,28 @@ class QuizSubmitRequest(BaseModel):
 
 # In-memory quiz sessions
 quiz_sessions = {}
+
+# In-memory TTL cache for parsed Google-Sheet questions
+# Key: (sheet_url, sheet_name, topic_filter) -> (expires_at_epoch, questions_list)
+_QUESTIONS_CACHE_TTL_SECONDS = 600  # 10 minutes
+_questions_cache: Dict[Tuple[str, Optional[str], Optional[str]], Tuple[float, List[Dict[str, Any]]]] = {}
+
+
+def _cache_get_questions(sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str]):
+    key = (sheet_url, sheet_name, topic_filter)
+    entry = _questions_cache.get(key)
+    if not entry:
+        return None
+    expires_at, questions = entry
+    if expires_at < time.time():
+        _questions_cache.pop(key, None)
+        return None
+    return questions
+
+
+def _cache_set_questions(sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str], questions: List[Dict[str, Any]]):
+    key = (sheet_url, sheet_name, topic_filter)
+    _questions_cache[key] = (time.time() + _QUESTIONS_CACHE_TTL_SECONDS, questions)
 
 @router.get("/exams")
 async def get_exams():
@@ -547,12 +570,20 @@ async def start_quiz(request: QuizStartRequest):
                     print(f"⚠️ No sheet_link/sheet_url found in mapping for {exam}/{subject}/{topic}")
                     print(f"   Available keys: {list(sheet_mapping.keys())}")
                 else:
-                    questions = sheets_service.fetch_questions(
-                        sheet_url,
-                        sheet_name,
-                        topic_filter=filter_topic  # Filter by sub-topic or topic
-                    )
-                    
+                    cached = _cache_get_questions(sheet_url, sheet_name, filter_topic)
+                    if cached is not None:
+                        questions = cached
+                        print(f"⚡ Cache HIT for {sheet_url} / {sheet_name} / {filter_topic} — {len(questions)} questions")
+                    else:
+                        questions = sheets_service.fetch_questions(
+                            sheet_url,
+                            sheet_name,
+                            topic_filter=filter_topic  # Filter by sub-topic or topic
+                        )
+                        if questions:
+                            _cache_set_questions(sheet_url, sheet_name, filter_topic, questions)
+                            print(f"💾 Cache MISS — fetched & cached {len(questions)} questions")
+
                     if questions:
                         source = "google_sheets"
                         filter_info = f"{topic}/{sub_topic}" if sub_topic else topic
