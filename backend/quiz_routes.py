@@ -686,8 +686,8 @@ async def start_quiz(request: QuizStartRequest):
         {
             "id": q.get("id", ""),
             "question": q.get("question", ""),
-            "options": q.get("options", {}),
-            "correctAnswer": q.get("correctAnswer") or q.get("correct_answer", ""),
+            "options": q.get("options", []),
+            "correctAnswer": q.get("correctAnswer") if q.get("correctAnswer") is not None else q.get("correct_answer", ""),
             "explanation": q.get("explanation", "")
         }
         for q in questions
@@ -697,7 +697,7 @@ async def start_quiz(request: QuizStartRequest):
     normalized_questions = [
         {
             **q,
-            "correctAnswer": q.get("correctAnswer") or q.get("correct_answer", "")
+            "correctAnswer": q.get("correctAnswer") if q.get("correctAnswer") is not None else q.get("correct_answer", "")
         }
         for q in questions
     ]
@@ -744,7 +744,7 @@ async def submit_quiz(request: QuizSubmitRequest):
         # - An integer index (0, 1, 2, 3)
         # - A letter string ("A", "B", "C", "D")
         selected_option = user_answer.get("selectedOption") if user_answer else None
-        correct_answer = question.get("correctAnswer") or question.get("correct_answer")
+        correct_answer = question.get("correctAnswer") if question.get("correctAnswer") is not None else question.get("correct_answer")
         
         is_correct = False
         selected_letter = None
