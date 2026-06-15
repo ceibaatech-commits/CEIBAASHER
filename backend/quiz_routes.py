@@ -1,5 +1,6 @@
 import re
 import time
+import asyncio
 import requests
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -7,7 +8,7 @@ from typing import List, Dict, Any, Optional, Tuple
 import secrets
 import random
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from exam_data import get_all_exams, get_exam_details, get_exam_subjects, get_subject_topics, get_all_topics_flat
 
 router = APIRouter(prefix="/quiz", tags=["quiz"])
@@ -34,14 +35,23 @@ class QuizSubmitRequest(BaseModel):
 # In-memory quiz sessions
 quiz_sessions = {}
 
-# In-memory TTL cache for parsed Google-Sheet questions
-# Key: (sheet_url, sheet_name, topic_filter) -> (expires_at_epoch, questions_list)
+# ---------------------------------------------------------------------------
+# Parsed-question cache (two-tier: in-memory L1 + MongoDB L2 with TTL index).
+# Key: (sheet_url, sheet_name, topic_filter)
+# ---------------------------------------------------------------------------
 _QUESTIONS_CACHE_TTL_SECONDS = 600  # 10 minutes
-_questions_cache: Dict[Tuple[str, Optional[str], Optional[str]], Tuple[float, List[Dict[str, Any]]]] = {}
+_QUESTIONS_CACHE_COLLECTION = "quiz_sheet_cache"
+
+CacheKey = Tuple[str, Optional[str], Optional[str]]
+_questions_cache: Dict[CacheKey, Tuple[float, List[Dict[str, Any]]]] = {}
+# Per-key locks prevent thundering-herd: if N requests miss simultaneously,
+# only one fetches from Sheets while the rest wait and reuse the result.
+_cache_locks: Dict[CacheKey, asyncio.Lock] = {}
+_ttl_index_ready = False
 
 
 def _cache_get_questions(sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str]):
-    key = (sheet_url, sheet_name, topic_filter)
+    key: CacheKey = (sheet_url, sheet_name, topic_filter)
     entry = _questions_cache.get(key)
     if not entry:
         return None
@@ -53,8 +63,87 @@ def _cache_get_questions(sheet_url: str, sheet_name: Optional[str], topic_filter
 
 
 def _cache_set_questions(sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str], questions: List[Dict[str, Any]]):
-    key = (sheet_url, sheet_name, topic_filter)
+    key: CacheKey = (sheet_url, sheet_name, topic_filter)
     _questions_cache[key] = (time.time() + _QUESTIONS_CACHE_TTL_SECONDS, questions)
+
+
+def _get_cache_lock(sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str]) -> asyncio.Lock:
+    key: CacheKey = (sheet_url, sheet_name, topic_filter)
+    lock = _cache_locks.get(key)
+    if lock is None:
+        lock = asyncio.Lock()
+        _cache_locks[key] = lock
+    return lock
+
+
+async def _ensure_ttl_index(db):
+    """Create the MongoDB TTL index once per process lifetime."""
+    global _ttl_index_ready
+    if _ttl_index_ready:
+        return
+    try:
+        await db[_QUESTIONS_CACHE_COLLECTION].create_index(
+            "expires_at", expireAfterSeconds=0
+        )
+    except Exception as e:
+        print(f"⚠️ Could not create TTL index on {_QUESTIONS_CACHE_COLLECTION}: {e}")
+    _ttl_index_ready = True
+
+
+async def _persistent_cache_get(db, sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str]):
+    """Fetch a cached question list from MongoDB. Returns None if missing/expired."""
+    doc = await db[_QUESTIONS_CACHE_COLLECTION].find_one(
+        {"sheet_url": sheet_url, "sheet_name": sheet_name, "topic_filter": topic_filter},
+        {"_id": 0, "questions": 1, "expires_at": 1},
+    )
+    if not doc:
+        return None
+    expires_at = doc.get("expires_at")
+    if isinstance(expires_at, datetime):
+        # Normalise to a tz-aware UTC datetime before comparing.
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if expires_at < datetime.now(timezone.utc):
+            return None
+    return doc.get("questions")
+
+
+async def _persistent_cache_set(db, sheet_url: str, sheet_name: Optional[str], topic_filter: Optional[str], questions: List[Dict[str, Any]]):
+    """Persist a question list to MongoDB. TTL index auto-expires the doc."""
+    await _ensure_ttl_index(db)
+    now = datetime.now(timezone.utc)
+    await db[_QUESTIONS_CACHE_COLLECTION].replace_one(
+        {"sheet_url": sheet_url, "sheet_name": sheet_name, "topic_filter": topic_filter},
+        {
+            "sheet_url": sheet_url,
+            "sheet_name": sheet_name,
+            "topic_filter": topic_filter,
+            "questions": questions,
+            "cached_at": now,
+            "expires_at": now + timedelta(seconds=_QUESTIONS_CACHE_TTL_SECONDS),
+        },
+        upsert=True,
+    )
+
+
+async def invalidate_questions_cache(db, sheet_url: Optional[str] = None):
+    """Public helper — admin CRUD routes call this when an exam_sheets mapping is edited.
+
+    If sheet_url is None, wipes the entire cache (both tiers).
+    """
+    # L1
+    if sheet_url is None:
+        _questions_cache.clear()
+    else:
+        for k in [k for k in _questions_cache if k[0] == sheet_url]:
+            _questions_cache.pop(k, None)
+    # L2
+    if db is not None:
+        try:
+            query = {} if sheet_url is None else {"sheet_url": sheet_url}
+            await db[_QUESTIONS_CACHE_COLLECTION].delete_many(query)
+        except Exception as e:
+            print(f"⚠️ Persistent cache invalidation failed: {e}")
 
 @router.get("/exams")
 async def get_exams():
@@ -570,19 +659,44 @@ async def start_quiz(request: QuizStartRequest):
                     print(f"⚠️ No sheet_link/sheet_url found in mapping for {exam}/{subject}/{topic}")
                     print(f"   Available keys: {list(sheet_mapping.keys())}")
                 else:
+                    # L1: in-memory cache
                     cached = _cache_get_questions(sheet_url, sheet_name, filter_topic)
+                    if cached is None:
+                        # L2: MongoDB cache (survives backend restarts)
+                        try:
+                            cached = await _persistent_cache_get(db, sheet_url, sheet_name, filter_topic)
+                            if cached is not None:
+                                # Promote L2 -> L1
+                                _cache_set_questions(sheet_url, sheet_name, filter_topic, cached)
+                                print(f"⚡ L2 (Mongo) HIT — promoted to L1 ({len(cached)} questions)")
+                        except Exception as e:
+                            print(f"⚠️ L2 cache read failed (continuing): {e}")
+
                     if cached is not None:
                         questions = cached
                         print(f"⚡ Cache HIT for {sheet_url} / {sheet_name} / {filter_topic} — {len(questions)} questions")
                     else:
-                        questions = sheets_service.fetch_questions(
-                            sheet_url,
-                            sheet_name,
-                            topic_filter=filter_topic  # Filter by sub-topic or topic
-                        )
-                        if questions:
-                            _cache_set_questions(sheet_url, sheet_name, filter_topic, questions)
-                            print(f"💾 Cache MISS — fetched & cached {len(questions)} questions")
+                        # Stampede protection: only one coroutine fetches per key
+                        lock = _get_cache_lock(sheet_url, sheet_name, filter_topic)
+                        async with lock:
+                            # Re-check L1 after acquiring lock (a peer may have just populated it)
+                            cached = _cache_get_questions(sheet_url, sheet_name, filter_topic)
+                            if cached is not None:
+                                questions = cached
+                                print(f"⚡ Cache HIT after lock — {len(questions)} questions")
+                            else:
+                                questions = sheets_service.fetch_questions(
+                                    sheet_url,
+                                    sheet_name,
+                                    topic_filter=filter_topic
+                                )
+                                if questions:
+                                    _cache_set_questions(sheet_url, sheet_name, filter_topic, questions)
+                                    try:
+                                        await _persistent_cache_set(db, sheet_url, sheet_name, filter_topic, questions)
+                                    except Exception as e:
+                                        print(f"⚠️ L2 cache write failed (L1 still populated): {e}")
+                                    print(f"💾 Cache MISS — fetched {len(questions)} questions, stored in L1+L2")
 
                     if questions:
                         source = "google_sheets"
