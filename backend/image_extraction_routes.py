@@ -49,7 +49,7 @@ async def extract_questions_from_image(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"image-extraction-{uuid.uuid4()}",
             system_message="You are an expert at extracting structured data from images. You analyze images containing educational questions and extract them in JSON format."
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
         
         print("[Image Extraction] LlmChat initialized with Claude model")
         
@@ -208,7 +208,7 @@ async def extract_questions_for_victory_lane(
             api_key=EMERGENT_LLM_KEY,
             session_id=f"victory-image-{uuid.uuid4()}",
             system_message="You are an expert at extracting structured data from images. You analyze images containing educational questions and extract them in JSON format."
-        ).with_model("anthropic", "claude-sonnet-4-20250514")
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
         
         print("[Victory Lane Image Extraction] LlmChat initialized")
         
