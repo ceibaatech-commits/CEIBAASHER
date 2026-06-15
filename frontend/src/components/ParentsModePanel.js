@@ -117,22 +117,22 @@ export const ParentsModePanel = () => {
       )}
 
       {/* Card */}
-      <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 mb-8 border border-white/20" data-testid="parents-mode-panel">
+      <div className="bg-white rounded-2xl p-5 md:p-6 mb-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100" data-testid="parents-mode-panel">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-              parentsModeActive ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-white/10 border border-white/20'
+            <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${
+              parentsModeActive ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-[#f4f0ff] border border-violet-100'
             }`}>
-              <Shield className={`w-7 h-7 ${parentsModeActive ? 'text-white' : 'text-emerald-400'}`} />
+              <Shield className={`w-7 h-7 ${parentsModeActive ? 'text-white' : 'text-[#7c5cff]'}`} />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 Parents Mode
                 {parentsModeActive && (
-                  <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded-full text-xs font-medium border border-amber-500/30">ACTIVE</span>
+                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold">ACTIVE</span>
                 )}
               </h3>
-              <p className="text-emerald-200/70 text-sm">
+              <p className="text-slate-500 text-sm">
                 {parentsModeActive ? `1v1 Battle Mode blocked \u{2022} Expires in ${formatTime(parentsModeTimeRemaining)}` : 'Block 1v1 Battle Mode for 12 hours'}
               </p>
             </div>
@@ -140,24 +140,24 @@ export const ParentsModePanel = () => {
           {parentsModeActive ? (
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <p className="text-xs text-emerald-200/60">Time Remaining</p>
-                <p className="text-2xl font-bold text-amber-400 font-mono">{formatTime(parentsModeTimeRemaining)}</p>
+                <p className="text-xs text-slate-400">Time Remaining</p>
+                <p className="text-2xl font-bold text-amber-600 font-mono">{formatTime(parentsModeTimeRemaining)}</p>
               </div>
-              <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center border-2 border-amber-500/30">
-                <Clock className="w-5 h-5 text-amber-400" />
+              <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-amber-600" />
               </div>
             </div>
           ) : (
             <button onClick={() => setShowConfirm(true)}
-              className="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-105 transition-all flex items-center gap-2">
-              <Shield className="w-5 h-5" />
+              className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:shadow-md hover:shadow-orange-500/20 transition-all flex items-center justify-center gap-2 text-sm">
+              <Shield className="w-4 h-4" />
               Enable Parents Mode
             </button>
           )}
         </div>
         {parentsModeActive && (
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <div className="flex items-center gap-2 text-amber-300/80 text-sm">
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <div className="flex items-center gap-2 text-amber-700 text-sm">
               <AlertTriangle className="w-4 h-4" />
               <span>This mode cannot be manually disabled. It will automatically turn off when the timer expires.</span>
             </div>

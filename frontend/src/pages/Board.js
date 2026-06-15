@@ -375,14 +375,14 @@ const Board = () => {
 
   if (loading || loadingDashboard) {
     return (
-      <div className="min-h-screen bg-[#0b1220] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-400"></div>
+      <div className="min-h-screen bg-[#f6f7fb] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#7c5cff]"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0b1220] bg-[radial-gradient(circle_at_top_left,_rgba(34,197,94,0.12),_transparent_60%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.08),_transparent_55%)]">
+    <div className="min-h-screen bg-[#f6f7fb]">
       {/* Header */}
       <Header 
         isLoggedIn={isLoggedIn}
@@ -393,11 +393,11 @@ const Board = () => {
         }}
       />
       
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
         {/* Page Title */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">My Board</h1>
-          <p className="text-slate-300/70">Track your progress and achieve your goals</p>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-2">My Board</h1>
+          <p className="text-slate-500">Track your progress and achieve your goals</p>
         </div>
 
         {/* Goal Selection Modal */}
@@ -408,10 +408,7 @@ const Board = () => {
           currentGoal={userGoal}
         />
 
-        {/* Parents Mode Panel — extracted component */}
-        <ParentsModePanel />
-
-        {/* Figma-inspired purple profile hero (replaces BoardProfileHeader + the 3-card stat grid) */}
+        {/* 1. Figma-inspired profile hero */}
         <BoardFigmaHero
           user={user}
           stats={dashboardStats}
@@ -422,7 +419,10 @@ const Board = () => {
           onChangeGoal={() => setShowGoalModal(true)}
         />
 
-        {/* Figma-inspired streak hero with milestone rewards */}
+        {/* 2. Parents Mode — above the day streak per requirement */}
+        <ParentsModePanel />
+
+        {/* 3. Streak hero with milestone rewards */}
         <BoardStreakHero
           streak={dashboardStats.streak}
           nextMilestone={dashboardStats.next_milestone}
@@ -434,107 +434,103 @@ const Board = () => {
           milestoneTiers={dashboardStats.milestone_tiers}
         />
 
-        {/* Stats are now surfaced inside <BoardFigmaHero/> — no duplication here. */}
-
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* 4. Subject Mastery + Today's Schedule — 2 columns on desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
           {/* Subject Mastery */}
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-emerald-400" />
+          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base md:text-lg font-bold text-slate-900 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-[#7c5cff]" />
                 Subject Mastery
               </h3>
             </div>
-            
+
             {subjectMastery.length > 0 ? (
               <div className="space-y-4">
                 {subjectMastery.map((subject, index) => (
-                  <div key={subject.subject || `subj-${index}`} className="group">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium text-white/90">{subject.subject}</span>
-                      <span className="font-bold text-emerald-400">{subject.mastery}%</span>
+                  <div key={subject.subject || `subj-${index}`}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="font-semibold text-slate-800 text-sm">{subject.subject}</span>
+                      <span className="font-bold text-[#7c5cff] text-sm">{subject.mastery}%</span>
                     </div>
-                    <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                      <div 
-                        className={`h-full bg-gradient-to-r ${subject.gradient} rounded-full transition-all duration-500 group-hover:shadow-lg`}
+                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full bg-gradient-to-r ${subject.gradient || 'from-violet-500 to-violet-600'} rounded-full transition-all duration-500`}
                         style={{ width: `${subject.mastery}%` }}
                       />
                     </div>
-                    <div className="text-xs text-emerald-200/50 mt-1">{subject.tests_taken} tests taken</div>
+                    <div className="text-[11px] text-slate-400 mt-1">{subject.tests_taken} tests taken</div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-emerald-200/50">
-                <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Complete quizzes to see your subject mastery</p>
+              <div className="text-center py-8 text-slate-400">
+                <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">Complete quizzes to see your subject mastery</p>
               </div>
             )}
           </div>
 
-          {/* AI Weekly Schedule */}
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-emerald-400" />
+          {/* Today's Schedule */}
+          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base md:text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#7c5cff]" />
                 {"Today's Schedule"}
               </h3>
-              <button 
+              <button
                 onClick={regenerateSchedule}
                 disabled={loadingSchedule}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50"
+                className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
                 title="Regenerate Schedule"
               >
-                <RefreshCw className={`w-4 h-4 text-emerald-400 ${loadingSchedule ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 text-slate-500 ${loadingSchedule ? 'animate-spin' : ''}`} />
               </button>
             </div>
-            
+
             {loadingSchedule ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-400"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7c5cff]"></div>
               </div>
             ) : getTodaySchedule()?.sessions?.length > 0 ? (
               <div className="space-y-3">
                 {getTodaySchedule().sessions.slice(0, 4).map((session, index) => (
-                  <div 
-                    key={`${session.time || ''}-${session.topic || index}`} 
-                    className="flex items-center gap-4 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer group border border-white/10"
+                  <div
+                    key={`${session.time || ''}-${session.topic || index}`}
+                    className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-[#f4f0ff] rounded-xl transition-colors cursor-pointer group border border-slate-100"
                   >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-sm font-bold ${
-                      session.type === 'study' ? 'bg-emerald-500/80' :
-                      session.type === 'practice' ? 'bg-blue-500/80' :
-                      session.type === 'review' ? 'bg-purple-500/80' : 'bg-orange-500/80'
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0 ${
+                      session.type === 'study' ? 'bg-emerald-500' :
+                      session.type === 'practice' ? 'bg-sky-500' :
+                      session.type === 'review' ? 'bg-[#7c5cff]' : 'bg-amber-500'
                     }`}>
                       {session.subject?.substring(0, 3).toUpperCase()}
                     </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-white">{session.topic}</div>
-                      <div className="text-sm text-emerald-200/60">{session.time} • {session.duration} mins</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-slate-900 text-sm truncate">{session.topic}</div>
+                      <div className="text-xs text-slate-500">{session.time} • {session.duration} mins</div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        session.priority === 'high' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                        session.priority === 'medium' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
-                        'bg-white/10 text-white/70 border border-white/20'
-                      }`}>
-                        {session.priority}
-                      </span>
-                      <ChevronRight className="w-4 h-4 text-emerald-400/50 group-hover:text-emerald-400 transition-colors" />
-                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                      session.priority === 'high' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
+                      session.priority === 'medium' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
+                      'bg-slate-100 text-slate-600'
+                    }`}>
+                      {session.priority}
+                    </span>
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#7c5cff] transition-colors" />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-emerald-200/50">
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>No schedule generated yet</p>
+              <div className="text-center py-8 text-slate-400">
+                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                <p className="text-sm">No schedule generated yet</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* AI Insights & Recommended Tests */}
+        {/* 5. AI Insights & Recommended Tests */}
         <BoardInsights
           loadingInsights={loadingInsights}
           aiInsights={aiInsights}
@@ -542,98 +538,71 @@ const Board = () => {
           onStartRecommendedTest={startRecommendedTest}
         />
 
-        {/* Divider - Test History */}
-        <div className="flex items-center gap-4 my-10">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent"></div>
-          <span className="text-violet-300/70 font-medium px-4 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
-            Test Performance History
-          </span>
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-violet-500/30 to-transparent"></div>
+        {/* 6. Test Performance History */}
+        <SectionHeader icon={<BarChart3 className="w-4 h-4" />} label="Test Performance History" />
+        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100 mb-8" data-testid="board-test-history-section">
+          <TestHistoryTable data={testHistory} loading={historyLoading} />
         </div>
 
-        {/* Test History Table */}
-        <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20 mb-8" data-testid="board-test-history-section">
-          <div className="bg-white rounded-xl p-4 sm:p-6">
-            <TestHistoryTable data={testHistory} loading={historyLoading} />
-          </div>
-        </div>
+        {/* 7. Quiz Battles & Rooms */}
+        <SectionHeader icon={<Trophy className="w-4 h-4" />} label="Quiz Battles & Rooms" />
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 my-10">
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
-          <span className="text-emerald-300/70 font-medium px-4">Quiz Battles & Rooms</span>
-          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
-        </div>
-
-        {/* Existing Room Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <Trophy className="w-8 h-8 text-yellow-400" />
-              <span className="text-3xl font-bold text-white">{stats.total}</span>
+        {/* Room stats — 4-up light cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+          {[
+            { label: 'Total Rooms', value: stats.total, icon: <Trophy className="w-5 h-5 text-amber-500" />, accent: 'bg-amber-50' },
+            { label: 'Active Rooms', value: stats.active, icon: <Play className="w-5 h-5 text-emerald-500" />, accent: 'bg-emerald-50' },
+            { label: 'Completed', value: stats.completed, icon: <CheckCircle className="w-5 h-5 text-sky-500" />, accent: 'bg-sky-50' },
+            { label: 'Created by Me', value: stats.created, icon: <Users className="w-5 h-5 text-[#7c5cff]" />, accent: 'bg-[#f4f0ff]' },
+          ].map((c) => (
+            <div key={c.label} className="bg-white rounded-2xl p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
+              <div className="flex items-center justify-between mb-2">
+                <div className={`w-9 h-9 rounded-lg ${c.accent} flex items-center justify-center`}>
+                  {c.icon}
+                </div>
+                <span className="text-2xl md:text-3xl font-black text-slate-900">{c.value}</span>
+              </div>
+              <div className="text-xs md:text-sm text-slate-500 font-medium">{c.label}</div>
             </div>
-            <div className="text-sm text-yellow-200/70">Total Rooms</div>
-          </div>
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <Play className="w-8 h-8 text-green-400" />
-              <span className="text-3xl font-bold text-white">{stats.active}</span>
-            </div>
-            <div className="text-sm text-green-200/70">Active Rooms</div>
-          </div>
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <CheckCircle className="w-8 h-8 text-blue-400" />
-              <span className="text-3xl font-bold text-white">{stats.completed}</span>
-            </div>
-            <div className="text-sm text-blue-200/70">Completed</div>
-          </div>
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <Users className="w-8 h-8 text-purple-400" />
-              <span className="text-3xl font-bold text-white">{stats.created}</span>
-            </div>
-            <div className="text-sm text-purple-200/70">Created by Me</div>
-          </div>
+          ))}
         </div>
 
         {/* Rooms List */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-6">
+        <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
+          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between mb-6">
             <div className="flex flex-wrap gap-2">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-xl font-semibold transition-all ${
+                  className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
                     activeTab === tab.id
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-[#7c5cff] text-white shadow-md shadow-violet-500/20'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
                   {tab.label}
-                  <span className="ml-2 text-xs opacity-75">({tab.count})</span>
+                  <span className="ml-1.5 text-[11px] opacity-75">({tab.count})</span>
                 </button>
               ))}
             </div>
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search rooms..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:outline-none"
+                className="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-[#7c5cff] focus:ring-2 focus:ring-violet-100 focus:outline-none"
               />
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {filteredRooms.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <Trophy className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">No rooms found</p>
+              <div className="text-center py-12 text-slate-400">
+                <Trophy className="w-14 h-14 mx-auto mb-4 opacity-40" />
+                <p className="text-base font-semibold text-slate-600">No rooms found</p>
                 <p className="text-sm">Start creating or joining quiz battles!</p>
               </div>
             ) : (
@@ -642,49 +611,49 @@ const Board = () => {
                 return (
                   <div
                     key={room.pin}
-                    className="border-2 border-gray-200 rounded-xl p-6 hover:border-emerald-300 hover:shadow-md transition-all"
+                    className="bg-slate-50 hover:bg-[#f9f8ff] border border-slate-100 hover:border-violet-200 rounded-xl p-4 md:p-5 transition-all"
                   >
-                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="font-mono font-bold text-2xl text-emerald-600">{room.pin}</span>
+                    <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="font-mono font-black text-xl text-[#7c5cff]">{room.pin}</span>
                           {isActive ? (
-                            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Active</span>
+                            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase">Active</span>
                           ) : (
-                            <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">Completed</span>
+                            <span className="px-2 py-0.5 bg-slate-200 text-slate-600 rounded-full text-[10px] font-bold uppercase">Completed</span>
                           )}
                         </div>
-                        <div className="text-gray-700 font-semibold mb-1">{room.exam_category} - {room.subject}</div>
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                        <div className="text-slate-800 font-bold text-sm mb-1 truncate">{room.exam_category} · {room.subject}</div>
+                        <div className="flex flex-wrap gap-3 text-xs text-slate-500">
                           <span className="flex items-center gap-1">
-                            <Users className="w-4 h-4" />
-                            {room.participant_count} / {room.max_participants} players
+                            <Users className="w-3.5 h-3.5" />
+                            {room.participant_count} / {room.max_participants}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Trophy className="w-4 h-4" />
+                            <Trophy className="w-3.5 h-3.5" />
                             {room.submission_count} submissions
                           </span>
                           {isActive && (
-                            <span className="flex items-center gap-1 text-orange-600">
-                              <Clock className="w-4 h-4" />
+                            <span className="flex items-center gap-1 text-amber-600 font-semibold">
+                              <Clock className="w-3.5 h-3.5" />
                               {getTimeRemaining(room.expires_at)}
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full md:w-auto">
                         {isActive && (
                           <button
                             onClick={() => rejoinRoom(room.pin)}
-                            className="px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                            className="flex-1 md:flex-none px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
                           >
-                            <Play className="w-4 h-4" />
+                            <Play className="w-3.5 h-3.5" />
                             Rejoin
                           </button>
                         )}
                         <button
                           onClick={() => viewRoomDetail(room.pin)}
-                          className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                          className="flex-1 md:flex-none px-3.5 py-2 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-lg text-sm font-semibold transition-colors"
                         >
                           View Details
                         </button>
@@ -703,5 +672,16 @@ const Board = () => {
     </div>
   );
 };
+
+/** Small reusable section divider/heading in the Queezy style. */
+const SectionHeader = ({ icon, label }) => (
+  <div className="flex items-center gap-3 mb-4 mt-2">
+    <div className="w-8 h-8 rounded-lg bg-[#f4f0ff] text-[#7c5cff] flex items-center justify-center">
+      {icon}
+    </div>
+    <h2 className="text-base md:text-lg font-bold text-slate-900">{label}</h2>
+    <div className="flex-1 h-px bg-slate-200" />
+  </div>
+);
 
 export default Board;

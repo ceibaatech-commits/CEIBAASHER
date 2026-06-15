@@ -2,8 +2,8 @@ import React from 'react';
 import { Lightbulb, Star, Zap, Clock, Brain, Award } from 'lucide-react';
 
 /**
- * AI Insights + Recommended Tests section of the Board dashboard.
- * Extracted from Board.js for maintainability. Pure presentational.
+ * AI Insights + Recommended Tests — light Queezy aesthetic.
+ * Two-column on desktop, stacked on mobile.
  */
 const BoardInsights = ({
   loadingInsights,
@@ -11,81 +11,78 @@ const BoardInsights = ({
   recommendedTests,
   onStartRecommendedTest,
 }) => {
+  const insightCard = (icon, label, body, accent) => (
+    <div className={`flex items-start gap-3 p-3 rounded-xl border ${accent.bg} ${accent.border}`}>
+      <div className={`shrink-0 w-9 h-9 rounded-lg ${accent.iconBg} flex items-center justify-center`}>
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className={`text-xs font-bold ${accent.label}`}>{label}</div>
+        <p className="text-sm text-slate-700 mt-0.5 leading-snug">{body}</p>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6" data-testid="board-insights-section">
       {/* AI Insights */}
-      <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <Lightbulb className="w-5 h-5 text-amber-400" />
+      <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-base md:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Lightbulb className="w-5 h-5 text-amber-500" />
             AI Insights
           </h3>
-          <span className="px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full text-xs font-medium border border-amber-500/30">AI Powered</span>
+          <span className="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold uppercase tracking-wide">AI Powered</span>
         </div>
 
         {loadingInsights ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
           </div>
         ) : aiInsights ? (
           <div className="space-y-3">
-            {/* Strengths */}
-            {aiInsights.strengths?.slice(0, 2).map((s, i) => (
-              <div key={s.area || `strength-${i}`} className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Star className="w-4 h-4 text-emerald-400" />
-                  <span className="font-semibold text-emerald-300">{s.area}</span>
-                </div>
-                <p className="text-sm text-emerald-200/70">{s.description}</p>
-              </div>
-            ))}
-
-            {/* Weaknesses */}
-            {aiInsights.weaknesses?.slice(0, 1).map((w, i) => (
-              <div key={w.area || `weakness-${i}`} className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Zap className="w-4 h-4 text-amber-400" />
-                  <span className="font-semibold text-amber-300">{w.area}</span>
-                </div>
-                <p className="text-sm text-amber-200/70">{w.description}</p>
-              </div>
-            ))}
-
-            {/* Best Study Time */}
-            {aiInsights.best_study_time && (
-              <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Clock className="w-4 h-4 text-blue-400" />
-                  <span className="font-semibold text-blue-300">Best Study Time</span>
-                </div>
-                <p className="text-sm text-blue-200/70">{aiInsights.best_study_time.time}</p>
+            {aiInsights.strengths?.slice(0, 2).map((s, i) =>
+              <div key={s.area || `strength-${i}`}>
+                {insightCard(
+                  <Star className="w-4 h-4 text-emerald-600" />,
+                  s.area, s.description,
+                  { bg: 'bg-emerald-50', border: 'border-emerald-100', iconBg: 'bg-emerald-100', label: 'text-emerald-700' }
+                )}
               </div>
             )}
-
-            {/* Tip */}
-            {aiInsights.tip_of_the_day && (
-              <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Brain className="w-4 h-4 text-purple-400" />
-                  <span className="font-semibold text-purple-300">Tip of the Day</span>
-                </div>
-                <p className="text-sm text-purple-200/70">{aiInsights.tip_of_the_day}</p>
+            {aiInsights.weaknesses?.slice(0, 1).map((w, i) =>
+              <div key={w.area || `weakness-${i}`}>
+                {insightCard(
+                  <Zap className="w-4 h-4 text-amber-600" />,
+                  w.area, w.description,
+                  { bg: 'bg-amber-50', border: 'border-amber-100', iconBg: 'bg-amber-100', label: 'text-amber-700' }
+                )}
               </div>
+            )}
+            {aiInsights.best_study_time && insightCard(
+              <Clock className="w-4 h-4 text-sky-600" />,
+              'Best Study Time', aiInsights.best_study_time.time,
+              { bg: 'bg-sky-50', border: 'border-sky-100', iconBg: 'bg-sky-100', label: 'text-sky-700' }
+            )}
+            {aiInsights.tip_of_the_day && insightCard(
+              <Brain className="w-4 h-4 text-[#7c5cff]" />,
+              'Tip of the Day', aiInsights.tip_of_the_day,
+              { bg: 'bg-[#f4f0ff]', border: 'border-violet-100', iconBg: 'bg-violet-100', label: 'text-[#7c5cff]' }
             )}
           </div>
         ) : (
-          <div className="text-center py-8 text-emerald-200/50">
-            <Lightbulb className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>Complete more quizzes to get AI insights</p>
+          <div className="text-center py-8 text-slate-400">
+            <Lightbulb className="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">Complete more quizzes to get AI insights</p>
           </div>
         )}
       </div>
 
       {/* Recommended Tests */}
-      <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <Award className="w-5 h-5 text-emerald-400" />
+      <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-base md:text-lg font-bold text-slate-900 flex items-center gap-2">
+            <Award className="w-5 h-5 text-[#7c5cff]" />
             Recommended for You
           </h3>
         </div>
@@ -95,26 +92,26 @@ const BoardInsights = ({
             {recommendedTests.slice(0, 4).map((test, index) => (
               <div
                 key={test.id || test.title || `rec-${index}`}
-                className="p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-emerald-500/30 transition-all cursor-pointer group"
+                className="p-4 bg-slate-50 hover:bg-[#f4f0ff] border border-slate-100 hover:border-violet-200 rounded-xl transition-all cursor-pointer group"
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-white group-hover:text-emerald-400 transition-colors">{test.title}</h4>
-                    <p className="text-sm text-emerald-200/60">{test.description}</p>
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-slate-900 group-hover:text-[#7c5cff] transition-colors truncate">{test.title}</h4>
+                    <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{test.description}</p>
                   </div>
-                  <div className="flex items-center gap-1 px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-bold border border-emerald-500/30 ml-2">
+                  <div className="shrink-0 px-2.5 py-1 bg-[#7c5cff] text-white rounded-full text-xs font-bold">
                     {test.match_percent}%
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex gap-2 text-xs">
-                    <span className="px-2 py-1 bg-white/10 text-white/70 rounded-full border border-white/10">{test.duration}</span>
-                    <span className="px-2 py-1 bg-white/10 text-white/70 rounded-full border border-white/10">{test.questions} Q</span>
-                    <span className={`px-2 py-1 rounded-full border ${
-                      test.difficulty === 'Easy' ? 'bg-green-500/20 text-green-300 border-green-500/30' :
-                      test.difficulty === 'Medium' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
-                      test.difficulty === 'Hard' ? 'bg-red-500/20 text-red-300 border-red-500/30' :
-                      'bg-white/10 text-white/70 border-white/20'
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                    <span className="px-2 py-0.5 bg-white text-slate-600 rounded-full border border-slate-200">{test.duration}</span>
+                    <span className="px-2 py-0.5 bg-white text-slate-600 rounded-full border border-slate-200">{test.questions} Q</span>
+                    <span className={`px-2 py-0.5 rounded-full border ${
+                      test.difficulty === 'Easy' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      test.difficulty === 'Medium' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      test.difficulty === 'Hard' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+                      'bg-white text-slate-600 border-slate-200'
                     }`}>{test.difficulty}</span>
                   </div>
                   <button
@@ -122,7 +119,7 @@ const BoardInsights = ({
                       e.stopPropagation();
                       onStartRecommendedTest(test);
                     }}
-                    className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition-all"
+                    className="px-4 py-1.5 bg-[#7c5cff] text-white text-xs font-bold rounded-lg hover:bg-[#6a4ce4] transition-colors shrink-0"
                   >
                     Start
                   </button>
@@ -131,9 +128,9 @@ const BoardInsights = ({
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-emerald-200/50">
-            <Award className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>Complete quizzes to get personalized recommendations</p>
+          <div className="text-center py-8 text-slate-400">
+            <Award className="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">Complete quizzes to get personalized recommendations</p>
           </div>
         )}
       </div>

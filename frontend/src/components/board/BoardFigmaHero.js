@@ -272,30 +272,59 @@ const BoardFigmaHero = ({
                 </div>
               </div>
 
-              {/* Top performance by category */}
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-bold text-slate-800">Top performance by category</h4>
+              {/* Top performance by category — vertical bars like Figma */}
+              <div className="mt-6 rounded-2xl bg-gradient-to-br from-[#7c5cff] to-[#6a4ce4] p-5 text-white">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-bold leading-tight">
+                    Top performance<br />by category
+                  </h4>
+                  <div className="w-9 h-9 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center">
+                    <Trophy className="w-4 h-4" />
+                  </div>
                 </div>
                 {subjectMastery.length > 0 ? (
-                  <div className="space-y-3">
-                    {subjectMastery.slice(0, 4).map((s) => (
-                      <div key={s.subject}>
-                        <div className="flex justify-between mb-1 text-xs">
-                          <span className="font-medium text-slate-700 truncate">{s.subject}</span>
-                          <span className="font-bold text-slate-900">{s.mastery}%</span>
-                        </div>
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full bg-gradient-to-r ${s.gradient || 'from-violet-500 to-violet-600'} rounded-full transition-all duration-500`}
-                            style={{ width: `${s.mastery}%` }}
-                          />
-                        </div>
+                  <>
+                    {/* Legend */}
+                    <div className="flex flex-wrap items-center gap-3 text-xs mb-4">
+                      {subjectMastery.slice(0, 3).map((s, i) => (
+                        <span key={s.subject} className="inline-flex items-center gap-1.5">
+                          <span className={`w-2 h-2 rounded-full ${
+                            i === 0 ? 'bg-rose-300' : i === 1 ? 'bg-sky-300' : 'bg-violet-200'
+                          }`} />
+                          <span className="font-medium">{s.subject}</span>
+                        </span>
+                      ))}
+                    </div>
+                    {/* Y-axis labels + vertical bars */}
+                    <div className="relative h-32 flex items-end gap-4 pl-10 pr-2 border-l border-b border-white/15">
+                      {/* Y axis labels */}
+                      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] font-medium text-white/60 pr-1">
+                        <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
                       </div>
-                    ))}
-                  </div>
+                      {subjectMastery.slice(0, 3).map((s, i) => {
+                        const barColor = i === 0 ? 'bg-rose-300' : i === 1 ? 'bg-sky-300' : 'bg-violet-200';
+                        return (
+                          <div key={s.subject} className="flex-1 flex flex-col items-center justify-end h-full">
+                            <span className="text-[10px] font-bold mb-1">{s.mastery}%</span>
+                            <div
+                              className={`w-full max-w-[40px] rounded-t-lg ${barColor} transition-all duration-700`}
+                              style={{ height: `${Math.max(s.mastery, 4)}%` }}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {/* Subject labels under bars */}
+                    <div className="flex gap-4 pl-8 pr-2 mt-2 text-[10px] text-white/80 font-medium">
+                      {subjectMastery.slice(0, 3).map((s) => (
+                        <span key={s.subject} className="flex-1 text-center truncate">
+                          {s.tests_taken} tests
+                        </span>
+                      ))}
+                    </div>
+                  </>
                 ) : (
-                  <p className="text-xs text-slate-400 text-center py-6">
+                  <p className="text-xs text-white/70 text-center py-6">
                     Complete a quiz to see category breakdown.
                   </p>
                 )}
