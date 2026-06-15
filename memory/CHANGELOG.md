@@ -2,6 +2,34 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — Messenger Premium Redesign (Immersive Chat + Adaptive Theme) — COMPLETE
+- [x] **`/app/frontend/src/pages/Messages.js` — full UI rewrite (~960 lines)** preserving all socket.io / axios state logic but replacing the JSX rendering.
+  - **Immersive chat (route `/messages/:conversationId`)** — `fixed inset-0 z-[100]` container, `100dvh` height with `visualViewport` keyboard sync, hides global `<Header />` and `<MobileBottomNav>` via `body[data-chat-active="true"]` CSS rule.
+  - **Light / Dark adaptive theme** — `useChatTheme` hook reads `prefers-color-scheme` + per-user override stored in `localStorage` (`ceibaa.chat.theme` = light/dark/system). In-chat theme picker (Sun/Moon icon top-right) lets user pin a preference.
+  - **Single brand accent** — replaced the clashing cyan/blue/purple/pink gradient mess with a single `#5B5BF0 → #7C3AED` violet gradient used ONLY on the user's outgoing bubbles and the Send FAB.
+  - **Asymmetric bubbles** — outgoing bubbles flatten bottom-right corner to 6px (only the LAST bubble of a streak), incoming bubbles flatten bottom-left. Sender name appears only on the FIRST incoming bubble of a same-sender streak (groups only). Avatar appears only on the LAST incoming bubble of a streak.
+  - **Day separators** (Today / Yesterday / weekday / Mon DD) injected between message clusters via a memoized `renderableMessages` pre-pass.
+  - **System messages** rendered as slim centered muted pills (no border).
+  - **Sticky bottom input** — `padding-bottom: calc(10px + env(safe-area-inset-bottom))` so the Send button always clears the iOS home indicator and Safari bottom chrome. Auto-grow `<textarea>` (1 → 5 lines, then internal scroll). Send button is `44×44`, gradient when active, muted when input empty.
+  - **Receipts** — `Check` / `CheckCheck` brand-violet only when read; only rendered on the LAST outgoing bubble of a streak (less visual noise).
+  - **Gestures** — touchstart/touchmove on the chat header for swipe-down-to-close (threshold 80px) with live transform/opacity feedback; left-edge swipe (touchstart x<22, dx>80, |dy|<60) also closes the chat. Explicit collapse-arrow button top-right (`data-testid="chat-collapse-btn"`).
+  - **Jump-to-latest pill** — sticky bottom-right `↓ N new` pill appears when new incoming msg arrives while user is scrolled up.
+  - **Typing indicator** — 3-dot pulsing animation in an incoming-style bubble.
+  - **Open animation** — `chat-slide-in` (220ms spring) on mount, respects `prefers-reduced-motion`.
+- [x] **Messages list (route `/messages`)** redesigned light: `max-w-2xl` centered, `text-[22px] font-bricolage` title, soft purple ghost `New group` pill, neutral pill search (h-11, rounded-2xl), 72px-tall conversation rows with brand-tinted group avatar, presence dot ring against bg, unread badge in single brand violet.
+- [x] **Top-gap fix** — App.js root already wraps everything with `paddingTop: 72px`; removed the redundant `paddingTop: 88` from `<main>` (was double-counting) — gap between header bottom and "Messages" title now measured at **18px** (was ~88-140px on mobile).
+- [x] **Fonts** — Added `Bricolage Grotesque` + `Fraunces` to `/app/frontend/public/index.html` (Google Fonts CDN) and utility classes `.font-bricolage`, `.font-fraunces`, `.font-geist` in `/app/frontend/src/index.css`.
+
+### Feb 15, 2026 — SoloPractice Results dynamic score themes — IMPLEMENTED (manual user verification pending)
+- [x] **`/app/frontend/src/pages/SoloPractice.js` `quizState === 'results'` block fully redesigned** with three dynamic themes driven by `getResultTheme()`:
+  - **HIGH (≥75%) "Forest Focus"** — deep-green `#0F2A1D` hero, sage accents `#A8C695`, headline *"You mastered this."*, eyebrow chip *Forest Focus*.
+  - **AVG (45-74%) "Japandi"** — sage `#9CAE8C` hero, ink-black text `#1A1A1A`, headline *"Solid effort — refine the gaps."*, eyebrow chip *Japandi*.
+  - **LOW (<45%) "Sunset Reset"** — ink-black `#1B1A18` hero with warm cream `#F2E4CC` text and amber `#E8B27A` accents, headline *"Every expert was once a beginner."*, eyebrow chip *Sunset Reset*.
+  - Big score uses **Fraunces** variable font (`font-fraunces`, `opsz 144`, 88-128px); headline + buttons use **Bricolage Grotesque**.
+  - Standardized button sizes: `h-12`, `rounded-2xl`, Practice Again (primary, theme-tinted) + More Topics (secondary white).
+  - data-testids added: `solo-practice-results`, `results-hero-card`, `results-score-number`, `results-headline`, `results-back-btn`, `results-correct-count`, `practice-again-btn`, `more-topics-btn` (and `-bottom` variants).
+  - Testing agent was unable to drive automated quiz-completion (demo1 quick-login not exposed via data-testid yet); user opted to verify manually.
+
 ### Feb 13, 2026 — Divya Tutor Phase 2 (progress storage) + Phase 4 (Quiz Mode) — COMPLETE
 - [x] **New backend file `/app/backend/divya_progress_routes.py`** — prefix `/divya/progress`, hybrid cookie+bearer auth via `get_user_id_from_request` from `profile_routes`. Endpoints:
   - `POST /session/start` — create `divya_sessions` row, returns `{session_id}`
