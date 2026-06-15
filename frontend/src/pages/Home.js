@@ -988,6 +988,7 @@ const Home = () => {
       {/* Floating Action Button - Mobile */}
       <button
         onClick={() => navigate('/join-room')}
+        data-create-post-fab
         className="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center z-50 hover:scale-110 transition-transform"
       >
         <Plus className="w-7 h-7 text-white" />

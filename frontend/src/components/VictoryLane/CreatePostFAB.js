@@ -321,6 +321,7 @@ const CreatePostFAB = ({
         }}
         aria-label={showCreateMenu ? 'Close create menu' : 'Create a post'}
         data-testid="create-post-fab"
+        data-create-post-fab
       >
         {/* Pulsing aura so it's never missed */}
         {!showCreateMenu && (
