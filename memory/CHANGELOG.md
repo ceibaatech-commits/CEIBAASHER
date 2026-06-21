@@ -2,6 +2,26 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — Migration script: lowercase + trim `class_chapters` — READY
+- [x] **New file `/app/backend/scripts/migrate_class_chapters_lowercase_board.py`** — one-time, idempotent migration that:
+  - Lower-cases every `class_chapters.board` value (e.g. legacy `"HBSE"`, `"CBSE"`, `"HBSE "` → `"hbse"`, `"cbse"`).
+  - Trims `class_name`, `subject`, `chapter_name` of stray whitespace.
+  - Uses a single `bulk_write` so it runs in seconds even on large prod collections.
+  - Prints a before/after distribution table for transparency.
+- [x] **Safety**: supports `--dry-run` flag (queues ops, reports counts, writes nothing). Idempotent — re-runs report `"Nothing to do"` and skip the bulk_write entirely.
+- [x] **Verified on preview** with 4 deliberately dirty seed rows (mixed `HBSE`/`hbse`/`CBSE`/`rbse`, trailing spaces in 4 text fields):
+  - First run: `modified=3, matched=3` → final distribution `hbse:2, cbse:1, rbse:1`, all text fields trimmed.
+  - Second run: `0 ops queued`, exits without writes (idempotent ✅).
+- [x] **Usage on production**:
+  ```bash
+  cd /app/backend
+  # Preview the changes first (recommended)
+  python scripts/migrate_class_chapters_lowercase_board.py --dry-run
+  # Apply
+  python scripts/migrate_class_chapters_lowercase_board.py
+  ```
+  Read path was already case-insensitive (see prior changelog entry), so this is purely cleanup — but it lets future queries use exact-match indexes and produces cleaner logs.
+
 ### Feb 15, 2026 — Bug fix: Chapter Manager → Exam Sheet Manager → Student frontend data flow broken — RESOLVED
 - **Reproduction (matches user's IMG_3228 / IMG_3229 / IMG_3230 on `ceibaa.in`):**
   - Admin adds a chapter via **Class Chapter Manager** (Board=HBSE, Class 6, Science, Chapter 3 *"तन्तु से वस्त्र तक"*) → success toast.
