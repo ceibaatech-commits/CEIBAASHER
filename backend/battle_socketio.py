@@ -49,6 +49,9 @@ async def disconnect(sid):
     # Cleanup activity tracking
     user_activity.pop(sid, None)
 
+    # Capture active battle BEFORE cleanup so opponent gets notified reliably.
+    battle = matchmaking_manager.get_player_battle(sid)
+
     # Cleanup matchmaking (1v1 battles)
     matchmaking_manager.cleanup_player(sid)
 
@@ -70,10 +73,26 @@ async def disconnect(sid):
     except Exception as e:
         print(f"[DISCONNECT] rematch cleanup error: {e}")
 
-    # Find battle room and notify opponent if in matched battle
-    battle = matchmaking_manager.get_player_battle(sid)
+    # Notify opponent if user dropped during a matched 1v1 battle.
+    # If this player already finished (battle-complete sent), avoid a false
+    # "opponent left" event on the remaining player's in-progress UI.
     if battle:
-        await sio.emit('opponent-disconnected', {}, room=battle.room_id, skip_sid=sid)
+        already_completed = False
+        try:
+            if battle.player1.get('socketId') == sid:
+                already_completed = battle.player1.get('finalScore') is not None
+            elif battle.player2.get('socketId') == sid:
+                already_completed = battle.player2.get('finalScore') is not None
+        except Exception:
+            already_completed = False
+
+        if not already_completed:
+            await sio.emit('opponent-disconnected', {}, room=battle.room_id, skip_sid=sid)
+            await sio.emit('opponent-left', {
+                'playerName': 'Opponent',
+                'reason': 'disconnect',
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+            }, room=battle.room_id, skip_sid=sid)
 
     # Find and handle user leaving the battle room
     room = await room_manager.get_user_room(sid)

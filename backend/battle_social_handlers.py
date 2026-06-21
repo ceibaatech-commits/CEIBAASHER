@@ -170,6 +170,46 @@ async def leave_room(sid, data):
     await handle_user_leave(sid, room_id)
 
 
+@sio.on('battle-quit')
+async def battle_quit(sid, data):
+    """Explicit quit signal from 1v1 client before navigation/unmount.
+
+    Ensures opponent is notified immediately even if websocket disconnect arrives late.
+    """
+    try:
+        room_id = data.get('roomId') or data.get('pin')
+        player_name = data.get('playerName', 'Opponent')
+
+        if not room_id:
+            battle = matchmaking_manager.get_player_battle(sid)
+            room_id = battle.room_id if battle else None
+        if not room_id:
+            return
+
+        now_iso = datetime.now(timezone.utc).isoformat()
+        await sio.emit('opponent-left', {
+            'playerName': player_name,
+            'reason': data.get('reason', 'left_quiz'),
+            'timestamp': now_iso,
+        }, room=room_id, skip_sid=sid)
+
+        await sio.emit('chat-message', {
+            'playerName': 'System',
+            'message': f'{player_name} left the battle.',
+            'timestamp': now_iso,
+        }, room=room_id, skip_sid=sid)
+
+        matchmaking_manager.cleanup_player(sid)
+        try:
+            await sio.leave_room(sid, room_id)
+        except Exception:
+            pass
+
+        print(f"[BATTLE_QUIT] {player_name} ({sid}) left room {room_id}")
+    except Exception as e:
+        print(f"[ERROR] battle_quit: {str(e)}")
+
+
 # ==================== MATCHMAKING EVENTS ====================
 
 
@@ -256,6 +296,12 @@ async def find_match(sid, data):
         except Exception:
             pass
 
+        # Fallback identity from payload when authenticate/session is late.
+        if not my_user_id:
+            my_user_id = data.get('userId') or data.get('user_id')
+        if not my_username:
+            my_username = data.get('username') or data.get('name')
+
         # Fetch blocked user ids (both directions) so matchmaking skips them
         blocked_user_ids: set = set()
         if my_user_id:
@@ -315,22 +361,70 @@ async def cancel_match(sid, data=None):
 
 # ==================== REMATCH FLOW ====================
 # When a 1v1 battle ends, either player can request a rematch from the results
-# screen. The opponent has 30 seconds to accept; if both click rematch within
+# screen. The opponent has 15 seconds to accept; if both click rematch within
 # that window we skip the matchmaking queue and create a fresh room directly.
 #
 # In-memory only — once both sockets disconnect, this state is dropped.
 # Shape: { old_room_id: {requester_sid, opponent_sid, expires_at, timeout_task} }
 pending_rematches: dict = {}
-REMATCH_TIMEOUT_SECONDS = 30
+REMATCH_TIMEOUT_SECONDS = 15
+
+# Short-lived snapshot of finished battles so the rematch button still works
+# after the active battle record has been cleared by other lifecycle paths.
+recent_completed_battles: dict = {}
+RECENT_COMPLETED_BATTLE_TTL_SECONDS = 600
+
+
+def _store_recent_completed_battle(room_id: str, battle) -> None:
+    recent_completed_battles[room_id] = {
+        'stored_at': datetime.now(timezone.utc).timestamp(),
+        'players': [
+            {
+                'socketId': battle.player1.get('socketId'),
+                'playerName': battle.player1.get('playerName'),
+                'userId': battle.player1.get('userId'),
+                'username': battle.player1.get('username'),
+            },
+            {
+                'socketId': battle.player2.get('socketId'),
+                'playerName': battle.player2.get('playerName'),
+                'userId': battle.player2.get('userId'),
+                'username': battle.player2.get('username'),
+            },
+        ],
+        'exam': getattr(battle, 'exam', '') or '',
+        'subject': getattr(battle, 'subject', '') or '',
+    }
+
+
+def _get_recent_completed_battle(room_id: str):
+    snapshot = recent_completed_battles.get(room_id)
+    if not snapshot:
+        return None
+    age = datetime.now(timezone.utc).timestamp() - snapshot.get('stored_at', 0)
+    if age > RECENT_COMPLETED_BATTLE_TTL_SECONDS:
+        recent_completed_battles.pop(room_id, None)
+        return None
+    return snapshot
 
 
 async def _expire_rematch(room_id: str):
-    """Auto-cleanup a pending rematch after the timeout. Notifies the requester."""
+    """Auto-cleanup a pending rematch after timeout and notify both parties."""
     try:
         await asyncio.sleep(REMATCH_TIMEOUT_SECONDS)
         pending = pending_rematches.pop(room_id, None)
         if pending and pending.get('requester_sid'):
-            await sio.emit('rematch-timeout', {'roomId': room_id}, room=pending['requester_sid'])
+            await sio.emit(
+                'rematch-timeout',
+                {'roomId': room_id, 'reason': 'Opponent declined the rematch.'},
+                room=pending['requester_sid'],
+            )
+        if pending and pending.get('opponent_sid'):
+            await sio.emit(
+                'rematch-expired',
+                {'roomId': room_id, 'reason': 'Rematch request expired.'},
+                room=pending['opponent_sid'],
+            )
             print(f"[REMATCH] Timeout for room {room_id}")
     except asyncio.CancelledError:
         pass  # Cancelled because opponent accepted/declined in time
@@ -342,8 +436,40 @@ def _get_battle_players(room_id: str):
     """Return (p1, p2) from active_battles (dicts with socketId/playerName/userId/username)."""
     battle = matchmaking_manager.get_battle(room_id)
     if not battle:
-        return None, None
+        snapshot = _get_recent_completed_battle(room_id)
+        if not snapshot:
+            return None, None
+        players = snapshot.get('players') or []
+        if len(players) < 2:
+            return None, None
+        return players[0], players[1]
     return battle.player1, battle.player2
+
+
+async def _validate_rematch_pairing(requester: dict, opponent: dict):
+    """Return (allowed: bool, reason: str) for rematch eligibility."""
+    requester_user_id = requester.get('userId')
+    opponent_user_id = opponent.get('userId')
+
+    # If both user IDs are present, never allow same-account rematches.
+    if requester_user_id and opponent_user_id and str(requester_user_id) == str(opponent_user_id):
+        return False, 'You cannot battle your own account.'
+
+    # Respect blocks in both directions.
+    if requester_user_id and opponent_user_id:
+        try:
+            block_doc = await db.blocks.find_one({
+                '$or': [
+                    {'blocker_id': requester_user_id, 'blocked_id': opponent_user_id},
+                    {'blocker_id': opponent_user_id, 'blocked_id': requester_user_id},
+                ]
+            })
+            if block_doc:
+                return False, 'Rematch unavailable due to privacy settings.'
+        except Exception as e:
+            print(f"[REMATCH] block check error: {e}")
+
+    return True, ''
 
 
 @sio.on('rematch-request')
@@ -364,6 +490,24 @@ async def rematch_request(sid, data):
         elif p2.get('socketId') == sid:
             requester, opponent = p2, p1
         else:
+            # Fallback to user identity so rematch still works if socket IDs got
+            # refreshed while battle state still references old participant sid.
+            requester_user_id = data.get('requesterUserId')
+            if requester_user_id and p1.get('userId') == requester_user_id:
+                requester, opponent = p1, p2
+            elif requester_user_id and p2.get('userId') == requester_user_id:
+                requester, opponent = p2, p1
+            else:
+                await sio.emit('rematch-declined', {'roomId': room_id, 'reason': 'Unable to identify players for rematch.'}, room=sid)
+                return
+
+        if not opponent.get('socketId'):
+            await sio.emit('rematch-declined', {'roomId': room_id, 'reason': 'Opponent is unavailable for rematch.'}, room=sid)
+            return
+
+        allowed, reason = await _validate_rematch_pairing(requester, opponent)
+        if not allowed:
+            await sio.emit('rematch-declined', {'roomId': room_id, 'reason': reason}, room=sid)
             return
 
         existing = pending_rematches.get(room_id)
@@ -376,7 +520,7 @@ async def rematch_request(sid, data):
             await _create_rematch_room(room_id, requester, opponent)
             return
 
-        # Otherwise: first request — notify the opponent and start the 30s clock
+        # Otherwise: first request — notify the opponent and start the timeout
         task = asyncio.create_task(_expire_rematch(room_id))
         pending_rematches[room_id] = {
             'requester_sid': sid,
@@ -391,6 +535,31 @@ async def rematch_request(sid, data):
         }, room=opponent.get('socketId'))
         await sio.emit('rematch-pending', {'roomId': room_id, 'expiresIn': REMATCH_TIMEOUT_SECONDS}, room=sid)
         print(f"[REMATCH] {requester.get('playerName')} requested rematch in room {room_id}")
+
+        # Push a persistent in-app notification so the opponent sees it in their
+        # notification bell even if they navigated away from the results screen.
+        opponent_user_id = opponent.get('userId')
+        if opponent_user_id:
+            try:
+                import uuid as _uuid
+                from social_socketio import send_notification as _push_notif
+                requester_name = requester.get('playerName') or 'Someone'
+                notif_doc = {
+                    'id': str(_uuid.uuid4()),
+                    'user_id': opponent_user_id,
+                    'type': 'challenge',
+                    'actor_id': requester.get('userId'),
+                    'actor_name': requester_name,
+                    'actor_avatar': '',
+                    'content': f"{requester_name} challenged you to a rematch! Open Ceibaa to respond.",
+                    'reference_id': room_id,
+                    'is_read': False,
+                    'created_at': datetime.now(timezone.utc).isoformat(),
+                }
+                await db.notifications.insert_one(dict(notif_doc))
+                await _push_notif(opponent_user_id, notif_doc)
+            except Exception as _e:
+                print(f"[REMATCH] notification error: {_e}")
     except Exception as e:
         print(f"[ERROR] rematch_request: {e}")
 
@@ -422,6 +591,14 @@ async def rematch_accept(sid, data):
             requester, opponent = p1, p2
         else:
             requester, opponent = p2, p1
+
+        allowed, reason = await _validate_rematch_pairing(requester, opponent)
+        if not allowed:
+            if pending.get('requester_sid'):
+                await sio.emit('rematch-declined', {'roomId': room_id, 'reason': reason}, room=pending['requester_sid'])
+            await sio.emit('rematch-declined', {'roomId': room_id, 'reason': reason}, room=sid)
+            return
+
         await _create_rematch_room(room_id, requester, opponent)
     except Exception as e:
         print(f"[ERROR] rematch_accept: {e}")
@@ -440,8 +617,9 @@ async def rematch_decline(sid, data):
         task = pending.get('timeout_task')
         if task:
             task.cancel()
+        decline_reason = (data or {}).get('reason') or 'Opponent declined the rematch.'
         if pending.get('requester_sid'):
-            await sio.emit('rematch-declined', {'roomId': room_id, 'reason': 'Opponent declined'}, room=pending['requester_sid'])
+            await sio.emit('rematch-declined', {'roomId': room_id, 'reason': decline_reason}, room=pending['requester_sid'])
         print(f"[REMATCH] Declined for room {room_id}")
     except Exception as e:
         print(f"[ERROR] rematch_decline: {e}")
@@ -521,8 +699,12 @@ async def battle_answer(sid, data):
     try:
         room_id = data.get('roomId')
         question_id = data.get('questionId')
+        question_index = data.get('questionIndex')
         answer = data.get('answer')
         time_taken = data.get('timeTaken', 0)
+        score = data.get('score')
+        outcome = data.get('outcome')
+        is_correct = data.get('isCorrect')
 
         battle = matchmaking_manager.get_battle(room_id)
         if not battle:
@@ -546,9 +728,19 @@ async def battle_answer(sid, data):
         else:
             return
 
-        # Notify opponent
+        # Notify opponent with live progress fields when available so the
+        # frontend can update the opponent score card in real time.
         await sio.emit('opponent-answered', {
-            'playerName': player_name
+            'playerName': player_name,
+            'playerId': sid,
+            'questionId': question_id,
+            'questionIndex': question_index,
+            'answer': answer,
+            'timeTaken': time_taken,
+            'score': score,
+            'newScore': score,
+            'outcome': outcome,
+            'isCorrect': is_correct,
         }, room=room_id, skip_sid=sid)
 
     except Exception as e:
@@ -717,9 +909,18 @@ async def battle_complete(sid, data):
             data.get('exam', ''), data.get('subject', ''), player_name,
         )
 
+        # Preserve the finished battle briefly so the rematch button can still
+        # resolve the opponent even if the active battle record is cleared.
+        _store_recent_completed_battle(room_id, battle)
+
         # Notify opponent
         await sio.emit('opponent-score-update',
-                       {'playerName': player_name, 'score': final_score},
+                       {
+                           'playerName': player_name,
+                           'score': final_score,
+                           'completed': True,
+                           'totalQuestions': total_questions,
+                       },
                        room=room_id, skip_sid=sid)
 
         print(f"[BATTLE_COMPLETE] {player_name} finished with {final_score} pts in {room_id}")

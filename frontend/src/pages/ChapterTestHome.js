@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { BookOpen, Award, GraduationCap, ArrowRight, Sparkles, Zap, Target, BarChart3, Smartphone, Users, Bell, Clock, ChevronRight } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -30,13 +30,8 @@ const CLASS_DATA = [
 ];
 
 const STATE_BOARDS = [
-  { name: 'Haryana Board', abbr: 'HBSE', logo: 'https://bseh.org.in/logo.png' },
-  { name: 'Rajasthan Board', abbr: 'RBSE', logo: 'https://rajeduboard.rajasthan.gov.in/Images/logo-bw.jpg' },
-  { name: 'Bihar Board', abbr: 'BSEB', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurIRzAozqqvB6oeu6AtsBKajPXAcneI5cfKH3AIJPwQiRss722qGPjc&s=10' },
   { name: 'Tamil Nadu Board', abbr: 'TNBSE', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQ-xL8bBH8V0muviqy4ugfn8z3fjC-9RTDAtOkSg4xRky7-GbkbY8nmM&s=10' },
-  { name: 'UP Board', abbr: 'UPMSP', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH0-G5YTSz055LClxVm5HMPOXdk9YkJUz15fWpWxI2KuK9lCHuba85pRI&usqp=CAE&s' },
   { name: 'Maharashtra Board', abbr: 'MSBSHSE', logo: 'https://mahahsscboard.in/boardlogo.svg' },
-  { name: 'MP Board', abbr: 'MPBSE', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLa5vNIMOo1x4zzw6gDoPw8j-uZ0ZOyCQCS3ojKlpxIKwOJxI4ERIUELnm&s=10' },
   { name: 'West Bengal Board', abbr: 'WBBSE', logo: 'https://wbbse.wb.gov.in/img/logo.png' },
 ];
 
@@ -51,22 +46,94 @@ const FEATURES = [
 
 const ChapterTestHome = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
 
+  const queryBoard = new URLSearchParams(location.search).get('board') || 'cbse';
+  const [selectedBoard, setSelectedBoard] = useState(queryBoard);
+
+  useEffect(() => {
+    setSelectedBoard(queryBoard);
+  }, [queryBoard]);
+
+  const boardMeta = {
+    cbse: {
+      label: 'CBSE',
+      logo: 'https://www.cbse.gov.in/images//logo.png',
+      hero: 'NCERT Aligned · CBSE 2026',
+      classesText: 'Classes 6–12',
+      classRangeText: '6, 7, 8, 9, 10, 11 & 12',
+      shortClassText: 'Class 6 to 12'
+    },
+    rbse: {
+      label: 'Rajasthan Board',
+      logo: 'https://rajeduboard.rajasthan.gov.in/Images/logo-bw.jpg',
+      hero: 'RBSE Aligned · Rajasthan Board 2026',
+      classesText: 'Classes 6–10',
+      classRangeText: '6, 7, 8, 9, 10',
+      shortClassText: 'Class 6 to 10'
+    },
+    hbse: {
+      label: 'Haryana Board',
+      logo: 'https://bseh.org.in/logo.png',
+      hero: 'HBSE Aligned · Haryana Board 2026',
+      classesText: 'Classes 6–10',
+      classRangeText: '6, 7, 8, 9, 10',
+      shortClassText: 'Class 6 to 10'
+    },
+    upboard: {
+      label: 'UP Board',
+      logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH0-G5YTSz055LClxVm5HMPOXdk9YkJUz15fWpWxI2KuK9lCHuba85pRI&usqp=CAE&s',
+      hero: 'UP Board Aligned · UPMSP 2026',
+      classesText: 'Classes 6–10',
+      classRangeText: '6, 7, 8, 9, 10',
+      shortClassText: 'Class 6 to 10'
+    },
+    bseb: {
+      label: 'Bihar Board',
+      logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurIRzAozqqvB6oeu6AtsBKajPXAcneI5cfKH3AIJPwQiRss722qGPjc&s=10',
+      hero: 'Bihar Board Aligned · BSEB 2026',
+      classesText: 'Classes 6–10',
+      classRangeText: '6, 7, 8, 9, 10',
+      shortClassText: 'Class 6 to 10'
+    },
+    mpbse: {
+      label: 'MP Board',
+      logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLa5vNIMOo1x4zzw6gDoPw8j-uZ0ZOyCQCS3ojKlpxIKwOJxI4ERIUELnm&s=10',
+      hero: 'MP Board Aligned · MPBSE 2026',
+      classesText: 'Classes 6–10',
+      classRangeText: '6, 7, 8, 9, 10',
+      shortClassText: 'Class 6 to 10'
+    }
+  };
+  const activeBoard = boardMeta[selectedBoard] || boardMeta.cbse;
+  const boardLabel = activeBoard.label;
+  const boardLogo = activeBoard.logo;
+  const visibleClasses = selectedBoard === 'cbse' ? CLASS_DATA : CLASS_DATA.filter(({ num }) => num <= 10);
+
   const handleClassClick = (classNum) => {
+    const boardQuery = `?board=${selectedBoard}`;
     if (classNum === 11 || classNum === 12) {
-      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+      navigate(`/chapter-tests/class-${classNum}/select-stream${boardQuery}`);
     } else {
-      navigate(`/chapter-tests/class-${classNum}`);
+      navigate(`/chapter-tests/class-${classNum}${boardQuery}`);
     }
   };
 
+  const handleBoardSelect = (boardId) => {
+    setSelectedBoard(boardId);
+    navigate(`/chapter-tests?board=${boardId}`);
+    setTimeout(() => {
+      document.getElementById('class-selection')?.scrollIntoView({ behavior: 'smooth' });
+    }, 0);
+  };
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ fontFamily: "'Outfit', sans-serif", background: '#FDFBF7' }}>
+    <div className="min-h-screen flex flex-col" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' , background: '#FDFBF7' }}>
       <SEO
-        title="Free Chapter-wise MCQs & NCERT Solutions - CBSE Class 6 to 12"
-        description="Practice free chapter-wise MCQs, NCERT solutions, and interactive quizzes for CBSE Class 6, 7, 8, 9, 10, 11 & 12. All subjects covered with instant results."
-        keywords="chapter wise mcq, ncert solutions, cbse class 6 7 8 9 10 11 12, free mcq test, online quiz, ncert mcq"
+        title={`Free Chapter-wise MCQs & Solutions - ${boardLabel} ${activeBoard.shortClassText}`}
+        description={`Practice free chapter-wise MCQs, solutions, and interactive quizzes for ${boardLabel} classes ${activeBoard.classRangeText}. All subjects covered with instant results.`}
+        keywords={`chapter wise mcq, solutions, ${boardLabel.toLowerCase()} class ${activeBoard.classRangeText.replace(/,/g, '')}, free mcq test, online quiz`}
         canonical="https://ceibaa.in/chapter-tests"
       />
       <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
@@ -91,15 +158,16 @@ const ChapterTestHome = () => {
               className="inline-flex items-center gap-2 border-2 border-white/30 bg-white/10 backdrop-blur-sm px-4 py-1.5 rounded-full mb-6"
               data-testid="hero-badge"
             >
+              <img src={boardLogo} alt={`${boardLabel} logo`} className="w-5 h-5 rounded-sm object-contain bg-white" loading="lazy" />
               <span className="w-2 h-2 bg-[#A7F3D0] rounded-full animate-pulse" />
-              <span className="text-white text-xs sm:text-sm font-semibold tracking-wide" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                NCERT Aligned &middot; CBSE 2026
+              <span className="text-white text-xs sm:text-sm font-semibold tracking-wide" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}>
+                {activeBoard.hero}
               </span>
             </div>
 
             <h1
               className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-[1.08] mb-4 drop-shadow-lg"
-              style={{ fontFamily: "'Clash Display', sans-serif", wordSpacing: '0.3em'  }}
+              style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' , wordSpacing: '0.3em'  }}
               data-testid="hero-title"
             >
               Master  Every  Chapter
@@ -110,8 +178,8 @@ const ChapterTestHome = () => {
               
             </h1>
 
-            <p className="text-base sm:text-lg text-gray-200 max-w-xl mx-auto mb-8 leading-relaxed" style={{ fontFamily: "'Outfit', sans-serif" }}>
-              Chapter-wise practice tests for CBSE Classes 6–12. Focused. Free. Built for Indian students.
+            <p className="text-base sm:text-lg text-gray-200 max-w-xl mx-auto mb-8 leading-relaxed" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}>
+              Chapter-wise practice tests for {boardLabel} {activeBoard.classesText}. Focused. Free. Built for Indian students.
             </p>
 
             <button
@@ -119,7 +187,7 @@ const ChapterTestHome = () => {
                 document.getElementById('class-selection')?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="inline-flex items-center gap-2 bg-[#FFD831] text-[#0A0A0A] border-2 border-[#0A0A0A] px-8 py-4 rounded-xl font-bold text-base sm:text-lg shadow-[4px_4px_0px_#0A0A0A] hover:translate-y-1 hover:translate-x-1 hover:shadow-[2px_2px_0px_#0A0A0A] transition-all active:translate-y-1.5"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
+              style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
               data-testid="hero-cta"
             >
               Start Practicing Now
@@ -150,7 +218,7 @@ const ChapterTestHome = () => {
                 <div className="w-8 h-8 sm:w-12 sm:h-12 bg-white border-2 border-[#0A0A0A] rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3 shadow-[2px_2px_0px_#0A0A0A]">
                   <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-[#0A0A0A]" strokeWidth={2.5} />
                 </div>
-                <p className="text-lg sm:text-2xl sm:text-3xl font-bold text-[#0A0A0A]" style={{ fontFamily: "'Clash Display', sans-serif" }}>{val}</p>
+                <p className="text-lg sm:text-2xl sm:text-3xl font-bold text-[#0A0A0A]" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}>{val}</p>
                 <p className="text-xs sm:text-sm text-[#0A0A0A]/70 font-medium mt-0.5">{label}</p>
               </div>
             ))}
@@ -162,7 +230,7 @@ const ChapterTestHome = () => {
           <div className="text-center mb-8 sm:mb-10">
             <h2
               className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0A0A0A] mb-2"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
+              style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
               data-testid="class-selection-title"
             >
               Select Your Class
@@ -171,7 +239,7 @@ const ChapterTestHome = () => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {CLASS_DATA.map(({ num, label }, idx) => {
+            {visibleClasses.map(({ num, label }, idx) => {
               const pastel = PASTEL_CYCLE[idx % PASTEL_CYCLE.length];
               return (
                 <button
@@ -181,10 +249,10 @@ const ChapterTestHome = () => {
                   className={`group bg-white border-2 border-[#0A0A0A] rounded-xl p-5 sm:p-6 shadow-[4px_4px_0px_#0A0A0A] hover:shadow-[6px_6px_0px_#0A0A0A] hover:-translate-y-1 hover:-translate-x-0.5 transition-all cursor-pointer flex flex-col items-center text-center`}
                 >
                   <div className={`w-14 h-14 sm:w-16 sm:h-16 ${pastel.bg} ${pastel.hover} border-2 border-[#0A0A0A] rounded-lg flex items-center justify-center mb-3 shadow-[2px_2px_0px_#0A0A0A] transition-colors`}>
-                    <span className="text-xl sm:text-2xl font-bold text-[#0A0A0A]" style={{ fontFamily: "'Clash Display', sans-serif" }}>{num}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-[#0A0A0A]" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}>{num}</span>
                   </div>
-                  <h3 className="text-sm sm:text-base font-bold text-[#0A0A0A]" style={{ fontFamily: "'Clash Display', sans-serif" }}>{label}</h3>
-                  <p className="text-[10px] sm:text-xs text-gray-400 font-medium mt-0.5 uppercase tracking-wide">CBSE</p>
+                  <h3 className="text-sm sm:text-base font-bold text-[#0A0A0A]" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}>{label}</h3>
+                  <p className="text-[10px] sm:text-xs text-gray-400 font-medium mt-0.5 uppercase tracking-wide">{boardLabel}</p>
                   <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-[#0A0A0A] mt-2 transition-colors" strokeWidth={2.5} />
                 </button>
               );
@@ -192,7 +260,7 @@ const ChapterTestHome = () => {
           </div>
         </section>
 
-        {/* ═══════ STATE BOARDS — Coming Soon ═══════ */}
+        {/* ═══════ STATE BOARDS ═══════ */}
         <section className="relative border-y-2 border-[#0A0A0A] bg-gray-50 py-12 sm:py-16 mb-16 sm:mb-20" data-testid="state-boards-section">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
             {/* Divider label */}
@@ -200,14 +268,46 @@ const ChapterTestHome = () => {
               <div className="flex-1 h-0.5 bg-[#0A0A0A]/10" />
               <span
                 className="text-xs font-semibold text-gray-400 uppercase tracking-[0.08em] whitespace-nowrap"
-                style={{ fontFamily: "'Outfit', sans-serif" }}
+                style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
               >
-                State Boards &mdash; Coming Soon
+                Board Selector
               </span>
               <div className="flex-1 h-0.5 bg-[#0A0A0A]/10" />
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5" data-testid="state-boards-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 mb-6" data-testid="state-boards-grid">
+              {[
+                { id: 'cbse', name: 'CBSE', description: 'Classes 6 to 12', logo: 'https://www.cbse.gov.in/images//logo.png' },
+                { id: 'rbse', name: 'Rajasthan Board', description: 'Classes 6 to 10', logo: 'https://rajeduboard.rajasthan.gov.in/Images/logo-bw.jpg' },
+                { id: 'hbse', name: 'Haryana Board', description: 'Classes 6 to 10', logo: 'https://bseh.org.in/logo.png' },
+                { id: 'upboard', name: 'UP Board', description: 'Classes 6 to 10', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH0-G5YTSz055LClxVm5HMPOXdk9YkJUz15fWpWxI2KuK9lCHuba85pRI&usqp=CAE&s' },
+                { id: 'bseb', name: 'Bihar Board', description: 'Classes 6 to 10', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurIRzAozqqvB6oeu6AtsBKajPXAcneI5cfKH3AIJPwQiRss722qGPjc&s=10' },
+                { id: 'mpbse', name: 'MP Board', description: 'Classes 6 to 10', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLa5vNIMOo1x4zzw6gDoPw8j-uZ0ZOyCQCS3ojKlpxIKwOJxI4ERIUELnm&s=10' },
+              ].map(({ id, name, description, logo }) => (
+                <div
+                  key={id}
+                  data-testid={`state-board-card-${id}`}
+                  onClick={() => handleBoardSelect(id)}
+                  className={`bg-white border-2 rounded-xl p-4 sm:p-5 flex flex-col items-center text-center cursor-pointer transition-all ${selectedBoard === id ? 'border-[#0A0A0A] shadow-[4px_4px_0px_#0A0A0A]' : 'border-gray-300 hover:border-[#0A0A0A]'}`}
+                >
+                  <div className={`w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-lg overflow-hidden flex items-center justify-center mb-2 ${selectedBoard === id ? 'bg-[#A7F3D0]' : 'bg-white'}`}>
+                    {logo ? (
+                      <img src={logo} alt={`${name} logo`} className="w-full h-full object-contain bg-white" loading="lazy" />
+                    ) : (
+                      <BookOpen className="w-6 h-6 text-[#0A0A0A]" />
+                    )}
+                  </div>
+                  <h3 className="text-xs sm:text-sm font-semibold text-gray-600 leading-tight">{name}</h3>
+                  <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{description}</p>
+                  <span className={`inline-flex items-center gap-1 ${selectedBoard === id ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200'} border rounded-full px-2 py-0.5 text-[9px] sm:text-xs font-bold mt-2`}>
+                    <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                    {selectedBoard === id ? 'Selected' : 'Tap to choose'}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5" data-testid="state-boards-grid-legacy">
               {STATE_BOARDS.map(({ name, abbr, logo }) => (
                 <div
                   key={abbr}
@@ -218,11 +318,7 @@ const ChapterTestHome = () => {
                     <img src={logo} alt={`${name} logo`} className="w-full h-full object-contain" loading="lazy" />
                   </div>
                   <h3 className="text-xs sm:text-sm font-semibold text-gray-600 leading-tight">{name}</h3>
-                  <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{abbr} · Classes 6–12</p>
-                  <span className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 border border-yellow-200 rounded-full px-2 py-0.5 text-[9px] sm:text-xs font-bold mt-2">
-                    <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                    Coming Soon
-                  </span>
+                  <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{abbr} · Coming Soon</p>
                 </div>
               ))}
             </div>
@@ -230,13 +326,13 @@ const ChapterTestHome = () => {
             {/* Notify button */}
             <div className="flex justify-center mt-8 sm:mt-10">
               <button
-                onClick={() => toast.success("You'll be notified when your board goes live!")}
+                onClick={() => toast.success(selectedBoard === 'cbse' ? "You'll be notified when your board goes live!" : `${boardLabel} flow is ready.`)}
                 className="inline-flex items-center gap-2 bg-[#FFBDBE] text-[#0A0A0A] border-2 border-[#0A0A0A] rounded-full px-6 py-3 font-bold text-sm shadow-[4px_4px_0px_#0A0A0A] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[2px_2px_0px_#0A0A0A] transition-all"
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
                 data-testid="notify-state-boards-btn"
               >
                 <Bell className="w-4 h-4" strokeWidth={2.5} />
-                Notify Me When My Board Launches
+                {selectedBoard === 'cbse' ? 'Notify Me When My Board Launches' : `${selectedBoard.toUpperCase()} Flow Selected`}
               </button>
             </div>
           </div>
@@ -247,7 +343,7 @@ const ChapterTestHome = () => {
           <div className="text-center mb-8 sm:mb-10">
             <h2
               className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0A0A0A] mb-2"
-              style={{ fontFamily: "'Clash Display', sans-serif" }}
+              style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
             >
               Everything You Need
             </h2>
@@ -264,7 +360,7 @@ const ChapterTestHome = () => {
                 <div className={`w-11 h-11 sm:w-12 sm:h-12 ${color} border-2 border-[#0A0A0A] rounded-lg flex items-center justify-center mb-3 shadow-[2px_2px_0px_#0A0A0A]`}>
                   <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#0A0A0A]" strokeWidth={2.5} />
                 </div>
-                <h4 className="text-sm sm:text-base font-bold text-[#0A0A0A] mb-1" style={{ fontFamily: "'Clash Display', sans-serif" }}>{title}</h4>
+                <h4 className="text-sm sm:text-base font-bold text-[#0A0A0A] mb-1" style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}>{title}</h4>
                 <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{desc}</p>
               </div>
             ))}
@@ -279,13 +375,13 @@ const ChapterTestHome = () => {
               <div className="p-6 sm:p-10 flex flex-col justify-center">
                 <span
                   className="inline-block bg-[#FFD831] text-[#0A0A0A] border-2 border-[#0A0A0A] px-3 py-1 rounded-full text-xs font-bold mb-4 w-fit shadow-[2px_2px_0px_#0A0A0A]"
-                  style={{ fontFamily: "'Outfit', sans-serif" }}
+                  style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
                 >
                   MADE FOR INDIA
                 </span>
                 <h2
                   className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#0A0A0A] mb-4 leading-tight"
-                  style={{ fontFamily: "'Clash Display', sans-serif" }}
+                  style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
                 >
                   Why Ceibaa is Perfect for Indian Students
                 </h2>
@@ -331,7 +427,7 @@ const ChapterTestHome = () => {
             <div className="relative z-10">
               <h2
                 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight"
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
               >
                 Join 50,000+ Students
                 <br />
@@ -343,7 +439,7 @@ const ChapterTestHome = () => {
               <button
                 onClick={() => document.getElementById('class-selection')?.scrollIntoView({ behavior: 'smooth' })}
                 className="inline-flex items-center gap-2 bg-[#FFD831] text-[#0A0A0A] border-2 border-[#FFD831] px-7 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-[4px_4px_0px_#FFD831]/30 hover:translate-y-0.5 hover:shadow-none transition-all"
-                style={{ fontFamily: "'Clash Display', sans-serif" }}
+                style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'  }}
                 data-testid="cta-start-learning"
               >
                 Start Learning Now — It's Free!

@@ -11,6 +11,80 @@ import '../styles/exam-detail-mobile.css';
 
 const API_URL = window.location.origin;
 
+const SoloOperationIcon = ({ className = 'w-5 h-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M5 6H16L19 9V19H5V6Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M16 6V9H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 12H14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M8 15H12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <circle cx="17.5" cy="16.5" r="3" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M17.5 15V18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M16 16.5H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+const RoomConsultIcon = ({ className = 'w-5 h-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+    <circle cx="16" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M3.5 18C3.8 15.9 5.6 14.4 7.8 14.4H8.2C10.4 14.4 12.2 15.9 12.5 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M11.5 18C11.8 15.9 13.6 14.4 15.8 14.4H16.2C18.4 14.4 20.2 15.9 20.5 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <rect x="7" y="19" width="10" height="2" rx="1" fill="currentColor" />
+  </svg>
+);
+
+const BattleInteractIcon = ({ className = 'w-5 h-5' }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="7.5" cy="7.5" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+    <circle cx="16.5" cy="7.5" r="2.5" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M7.5 10.5V14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M16.5 10.5V14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M9 14.5L12 12L15 14.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M5 18.5H10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <path d="M14 18.5H19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+  </svg>
+);
+
+const FocusMapIcon = ({ className = 'w-10 h-10' }) => (
+  <svg viewBox="0 0 48 48" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect x="6" y="9" width="36" height="30" rx="8" stroke="currentColor" strokeWidth="2.4" />
+    <path d="M14 18H20" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M14 24H18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M14 30H22" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <circle cx="30" cy="24" r="7" stroke="currentColor" strokeWidth="2.4" />
+    <circle cx="30" cy="24" r="2.5" fill="currentColor" />
+    <path d="M30 14V11" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M30 37V34" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M40 24H37" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M23 24H20" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+  </svg>
+);
+
+const ArenaPulseIcon = ({ className = 'w-10 h-10' }) => (
+  <svg viewBox="0 0 48 48" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="15" cy="16" r="4" stroke="currentColor" strokeWidth="2.4" />
+    <circle cx="33" cy="16" r="4" stroke="currentColor" strokeWidth="2.4" />
+    <path d="M9 31C9.4 27.9 12 25.6 15.1 25.6H15.9C19 25.6 21.6 27.9 22 31" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M26 31C26.4 27.9 29 25.6 32.1 25.6H32.9C36 25.6 38.6 27.9 39 31" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M20.5 20.5L27.5 20.5" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M24 17L27.5 20.5L24 24" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 32.5V37" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+  </svg>
+);
+
+const InsightGridIcon = ({ className = 'w-10 h-10' }) => (
+  <svg viewBox="0 0 48 48" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect x="7" y="8" width="34" height="32" rx="7" stroke="currentColor" strokeWidth="2.4" />
+    <path d="M14 34V26" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M24 34V18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M34 34V22" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
+    <circle cx="14" cy="23.5" r="1.8" fill="currentColor" />
+    <circle cx="24" cy="15.5" r="1.8" fill="currentColor" />
+    <circle cx="34" cy="19.5" r="1.8" fill="currentColor" />
+    <path d="M14 23.5L24 15.5L34 19.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 const ModernExamSyllabus = () => {
   const { examId } = useParams();
   const navigate = useNavigate();
@@ -98,11 +172,11 @@ const ModernExamSyllabus = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <button 
-            onClick={() => navigate('/victory-lane')} 
+            onClick={() => navigate('/capazoo')} 
             className="flex items-center text-gray-700 hover:text-blue-600 transition-colors min-h-[44px] min-w-[44px] -ml-2 pl-2"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            <span className="font-semibold text-base">Back to Victory Lane</span>
+            <span className="font-semibold text-base">Back to Capazoo</span>
           </button>
         </div>
       </div>
@@ -385,20 +459,20 @@ const ModernExamSyllabus = () => {
                                     e.stopPropagation();
                                     navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`, { state: { subTopic: sub } });
                                   }}
-                                  className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-semibold shadow-sm hover:shadow transition-all"
+                                  className="bg-sky-600 hover:bg-sky-700 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm hover:shadow transition-all inline-flex items-center justify-center"
                                   title="Practice this concept"
                                 >
-                                  📚
+                                  <SoloOperationIcon className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     navigate(`/create-room/${examId}/${topic.syllabus_topic}/${topic.subject}`, { state: { subTopic: sub } });
                                   }}
-                                  className="bg-purple-500 hover:bg-purple-600 text-white px-2 py-0.5 rounded text-xs font-semibold shadow-sm hover:shadow transition-all"
+                                  className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-sm hover:shadow transition-all inline-flex items-center justify-center"
                                   title="Create room for this concept"
                                 >
-                                  🎯
+                                  <RoomConsultIcon className="w-3.5 h-3.5" />
                                 </button>
                               </div>
                             </div>
@@ -412,27 +486,33 @@ const ModernExamSyllabus = () => {
                 <div className="space-y-2">
                   <button 
                     onClick={() => navigate(`/topic-quiz/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-blue-600'} text-white py-2 px-4 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2`}
+                    className={`w-full ${examData?.game_mode ? 'game-play-button bg-gradient-to-r from-sky-600 to-cyan-600' : 'bg-gradient-to-r from-sky-600 to-cyan-600'} text-white py-2.5 px-4 rounded-xl text-sm font-bold tracking-tight hover:shadow-lg transition-all flex items-center justify-center gap-2`}
                     style={{ minHeight: '40px' }}
                   >
-                    <span className="text-base">{examData?.game_mode ? '🎯' : '📚'}</span>
+                    <span className="w-7 h-7 rounded-lg bg-white/20 inline-flex items-center justify-center">
+                      <SoloOperationIcon className="w-4 h-4" />
+                    </span>
                     <span>{examData?.game_mode ? 'Quick Play' : 'Solo Practice'}</span>
                   </button>
                   <div className="grid grid-cols-2 gap-2">
                     <button 
                       onClick={() => navigate(`/create-room/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'battle-button' : 'bg-purple-600'} text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-1`}
+                      className={`${examData?.game_mode ? 'battle-button bg-gradient-to-r from-amber-500 to-orange-500' : 'bg-gradient-to-r from-amber-500 to-orange-500'} text-white py-2.5 px-3 rounded-xl text-sm font-bold tracking-tight hover:shadow-lg transition-all flex items-center justify-center gap-1.5`}
                       style={{ minHeight: '40px' }}
                     >
-                      <span className="text-base">{examData?.game_mode ? '👥' : '🎯'}</span>
+                      <span className="w-6 h-6 rounded-md bg-white/20 inline-flex items-center justify-center">
+                        <RoomConsultIcon className="w-3.5 h-3.5" />
+                      </span>
                       <span>{examData?.game_mode ? 'Team' : 'Room'}</span>
                     </button>
                     <button 
                       onClick={() => navigate(`/matchmaking/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-red-500 to-rose-600' : 'bg-orange-600'} text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-1`}
+                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-rose-600 to-red-600' : 'bg-gradient-to-r from-rose-600 to-red-600'} text-white py-2.5 px-3 rounded-xl text-sm font-bold tracking-tight hover:shadow-lg transition-all flex items-center justify-center gap-1.5`}
                       style={{ minHeight: '40px' }}
                     >
-                      <span className="text-base">⚔️</span>
+                      <span className="w-6 h-6 rounded-md bg-white/20 inline-flex items-center justify-center">
+                        <BattleInteractIcon className="w-3.5 h-3.5" />
+                      </span>
                       <span>{examData?.game_mode ? '1v1' : 'Battle'}</span>
                     </button>
                   </div>
@@ -445,34 +525,40 @@ const ModernExamSyllabus = () => {
 
 
       {/* Why Choose Ceibaa - Features */}
-      <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 md:p-12 mb-12 border border-gray-700">
-        <h2 className="text-3xl font-bold text-white text-center mb-8">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-7 md:p-10 mb-8 border border-slate-700/90">
+        <h2 className="text-3xl font-extrabold tracking-tight text-white text-center mb-7">
           🚀 Why Choose Ceibaa?
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
-            <Target className="w-10 h-10 mb-3" />
-            <h3 className="text-xl font-bold mb-2">Sub-Topic Wise Focus</h3>
-            <p className="text-white/90 text-sm">Master every topic by breaking it into smaller, focused segments</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="bg-gradient-to-br from-sky-600 to-blue-700 rounded-2xl p-6 text-white hover:scale-[1.02] transform transition-all shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-white/16 border border-white/20 inline-flex items-center justify-center mb-4">
+              <FocusMapIcon className="w-9 h-9" />
+            </div>
+            <h3 className="text-xl font-extrabold tracking-tight mb-2">Sub-Topic Wise Focus</h3>
+            <p className="text-white/90 text-sm font-medium">Master every topic by breaking it into smaller, focused segments.</p>
           </div>
 
-          <div className="bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
-            <Zap className="w-10 h-10 mb-3" />
-            <h3 className="text-xl font-bold mb-2">Real-Time Battles</h3>
-            <p className="text-white/90 text-sm">Compete with live opponents and learn faster through competition</p>
+          <div className="bg-gradient-to-br from-rose-600 to-red-700 rounded-2xl p-6 text-white hover:scale-[1.02] transform transition-all shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-white/16 border border-white/20 inline-flex items-center justify-center mb-4">
+              <ArenaPulseIcon className="w-9 h-9" />
+            </div>
+            <h3 className="text-xl font-extrabold tracking-tight mb-2">Real-Time Battles</h3>
+            <p className="text-white/90 text-sm font-medium">Compete with live opponents and learn faster through purposeful competition.</p>
           </div>
 
-          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
-            <BarChart className="w-10 h-10 mb-3" />
-            <h3 className="text-xl font-bold mb-2">Detailed Analytics</h3>
-            <p className="text-white/90 text-sm">Track your progress in every sub-topic with detailed insights</p>
+          <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-6 text-white hover:scale-[1.02] transform transition-all shadow-xl">
+            <div className="w-14 h-14 rounded-2xl bg-white/16 border border-white/20 inline-flex items-center justify-center mb-4">
+              <InsightGridIcon className="w-9 h-9" />
+            </div>
+            <h3 className="text-xl font-extrabold tracking-tight mb-2">Detailed Analytics</h3>
+            <p className="text-white/90 text-sm font-medium">Track your progress in every sub-topic with detailed, actionable insights.</p>
           </div>
         </div>
       </div>
 
       {/* Success Stories & CTA */}
-      <div className="relative overflow-hidden rounded-3xl mb-12">
+      <div className="relative overflow-hidden rounded-3xl mb-8">
         <div className="bg-gradient-to-r from-emerald-500 via-green-600 to-teal-700 p-8 md:p-12">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{

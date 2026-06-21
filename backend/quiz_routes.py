@@ -26,6 +26,7 @@ class QuizStartRequest(BaseModel):
     isClassBased: bool = False
     class_name: Optional[str] = None
     chapter: Optional[str] = None
+    board: Optional[str] = None
     userId: Optional[str] = None  # NEW: User ID for auto-posting results
 
 class QuizSubmitRequest(BaseModel):
@@ -474,16 +475,11 @@ async def get_exam_weightage(exam_id: str):
     """
     Get topic-wise weightage analysis for an exam
     """
-    from motor.motor_asyncio import AsyncIOMotorClient
-    import os
+    from exam_structure_routes import db
     
     try:
-        # Create direct database connection with explicit values
-        mongo_url = os.getenv('MONGO_URL') or 'mongodb://localhost:27017'
-        db_name = os.getenv('DB_NAME') or 'test_database'
-        
-        client = AsyncIOMotorClient(mongo_url)
-        db = client[db_name]
+        if db is None:
+            raise HTTPException(status_code=500, detail="Database not initialized")
         
         # Get weightage data from database
         weightage = await db.exam_metadata.find_one({
@@ -493,8 +489,6 @@ async def get_exam_weightage(exam_id: str):
         
         # Debug info
         all_metadata = await db.exam_metadata.find({}).to_list(length=10)
-        
-        client.close()
         
         if weightage and isinstance(weightage, dict):
             # Remove MongoDB _id
@@ -513,19 +507,13 @@ async def get_exam_weightage(exam_id: str):
 
 @router.get("/test-weightage-db")
 async def test_weightage_db():
-    from motor.motor_asyncio import AsyncIOMotorClient
-    import os
-    
-    mongo_url = os.getenv('MONGO_URL') or 'mongodb://localhost:27017'
-    db_name = os.getenv('DB_NAME') or 'test_database'
-    
-    client = AsyncIOMotorClient(mongo_url)
-    db = client[db_name]
+    from exam_structure_routes import db
+
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
     
     count = await db.exam_metadata.count_documents({})
     sbi_doc = await db.exam_metadata.find_one({"exam_name": "SBI_PO"})
-    
-    client.close()
     
     return {"count": count, "has_sbi": sbi_doc is not None}
 
@@ -540,9 +528,11 @@ async def get_topics(exam_id: str, subject: str):
 
 @router.post("/start")
 async def start_quiz(request: QuizStartRequest):
-    from motor.motor_asyncio import AsyncIOMotorClient
+    from exam_structure_routes import db
     from google_sheets_service import GoogleSheetsService
-    import os
+
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
     
     exam = request.exam
     subject = request.subject
@@ -554,10 +544,6 @@ async def start_quiz(request: QuizStartRequest):
     source = "demo"
     
     # Check if there's a Google Sheet mapping
-    MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-    DB_NAME = os.getenv("DB_NAME", "test_database")
-    client = AsyncIOMotorClient(MONGO_URL)
-    db = client[DB_NAME]
     
     # Build query based on whether it's class-based or exam-based
     if request.isClassBased and request.class_name and request.chapter:
@@ -604,6 +590,8 @@ async def start_quiz(request: QuizStartRequest):
             "subject": request.subject,
             "chapter": {"$regex": chapter_pattern}
         }
+        if request.board:
+            query["board"] = request.board.lower()
         print(f"🔍 Querying exam_sheets for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
     elif topic:
         # Exam-based query (NEET, JEE, etc.)
@@ -757,6 +745,8 @@ async def start_quiz(request: QuizStartRequest):
                     "subject": request.subject,
                     "chapter": {"$regex": chapter_pattern}
                 }
+                if request.board:
+                    query_filter["board"] = request.board.lower()
                 print(f"🔍 Querying questions for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
             else:
                 # EXAM-BASED QUERY: Build a flexible query that handles both old format (syllabus_topic/subject) 
@@ -798,8 +788,8 @@ async def start_quiz(request: QuizStartRequest):
                     }
                 print(f"🔍 Querying questions collection for EXAM-BASED: exam={exam}, subject={subject}, topic={topic}")
             
-            questions_cursor = db.questions.find(query_filter, {"_id": 0})
-            db_questions = await questions_cursor.to_list(length=None)
+            questions_cursor = db.questions.find(query_filter, {"_id": 0}).limit(200)
+            db_questions = await questions_cursor.to_list(length=200)
             
             if db_questions:
                 questions = db_questions

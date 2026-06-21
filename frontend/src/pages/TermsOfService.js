@@ -53,7 +53,7 @@ const TermsOfService = () => {
               </p>
               <ul className="list-disc list-inside text-gray-600 mt-2 space-y-1">
                 <li>Practice quizzes and mock tests for competitive exams</li>
-                <li>Victory Lane social features for community engagement</li>
+                <li>Capazoo social features for community engagement</li>
                 <li>Live quiz battles and multiplayer competitions</li>
                 <li>Study materials and resources</li>
               </ul>

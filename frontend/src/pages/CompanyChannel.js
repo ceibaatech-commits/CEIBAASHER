@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
+import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Users, Briefcase, Code2, Trophy, Calendar, CheckCircle2, Globe, MapPin, DollarSign, Clock, ChevronRight, Heart, MessageCircle, Share2, Bookmark, Award, TrendingUp, ExternalLink } from 'lucide-react';
@@ -34,6 +35,7 @@ const timeAgo = (d) => {
 
 export default function CompanyChannel() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const [company, setCompany] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -72,12 +74,73 @@ export default function CompanyChannel() {
     } catch {}
   };
 
+  const [messageLoading, setMessageLoading] = useState(false);
+
   const handleFollow = async () => {
     if (!company) return;
+    if (!isAuthenticated?.()) {
+      navigate('/login');
+      return;
+    }
+
+    const wasFollowing = company.is_following;
+    const optimistic = !wasFollowing;
+    const delta = optimistic ? 1 : -1;
+
+    setCompany(prev => ({
+      ...prev,
+      is_following: optimistic,
+      followers_count: Math.max(0, prev.followers_count + delta),
+    }));
+
     try {
-      await axios.post(`${BACKEND_URL}/api/recruitment/follow/${company.id}`, {});
-      setCompany(prev => ({ ...prev, is_following: !prev.is_following, followers_count: prev.is_following ? prev.followers_count - 1 : prev.followers_count + 1 }));
-    } catch (err) { console.error(err); }
+      const { data } = await axios.post(`${BACKEND_URL}/api/recruitment/follow/${company.id}`, {});
+      const following = data.status === 'followed';
+      if (following !== optimistic) {
+        const correction = following ? 1 : -1;
+        setCompany(prev => ({
+          ...prev,
+          is_following: following,
+          followers_count: Math.max(0, prev.followers_count + correction),
+        }));
+      }
+    } catch (err) {
+      const revert = wasFollowing ? 1 : -1;
+      setCompany(prev => ({
+        ...prev,
+        is_following: wasFollowing,
+        followers_count: Math.max(0, prev.followers_count + revert),
+      }));
+      toast.error('Unable to update follow status. Please try again.');
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!company) return;
+    if (!isAuthenticated?.()) {
+      navigate('/login');
+      return;
+    }
+    if (!company.id) {
+      toast.error('Unable to start message. Company target invalid.');
+      return;
+    }
+    setMessageLoading(true);
+    try {
+      const { data } = await axios.post(`${BACKEND_URL}/api/messages/conversations`, {
+        target_user_id: company.id,
+      });
+      if (data?.success && data?.conversation?.id) {
+        navigate(`/messages/${data.conversation.id}`);
+        return;
+      }
+      toast.error('Unable to open conversation.');
+    } catch (err) {
+      console.error('Failed to start recruiter conversation:', err);
+      toast.error('Unable to start message. Please try again.');
+    } finally {
+      setMessageLoading(false);
+    }
   };
 
   if (loading) return <div className="min-h-screen bg-slate-50"><Header isLoggedIn={isAuthenticated?.()} user={user} /><div className="flex items-center justify-center py-32"><div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div><Footer /></div>;
@@ -99,60 +162,86 @@ export default function CompanyChannel() {
       </div>
 
       {/* ── Channel Header ── */}
-      <div className="max-w-6xl mx-auto px-4 -mt-20 relative z-10">
-        <div className="flex items-end gap-5 flex-wrap">
-          <div className="w-28 h-28 rounded-2xl overflow-hidden border-4 border-white bg-white shadow-2xl flex-shrink-0">
-            <img src={company.logo_url} alt={company.company_name} className="w-full h-full object-cover" />
-          </div>
-          <div className="flex-1 pb-2 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-slate-900 text-2xl md:text-3xl font-extrabold">{company.company_name}</h1>
-              {(company.verified_email || company.verified_gst) && <CheckCircle2 size={22} className="text-blue-500" />}
+      <div className="max-w-[1100px] mx-auto px-6 -mt-20 relative z-10">
+        <div className="rounded-[32px] bg-white border border-slate-200 shadow-xl p-5 md:p-6">
+          <div className="flex flex-col items-center text-center gap-4 md:flex-row md:items-center md:text-left md:justify-between">
+            <div className="flex flex-col items-center gap-4 md:flex-row md:items-center md:gap-5">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 flex-shrink-0">
+                <img src={company.logo_url} alt={company.company_name} className="w-full h-full object-cover" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center justify-center gap-2 flex-wrap md:justify-start">
+                  <h1 className="text-slate-900 text-xl font-bold md:text-2xl truncate">{company.company_name}</h1>
+                  {(company.verified_email || company.verified_gst) && <CheckCircle2 size={20} className="text-blue-500" />}
+                </div>
+                <p className="text-slate-500 text-sm mt-1">{company.industry} {company.founding_year && `· Est. ${company.founding_year}`}</p>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-sm text-slate-500 md:justify-start">
+                  <span className="font-semibold text-slate-900">{company.followers_count}</span>
+                  <span className="text-slate-400">followers</span>
+                  <span className="text-slate-300">·</span>
+                  <span className="font-semibold text-slate-900">{company.posts_count}</span>
+                  <span className="text-slate-400">posts</span>
+                  <span className="text-slate-300">·</span>
+                  <span className="font-semibold text-slate-900">{company.open_roles}</span>
+                  <span className="text-slate-400">open roles</span>
+                </div>
+              </div>
             </div>
-            <p className="text-slate-500 text-sm mt-0.5">{company.industry} {company.founding_year && `· Est. ${company.founding_year}`}</p>
-            <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
-              <span><span className="text-slate-800 font-bold">{company.followers_count}</span> followers</span>
-              <span className="text-slate-300">·</span>
-              <span><span className="text-slate-800 font-bold">{company.posts_count}</span> posts</span>
-              <span className="text-slate-300">·</span>
-              <span><span className="text-slate-800 font-bold">{company.open_roles}</span> open roles</span>
+
+            <div className="flex w-full gap-3 max-w-md mx-auto md:mx-0 md:w-auto">
+              <button
+                onClick={handleFollow}
+                data-testid="company-follow-button"
+                className={`flex-1 rounded-xl px-5 py-3 text-sm font-semibold transition-all ${company.is_following ? 'bg-slate-100 border border-blue-500 text-blue-600 hover:bg-slate-50' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+              >
+                {company.is_following ? 'Following ✓' : 'Follow'}
+              </button>
+              <button
+                type="button"
+                onClick={handleMessage}
+                disabled={messageLoading}
+                data-testid="company-message-button"
+                className="flex-1 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm font-semibold flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Message</span>
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-3 pb-2">
-            {company.open_roles > 0 && <span className="px-3 py-1 rounded-full text-xs bg-emerald-50 text-emerald-600 font-semibold border border-emerald-200">Hiring now</span>}
-            <button
-              onClick={handleFollow}
-              data-testid="follow-btn"
-              className={`px-6 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                company.is_following ? 'bg-white border-2 border-blue-500 text-blue-600 hover:bg-blue-50' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20'
-              }`}
-            >
-              {company.is_following ? 'Following' : 'Follow'}
-            </button>
+
+          <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
+            {company.verified_email && <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 flex items-center gap-1" data-testid="company-badge-email"><CheckCircle2 size={11} /> Email Verified</span>}
+            {company.verified_mobile && <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center gap-1" data-testid="company-badge-mobile"><CheckCircle2 size={11} /> Mobile Verified</span>}
+            {company.verified_gst && <span className="text-xs font-medium px-2.5 py-1 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 flex items-center gap-1" data-testid="company-badge-gst"><CheckCircle2 size={11} /> GST Registered</span>}
           </div>
-        </div>
 
-        {/* Verified Badges */}
-        <div className="flex gap-2 mt-3 flex-wrap">
-          {company.verified_email && <span className="px-2.5 py-1 rounded-lg text-xs bg-blue-50 text-blue-600 flex items-center gap-1 font-medium border border-blue-200"><CheckCircle2 size={11} /> Email Verified</span>}
-          {company.verified_mobile && <span className="px-2.5 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-600 flex items-center gap-1 font-medium border border-emerald-200"><CheckCircle2 size={11} /> Mobile Verified</span>}
-          {company.verified_gst && <span className="px-2.5 py-1 rounded-lg text-xs bg-amber-50 text-amber-600 flex items-center gap-1 font-medium border border-amber-200"><CheckCircle2 size={11} /> GST Registered</span>}
-        </div>
-
-        {/* ── Tabs ── */}
-        <div className="flex gap-0 mt-5 overflow-x-auto border-b border-slate-200 no-scrollbar">
-          {tabs.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)} data-testid={`tab-${t.key}`}
-              className={`px-5 py-3.5 text-sm font-semibold whitespace-nowrap transition-all border-b-[3px] ${
-                tab === t.key ? 'text-blue-600 border-blue-600' : 'text-slate-500 border-transparent hover:text-slate-800 hover:bg-slate-100'
-              }`}
-            >{t.label}</button>
-          ))}
+          <div className="relative mt-6">
+            <div className="overflow-x-auto border-b border-slate-200 scroll-smooth">
+              <div className="inline-flex gap-3 px-4 py-1 min-w-full md:px-0">
+                {tabs.map(t => (
+                  <button
+                    key={t.key}
+                    onClick={() => setTab(t.key)}
+                    data-testid={`company-tab-${t.key}`}
+                    className={`flex-shrink-0 whitespace-nowrap rounded-full py-2 px-4 text-xs md:text-sm font-semibold transition-all border-b-2 ${
+                      tab === t.key
+                        ? 'text-blue-600 border-blue-600'
+                        : 'text-slate-500 border-transparent hover:text-slate-800 hover:border-slate-300'
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white via-white to-transparent md:hidden" />
+            <div className="pointer-events-none absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-white via-white to-transparent md:hidden" />
+          </div>
         </div>
       </div>
 
       {/* ── Content Area ── */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-[1100px] mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             {tab === 'about' ? (

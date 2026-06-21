@@ -1,4 +1,4 @@
-import React, { useCallback, memo } from 'react';
+import React, { useCallback, memo, useEffect } from 'react';
 import { X, ArrowLeft, Image, Video, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UserAvatar from '../UserAvatar';
@@ -10,7 +10,7 @@ const PostTextarea = memo(({ value, onChange }) => (
     value={value}
     onChange={onChange}
     placeholder="What's happening?"
-    className="w-full border-none outline-none resize-none min-h-[150px] text-lg placeholder-gray-400 focus:ring-0 bg-transparent"
+    className="w-full border-none outline-none resize-none min-h-[120px] text-[17px] leading-6 placeholder-gray-400 focus:ring-0 bg-transparent"
     autoFocus
     data-testid="mobile-post-content-input"
   />
@@ -46,6 +46,13 @@ const CreatePostFAB = ({
   const handleContentChange = useCallback((e) => {
     setNewPostContent(e.target.value);
   }, [setNewPostContent]);
+
+  // Listen for the bottom-nav center button to toggle this menu
+  useEffect(() => {
+    const handler = () => setShowCreateMenu(prev => !prev);
+    window.addEventListener('ceibaa:toggle-create-menu', handler);
+    return () => window.removeEventListener('ceibaa:toggle-create-menu', handler);
+  }, [setShowCreateMenu]);
 
   if (!user) return null;
 
@@ -97,8 +104,8 @@ const CreatePostFAB = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed right-4 z-50 flex flex-col gap-3 w-64"
-            style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 170px)' }}
+            className="md:hidden fixed right-4 z-50 flex flex-col gap-2.5 w-64"
+            style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 154px)' }}
           >
             {/* Academic Question */}
             <button
@@ -163,13 +170,13 @@ const CreatePostFAB = ({
             data-testid="mobile-post-composer"
           >
             {/* Composer Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white sticky top-0 z-10">
+            <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-200 bg-white sticky top-0 z-10">
               <button
                 onClick={handleClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition"
+                className="p-1.5 hover:bg-gray-100 rounded-full transition"
                 data-testid="close-composer-btn"
               >
-                <ArrowLeft className="w-5 h-5 text-gray-700" />
+                <ArrowLeft className="w-4.5 h-4.5 text-gray-700" />
               </button>
               
               <div className="flex items-center gap-2">
@@ -177,7 +184,7 @@ const CreatePostFAB = ({
                 {showUploadFirst && (
                   <button
                     onClick={uploadAllMedia}
-                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-sm font-medium flex items-center gap-1.5"
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold flex items-center gap-1.5"
                     data-testid="mobile-upload-btn"
                   >
                     <Image className="w-4 h-4" />
@@ -189,7 +196,7 @@ const CreatePostFAB = ({
                 <button
                   onClick={onPostClick}
                   disabled={buttonState.disabled || isUploading}
-                  className={`px-5 py-2 rounded-full font-semibold text-sm transition flex items-center gap-2 ${
+                  className={`px-4 py-1.5 rounded-full font-semibold text-sm transition flex items-center gap-1.5 ${
                     buttonState.disabled || isUploading
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       : 'bg-blue-500 text-white hover:bg-blue-600'
@@ -204,15 +211,15 @@ const CreatePostFAB = ({
 
             {/* Post Composer Content */}
             <div className="flex-1 overflow-y-auto">
-              <div className="p-4">
-                <div className="flex gap-3">
+              <div className="p-3.5">
+                <div className="flex gap-2.5">
                   <UserAvatar
                     profilePicture={user.profile_picture}
                     name={user.name}
                     size="md"
                   />
                   <div className="flex-1">
-                    <p className="font-semibold text-gray-900 text-sm mb-2">{user.name}</p>
+                    <p className="font-semibold text-gray-900 text-[13px] mb-1.5">{user.name}</p>
                     <PostTextarea 
                       value={newPostContent}
                       onChange={handleContentChange}
@@ -235,15 +242,15 @@ const CreatePostFAB = ({
             </div>
 
             {/* Bottom Toolbar */}
-            <div className="border-t border-gray-200 px-4 py-3 bg-white sticky bottom-0">
+            <div className="border-t border-gray-200 px-3.5 py-2.5 bg-white sticky bottom-0">
               {canPostImages || canPostVideos ? (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3.5">
                   {canPostImages && (
                     <label 
-                      className={`p-2 hover:bg-blue-50 rounded-full transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`} 
+                      className={`p-1.5 hover:bg-blue-50 rounded-full transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`} 
                       data-testid="image-upload-btn"
                     >
-                      <Image className="w-6 h-6 text-blue-500" />
+                      <Image className="w-5 h-5 text-blue-500" />
                       <input 
                         type="file" 
                         accept="image/jpeg,image/png,image/gif,image/webp" 
@@ -256,10 +263,10 @@ const CreatePostFAB = ({
                   )}
                   {canPostVideos && (
                     <label 
-                      className={`p-2 hover:bg-blue-50 rounded-full transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`} 
+                      className={`p-1.5 hover:bg-blue-50 rounded-full transition cursor-pointer ${isUploading ? 'opacity-50 pointer-events-none' : ''}`} 
                       data-testid="video-upload-btn"
                     >
-                      <Video className="w-6 h-6 text-blue-500" />
+                      <Video className="w-5 h-5 text-blue-500" />
                       <input 
                         type="file" 
                         accept="video/mp4,video/webm,video/quicktime" 
@@ -280,7 +287,7 @@ const CreatePostFAB = ({
                   )}
                   
                   {/* Character count */}
-                  <span className={`text-sm ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
+                  <span className={`text-xs ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
                     {newPostContent.length}/280
                   </span>
                 </div>
@@ -292,7 +299,7 @@ const CreatePostFAB = ({
                     <span className="text-xs">Media uploads disabled by administrator</span>
                   </div>
                   <div className="flex-1" />
-                  <span className={`text-sm ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
+                  <span className={`text-xs ${newPostContent.length > 280 ? 'text-red-500' : 'text-gray-400'}`}>
                     {newPostContent.length}/280
                   </span>
                 </div>
@@ -301,53 +308,6 @@ const CreatePostFAB = ({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Main FAB Button — Mobile Only — visible, on-brand, lifts above bottom nav */}
-      <motion.button
-        onClick={() => setShowCreateMenu(!showCreateMenu)}
-        initial={{ scale: 0, rotate: -90 }}
-        animate={{ scale: 1, rotate: 0 }}
-        whileTap={{ scale: 0.92 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-        className={`md:hidden fixed right-4 z-50 w-16 h-16 rounded-full shadow-[0_8px_28px_rgba(124,58,237,0.55)] flex items-center justify-center
-          ${showCreateMenu
-            ? 'bg-white border-2 border-purple-300'
-            : 'bg-gradient-to-br from-fuchsia-500 via-purple-600 to-indigo-600'}
-        `}
-        style={{
-          // Lift above the bottom nav (~72px) with extra breathing room.
-          bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
-          padding: 0,
-        }}
-        aria-label={showCreateMenu ? 'Close create menu' : 'Create a post'}
-        data-testid="create-post-fab"
-        data-create-post-fab
-      >
-        {/* Pulsing aura so it's never missed */}
-        {!showCreateMenu && (
-          <span
-            aria-hidden="true"
-            className="absolute inset-0 rounded-full bg-purple-500/40 animate-ping"
-          />
-        )}
-        {showCreateMenu ? (
-          <X className="w-7 h-7 text-purple-600 relative" />
-        ) : (
-          <svg
-            className="w-7 h-7 text-white relative drop-shadow"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-        )}
-      </motion.button>
     </>
   );
 };

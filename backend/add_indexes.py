@@ -78,6 +78,8 @@ INDEX_SPECS = {
     "questions": [
         ([("sheet_id", 1)],                      "idx_sheet",         {}),
         ([("exam_name", 1), ("subject", 1)],     "idx_exam_subject",  {}),
+        ([("exam_id", 1), ("subject", 1)],       "idx_exam_id_subject", {}),
+        ([("type", 1), ("exam_name", 1)],        "idx_type_exam_name",  {}),
     ],
     "support_tickets": [
         ([("user_id", 1), ("created_at", -1)], "idx_user_created", {}),
@@ -100,12 +102,17 @@ async def _apply_indexes_for_collection(db, collection_name: str, specs: list) -
         await create_index_safe(coll, keys, name, **opts)
 
 
+async def ensure_all_indexes(db) -> None:
+    """Ensure all declared indexes exist using an existing DB connection."""
+    for coll_name, specs in INDEX_SPECS.items():
+        await _apply_indexes_for_collection(db, coll_name, specs)
+
+
 async def add_indexes():
     client = AsyncIOMotorClient(MONGO_URL)
     db = client[DB_NAME]
     try:
-        for coll_name, specs in INDEX_SPECS.items():
-            await _apply_indexes_for_collection(db, coll_name, specs)
+        await ensure_all_indexes(db)
         print("\nDone. All indexes created.")
     except Exception as e:
         print(f"Error: {e}")

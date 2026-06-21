@@ -47,7 +47,7 @@ const PrivacyPolicy = () => {
                 <li><strong>Account Information:</strong> Name, email address, username, and password</li>
                 <li><strong>Profile Information:</strong> Bio, location, and profile picture</li>
                 <li><strong>Usage Data:</strong> Quiz attempts, scores, and learning progress</li>
-                <li><strong>Social Data:</strong> Posts, comments, likes, and follows on Victory Lane</li>
+                <li><strong>Social Data:</strong> Posts, comments, likes, and follows on Capazoo</li>
                 <li><strong>Device Information:</strong> Browser type, IP address, and device identifiers</li>
               </ul>
             </section>

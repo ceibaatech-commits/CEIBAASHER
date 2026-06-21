@@ -2,7 +2,7 @@ import re
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
-from cbse_chapter_data import get_chapters_by_class_subject, get_all_subjects_for_class, get_chapter_details
+from board_chapter_data import get_chapters_by_class_subject, get_all_subjects_for_class, get_chapter_details
 import os
 import secrets
 
@@ -12,6 +12,12 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
 mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
 db = mongo_client[DB_NAME]
+from board_sheet_data import (
+    get_dynamic_board_chapter_cards,
+    get_dynamic_board_chapter_detail,
+    get_dynamic_board_subjects_for_class,
+    is_dynamic_board,
+)
 
 router = APIRouter(prefix="/api/chapter-tests", tags=["chapter-tests"])
 
@@ -27,8 +33,14 @@ class ChapterResponse(BaseModel):
 
 
 @router.get("/chapters")
-async def get_chapters(class_param: str = None, subject: str = None):
-    """Get all chapters for a specific class and subject"""
+async def get_chapters(class_param: str = None, subject: str = None, board: str = None):
+    """Get all chapters for a specific class and subject
+    
+    Fetching priority:
+    1. Database (admin-uploaded chapters)
+    2. Dynamic board data (for custom boards)
+    3. Hardcoded data (fallback)
+    """
     try:
         # Extract class number from parameter
         if class_param:
@@ -53,8 +65,39 @@ async def get_chapters(class_param: str = None, subject: str = None):
                 words[i] = word.lower()
         normalized_subject = ' '.join(words)
         
-        # Get chapters from data
-        chapters = get_chapters_by_class_subject(class_number, normalized_subject)
+        # Determine class name for database lookup
+        class_name = f"Class {class_number}"
+        board_name = (board or 'cbse').lower()
+        import re as _re_local
+        board_filter = {"$regex": f"^{_re_local.escape(board_name)}$", "$options": "i"}
+        subject_filter = {"$regex": f"^{_re_local.escape(normalized_subject)}$", "$options": "i"}
+        
+        # PRIORITY 1: Try to fetch from database (admin-uploaded chapters).
+        # Case-insensitive board + subject so legacy "HBSE" rows and
+        # mixed-case subject entries also resolve correctly.
+        db_chapters = await db.class_chapters.find({
+            "board": board_filter,
+            "class_name": class_name,
+            "subject": subject_filter
+        }, {"_id": 0}).sort("chapter_number", 1).to_list(None)
+        
+        if db_chapters:
+            # Format database chapters to match API response structure
+            chapters = []
+            for ch in db_chapters:
+                chapters.append({
+                    "chapter_number": ch.get("chapter_number", 0),
+                    "chapter_name": ch.get("chapter_name", ""),
+                    "total_questions": ch.get("total_questions", 50),
+                    "difficulty": ch.get("difficulty", "Medium"),
+                    "duration": ch.get("duration", 35)
+                })
+        else:
+            # PRIORITY 2: Get chapters from dynamic board or hardcoded data
+            if is_dynamic_board(board):
+                chapters = await get_dynamic_board_chapter_cards(db, class_number, normalized_subject, board)
+            else:
+                chapters = get_chapters_by_class_subject(class_number, normalized_subject, board=board)
         
         # Format response
         chapter_list = []
@@ -81,12 +124,15 @@ async def get_chapters(class_param: str = None, subject: str = None):
 
 
 @router.get("/subjects/{class_number}")
-async def get_subjects(class_number: str):
+async def get_subjects(class_number: str, board: str = None):
     """Get all subjects available for a class"""
     try:
         # Extract class number
         class_num = class_number.replace('class-', '').replace('Class ', '')
-        subjects = get_all_subjects_for_class(class_num)
+        if is_dynamic_board(board):
+            subjects = await get_dynamic_board_subjects_for_class(db, class_num, board=board)
+        else:
+            subjects = get_all_subjects_for_class(class_num, board=board)
         
         return {
             "success": True,
@@ -99,11 +145,15 @@ async def get_subjects(class_number: str):
 
 
 @router.get("/chapter/{class_number}/{subject}/{chapter_number}")
-async def get_chapter(class_number: str, subject: str, chapter_number: int):
+async def get_chapter(class_number: str, subject: str, chapter_number: int, board: str = None):
     """Get details of a specific chapter"""
     try:
         class_num = class_number.replace('class-', '').replace('Class ', '')
-        chapter = get_chapter_details(class_num, subject, chapter_number)
+        if is_dynamic_board(board):
+            normalized_subject = subject.replace('---', '|||').replace('-', ' ').replace('|||', ' - ').title()
+            chapter = await get_dynamic_board_chapter_detail(db, class_num, normalized_subject, chapter_number, board)
+        else:
+            chapter = get_chapter_details(class_num, subject, chapter_number, board=board)
         
         if not chapter:
             return {"success": False, "error": "Chapter not found"}
@@ -131,6 +181,7 @@ async def get_chapter_questions(
     class_param: str = Query(..., description="Class number e.g., class-7"),
     subject: str = Query(..., description="Subject slug e.g., english---poorvi"),
     chapter: int = Query(..., description="Chapter number"),
+    board: str = Query(None, description="Board identifier e.g., cbse or rbse"),
     limit: int = Query(20, description="Number of questions to return"),
     randomize: bool = Query(True, description="Whether to randomize questions")
 ):
@@ -147,6 +198,9 @@ async def get_chapter_questions(
             "class_name": f"Class {class_number}",
             "chapter_number": chapter
         }
+
+        if board:
+            query["board"] = board.lower()
         
         # Add subject filter - try different formats
         if 'poorvi' in subject.lower():
@@ -189,6 +243,7 @@ async def start_chapter_test(
     class_param: str = Query(...),
     subject: str = Query(...),
     chapter: int = Query(...),
+    board: str = Query(None),
     num_questions: int = Query(20, description="Number of questions for the test")
 ):
     """Start a chapter test with randomized questions"""
@@ -200,6 +255,9 @@ async def start_chapter_test(
             "class_name": f"Class {class_number}",
             "chapter_number": chapter
         }
+
+        if board:
+            query["board"] = board.lower()
         
         if 'poorvi' in subject.lower():
             query["subject"] = {"$regex": "poorvi", "$options": "i"}

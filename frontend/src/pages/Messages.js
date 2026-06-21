@@ -6,8 +6,6 @@ import {
   Send,
   MessageSquare,
   Search,
-  Check,
-  CheckCheck,
   AlertCircle,
   Users,
   UserPlus,
@@ -26,117 +24,8 @@ import GroupModal from '../components/messages/GroupModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// =====================================================================
-// Theme hook (chat-only) — system preference + manual override (localStorage)
-// =====================================================================
-const THEME_STORAGE_KEY = 'ceibaa.chat.theme'; // 'light' | 'dark' | 'system'
-
-const useChatTheme = () => {
-  const [pref, setPref] = useState(() => {
-    try {
-      return localStorage.getItem(THEME_STORAGE_KEY) || 'system';
-    } catch (_e) {
-      return 'system';
-    }
-  });
-  const [systemDark, setSystemDark] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia?.('(prefers-color-scheme: dark)').matches
-      : false
-  );
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e) => setSystemDark(e.matches);
-    mq.addEventListener?.('change', handler);
-    return () => mq.removeEventListener?.('change', handler);
-  }, []);
-
-  const isDark = pref === 'dark' || (pref === 'system' && systemDark);
-
-  const setPreference = (next) => {
-    setPref(next);
-    try { localStorage.setItem(THEME_STORAGE_KEY, next); } catch (_e) { /* ignore */ }
-  };
-
-  return { isDark, pref, setPreference };
-};
-
-// =====================================================================
-// Date helpers
-// =====================================================================
-const isSameDay = (a, b) => {
-  if (!a || !b) return false;
-  return a.getFullYear() === b.getFullYear()
-    && a.getMonth() === b.getMonth()
-    && a.getDate() === b.getDate();
-};
-
-const formatDaySeparator = (d) => {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const day = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  if (day.getTime() === today.getTime()) return 'Today';
-  if (day.getTime() === yesterday.getTime()) return 'Yesterday';
-  const diffDays = Math.round((today - day) / 86400000);
-  if (diffDays < 7) return d.toLocaleDateString([], { weekday: 'long' });
-  return d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
-};
-
-// =====================================================================
-// Sub-components
-// =====================================================================
-const DaySeparator = ({ label, isDark }) => (
-  <div className="flex justify-center my-4" data-testid="day-separator">
-    <span
-      className={`text-[11px] font-medium font-geist px-3 py-1 rounded-full ${
-        isDark ? 'bg-[#1E2230] text-[#94A3B8]' : 'bg-[#F1F2F6] text-[#64748B]'
-      }`}
-    >
-      {label}
-    </span>
-  </div>
-);
-
-const SystemMessage = ({ text, isDark }) => (
-  <div className="flex justify-center py-1.5">
-    <span
-      className={`text-[12px] font-geist px-3 py-1 ${
-        isDark ? 'text-[#94A3B8]' : 'text-[#64748B]'
-      }`}
-    >
-      {text}
-    </span>
-  </div>
-);
-
-const TypingIndicator = ({ isDark }) => (
-  <div className="flex items-end gap-2 mt-1" data-testid="typing-indicator">
-    <div className="w-7 shrink-0" />
-    <div
-      className={`flex gap-1 px-3.5 py-3 rounded-2xl rounded-bl-md ${
-        isDark ? 'bg-[#1E2230]' : 'bg-[#F1F2F6]'
-      }`}
-    >
-      <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${isDark ? 'bg-[#94A3B8]' : 'bg-[#64748B]'}`} style={{ animationDelay: '0ms' }} />
-      <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${isDark ? 'bg-[#94A3B8]' : 'bg-[#64748B]'}`} style={{ animationDelay: '150ms' }} />
-      <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${isDark ? 'bg-[#94A3B8]' : 'bg-[#64748B]'}`} style={{ animationDelay: '300ms' }} />
-    </div>
-  </div>
-);
-
-const Receipt = ({ msg, isDark }) => {
-  if (msg.read) {
-    return <CheckCheck data-testid={`receipt-read-${msg.id}`} aria-label="Read" className="w-3.5 h-3.5 text-[#7C3AED]" />;
-  }
-  if (msg.delivered) {
-    return <CheckCheck data-testid={`receipt-delivered-${msg.id}`} aria-label="Delivered" className={`w-3.5 h-3.5 ${isDark ? 'text-[#64748B]' : 'text-[#94A3B8]'}`} />;
-  }
-  return <Check data-testid={`receipt-sent-${msg.id}`} aria-label="Sent" className={`w-3.5 h-3.5 ${isDark ? 'text-[#64748B]' : 'text-[#94A3B8]'}`} />;
-};
+import { useChatTheme } from '../hooks/useChatTheme';
+import { DaySeparator, SystemMessage, TypingIndicator, Receipt } from '../components/messages/ChatPrimitives';
 
 // =====================================================================
 // Main component
@@ -156,6 +45,7 @@ export default function Messages() {
   const [convsError, setConvsError] = useState(null);
   const [sending, setSending] = useState(false);
   const [otherTyping, setOtherTyping] = useState(false);
+  const [chatViewportHeight, setChatViewportHeight] = useState('100dvh');
   const [searchQuery, setSearchQuery] = useState('');
   const [convsRefreshKey, setConvsRefreshKey] = useState(0);
   const [groupModal, setGroupModal] = useState(null);
@@ -192,8 +82,10 @@ export default function Messages() {
     if (!conversationId || typeof window === 'undefined' || !window.visualViewport) return;
     const vv = window.visualViewport;
     const sync = () => {
+      const height = `${Math.max(320, Math.floor(vv.height))}px`;
+      setChatViewportHeight(height);
       if (chatContainerRef.current) {
-        chatContainerRef.current.style.height = `${vv.height}px`;
+        chatContainerRef.current.style.height = height;
       }
     };
     sync();
@@ -203,6 +95,7 @@ export default function Messages() {
       vv.removeEventListener('resize', sync);
       vv.removeEventListener('scroll', sync);
       if (chatContainerRef.current) chatContainerRef.current.style.height = '';
+      setChatViewportHeight('100dvh');
     };
   }, [conversationId]);
 
@@ -639,7 +532,10 @@ export default function Messages() {
           data-testid="chat-immersive"
           className="fixed inset-0 flex flex-col z-[100] animate-chat-in"
           style={{
-            height: '100dvh',
+            height: chatViewportHeight,
+            minHeight: '100dvh',
+            width: '100%',
+            overflow: 'hidden',
             backgroundColor: T.bg,
             color: T.text,
             fontFamily: '"Geist", system-ui, -apple-system, sans-serif',
@@ -825,7 +721,7 @@ export default function Messages() {
             onScroll={handleMessagesScroll}
             data-testid="messages-list"
             className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-4 pt-3 pb-3 relative"
-            style={{ backgroundColor: T.bg }}
+            style={{ backgroundColor: T.bg, minHeight: 0, flex: '1 1 0%' }}
           >
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center px-6" data-testid="empty-thread-state">
@@ -951,6 +847,9 @@ export default function Messages() {
               paddingTop: 10,
               paddingBottom: `calc(10px + env(safe-area-inset-bottom))`,
               backdropFilter: 'blur(8px)',
+              position: 'sticky',
+              bottom: 0,
+              zIndex: 2,
             }}
           >
             <div className="flex items-end gap-2">

@@ -153,7 +153,7 @@ const BattleLobby = () => {
       }
       
       alert(msg);
-      navigate('/victory-lane');
+      navigate('/capazoo');
     });
 
     newSocket.on('error', (data) => {

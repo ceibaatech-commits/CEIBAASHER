@@ -582,7 +582,7 @@ const Earn = () => {
               <span className="text-sm text-emerald-200">Currently targeting: Delhi NCR region</span>
             </div>
             <button
-              onClick={() => navigate('/victory-lane')}
+              onClick={() => navigate('/capazoo')}
               className="px-6 py-2.5 bg-white text-emerald-700 rounded-lg font-semibold hover:bg-emerald-50 transition flex items-center gap-2"
             >
               Start Creating

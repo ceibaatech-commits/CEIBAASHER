@@ -53,12 +53,15 @@ import user_management_routes
 from dashboard_routes import router as dashboard_router
 from question_image_routes import router as question_image_router
 from cbse_data_routes import router as cbse_data_router
+from class_chapters_routes import router as class_chapters_router
+from admin_realtime_analytics_routes import router as admin_analytics_router
 from referral_routes import router as referral_router
 import referral_routes
 from media_upload_routes import router as media_upload_router
 import media_upload_routes
 from messaging_routes import router as messaging_router
 import messaging_routes
+from institute_panel_routes import router as institute_panel_router
  
 # ── Divya AI Tutor (merged: podcast + live tutor, Sarvam TTS) ─────────────────
 from divya_routes import router as divya_router, live_router as divya_live_router
@@ -203,12 +206,15 @@ fastapi_app.include_router(exam_sync_router)
 fastapi_app.include_router(exam_management_router, prefix="/api/admin/manage")
 fastapi_app.include_router(referral_router, prefix="/api")
 fastapi_app.include_router(admin_data_router, prefix="/api/admin")
+fastapi_app.include_router(class_chapters_router)
+fastapi_app.include_router(admin_analytics_router)
 fastapi_app.include_router(user_management_router, prefix="/api")
 fastapi_app.include_router(dashboard_router)
 fastapi_app.include_router(messaging_router, prefix="/api/messages")
 fastapi_app.include_router(question_image_router, prefix="/api")
 fastapi_app.include_router(cbse_data_router, prefix="/api")
 fastapi_app.include_router(media_upload_router, prefix="/api")
+fastapi_app.include_router(institute_panel_router)
  
 # Employee routes
 from employee_routes import router as employee_router
@@ -302,6 +308,12 @@ async def seed_recruitment():
 async def startup_test_history_indexes():
     from indexes import ensure_test_history_indexes
     await ensure_test_history_indexes(db)
+
+
+@fastapi_app.on_event("startup")
+async def startup_general_indexes():
+    from add_indexes import ensure_all_indexes
+    await ensure_all_indexes(db)
  
 app = fastapi_app
  

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { GraduationCap, Send, Info, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import MathInput from './MathInput';
@@ -24,6 +25,7 @@ const CLASS_OPTIONS = [
 ];
 
 const AcademicQuestionModal = ({ isOpen, onClose, onSubmit }) => {
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [cbseData, setCbseData] = useState({});
   const [loadingCbseData, setLoadingCbseData] = useState(true);
@@ -44,13 +46,14 @@ const AcademicQuestionModal = ({ isOpen, onClose, onSubmit }) => {
   useEffect(() => {
     if (!isOpen) return;
     setLoadingCbseData(true);
-    axios.get(`${BACKEND_URL}/api/cbse-data/admin/class-subjects`)
+    const selectedBoard = new URLSearchParams(location.search).get('board') || 'cbse';
+    axios.get(`${BACKEND_URL}/api/cbse-data/admin/class-subjects?board=${selectedBoard}`)
       .then((res) => {
         if (res.data.success) setCbseData(res.data.class_subjects);
       })
       .catch(() => toast.error('Failed to load class data'))
       .finally(() => setLoadingCbseData(false));
-  }, [isOpen]);
+  }, [isOpen, location.search]);
 
   // Cascading resets
   useEffect(() => { setSelectedSubject(''); setSelectedChapter(''); }, [selectedClass]);
@@ -175,7 +178,7 @@ const AcademicQuestionModal = ({ isOpen, onClose, onSubmit }) => {
           {/* Subtle tip */}
           <div className="flex items-start gap-2 px-1 text-[12.5px] text-slate-500 leading-relaxed">
             <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-            <span>Your question appears on Victory Lane and on the chapter page so peers in the same chapter can help.</span>
+            <span>Your question appears on Capazoo and on the chapter page so peers in the same chapter can help.</span>
           </div>
         </div>
       )}

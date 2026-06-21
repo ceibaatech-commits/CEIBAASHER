@@ -37,6 +37,45 @@ MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
 SARVAM_VOICE_MAP = {"divya": "anushka", "sher": "manisha"}
 SARVAM_DEFAULT_SPEAKER = "anushka"
 
+# Voice-mode presets tuned for student listening comfort.
+VOICE_MODE_SPEAKERS = {
+    "default": {"divya": "anushka", "sher": "manisha"},
+    "calm": {"divya": "vidya", "sher": "manisha"},
+    "energetic": {"divya": "anushka", "sher": "arya"},
+    "exam": {"divya": "manisha", "sher": "hitesh"},
+}
+
+STUDENT_GOAL_LABELS = {
+    "school": "School exams (CBSE/State boards)",
+    "jee_neet": "JEE/NEET entrance preparation",
+    "govt": "Government exam preparation (SSC/Banking/Railways)",
+    "spoken": "Spoken English and communication skills",
+}
+
+# Goal-specific coaching strategies
+GOAL_COACHING = {
+    "school": {
+        "strategy": "Focus on CBSE/State curriculum alignment. Use NCERT examples. Explain with Indian textbook context.",
+        "examples": "e.g., history (CBSE chapters), math (NCERT solved), science (ICSE labs)",
+        "emphasis": "Board exam patterns, sample papers, chapter-wise practice"
+    },
+    "jee_neet": {
+        "strategy": "Prioritize advanced problem-solving and competitive exam patterns. Use NEET/JEE-specific tricks.",
+        "examples": "e.g., NEET biology (human physiology focus), JEE math (calculus tricks), physics (concepts with applications)",
+        "emphasis": "Difficult concepts, tricky MCQs, time-saving shortcuts"
+    },
+    "govt": {
+        "strategy": "Emphasize factual accuracy, government syllabus precision, and exam pattern awareness (SSC, Bank, Railway).",
+        "examples": "e.g., SSC GK (current affairs), Banking (aptitude, banking awareness), Railway (general knowledge)",
+        "emphasis": "High-frequency topics, factual questions, smart revision"
+    },
+    "spoken": {
+        "strategy": "Focus on practical communication, Indian English pronunciation, real-world conversational scenarios.",
+        "examples": "e.g., interviews, everyday conversations, professional English, accent reduction",
+        "emphasis": "Fluency building, confidence in speaking, practical usage"
+    },
+}
+
 # Frontend may send short language codes ("en", "hi"); map to Sarvam's full codes
 SHORT_TO_FULL_LANG = {
     "en": "en-IN", "hi": "hi-IN", "ta": "ta-IN", "te": "te-IN",
@@ -52,6 +91,20 @@ def _normalize_lang(lang: Optional[str]) -> str:
     if lang in LANGUAGE_NAMES:
         return lang
     return SHORT_TO_FULL_LANG.get(lang.lower(), "en-IN")
+
+
+def _resolve_voice_speaker(tutor: str, voice_mode: Optional[str]) -> str:
+    mode = (voice_mode or "default").strip().lower()
+    if mode not in VOICE_MODE_SPEAKERS:
+        mode = "default"
+    return VOICE_MODE_SPEAKERS[mode].get(tutor, SARVAM_VOICE_MAP.get(tutor, SARVAM_DEFAULT_SPEAKER))
+
+
+def _normalize_goal(goal: Optional[str]) -> Optional[str]:
+    if not goal:
+        return None
+    g = goal.strip().lower()
+    return g if g in STUDENT_GOAL_LABELS else None
  
 # Language code → human-readable name (used in system prompts)
 LANGUAGE_NAMES = {
@@ -178,6 +231,13 @@ async def _sarvam_tts(text: str, speaker: str, language: str) -> bytes:
     if not SARVAM_KEY:
         raise HTTPException(status_code=500, detail="SARVAM_API_KEY is not configured")
  
+    # Sanitize text: remove problematic unicode and control characters
+    text = text.replace('\x00', '').replace('\x01', '').replace('\x02', '')
+    text = ''.join(c if ord(c) >= 32 or c in '\n\t' else ' ' for c in text)
+    text = text.strip()
+    if not text:
+        text = "I understand your question."
+    
     # Chunk text at word boundaries (Sarvam limit ~490 chars per request)
     MAX_CHARS = 490
     words = text.split()
@@ -198,27 +258,31 @@ async def _sarvam_tts(text: str, speaker: str, language: str) -> bytes:
     wav_parts: List[bytes] = []
     async with httpx.AsyncClient(timeout=30.0) as client:
         for chunk in chunks:
-            resp = await client.post(
-                "https://api.sarvam.ai/text-to-speech",
-                headers={
-                    "API-Subscription-Key": SARVAM_KEY,
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "inputs": [chunk],
-                    "target_language_code": language,
-                    "speaker": speaker,
-                    "model": "bulbul:v2",
-                    "enable_preprocessing": True,
-                    "speech_sample_rate": 22050,
-                },
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            audio_b64 = data["audios"][0]
-            if "," in audio_b64:
-                audio_b64 = audio_b64.split(",", 1)[1]
-            wav_parts.append(base64.b64decode(audio_b64))
+            try:
+                resp = await client.post(
+                    "https://api.sarvam.ai/text-to-speech",
+                    headers={
+                        "API-Subscription-Key": SARVAM_KEY,
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "inputs": [chunk],
+                        "target_language_code": language,
+                        "speaker": speaker,
+                        "model": "bulbul:v2",
+                        "enable_preprocessing": True,
+                        "speech_sample_rate": 22050,
+                    },
+                )
+                resp.raise_for_status()
+                data = resp.json()
+                audio_b64 = data["audios"][0]
+                if "," in audio_b64:
+                    audio_b64 = audio_b64.split(",", 1)[1]
+                wav_parts.append(base64.b64decode(audio_b64))
+            except Exception as chunk_err:
+                print(f"[SARVAM-TTS] Chunk failed: {str(chunk_err)}")
+                raise
  
     if len(wav_parts) == 1:
         return wav_parts[0]
@@ -236,32 +300,52 @@ async def _sarvam_tts(text: str, speaker: str, language: str) -> bytes:
  
 async def _extract_with_gemini(content: bytes, mime_type: str, filename: str) -> str:
     """Use Gemini to extract/describe content from files."""
+    if not EMERGENT_KEY:
+        raise HTTPException(status_code=503, detail="OCR service unavailable")
+
     from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContentWithMimeType
  
+    system_msg = """Extract ALL text content from this file. For images:
+1. Identify educational content type (diagram, chart, screenshot, formula, concept map, etc.)
+2. Extract ALL visible text and transcribe accurately
+3. Describe diagrams/charts in detail including labels, axes, data points
+4. For math/science content, preserve formulas and notation precisely
+5. For textbook pages, include chapter/section numbers and highlighted content
+6. For screenshots, extract menu text, labels, and visible content
+
+Format extracted content clearly and maintain structure."""
+
     tmp_path = f"/tmp/divya_{uuid.uuid4().hex[:8]}_{filename}"
-    with open(tmp_path, "wb") as f:
-        f.write(content)
- 
     try:
+        with open(tmp_path, "wb") as f:
+            f.write(content)
+        
         chat = LlmChat(
             api_key=EMERGENT_KEY,
             session_id=f"extract-{uuid.uuid4().hex[:8]}",
-            system_message="Extract all text content from this file. If it's an image, describe the educational content in detail.",
+            system_message=system_msg,
         ).with_model("gemini", "gemini-2.5-flash")
  
         msg = UserMessage(
-            text="Extract all text and educational content from this file.",
+            text="Extract all text and educational content from this file. Be thorough and accurate.",
             file_contents=[FileContentWithMimeType(file_path=tmp_path, mime_type=mime_type)],
         )
         result = await chat.send_message(msg)
-        return result.strip()
+        result_text = result.strip()
+        print(f"[EXTRACT-GEMINI] Extracted {len(result_text)} chars from {filename}")
+        return result_text if result_text else f"[{filename}] File processed."
+        
+    except Exception as e:
+        print(f"[EXTRACT-GEMINI] Error with {filename}: {type(e).__name__}: {str(e)}")
+        return f"[{filename}] Could not extract text. File uploaded."
     finally:
         try:
-            os.remove(tmp_path)
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
         except OSError:
             pass
- 
- 
+
+
 def _parse_dialogue(text: str) -> List[dict]:
     """Parse DIVYA:/SHER: dialogue into a structured list."""
     lines = []
@@ -301,6 +385,8 @@ class LiveAskRequest(BaseModel):
     language: str = "en-IN"
     context: str = ""
     chat_history: list = []
+    voice_mode: str = "default"
+    student_goal: Optional[str] = None
  
  
 @live_router.post("/ask")
@@ -309,41 +395,80 @@ async def live_ask(req: LiveAskRequest):
     if not EMERGENT_KEY:
         raise HTTPException(status_code=500, detail="AI service not configured")
  
-    tutor = req.tutor.lower() if req.tutor.lower() in TUTOR_PROMPTS else "divya"
-    language = _normalize_lang(req.language)
-    language_name = LANGUAGE_NAMES[language]
-    sarvam_speaker = SARVAM_VOICE_MAP.get(tutor, SARVAM_DEFAULT_SPEAKER)
- 
-    system_prompt = TUTOR_PROMPTS[tutor].format(language_name=language_name)
- 
-    prompt_parts = []
-    if req.context:
-        prompt_parts.append(f"[Study Material Context]\n{req.context[:3000]}")
-    if req.chat_history:
-        recent = req.chat_history[-8:]
-        history_text = "\n".join([f"{m.get('role', 'user')}: {m.get('text', '')}" for m in recent])
-        prompt_parts.append(f"[Recent Conversation]\n{history_text}")
-    prompt_parts.append(f"Student says: {req.text}")
-    full_prompt = "\n\n".join(prompt_parts)
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
  
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        tutor = req.tutor.lower() if req.tutor.lower() in TUTOR_PROMPTS else "divya"
+        language = _normalize_lang(req.language)
+        language_name = LANGUAGE_NAMES.get(language, "English")
+        goal_key = _normalize_goal(req.student_goal)
+        sarvam_speaker = _resolve_voice_speaker(tutor, req.voice_mode)
+
+        system_prompt = TUTOR_PROMPTS[tutor].format(language_name=language_name)
+
+        prompt_parts = []
+        if goal_key:
+            coaching = GOAL_COACHING.get(goal_key, {})
+            prompt_parts.append(
+                f"[Student Goal: {STUDENT_GOAL_LABELS[goal_key]}]\n"
+                f"Strategy: {coaching.get('strategy', '')}\n"
+                f"Examples: {coaching.get('examples', '')}\n"
+                f"Emphasis: {coaching.get('emphasis', '')}"
+            )
+        if req.context:
+            clean_context = req.context.replace('\x00', '').replace('\x01', '').replace('\x02', '')
+            prompt_parts.append(f"[Study Material Context]\n{clean_context[:3000]}")
+        if req.chat_history and isinstance(req.chat_history, list):
+            recent = req.chat_history[-8:] if len(req.chat_history) > 8 else req.chat_history
+            history_text = "\n".join([f"{m.get('role', 'user')}: {m.get('text', '')}" for m in recent if isinstance(m, dict)])
+            if history_text:
+                prompt_parts.append(f"[Recent Conversation]\n{history_text}")
+        prompt_parts.append(f"Student says: {req.text}")
+        full_prompt = "\n\n".join(prompt_parts)
  
+        # First attempt with full context
+        print(f"[DIVYA-LIVE] Sending to Gemini: {len(full_prompt)} chars, context={len(req.context or '')} chars")
         chat = LlmChat(
             api_key=EMERGENT_KEY,
             session_id=f"live-{tutor}-{uuid.uuid4().hex[:8]}",
             system_message=system_prompt,
         ).with_model("gemini", "gemini-2.5-flash")
  
-        response_text = await chat.send_message(UserMessage(text=full_prompt))
-        response_text = response_text.strip()
+        try:
+            response_text = await chat.send_message(UserMessage(text=full_prompt))
+            response_text = response_text.strip()
+            print(f"[DIVYA-LIVE] Success: got {len(response_text)} chars from Gemini")
+        except Exception as err1:
+            print(f"[DIVYA-LIVE] First attempt failed ({type(err1).__name__}), retrying without context")
+            # Create NEW chat instance for fallback (don't reuse failed one)
+            chat2 = LlmChat(
+                api_key=EMERGENT_KEY,
+                session_id=f"live-fallback-{uuid.uuid4().hex[:8]}",
+                system_message=system_prompt,
+            ).with_model("gemini", "gemini-2.5-flash")
+            
+            fallback_prompt = f"Student says: {req.text}"
+            try:
+                response_text = await chat2.send_message(UserMessage(text=fallback_prompt))
+                response_text = response_text.strip()
+                print(f"[DIVYA-LIVE] Fallback succeeded: got {len(response_text)} chars")
+            except Exception as err2:
+                print(f"[DIVYA-LIVE] Both attempts failed: {type(err2).__name__}")
+                raise HTTPException(status_code=500, detail="AI service temporarily unavailable. Please try again.")
+        
+        if not response_text:
+            response_text = "I understand your question. Let me help you with that."
  
         for prefix in ["DIVYA:", "SHER:", "Divya:", "Sher:"]:
             if response_text.startswith(prefix):
                 response_text = response_text[len(prefix):].strip()
- 
-        audio_bytes = await _sarvam_tts(response_text[:2000], sarvam_speaker, language)
-        audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
+        
+        try:
+            audio_bytes = await _sarvam_tts(response_text[:2000], sarvam_speaker, language)
+            audio_b64 = base64.b64encode(audio_bytes).decode("utf-8")
+        except Exception as tts_err:
+            print(f"[DIVYA-LIVE] TTS failed ({type(tts_err).__name__}), returning text only")
+            audio_b64 = None
  
         return {
             "success": True,
@@ -351,29 +476,38 @@ async def live_ask(req: LiveAskRequest):
             "audio_base64": audio_b64,
             "tutor": tutor,
             "language": language,
+            "voice_mode": (req.voice_mode or "default"),
+            "student_goal": goal_key,
         }
  
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"[DIVYA-LIVE] Error: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to generate response: {str(e)}")
+        print(f"[DIVYA-LIVE] Unexpected error: {type(e).__name__}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Unexpected error. Please try again.")
  
  
 @live_router.post("/upload-context")
 async def upload_context(files: List[UploadFile] = File(...)):
     """Upload PDF/images and extract text for tutoring context."""
-    if not EMERGENT_KEY:
-        raise HTTPException(status_code=500, detail="AI service not configured")
- 
     extracted_text = []
- 
+    warnings: List[str] = []
+
     for f in files:
         content = await f.read()
-        ext = f.filename.rsplit(".", 1)[-1].lower() if "." in f.filename else ""
- 
+        filename = f.filename or "uploaded_file"
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        content_type = (f.content_type or "").lower()
+        if not ext:
+            if content_type == "application/pdf":
+                ext = "pdf"
+            elif content_type in ("image/png", "image/jpeg", "image/webp"):
+                ext = content_type.split("/")[1]
+
         if ext == "pdf":
             try:
                 from PyPDF2 import PdfReader
- 
+
                 reader = PdfReader(io.BytesIO(content))
                 pages_text = []
                 for i, page in enumerate(reader.pages[:30]):
@@ -382,20 +516,50 @@ async def upload_context(files: List[UploadFile] = File(...)):
                         pages_text.append(f"[Page {i+1}] {text}")
                 if pages_text:
                     extracted_text.append("\n".join(pages_text))
-                else:
-                    extracted_text.append(await _extract_with_gemini(content, "application/pdf", f.filename))
+                    continue
             except Exception:
-                extracted_text.append(await _extract_with_gemini(content, "application/pdf", f.filename))
- 
-        elif ext in ("png", "jpg", "jpeg", "webp"):
+                pass
+
+            if EMERGENT_KEY:
+                try:
+                    extracted_text.append(await _extract_with_gemini(content, "application/pdf", filename))
+                except Exception:
+                    warnings.append(f"{filename}: OCR failed. Try a text-based PDF.")
+                    extracted_text.append(f"[{filename}] PDF uploaded. Could not extract text via OCR.")
+            else:
+                warnings.append(f"{filename}: scanned or locked PDF needs OCR service.")
+                extracted_text.append(f"[{filename}] PDF uploaded. Could not read text directly.")
+            continue
+
+        if ext in ("png", "jpg", "jpeg", "webp"):
             mime = f"image/{ext}" if ext != "jpg" else "image/jpeg"
-            extracted_text.append(await _extract_with_gemini(content, mime, f.filename))
- 
-    full_context = "\n\n---\n\n".join(extracted_text)
+            if not EMERGENT_KEY:
+                warnings.append(f"{filename}: image OCR unavailable right now.")
+                extracted_text.append(f"[{filename}] Image uploaded. OCR service currently unavailable.")
+                continue
+            try:
+                extracted_text.append(await _extract_with_gemini(content, mime, filename))
+            except Exception:
+                warnings.append(f"{filename}: image extraction failed.")
+                extracted_text.append(f"[{filename}] Image uploaded. Could not extract text via OCR.")
+            continue
+
+        warnings.append(f"{filename}: unsupported file type.")
+
+    full_context = "\n\n---\n\n".join(extracted_text).strip()
+    if not full_context:
+        raise HTTPException(status_code=400, detail="Could not extract readable content from uploaded files.")
+
+    # Sanitize context for safe transmission and processing
+    full_context = full_context.replace('\x00', '').replace('\x01', '').replace('\x02', '')
+    full_context = ''.join(c if ord(c) >= 32 or c in '\n\t' else ' ' for c in full_context)
+    full_context = full_context.strip()
+
     return {
         "success": True,
-        "context": full_context[:8000],
+        "context": full_context[:5000],  # Reduced from 8000 to avoid API limits
         "char_count": len(full_context),
+        "warnings": warnings,
     }
  
  

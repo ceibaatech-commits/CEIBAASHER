@@ -101,6 +101,19 @@ const LiveBattleMode = () => {
     newSocket.on('rematch-declined', () => setRematchState('idle'));
     newSocket.on('rematch-timeout', () => setRematchState('idle'));
 
+    // Live opponent progress updates (score + question index)
+    newSocket.on('opponent-answered', (data) => {
+      if (typeof data?.score === 'number') {
+        setOpponentScore(data.score);
+      }
+    });
+
+    newSocket.on('opponent-score-update', (data) => {
+      if (typeof data?.score === 'number') {
+        setOpponentScore(data.score);
+      }
+    });
+
     newSocket.on('opponent-disconnected', () => {
       alert('Opponent disconnected!');
       navigate(`/exam/${examId}`);
@@ -262,18 +275,24 @@ const LiveBattleMode = () => {
   const handleAnswerSelect = (optionIndex) => {
     if (selectedAnswer === null) {
       setSelectedAnswer(optionIndex);
+
+      const nextScore = myScore + 100;
       
       // Emit answer to opponent
       socket.emit('battle-answer', {
         roomId,
         questionId: questions[currentQuestionIndex].id,
+        questionIndex: currentQuestionIndex,
         answer: optionIndex,
-        timeTaken: 30 - timeLeft
+        timeTaken: 30 - timeLeft,
+        score: nextScore,
+        isCorrect: true,
+        outcome: 'correct'
       });
 
       // Calculate if correct (simplified - should validate on backend)
       // For demo, we'll just add points
-      setMyScore(myScore + 100);
+      setMyScore(nextScore);
 
       setTimeout(() => {
         handleNextQuestion();

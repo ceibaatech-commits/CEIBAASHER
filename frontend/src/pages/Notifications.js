@@ -45,18 +45,18 @@ const Notifications = () => {
       }
     } else if (notifType === 'like' || notifType === 'comment') {
       if (postId) {
-        navigate(`/victory-lane?post=${postId}`);
+        navigate(`/capazoo?post=${postId}`);
       } else {
-        navigate('/victory-lane');
+        navigate('/capazoo');
       }
     } else if (notifType === 'quiz_created' || notifType === 'score_beaten' || notifType === 'challenge') {
       if (postId) {
-        navigate(`/victory-lane?post=${postId}`);
+        navigate(`/capazoo?post=${postId}`);
       }
     } else if (notifType === 'daily_streak') {
       navigate('/');
     } else {
-      navigate('/victory-lane');
+      navigate('/capazoo');
     }
   };
 

@@ -90,6 +90,7 @@ import RecruitmentCell from "@/pages/RecruitmentCell";
 import RecruiterLogin from "@/pages/RecruiterLogin";
 import RecruiterDashboard from "@/pages/RecruiterDashboard";
 import RecruiterAnalytics from "@/pages/RecruiterAnalytics";
+import RecruiterMessages from "@/pages/RecruiterMessages";
 import CreatePost from "@/pages/CreatePost";
 import ManageApplicants from "@/pages/ManageApplicants";
 import JobsFeed from "@/pages/JobsFeed";
@@ -99,12 +100,23 @@ import ApplyJob from "@/pages/ApplyJob";
 import QuizAttempt from "@/pages/QuizAttempt";
 import HackathonDetail from "@/pages/HackathonDetail";
 import MyApplications from "@/pages/MyApplications";
+import InstitutePanel from "@/pages/InstitutePanel";
+import InstituteHub from "@/pages/InstituteHub";
+import InstituteOwnerLogin from "@/pages/InstituteOwnerLogin";
 
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Toaster } from "sonner";
 
 function App() {
+  const ProtectedInstitutePanel = () => {
+    const token = localStorage.getItem('ceibaa_institute_owner_token');
+    if (!token) {
+      return <Navigate to="/institute/login" replace state={{ from: '/institute/panel' }} />;
+    }
+    return <InstitutePanel />;
+  };
+
   return (
     <HelmetProvider>
     <AuthProvider>
@@ -162,7 +174,8 @@ function App() {
           {/* Social Routes - Redirect old routes to VictoryLane */}
           <Route path="/social" element={<VictoryLane />} />
           <Route path="/social-feed" element={<VictoryLane />} />
-          <Route path="/victory-lane" element={<VictoryLane />} />
+          <Route path="/victory-lane" element={<Navigate to="/capazoo" replace />} />
+          <Route path="/capazoo" element={<VictoryLane />} />
           <Route path="/post/:postId" element={<SinglePost />} />
           
           {/* Admin Routes */}
@@ -235,6 +248,11 @@ function App() {
           <Route path="/quiz-recruit/:quizId" element={<QuizAttempt />} />
           <Route path="/hackathon/:hackId" element={<HackathonDetail />} />
           <Route path="/my-applications" element={<MyApplications />} />
+
+          {/* Coaching Institute Panel */}
+          <Route path="/institute/login" element={<InstituteOwnerLogin />} />
+          <Route path="/institute/panel" element={<ProtectedInstitutePanel />} />
+          <Route path="/institute/:instituteId" element={<InstituteHub />} />
           
           {/* 404 Catch-All */}
           <Route path="*" element={<NotFound />} />

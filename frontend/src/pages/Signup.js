@@ -108,7 +108,7 @@ const Signup = () => {
         }
       }
 
-      navigate('/victory-lane', { replace: true });
+      navigate('/capazoo', { replace: true });
       
     } catch (err) {
       setLoading(false);

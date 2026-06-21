@@ -133,12 +133,12 @@ const PostCard = ({
       ref={(el) => { if (postRefs?.current && el) postRefs.current[post.id] = el; }}
       data-testid={`post-card-${post.id}`}
       data-post-id={post.id}
-      className={`border-b border-gray-200 bg-white hover:bg-gray-50/50 transition-colors duration-150 cursor-pointer ${isCloseFriend ? 'border-l-2 border-l-teal-400' : ''}`}
+      className={`border-b border-gray-200 bg-white hover:bg-gray-50/60 transition-colors duration-150 cursor-pointer ${isCloseFriend ? 'border-l-2 border-l-teal-400' : ''}`}
       onClick={handleContentClick}
     >
       {/* Close friend indicator */}
       {isCloseFriend && !post.is_retweet && (
-        <div data-testid="close-friend-indicator" className="flex items-center gap-1.5 text-teal-600 text-[13px] px-4 pt-2.5 pl-14">
+        <div data-testid="close-friend-indicator" className="flex items-center gap-1.5 text-teal-600 text-xs px-3 sm:px-4 pt-2 pl-14">
           <Star className="w-3.5 h-3.5 fill-teal-500 text-teal-500" />
           <span className="font-semibold">Close friend</span>
         </div>
@@ -146,7 +146,7 @@ const PostCard = ({
 
       {/* Repost indicator */}
       {post.is_retweet && (
-        <div data-testid="repost-indicator" className="flex items-center gap-2 text-gray-500 text-[13px] px-4 pt-3 pl-14">
+        <div data-testid="repost-indicator" className="flex items-center gap-2 text-gray-500 text-xs px-3 sm:px-4 pt-2.5 pl-14">
           <Repeat2 className="w-4 h-4" />
           <span className="font-medium hover:underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onOpenProfile(post.user_id); }}>
             {post.user_name || post.username} reposted
@@ -154,11 +154,11 @@ const PostCard = ({
         </div>
       )}
 
-      <div className="flex gap-3 px-4 py-3">
+      <div className="flex gap-2.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3">
         {/* Avatar */}
         <div className="flex-shrink-0">
           <div
-            className="w-10 h-10 rounded-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
             onClick={(e) => { e.stopPropagation(); onOpenProfile(displayUserId); }}
           >
             <UserAvatar profilePicture={displayAvatar} name={displayName} size="md" clickable={false} className="w-full h-full" />
@@ -171,7 +171,7 @@ const PostCard = ({
           <div className="flex items-center justify-between gap-2 mb-0.5">
             <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
               <span
-                className="font-bold text-[15px] text-gray-900 hover:underline truncate cursor-pointer"
+                className="font-bold text-[13.5px] sm:text-[15px] text-gray-900 hover:underline truncate cursor-pointer"
                 onClick={(e) => { e.stopPropagation(); onOpenProfile(displayUserId); }}
               >
                 {displayName}
@@ -188,9 +188,9 @@ const PostCard = ({
               {post.isInstitute === true && <span className="px-1.5 py-0.5 text-[10px] font-bold bg-rose-600 text-white rounded">Institute</span>}
               {post.isOfficial === true && <span className="px-1.5 py-0.5 text-[10px] font-bold bg-gray-800 text-white rounded">Official</span>}
 
-              <span className="text-gray-500 text-[15px]">@{displayUsername}</span>
+              <span className="text-gray-500 text-[12px] sm:text-[14px]">@{displayUsername}</span>
               <span className="text-gray-500">&middot;</span>
-              <span className="text-gray-500 text-[15px] hover:underline">{formatTimestamp(post.created_at)}</span>
+              <span className="text-gray-500 text-[12px] sm:text-[14px] hover:underline">{formatTimestamp(post.created_at)}</span>
             </div>
 
             <PostCardMenu
@@ -234,7 +234,7 @@ const PostCard = ({
           )}
 
           {/* Content with See more */}
-          <div className="text-[15px] text-gray-900 leading-normal whitespace-pre-wrap break-words mb-3">
+          <div className="text-[13.5px] sm:text-[15px] text-gray-900 leading-relaxed whitespace-pre-wrap break-words mb-2">
             <MathText
               text={truncatedContent}
               onHashtagClick={(tag) => onTagClick && onTagClick(tag)}
@@ -266,7 +266,7 @@ const PostCard = ({
 
           {/* Media */}
           {post.media_urls && post.media_urls.length > 0 && (
-            <div className="mt-3 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
+            <div className="mt-2.5 rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
               {post.media_urls[0].includes('.mp4') || post.media_urls[0].includes('.webm') || post.media_urls[0].includes('/video/') ? (
                 <VideoPost src={post.media_urls[0]} />
               ) : (
@@ -311,7 +311,7 @@ const PostCard = ({
           {!hasImageMedia && post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {post.tags.map((tag, idx) => (
-                <button key={idx} onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag); }} className="text-blue-500 hover:underline text-[15px]">
+                <button key={idx} onClick={(e) => { e.stopPropagation(); onTagClick && onTagClick(tag); }} className="text-blue-500 hover:underline text-[13px] sm:text-[14px] font-medium">
                   #{tag}
                 </button>
               ))}

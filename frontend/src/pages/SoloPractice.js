@@ -58,6 +58,7 @@ const SoloPractice = () => {
   
   // Check if this is a class-based quiz (from state OR from URL pattern)
   const isClassBased = location.state?.isClassBased || isClassBasedFromUrl;
+  const board = location.state?.board || new URLSearchParams(location.search).get('board') || 'cbse';
   
   // Extract class-based data
   let classBasedData = null;
@@ -68,7 +69,8 @@ const SoloPractice = () => {
         class_name: location.state.class_name,
         subject: location.state.subject,
         chapter: location.state.chapter,
-        stream: location.state.stream  // Include stream if available
+        stream: location.state.stream,  // Include stream if available
+        board: location.state.board || board
       };
     } else if (isClassBasedFromUrl) {
       // Extract from URL if state not available
@@ -127,7 +129,8 @@ const SoloPractice = () => {
         class_name: urlClassName.replace('Class-', 'Class ').replace(/-/g, ' '),
         subject: processedSubject,
         chapter: processedChapter,
-        stream: inferredStream
+        stream: inferredStream,
+        board
       };
     }
   }
@@ -161,13 +164,14 @@ const SoloPractice = () => {
         .toLowerCase()
         .replace(/ - /g, '---')
         .replace(/\s+/g, '-');
+      const boardQuery = `?board=${classBasedData.board || 'cbse'}`;
       if ((classNum === '11' || classNum === '12') && classBasedData.stream) {
-        return `/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}/${subjectSlug}`;
+        return `/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}/${subjectSlug}${boardQuery}`;
       }
       if (classNum === '11' || classNum === '12') {
-        return `/chapter-tests/class-${classNum}/select-stream`;
+        return `/chapter-tests/class-${classNum}/select-stream${boardQuery}`;
       }
-      return `/chapter-tests/class-${classNum}/${subjectSlug}`;
+      return `/chapter-tests/class-${classNum}/${subjectSlug}${boardQuery}`;
     }
     if (exam) return `/exam/${exam}`;
     return '/';
@@ -243,6 +247,7 @@ const SoloPractice = () => {
           class_name: classBasedData.class_name,
           subject: classBasedData.subject,
           chapter: classBasedData.chapter,
+          board: classBasedData.board,
           exam: exam, // For compatibility
           numberOfQuestions: numberOfQuestions
         };
@@ -347,15 +352,16 @@ const SoloPractice = () => {
                 // Navigate to appropriate page based on quiz type
                 if (isClassBased && classBasedData) {
                   const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+                  const boardQuery = `?board=${classBasedData.board || 'cbse'}`;
                   if (classNum === '11' || classNum === '12') {
                     // If we have stream info, go to that stream's subjects
                     if (classBasedData.stream) {
-                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}${boardQuery}`);
                     } else {
-                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                      navigate(`/chapter-tests/class-${classNum}/select-stream${boardQuery}`);
                     }
                   } else {
-                    navigate(`/chapter-tests/class-${classNum}`);
+                    navigate(`/chapter-tests/class-${classNum}${boardQuery}`);
                   }
                 } else if (exam) {
                   navigate(`/exam/${exam}`);
@@ -506,14 +512,15 @@ const SoloPractice = () => {
     const handleMoreTopics = () => {
       if (isClassBased && classBasedData) {
         const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+        const boardQuery = `?board=${classBasedData.board || 'cbse'}`;
         if (classNum === '11' || classNum === '12') {
           if (classBasedData.stream) {
-            navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+              navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}${boardQuery}`);
           } else {
-            navigate(`/chapter-tests/class-${classNum}/select-stream`);
+              navigate(`/chapter-tests/class-${classNum}/select-stream${boardQuery}`);
           }
         } else {
-          navigate(`/chapter-tests/class-${classNum}`);
+            navigate(`/chapter-tests/class-${classNum}${boardQuery}`);
         }
       } else {
         navigate(`/exam/${exam}`);
@@ -785,15 +792,16 @@ const SoloPractice = () => {
               onClick={() => {
                 if (isClassBased && classBasedData) {
                   const classNum = classBasedData.class_name.toLowerCase().replace('class ', '').replace('class-', '');
+                  const boardQuery = `?board=${classBasedData.board || 'cbse'}`;
                   // For Class 11 and 12, navigate to stream selection
                   if (classNum === '11' || classNum === '12') {
                     if (classBasedData.stream) {
-                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}`);
+                      navigate(`/chapter-tests/class-${classNum}/${classBasedData.stream.toLowerCase()}${boardQuery}`);
                     } else {
-                      navigate(`/chapter-tests/class-${classNum}/select-stream`);
+                      navigate(`/chapter-tests/class-${classNum}/select-stream${boardQuery}`);
                     }
                   } else {
-                    navigate(`/chapter-tests/class-${classNum}`);
+                    navigate(`/chapter-tests/class-${classNum}${boardQuery}`);
                   }
                 } else {
                   navigate(`/exam/${exam}`);
@@ -999,14 +1007,14 @@ const SoloPractice = () => {
         {isClassBased && classBasedData && (
           <div className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
             <button 
-              onClick={() => navigate('/chapter-tests')} 
+              onClick={() => navigate(`/chapter-tests?board=${classBasedData.board || 'cbse'}`)} 
               className="hover:text-cyan-600 font-semibold"
             >
               Home
             </button>
             <span>/</span>
             <button 
-              onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}`)} 
+              onClick={() => navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}?board=${classBasedData.board || 'cbse'}`)} 
               className="hover:text-cyan-600 font-semibold"
             >
               {classBasedData.class_name}
@@ -1018,7 +1026,7 @@ const SoloPractice = () => {
                   .toLowerCase()
                   .replace(/ - /g, '---')
                   .replace(/\s+/g, '-');
-                navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${subjectSlug}`);
+                navigate(`/chapter-tests/class-${classBasedData.class_name.toLowerCase().replace('class ', '')}/${subjectSlug}?board=${classBasedData.board || 'cbse'}`);
               }} 
               className="hover:text-cyan-600 font-semibold"
             >

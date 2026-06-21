@@ -56,6 +56,7 @@ const ExamSheetManager = () => {
 
   // Form data for Option 2: Class-based
   const [classForm, setClassForm] = useState({
+    board: 'cbse',
     class_name: '',
     subject: '',
     chapter: '',
@@ -75,22 +76,23 @@ const ExamSheetManager = () => {
   const [cbseClassSubjects, setCbseClassSubjects] = useState({});
   const [loadingCbseData, setLoadingCbseData] = useState(true);
 
-  // Fetch CBSE data from centralized API on mount
+  // Fetch board-specific class data from centralized API
   useEffect(() => {
     const fetchCbseData = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/cbse-data/admin/class-subjects`);
+        setLoadingCbseData(true);
+        const response = await axios.get(`${BACKEND_URL}/api/cbse-data/admin/class-subjects?board=${classForm.board}`);
         if (response.data.success) {
           setCbseClassSubjects(response.data.class_subjects);
         }
       } catch (error) {
-        console.error('Error fetching CBSE data:', error);
+        console.error('Error fetching board data:', error);
       } finally {
         setLoadingCbseData(false);
       }
     };
     fetchCbseData();
-  }, []);
+  }, [classForm.board]);
 
   // Class names for dropdowns
   const classNames = ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 (Science)', 'Class 11 (Commerce)', 'Class 11 (Humanities)', 'Class 12 (Science)', 'Class 12 (Commerce)', 'Class 12 (Humanities)'];
@@ -298,7 +300,7 @@ const ExamSheetManager = () => {
         chapter: ''
       }));
     }
-  }, [classForm.class_name, classForm.subject, cbseClassSubjects]);
+  }, [classForm.class_name, classForm.subject, classForm.board, cbseClassSubjects]);
 
   // Legacy hardcoded data removed - now using centralized CBSE API as Single Source of Truth
   // This ensures chapter names in admin panel match exactly with quiz page
@@ -441,6 +443,7 @@ const ExamSheetManager = () => {
     if (selectedOption === 'class') {
       questionDoc.type = 'class';
       questionDoc.class_name = classForm.class_name;
+      questionDoc.board = classForm.board;
       questionDoc.subject = classForm.subject;
       questionDoc.chapter = classForm.chapter;
     } else if (selectedOption === 'exam') {
@@ -590,6 +593,7 @@ const ExamSheetManager = () => {
       sheet_link: ''
     });
     setClassForm({
+      board: 'cbse',
       class_name: '',
       subject: '',
       chapter: '',
@@ -814,6 +818,26 @@ const ExamSheetManager = () => {
             {selectedOption === 'class' && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Board */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Board *
+                    </label>
+                    <select
+                      required
+                      value={classForm.board}
+                      onChange={(e) => setClassForm({ ...classForm, board: e.target.value, class_name: '', subject: '', chapter: '' })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                      <option value="cbse">CBSE</option>
+                      <option value="rbse">Rajasthan Board (RBSE)</option>
+                      <option value="hbse">Haryana Board (HBSE)</option>
+                      <option value="upboard">UP Board (UPMSP)</option>
+                      <option value="bseb">Bihar Board (BSEB)</option>
+                      <option value="mpbse">MP Board (MPBSE)</option>
+                    </select>
+                  </div>
+
                   {/* Class Name */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">

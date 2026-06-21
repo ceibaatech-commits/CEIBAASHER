@@ -59,9 +59,27 @@ def test_anonymous_player_still_matches():
     assert opp.player_name == 'Guest'
 
 
+def test_same_user_id_cannot_match_self():
+    m = MatchmakingManager()
+    m.add_to_queue('s1', 'Demo One', 'NDA', 'Math', user_id='demo1', username='demo1')
+    opp = m.add_to_queue('s2', 'Demo One Again', 'NDA', 'Math', user_id='demo1', username='demo1')
+    assert opp is None, 'Same account must never match against itself'
+    assert m.get_queue_size('NDA', 'Math') == 2
+
+
+def test_same_username_cannot_match_self_without_user_id():
+    m = MatchmakingManager()
+    m.add_to_queue('s1', 'Player A', 'NDA', 'Math', username='demo1')
+    opp = m.add_to_queue('s2', 'Player B', 'NDA', 'Math', username='demo1')
+    assert opp is None, 'Same username fallback should prevent self-match'
+    assert m.get_queue_size('NDA', 'Math') == 2
+
+
 if __name__ == '__main__':
     test_basic_match_no_blocks()
     test_blocked_player_is_skipped_and_remains_in_queue()
     test_next_unrelated_player_still_matches_with_first()
     test_anonymous_player_still_matches()
+    test_same_user_id_cannot_match_self()
+    test_same_username_cannot_match_self_without_user_id()
     print("All matchmaking block-filter tests passed.")

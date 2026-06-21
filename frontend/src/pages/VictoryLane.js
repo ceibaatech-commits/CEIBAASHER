@@ -75,36 +75,39 @@ const VictoryLane = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f7f9fc]">
       <Header isLoggedIn={!!user} user={user} onLogout={logout} />
 
-      <VictoryLaneHeader
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        searchExpanded={searchExpanded}
-        setSearchExpanded={setSearchExpanded}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
-        selectedTag={selectedTag}
-        setSelectedTag={setSelectedTag}
-        allTags={feed.allTags}
-        filteredPosts={feed.filteredPosts}
-        posts={feed.posts}
-        isConnected={feed.isConnected}
-      />
+      <div className="max-w-6xl mx-auto lg:px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-6">
+          <section className="bg-white border-x-0 lg:border-x border-gray-200 min-h-screen">
+            <VictoryLaneHeader
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              searchExpanded={searchExpanded}
+              setSearchExpanded={setSearchExpanded}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              showFilters={showFilters}
+              setShowFilters={setShowFilters}
+              selectedTag={selectedTag}
+              setSelectedTag={setSelectedTag}
+              allTags={feed.allTags}
+              filteredPosts={feed.filteredPosts}
+              posts={feed.posts}
+              isConnected={feed.isConnected}
+            />
 
-      <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl mx-auto">
         {/* Guest CTA Banner */}
         {!user && (
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white mx-4 mt-4 mb-3 rounded-2xl p-6 text-center shadow-lg">
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white mx-3 sm:mx-4 mt-2 mb-2 rounded-xl p-3.5 text-center shadow-sm">
             <Trophy className="w-10 h-10 mx-auto mb-2 opacity-90" />
-            <h2 className="text-xl font-bold mb-1">Join the Victory Lane!</h2>
+            <h2 className="text-lg font-bold mb-1">Join Capazoo!</h2>
             <p className="mb-3 text-sm text-blue-50">Share your wins, create quiz rooms, and compete with others</p>
             <button
               onClick={() => navigate('/login')}
-              className="px-5 py-2 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition text-sm shadow-md"
+              className="px-4 py-1.5 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition text-sm shadow-sm"
               data-testid="victory-lane-login-btn"
             >
               Login to Participate
@@ -224,6 +227,65 @@ const VictoryLane = () => {
             )}
           </div>
         )}
+
+            </div>
+          </section>
+
+          {/* Desktop Right Rail */}
+          <aside className="hidden lg:block pt-0">
+            <div className="sticky top-[72px] space-y-4">
+              <div className="bg-white border border-gray-200 rounded-2xl p-3">
+                <label className="block text-xs font-semibold text-gray-600 mb-2">Search Capazoo</label>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search posts, users, tags"
+                  className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400"
+                />
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-2xl p-3">
+                <h3 className="text-sm font-bold text-gray-900 mb-2">Trending Topics</h3>
+                <div className="space-y-1.5 max-h-[320px] overflow-y-auto pr-1">
+                  {feed.allTags.slice(0, 12).map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => {
+                        setSelectedTag(selectedTag === tag ? null : tag);
+                        setShowFilters(true);
+                        setActiveTab('trending');
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-sm transition ${
+                        selectedTag === tag
+                          ? 'bg-blue-600 text-white'
+                          : 'hover:bg-gray-50 text-gray-800'
+                      }`}
+                    >
+                      #{tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {(searchQuery || selectedTag) && (
+                <div className="bg-white border border-gray-200 rounded-2xl p-3">
+                  <h3 className="text-sm font-bold text-gray-900">Active Filters</h3>
+                  <p className="text-xs text-gray-600 mt-1">{feed.filteredPosts.length} posts matched</p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedTag(null);
+                    }}
+                    className="mt-2 px-3 py-1.5 text-xs font-semibold rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              )}
+            </div>
+          </aside>
+        </div>
       </div>
 
       {/* Modals */}

@@ -214,8 +214,13 @@ const Sitemap = () => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             {[
               { name: 'Home', path: '/' },
-              { name: 'Victory Lane (Feed)', path: '/victory-lane' },
-              { name: 'Chapter Tests', path: '/chapter-tests' },
+              { name: 'Capazoo (Feed)', path: '/capazoo' },
+              { name: 'Chapter Tests - CBSE', path: '/chapter-tests?board=cbse' },
+              { name: 'Chapter Tests - Rajasthan Board', path: '/chapter-tests?board=rbse' },
+              { name: 'Chapter Tests - Haryana Board', path: '/chapter-tests?board=hbse' },
+              { name: 'Chapter Tests - UP Board', path: '/chapter-tests?board=upboard' },
+              { name: 'Chapter Tests - Bihar Board', path: '/chapter-tests?board=bseb' },
+              { name: 'Chapter Tests - MP Board', path: '/chapter-tests?board=mpbse' },
               { name: 'Leaderboard', path: '/leaderboard' },
               { name: 'Join Quiz Room', path: '/join-room' },
               { name: 'My Board', path: '/board' },
@@ -308,7 +313,7 @@ const Sitemap = () => {
               { name: '1v1 Live Battles', path: '/' },
               { name: 'AI Tutor - Divya', path: '/divya' },
               { name: 'Room-based Quizzes', path: '/join-room' },
-              { name: 'Victory Lane (Social Feed)', path: '/victory-lane' },
+              { name: 'Capazoo (Social Feed)', path: '/capazoo' },
               { name: 'Leaderboard & Rankings', path: '/leaderboard' },
               { name: 'Performance Dashboard', path: '/board' },
             ].map(f => (

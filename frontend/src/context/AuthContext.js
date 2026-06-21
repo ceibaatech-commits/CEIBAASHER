@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
           const url = error.config?.url || '';
           const isAuthMe = url.includes('/api/auth/me');
           const detail = error.response?.data?.detail || '';
-          const looksExpired = detail.includes('expired') || detail.includes('Invalid token');
+          const looksExpired = detail.includes('expired');
 
           if (isAuthMe && looksExpired) {
             localStorage.removeItem('ceibaa_user');

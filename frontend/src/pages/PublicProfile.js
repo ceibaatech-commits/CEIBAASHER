@@ -95,7 +95,7 @@ const PublicProfile = () => {
 
   const handleBlock = () => {
     // After blocking, navigate away from the blocked user's profile
-    navigate('/victory-lane', { replace: true });
+    navigate('/capazoo', { replace: true });
   };
 
   const handleFollowersClick = () => {
@@ -351,7 +351,7 @@ const PublicProfile = () => {
           <h1 className="text-4xl font-bold text-gray-800 mb-4">User Not Found</h1>
           <p className="text-gray-600 mb-6">The profile @{username} doesn&apos;t exist.</p>
           <button
-            onClick={() => navigate('/victory-lane')}
+            onClick={() => navigate('/capazoo')}
             className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold"
           >
             Back to Feed
@@ -378,7 +378,7 @@ const PublicProfile = () => {
               You can&apos;t view this profile.
             </p>
             <button
-              onClick={() => navigate('/victory-lane')}
+              onClick={() => navigate('/capazoo')}
               data-testid="profile-unavailable-back"
               className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 font-semibold transition-all shadow-md"
             >
@@ -395,13 +395,13 @@ const PublicProfile = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
         <Header isLoggedIn={!!user} user={user} onLogout={logout} />
-        <div className="max-w-2xl mx-auto py-12 px-4">
+        <div className="max-w-2xl mx-auto py-6 px-4">
           {/* Back Button */}
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 mb-4 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
+            className="flex items-center gap-1.5 mb-3 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
             Back
           </button>
 
@@ -490,13 +490,13 @@ const PublicProfile = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
       <Header isLoggedIn={!!user} user={user} onLogout={logout} />
-      <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="max-w-4xl mx-auto py-5 px-4">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/victory-lane')}
-          className="flex items-center gap-2 mb-4 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
+          onClick={() => navigate('/capazoo')}
+          className="flex items-center gap-1.5 mb-3 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
           Back
         </button>
 

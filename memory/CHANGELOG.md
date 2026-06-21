@@ -2,6 +2,58 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — Bug fix: Chapter Manager → Exam Sheet Manager → Student frontend data flow broken — RESOLVED
+- **Reproduction (matches user's IMG_3228 / IMG_3229 / IMG_3230 on `ceibaa.in`):**
+  - Admin adds a chapter via **Class Chapter Manager** (Board=HBSE, Class 6, Science, Chapter 3 *"तन्तु से वस्त्र तक"*) → success toast.
+  - **Exam Sheet Manager** → Sheet Type "School Classes" → picks Board "Haryana Board (HBSE)", Class "Class 6" → **Subject dropdown is empty** and Chapter dropdown stays disabled.
+  - Student visits `/chapter-tests/class-6?board=hbse` → renders empty state **"No subjects available for Class 6"**.
+- **Root cause — two unconnected collections:**
+  - **Class Chapter Manager** writes to `class_chapters` collection.
+  - **Exam Sheet Manager** dropdowns AND student frontend read **only from `exam_sheets` collection** (via `get_dynamic_board_subjects_for_class` / `get_dynamic_board_admin_map`).
+  - Because no Google Sheet had been linked yet, `exam_sheets` was empty for `board=hbse` → both flows returned `[]`.
+  - Bonus contributing factor: the chapter row was stored with whatever case the admin sent (`HBSE` from one path, `hbse` from another), so even when the read path was right, exact case-match queries would silently miss legacy rows.
+- **Fix #1 — Merge `class_chapters` into the dynamic-board reads** (`/app/backend/board_sheet_data.py`):
+  - `get_dynamic_board_subjects_for_class()` now pools subjects from BOTH `exam_sheets` AND `class_chapters` before dedupe/sort.
+  - `get_dynamic_board_chapters_for_subject()` does the same for chapters.
+  - `get_dynamic_board_chapter_cards()` now starts from `class_chapters` (authoritative `total_questions` / `difficulty` / `duration` / `chapter_number`) and overlays any actual sheet-uploaded question counts on top.
+  - `get_dynamic_board_admin_map()` (powers ExamSheetManager's cascading dropdowns) now pulls from `class_chapters` FIRST (sorted by `chapter_number`), then merges in `exam_sheets` for legacy data.
+  - All board comparisons use the new `_board_case_insensitive_filter()` helper so `"HBSE"`, `"hbse"`, and `"Hbse"` rows all resolve identically.
+- **Fix #2 — Normalize on write** (`/app/backend/class_chapters_routes.py`):
+  - `POST /api/admin/class-chapters/chapters` now lowercases `board`, trims `class_name` / `subject` / `chapter_name` before insert.
+  - Delete-existing query also became case-insensitive so re-uploading a chapter list correctly replaces older mixed-case rows.
+- **Fix #3 — Case-insensitive lookups everywhere** that read `class_chapters`:
+  - `/app/backend/cbse_data_routes.py::_get_db_chapters_for_board_class_subject` now uses `^...$` `(?i)` regex for `board`.
+  - `/app/backend/chapter_test_routes.py::get_chapters` does the same for `board` AND `subject` so trailing whitespace / mixed-case subject entries don't 0-out the chapter list.
+- **Verified end-to-end via curl on preview** (reproducing the exact admin flow):
+  - `POST /api/admin/class-chapters/chapters {board:"HBSE", class_name:"Class 6", subject:"Science", chapters:[{3, "तन्तु से वस्त्र तक", ...}]}` → 200, persisted as lowercase `hbse`.
+  - `GET /api/cbse-data/admin/class-subjects?board=hbse` → `{Class 6: {Science: ["तन्तु से वस्त्र तक"]}}` ✅ (ExamSheetManager dropdowns will now populate).
+  - `GET /api/cbse-data/subjects/6?board=hbse` → `subjects: [{name:"Science", ...}]` ✅ (student "Choose Your Subject" page).
+  - `GET /api/chapter-tests/chapters?class_param=6&subject=Science&board=hbse` → `chapters: [{chapter_number:3, total_questions:50, ...}]` ✅ (student chapter-list page).
+  - Legacy uppercase `board:"HBSE"` row inserted directly into Mongo also resolves through `?board=hbse`. ✅
+- **Required action on production**: redeploy. The data flow is fixed by code changes alone — no data migration required (legacy uppercase rows continue working thanks to the case-insensitive read path).
+
+### Feb 15, 2026 — Board page: BoardFigmaHero stat-strip + compact layout redesign — COMPLETE
+- [x] **`/app/frontend/src/components/board/BoardFigmaHero.js` — full visual rewrite (~393 → ~430 lines).** All existing data-testids preserved; `board-figma-tests`/`-avg`/`-hours` replaced by `board-figma-points`/`-world-rank`/`-local-rank` (callers update their assertions accordingly).
+- [x] **Stat strip — Tests/Avg/Hours → POINTS · WORLD RANK · LOCAL RANK**:
+  - **POINTS** (`Star` icon, filled violet) — computed as `tests_completed * 10 + Math.round(avg_score * streak)`. Animated count-up from 0 over 700ms via new `useCountUp` hook (respects `prefers-reduced-motion`). `tabular-nums` for clean alignment.
+  - **WORLD RANK** (`Globe` icon) — `#—` placeholder pending backend wiring.
+  - **LOCAL RANK** (`Network` icon) — `#—` placeholder pending backend wiring.
+  - Card shadow: `0 10px 30px -10px rgba(76,46,196,0.18)` with thin `divide-x divide-slate-100` between columns.
+- [x] **Nationality flag emoji next to the username**:
+  - New `countryCodeToFlag(code)` helper: converts ISO-3166 alpha-2 → regional-indicator-pair (🇮🇳, 🇺🇸…). Falls back to 🇮🇳 (India) when `user.country_code` / `user.country` is missing — appropriate for Ceibaa's India-first user base.
+  - Rendered as a small 18px emoji span beside the name, with `data-testid="board-figma-flag"`.
+- [x] **Layout polish** per the design spec:
+  - **Compact purple hero** (`pt-4 pb-14`, rounded-b-[28px], subtle 5-15% opacity decorative circles) — fits within ~38–40% viewport on iPhone 13/14.
+  - **Avatar overlap**: 96×96 avatar absolutely positioned at `bottom-0 translate-y-1/2` so 50% sits on purple, 50% on white — single visual stitch between the two zones.
+  - **Name + flag + Beginner pill** all on the **white sheet** (not purple).
+  - **Floating stats card** below the pill (20px gap) with `border-radius: 20px`, soft violet shadow, thin slate-100 dividers.
+  - **Segmented tabs** with **sliding 3px violet underline** that animates between Badges / Stats / Details on tab change (250ms `cubic-bezier(0.32,0.72,0,1)`).
+  - Heading weight dialled down from `font-black` → `font-semibold` per spec ("no heavy 800 weights").
+- [x] **Tokens applied**: brand violet `#6D5BFF` (CTAs, icons, active tab), hero gradient `#6D5BFF → #8B7BFF`, text `#0F172A`, muted `#64748B`, label `#94A3B8`, card shadow `0 10px 30px -10px rgba(76,46,196,0.18)`. Font stack: **Geist** → Manrope → system.
+- [x] **Edge cases handled**: monogram avatar (orange gradient `#FF7A3D → #FF5A28`) when `profile_picture` missing; long-name truncation (scales down to 20px if name > 14 chars).
+- [x] **Subtle motion**: avatar fade+scale-in on mount (`board-figma-avatar-in` keyframe, 600ms cubic-bezier) with `prefers-reduced-motion` opt-out. Stat values animate count-up on mount. Tab underline slides smoothly.
+- [x] **Verified visually** on `/board` route as logged-in `demo1`: stat strip shows POINTS=30, WORLD RANK=#—, LOCAL RANK=#—; 🇮🇳 flag visible beside "Demo Student 1"; avatar overlaps seam; segmented tabs with sliding underline working. Webpack compiles clean (same 6 pre-existing warnings).
+
 ### Feb 15, 2026 — Bug fix: Report user not working on Battle screen — RESOLVED (3 root causes)
 - [x] **Root cause #1 — Auth mismatch (401 always).** `/api/admin/battles/report` required `Authorization: Bearer <token>` header, but the Ceibaa frontend uses **cookie-based session auth** (`axios.defaults.withCredentials = true`, `session_token` cookie set by `_set_auth_cookie`). It never sent a bearer header, so the endpoint 401-ed every submit silently. **Fix in `/app/backend/live_battles_admin_routes.py` `create_battle_report()`**: refactored the auth block to try the `session_token` cookie FIRST (`db.user_sessions.find_one` then raw-JWT fallback), then fall back to Authorization header (admin session / user session / JWT). Returns 401 only when both fail.
 - [x] **Root cause #2 — Reason whitelist out of sync.** Frontend offers `nudity` as a report reason, backend's `valid_reasons` whitelist did NOT include it — so picking "Nudity / Sexual Content" returned **400 Invalid reason**. **Fix**: added `"nudity"` to the backend whitelist so the full UI list now passes validation.

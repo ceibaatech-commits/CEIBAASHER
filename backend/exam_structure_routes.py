@@ -40,11 +40,14 @@ async def get_all_exams_structure():
             },
             {
                 "$sort": {"exam_name": 1}
+            },
+            {
+                "$limit": 500
             }
         ]
         
         exams_cursor = db.exam_sheets.aggregate(pipeline)
-        exams_list = await exams_cursor.to_list(length=None)
+        exams_list = await exams_cursor.to_list(length=500)
         
         # Build structure for each exam
         result = []
@@ -188,11 +191,14 @@ async def get_exam_topics(exam_id: str):
             },
             {
                 "$sort": {"topic": 1}
+            },
+            {
+                "$limit": 500
             }
         ]
         
         cursor = db.exam_sheets.aggregate(pipeline)
-        topics = await cursor.to_list(length=None)
+        topics = await cursor.to_list(length=500)
         
         topic_list = [t["topic"] for t in topics if t["topic"]]
         
@@ -229,11 +235,14 @@ async def get_topic_subjects(exam_id: str, topic: str):
             },
             {
                 "$sort": {"subject": 1}
+            },
+            {
+                "$limit": 500
             }
         ]
         
         cursor = db.exam_sheets.aggregate(pipeline)
-        subjects = await cursor.to_list(length=None)
+        subjects = await cursor.to_list(length=500)
         
         subject_list = [
             {
@@ -278,11 +287,14 @@ async def get_subject_subtopics(exam_id: str, topic: str, subject: str):
             },
             {
                 "$sort": {"sub_topic": 1}
+            },
+            {
+                "$limit": 1000
             }
         ]
         
         cursor = db.exam_sheets.aggregate(pipeline)
-        subtopics = await cursor.to_list(length=None)
+        subtopics = await cursor.to_list(length=1000)
         
         subtopic_list = [
             {

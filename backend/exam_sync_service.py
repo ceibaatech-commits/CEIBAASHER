@@ -59,18 +59,20 @@ async def audit_exam_data() -> Dict[str, Any]:
         if db is not None:
             sheets_pipeline = [
                 {"$group": {"_id": "$exam_name"}},
-                {"$project": {"exam_name": "$_id", "_id": 0}}
+                {"$project": {"exam_name": "$_id", "_id": 0}},
+                {"$limit": 500}
             ]
-            sheets_cursor = await db.exam_sheets.aggregate(sheets_pipeline).to_list(None)
+            sheets_cursor = await db.exam_sheets.aggregate(sheets_pipeline).to_list(500)
             db_exams_from_sheets = [s["exam_name"] for s in sheets_cursor if s.get("exam_name")]
             audit_report["database_exams"] = db_exams_from_sheets
             
             # 3. Get unique exams from questions collection
             questions_pipeline = [
                 {"$group": {"_id": "$exam_name"}},
-                {"$project": {"exam_name": "$_id", "_id": 0}}
+                {"$project": {"exam_name": "$_id", "_id": 0}},
+                {"$limit": 500}
             ]
-            questions_cursor = await db.questions.aggregate(questions_pipeline).to_list(None)
+            questions_cursor = await db.questions.aggregate(questions_pipeline).to_list(500)
             db_exams_from_questions = [q["exam_name"] for q in questions_cursor if q.get("exam_name")]
             
             # 4. Compare and find discrepancies
@@ -87,12 +89,12 @@ async def audit_exam_data() -> Dict[str, Any]:
             sheets_with_questions = await db.exam_sheets.find(
                 {"questions_imported": True, "question_count": {"$gt": 0}},
                 {"_id": 0, "id": 1, "exam_name": 1, "subject": 1, "sub_topic": 1}
-            ).to_list(None)
+            ).limit(2000).to_list(2000)
             
             sheets_without_questions = await db.exam_sheets.find(
                 {"$or": [{"questions_imported": False}, {"question_count": 0}, {"question_count": None}]},
                 {"_id": 0, "id": 1, "exam_name": 1, "subject": 1, "sub_topic": 1, "sheet_link": 1}
-            ).to_list(None)
+            ).limit(2000).to_list(2000)
             
             audit_report["orphan_sheets"] = sheets_without_questions
             
@@ -471,7 +473,7 @@ async def run_migration(backup_first: bool = True) -> Dict[str, Any]:
             backup_id = f"migration_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             
             # Backup exam_sheets
-            sheets = await db.exam_sheets.find({}).to_list(None)
+            sheets = await db.exam_sheets.find({}).limit(50000).to_list(50000)
             if sheets:
                 for s in sheets:
                     s.pop("_id", None)
@@ -504,9 +506,10 @@ async def run_migration(backup_first: bool = True) -> Dict[str, Any]:
                 "count": {"$sum": 1},
                 "ids": {"$push": "$id"}
             }},
-            {"$match": {"count": {"$gt": 1}}}
+            {"$match": {"count": {"$gt": 1}}},
+            {"$limit": 5000}
         ]
-        duplicates = await db.exam_sheets.aggregate(pipeline).to_list(None)
+        duplicates = await db.exam_sheets.aggregate(pipeline).to_list(5000)
         
         duplicates_removed = 0
         for dup in duplicates:

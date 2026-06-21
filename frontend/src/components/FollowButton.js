@@ -238,6 +238,7 @@ const FollowButton = ({
   initialStatus = null,
   onFollowChange,
   onBlock,
+  compact = false,
 }) => {
   const [status, setStatus] = useState(initialStatus);
   const [loading, setLoading] = useState(initialStatus === null);
@@ -394,24 +395,26 @@ const FollowButton = ({
   };
 
   const btnProps = (() => {
-    const base = 'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm w-full sm:w-auto cursor-pointer active:scale-95 transition-all';
+    const base = compact
+      ? 'inline-flex items-center justify-center gap-2 rounded-2xl px-3.5 py-2 text-sm font-semibold w-full sm:w-auto cursor-pointer active:scale-95 transition-all shadow-sm border'
+      : 'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full font-semibold text-sm w-full sm:w-auto cursor-pointer active:scale-95 transition-all';
     if (status === 'close_friend') return {
-      className: `${base} bg-teal-50 border border-teal-200 text-teal-700`,
+      className: `${base} ${compact ? 'bg-teal-600 border-teal-600 text-white shadow-teal-500/20' : 'bg-teal-50 border border-teal-200 text-teal-700'}`,
       icon: <Heart className="w-4 h-4" />,
-      label: 'Close friend',
+      label: compact ? 'Close friend' : 'Close friend',
     };
     if (status === 'approved') return {
-      className: `${base} bg-blue-50 border border-blue-200 text-blue-700`,
+      className: `${base} ${compact ? 'bg-slate-950 border-slate-950 text-white shadow-slate-900/20' : 'bg-blue-50 border border-blue-200 text-blue-700'}`,
       icon: <UserCheck className="w-4 h-4" />,
       label: 'Following',
     };
     if (status === 'pending') return {
-      className: `${base} bg-amber-50 border border-amber-200 text-amber-700`,
+      className: `${base} ${compact ? 'bg-amber-50 border-amber-200 text-amber-800 shadow-amber-500/10' : 'bg-amber-50 border border-amber-200 text-amber-700'}`,
       icon: <Clock className="w-4 h-4" />,
       label: 'Requested',
     };
     return {
-      className: `${base} bg-gray-900 text-white hover:bg-gray-800`,
+      className: `${base} ${compact ? 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50' : 'bg-gray-900 text-white hover:bg-gray-800'}`,
       icon: <UserPlus className="w-4 h-4" />,
       label: 'Follow',
     };

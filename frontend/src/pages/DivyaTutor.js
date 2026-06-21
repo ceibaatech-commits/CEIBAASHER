@@ -24,6 +24,64 @@ const LANGUAGES = [
   { code: 'bn', label: 'Bengali', flag: '🇮🇳' },
 ];
 
+const LEARNING_MODES = {
+  concept: {
+    label: 'Concept',
+    guidance: 'Explain clearly in simple steps with one everyday example and end with a quick check question.',
+  },
+  exam: {
+    label: 'Exam Boost',
+    guidance: 'Prioritize exam-important points, likely question framing, and one fast recall trick.',
+  },
+  revision: {
+    label: 'Quick Revision',
+    guidance: 'Keep answers short in bullet style with key formulas/facts and common mistakes to avoid.',
+  },
+};
+
+const QUICK_PROMPTS = [
+  'Explain this like I am in class 8',
+  'Give me 3 exam-important points',
+  'Ask me one quick quiz question',
+];
+
+const GOAL_QUICK_PROMPTS = {
+  school: [
+    'Explain with CBSE curriculum examples',
+    'Which topics come in board exams?',
+    'Help me solve this NCERT problem',
+  ],
+  jee_neet: [
+    'What is the tricky part in this concept?',
+    'Show me one JEE/NEET-style question',
+    'Give me the fastest solving trick',
+  ],
+  govt: [
+    'Explain the factual key points for exams',
+    'What is asked in SSC/Bank exams?',
+    'Show me 3 frequently asked questions',
+  ],
+  spoken: [
+    'Correct my pronunciation and explain usage',
+    'Give me 5 phrases for this situation',
+    'How do I say this naturally in English?',
+  ],
+};
+
+const AUDIO_MODES = {
+  default: { label: 'Balanced Voice' },
+  calm: { label: 'Calm Teacher' },
+  energetic: { label: 'Energetic Mentor' },
+  exam: { label: 'Exam Drill' },
+};
+
+const STUDENT_GOALS = {
+  school: 'CBSE/State School',
+  jee_neet: 'JEE / NEET',
+  govt: 'Govt Exams',
+  spoken: 'Spoken English',
+};
+
 const TUTORS = {
   divya: {
     name: 'Divya', tagline: 'Warm & Encouraging',
@@ -305,6 +363,11 @@ const LiveTutor = ({ onSessionChange }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [learningMode, setLearningMode] = useState('concept');
+  const [autoSpeak, setAutoSpeak] = useState(true);
+  const [recordSeconds, setRecordSeconds] = useState(0);
+  const [voiceMode, setVoiceMode] = useState('default');
+  const [studentGoal, setStudentGoal] = useState('school');
 
   // Phase 2 — session_id returned by /api/divya/progress/session/start
   const sessionIdRef = useRef(null);
@@ -319,6 +382,7 @@ const LiveTutor = ({ onSessionChange }) => {
   const quizHistoryRef = useRef([]);                       // [{question, user_answer, correct}]
 
   const mediaRecorderRef = useRef(null);
+  const recordTimerRef = useRef(null);
   const chunksRef = useRef([]);
   const chatEndRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -327,7 +391,11 @@ const LiveTutor = ({ onSessionChange }) => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isProcessing]);
 
-  useEffect(() => () => { audioMgr.stop(); stopRecording(); }, []);
+  useEffect(() => () => {
+    audioMgr.stop();
+    stopRecording();
+    if (recordTimerRef.current) clearInterval(recordTimerRef.current);
+  }, []);
 
   /* ─── File Upload ─── */
   const handleFileUpload = async (e) => {
@@ -342,14 +410,21 @@ const LiveTutor = ({ onSessionChange }) => {
       const fd = new FormData();
       files.forEach(f => fd.append('files', f));
       const res = await axios.post(`${BACKEND_URL}/api/divya/live/upload-context`, fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }, timeout: 120000,
+        timeout: 120000,
       });
       if (res.data.success) {
-        setPdfContext(res.data.context);
-        toast.success(`${files.length} file(s): ${res.data.char_count} chars extracted`);
+        setPdfContext(res.data.context || '');
+        if (Array.isArray(res.data.warnings) && res.data.warnings.length) {
+          toast.warning(res.data.warnings[0]);
+        }
+        toast.success(`${files.length} file(s): ${res.data.char_count || 0} chars extracted`);
       }
-    } catch { toast.error('Failed to process files'); setUploadedFiles([]); }
-    finally { setUploadingFiles(false); }
+    } catch (err) {
+      const detail = err?.response?.data?.detail || err?.response?.data?.message;
+      toast.error(detail || 'Failed to process files');
+      setPdfContext('');
+      setUploadedFiles([]);
+    } finally { setUploadingFiles(false); }
   };
 
   const removeFiles = () => { setPdfContext(''); setUploadedFiles([]); if (fileInputRef.current) fileInputRef.current.value = ''; };
@@ -389,6 +464,8 @@ const LiveTutor = ({ onSessionChange }) => {
 
   const endSession = async () => {
     audioMgr.stop(); stopRecording();
+    if (recordTimerRef.current) clearInterval(recordTimerRef.current);
+    setRecordSeconds(0);
     const sid = sessionIdRef.current;
     sessionIdRef.current = null;
     setSessionActive(false);
@@ -505,15 +582,23 @@ const LiveTutor = ({ onSessionChange }) => {
     }));
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/divya/live/ask`, {
-        text: userText, tutor: selectedTutor, language: selectedLang,
-        context: pdfContext, chat_history: chatHistory,
-      }, { timeout: 60000 });
+      const modeGuidance = LEARNING_MODES[learningMode]?.guidance || LEARNING_MODES.concept.guidance;
+      const guidedText = `${userText}\n\n[Student Preference]\nLearning mode: ${LEARNING_MODES[learningMode]?.label || 'Concept'}\nGuidance: ${modeGuidance}`;
+      const payload = {
+        text: guidedText,
+        tutor: selectedTutor,
+        language: selectedLang,
+        context: pdfContext || '',
+        chat_history: Array.isArray(chatHistory) ? chatHistory : [],
+        voice_mode: voiceMode || 'default',
+        student_goal: studentGoal || null,
+      };
+      const res = await axios.post(`${BACKEND_URL}/api/divya/live/ask`, payload, { timeout: 60000 });
 
       if (res.data.success) {
         const audioB64 = res.data.audio_base64 || null;
         setMessages(prev => [...prev, { role: 'tutor', text: res.data.text, audio: audioB64 }]);
-        if (audioB64) playMessageAudio(audioB64);
+        if (audioB64 && autoSpeak) playMessageAudio(audioB64);
         // Phase 2 — log this exchange (user + tutor = 2 messages)
         const sid = sessionIdRef.current;
         if (sid) {
@@ -521,10 +606,22 @@ const LiveTutor = ({ onSessionChange }) => {
           axios.post(`${BACKEND_URL}/api/divya/progress/session/log-message`, { session_id: sid, role: 'tutor' }, { withCredentials: true }).catch(() => {});
         }
       }
-    } catch {
-      setMessages(prev => [...prev, { role: 'tutor', text: "Sorry, couldn't process that. Try again?" }]);
+    } catch (err) {
+      const detail = err?.response?.data?.detail || err?.message || "couldn't process that";
+      console.error('[Divya Error]', detail);
+      setMessages(prev => [...prev, { role: 'tutor', text: `Sorry, ${detail}. Try again?` }]);
     } finally { setIsProcessing(false); }
-  }, [isProcessing, messages, selectedTutor, selectedLang, pdfContext]);
+  }, [
+    isProcessing,
+    messages,
+    selectedTutor,
+    selectedLang,
+    pdfContext,
+    learningMode,
+    autoSpeak,
+    voiceMode,
+    studentGoal,
+  ]);
 
   /* ─── Voice Recording ─── */
   const startRecording = async () => {
@@ -539,16 +636,38 @@ const LiveTutor = ({ onSessionChange }) => {
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = async () => {
         stream.getTracks().forEach(t => t.stop());
+        if (recordTimerRef.current) clearInterval(recordTimerRef.current);
+        setRecordSeconds(0);
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         if (blob.size > 1000) await transcribeAndSend(blob);
       };
       mr.start(250);
       mediaRecorderRef.current = mr;
       setIsRecording(true);
-    } catch { toast.error('Microphone access denied'); }
+      setRecordSeconds(0);
+      recordTimerRef.current = setInterval(() => {
+        setRecordSeconds(prev => {
+          if (prev >= 59) {
+            stopRecording();
+            return 60;
+          }
+          return prev + 1;
+        });
+      }, 1000);
+    } catch (err) {
+      const denied = err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError';
+      const unavailable = err?.name === 'NotFoundError' || err?.name === 'DevicesNotFoundError';
+      if (denied) toast.error('Microphone permission denied. Please allow mic access.');
+      else if (unavailable) toast.error('No microphone detected on this device.');
+      else toast.error('Could not start recording. Please try again.');
+    }
   };
 
   const stopRecording = () => {
+    if (recordTimerRef.current) {
+      clearInterval(recordTimerRef.current);
+      recordTimerRef.current = null;
+    }
     if (mediaRecorderRef.current?.state !== 'inactive') {
       try { mediaRecorderRef.current?.stop(); } catch {}
     }
@@ -571,10 +690,23 @@ const LiveTutor = ({ onSessionChange }) => {
       });
       if (res.data.success && res.data.text) await sendMessage(res.data.text);
       else { toast.error("Couldn't understand. Try again."); setIsProcessing(false); }
-    } catch { toast.error('Transcription failed. Try typing.'); setIsProcessing(false); }
+    } catch (err) {
+      const status = err?.response?.status;
+      if (status === 413) toast.error('Audio too long. Keep each recording under 1 minute.');
+      else if (status === 429) toast.error('Voice service is busy right now. Please retry in a moment.');
+      else toast.error('Transcription failed. Try typing.');
+      setIsProcessing(false);
+    }
   };
 
   const tutor = selectedTutor ? TUTORS[selectedTutor] : null;
+  const sessionStatus = isRecording
+    ? `Listening... ${recordSeconds}s`
+    : isSpeaking
+      ? 'Speaking...'
+      : isProcessing
+        ? 'Thinking...'
+        : 'Ready for your question';
 
   if (!sessionActive) {
     return (
@@ -601,7 +733,7 @@ const LiveTutor = ({ onSessionChange }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-bold text-gray-800">{tutor.name}</h3>
-          <p className="text-[10px] text-gray-400">{isSpeaking ? 'Speaking...' : isProcessing ? 'Thinking...' : 'Listening'}</p>
+          <p className="text-[10px] text-gray-400">{sessionStatus}</p>
         </div>
         {!quizMode && (
           <button
@@ -635,6 +767,57 @@ const LiveTutor = ({ onSessionChange }) => {
         />
       ) : (
       <>
+      <div className="px-4 pt-3 pb-2 bg-white border-b border-gray-100 -mx-4">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <p className="text-[11px] font-semibold text-gray-500">Learning mode</p>
+          <button
+            onClick={() => setAutoSpeak(prev => !prev)}
+            className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition ${autoSpeak ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-gray-50 border-gray-200 text-gray-500'}`}
+            data-testid="auto-speak-toggle"
+          >
+            {autoSpeak ? 'Auto voice ON' : 'Auto voice OFF'}
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-2" data-testid="learning-mode-selector">
+          {Object.entries(LEARNING_MODES).map(([key, mode]) => (
+            <button
+              key={key}
+              onClick={() => setLearningMode(key)}
+              className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition ${learningMode === key ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              data-testid={`learning-mode-${key}`}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-2 pt-2 border-t border-gray-100 flex flex-wrap items-center gap-2" data-testid="voice-mode-selector">
+          <p className="text-[11px] font-semibold text-gray-500 mr-1">Voice mode</p>
+          {Object.entries(AUDIO_MODES).map(([key, mode]) => (
+            <button
+              key={key}
+              onClick={() => setVoiceMode(key)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition ${voiceMode === key ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              data-testid={`voice-mode-${key}`}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2" data-testid="student-goal-selector">
+          <p className="text-[11px] font-semibold text-gray-500 mr-1">Target</p>
+          {Object.entries(STUDENT_GOALS).map(([key, label]) => (
+            <button
+              key={key}
+              onClick={() => setStudentGoal(key)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition ${studentGoal === key ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              data-testid={`student-goal-${key}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50" data-testid="chat-messages">
         {messages.map((msg, idx) => (
@@ -668,8 +851,22 @@ const LiveTutor = ({ onSessionChange }) => {
           </button>
         </div>
         <p className="text-[10px] text-gray-400 text-center mb-3">
-          {isRecording ? 'Listening... Tap to stop' : isSpeaking ? 'Tap mic to interrupt' : 'Tap mic to speak'}
+          {isRecording ? `Listening... ${recordSeconds}s (auto-stop at 60s)` : isSpeaking ? 'Tap mic to interrupt' : 'Tap mic to speak'}
         </p>
+        {!isRecording && !isProcessing && (
+          <div className="flex flex-wrap gap-1.5 justify-center mb-3" data-testid="quick-prompt-row">
+            {(GOAL_QUICK_PROMPTS[studentGoal] || QUICK_PROMPTS).map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => setInputText(prompt)}
+                className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 text-[10px] font-semibold hover:bg-gray-200 transition"
+                data-testid={`quick-prompt-${prompt.substring(0, 20)}`}
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex gap-2">
           <input type="text" value={inputText} onChange={e => setInputText(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && sendMessage(inputText)}

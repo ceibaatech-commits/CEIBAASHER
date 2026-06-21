@@ -16,7 +16,7 @@ const ExamActions = ({ examId, examName }) => {
       </button>
       
       <button
-        onClick={() => navigate('/victory-lane')}
+        onClick={() => navigate('/capazoo')}
         className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-lg font-medium hover:shadow-lg transition-all"
       >
         <Users className="w-4 h-4" />

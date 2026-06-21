@@ -32,7 +32,7 @@ const VerifyPhone = () => {
       try {
         const res = await axios.get(`${BACKEND_URL}/api/auth/phone-status`);
         if (!res.data?.needs_verification) {
-          const from = location.state?.from || '/victory-lane';
+          const from = location.state?.from || '/capazoo';
           navigate(from, { replace: true });
           return;
         }
@@ -76,7 +76,7 @@ const VerifyPhone = () => {
         `${BACKEND_URL}/api/auth/phone/verify-otp`,
         { code }
       );
-      const from = location.state?.from || '/victory-lane';
+      const from = location.state?.from || '/capazoo';
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid or expired code. Please try again.');

@@ -83,7 +83,7 @@ const ModalShell = ({
       aria-label={title}
       data-testid={testid}
       className="fixed inset-0 z-[100] flex items-end md:items-center md:justify-center"
-      style={{ fontFamily: '"Geist", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontFeatureSettings: '"cv11", "ss01"' }}
+      style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', fontFeatureSettings: '"cv11", "ss01"' }}
     >
       {/* Backdrop */}
       <button

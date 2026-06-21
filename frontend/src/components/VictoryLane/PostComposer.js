@@ -9,7 +9,7 @@ const DesktopTextarea = memo(({ value, onChange }) => (
     value={value}
     onChange={onChange}
     placeholder="Share your study wins, tips, or thoughts..."
-    className="w-full border-none outline-none resize-none min-h-[80px] text-base placeholder-gray-400 focus:ring-0 bg-transparent"
+    className="w-full border-none outline-none resize-none min-h-[68px] text-[15px] leading-relaxed placeholder-gray-400 focus:ring-0 bg-transparent"
     rows={2}
     data-testid="post-content-input"
   />
@@ -64,7 +64,7 @@ const PostComposer = ({
   const showUploadButton = pendingUploads.length > 0 && !isUploading;
 
   return (
-    <div className="hidden md:block bg-white border-b border-gray-200 p-4" data-testid="desktop-post-composer">
+    <div className="hidden md:block bg-white border-b border-gray-200 px-4 py-3" data-testid="desktop-post-composer">
       <div className="flex gap-3">
         <UserAvatar profilePicture={user.profile_picture} name={user.name} size="md" />
         <div className="flex-1">
@@ -85,7 +85,7 @@ const PostComposer = ({
             />
           )}
           
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex items-center justify-between pt-2.5 border-t border-gray-100">
             <div className="flex items-center gap-1">
               {/* Media Upload - only if admin allowed */}
               {canPostImages && (
@@ -150,7 +150,7 @@ const PostComposer = ({
               {showUploadButton && (
                 <button
                   onClick={uploadAllMedia}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition text-sm flex items-center gap-2"
+                  className="px-3.5 py-1.5 bg-gray-100 text-gray-700 rounded-full font-semibold hover:bg-gray-200 transition text-xs flex items-center gap-1.5"
                   data-testid="upload-media-btn"
                 >
                   <Image className="w-4 h-4" />
@@ -162,7 +162,7 @@ const PostComposer = ({
               <button
                 onClick={handleCreatePost}
                 disabled={buttonState.disabled || isUploading}
-                className={`px-5 py-2 rounded-full font-semibold transition text-sm flex items-center gap-2 ${
+                className={`px-4 py-1.5 rounded-full font-semibold transition text-sm flex items-center gap-1.5 ${
                   buttonState.disabled || isUploading
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:shadow-lg'

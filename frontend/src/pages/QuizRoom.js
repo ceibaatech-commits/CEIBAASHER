@@ -80,7 +80,7 @@ const QuizRoom = () => {
     if (!roomData || !user) return;
     if (roomData.privacy === 'private' && roomData.host_id && roomData.host_id !== user.id) {
       alert('This is a private quiz. Only the host can attempt it.');
-      navigate('/victory-lane');
+      navigate('/capazoo');
     }
   }, [roomData, user, navigate]);
 
@@ -117,7 +117,7 @@ const QuizRoom = () => {
         } else {
           alert('Failed to load quiz');
         }
-        navigate('/victory-lane');
+        navigate('/capazoo');
       } finally {
         setLoadingQuiz(false);
       }
@@ -278,7 +278,7 @@ const QuizRoom = () => {
     }
 
     if (!questions.length) {
-      navigate('/victory-lane');
+      navigate('/capazoo');
       return;
     }
 
@@ -311,7 +311,7 @@ const QuizRoom = () => {
       });
 
       // After successful share, redirect back to victory lane as requested
-      navigate('/victory-lane');
+      navigate('/capazoo');
     } catch (error) {
       console.error('Error sharing score:', error);
       setShareError(error.response?.data?.detail || 'Failed to share score. Please try again.');
@@ -349,7 +349,7 @@ const QuizRoom = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">No questions found</h2>
             <p className="text-gray-600 mb-6">This quiz room does not have any questions configured.</p>
             <button
-              onClick={() => navigate('/victory-lane')}
+              onClick={() => navigate('/capazoo')}
               className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
             >
               Back to Feed
@@ -406,7 +406,7 @@ const QuizRoom = () => {
                 {shareLoading ? 'Sharing...' : 'Share my score'}
               </button>
               <button
-                onClick={() => navigate('/victory-lane')}
+                onClick={() => navigate('/capazoo')}
                 className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
               >
                 Back to Feed
@@ -492,7 +492,7 @@ const QuizRoom = () => {
           <button
             onClick={() => {
               if (window.confirm('Are you sure you want to exit? Your progress will be lost.')) {
-                navigate('/victory-lane');
+                navigate('/capazoo');
               }
             }}
             className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"

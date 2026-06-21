@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, Plus, ChevronRight, ChevronDown, ArrowUpRight, Briefcase } from 'lucide-react';
+import { Trophy, Zap, Users, TrendingUp, BookOpen, FileText, Clock, Gamepad2, Search, Home as HomeIcon, ChevronRight, ChevronDown, ArrowUpRight, Briefcase } from 'lucide-react';
 import SEO from '../components/SEO';
 import CeibaaLogo from '../components/CeibaaLogo';
 import Header from '../components/Header';
@@ -30,7 +30,7 @@ const Home = () => {
       {/* SEO Component for Home Page */}
       <SEO 
         title="Ceibaa 2026 - India's #1 Social Learning & Career Platform"
-        description="FREE 1M+ MCQ's. Live 1v1 Duels. Multiplayer Rooms. The Victory Lane (Post MCQ's, Videos and Photos. Courses. Interships and Jobs by Top Companies"
+        description="FREE 1M+ MCQ's. Live 1v1 Duels. Multiplayer Rooms. Capazoo (Post MCQ's, Videos and Photos. Courses. Interships and Jobs by Top Companies"
       />
       
       <Header 
@@ -984,15 +984,6 @@ const Home = () => {
           </div>
         </div>
       </main>
-
-      {/* Floating Action Button - Mobile */}
-      <button
-        onClick={() => navigate('/join-room')}
-        data-create-post-fab
-        className="md:hidden fixed bottom-20 right-4 w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center z-50 hover:scale-110 transition-transform"
-      >
-        <Plus className="w-7 h-7 text-white" />
-      </button>
 
       <Footer />
     </div>

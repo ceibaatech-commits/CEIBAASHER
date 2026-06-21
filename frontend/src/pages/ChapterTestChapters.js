@@ -16,6 +16,9 @@ const ChapterTestChapters = () => {
   const { classNumber, subject, stream } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
   const location = window.location;
+  const board = new URLSearchParams(location.search).get('board') || 'cbse';
+  const boardLabel = board === 'rbse' ? 'Rajasthan Board' : board === 'hbse' ? 'Haryana Board' : board === 'upboard' ? 'UP Board' : board === 'bseb' ? 'Bihar Board' : board === 'mpbse' ? 'MP Board' : 'CBSE';
+  const boardQuery = `?board=${board}`;
   
   // Extract class number from URL path if not in params (for class 11/12 with streams)
   const selectedClass = classNumber?.replace('class-', '') || location.pathname.match(/class-(\d+)/)?.[1] || '';
@@ -58,7 +61,7 @@ const ChapterTestChapters = () => {
     fetchChapters();
     fetchAcademicPosts();
   // eslint-disable-next-line
-  }, [selectedClass, subject]);
+  }, [selectedClass, subject, board]);
 
   const fetchChapters = async () => {
     try {
@@ -67,7 +70,8 @@ const ChapterTestChapters = () => {
       const response = await axios.get(`${API_URL}/api/chapter-tests/chapters`, {
         params: {
           class_param: selectedClass,
-          subject: subject
+          subject: subject,
+          board
         }
       });
       
@@ -120,7 +124,8 @@ const ChapterTestChapters = () => {
         subject: formattedSubject,
         chapter: chapter.chapter_name,
         chapterNumber: chapter.chapter_number,
-        stream: stream // Include stream for Class 11/12
+        stream: stream, // Include stream for Class 11/12
+        board
       } 
     });
   };
@@ -140,7 +145,8 @@ const ChapterTestChapters = () => {
         class_name: `Class ${selectedClass}`,
         subject: formattedSubject,
         chapter: chapter.chapter_name,
-        stream: stream // Include stream for Class 11/12
+        stream: stream, // Include stream for Class 11/12
+        board
       }
     });
   };
@@ -175,7 +181,7 @@ const ChapterTestChapters = () => {
             <BookOpen className="w-16 h-16 text-red-400 mx-auto mb-4" />
             <p className="text-xl text-gray-600">{error}</p>
             <button 
-              onClick={() => navigate('/chapter-tests')}
+              onClick={() => navigate(`/chapter-tests${boardQuery}`)}
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Go Back to Class Selection
@@ -195,8 +201,8 @@ const ChapterTestChapters = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <SEO
         title={`Class ${selectedClass} ${subjectDisplay} - Free Chapter-wise MCQs`}
-        description={`Practice free chapter-wise MCQs for CBSE Class ${selectedClass} ${subjectDisplay}. Solve NCERT-based questions with instant results and detailed solutions.`}
-        keywords={`class ${selectedClass} ${subjectDisplay} mcq, class ${selectedClass} ${subjectDisplay} ncert solutions, ${subjectDisplay} chapter wise test`}
+        description={`Practice free chapter-wise MCQs for ${boardLabel} Class ${selectedClass} ${subjectDisplay}. Solve chapter-based questions with instant results and detailed solutions.`}
+        keywords={`class ${selectedClass} ${subjectDisplay} mcq, class ${selectedClass} ${subjectDisplay} solutions, ${boardLabel.toLowerCase()} chapter wise test`}
         canonical={`https://ceibaa.in/chapter-tests/${classNumber}/${subject}`}
       />
       <Header 
@@ -212,10 +218,10 @@ const ChapterTestChapters = () => {
           <div className="flex items-center">
             <button
               onClick={() => {
-                if (stream && (selectedClass === '11' || selectedClass === '12')) {
-                  navigate(`/chapter-tests/class-${selectedClass}/${stream}`);
+                  if (stream && (selectedClass === '11' || selectedClass === '12')) {
+                    navigate(`/chapter-tests/class-${selectedClass}/${stream}${boardQuery}`);
                 } else {
-                  navigate(`/chapter-tests/class-${selectedClass}`);
+                    navigate(`/chapter-tests/class-${selectedClass}${boardQuery}`);
                 }
               }}
               className="p-2 -ml-2 hover:bg-white/10 rounded-full transition-colors"
@@ -239,9 +245,9 @@ const ChapterTestChapters = () => {
               <button
                 onClick={() => {
                   if (stream && (selectedClass === '11' || selectedClass === '12')) {
-                    navigate(`/chapter-tests/class-${selectedClass}/${stream}`);
+                    navigate(`/chapter-tests/class-${selectedClass}/${stream}${boardQuery}`);
                   } else {
-                    navigate(`/chapter-tests/class-${selectedClass}`);
+                    navigate(`/chapter-tests/class-${selectedClass}${boardQuery}`);
                   }
                 }}
                 className="flex items-center space-x-2 text-white/90 hover:text-white transition-colors bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg hover:bg-white/20"
@@ -516,10 +522,10 @@ const ChapterTestChapters = () => {
               onClick={() => {
                 // For Class 11/12 with streams, go back to stream subjects page
                 if (stream && (selectedClass === '11' || selectedClass === '12')) {
-                  navigate(`/chapter-tests/class-${selectedClass}/${stream}`);
+                  navigate(`/chapter-tests/class-${selectedClass}/${stream}${boardQuery}`);
                 } else {
                   // For Class 6-10, go back to general subjects page
-                  navigate(`/chapter-tests/class-${selectedClass}`);
+                  navigate(`/chapter-tests/class-${selectedClass}${boardQuery}`);
                 }
               }}
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -529,7 +535,7 @@ const ChapterTestChapters = () => {
           </div>
         )}
 
-        {/* Comprehensive Question Section - Victory Lane Posts */}
+        {/* Comprehensive Question Section - Capazoo Posts */}
         {academicPosts.length > 0 && (
           <div className="bg-white rounded-2xl shadow-lg mt-8 overflow-hidden border border-gray-100">
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-4 md:p-6">
@@ -540,11 +546,11 @@ const ChapterTestChapters = () => {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white">Comprehensive Question</h2>
-                    <p className="text-white/80 text-sm">Questions from Victory Lane for {formattedSubject}</p>
+                    <p className="text-white/80 text-sm">Questions from Capazoo for {formattedSubject}</p>
                   </div>
                 </div>
                 <Link 
-                  to="/victory-lane"
+                  to="/capazoo"
                   className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm font-semibold transition"
                 >
                   Expert Questions
@@ -613,10 +619,10 @@ const ChapterTestChapters = () => {
             {academicPosts.length > 5 && (
               <div className="p-4 bg-gray-50 border-t border-gray-100 text-center">
                 <Link 
-                  to="/victory-lane"
+                  to="/capazoo"
                   className="text-blue-600 hover:text-blue-700 font-semibold text-sm"
                 >
-                  View all {academicPosts.length} questions on Victory Lane →
+                  View all {academicPosts.length} questions on Capazoo →
                 </Link>
               </div>
             )}
@@ -648,7 +654,7 @@ const ChapterTestChapters = () => {
               <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">
                 <Zap className="w-10 h-10 mb-3" />
                 <h3 className="text-xl font-bold mb-2">NCERT Aligned</h3>
-                <p className="text-white/90 text-sm">All questions follow latest NCERT curriculum</p>
+                <p className="text-white/90 text-sm">All questions follow the latest curriculum for {boardLabel}</p>
               </div>
 
               <div className="bg-gradient-to-br from-teal-500 to-green-600 rounded-2xl p-6 text-white hover:scale-105 transform transition-all">

@@ -56,7 +56,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
   // remaining ones into a "More ▾" dropdown.
   const NAV_ITEMS = React.useMemo(() => ([
     { label: 'Home',            path: '/',           icon: Home,          tint: 'text-cyan-500',    hover: 'hover:text-cyan-600',    underline: 'bg-cyan-600' },
-    { label: 'Victory Lane',    path: '/victory-lane', icon: Trophy,      tint: 'text-amber-500',   hover: 'hover:text-amber-600',   underline: 'bg-amber-500' },
+    { label: 'Capazoo',         path: '/capazoo',     icon: Trophy,      tint: 'text-amber-500',   hover: 'hover:text-amber-600',   underline: 'bg-amber-500' },
     { label: 'Skill Drills',    path: '/chapter-tests', icon: Zap,        tint: 'text-blue-500',    hover: 'hover:text-blue-600',    underline: 'bg-blue-500' },
     { label: 'Courses',         path: '/courses',    icon: GraduationCap, tint: 'text-indigo-500',  hover: 'hover:text-indigo-600',  underline: 'bg-indigo-500' },
     { label: 'The Headhunt',    path: '/jobs',       icon: Briefcase,     tint: 'text-orange-500',  hover: 'hover:text-orange-600',  underline: 'bg-orange-500' },
@@ -132,16 +132,14 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
           </div>
 
           {/* ────────── CENTER: Desktop Navigation (responsive collapse) ────────── */}
-          <nav className="hidden lg:flex flex-1 items-center justify-center gap-5 min-w-0" aria-label="Primary">
+          <nav className="hidden lg:flex flex-1 items-center justify-center gap-2 xl:gap-3 min-w-0" aria-label="Primary">
             {NAV_ITEMS.map((item, idx) => {
               const Icon = item.icon;
               // Visibility tiers:
-              //   ≥1024 (lg) : first 3
-              //   ≥1280 (xl) : first 5
-              //   ≥1440 (2xl): all 7
+              //   ≥1024 (lg) : first 5
+              //   ≥1280 (xl) : all 7
               let visibilityCls = '';
-              if (idx >= 5) visibilityCls = 'hidden 2xl:inline-flex';
-              else if (idx >= 3) visibilityCls = 'hidden xl:inline-flex';
+              if (idx >= 5) visibilityCls = 'hidden xl:inline-flex';
               else visibilityCls = 'inline-flex';
 
               return (
@@ -149,10 +147,10 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                   key={item.path}
                   type="button"
                   onClick={() => navigate(item.path)}
-                  className={`${visibilityCls} group relative flex-shrink-0 items-center gap-1.5 whitespace-nowrap px-1 py-2 text-sm font-medium text-gray-700 ${item.hover} transition-colors`}
+                  className={`${visibilityCls} group relative flex-shrink-0 items-center gap-1 xl:gap-1.5 whitespace-nowrap px-1 xl:px-1.5 py-2 text-[13px] xl:text-sm font-medium text-gray-700 ${item.hover} transition-colors`}
                   data-testid={`header-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${item.tint}`} />
+                  <Icon className={`w-3.5 h-3.5 xl:w-4 xl:h-4 shrink-0 ${item.tint}`} />
                   <span>{item.label}</span>
                   <span className={`absolute bottom-0 left-0 h-0.5 w-0 ${item.underline} transition-all duration-200 group-hover:w-full`} />
                 </button>
@@ -162,13 +160,12 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
             {/* "More ▾" — collapses overflow items per viewport */}
             <div className="relative" data-more-menu-container>
               {/* Show "More" when at least one nav item is hidden:
-                  - <xl (1280): hides items at idx >=3 ⇒ "More" visible
-                  - <2xl (1440): hides items at idx >=5 ⇒ "More" visible
-                  - ≥2xl: hide "More" */}
+                  - <xl (1280): hides items at idx >=5 ⇒ "More" visible
+                  - ≥xl: all 7 visible ⇒ hide "More" */}
               <button
                 type="button"
                 onClick={() => setMoreOpen((v) => !v)}
-                className="inline-flex 2xl:hidden flex-shrink-0 items-center gap-1 whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100"
+                className="inline-flex xl:hidden flex-shrink-0 items-center gap-1 whitespace-nowrap px-2 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100"
                 aria-haspopup="menu"
                 aria-expanded={moreOpen}
                 data-testid="header-nav-more"
@@ -178,7 +175,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
               </button>
               {moreOpen && (
                 <div
-                  className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
+                  className="absolute right-0 top-full mt-2 min-w-[15rem] w-max max-w-xs bg-white rounded-2xl border-gray-200 z-50"
                   role="menu"
                   data-testid="header-nav-more-menu"
                 >
@@ -188,21 +185,20 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                     // We use Tailwind responsive utilities to inverse-mirror the
                     // inline list above.
                     let cls = '';
-                    if (idx >= 5) cls = 'flex 2xl:hidden'; // hidden until 2xl inline → in More otherwise
-                    else if (idx >= 3) cls = 'flex xl:hidden'; // hidden until xl inline → in More on lg
-                    else cls = 'hidden'; // first 3 are always inline at lg+
+                    if (idx >= 5) cls = 'flex xl:hidden'; // hidden until xl inline → in More on lg
+                    else cls = 'hidden'; // first 5 are always inline at lg+
 
                     return (
                       <button
                         key={item.path}
                         type="button"
                         onClick={() => { setMoreOpen(false); navigate(item.path); }}
-                        className={`${cls} w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50`}
+                        className={`${cls} w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 whitespace-nowrap first:rounded-t-xl last:rounded-b-xl`}
                         role="menuitem"
                         data-testid={`header-nav-more-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                       >
                         <Icon className={`w-4 h-4 shrink-0 ${item.tint}`} />
-                        <span className="font-medium">{item.label}</span>
+                        <span className="font-medium whitespace-nowrap">{item.label}</span>
                       </button>
                     );
                   })}
@@ -459,11 +455,11 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
               </button>
               
               <button 
-                onClick={() => { navigate('/victory-lane'); setMobileMenuOpen(false); }} 
+                onClick={() => { navigate('/capazoo'); setMobileMenuOpen(false); }} 
                 className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
               >
                 <Trophy className="w-4 h-4" />
-                <span className="font-medium text-sm">Victory Lane</span>
+                <span className="font-medium text-sm">Capazoo</span>
               </button>
               
               <button 

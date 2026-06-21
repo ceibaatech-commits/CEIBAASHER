@@ -382,6 +382,7 @@ class ExamSheet(BaseModel):
     sub_sub_topic: Optional[str] = None
     # For class type
     class_name: Optional[str] = None
+    board: Optional[str] = None
     chapter: Optional[str] = None
     # Common
     sheet_link: str
@@ -416,6 +417,7 @@ def _exam_fields(sheet: "ExamSheet") -> dict:
 def _class_fields(sheet: "ExamSheet") -> dict:
     return {
         "class_name": sheet.class_name,
+        "board": (sheet.board or "cbse").lower() if sheet.board else "cbse",
         "subject": sheet.subject,
         "chapter": sheet.chapter,
     }
@@ -630,6 +632,7 @@ def _question_doc_from_sheet_dict(sheet: dict, sheet_id: str, idx: int, question
     else:
         doc.update({
             "class_name": sheet.get("class_name"),
+            "board": (sheet.get("board") or "cbse").lower(),
             "subject": sheet.get("subject"),
             "chapter": sheet.get("chapter"),
         })

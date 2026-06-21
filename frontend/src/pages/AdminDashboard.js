@@ -16,6 +16,8 @@ import RevenueManagement from '../components/admin/RevenueManagement';
 import SystemSettings from '../components/admin/SystemSettings';
 import ExamSheetManager from '../components/admin/ExamSheetManager';
 import ExamCategoryManager from '../components/admin/ExamCategoryManager';
+import ChapterUploadManager from '../components/admin/ChapterUploadManager';
+import RealtimeAnalyticsDashboard from '../components/admin/RealtimeAnalyticsDashboard';
 import SupportPanel from '../components/admin/SupportPanel';
 import EmployeeManager from '../components/admin/EmployeeManager';
 import LiveBattlesManager from '../components/admin/LiveBattlesManager';
@@ -23,7 +25,8 @@ import ProgramsManager from '../components/admin/ProgramsManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [activeSection, setActiveSection] = useState('overview');
   const [adminUser, setAdminUser] = useState(null);
 
@@ -54,6 +57,17 @@ const AdminDashboard = () => {
     // eslint-disable-next-line
   }, [navigate]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const mobileView = window.innerWidth < 768;
+      setIsMobile(mobileView);
+      setSidebarOpen(!mobileView);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleLogout = async () => {
     if (window.confirm('Are you sure you want to logout?')) {
       try {
@@ -70,6 +84,8 @@ const AdminDashboard = () => {
     { id: 'users', label: 'User Management', icon: Users, color: 'green' },
     { id: 'employees', label: 'Employee Portal', icon: Briefcase, color: 'violet' },
     { id: 'sheets', label: 'Exam Sheet Manager', icon: BookOpen, color: 'indigo' },
+    { id: 'chapters', label: 'Class Chapters', icon: GraduationCap, color: 'cyan' },
+    { id: 'realtime', label: '⚡ Live Analytics', icon: Activity, color: 'red' },
     { id: 'exams', label: 'Exam & Categories', icon: Layers, color: 'purple' },
     { id: 'content', label: 'Content Moderation', icon: FileText, color: 'purple' },
     { id: 'revenue', label: 'Revenue & Finance', icon: DollarSign, color: 'yellow' },
@@ -78,6 +94,13 @@ const AdminDashboard = () => {
     { id: 'programs', label: 'Programs', icon: GraduationCap, color: 'violet' },
     { id: 'support', label: 'Support Tickets', icon: MessageSquare, color: 'teal' },
     { id: 'settings', label: 'System Settings', icon: Settings, color: 'gray' },
+  ];
+
+  const quickAccessItems = [
+    { id: 'chapters', label: 'Class Chapters', icon: GraduationCap, color: 'cyan' },
+    { id: 'realtime', label: 'Live Analytics', icon: Activity, color: 'red' },
+    { id: 'sheets', label: 'Exam Sheets', icon: BookOpen, color: 'indigo' },
+    { id: 'exams', label: 'Categories', icon: Layers, color: 'purple' },
   ];
 
   const renderSection = () => {
@@ -90,8 +113,12 @@ const AdminDashboard = () => {
         return <EmployeeManager />;
       case 'sheets':
         return <ExamSheetManager />;
+      case 'chapters':
+        return <ChapterUploadManager />;
       case 'exams':
         return <ExamCategoryManager />;
+      case 'realtime':
+        return <RealtimeAnalyticsDashboard />;
       case 'content':
         return <ContentModeration />;
       case 'revenue':
@@ -118,9 +145,16 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex relative">
+      {isMobile && sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-gray-900 transition-all duration-300 flex flex-col`}>
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20'} fixed md:static inset-y-0 left-0 z-40 w-72 md:w-64 bg-gray-900 transition-transform duration-300 flex flex-col`}>
         {/* Sidebar Header */}
         <div className="p-4 border-b border-gray-800">
           <div className="flex items-center justify-between">
@@ -148,7 +182,10 @@ const AdminDashboard = () => {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveSection(item.id)}
+                onClick={() => {
+                  setActiveSection(item.id);
+                  if (isMobile) setSidebarOpen(false);
+                }}
                 className={`w-full flex items-center space-x-3 px-4 py-3 transition-all ${
                   isActive 
                     ? 'bg-blue-600 text-white border-r-4 border-blue-400' 
@@ -190,11 +227,18 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden md:ml-0 ml-0">
         {/* Top Header */}
-        <div className="bg-white shadow-sm border-b border-gray-200 px-8 py-4">
+        <div className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="md:hidden inline-flex items-center justify-center p-2 mr-3 rounded-lg bg-gray-100 hover:bg-gray-200"
+                aria-label="Open navigation menu"
+              >
+                <Menu className="w-5 h-5 text-gray-700" />
+              </button>
               <h1 className="text-2xl font-bold text-gray-900">
                 {menuItems.find(item => item.id === activeSection)?.label || 'Dashboard'}
               </h1>
@@ -202,7 +246,7 @@ const AdminDashboard = () => {
             </div>
             
             {/* Quick Stats */}
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               <div className="flex items-center space-x-2 bg-green-50 px-4 py-2 rounded-lg">
                 <Activity className="w-5 h-5 text-green-600" />
                 <div>
@@ -215,6 +259,37 @@ const AdminDashboard = () => {
                 <Bell className="w-5 h-5 text-gray-600" />
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
+            </div>
+          </div>
+
+          <div className="mt-4 md:hidden">
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Quick Access</p>
+            <div className="grid grid-cols-2 gap-2">
+              {quickAccessItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setActiveSection(item.id);
+                      setSidebarOpen(false);
+                    }}
+                    className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-left transition-colors ${
+                      isActive
+                        ? 'border-blue-400 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                      isActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                      <Icon className="w-5 h-5" />
+                    </span>
+                    <span className="text-sm font-semibold leading-tight">{item.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

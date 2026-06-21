@@ -365,7 +365,7 @@ const Dashboard = () => {
       <div className="max-w-4xl mx-auto py-8 px-4">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/victory-lane')}
+          onClick={() => navigate('/capazoo')}
           className="flex items-center gap-2 mb-4 text-gray-700 hover:text-purple-600 font-semibold transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -677,7 +677,7 @@ const Dashboard = () => {
                           <FileText className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                           <p className="text-gray-600 text-lg">No posts yet</p>
                           <p className="text-gray-500 text-sm mt-2">
-                            Share your first thought on Victory Lane
+                            Share your first thought on Capazoo
                           </p>
                         </>
                       ) : (
@@ -685,7 +685,7 @@ const Dashboard = () => {
                           <Repeat2 className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                           <p className="text-gray-600 text-lg">No reposts yet</p>
                           <p className="text-gray-500 text-sm mt-2">
-                            Repost posts from Victory Lane to share them here
+                            Repost posts from Capazoo to share them here
                           </p>
                         </>
                       )}

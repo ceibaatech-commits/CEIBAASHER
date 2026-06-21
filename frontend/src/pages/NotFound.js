@@ -112,7 +112,7 @@ const NotFound = () => {
         {/* Quick links */}
         <div className="mt-12 flex flex-wrap gap-2 justify-center">
           {[
-            { label: 'Victory Lane', path: '/victory-lane' },
+            { label: 'Capazoo', path: '/capazoo' },
             { label: 'Exams', path: '/' },
             { label: 'Join Room', path: '/join-room' },
             { label: 'My Board', path: '/board' },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo, memo, Component } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo, Component, lazy, Suspense } from 'react';
 
 // Error boundary that catches Agora SDK crashes (invalid token, gateway errors)
 // so they don't tear down the entire LiveBattle/Matchmaking page.
@@ -41,7 +41,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 // (/api/agora/token) generates the signed token; the client never sees the
 // certificate. This is Agora's recommended production-ready setup per their
 // QuickStart docs.
-const AGORA_APP_ID = process.env.REACT_APP_AGORA_APP_ID || 'ea9b4118ab0943b5b216175785d0b871';
+const AGORA_APP_ID = process.env.REACT_APP_AGORA_APP_ID || '';
+
+const QuizView = lazy(() => import('../components/battle/QuizView'));
+const BattleVideoOverlay = lazy(() => import('../components/battle/BattleVideoOverlay'));
+const BattleReportModal = lazy(() => import('../components/battle/BattleReportModal'));
+const BattleResultScreen = lazy(() => import('../components/battle/BattleResultScreen'));
 
 /* ── VideoErrorBoundary ──
    Wraps the AgoraUIKit subtree so that any uncaught Agora SDK error
@@ -301,6 +306,12 @@ const REPORT_REASONS = [
   { id: 'inappropriate_behavior', label: 'Other Inappropriate Behaviour' },
 ];
 
+const REMATCH_MUTE_BEHAVIOR = {
+  AUTO_DECLINE: 'auto_decline',
+  IGNORE: 'ignore',
+  PASSIVE_BADGE: 'passive_badge',
+};
+
 const Matchmaking1v1 = () => {
   const { examId, subject, topic } = useParams();
   const navigate = useNavigate();
@@ -324,8 +335,12 @@ const Matchmaking1v1 = () => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [myScore, setMyScore] = useState(0);
   const [opponentScore, setOpponentScore] = useState(0);
+  const [opponentQuestionIndex, setOpponentQuestionIndex] = useState(1);
   const [answerResult, setAnswerResult] = useState(null);
   const [opponentAnswer, setOpponentAnswer] = useState(null);
+  const [scorePulse, setScorePulse] = useState({ me: false, opp: false });
+  const [scoreDeltas, setScoreDeltas] = useState([]);
+  const [isReconnecting, setIsReconnecting] = useState(false);
   // Per-outcome tally for the results breakdown card
   const [tally, setTally] = useState({ correct: 0, wrong: 0, skipped: 0, timeBonus: 0 });
 
@@ -333,7 +348,9 @@ const Matchmaking1v1 = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
+  const [opponentOnline, setOpponentOnline] = useState(false);
   const [opponentTyping, setOpponentTyping] = useState(false);
+  const [opponentFinishedQuiz, setOpponentFinishedQuiz] = useState(false);
   const [chatMenuOpen, setChatMenuOpen] = useState(false);
   const chatEndRef = useRef(null);
   const typingEmitRef = useRef(null);
@@ -342,6 +359,10 @@ const Matchmaking1v1 = () => {
   // Rematch state — drives the "Rematch" button + incoming-request banner on results screen
   // Values: 'idle' | 'pending' (I asked, awaiting opponent) | 'requested' (opponent asked, I decide)
   const [rematchState, setRematchState] = useState('idle');
+  const [rematchRequesterName, setRematchRequesterName] = useState('');
+  const [rematchCountdown, setRematchCountdown] = useState(30);
+  const [rematchMuteBehavior, setRematchMuteBehavior] = useState(REMATCH_MUTE_BEHAVIOR.AUTO_DECLINE);
+  const [passiveRematchRequest, setPassiveRematchRequest] = useState(null);
 
   // Video Call state
   // KEY FIX: we use `vcReady` as the gate for mounting AgoraUIKit, not `agoraToken !== null`.
@@ -355,6 +376,7 @@ const Matchmaking1v1 = () => {
   const [vcState, setVcState] = useState('idle'); // idle | requesting | incoming | active
   const [agoraToken, setAgoraToken] = useState(null);
   const [agoraUid, setAgoraUid] = useState(0);
+  const [agoraAppId, setAgoraAppId] = useState(AGORA_APP_ID);
   const [vcReady, setVcReady] = useState(false);
   // ── WhatsApp/Instagram-style PIP behaviour ──
   // 'mini'   — tiny draggable bubble (just video, no Agora controls)
@@ -371,12 +393,27 @@ const Matchmaking1v1 = () => {
   const [reportDesc, setReportDesc] = useState('');
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [reportDone, setReportDone] = useState(false);
+  const [notificationsMuted, setNotificationsMuted] = useState(false);
+  const [liveNotice, setLiveNotice] = useState(null);
+  const [resultNotice, setResultNotice] = useState(null);
+
+  const displayMyScore = Number.isFinite(myScore) ? myScore : 0;
+  const displayOpponentScore = Number.isFinite(opponentScore) ? opponentScore : 0;
+  const isPlayerMe = useCallback((playerId) => {
+    const uid = user?.id || user?.user_id;
+    if (playerId == null || uid == null) return true;
+    return String(playerId) === String(uid);
+  }, [user]);
 
   // Refs so socket listeners always read live values (prevents stale closures)
   const roomIdRef = useRef(null);
   const playerNameRef = useRef('');
   const userRef = useRef(null);
+  const notificationsMutedRef = useRef(false);
+  const rematchMuteBehaviorRef = useRef(REMATCH_MUTE_BEHAVIOR.AUTO_DECLINE);
   const socketRef = useRef(null);
+  const battleStateRef = useRef('setup');
+  const questionsRef = useRef([]);
 
   // ── Drag refs (avoid re-creating handlers on every render) ──
   const dragStateRef = useRef({ dragging: false, startX: 0, startY: 0, posX: 0, posY: 0 });
@@ -397,6 +434,10 @@ const Matchmaking1v1 = () => {
   useEffect(() => { roomIdRef.current = roomId; }, [roomId]);
   useEffect(() => { playerNameRef.current = playerName; }, [playerName]);
   useEffect(() => { userRef.current = user; }, [user]);
+  useEffect(() => { notificationsMutedRef.current = notificationsMuted; }, [notificationsMuted]);
+  useEffect(() => { rematchMuteBehaviorRef.current = rematchMuteBehavior; }, [rematchMuteBehavior]);
+  useEffect(() => { battleStateRef.current = battleState; }, [battleState]);
+  useEffect(() => { questionsRef.current = questions; }, [questions]);
 
   // Check Parents Mode
   useEffect(() => {
@@ -424,22 +465,42 @@ const Matchmaking1v1 = () => {
     const ch = roomIdRef.current?.replace(/[^a-zA-Z0-9]/g, '').substring(0, 64);
     if (!ch) {
       console.warn('[VC] initAgora: roomIdRef.current is empty, aborting');
-      return;
+      return false;
     }
     setVcReady(false);
     try {
       // Auth lives in the httpOnly session_token cookie, auto-sent by axios.
-      const { data } = await axios.get(`${BACKEND_URL}/api/agora/token?channel=${ch}`);
-      console.log('[VC] Agora token ready for channel:', ch, 'uid:', data.uid, 'mode:', data.mode);
-      setAgoraToken(data.token || null);
-      setAgoraUid(data.uid || 0);
+      const { data } = await axios.get(
+        `${BACKEND_URL}/api/agora/token?channel=${encodeURIComponent(ch)}`,
+        { withCredentials: true }
+      );
+      const token = typeof data?.token === 'string' ? data.token.trim() : '';
+      const uid = Number.isFinite(Number(data?.uid)) ? Number(data.uid) : 0;
+      const mode = String(data?.mode || '').toLowerCase();
+      const appIdFromServer = typeof data?.appId === 'string' ? data.appId.trim() : '';
+      const resolvedAppId = appIdFromServer || AGORA_APP_ID;
+
+      if (!resolvedAppId) {
+        throw new Error('Missing Agora App ID');
+      }
+      if (mode !== 'token' || !token) {
+        throw new Error('Agora project requires dynamic key (token), but backend returned app_id_only/missing token');
+      }
+
+      console.log('[VC] Agora credentials ready for channel:', ch, 'uid:', uid, 'mode:', data?.mode);
+      setAgoraAppId(resolvedAppId);
+      setAgoraToken(token || null);
+      setAgoraUid(uid);
       setVcReady(true);
+      return true;
     } catch (err) {
       console.error('[VC] Token fetch failed:', err);
       toast.error('Could not start video call. Please try again.');
       setVcState('idle');
       setVcReady(false);
       setAgoraToken(null);
+      setAgoraAppId(AGORA_APP_ID);
+      return false;
     }
   }, []);
 
@@ -472,19 +533,25 @@ const Matchmaking1v1 = () => {
       // Reset per-battle state so rematches start clean
       setMyScore(0);
       setOpponentScore(0);
+      setOpponentQuestionIndex(1);
       setCurrentQuestionIndex(0);
       setSelectedAnswer(null);
       setOpponentAnswer(null);
       setAnswerResult(null);
       setTimeLeft(30);
+      setLiveNotice(null);
+      setResultNotice(null);
+      setOpponentFinishedQuiz(false);
       setTally({ correct: 0, wrong: 0, skipped: 0, timeBonus: 0 });
       setChatMessages([]);
       setRematchState('idle');
+      setPassiveRematchRequest(null);
       // Update both state AND ref immediately so any code below can use the ref
       setRoomId(d.roomId);
       roomIdRef.current = d.roomId;
       const opp = d.players[1] || d.players.find(p => p.playerName !== playerNameRef.current);
       setOpponent(opp);
+      setOpponentOnline(true);
       setBattleState('matched');
       if (d.rematch) toast.success('Rematch starting!');
 
@@ -518,12 +585,33 @@ const Matchmaking1v1 = () => {
     s.on('match-timeout', () => { setSearchTimedOut(true); setBattleState('setup'); });
     s.on('battle-start', (d) => { if (d.questions) setQuestions(d.questions); setBattleState('playing'); });
     s.on('opponent-answered', (d) => {
-      if (d.score !== undefined) setOpponentScore(d.score);
+      if (typeof d?.score === 'number') setOpponentScore(d.score);
+      setOpponentOnline(true);
+      if (typeof d?.questionIndex === 'number') {
+        setOpponentQuestionIndex(Math.max(1, d.questionIndex + 1));
+      }
       setOpponentAnswer(d.answer);
     });
-    s.on('opponent-score-update', (d) => setOpponentScore(d.score));
-    s.on('chat-message', (d) => setChatMessages(prev => [...prev, { playerName: d.playerName, message: d.message, ts: Date.now() }]));
+    s.on('opponent-score-update', (d) => {
+      if (typeof d?.score === 'number') setOpponentScore(d.score);
+      setOpponentOnline(true);
+      if (d?.completed) {
+        setOpponentFinishedQuiz(true);
+        const totalQs = Number.isFinite(d?.totalQuestions)
+          ? Number(d.totalQuestions)
+          : (questionsRef.current.length || 10);
+        setOpponentQuestionIndex(totalQs + 1);
+        if (battleStateRef.current === 'playing') {
+          setLiveNotice(`${d?.playerName || 'Opponent'} finished! Keep going — you can still complete your MCQs.`);
+        }
+      }
+    });
+    s.on('chat-message', (d) => {
+      setOpponentOnline(true);
+      setChatMessages(prev => [...prev, { playerName: d.playerName, message: d.message, ts: Date.now() }]);
+    });
     s.on('chat-typing', (d) => {
+      setOpponentOnline(true);
       setOpponentTyping(!!d?.isTyping);
       // Safety: auto-clear after 4s of silence
       clearTimeout(typingResetRef.current);
@@ -531,8 +619,29 @@ const Matchmaking1v1 = () => {
         typingResetRef.current = setTimeout(() => setOpponentTyping(false), 4000);
       }
     });
-    s.on('opponent-disconnected', () => { toast.error('Opponent disconnected! You win.'); setBattleState('results'); });
-    s.on('battle-ended', () => setBattleState('results'));
+    s.on('opponent-disconnected', () => {
+      setOpponentOnline(false);
+      setOpponentTyping(false);
+      setResultNotice('Opponent disconnected. You win by default.');
+      if (battleStateRef.current === 'playing') {
+        // Keep the active player in quiz — just show a notice
+        setLiveNotice('Opponent disconnected. You can continue answering remaining questions.');
+        toast.error('Opponent disconnected. Continue your MCQs.');
+      } else {
+        toast.error('Opponent disconnected! You win.');
+        setBattleState('results');
+      }
+    });
+    s.on('battle-ended', () => {
+      // Only move to results if both players have finished — never interrupt mid-quiz
+      if (battleStateRef.current !== 'playing') {
+        setBattleState('results');
+      }
+    });
+    s.on('battle-complete-ack', () => {
+      // Server confirms both players done — now safe to go to results
+      setBattleState('results');
+    });
 
     // ── Rematch events ──
     s.on('rematch-pending', () => {
@@ -540,26 +649,71 @@ const Matchmaking1v1 = () => {
       setRematchState('pending');
     });
     s.on('rematch-requested', (d) => {
-      toast(`${d.requesterName || 'Your opponent'} wants a rematch!`);
+      const expiresIn = Number.isFinite(Number(d?.expiresIn)) ? Number(d.expiresIn) : 15;
+      const requesterName = d?.requesterName || 'Opponent';
+      const targetRoomId = d?.roomId || roomIdRef.current;
+
+      if (notificationsMutedRef.current) {
+        const behavior = rematchMuteBehaviorRef.current;
+        if (behavior === REMATCH_MUTE_BEHAVIOR.AUTO_DECLINE) {
+          s.emit('rematch-decline', {
+            roomId: targetRoomId,
+            reason: 'Opponent has muted rematch requests',
+          });
+          return;
+        }
+        if (behavior === REMATCH_MUTE_BEHAVIOR.IGNORE) {
+          return;
+        }
+        if (behavior === REMATCH_MUTE_BEHAVIOR.PASSIVE_BADGE) {
+          setRematchState('idle');
+          setPassiveRematchRequest({
+            roomId: targetRoomId,
+            requesterName,
+            expiresAt: Date.now() + (expiresIn * 1000),
+          });
+          setRematchRequesterName(requesterName);
+          setRematchCountdown(expiresIn);
+          return;
+        }
+      }
+
+      toast(`${requesterName} wants a rematch!`);
+      setPassiveRematchRequest(null);
       setRematchState('requested');
+      setRematchRequesterName(requesterName);
+      setRematchCountdown(expiresIn);
     });
     s.on('rematch-declined', (d) => {
       toast.error(d?.reason || 'Rematch declined');
       setRematchState('idle');
+      setPassiveRematchRequest(null);
     });
     s.on('rematch-timeout', () => {
       toast.error('Opponent didn\'t respond');
       setRematchState('idle');
+      setPassiveRematchRequest(null);
+    });
+    s.on('rematch-expired', () => {
+      setRematchState('idle');
+      setPassiveRematchRequest(null);
     });
 
     // VC socket events
-    s.on('vc_request', (d) => { setVcRequester(d.playerName); setVcState('incoming'); });
+    s.on('vc_request', (d) => {
+      setOpponentOnline(true);
+      setVcRequester(d.playerName);
+      setVcState('incoming');
+    });
 
     // vc_accepted fires on User A (the requester) — they now fetch their token
     s.on('vc_accepted', async () => {
-      await initAgora();
-      setVcState('active');
-      toast.success('Video call connected!');
+      setOpponentOnline(true);
+      const ok = await initAgora();
+      if (ok) {
+        setVcState('active');
+        toast.success('Video call connected!');
+      }
     });
 
     s.on('vc_declined', () => { setVcState('idle'); toast('Video call declined'); });
@@ -610,6 +764,36 @@ const Matchmaking1v1 = () => {
   }, [timeLeft, battleState, selectedAnswer, questions.length]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages, opponentTyping]);
+
+  // Keep rematch countdown fresh for modal and passive badge modes.
+  useEffect(() => {
+    const hasModalRequest = rematchState === 'requested';
+    const hasPassiveRequest = !!passiveRematchRequest;
+    if (!hasModalRequest && !hasPassiveRequest) return undefined;
+
+    const tick = () => {
+      const msLeft = hasPassiveRequest
+        ? Math.max(0, passiveRematchRequest.expiresAt - Date.now())
+        : null;
+      const nextCount = hasPassiveRequest
+        ? Math.ceil(msLeft / 1000)
+        : null;
+
+      if (hasPassiveRequest && nextCount <= 0) {
+        setPassiveRematchRequest(null);
+        setRematchCountdown(0);
+        return;
+      }
+
+      setRematchCountdown((prev) => {
+        if (hasPassiveRequest) return nextCount;
+        return Math.max(0, prev - 1);
+      });
+    };
+
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [rematchState, passiveRematchRequest]);
 
   // ── Phone-style vibration during ringing (1v1 video-call request) ──
   // Pattern: 400ms vibrate, 200ms pause, repeat. Stops as soon as the call
@@ -752,6 +936,17 @@ const Matchmaking1v1 = () => {
     setBattleState('setup');
   };
 
+  const handleBattleBack = () => {
+    if (battleState === 'playing' && roomIdRef.current && socket) {
+      socket.emit('battle-quit', {
+        roomId: roomIdRef.current,
+        playerName,
+        reason: 'manual-back',
+      });
+    }
+    navigate(-1);
+  };
+
   const handleAnswerSelect = (index) => {
     if (selectedAnswer !== null) return;
     const q = questions[currentQuestionIndex];
@@ -857,6 +1052,83 @@ const Matchmaking1v1 = () => {
     }
   };
 
+  const handleViewProfile = () => {
+    const target = opponent?.username || opponent?.userId;
+    if (!target) {
+      toast.error('Opponent profile is unavailable');
+      return;
+    }
+    openProfileNewTab(target);
+  };
+
+  const handleMuteNotifications = () => {
+    setNotificationsMuted((prev) => {
+      const next = !prev;
+      toast.success(next ? 'Notifications muted' : 'Notifications unmuted');
+      return next;
+    });
+  };
+
+  const handleReportPlayer = () => {
+    setShowReport(true);
+  };
+
+  const requestRematch = () => {
+    if (!socket || !roomIdRef.current) return;
+    socket.emit('rematch-request', {
+      roomId: roomIdRef.current,
+      requesterUserId: user?.id || user?.user_id,
+      requesterName: playerName,
+    });
+    setRematchState('pending');
+  };
+
+  const acceptRematch = (overrideRoomId) => {
+    const targetRoomId = overrideRoomId || roomIdRef.current;
+    if (!socket || !targetRoomId) return;
+    socket.emit('rematch-accept', { roomId: targetRoomId });
+    setRematchState('idle');
+    setRematchRequesterName('');
+    setPassiveRematchRequest(null);
+  };
+
+  const declineRematch = (overrideRoomId) => {
+    const targetRoomId = overrideRoomId || roomIdRef.current;
+    if (!socket || !targetRoomId) return;
+    socket.emit('rematch-decline', { roomId: targetRoomId });
+    setRematchState('idle');
+    setRematchRequesterName('');
+    setPassiveRematchRequest(null);
+  };
+
+  const handlePlayAgainFromResults = () => {
+    requestRematch();
+  };
+
+  const handleFindNewOpponentFromResults = () => {
+    if (!socket) {
+      toast.error('Connection issue. Please try again in a moment.');
+      return;
+    }
+
+    // Reset battle-specific UI state and jump directly into matchmaking
+    // without a full app reload.
+    setResultNotice(null);
+    setLiveNotice(null);
+    setOpponentFinishedQuiz(false);
+    setOpponentTyping(false);
+    setOpponentOnline(false);
+    setOpponent(null);
+    setRoomId(null);
+    roomIdRef.current = null;
+    setRematchState('idle');
+    setRematchRequesterName('');
+    setRematchCountdown(30);
+    setPassiveRematchRequest(null);
+
+    startMatchmaking();
+  };
+
   // Always open profile in a NEW TAB so the live battle isn't disrupted
   const openProfileNewTab = (target) => {
     if (!target) return;
@@ -872,8 +1144,13 @@ const Matchmaking1v1 = () => {
   // acceptVC: User B fetches their own token, then emits accepted so User A gets vc_accepted
   const acceptVC = async () => {
     if (!socket || !roomIdRef.current) return;
+    const ok = await initAgora();
+    if (!ok) {
+      socket.emit('vc_declined', { roomId: roomIdRef.current, playerName });
+      setVcState('idle');
+      return;
+    }
     socket.emit('vc_accepted', { roomId: roomIdRef.current, playerName });
-    await initAgora();
     setVcState('active');
   };
 
@@ -939,6 +1216,7 @@ const Matchmaking1v1 = () => {
 
   // Derive sanitized channel name (stable ref-based)
   const sanitizedChannel = roomIdRef.current?.replace(/[^a-zA-Z0-9]/g, '').substring(0, 64) || '';
+  const resolvedAgoraAppId = agoraAppId || AGORA_APP_ID;
 
   // ━━━━━━━━━━━━━━━━━━━━ LOGIN REQUIRED ━━━━━━━━━━━━━━━━━━━━
   if (!isUserAuth) {
@@ -1081,1050 +1359,133 @@ const Matchmaking1v1 = () => {
 
   // ━━━━━━━━━━━━━━━━━━━━ PLAYING ━━━━━━━━━━━━━━━━━━━━
   if (battleState === 'playing' && questions.length > 0) {
-    const q = questions[currentQuestionIndex];
-    if (!q) return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: C.cream }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: C.red }} />
-      </div>
-    );
-    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-    const oppName = opponent?.playerName || 'Opponent';
-
     return (
       <div className="min-h-screen" style={{ background: C.cream }}>
-
-        {/* ── MOBILE LAYOUT ── */}
-        <div className="md:hidden flex flex-col min-h-screen">
-          <Header isLoggedIn={isUserAuth} user={user} />
-
-          {/* Top bar */}
-          <div className="flex items-center justify-between px-4 py-3 bg-white shadow-sm">
-            <div className="flex items-center gap-2">
-              <button onClick={() => navigate(-1)}><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
-              <span className="font-bold text-gray-900 text-sm">{playerName}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              {/* Chat toggle with unread badge */}
-              <button onClick={() => setMobileChatOpen(o => !o)} className="relative p-1.5 rounded-lg bg-gray-100" data-testid="mobile-chat-toggle">
-                <MessageCircle className="w-4 h-4 text-gray-600" />
-                {chatMessages.length > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] text-white flex items-center justify-center" style={{ background: C.red }}>
-                    {chatMessages.length > 9 ? '9+' : chatMessages.length}
-                  </span>
-                )}
-              </button>
-              {vcState === 'idle' && (
-                <button onClick={requestVC} className="p-1.5 rounded-lg text-white" style={{ background: C.blue }} data-testid="mobile-start-vc">
-                  <Phone className="w-4 h-4" />
-                </button>
-              )}
-              {vcState === 'requesting' && <span className="text-xs text-gray-400 animate-pulse">Calling...</span>}
-              {vcState === 'active' && (
-                <span className="text-xs font-semibold animate-pulse" style={{ color: C.blue }}>● Live</span>
-              )}
-              <button onClick={() => setShowReport(true)} className="p-1.5 rounded-lg bg-gray-100"><Flag className="w-3.5 h-3.5 text-gray-400" /></button>
-              <div className="px-3 py-1 rounded-full text-white text-sm font-bold" style={{ background: timeLeft <= 10 ? C.red : '#888' }}>{timeLeft}s</div>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div className="h-1.5 mx-4 mt-2 rounded-full overflow-hidden" style={{ background: '#e0d8d0' }}>
-            <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: `linear-gradient(to right, ${C.red}, ${C.blue})` }} />
-          </div>
-
-          {/* Question area */}
-          <div className="flex-1 overflow-y-auto px-4 py-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Q{currentQuestionIndex + 1} of {questions.length} • {decodeURIComponent(subject)}</p>
-            <h2 className="text-xl font-serif font-bold text-gray-900 mb-5 leading-relaxed"><MathText text={q.question} /></h2>
-            <div className="space-y-3">
-              {q.options.map((opt, i) => {
-                const txt = typeof opt === 'object' ? (opt.text || opt.label) : opt;
-                const isMine = selectedAnswer === i;
-                const isOpp = opponentAnswer === i;
-                const isCorrect = answerResult && answerResult.correctAnswer === i;
-                const isWrong = isMine && answerResult && !answerResult.isCorrect;
-                let border = '#e5e0db'; let bg = C.white; let badge = null;
-                if (answerResult) {
-                  if (isCorrect) { border = '#22c55e'; bg = '#f0fdf4'; }
-                  else if (isWrong) { border = C.red; bg = C.redLight; }
-                } else if (isMine) { border = C.red; bg = C.redLight; badge = 'You'; }
-                if (isOpp && !answerResult) { border = C.blue; bg = C.blueLight; badge = oppName; }
-                if (isMine && isOpp && !answerResult) { border = '#8b5cf6'; bg = '#f5f3ff'; }
-                return (
-                  <button key={`q${currentQuestionIndex}-opt-${i}`} onClick={() => handleAnswerSelect(i)} disabled={selectedAnswer !== null}
-                    className="w-full text-left p-4 rounded-xl border-2 transition-all relative" style={{ borderColor: border, background: bg }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm"
-                        style={{ background: isCorrect ? '#22c55e' : isWrong ? C.red : isMine ? C.red : isOpp ? C.blue : '#e5e0db', color: (isCorrect || isWrong || isMine || isOpp) ? '#fff' : '#374151' }}>
-                        {String.fromCharCode(65 + i)}
-                      </div>
-                      <span className="flex-1 font-medium text-gray-900 text-sm"><MathText text={txt} /></span>
-                      {isCorrect && <span className="text-green-500 font-bold">✓</span>}
-                      {isWrong && <span style={{ color: C.red }} className="font-bold">✗</span>}
-                    </div>
-                    {badge && !answerResult && (
-                      <span className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ background: isMine ? C.red : C.blue }}>{badge}</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            {answerResult && (
-              <div className={`mt-4 p-3 rounded-xl border-2 ${
-                answerResult.outcome === 'correct' ? 'bg-green-50 border-green-400' :
-                answerResult.outcome === 'wrong' ? 'bg-red-50 border-red-400' :
-                'bg-amber-50 border-amber-400'
-              }`}>
-                <p className={`font-bold text-sm ${
-                  answerResult.outcome === 'correct' ? 'text-green-800' :
-                  answerResult.outcome === 'wrong' ? 'text-red-800' :
-                  'text-amber-800'
-                }`}>
-                  {answerResult.outcome === 'correct' && `✓ Correct! +${answerResult.points} pts`}
-                  {answerResult.outcome === 'wrong' && `✗ Incorrect — ${answerResult.points} pts`}
-                  {answerResult.outcome === 'skipped' && `⊘ Time's up — 0 pts`}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* ── Mobile chat — Premium messaging-app redesign (Feb 15, 2026)
-              Slides up from bottom with backdrop blur. Drag-handle.
-              Teal-green sent bubbles, gray received bubbles, cluster grouping,
-              ✓✓ read receipts, typing indicator, quick-reply chips, NEW-TAB
-              profile links so the live battle is never disrupted. Chat-only —
-              does NOT touch battle scoring, timer, or question logic. */}
-          {mobileChatOpen && (
-            <div className="fixed inset-0 z-[60] flex items-end" data-testid="mobile-chat-popup">
-              {/* Backdrop — tap to close */}
-              <button
-                aria-label="Close chat"
-                onClick={() => setMobileChatOpen(false)}
-                className="absolute inset-0 bg-black/50 backdrop-blur-md"
-                style={{ animation: 'mcChatFade 0.18s ease-out' }}
-              />
-              {/* Chat sheet */}
-              <div
-                className="relative w-full bg-white shadow-[0_-12px_40px_rgba(0,0,0,0.22)] flex flex-col"
-                style={{
-                  maxHeight: '85vh',
-                  height: '560px',
-                  borderTopLeftRadius: 24,
-                  borderTopRightRadius: 24,
-                  animation: 'mcChatSlide 0.28s cubic-bezier(0.32,0.72,0.28,1)',
-                  fontFamily: '"Inter Tight", "Geist", "SF Pro Display", system-ui, sans-serif',
-                  paddingBottom: 'env(safe-area-inset-bottom)',
-                }}
-              >
-                <style>{`
-                  @keyframes mcChatSlide { from { transform: translateY(100%); } to { transform: translateY(0); } }
-                  @keyframes mcChatFade { from { opacity: 0; } to { opacity: 1; } }
-                  @keyframes mcMsgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-                  .mc-msg-in { animation: mcMsgIn 0.18s ease-out; }
-                  @keyframes mcTypingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.6; } 30% { transform: translateY(-4px); opacity: 1; } }
-                  .mc-typing-dot { animation: mcTypingBounce 1.2s infinite; }
-                  @media (prefers-reduced-motion: reduce) { .mc-msg-in, .mc-typing-dot { animation: none; } }
-                `}</style>
-
-                {/* Drag handle */}
-                <div className="pt-2.5 pb-1.5 flex justify-center shrink-0">
-                  <div className="w-10 h-1.5 rounded-full" style={{ background: '#D1D5DB' }} />
-                </div>
-
-                {/* Header — opponent identity + actions */}
-                <div className="flex items-center gap-2 px-4 pb-3 shrink-0" style={{ borderBottom: '1px solid #EEEEEE' }}>
-                  <button
-                    onClick={() => setMobileChatOpen(false)}
-                    aria-label="Back"
-                    data-testid="mobile-chat-back"
-                    className="w-9 h-9 -ml-2 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
-                  >
-                    <ArrowLeft className="w-5 h-5 text-gray-700" />
-                  </button>
-                  {/* Avatar with online dot */}
-                  <button
-                    onClick={() => openProfileNewTab(opponent?.username || opponent?.userId)}
-                    aria-label="View opponent profile"
-                    data-testid="chat-opponent-avatar"
-                    className="relative shrink-0 active:scale-95 transition-transform"
-                  >
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-base"
-                      style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.red})` }}
-                    >
-                      {oppName?.charAt(0).toUpperCase() || '?'}
-                    </div>
-                    {/* Online dot */}
-                    <span
-                      className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full"
-                      style={{ background: '#22C55E', boxShadow: '0 0 0 2px #ffffff' }}
-                      aria-label="Online"
-                    />
-                  </button>
-                  {/* Name + status */}
-                  <div className="min-w-0 flex-1">
-                    {opponent?.userId ? (
-                      <button
-                        type="button"
-                        onClick={() => openProfileNewTab(opponent.username || opponent.userId)}
-                        data-testid="chat-opponent-name-link"
-                        className="text-[16px] font-semibold text-gray-900 leading-tight truncate block text-left hover:underline"
-                      >
-                        {oppName}
-                      </button>
-                    ) : (
-                      <p className="text-[16px] font-semibold text-gray-900 leading-tight truncate" data-testid="chat-opponent-name">{oppName}</p>
-                    )}
-                    <p className="text-[12px] leading-tight mt-0.5" style={{ color: battleState === 'playing' ? '#1FA47C' : '#9CA3AF' }}>
-                      {battleState === 'playing' ? '● In battle • Live' : battleState === 'results' ? 'Battle ended' : 'Active now'}
-                    </p>
-                  </div>
-
-                  {/* Right actions: Phone · Video · More */}
-                  <button
-                    onClick={requestVC}
-                    aria-label="Voice call"
-                    data-testid="chat-voice-call"
-                    className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
-                  >
-                    <Phone className="w-5 h-5" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                  </button>
-                  <button
-                    onClick={requestVC}
-                    aria-label="Video call"
-                    data-testid="chat-video-call"
-                    className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
-                  >
-                    <Video className="w-5 h-5" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                  </button>
-                  <div className="relative">
-                    <button
-                      onClick={() => setChatMenuOpen(o => !o)}
-                      aria-label="More options"
-                      data-testid="chat-more-menu"
-                      className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors"
-                    >
-                      <MoreVertical className="w-5 h-5" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                    </button>
-                    {chatMenuOpen && (
-                      <>
-                        <button
-                          aria-label="Close menu"
-                          onClick={() => setChatMenuOpen(false)}
-                          className="fixed inset-0 z-[1] cursor-default"
-                        />
-                        <div
-                          className="absolute right-0 top-11 w-44 bg-white rounded-2xl shadow-2xl overflow-hidden z-[2]"
-                          style={{ border: '1px solid #EEEEEE' }}
-                          data-testid="chat-more-dropdown"
-                        >
-                          <button
-                            onClick={() => {
-                              setChatMenuOpen(false);
-                              openProfileNewTab(opponent?.username || opponent?.userId);
-                            }}
-                            disabled={!opponent?.userId}
-                            data-testid="chat-menu-view-profile"
-                            className="w-full px-4 py-3 text-left text-[14px] font-medium text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
-                          >
-                            View profile
-                          </button>
-                          <button
-                            onClick={() => { setChatMenuOpen(false); toast.info('Opponent muted for this battle'); }}
-                            data-testid="chat-menu-mute"
-                            className="w-full px-4 py-3 text-left text-[14px] font-medium text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors"
-                          >
-                            Mute
-                          </button>
-                          <button
-                            onClick={() => { setChatMenuOpen(false); setMobileChatOpen(false); setShowReport(true); }}
-                            data-testid="chat-menu-report"
-                            className="w-full px-4 py-3 text-left text-[14px] font-medium text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors"
-                            style={{ borderTop: '1px solid #F3F4F6' }}
-                          >
-                            Report
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Messages area */}
-                <div className="flex-1 overflow-y-auto px-3 py-3" style={{ background: '#FFFFFF' }}>
-                  {chatMessages.length === 0 && !opponentTyping ? (
-                    <div className="h-full flex flex-col items-center justify-center text-center px-6 gap-2" data-testid="chat-empty-state">
-                      <div className="text-3xl">👋</div>
-                      <p className="text-[14px] font-semibold text-gray-900">Say hi to {oppName?.split(' ')[0] || 'your opponent'}</p>
-                      <p className="text-[12px] text-gray-500">Keep it sporty — good vibes win games.</p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Today date pill */}
-                      <div className="flex justify-center mb-3" data-testid="chat-date-separator">
-                        <span
-                          className="text-[11px] font-medium px-3 py-1 rounded-full"
-                          style={{ background: '#F1F1F3', color: '#6B7280' }}
-                        >
-                          Today
-                        </span>
-                      </div>
-
-                      {/* Messages — cluster-grouped */}
-                      {chatMessages.map((m, i) => {
-                        const mine = m.playerName === playerName;
-                        const prev = i > 0 ? chatMessages[i - 1] : null;
-                        const next = i < chatMessages.length - 1 ? chatMessages[i + 1] : null;
-                        const isFirstInCluster = !prev || prev.playerName !== m.playerName;
-                        const isLastInCluster = !next || next.playerName !== m.playerName;
-                        const time = m.ts ? new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-                        // Mock read state: assume opponent has read all but the LAST of my messages (until typing/answer arrives)
-                        const opponentHasReplied = chatMessages.slice(i + 1).some(x => x.playerName !== m.playerName);
-                        const isRead = mine && opponentHasReplied;
-                        return (
-                          <div
-                            key={`mc-${m.ts}-${i}`}
-                            className={`flex items-end gap-2 mc-msg-in ${mine ? 'justify-end' : 'justify-start'}`}
-                            style={{ marginTop: isFirstInCluster ? 12 : 2 }}
-                            data-testid={mine ? `chat-message-sent-${i}` : `chat-message-received-${i}`}
-                          >
-                            {/* Avatar slot (received only, only on LAST in cluster for proximity) */}
-                            {!mine && (
-                              <div className="w-8 shrink-0">
-                                {isLastInCluster && (
-                                  <div
-                                    className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
-                                    style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.red})` }}
-                                  >
-                                    {m.playerName?.charAt(0).toUpperCase() || '?'}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            <div className={`max-w-[75%] flex flex-col ${mine ? 'items-end' : 'items-start'}`}>
-                              {/* Sender name on FIRST received message in cluster */}
-                              {!mine && isFirstInCluster && (
-                                <p className="text-[13px] font-semibold text-gray-900 mb-1 px-1">{m.playerName}</p>
-                              )}
-                              <div
-                                className="px-3.5 py-2 text-[15px] leading-[1.4] break-words"
-                                style={{
-                                  background: mine ? '#1FA47C' : '#F1F1F3',
-                                  color: mine ? '#FFFFFF' : '#1A1A1A',
-                                  borderRadius: mine
-                                    ? `18px 18px ${isLastInCluster ? '4px' : '18px'} 18px`
-                                    : `18px 18px 18px ${isLastInCluster ? '4px' : '18px'}`,
-                                }}
-                              >
-                                {m.message}
-                              </div>
-                              {/* Timestamp + read receipt on LAST in cluster */}
-                              {isLastInCluster && (
-                                <div className={`flex items-center gap-1 mt-1 px-1 ${mine ? 'justify-end' : 'justify-start'}`}>
-                                  <span className="text-[11px] tabular-nums" style={{ color: '#9CA3AF' }}>{time}</span>
-                                  {mine && (
-                                    <CheckCheck
-                                      className="w-3.5 h-3.5"
-                                      style={{ color: isRead ? '#1FA47C' : '#9CA3AF' }}
-                                      data-testid={isRead ? `chat-receipt-read-${i}` : `chat-receipt-delivered-${i}`}
-                                      aria-label={isRead ? 'Read' : 'Delivered'}
-                                    />
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                      {/* Typing indicator */}
-                      {opponentTyping && (
-                        <div className="flex items-end gap-2 mt-2" data-testid="chat-typing-indicator">
-                          <div className="w-8 shrink-0" />
-                          <div
-                            className="flex items-center gap-1 px-3 py-2.5 rounded-2xl rounded-bl-[4px]"
-                            style={{ background: '#F1F1F3' }}
-                          >
-                            <span className="mc-typing-dot w-1.5 h-1.5 rounded-full" style={{ background: '#6B7280', animationDelay: '0ms' }} />
-                            <span className="mc-typing-dot w-1.5 h-1.5 rounded-full" style={{ background: '#6B7280', animationDelay: '150ms' }} />
-                            <span className="mc-typing-dot w-1.5 h-1.5 rounded-full" style={{ background: '#6B7280', animationDelay: '300ms' }} />
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                  <div ref={chatEndRef} />
-                </div>
-
-                {/* Quick reply chips (scrollable) */}
-                <div className="px-3 py-2 shrink-0" style={{ borderTop: '1px solid #EEEEEE', background: '#FFFFFF' }}>
-                  <div
-                    className="flex items-center gap-2 overflow-x-auto pb-1"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    data-testid="chat-quick-replies"
-                  >
-                    <style>{`[data-testid="chat-quick-replies"]::-webkit-scrollbar { display: none; }`}</style>
-                    {['👍 Nice!', '🔥 GG!', '😅 Tough one', '👏 Well played', '🚀 Let\u2019s go!'].map((qr) => (
-                      <button
-                        key={qr}
-                        type="button"
-                        onClick={() => sendQuickReply(qr)}
-                        data-testid={`quick-reply-${qr.split(' ')[0]}`}
-                        className="shrink-0 px-3 h-8 rounded-full text-[13px] font-medium whitespace-nowrap active:scale-95 transition-transform"
-                        style={{ background: '#F1F1F3', color: '#1A1A1A' }}
-                      >
-                        {qr}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Input bar */}
-                <form
-                  onSubmit={sendChat}
-                  className="flex items-center gap-2 px-3 py-2.5 shrink-0 bg-white"
-                  style={{ borderTop: '1px solid #EEEEEE' }}
-                >
-                  <button
-                    type="button"
-                    aria-label="Attach"
-                    data-testid="chat-attach-btn"
-                    onClick={() => toast.info('Attachments coming soon')}
-                    className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors shrink-0"
-                  >
-                    <Paperclip className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                  </button>
-                  <div className="flex-1 flex items-center gap-1 rounded-full px-3" style={{ background: '#F5F5F7' }}>
-                    <input
-                      type="text"
-                      value={chatInput}
-                      onChange={handleChatInputChange}
-                      placeholder="Write your message…"
-                      maxLength={140}
-                      autoFocus
-                      data-testid="chat-input"
-                      className="flex-1 bg-transparent text-[15px] py-2.5 focus:outline-none"
-                      style={{ color: '#1A1A1A' }}
-                    />
-                    <button
-                      type="button"
-                      aria-label="Emoji"
-                      data-testid="chat-emoji-btn"
-                      onClick={() => toast.info('Emoji picker coming soon')}
-                      className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                    >
-                      <Smile className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                    </button>
-                  </div>
-                  {chatInput.trim() ? (
-                    <button
-                      type="submit"
-                      aria-label="Send message"
-                      data-testid="chat-send-button"
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-md transition-all active:scale-95 shrink-0"
-                      style={{ background: '#1FA47C', boxShadow: '0 4px 12px rgba(31,164,124,0.32)' }}
-                    >
-                      <Send className="w-[18px] h-[18px]" />
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        type="button"
-                        aria-label="Camera"
-                        data-testid="chat-camera-btn"
-                        onClick={() => toast.info('Camera coming soon')}
-                        className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors shrink-0"
-                      >
-                        <Camera className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Voice message"
-                        data-testid="chat-mic-btn"
-                        onClick={() => toast.info('Voice messages coming soon')}
-                        className="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors shrink-0"
-                      >
-                        <Mic className="w-[22px] h-[22px]" style={{ color: '#6B7280' }} strokeWidth={1.75} />
-                      </button>
-                    </>
-                  )}
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* Bottom score bar */}
-          <div className="px-4 py-3 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-sm" style={{ color: C.red }}>{playerName.split(' ')[0]}</span>
-              <span className="text-lg font-black" style={{ color: C.red }}>{myScore} pts</span>
-            </div>
-            <span className="text-gray-400 font-bold text-xs">VS</span>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-black" style={{ color: C.blue }}>{opponentScore} pts</span>
-              <span className="font-bold text-sm" style={{ color: C.blue }}>{oppName.split(' ')[0]}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── DESKTOP LAYOUT ── */}
-        <div className="hidden md:block">
-          <Header isLoggedIn={isUserAuth} user={user} />
-          <div className="max-w-7xl mx-auto px-6 py-4">
-            {/* Top bar */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{ background: C.red }}>{playerName.charAt(0).toUpperCase()}</div>
-                <div>
-                  <p className="font-bold text-gray-900">{playerName}</p>
-                  <p className="text-xl font-black" style={{ color: C.red }}>{myScore} pts</p>
-                </div>
-              </div>
-              <div className="text-center">
-                <div className={`text-4xl font-black ${timeLeft <= 10 ? 'animate-pulse' : ''}`} style={{ color: timeLeft <= 10 ? C.red : '#374151' }}>{timeLeft}s</div>
-                <p className="text-gray-400 text-sm">Q{currentQuestionIndex + 1}/{questions.length}</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="font-bold text-gray-900">{oppName}</p>
-                  <p className="text-xl font-black" style={{ color: C.blue }}>{opponentScore} pts</p>
-                </div>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{ background: C.blue }}>{oppName.charAt(0).toUpperCase()}</div>
-              </div>
-            </div>
-
-            {/* Progress */}
-            <div className="h-2 rounded-full overflow-hidden mb-4" style={{ background: '#e0d8d0' }}>
-              <div className="h-full rounded-full transition-all duration-300" style={{ width: `${progress}%`, background: `linear-gradient(to right, ${C.red}, ${C.blue})` }} />
-            </div>
-
-            <div className="grid grid-cols-[1fr_240px] gap-4">
-              {/* Quiz area */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{decodeURIComponent(subject)} {topic ? `• ${decodeURIComponent(topic)}` : ''}</span>
-                <h2 className="text-2xl font-serif font-bold text-gray-900 mt-3 mb-6 leading-relaxed"><MathText text={q.question} /></h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {q.options.map((opt, i) => {
-                    const txt = typeof opt === 'object' ? (opt.text || opt.label) : opt;
-                    const isMine = selectedAnswer === i;
-                    const isOpp = opponentAnswer === i;
-                    const isCorrect = answerResult && answerResult.correctAnswer === i;
-                    const isWrong = isMine && answerResult && !answerResult.isCorrect;
-                    let border = '#e5e0db'; let bg = C.white; let badge = null;
-                    if (answerResult) {
-                      if (isCorrect) { border = '#22c55e'; bg = '#f0fdf4'; }
-                      else if (isWrong) { border = C.red; bg = C.redLight; }
-                    } else if (isMine) { border = C.red; bg = C.redLight; badge = 'You'; }
-                    if (isOpp && !answerResult) { border = C.blue; bg = C.blueLight; badge = oppName; }
-                    return (
-                      <button key={`q${currentQuestionIndex}-d-opt-${i}`} onClick={() => handleAnswerSelect(i)} disabled={selectedAnswer !== null}
-                        className="text-left p-4 rounded-xl border-2 transition-all hover:shadow-md relative" style={{ borderColor: border, background: bg }}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
-                            style={{ background: isCorrect ? '#22c55e' : isWrong ? C.red : isMine ? C.red : isOpp ? C.blue : '#e5e0db', color: (isCorrect || isWrong || isMine || isOpp) ? '#fff' : '#374151' }}>
-                            {String.fromCharCode(65 + i)}
-                          </div>
-                          <span className="flex-1 font-medium text-gray-900"><MathText text={txt} /></span>
-                          {isCorrect && <span className="text-green-500 font-bold text-xl">✓</span>}
-                          {isWrong && <span style={{ color: C.red }} className="font-bold text-xl">✗</span>}
-                        </div>
-                        {badge && !answerResult && (
-                          <span className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ background: isMine ? C.red : C.blue }}>{badge}</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                {answerResult && (
-                  <div className={`mt-4 p-4 rounded-xl border-2 ${
-                    answerResult.outcome === 'correct' ? 'bg-green-50 border-green-400' :
-                    answerResult.outcome === 'wrong' ? 'bg-red-50 border-red-400' :
-                    'bg-amber-50 border-amber-400'
-                  }`}>
-                    <p className={`font-bold ${
-                      answerResult.outcome === 'correct' ? 'text-green-800' :
-                      answerResult.outcome === 'wrong' ? 'text-red-800' :
-                      'text-amber-800'
-                    }`}>
-                      {answerResult.outcome === 'correct' && `✓ Correct! +${answerResult.points} pts`}
-                      {answerResult.outcome === 'wrong' && `✗ Incorrect — ${answerResult.points} pts`}
-                      {answerResult.outcome === 'skipped' && `⊘ Time's up — 0 pts`}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-3">
-                {/* Opponent card */}
-                <div className="rounded-2xl p-4 text-center" style={{ background: C.pink }}>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mx-auto mb-2" style={{ background: C.blue }}>{oppName.charAt(0).toUpperCase()}</div>
-                  {opponent?.userId && (battleState === 'results' || battleState === 'setup') ? (
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
-                      data-testid="desktop-opponent-name-link"
-                      className="font-bold text-gray-900 text-sm hover:underline"
-                    >
-                      {oppName}
-                    </button>
-                  ) : (
-                    <p className="font-bold text-gray-900 text-sm" data-testid="desktop-opponent-name">{oppName}</p>
-                  )}
-                  <p className="text-xs text-gray-500">{decodeURIComponent(examId)}</p>
-                  {opponent?.userId && (
-                    <div className="mt-2 flex justify-center" data-testid="desktop-opponent-follow">
-                      <FollowButton
-                        targetUserId={opponent.userId}
-                        targetUsername={opponent.username || opponent.playerName}
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* VC controls */}
-                <div className="bg-white rounded-xl p-3 border border-gray-100 space-y-2">
-                  {vcState === 'idle' && (
-                    <button onClick={requestVC} className="w-full py-2 rounded-lg text-white text-sm font-semibold flex items-center justify-center gap-2" style={{ background: C.blue }} data-testid="desktop-start-vc">
-                      <Phone className="w-4 h-4" /> Start Video Call
-                    </button>
-                  )}
-                  {vcState === 'requesting' && <div className="text-center py-2 text-sm text-gray-500 animate-pulse">Ringing opponent...</div>}
-                  {vcState === 'active' && (
-                    <div className="flex items-center justify-center gap-2 py-2 text-sm font-semibold" style={{ color: C.blue }}>
-                      <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: C.blue }} />
-                      Live — use video controls below
-                    </div>
-                  )}
-                  <button onClick={() => setShowReport(true)} className="w-full py-1.5 rounded-lg text-xs text-gray-400 hover:text-red-500 flex items-center justify-center gap-1">
-                    <Flag className="w-3 h-3" /> Report
-                  </button>
-                </div>
-
-                {/* Battle info */}
-                <div className="bg-white rounded-xl p-3 border border-gray-100">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Battle Info</p>
-                  <p className="text-xs text-gray-600">{decodeURIComponent(examId)}</p>
-                  <p className="text-xs text-gray-600">{decodeURIComponent(subject)}</p>
-                  <p className="text-xs text-gray-500 mt-1">Q{currentQuestionIndex + 1}/{questions.length} • {timeLeft}s left</p>
-                </div>
-
-                {/* Desktop chat */}
-                <div className="bg-white rounded-xl border border-gray-100 flex flex-col" style={{ height: '220px' }}>
-                  <div className="px-3 py-2 border-b border-gray-100 flex items-center gap-1.5">
-                    <MessageCircle className="w-3.5 h-3.5" style={{ color: C.blue }} />
-                    <span className="text-xs font-bold text-gray-700">Chat</span>
-                  </div>
-                  <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2" style={{ background: '#fafafa' }}>
-                    {chatMessages.length === 0
-                      ? (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-400 gap-1 py-4">
-                          <MessageCircle className="w-6 h-6 opacity-30" />
-                          <p className="text-xs font-medium">No messages yet</p>
-                        </div>
-                      )
-                      : chatMessages.map((m, i) => {
-                        const mine = m.playerName === playerName;
-                        return (
-                          <div key={`dc-${m.ts}-${i}`} className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                            <div
-                              className={`max-w-[80%] px-3 py-1.5 text-xs leading-snug shadow-sm ${
-                                mine ? 'text-white rounded-[16px] rounded-br-md' : 'bg-white text-gray-800 rounded-[16px] rounded-bl-md'
-                              }`}
-                              style={mine ? { background: C.red } : {}}
-                            >
-                              {!mine && <p className="text-[9px] opacity-60 font-bold mb-0.5">{m.playerName}</p>}
-                              <p className="break-words">{m.message}</p>
-                            </div>
-                          </div>
-                        );
-                      })
-                    }
-                    <div ref={chatEndRef} />
-                  </div>
-                  {/* Input bar — Messenger-style pill + circular send (desktop) */}
-                  <form onSubmit={sendChat} className="flex items-center gap-2 px-3 py-2.5 border-t border-gray-100 bg-white">
-                    <input
-                      type="text"
-                      value={chatInput}
-                      onChange={e => setChatInput(e.target.value)}
-                      placeholder="Aa"
-                      maxLength={100}
-                      data-testid="desktop-chat-input"
-                      className="flex-1 px-3 py-2 bg-gray-100 rounded-full text-xs focus:outline-none focus:bg-gray-50 transition-all"
-                    />
-                    <button
-                      type="submit"
-                      disabled={!chatInput.trim()}
-                      aria-label="Send message"
-                      data-testid="desktop-chat-send"
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-md disabled:opacity-40 disabled:shadow-none transition-all active:scale-95"
-                      style={{ background: chatInput.trim() ? C.red : '#d1d5db' }}
-                    >
-                      <Send className="w-3.5 h-3.5" />
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── FLOATING VIDEO CALL OVERLAY ──
-            WhatsApp / Instagram-style draggable PIP with three modes:
-              • mini  — small bubble (130×180), no Agora controls, double-tap or
-                        maximize button to expand. Draggable.
-              • pip   — medium card (300×420), Agora controls visible. Draggable,
-                        snaps to nearest edge on release.
-              • full  — fullscreen takeover; Agora controls visible; drag disabled.
-            The Flag/Report button on the quiz toolbar handles abuse reporting;
-            the call ends via Agora's built-in end-call button. */}
-        {vcState === 'active' && vcReady && (() => {
-          const isFull = vcSize === 'full';
-          const isMini = vcSize === 'mini';
-          const dims = isFull
-            ? { left: 0, top: 0, width: '100vw', height: '100vh', borderRadius: 0 }
-            : isMini
-              ? { left: vcPos.x, top: vcPos.y, width: vcDims.mini.w, height: vcDims.mini.h, borderRadius: 22 }
-              : { left: vcPos.x, top: vcPos.y, width: vcDims.pip.w, height: vcDims.pip.h, borderRadius: 18 };
-          return (
-            <div
-              data-testid="vc-pip"
-              data-vc-size={vcSize}
-              onMouseDown={!isFull ? onDragStart : undefined}
-              onTouchStart={!isFull ? onDragStart : undefined}
-              onClick={onOverlayClick}
-              onDoubleClick={() => setVcSize(isFull ? 'pip' : 'full')}
-              style={{
-                position: 'fixed',
-                zIndex: 70,
-                ...dims,
-                overflow: 'hidden',
-                border: isFull ? 'none' : '2px solid white',
-                backgroundColor: '#111',
-                boxShadow: isFull ? 'none' : '0 12px 48px rgba(0,0,0,0.5)',
-                display: 'block',
-                cursor: isFull ? 'default' : (isDragging ? 'grabbing' : 'grab'),
-                touchAction: isFull ? 'auto' : 'none',
-                transition: isDragging ? 'none' : 'width 0.25s ease, height 0.25s ease, border-radius 0.25s ease, left 0.25s ease, top 0.25s ease',
-                userSelect: 'none',
-              }}
-            >
-              <VideoErrorBoundary onError={() => endVC()}>
-                <StableAgoraVideo
-                  appId={AGORA_APP_ID}
-                  channel={sanitizedChannel}
-                  token={agoraToken}
-                  uid={agoraUid}
-                  onEnd={endVC}
-                  compact={isMini}
-                />
-              </VideoErrorBoundary>
-
-              {/* Top-left drag grip (visual handle, dragging works on whole card) */}
-              {!isFull && !isMini && (
-                <div
-                  data-vc-control
-                  style={{ position: 'absolute', top: 6, left: '50%', transform: 'translateX(-50%)', zIndex: 9, padding: '4px 12px', borderRadius: 12, background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)', pointerEvents: 'none' }}
-                >
-                  <GripHorizontal size={14} color="#fff" style={{ opacity: 0.7 }} />
-                </div>
-              )}
-
-              {/* Maximize / Minimize button — top-left, like WhatsApp.
-                  Hidden in mini bubble (tap-to-expand handles that). */}
-              {!isMini && (
-                <button
-                  data-vc-control
-                  data-testid="vc-toggle-size"
-                  onClick={(e) => { e.stopPropagation(); setVcSize(isFull ? 'pip' : 'full'); }}
-                  style={{
-                    position: 'absolute',
-                    top: 8,
-                    left: 8,
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
-                    background: 'rgba(0,0,0,0.55)',
-                    backdropFilter: 'blur(6px)',
-                    border: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    zIndex: 9,
-                  }}
-                >
-                  {isFull ? <Minimize2 size={14} color="#fff" /> : <Maximize2 size={14} color="#fff" />}
-                </button>
-              )}
-
-              {/* Collapse-to-bubble button — only in pip / full mode */}
-              {!isMini && (
-                <button
-                  data-vc-control
-                  data-testid="vc-toggle-mini"
-                  onClick={(e) => { e.stopPropagation(); setVcSize('mini'); }}
-                  style={{
-                    position: 'absolute',
-                    top: 8,
-                    left: 46,
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
-                    background: 'rgba(0,0,0,0.55)',
-                    backdropFilter: 'blur(6px)',
-                    border: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    zIndex: 9,
-                  }}
-                  title="Collapse to bubble"
-                >
-                  <X size={14} color="#fff" />
-                </button>
-              )}
-
-              {/* Mini bubble: pulsing live dot — Agora's mute/camera/end-call
-                  controls render at the bottom of the bubble, so users always
-                  have call controls without expanding. Tap empty area = expand. */}
-              {isMini && (
-                <div
-                  data-vc-control
-                  style={{
-                    position: 'absolute',
-                    top: 6,
-                    left: 6,
-                    width: 10,
-                    height: 10,
-                    borderRadius: 5,
-                    background: '#22c55e',
-                    boxShadow: '0 0 0 0 rgba(34,197,94,0.7)',
-                    animation: 'vcPulse 1.4s infinite',
-                    zIndex: 9,
-                    pointerEvents: 'none',
-                  }}
-                />
-              )}
-            </div>
-          );
-        })()}
-
-        {/* Pulse keyframes for mini bubble live indicator */}
-        {vcState === 'active' && (
-          <style>{`@keyframes vcPulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7);} 70% { box-shadow: 0 0 0 8px rgba(34,197,94,0);} 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0);} }`}</style>
-        )}
-
-        {/* VC incoming request modal */}
-        {vcState === 'incoming' && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl">
-              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse" style={{ background: C.blue }}>
-                <Phone className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="font-bold text-lg text-gray-900 mb-1">Video Call Request</h3>
-              <p className="text-gray-500 text-sm mb-6">{vcRequester} wants to video call</p>
-              <div className="flex gap-3">
-                <button onClick={declineVC} className="flex-1 py-3 bg-gray-200 text-gray-700 rounded-xl font-semibold">Decline</button>
-                <button onClick={acceptVC} className="flex-1 py-3 text-white rounded-xl font-semibold" style={{ background: '#22c55e' }}>Accept</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Report Modal */}
-        {showReport && (
-          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
-              {reportDone ? (
-                <div className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-bold mb-2">Report Submitted</h3>
-                  <button onClick={() => { setShowReport(false); setReportDone(false); setReportReason(''); setReportDesc(''); }}
-                    className="mt-4 px-6 py-2 rounded-xl text-white font-semibold" style={{ background: C.blue }}>Close</button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between p-4 border-b">
-                    <div className="flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-red-600" /><h3 className="font-bold">Report User</h3></div>
-                    <button onClick={() => setShowReport(false)}><X className="w-4 h-4" /></button>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    {REPORT_REASONS.map(r => (
-                      <label key={r.id} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer ${reportReason === r.id ? 'border-red-500 bg-red-50' : 'border-gray-200'}`}>
-                        <input type="radio" name="rr" checked={reportReason === r.id} onChange={() => setReportReason(r.id)} />
-                        <span className="text-sm font-medium">{r.label}</span>
-                      </label>
-                    ))}
-                    <textarea value={reportDesc} onChange={e => setReportDesc(e.target.value)} placeholder="Details..." rows={2} className="w-full p-3 border rounded-xl text-sm" />
-                  </div>
-                  <div className="p-4 border-t">
-                    <button onClick={submitReport} disabled={!reportReason || reportSubmitting} className="w-full py-2.5 bg-red-500 text-white rounded-xl font-medium disabled:opacity-50">
-                      {reportSubmitting ? 'Submitting...' : 'Submit Report'}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" style={{ color: C.red }} /></div>}>
+          <QuizView
+            isUserAuth={isUserAuth}
+            user={user}
+            C={C}
+            playerName={playerName}
+            timeLeft={timeLeft}
+            handleBattleBack={handleBattleBack}
+            setMobileChatOpen={setMobileChatOpen}
+            chatMessages={chatMessages}
+            setChatMenuOpen={setChatMenuOpen}
+            chatMenuOpen={chatMenuOpen}
+            handleViewProfile={handleViewProfile}
+            opponent={opponent}
+            handleMuteNotifications={handleMuteNotifications}
+            notificationsMuted={notificationsMuted}
+            handleReportPlayer={handleReportPlayer}
+            liveNotice={liveNotice}
+            currentQuestionIndex={currentQuestionIndex}
+            questions={questions}
+            subject={subject}
+            selectedAnswer={selectedAnswer}
+            opponentAnswer={opponentAnswer}
+            answerResult={answerResult}
+            handleAnswerSelect={handleAnswerSelect}
+            mobileChatOpen={mobileChatOpen}
+            openProfileNewTab={openProfileNewTab}
+            battleState={battleState}
+            opponentFinishedQuiz={opponentFinishedQuiz}
+            opponentOnline={opponentOnline}
+            requestVC={requestVC}
+            opponentTyping={opponentTyping}
+            chatEndRef={chatEndRef}
+            sendQuickReply={sendQuickReply}
+            sendChat={sendChat}
+            chatInput={chatInput}
+            handleChatInputChange={handleChatInputChange}
+            setChatInput={setChatInput}
+            displayMyScore={displayMyScore}
+            displayOpponentScore={displayOpponentScore}
+            opponentQuestionIndex={opponentQuestionIndex}
+            scorePulse={scorePulse}
+            scoreDeltas={scoreDeltas}
+            isPlayerMe={isPlayerMe}
+            isReconnecting={isReconnecting}
+            topic={topic}
+            examId={examId}
+            navigate={navigate}
+            myScore={myScore}
+            opponentScore={opponentScore}
+            vcState={vcState}
+            setShowReport={setShowReport}
+          />
+          <BattleVideoOverlay
+            vcState={vcState}
+            vcReady={vcReady}
+            vcSize={vcSize}
+            setVcSize={setVcSize}
+            vcPos={vcPos}
+            vcDims={vcDims}
+            onDragStart={onDragStart}
+            onOverlayClick={onOverlayClick}
+            isDragging={isDragging}
+            agoraAppId={resolvedAgoraAppId}
+            AGORA_APP_ID={AGORA_APP_ID}
+            sanitizedChannel={sanitizedChannel}
+            agoraToken={agoraToken}
+            agoraUid={agoraUid}
+            endVC={endVC}
+            vcRequester={vcRequester}
+            declineVC={declineVC}
+            acceptVC={acceptVC}
+            C={C}
+          />
+          <BattleReportModal
+            showReport={showReport}
+            reportDone={reportDone}
+            setShowReport={setShowReport}
+            setReportDone={setReportDone}
+            setReportReason={setReportReason}
+            setReportDesc={setReportDesc}
+            reportReason={reportReason}
+            REPORT_REASONS={REPORT_REASONS}
+            reportDesc={reportDesc}
+            submitReport={submitReport}
+            reportSubmitting={reportSubmitting}
+            C={C}
+          />
+        </Suspense>
       </div>
     );
   }
-
   // ━━━━━━━━━━━━━━━━━━━━ RESULTS ━━━━━━━━━━━━━━━━━━━━
   if (battleState === 'results') {
-    const isWinner = myScore > opponentScore;
-    const isTie = myScore === opponentScore;
-    const oppName = opponent?.playerName || 'Opponent';
-
     return (
-      <div className="min-h-screen" style={{ background: C.cream }}>
-        <Header isLoggedIn={isUserAuth} user={user} />
-        <div className="flex items-center justify-center p-4 py-8">
-          <div className="max-w-md w-full">
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-              <div className={`py-8 px-6 text-center ${isWinner ? 'bg-gradient-to-br from-amber-400 to-orange-500' : isTie ? 'bg-gradient-to-br from-blue-400 to-indigo-500' : 'bg-gradient-to-br from-gray-400 to-gray-600'}`}>
-                {isWinner && (
-                  <div className="w-24 h-24 mx-auto mb-2">
-                    <DotLottiePlayer src="https://assets-v2.lottiefiles.com/a/745fc364-117b-11ee-b7ec-9f18a8a356e0/ctpFpJP75f.lottie" loop autoplay style={{ width: '100%', height: '100%' }} />
-                  </div>
-                )}
-                {!isWinner && (
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 flex items-center justify-center">
-                    <Trophy className="w-10 h-10 text-white" />
-                  </div>
-                )}
-                <h1 className="text-4xl font-black text-white mb-1">{isWinner ? 'Victory!' : isTie ? 'Draw!' : 'Defeat'}</h1>
-                <p className="text-white/80">{isWinner ? 'You dominated!' : isTie ? 'A worthy match!' : 'Better luck next time!'}</p>
-              </div>
-
-              <div className="p-6">
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  <div className="p-4 rounded-xl text-center" style={{ background: C.redLight, border: isWinner ? `2px solid ${C.red}` : '2px solid transparent' }}>
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-2" style={{ background: C.red }}>{playerName.charAt(0).toUpperCase()}</div>
-                    <p className="text-xs text-gray-600 mb-1">You</p>
-                    <p className="text-2xl font-black" style={{ color: C.red }}>{myScore}</p>
-                  </div>
-                  <div className="flex items-center justify-center"><span className="text-gray-300 font-black text-xl">VS</span></div>
-                  <div className="p-4 rounded-xl text-center" style={{ background: C.blueLight, border: !isWinner && !isTie ? `2px solid ${C.blue}` : '2px solid transparent' }}>
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg mx-auto mb-2" style={{ background: C.blue }}>{oppName.charAt(0).toUpperCase()}</div>
-                    {opponent?.userId ? (
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/profile/${opponent.username || opponent.userId}`)}
-                        data-testid="results-opponent-name-link"
-                        className="text-xs text-gray-600 mb-1 hover:underline font-medium"
-                      >
-                        {oppName.split(' ')[0]}
-                      </button>
-                    ) : (
-                      <p className="text-xs text-gray-600 mb-1">{oppName.split(' ')[0]}</p>
-                    )}
-                    <p className="text-2xl font-black" style={{ color: C.blue }}>{opponentScore}</p>
-                    {opponent?.userId && (
-                      <div className="mt-2 flex justify-center" data-testid="results-opponent-follow">
-                        <FollowButton
-                          targetUserId={opponent.userId}
-                          targetUsername={opponent.username || opponent.playerName}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div><p className="text-gray-400">Questions</p><p className="font-bold text-gray-900">{questions.length}</p></div>
-                    <div><p className="text-gray-400">Exam</p><p className="font-bold text-gray-900">{decodeURIComponent(examId)}</p></div>
-                    <div><p className="text-gray-400">Subject</p><p className="font-bold text-gray-900">{decodeURIComponent(subject)}</p></div>
-                  </div>
-                </div>
-
-                {/* ── Score breakdown card (Feb 2026) ──
-                    Shows the user how their points were earned per the unified
-                    scoring equation: correct (50–100), wrong (-10), skipped (0). */}
-                <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6" data-testid="score-breakdown">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Score Breakdown</p>
-                    <p className="text-xs text-gray-400">out of {questions.length * SCORE.MAX_PER_QUESTION}</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2 text-center text-xs mb-3">
-                    <div className="rounded-lg bg-green-50 p-2">
-                      <p className="text-green-700 font-bold text-lg" data-testid="tally-correct">{tally.correct}</p>
-                      <p className="text-green-600">Correct</p>
-                    </div>
-                    <div className="rounded-lg bg-red-50 p-2">
-                      <p className="text-red-700 font-bold text-lg" data-testid="tally-wrong">{tally.wrong}</p>
-                      <p className="text-red-600">Wrong</p>
-                    </div>
-                    <div className="rounded-lg bg-amber-50 p-2">
-                      <p className="text-amber-700 font-bold text-lg" data-testid="tally-skipped">{tally.skipped}</p>
-                      <p className="text-amber-600">Skipped</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500 border-t pt-2">
-                    <span>⚡ Time bonus earned</span>
-                    <span className="font-bold text-gray-700" data-testid="tally-time-bonus">+{tally.timeBonus} pts</span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
-                    <span>📊 Accuracy</span>
-                    <span className="font-bold text-gray-700">
-                      {questions.length > 0 ? Math.round((tally.correct / questions.length) * 100) : 0}%
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  {rematchState === 'requested' ? (
-                    <div className="rounded-xl p-3 border-2 mb-1" style={{ background: C.blueLight, borderColor: C.blue }} data-testid="rematch-incoming-banner">
-                      <p className="text-sm font-bold text-gray-900 mb-2 text-center">{oppName} wants a rematch!</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => { socket?.emit('rematch-accept', { roomId: roomIdRef.current }); setRematchState('idle'); }}
-                          data-testid="rematch-accept-btn"
-                          className="py-2.5 rounded-lg text-white font-bold text-sm active:scale-95 transition-all"
-                          style={{ background: C.blue }}
-                        >Accept</button>
-                        <button
-                          onClick={() => { socket?.emit('rematch-decline', { roomId: roomIdRef.current }); setRematchState('idle'); }}
-                          data-testid="rematch-decline-btn"
-                          className="py-2.5 rounded-lg bg-gray-200 text-gray-700 font-semibold text-sm active:scale-95 transition-all"
-                        >Decline</button>
-                      </div>
-                    </div>
-                  ) : opponent?.userId ? (
-                    <button
-                      onClick={() => { socket?.emit('rematch-request', { roomId: roomIdRef.current }); setRematchState('pending'); }}
-                      disabled={rematchState === 'pending'}
-                      data-testid="rematch-btn"
-                      className="w-full text-white py-3.5 rounded-xl font-bold hover:shadow-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                      style={{ background: C.red }}
-                    >
-                      {rematchState === 'pending' ? (
-                        <><Loader2 className="w-4 h-4 animate-spin" /> Waiting for {oppName}...</>
-                      ) : (
-                        <><Swords className="w-5 h-5" /> Rematch with {oppName}</>
-                      )}
-                    </button>
-                  ) : (
-                    <button onClick={() => window.location.reload()} className="w-full text-white py-3.5 rounded-xl font-bold hover:shadow-xl transition-all" style={{ background: C.red }} data-testid="battle-again-btn">Battle Again</button>
-                  )}
-                  <button onClick={() => window.location.reload()} className="w-full bg-gray-100 text-gray-700 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-200" data-testid="battle-again-other">Find new opponent</button>
-                  <button onClick={() => navigate('/victory-lane')} className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200">Victory Lane</button>
-                  <button onClick={() => navigate('/')} className="w-full text-gray-500 py-2 text-sm hover:text-gray-700">Home</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" style={{ color: C.red }} /></div>}>
+        <BattleResultScreen
+          playerName={playerName}
+          opponent={opponent}
+          myScore={myScore}
+          opponentScore={opponentScore}
+          questions={questions}
+          examId={examId}
+          subject={subject}
+          tally={tally}
+          rematchState={rematchState}
+          rematchRequesterName={rematchRequesterName}
+          rematchCountdown={rematchCountdown}
+          rematchMuteBehavior={rematchMuteBehavior}
+          setRematchMuteBehavior={setRematchMuteBehavior}
+          notificationsMuted={notificationsMuted}
+          passiveRematchRequest={passiveRematchRequest}
+          requestRematch={requestRematch}
+          acceptRematch={acceptRematch}
+          declineRematch={declineRematch}
+          onPlayAgain={handlePlayAgainFromResults}
+          onFindNewOpponent={handleFindNewOpponentFromResults}
+          navigate={navigate}
+          openProfileNewTab={openProfileNewTab}
+          isUserAuth={isUserAuth}
+          user={user}
+          SCORE={SCORE}
+          resultNotice={resultNotice}
+        />
+      </Suspense>
     );
   }
 

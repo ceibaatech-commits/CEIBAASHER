@@ -1,5 +1,5 @@
 /**
- * Social Socket Hook - Real-time updates for Victory Lane
+ * Social Socket Hook - Real-time updates for Capazoo
  */
 
 import { useEffect, useRef, useCallback, useState } from 'react';

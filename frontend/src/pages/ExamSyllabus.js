@@ -96,7 +96,7 @@ const ExamSyllabus = () => {
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-2 md:py-8">
           {/* Back Button - Inline on Mobile */}
           <button
-            onClick={() => navigate('/victory-lane')}
+            onClick={() => navigate('/capazoo')}
             className="flex items-center text-white/90 hover:text-white mb-1 md:mb-4 transition-colors text-xs md:text-base"
           >
             <ArrowLeft className="w-3 h-3 md:w-5 md:h-5 mr-1" />

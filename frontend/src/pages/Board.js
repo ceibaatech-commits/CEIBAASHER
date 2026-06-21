@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   Trophy, Clock, Users, Search, Play, CheckCircle,
   Target, BookOpen, TrendingUp, Calendar,
@@ -34,6 +34,7 @@ const LEVEL_COLORS = {
 
 const Board = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
   
@@ -76,6 +77,8 @@ const Board = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, active: 0, completed: 0, created: 0 });
+  const selectedBoard = new URLSearchParams(location.search).get('board') || 'cbse';
+  const boardQuery = `?board=${selectedBoard}`;
 
   // Fetch user goal
   const fetchUserGoal = async (userId) => {
@@ -327,14 +330,14 @@ const Board = () => {
         // Determine stream from goal_category (class_11_science, class_11_commerce, etc.)
         const streamMatch = test.exam_category?.match(/class_\d+_(\w+)/);
         const stream = streamMatch ? streamMatch[1] : 'science';
-        navigate(`/chapter-tests/class-${classNum}/${stream}/${subjectSlug}`);
+        navigate(`/chapter-tests/class-${classNum}/${stream}/${subjectSlug}${boardQuery}`);
       } else {
         // Class 6-10 don't need stream
-        navigate(`/chapter-tests/class-${classNum}/${subjectSlug}`);
+        navigate(`/chapter-tests/class-${classNum}/${subjectSlug}${boardQuery}`);
       }
     } else {
       // Default: navigate to chapter tests
-      navigate(`/chapter-tests`);
+      navigate(`/chapter-tests${boardQuery}`);
     }
   };
 

@@ -58,7 +58,7 @@ const AuthCallback = () => {
           setUserData(userData);
           sessionStorage.setItem('just_authenticated', 'true');
 
-          window.location.replace('/victory-lane');
+          window.location.replace('/capazoo');
         } else {
           throw new Error('Auth failed');
         }

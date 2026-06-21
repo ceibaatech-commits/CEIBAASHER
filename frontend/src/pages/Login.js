@@ -92,7 +92,7 @@ const Login = () => {
         }
       }
 
-      const from = location.state?.from || '/victory-lane';
+      const from = location.state?.from || '/capazoo';
       navigate(from, { replace: true });
       
     } catch (err) {
@@ -102,7 +102,7 @@ const Login = () => {
   };
 
   const handleGuestMode = () => {
-    navigate('/victory-lane', { state: { guestMode: true } });
+    navigate('/capazoo', { state: { guestMode: true } });
   };
 
   return (

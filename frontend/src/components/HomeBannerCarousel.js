@@ -24,11 +24,11 @@ const HeroBanner = () => {
     },
     {
       id: 'victory',
-      title: 'Victory Lane',
+      title: 'Capazoo',
       desc: 'Leaderboards & glory',
       icon: Trophy,
       iconBg: '#ea580c',
-      link: '/victory-lane'
+      link: '/capazoo'
     },
     {
       id: 'duel',

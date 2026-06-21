@@ -32,6 +32,7 @@ const EmployeeDashboard = () => {
   });
 
   const [classForm, setClassForm] = useState({
+    board: 'cbse',
     class_name: '',
     subject: '',
     chapter: '',
@@ -81,10 +82,13 @@ const EmployeeDashboard = () => {
     // axios.defaults.withCredentials = true in /app/frontend/src/index.js)
     fetchSheets();
     fetchExamMetadata();
-    fetchCbseData();
     fetchBooks();
   // eslint-disable-next-line
   }, [navigate]);
+
+  useEffect(() => {
+    fetchCbseData();
+  }, [classForm.board]);
 
   // Cookie-based auth — no Authorization header needed.
   // Kept as a thin pass-through so existing callsites don't break.
@@ -126,12 +130,12 @@ const EmployeeDashboard = () => {
 
   const fetchCbseData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/cbse-data/admin/class-subjects`);
+      const response = await axios.get(`${API_URL}/api/cbse-data/admin/class-subjects?board=${classForm.board}`);
       if (response.data.success) {
         setCbseClassSubjects(response.data.class_subjects || {});
       }
     } catch (error) {
-      console.error('Error fetching CBSE data:', error);
+      console.error('Error fetching board data:', error);
     }
   };
 
@@ -182,6 +186,7 @@ const EmployeeDashboard = () => {
         }
         sheetData = {
           type: 'class',
+          board: classForm.board,
           class_name: classForm.class_name,
           subject: classForm.subject,
           chapter: classForm.chapter,
@@ -241,7 +246,7 @@ const EmployeeDashboard = () => {
 
   const resetForms = () => {
     setExamForm({ exam_name: '', syllabus_topic: '', subject: '', sub_topic: '', sheet_link: '' });
-    setClassForm({ class_name: '', subject: '', chapter: '', sheet_link: '' });
+    setClassForm({ board: 'cbse', class_name: '', subject: '', chapter: '', sheet_link: '' });
     setBookForm({ book_name: '', chapter_name: '', sheet_link: '' });
   };
 
@@ -491,6 +496,21 @@ const EmployeeDashboard = () => {
                 {/* Class Form */}
                 {selectedOption === 'class' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Board *</label>
+                      <select
+                        value={classForm.board}
+                        onChange={(e) => setClassForm({...classForm, board: e.target.value, class_name: '', subject: '', chapter: ''})}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="cbse">CBSE</option>
+                        <option value="rbse">Rajasthan Board (RBSE)</option>
+                        <option value="hbse">Haryana Board (HBSE)</option>
+                        <option value="upboard">UP Board (UPMSP)</option>
+                        <option value="bseb">Bihar Board (BSEB)</option>
+                        <option value="mpbse">MP Board (MPBSE)</option>
+                      </select>
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Class *</label>
                       <select

@@ -1,5 +1,5 @@
 /**
- * Cloudinary Upload Utility for Victory Lane
+ * Cloudinary Upload Utility for Capazoo
  * Handles signed uploads directly to Cloudinary CDN
  */
 

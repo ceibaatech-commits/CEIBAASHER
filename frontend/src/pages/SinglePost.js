@@ -334,15 +334,15 @@ const SinglePost = () => {
       
       <div className="max-w-xl mx-auto border-x border-gray-200 min-h-screen">
         {/* Sticky Header */}
-        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-200">
-          <div className="flex items-center gap-6 px-4 py-3">
+        <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200">
+          <div className="flex items-center gap-3 px-3.5 py-2.5">
             <button
               onClick={() => navigate(-1)}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1.5 -ml-1 hover:bg-gray-100 rounded-full transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4.5 h-4.5" />
             </button>
-            <h1 className="text-xl font-bold">Post</h1>
+            <h1 className="text-lg font-bold">Post</h1>
           </div>
         </div>
 
@@ -458,7 +458,7 @@ const SinglePost = () => {
             <div className="text-[17px] leading-relaxed text-gray-900 whitespace-pre-wrap">
               <MathText 
                 text={post.content} 
-                onHashtagClick={(tag) => navigate(`/victory-lane?tag=${encodeURIComponent(tag)}`)}
+                onHashtagClick={(tag) => navigate(`/capazoo?tag=${encodeURIComponent(tag)}`)}
                 onMentionClick={(username) => navigate(`/profile/${username}`)}
               />
             </div>
@@ -511,7 +511,7 @@ const SinglePost = () => {
                 return (
                   <button
                     key={`tag-${tag}`}
-                    onClick={() => navigate(`/victory-lane?tag=${encodeURIComponent(tag)}`)}
+                    onClick={() => navigate(`/capazoo?tag=${encodeURIComponent(tag)}`)}
                     className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border transition-colors hover:opacity-80 ${style.bg} ${style.text} ${style.border}`}
                   >
                     <Target className="w-3 h-3" />

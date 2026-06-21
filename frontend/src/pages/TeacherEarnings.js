@@ -203,8 +203,8 @@ const TeacherEarnings = () => {
             
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button
-                onClick={() => navigate('/victory-lane')}
-                aria-label="Start posting on Victory Lane"
+                onClick={() => navigate('/capazoo')}
+                aria-label="Start posting on Capazoo"
                 className="bg-white text-teal-600 px-6 py-3 rounded-xl font-bold text-base shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <Trophy className="w-5 h-5" />
@@ -335,7 +335,7 @@ const TeacherEarnings = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-6">
             <h2 className="text-xl md:text-3xl font-black text-white mb-2">
-              How to <span className="text-teal-400">Earn</span> on Victory Lane
+              How to <span className="text-teal-400">Earn</span> on Capazoo
             </h2>
             <p className="text-white/70 text-base">Follow these simple steps to start earning today</p>
           </div>
@@ -386,11 +386,11 @@ const TeacherEarnings = () => {
               </div>
 
               <button
-                onClick={() => navigate('/victory-lane')}
-                aria-label="Join Victory Lane community"
+                onClick={() => navigate('/capazoo')}
+                aria-label="Join Capazoo community"
                 className="bg-white text-emerald-600 px-6 py-3 rounded-xl font-bold text-base shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 inline-flex items-center gap-2"
               >
-                Join Victory Lane
+                Join Capazoo
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
@@ -413,8 +413,8 @@ const TeacherEarnings = () => {
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
-              onClick={() => navigate('/victory-lane')}
-              aria-label="Start earning now on Victory Lane"
+              onClick={() => navigate('/capazoo')}
+              aria-label="Start earning now on Capazoo"
               className="bg-white text-teal-600 px-6 py-3 rounded-xl font-bold text-base shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
               🚀 Start Earning Now

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, Atom, TrendingUp, BookOpen } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -8,12 +8,14 @@ import { STREAM_COLORS, CLASS_COLORS } from '../config/constants';
 
 const ChapterTestStreams = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { classNumber } = useParams();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
-  const location = window.location;
   
   // Extract class number from URL path since route is hardcoded
   const selectedClass = classNumber?.replace('class-', '') || location.pathname.match(/class-(\d+)/)?.[1];
+  const selectedBoard = new URLSearchParams(location.search).get('board') || 'cbse';
+  const boardQuery = `?board=${selectedBoard}`;
 
   const streams = [
     {
@@ -57,7 +59,7 @@ const ChapterTestStreams = () => {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
         <button
-          onClick={() => navigate('/chapter-tests')}
+          onClick={() => navigate(`/chapter-tests${boardQuery}`)}
           className="flex items-center space-x-2 text-gray-700 hover:text-cyan-600 mb-8 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -86,7 +88,7 @@ const ChapterTestStreams = () => {
                 key={stream.name}
                 onClick={() => {
                   const streamSlug = stream.name.toLowerCase().replace(/\s+/g, '-');
-                  navigate(`/chapter-tests/class-${selectedClass}/${streamSlug}`);
+                  navigate(`/chapter-tests/class-${selectedClass}/${streamSlug}${boardQuery}`);
                 }}
                 className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-2 border-gray-100 hover:border-transparent text-left overflow-hidden"
               >
@@ -137,7 +139,7 @@ const ChapterTestStreams = () => {
           </h3>
           <div className="text-gray-600 space-y-3">
             <p className="text-center">
-              All tests are designed according to the latest NCERT curriculum and CBSE guidelines for Class {selectedClass}.
+              All tests are designed according to the latest curriculum guidelines for Class {selectedClass}.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-6">
               <div className="flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-lg">

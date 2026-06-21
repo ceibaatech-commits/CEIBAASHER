@@ -128,17 +128,20 @@ async def _system_message(conversation_id: str, text: str):
 
 @router.post("/conversations")
 async def create_or_get_conversation(body: CreateConversationReq, request: Request, authorization: Optional[str] = Header(None)):
-    """Create a 1-on-1 conversation or return existing one."""
+    """Create a 1-on-1 conversation or return existing one. Supports messaging users and recruiters."""
     user_id = await _get_user_id(authorization, request)
     target_id = body.target_user_id
 
     if user_id == target_id:
         raise HTTPException(400, "Cannot message yourself")
 
-    # Check target exists
+    # Check target exists — support both regular users and recruiters
     target = await db.users.find_one({"id": target_id}, {"_id": 0, "id": 1})
     if not target:
-        raise HTTPException(404, "User not found")
+        # Also check recruiters collection for company/recruiter targets
+        target = await db.recruiters.find_one({"id": target_id}, {"_id": 0, "id": 1})
+    if not target:
+        raise HTTPException(404, "User or company not found")
 
     participants = sorted([user_id, target_id])
 
