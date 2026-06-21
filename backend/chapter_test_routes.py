@@ -256,8 +256,21 @@ async def start_chapter_test(
             "chapter_number": chapter
         }
 
+        # Board filter is forgiving for legacy data:
+        # questions collection has ~21k untagged CBSE rows, so an exact-match
+        # would drop them. For CBSE we accept missing/null board too; for
+        # other boards we keep strict match so they don't leak CBSE data.
         if board:
-            query["board"] = board.lower()
+            board_lower = board.lower()
+            if board_lower == "cbse":
+                query["$or"] = [
+                    {"board": {"$regex": "^cbse$", "$options": "i"}},
+                    {"board": {"$exists": False}},
+                    {"board": None},
+                ]
+            else:
+                import re as _re_local
+                query["board"] = {"$regex": f"^{_re_local.escape(board_lower)}$", "$options": "i"}
         
         if 'poorvi' in subject.lower():
             query["subject"] = {"$regex": "poorvi", "$options": "i"}

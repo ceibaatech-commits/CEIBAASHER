@@ -2,6 +2,27 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — Bug fix: Skill Drill CBSE MCQs not loading on deployed site — RESOLVED (regression introduced by recent commit)
+- **Reproduction:** Open `/chapter-tests/class-6/mathematics---ganita-prakash?board=cbse` on `ceibaa.in`, pick "Patterns in Mathematics" → quiz fails to load any questions.
+- **Root cause — recent regression in `commit 73976e6d`** (auto-commit from a prior fork session): added a strict `board` exact-match filter to BOTH the `exam_sheets` lookup (line ~593) AND the `questions` collection fallback (line ~748) inside `quiz_routes.py::start_quiz`. The `questions` collection contains **21,354 legacy CBSE MCQs that were inserted WITHOUT a `board` field** (`db.questions.distinct('board') === []`). So `query["board"] = "cbse"` rejected every single one of them → 0 questions returned → "Failed to load questions" toast.
+  - Confirmed via Mongo count: same query without the board filter returned 200 valid MCQs for Class 6 / Mathematics - Ganita Prakash / Patterns in Mathematics; with `board: "cbse"` exact-match → 0.
+- **Fix (in `/app/backend/quiz_routes.py` AND `/app/backend/chapter_test_routes.py`)**:
+  - For `board == "cbse"` (or empty/None): build a `$or` clause that matches `board ∈ {/^cbse$/i, missing, null}` — so legacy untagged questions are treated as CBSE (their de-facto origin).
+  - For all other boards (rbse, hbse, upboard, bseb, mpbse, etc.): keep STRICT case-insensitive regex match so CBSE data never leaks into a non-CBSE quiz.
+  - Applied identically in `exam_sheets` lookup AND `questions` fallback so both query paths agree.
+- **Verified end-to-end via curl after backend restart**:
+  - Class 6 / Mathematics - Ganita Prakash / Patterns in Mathematics → **5 questions** (was 0) ✅
+  - Class 9 / Science / Matter in Our Surroundings → **3 questions** (was 0) ✅
+  - Class 6 with `board: "rbse"` (no RBSE data exists) → **0 questions** (correctly strict) ✅
+- **Data observations (for admin):**
+  - `questions` collection: 21,354 rows, **NONE** have a `board` field — all are de-facto CBSE legacy imports. Fix above treats them as CBSE; no migration required.
+  - Some new-NCERT chapters have ZERO MCQs in the DB (e.g. Class 7 / Science - Curiosity, Class 10 / Mathematics). These return 0 questions even after the fix because there's nothing to return — the curator needs to upload sheets via Exam Sheet Manager.
+  - Some Class 6 Math questions are mis-tagged (Science content under Mathematics - Ganita Prakash / Patterns in Mathematics). Data-quality concern for the curator, not a code bug.
+- **What did NOT change in our recent work** (to address user's "what has changed?"):
+  - The CBSE Skill Drill chapter LISTING (sections → subjects → chapter cards) was never broken on preview; our changes to `cbse_data_routes.py` and `chapter_test_routes.py::get_chapters` only ADDED case-insensitive handling for legacy uppercase HBSE rows and never affected the static CBSE path.
+  - The MCQs themselves continue to live in MongoDB (`questions` collection 21k rows, plus the 2-tier `quiz_sheet_cache` collection for sheet-fetched questions).
+- **Required action on production**: **Redeploy to push the fix to `ceibaa.in`**. After redeploy, the Skill Drill CBSE MCQs will load again immediately — no data migration needed.
+
 ### Feb 15, 2026 — Migration script: lowercase + trim `class_chapters` — READY
 - [x] **New file `/app/backend/scripts/migrate_class_chapters_lowercase_board.py`** — one-time, idempotent migration that:
   - Lower-cases every `class_chapters.board` value (e.g. legacy `"HBSE"`, `"CBSE"`, `"HBSE "` → `"hbse"`, `"cbse"`).

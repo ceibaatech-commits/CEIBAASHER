@@ -590,8 +590,23 @@ async def start_quiz(request: QuizStartRequest):
             "subject": request.subject,
             "chapter": {"$regex": chapter_pattern}
         }
+        # Board filter is forgiving for legacy data:
+        # the questions/exam_sheets collections contain ~21k CBSE rows
+        # that pre-date the board field, so an exact-match would drop them.
+        # We accept rows where board equals the requested value (case-insensitive)
+        # OR where board is missing / null. For non-CBSE boards we still
+        # require the field to be present so they don't accidentally pick
+        # up untagged CBSE data.
         if request.board:
-            query["board"] = request.board.lower()
+            board_lower = request.board.lower()
+            if board_lower == "cbse":
+                query["$or"] = [
+                    {"board": {"$regex": "^cbse$", "$options": "i"}},
+                    {"board": {"$exists": False}},
+                    {"board": None},
+                ]
+            else:
+                query["board"] = {"$regex": f"^{re.escape(board_lower)}$", "$options": "i"}
         print(f"🔍 Querying exam_sheets for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
     elif topic:
         # Exam-based query (NEET, JEE, etc.)
@@ -745,8 +760,19 @@ async def start_quiz(request: QuizStartRequest):
                     "subject": request.subject,
                     "chapter": {"$regex": chapter_pattern}
                 }
+                # Board filter is forgiving for legacy data — see exam_sheets
+                # branch above for rationale. Untagged questions are treated
+                # as CBSE since CBSE is the default + legacy import.
                 if request.board:
-                    query_filter["board"] = request.board.lower()
+                    board_lower = request.board.lower()
+                    if board_lower == "cbse":
+                        query_filter["$or"] = [
+                            {"board": {"$regex": "^cbse$", "$options": "i"}},
+                            {"board": {"$exists": False}},
+                            {"board": None},
+                        ]
+                    else:
+                        query_filter["board"] = {"$regex": f"^{re.escape(board_lower)}$", "$options": "i"}
                 print(f"🔍 Querying questions for CLASS-BASED: class={request.class_name}, subject={request.subject}, chapter={request.chapter} (normalized: {chapter_clean})")
             else:
                 # EXAM-BASED QUERY: Build a flexible query that handles both old format (syllabus_topic/subject) 
