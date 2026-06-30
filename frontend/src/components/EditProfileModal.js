@@ -149,52 +149,11 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Profile Picture */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Profile Picture
-            </label>
-            <div className="flex items-center gap-4">
-              {/* Profile Picture Preview */}
-              <div className="relative">
-                <img
-                  src={formData.profile_picture || `https://ui-avatars.com/api/?name=${formData.name}&background=random&size=200`}
-                  alt="Profile"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-lg"
-                />
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('profile-picture-input').click()}
-                  className="absolute bottom-0 right-0 p-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all shadow-lg"
-                >
-                  <Camera className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* File Input (Hidden) */}
-              <input
-                id="profile-picture-input"
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleImageUpload(e, 'profile_picture')}
-                className="hidden"
-              />
-
-              {/* Upload Button */}
-              <div className="flex-1">
-                <button
-                  type="button"
-                  onClick={() => document.getElementById('profile-picture-input').click()}
-                  className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-purple-600"
-                >
-                  <Upload className="w-5 h-5" />
-                  <span className="font-semibold">Choose from Gallery</span>
-                </button>
-                <p className="text-xs text-gray-500 mt-2 text-center">
-                  JPG, PNG or GIF (Max 5MB)
-                </p>
-              </div>
-            </div>
-          </div>
+          <ProfilePictureUploadSection
+            profilePicture={formData.profile_picture}
+            name={formData.name}
+            handleImageUpload={handleImageUpload}
+          />
 
           {/* Name */}
           <div>
@@ -243,29 +202,11 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
           </div>
 
           {/* Exam Focus */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Exam Focus
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {examOptions.map(exam => (
-                <button
-                  key={exam}
-                  type="button"
-                  onClick={() => handleExamFocusToggle(exam)}
-                  className={`
-                    px-4 py-2 rounded-full font-medium text-sm transition-all
-                    ${(formData.exam_focus || []).includes(exam)
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }
-                  `}
-                >
-                  {exam}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ExamFocusSelector
+            examOptions={examOptions}
+            selectedExams={formData.exam_focus}
+            handleExamFocusToggle={handleExamFocusToggle}
+          />
 
           {/* Website */}
           <div>
@@ -311,5 +252,80 @@ const EditProfileModal = ({ isOpen, onClose, currentProfile, onProfileUpdated })
     </div>
   );
 };
+
+const ProfilePictureUploadSection = ({ profilePicture, name, handleImageUpload }) => (
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">
+      Profile Picture
+    </label>
+    <div className="flex items-center gap-4">
+      {/* Profile Picture Preview */}
+      <div className="relative">
+        <img
+          src={profilePicture || `https://ui-avatars.com/api/?name=${name}&background=random&size=200`}
+          alt="Profile"
+          className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 shadow-lg"
+        />
+        <button
+          type="button"
+          onClick={() => document.getElementById('profile-picture-input').click()}
+          className="absolute bottom-0 right-0 p-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all shadow-lg"
+        >
+          <Camera className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* File Input (Hidden) */}
+      <input
+        id="profile-picture-input"
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleImageUpload(e, 'profile_picture')}
+        className="hidden"
+      />
+
+      {/* Upload Button */}
+      <div className="flex-1">
+        <button
+          type="button"
+          onClick={() => document.getElementById('profile-picture-input').click()}
+          className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 transition-colors flex items-center justify-center gap-2 text-gray-600 hover:text-purple-600"
+        >
+          <Upload className="w-5 h-5" />
+          <span className="font-semibold">Choose from Gallery</span>
+        </button>
+        <p className="text-xs text-gray-500 mt-2 text-center">
+          JPG, PNG or GIF (Max 5MB)
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const ExamFocusSelector = ({ examOptions, selectedExams, handleExamFocusToggle }) => (
+  <div>
+    <label className="block text-sm font-semibold text-gray-700 mb-2">
+      Exam Focus
+    </label>
+    <div className="flex flex-wrap gap-2">
+      {examOptions.map(exam => (
+        <button
+          key={exam}
+          type="button"
+          onClick={() => handleExamFocusToggle(exam)}
+          className={`
+            px-4 py-2 rounded-full font-medium text-sm transition-all
+            ${(selectedExams || []).includes(exam)
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }
+          `}
+        >
+          {exam}
+        </button>
+      ))}
+    </div>
+  </div>
+);
 
 export default EditProfileModal;

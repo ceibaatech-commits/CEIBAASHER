@@ -29,7 +29,6 @@ import bcrypt
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Header, Request
 from jose import jwt, JWTError
-from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, EmailStr
 
 # Load .env eagerly so this module works whether imported first or after auth_routes.
@@ -48,9 +47,7 @@ RESET_TOKEN_TTL_MINUTES = 60
 OTP_TTL_MINUTES = 10
 OTP_MAX_ATTEMPTS = 5
 
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
-db = AsyncIOMotorClient(MONGO_URL)[DB_NAME]
+from database import db
 
 
 # ---------- Helpers ----------

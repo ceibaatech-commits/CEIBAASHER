@@ -8,7 +8,6 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import json
 from dotenv import load_dotenv
@@ -73,10 +72,7 @@ STUDY_GOALS = {
 }
 
 # MongoDB connection
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from database import db
 
 # Pydantic models
 class DashboardStatsResponse(BaseModel):

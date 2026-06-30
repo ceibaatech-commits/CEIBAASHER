@@ -7,7 +7,6 @@ from fastapi import APIRouter, Header, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from jose import jwt, JWTError
-from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from pathlib import Path
@@ -26,10 +25,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1008
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 # MongoDB connection
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from database import db
 
 
 # Password hashing

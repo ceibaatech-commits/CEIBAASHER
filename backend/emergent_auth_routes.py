@@ -5,7 +5,6 @@ Provides hassle-free social authentication via Google OAuth
 from fastapi import APIRouter, HTTPException, Request, Response
 from pydantic import BaseModel
 from datetime import datetime, timezone, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
 from jose import jwt as jose_jwt
 import os
 import httpx
@@ -13,16 +12,12 @@ import uuid
 
 router = APIRouter()
 
-# Environment variables
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
 JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))
 
 # MongoDB connection
-client = AsyncIOMotorClient(MONGO_URL)
-db = client[DB_NAME]
+from database import db, client
 
 # Constants
 EMERGENT_AUTH_ENDPOINT = "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data"

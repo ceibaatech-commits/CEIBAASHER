@@ -469,9 +469,14 @@ class BattleRoomManager:
             return room
 
     async def get_room(self, room_id: str) -> Optional[BattleRoom]:
-        """Return room by ID or None."""
+        """Return room by ID or None, hydrating from DB on cache miss."""
         async with self._lock:
             room = self.rooms.get(room_id)
+            if room is None:
+                loaded = await self._load_room_from_db(room_id)
+                if "room" in loaded:
+                    room = loaded["room"]
+            
             # Auto-expire check
             if room and room.is_expired():
                 room.status = "expired"
@@ -479,11 +484,24 @@ class BattleRoomManager:
             return room
 
     async def get_user_room(self, user_id: str) -> Optional[BattleRoom]:
-        """Return the room object a user is currently in, or None."""
+        """Return the room object a user is currently in, hydrating from DB on cache miss."""
         async with self._lock:
             room_id = self.user_rooms.get(user_id)
+            if not room_id:
+                if self.db is not None:
+                    try:
+                        db_room = await self.db.battle_rooms.find_one({"participants.userId": user_id})
+                        if db_room:
+                            room_id = db_room.get("roomId")
+                            if room_id:
+                                loaded = await self._load_room_from_db(room_id)
+                                if "room" in loaded:
+                                    self.user_rooms[user_id] = room_id
+                    except Exception as e:
+                        print(f"[ERROR] Failed to query user room from DB: {e}")
+            
             if room_id:
-                return self.rooms.get(room_id)
+                return await self.get_room(room_id)
             return None
 
     async def _load_room_from_db(self, room_id: str) -> Dict[str, Any]:

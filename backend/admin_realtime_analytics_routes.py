@@ -6,12 +6,7 @@ Provides live data on battles, quiz attempts, user activity, and performance met
 from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime, timedelta
 import os
-import motor.motor_asyncio
-
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
-mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = mongo_client[DB_NAME]
+from database import db
 
 router = APIRouter(prefix="/api/admin/analytics", tags=["admin-analytics"])
 

@@ -8,6 +8,7 @@ Includes matchmaking and WebRTC signaling
 """
 import socketio
 import asyncio
+import os
 from typing import Dict, Any, Optional
 from battle_rooms import room_manager, Participant
 from matchmaking import matchmaking_manager
@@ -15,19 +16,35 @@ from datetime import datetime, timezone
 import secrets
 import string
 
-# Create Socket.IO server with async mode
-# PRODUCTION SETTINGS: Optimized for mid-quiz connection stability
-sio = socketio.AsyncServer(
-    async_mode='asgi',
-    cors_allowed_origins='*',
-    logger=True,
-    engineio_logger=True,
-    # CRITICAL: More frequent checks with longer timeout window
-    ping_interval=15,   # Send ping every 15 seconds (faster health checks)
-    ping_timeout=120,   # Wait 120 seconds for pong response (2 minutes buffer)
-    max_http_buffer_size=10000000,  # 10MB for large data
-    allow_upgrades=True
-)
+# Create Socket.IO server with async mode and Redis client manager for scaling (with optional fallback)
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+mgr = None
+
+try:
+    # Try importing redis package first to prevent boot failures if package is missing
+    import redis
+    mgr = socketio.AsyncRedisManager(REDIS_URL)
+    print(f"[INFO] Redis Pub/Sub client manager loaded successfully at {REDIS_URL}")
+except (ImportError, ModuleNotFoundError):
+    print("[WARNING] Redis module not installed. Falling back to local in-memory Socket.IO manager.")
+except Exception as e:
+    print(f"[WARNING] Failed to load Redis client manager: {e}. Falling back to local in-memory Socket.IO manager.")
+
+sio_args = {
+    "async_mode": 'asgi',
+    "cors_allowed_origins": '*',
+    "logger": True,
+    "engineio_logger": True,
+    "ping_interval": 15,
+    "ping_timeout": 120,
+    "max_http_buffer_size": 10000000,
+    "allow_upgrades": True
+}
+
+if mgr is not None:
+    sio_args["client_manager"] = mgr
+
+sio = socketio.AsyncServer(**sio_args)
 
 # Activity tracking to prevent timeout on active players
 user_activity = {}  # {sid: last_activity_timestamp}

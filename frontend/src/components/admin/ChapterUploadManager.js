@@ -12,6 +12,7 @@ const ChapterUploadManager = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
+  const [isCustomSubject, setIsCustomSubject] = useState(false);
   const [chapters, setChapters] = useState([]);
   const [editingChapterId, setEditingChapterId] = useState(null);
   const [editForm, setEditForm] = useState(null);
@@ -37,6 +38,8 @@ const ChapterUploadManager = () => {
     setClassNames(classOptions[board] || classOptions.default);
     setSelectedClass('');
     setSubjects([]);
+    setSelectedSubject('');
+    setIsCustomSubject(false);
     loadStats();
   }, [board]);
 
@@ -45,6 +48,44 @@ const ChapterUploadManager = () => {
       loadChapters();
     }
   }, [selectedClass, selectedSubject, board]);
+
+  useEffect(() => {
+    if (selectedClass) {
+      loadSubjects();
+    } else {
+      setSubjects([]);
+    }
+    setSelectedSubject('');
+    setIsCustomSubject(false);
+  }, [selectedClass, board]);
+
+  const loadSubjects = async () => {
+    if (!selectedClass) {
+      setSubjects([]);
+      return;
+    }
+    try {
+      const classNum = selectedClass.replace('Class ', '').split(' ')[0];
+      let streamParam = '';
+      if (selectedClass.includes('(')) {
+        const match = selectedClass.match(/\(([^)]+)\)/);
+        if (match) streamParam = match[1].toLowerCase();
+      }
+      let url = `${BACKEND_URL}/api/cbse-data/subjects/${classNum}?board=${board}`;
+      if (streamParam) {
+        url += `&stream=${streamParam}`;
+      }
+      const response = await axios.get(url);
+      if (response.data.success && response.data.subjects) {
+        setSubjects(response.data.subjects.map(s => s.name));
+      } else {
+        setSubjects([]);
+      }
+    } catch (error) {
+      console.error('Error loading subjects:', error);
+      setSubjects([]);
+    }
+  };
 
   const loadStats = async () => {
     try {
@@ -134,6 +175,7 @@ const ChapterUploadManager = () => {
         setFormData([{ chapter_number: 1, chapter_name: '', total_questions: 50, difficulty: 'Medium', duration: 35 }]);
         loadChapters();
         loadStats();
+        loadSubjects(); // reload subjects list so any new manual subject persists
         setTimeout(() => setSuccessMessage(''), 5000);
       }
     } catch (error) {
@@ -166,6 +208,7 @@ const ChapterUploadManager = () => {
         setSuccessMessage(`Deleted ${response.data.deleted_count} chapters`);
         loadChapters();
         loadStats();
+        loadSubjects();
         setTimeout(() => setSuccessMessage(''), 5000);
       }
     } catch (error) {
@@ -190,6 +233,7 @@ const ChapterUploadManager = () => {
         setSuccessMessage(response.data.message);
         loadChapters();
         loadStats();
+        loadSubjects();
         setTimeout(() => setSuccessMessage(''), 5000);
       }
     } catch (error) {
@@ -356,21 +400,43 @@ const ChapterUploadManager = () => {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
             <select
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={isCustomSubject ? 'Other' : selectedSubject}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === 'Other') {
+                  setIsCustomSubject(true);
+                  setSelectedSubject('');
+                } else {
+                  setIsCustomSubject(false);
+                  setSelectedSubject(val);
+                }
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
             >
               <option value="">Select Subject</option>
-              {/* Subjects would be populated from API or config */}
-              <option value="Mathematics">Mathematics</option>
-              <option value="Science">Science</option>
-              <option value="English">English</option>
-              <option value="Hindi">Hindi</option>
-              <option value="History">History</option>
-              <option value="Geography">Geography</option>
-              <option value="Political Science">Political Science</option>
-              <option value="Economics">Economics</option>
+              {Array.from(new Set([
+                ...subjects,
+                'Mathematics', 'Science', 'English', 'Hindi', 'Sanskrit',
+                'Physics', 'Chemistry', 'Biology', 'History', 'Geography',
+                'Political Science', 'Economics', 'Sociology', 'Psychology',
+                'Accountancy', 'Business Studies', 'Vigyaan', 'Ganit', 'Samajik Vigyaan'
+              ])).map(subName => (
+                <option key={subName} value={subName}>{subName}</option>
+              ))}
+              <option value="Other">Other (Enter manually...)</option>
             </select>
+
+            {isCustomSubject && (
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Enter custom subject name (e.g., Vigyaan)"
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full px-3 py-2 border border-blue-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-sm font-semibold"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -604,9 +670,9 @@ const ChapterUploadManager = () => {
                         {editingChapterId === chapter.id ? (
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={saveEditChapter}
-                              disabled={savingEdit}
-                              className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+                               onClick={saveEditChapter}
+                               disabled={savingEdit}
+                               className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
                             >
                               {savingEdit ? 'Saving...' : 'Save'}
                             </button>

@@ -16,21 +16,8 @@ import { ParentsModePanel } from '../components/ParentsModePanel';
 import BoardInsights from '../components/board/BoardInsights';
 import BoardFigmaHero from '../components/board/BoardFigmaHero';
 import BoardStreakHero from '../components/board/BoardStreakHero';
-import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
-
-// Learner level colors
-const LEVEL_COLORS = {
-  'Beginner': 'from-gray-400 to-gray-500',
-  'Learner': 'from-green-400 to-green-500',
-  'Intermediate': 'from-blue-400 to-blue-500',
-  'Advanced': 'from-purple-400 to-purple-500',
-  'Expert': 'from-orange-400 to-orange-500',
-  'Master': 'from-yellow-400 to-yellow-500'
-};
-
-// GoalSelectionModal extracted to /components/GoalSelectionModal.js
 
 const Board = () => {
   const navigate = useNavigate();
@@ -38,12 +25,10 @@ const Board = () => {
   const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
   
-  // Goal state
   const [userGoal, setUserGoal] = useState(null);
   const [goalInfo, setGoalInfo] = useState(null);
   const [showGoalModal, setShowGoalModal] = useState(false);
   
-  // Dashboard state
   const [dashboardStats, setDashboardStats] = useState({
     tests_completed: 0,
     avg_score: 0,
@@ -66,11 +51,9 @@ const Board = () => {
   const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
   
-  // Test History state
   const [testHistory, setTestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  // Existing room state
   const [activeTab, setActiveTab] = useState('all');
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -80,7 +63,6 @@ const Board = () => {
   const selectedBoard = new URLSearchParams(location.search).get('board') || 'cbse';
   const boardQuery = `?board=${selectedBoard}`;
 
-  // Fetch user goal
   const fetchUserGoal = async (userId) => {
     try {
       const res = await axios.get(`${BACKEND_URL}/api/dashboard/user-goal/${userId}`);
@@ -89,7 +71,6 @@ const Board = () => {
           setUserGoal(res.data.goal);
           setGoalInfo(res.data.goal_info);
         } else {
-          // Show goal selection modal for new users
           setShowGoalModal(true);
         }
       }
@@ -109,25 +90,21 @@ const Board = () => {
         setGoalInfo(res.data.goal_info);
         setUserGoal({ goal_type: goalType, goal_category: goalCategory });
         
-        // Set ALL loading states to show refresh is happening
         setLoadingDashboard(true);
         setLoadingSchedule(true);
         setLoadingInsights(true);
         
-        // Clear existing data to show fresh content
         setWeeklySchedule([]);
         setAiInsights(null);
         setRecommendedTests([]);
         setSubjectMastery([]);
         
-        // Force regenerate schedule for new goal and refresh all dashboard data
         try {
           await axios.post(`${BACKEND_URL}/api/dashboard/regenerate-schedule/${user.id}`);
         } catch (scheduleError) {
           console.error('Error regenerating schedule:', scheduleError);
         }
         
-        // Fetch all fresh data for new goal
         fetchDashboardData(user.id);
       }
     } catch (error) {
@@ -135,7 +112,6 @@ const Board = () => {
     }
   };
 
-  // Fetch test history
   const fetchTestHistory = async (userId) => {
     setHistoryLoading(true);
     try {
@@ -152,7 +128,6 @@ const Board = () => {
 
   const fetchDashboardData = async (userId) => {
     try {
-      // Fetch stats
       const statsRes = await axios.get(`${BACKEND_URL}/api/dashboard/stats/${userId}`);
       if (statsRes.data.success) {
         setDashboardStats(statsRes.data.stats);
@@ -161,21 +136,18 @@ const Board = () => {
       }
       setLoadingDashboard(false);
 
-      // Fetch schedule
       const scheduleRes = await axios.get(`${BACKEND_URL}/api/dashboard/schedule/${userId}`);
       if (scheduleRes.data.success) {
         setWeeklySchedule(scheduleRes.data.schedule);
       }
       setLoadingSchedule(false);
 
-      // Fetch insights
       const insightsRes = await axios.get(`${BACKEND_URL}/api/dashboard/insights/${userId}`);
       if (insightsRes.data.success) {
         setAiInsights(insightsRes.data.insights);
       }
       setLoadingInsights(false);
 
-      // Fetch recommended tests
       const testsRes = await axios.get(`${BACKEND_URL}/api/dashboard/recommended-tests/${userId}`);
       if (testsRes.data.success) {
         setRecommendedTests(testsRes.data.tests);
@@ -206,9 +178,9 @@ const Board = () => {
     try {
       const userStr = localStorage.getItem('ceibaa_user');
       if (!userStr) return;
-      const user = JSON.parse(userStr);
+      const userObj = JSON.parse(userStr);
       
-      const response = await axios.get(`${BACKEND_URL}/api/battle/async/user/${user.id}/rooms`);
+      const response = await axios.get(`${BACKEND_URL}/api/battle/async/user/${userObj.id}/rooms`);
       
       if (response.data.success) {
         const roomsData = response.data.rooms;
@@ -217,7 +189,7 @@ const Board = () => {
         const now = new Date();
         const active = roomsData.filter(r => new Date(r.expires_at) > now && r.is_active).length;
         const completed = roomsData.filter(r => new Date(r.expires_at) <= now || !r.is_active).length;
-        const created = roomsData.filter(r => r.host_id === user.id).length;
+        const created = roomsData.filter(r => r.host_id === userObj.id).length;
         
         setStats({ total: roomsData.length, active, completed, created });
       }
@@ -231,7 +203,7 @@ const Board = () => {
   const filterRooms = () => {
     let filtered = rooms;
     const userStr = localStorage.getItem('ceibaa_user');
-    const user = userStr ? JSON.parse(userStr) : null;
+    const userObj = userStr ? JSON.parse(userStr) : null;
     const now = new Date();
 
     if (activeTab === 'active') {
@@ -239,7 +211,7 @@ const Board = () => {
     } else if (activeTab === 'completed') {
       filtered = filtered.filter(r => new Date(r.expires_at) <= now || !r.is_active);
     } else if (activeTab === 'created') {
-      filtered = filtered.filter(r => user && r.host_id === user.id);
+      filtered = filtered.filter(r => userObj && r.host_id === userObj.id);
     }
 
     if (searchQuery) {
@@ -264,11 +236,11 @@ const Board = () => {
   };
 
   const rejoinRoom = (pin) => {
-    const user = JSON.parse(localStorage.getItem('ceibaa_user'));
+    const userObj = JSON.parse(localStorage.getItem('ceibaa_user'));
     navigate(`/live-battle/${pin}`, {
       state: {
         autoJoin: true,
-        playerName: user.name
+        playerName: userObj.name
       }
     });
   };
@@ -281,7 +253,7 @@ const Board = () => {
     { id: 'all', label: 'All Rooms', count: stats.total },
     { id: 'active', label: 'Active', count: stats.active },
     { id: 'completed', label: 'Completed', count: stats.completed },
-    { id: 'created', label: 'Rooms I Created', count: stats.created }
+    { id: 'created', label: 'Created by Me', count: stats.created }
   ];
 
   const getTodaySchedule = () => {
@@ -291,9 +263,7 @@ const Board = () => {
   };
 
   const startRecommendedTest = (test) => {
-    // Navigate based on goal type
     if (test.exam_type === 'competitive') {
-      // For competitive exams, navigate to exam selection page
       const examMap = {
         'jee': 'JEE',
         'neet': 'NEET',
@@ -304,49 +274,37 @@ const Board = () => {
         'cat': 'CAT'
       };
       const examName = examMap[test.exam_category] || 'JEE';
-      // Navigate to exam page where user can select topic
       navigate(`/exam/${examName}`, {
         state: {
           highlightSubject: test.subject
         }
       });
     } else if (test.exam_type === 'cbse') {
-      // For CBSE classes, navigate to class subject page
       const classMatch = test.exam_category?.match(/class_(\d+)/);
       const classNum = classMatch ? classMatch[1] : '10';
       
-      // Convert subject name to URL slug
-      // "Mathematics - Ganita Prakash" -> "mathematics---ganita-prakash"
-      // " - " (space-dash-space) becomes "---" (triple dash)
-      // Regular spaces become "-" (single dash)
       const subjectSlug = test.subject
         .toLowerCase()
-        .replace(/ - /g, '---')  // Space-dash-space becomes triple dash
-        .replace(/: /g, ':')     // Keep colon but remove space after
-        .replace(/\s+/g, '-');   // Regular spaces become dashes
+        .replace(/ - /g, '---')
+        .replace(/: /g, ':')
+        .replace(/\s+/g, '-');
       
-      // Class 11 and 12 require stream in URL
       if (classNum === '11' || classNum === '12') {
-        // Determine stream from goal_category (class_11_science, class_11_commerce, etc.)
         const streamMatch = test.exam_category?.match(/class_\d+_(\w+)/);
         const stream = streamMatch ? streamMatch[1] : 'science';
         navigate(`/chapter-tests/class-${classNum}/${stream}/${subjectSlug}${boardQuery}`);
       } else {
-        // Class 6-10 don't need stream
         navigate(`/chapter-tests/class-${classNum}/${subjectSlug}${boardQuery}`);
       }
     } else {
-      // Default: navigate to chapter tests
       navigate(`/chapter-tests${boardQuery}`);
     }
   };
 
-  // Sync user from AuthContext (updates when profile picture changes)
   useEffect(() => {
     if (authUser) {
       setUser(authUser);
     } else {
-      // Fallback to localStorage if authUser not available
       const userStr = localStorage.getItem('ceibaa_user');
       if (!userStr) {
         alert('Please login to view your Board');
@@ -357,7 +315,6 @@ const Board = () => {
     }
   }, [authUser, navigate]);
 
-  // Fetch dashboard data when user is available
   useEffect(() => {
     if (user?.id) {
       fetchUserGoal(user.id);
@@ -365,28 +322,34 @@ const Board = () => {
       fetchDashboardData(user.id);
       fetchTestHistory(user.id);
     }
+  // eslint-disable-next-line
   }, [user?.id]);
 
-  // Filter rooms when filters change
   useEffect(() => {
     filterRooms();
   // eslint-disable-next-line
   }, [activeTab, searchQuery, rooms]);
 
-  // Check if user is logged in for Header
   const isLoggedIn = !!user;
 
   if (loading || loadingDashboard) {
     return (
-      <div className="min-h-screen bg-[#f6f7fb] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#7c5cff]"></div>
+      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+        <div className="relative flex items-center justify-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-violet-100 border-b-violet-500"></div>
+          <div className="absolute w-8 h-8 rounded-full bg-violet-50 flex items-center justify-center">🎓</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f7fb]">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-[#faf9ff] via-[#f7f5ff] to-[#f0f4ff]">
+      {/* Dynamic light gradient nodes */}
+      <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-[#e3ddff]/20 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute top-[20%] right-[-100px] w-96 h-96 rounded-full bg-sky-300/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-[50%] left-[-150px] w-[500px] h-[500px] rounded-full bg-violet-400/5 blur-3xl pointer-events-none" />
+
       <Header 
         isLoggedIn={isLoggedIn}
         user={user}
@@ -396,8 +359,7 @@ const Board = () => {
         }}
       />
       
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
-        {/* Goal Selection Modal */}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 relative z-10">
         <GoalSelectionModal 
           isOpen={showGoalModal} 
           onClose={() => setShowGoalModal(false)}
@@ -416,10 +378,10 @@ const Board = () => {
           onChangeGoal={() => setShowGoalModal(true)}
         />
 
-        {/* 2. Parents Mode — above the day streak per requirement */}
+        {/* 2. Parents Mode Panel */}
         <ParentsModePanel />
 
-        {/* 3. Streak hero with milestone rewards */}
+        {/* 3. Streak hero */}
         <BoardStreakHero
           streak={dashboardStats.streak}
           nextMilestone={dashboardStats.next_milestone}
@@ -431,54 +393,58 @@ const Board = () => {
           milestoneTiers={dashboardStats.milestone_tiers}
         />
 
-        {/* 4. Subject Mastery + Today's Schedule — 2 columns on desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+        {/* 4. Subject Mastery + Today's Schedule */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6 mb-8">
           {/* Subject Mastery */}
-          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-base md:text-lg font-bold text-slate-900 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-[#7c5cff]" />
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#7c5cff] flex items-center justify-center shadow-sm">
+                  <BookOpen className="w-5 h-5" />
+                </div>
                 Subject Mastery
               </h3>
             </div>
 
             {subjectMastery.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {subjectMastery.map((subject, index) => (
-                  <div key={subject.subject || `subj-${index}`}>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="font-semibold text-slate-800 text-sm">{subject.subject}</span>
-                      <span className="font-bold text-[#7c5cff] text-sm">{subject.mastery}%</span>
+                  <div key={subject.subject || `subj-${index}`} className="group">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-extrabold text-slate-800 text-sm">{subject.subject}</span>
+                      <span className="font-black text-[#7c5cff] text-sm">{subject.mastery}%</span>
                     </div>
-                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-3 bg-slate-100 rounded-full overflow-hidden shadow-inner relative">
                       <div
-                        className={`h-full bg-gradient-to-r ${subject.gradient || 'from-violet-500 to-violet-600'} rounded-full transition-all duration-500`}
+                        className={`h-full bg-gradient-to-r ${subject.gradient || 'from-[#7c5cff] to-[#ec4899]'} rounded-full transition-all duration-1000 ease-out`}
                         style={{ width: `${subject.mastery}%` }}
                       />
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-1">{subject.tests_taken} tests taken</div>
+                    <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-1.5">{subject.tests_taken} tests completed</div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-slate-400">
-                <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                <p className="text-sm">Complete quizzes to see your subject mastery</p>
+              <div className="text-center py-12 text-slate-400">
+                <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-sm font-bold">Complete quizzes to see subject mastery</p>
               </div>
             )}
           </div>
 
           {/* Today's Schedule */}
-          <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
-            <div className="flex items-center justify-between mb-5">
-              <h3 className="text-base md:text-lg font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#7c5cff]" />
-                {"Today's Schedule"}
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all duration-300">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#7c5cff] flex items-center justify-center shadow-sm">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                Today's Schedule
               </h3>
               <button
                 onClick={regenerateSchedule}
                 disabled={loadingSchedule}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+                className="p-2 hover:bg-slate-100/60 rounded-xl transition-all disabled:opacity-50 active:scale-90 border border-slate-200/20"
                 title="Regenerate Schedule"
               >
                 <RefreshCw className={`w-4 h-4 text-slate-500 ${loadingSchedule ? 'animate-spin' : ''}`} />
@@ -486,42 +452,42 @@ const Board = () => {
             </div>
 
             {loadingSchedule ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7c5cff]"></div>
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-violet-100 border-b-[#7c5cff]"></div>
               </div>
             ) : getTodaySchedule()?.sessions?.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {getTodaySchedule().sessions.slice(0, 4).map((session, index) => (
                   <div
                     key={`${session.time || ''}-${session.topic || index}`}
-                    className="flex items-center gap-3 p-3 bg-slate-50 hover:bg-[#f4f0ff] rounded-xl transition-colors cursor-pointer group border border-slate-100"
+                    className="flex items-center gap-4 p-3.5 bg-slate-50/50 hover:bg-violet-50/30 border border-slate-100 hover:border-violet-200/50 rounded-2xl transition-all cursor-pointer group hover:-translate-y-0.5"
                   >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0 ${
-                      session.type === 'study' ? 'bg-emerald-500' :
-                      session.type === 'practice' ? 'bg-sky-500' :
-                      session.type === 'review' ? 'bg-[#7c5cff]' : 'bg-amber-500'
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-white text-xs font-black shrink-0 shadow-md ${
+                      session.type === 'study' ? 'bg-emerald-500 shadow-emerald-500/10' :
+                      session.type === 'practice' ? 'bg-sky-500 shadow-sky-500/10' :
+                      session.type === 'review' ? 'bg-[#7c5cff] shadow-violet-500/10' : 'bg-amber-500 shadow-amber-500/10'
                     }`}>
                       {session.subject?.substring(0, 3).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-slate-900 text-sm truncate">{session.topic}</div>
-                      <div className="text-xs text-slate-500">{session.time} • {session.duration} mins</div>
+                      <div className="font-extrabold text-slate-900 text-sm truncate">{session.topic}</div>
+                      <div className="text-xs text-slate-400 font-bold mt-0.5">{session.time} • {session.duration} mins</div>
                     </div>
-                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                      session.priority === 'high' ? 'bg-rose-50 text-rose-700 border border-rose-100' :
-                      session.priority === 'medium' ? 'bg-amber-50 text-amber-700 border border-amber-100' :
-                      'bg-slate-100 text-slate-600'
+                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest shrink-0 ${
+                      session.priority === 'high' ? 'bg-rose-50 text-rose-700 border border-rose-100/50' :
+                      session.priority === 'medium' ? 'bg-amber-50 text-amber-700 border border-amber-100/50' :
+                      'bg-slate-100 text-slate-500'
                     }`}>
                       {session.priority}
                     </span>
-                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#7c5cff] transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-[#7c5cff] group-hover:translate-x-0.5 transition-all" />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 text-slate-400">
-                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                <p className="text-sm">No schedule generated yet</p>
+              <div className="text-center py-12 text-slate-400">
+                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p className="text-sm font-bold">No schedule generated yet</p>
               </div>
             )}
           </div>
@@ -537,70 +503,70 @@ const Board = () => {
 
         {/* 6. Test Performance History */}
         <SectionHeader icon={<BarChart3 className="w-4 h-4" />} label="Test Performance History" />
-        <div className="bg-white rounded-2xl p-4 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100 mb-8" data-testid="board-test-history-section">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-4 md:p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all mb-8" data-testid="board-test-history-section">
           <TestHistoryTable data={testHistory} loading={historyLoading} />
         </div>
 
         {/* 7. Quiz Battles & Rooms */}
         <SectionHeader icon={<Trophy className="w-4 h-4" />} label="Quiz Battles & Rooms" />
 
-        {/* Room stats — 4-up light cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+        {/* Room stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {[
-            { label: 'Total Rooms', value: stats.total, icon: <Trophy className="w-5 h-5 text-amber-500" />, accent: 'bg-amber-50' },
-            { label: 'Active Rooms', value: stats.active, icon: <Play className="w-5 h-5 text-emerald-500" />, accent: 'bg-emerald-50' },
-            { label: 'Completed', value: stats.completed, icon: <CheckCircle className="w-5 h-5 text-sky-500" />, accent: 'bg-sky-50' },
-            { label: 'Created by Me', value: stats.created, icon: <Users className="w-5 h-5 text-[#7c5cff]" />, accent: 'bg-[#f4f0ff]' },
+            { label: 'Total Rooms', value: stats.total, icon: <Trophy className="w-5 h-5 text-amber-500" />, accent: 'bg-amber-50/50 border-amber-100/40 text-amber-500' },
+            { label: 'Active Rooms', value: stats.active, icon: <Play className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />, accent: 'bg-emerald-50/50 border-emerald-100/40 text-emerald-500' },
+            { label: 'Completed', value: stats.completed, icon: <CheckCircle className="w-5 h-5 text-sky-500" />, accent: 'bg-sky-50/50 border-sky-100/40 text-sky-500' },
+            { label: 'Created by Me', value: stats.created, icon: <Users className="w-5 h-5 text-[#7c5cff]" />, accent: 'bg-[#f4f0ff]/50 border-violet-100/40 text-[#7c5cff]' },
           ].map((c) => (
-            <div key={c.label} className="bg-white rounded-2xl p-4 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
-              <div className="flex items-center justify-between mb-2">
-                <div className={`w-9 h-9 rounded-lg ${c.accent} flex items-center justify-center`}>
+            <div key={c.label} className="bg-white/75 backdrop-blur-md rounded-2xl p-4.5 border border-white/60 shadow-[0_12px_30px_-10px_rgba(124,92,255,0.05)] hover:-translate-y-0.5 transition-all">
+              <div className="flex items-center justify-between mb-3">
+                <div className={`w-9 h-9 rounded-xl ${c.accent.split(' ')[0]} ${c.accent.split(' ')[1]} flex items-center justify-center border`}>
                   {c.icon}
                 </div>
-                <span className="text-2xl md:text-3xl font-black text-slate-900">{c.value}</span>
+                <span className="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">{c.value}</span>
               </div>
-              <div className="text-xs md:text-sm text-slate-500 font-medium">{c.label}</div>
+              <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">{c.label}</div>
             </div>
           ))}
         </div>
 
         {/* Rooms List */}
-        <div className="bg-white rounded-2xl p-5 md:p-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100">
-          <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between mb-6">
-            <div className="flex flex-wrap gap-2">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-5 md:p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all">
+          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between mb-6">
+            <div className="flex flex-wrap gap-2.5">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${
                     activeTab === tab.id
-                      ? 'bg-[#7c5cff] text-white shadow-md shadow-violet-500/20'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-[#7c5cff] text-white shadow-lg shadow-violet-500/20'
+                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
                   }`}
                 >
                   {tab.label}
-                  <span className="ml-1.5 text-[11px] opacity-75">({tab.count})</span>
+                  <span className="ml-1.5 text-[10px] font-bold opacity-80">({tab.count})</span>
                 </button>
               ))}
             </div>
-            <div className="relative w-full md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <div className="relative w-full md:w-72">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search rooms..."
+                placeholder="Search by PIN or exam..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-[#7c5cff] focus:ring-2 focus:ring-violet-100 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-[#7c5cff] focus:ring-4 focus:ring-violet-100 focus:outline-none transition-all"
               />
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {filteredRooms.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
-                <Trophy className="w-14 h-14 mx-auto mb-4 opacity-40" />
-                <p className="text-base font-semibold text-slate-600">No rooms found</p>
-                <p className="text-sm">Start creating or joining quiz battles!</p>
+              <div className="text-center py-16 text-slate-400">
+                <Trophy className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                <p className="text-base font-extrabold text-slate-700">No battle rooms found</p>
+                <p className="text-sm text-slate-400 mt-1">Start creating or joining quiz battles!</p>
               </div>
             ) : (
               filteredRooms.map(room => {
@@ -608,49 +574,49 @@ const Board = () => {
                 return (
                   <div
                     key={room.pin}
-                    className="bg-slate-50 hover:bg-[#f9f8ff] border border-slate-100 hover:border-violet-200 rounded-xl p-4 md:p-5 transition-all"
+                    className="bg-white/50 hover:bg-violet-50/20 border border-slate-100 hover:border-violet-200/50 rounded-2xl p-4 md:p-5 transition-all shadow-[0_8px_20px_-8px_rgba(124,92,255,0.03)] hover:shadow-[0_12px_24px_-8px_rgba(124,92,255,0.06)] hover:-translate-y-0.5"
                   >
-                    <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
+                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="font-mono font-black text-xl text-[#7c5cff]">{room.pin}</span>
+                        <div className="flex items-center gap-2.5 mb-2">
+                          <span className="font-mono font-black text-2xl text-[#7c5cff] select-all tracking-wider">{room.pin}</span>
                           {isActive ? (
-                            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-bold uppercase">Active</span>
+                            <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-100/50 rounded-full text-[9px] font-extrabold uppercase tracking-wider">Active</span>
                           ) : (
-                            <span className="px-2 py-0.5 bg-slate-200 text-slate-600 rounded-full text-[10px] font-bold uppercase">Completed</span>
+                            <span className="px-2.5 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[9px] font-extrabold uppercase tracking-wider">Completed</span>
                           )}
                         </div>
-                        <div className="text-slate-800 font-bold text-sm mb-1 truncate">{room.exam_category} · {room.subject}</div>
-                        <div className="flex flex-wrap gap-3 text-xs text-slate-500">
-                          <span className="flex items-center gap-1">
-                            <Users className="w-3.5 h-3.5" />
+                        <div className="text-slate-800 font-extrabold text-sm mb-1.5 truncate">{room.exam_category} · {room.subject}</div>
+                        <div className="flex flex-wrap gap-4 text-xs text-slate-500 font-bold uppercase tracking-wider">
+                          <span className="flex items-center gap-1.5 text-slate-400">
+                            <Users className="w-4 h-4 text-slate-400" />
                             {room.participant_count} / {room.max_participants}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <Trophy className="w-3.5 h-3.5" />
+                          <span className="flex items-center gap-1.5 text-slate-400">
+                            <Trophy className="w-4 h-4 text-slate-400" />
                             {room.submission_count} submissions
                           </span>
                           {isActive && (
-                            <span className="flex items-center gap-1 text-amber-600 font-semibold">
-                              <Clock className="w-3.5 h-3.5" />
+                            <span className="flex items-center gap-1.5 text-amber-600 font-black normal-case">
+                              <Clock className="w-4 h-4 text-amber-500" />
                               {getTimeRemaining(room.expires_at)}
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2 w-full md:w-auto">
+                      <div className="flex gap-2.5 w-full md:w-auto mt-2 md:mt-0">
                         {isActive && (
                           <button
                             onClick={() => rejoinRoom(room.pin)}
-                            className="flex-1 md:flex-none px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-1.5"
+                            className="flex-1 md:flex-none px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-emerald-500/10 transition-all flex items-center justify-center gap-1.5"
                           >
-                            <Play className="w-3.5 h-3.5" />
+                            <Play className="w-4 h-4 fill-white/10" strokeWidth={2.5} />
                             Rejoin
                           </button>
                         )}
                         <button
                           onClick={() => viewRoomDetail(room.pin)}
-                          className="flex-1 md:flex-none px-3.5 py-2 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-lg text-sm font-semibold transition-colors"
+                          className="flex-1 md:flex-none px-4 py-2.5 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-violet-500/10 transition-all"
                         >
                           View Details
                         </button>
@@ -664,20 +630,18 @@ const Board = () => {
         </div>
       </div>
       
-      {/* Footer */}
       <Footer />
     </div>
   );
 };
 
-/** Small reusable section divider/heading in the Queezy style. */
 const SectionHeader = ({ icon, label }) => (
-  <div className="flex items-center gap-3 mb-4 mt-2">
-    <div className="w-8 h-8 rounded-lg bg-[#f4f0ff] text-[#7c5cff] flex items-center justify-center">
+  <div className="flex items-center gap-3.5 mb-5 mt-6">
+    <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#7c5cff] flex items-center justify-center shadow-sm">
       {icon}
     </div>
-    <h2 className="text-base md:text-lg font-bold text-slate-900">{label}</h2>
-    <div className="flex-1 h-px bg-slate-200" />
+    <h2 className="text-base md:text-lg font-black text-slate-900">{label}</h2>
+    <div className="flex-1 h-0.5 bg-gradient-to-r from-violet-100 to-transparent" />
   </div>
 );
 

@@ -18,7 +18,6 @@ from typing import Optional, List
 
 from fastapi import APIRouter, HTTPException, Request, Header
 from pydantic import BaseModel
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from profile_routes import get_user_id_from_request
 
@@ -26,8 +25,7 @@ from profile_routes import get_user_id_from_request
 router = APIRouter(prefix="/divya/progress", tags=["divya-progress"])
 
 # Mongo
-_client = AsyncIOMotorClient(os.environ["MONGO_URL"])
-_db = _client[os.environ["DB_NAME"]]
+from database import db as _db, client as _client
 
 
 def _iso_now() -> str:

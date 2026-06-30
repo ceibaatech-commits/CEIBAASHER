@@ -2,6 +2,21 @@
 
 > Older history (pre-June 2026) lives in `/app/memory/PRD.md`. New entries are appended here.
 
+### Feb 15, 2026 — `/chapter-tests` desktop redesign — COMPLETE
+- [x] **`/app/frontend/src/pages/ChapterTestChapters.js` — desktop-only JSX rewrite (~3 sections, ~150 lines replaced)**. Mobile layout untouched.
+- **What was wrong (per user "looking very BAD and odd on desktop")**:
+  - Full-width loud gradient breadcrumb bar (`bg-gradient-to-br ${colorGradient}` — blue/purple slab across the whole viewport).
+  - Three clashing colored stat tiles (blue · purple · green gradients side-by-side) inside a frosted-glass card.
+  - Chapter cards with a heavy 2-tone look: solid blue header on top + white body below; metric values in clashing blue + purple text; Solo Practice in gradient + Create Room in solid black.
+  - Page background was an additional blue gradient that fought with everything else.
+- **Fixes**:
+  - **Breadcrumb**: replaced with a clean light white bar (`bg-white border-b border-slate-200`) and an inline trail — Back · violet chip (`CBSE · Class 6`) · subject name · right-side `BookOpen` "10 Chapters" counter.
+  - **Stats bar**: single rounded card with divider columns (Questions · Chapters · Curriculum), single solid-violet "Let's Practice" primary CTA on the right. Numbers in tabular-nums slate-900.
+  - **Chapter cards**: all-white surface, soft slate-200 border, hover lifts 3px with a violet glow shadow. Violet chip for the chapter number, slate-900 title, neutral 3-col metric strip with dividers, optional emerald "Last score" pill. Primary CTA is solid violet (Solo Practice), secondary is ghost white border (Create Room).
+  - **Page bg**: dropped the `from-slate-50 to-blue-50` gradient → flat `bg-slate-50`.
+  - Per-chapter `data-testid`s added: `chapter-card-{n}`, `solo-practice-btn-{n}`, `create-room-btn-{n}`, plus `chapters-lets-practice` on the global CTA.
+- **Verified visually** at 1440×900 viewport — clean modern light theme, single brand-violet accent throughout, no clashing palettes. Webpack compiled clean.
+
 ### Feb 15, 2026 — Bug fix: Skill Drill CBSE MCQs not loading on deployed site — RESOLVED (regression introduced by recent commit)
 - **Reproduction:** Open `/chapter-tests/class-6/mathematics---ganita-prakash?board=cbse` on `ceibaa.in`, pick "Patterns in Mathematics" → quiz fails to load any questions.
 - **Root cause — recent regression in `commit 73976e6d`** (auto-commit from a prior fork session): added a strict `board` exact-match filter to BOTH the `exam_sheets` lookup (line ~593) AND the `questions` collection fallback (line ~748) inside `quiz_routes.py::start_quiz`. The `questions` collection contains **21,354 legacy CBSE MCQs that were inserted WITHOUT a `board` field** (`db.questions.distinct('board') === []`). So `query["board"] = "cbse"` rejected every single one of them → 0 questions returned → "Failed to load questions" toast.

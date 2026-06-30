@@ -15,35 +15,17 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-/**
- * BoardFigmaHero — compact "Profile" hero for /board (Feb 15, 2026 redesign).
- *
- *  Layout strategy:
- *    [Purple hero  — height ≈ 38–40% of viewport, rounded bottom]
- *    [Avatar overlaps the seam (translateY 50%)]
- *    [White sheet — name + flag + Beginner pill + stats card + segmented tabs]
- *
- *  Stat strip:  POINTS (Star)  ·  WORLD RANK (Globe)  ·  LOCAL RANK (Network)
- *    points = tests_completed * 10 + (avg_score * streak)
- *    ranks  = "#—" placeholders for now (backend wiring later)
- */
-
 const HEX_CLIP = { clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' };
 
 const BADGE_PALETTE = [
-  { bg: 'bg-teal-400', icon: BookOpen },
-  { bg: 'bg-amber-400', icon: Trophy },
-  { bg: 'bg-sky-400', icon: Star },
-  { bg: 'bg-rose-400', icon: Award },
-  { bg: 'bg-indigo-400', icon: GraduationCap },
-  { bg: 'bg-slate-500', icon: Lock },
+  { bg: 'bg-gradient-to-br from-teal-400 to-emerald-500 shadow-teal-500/20', icon: BookOpen },
+  { bg: 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/20', icon: Trophy },
+  { bg: 'bg-gradient-to-br from-sky-400 to-indigo-500 shadow-sky-500/20', icon: Star },
+  { bg: 'bg-gradient-to-br from-rose-400 to-pink-500 shadow-rose-500/20', icon: Award },
+  { bg: 'bg-gradient-to-br from-indigo-400 to-purple-500 shadow-indigo-500/20', icon: GraduationCap },
+  { bg: 'bg-slate-400 to-slate-500', icon: Lock },
 ];
 
-// ─────────────────────────────────────────────────────────
-// Helper: ISO-3166 alpha-2 → flag emoji (e.g. "IN" → 🇮🇳)
-// Falls back to 🇮🇳 (India) when no country is set — Ceibaa's
-// primary user base is India (JEE/NEET/UPSC/SSC).
-// ─────────────────────────────────────────────────────────
 const countryCodeToFlag = (code) => {
   if (!code || typeof code !== 'string') return '🇮🇳';
   const cc = code.trim().toUpperCase();
@@ -53,10 +35,6 @@ const countryCodeToFlag = (code) => {
   return flag;
 };
 
-// ─────────────────────────────────────────────────────────
-// useCountUp — animate an integer from 0 to target over `duration`ms.
-// Respects prefers-reduced-motion.
-// ─────────────────────────────────────────────────────────
 const useCountUp = (target, duration = 600) => {
   const [value, setValue] = useState(0);
   useEffect(() => {
@@ -68,7 +46,6 @@ const useCountUp = (target, duration = 600) => {
     const start = performance.now();
     const step = (now) => {
       const t = Math.min((now - start) / duration, 1);
-      // ease-out cubic
       const eased = 1 - Math.pow(1 - t, 3);
       setValue(Math.round(safeTarget * eased));
       if (t < 1) raf = requestAnimationFrame(step);
@@ -95,18 +72,14 @@ const BoardFigmaHero = ({
 
   const initial = user?.name?.charAt(0).toUpperCase() || 'U';
   const avatar = user?.profile_picture || user?.avatar;
-
-  // ───────── Country flag (next to name) ─────────
   const flag = countryCodeToFlag(user?.country_code || user?.country || 'IN');
 
-  // ───────── Stat values ─────────
   const tests = stats?.tests_completed ?? 0;
   const avg = stats?.avg_score ?? 0;
   const streak = stats?.streak ?? 0;
   const pointsTarget = useMemo(() => tests * 10 + Math.round(avg * streak), [tests, avg, streak]);
   const pointsValue = useCountUp(pointsTarget, 700);
 
-  // Badges (Badges tab)
   const milestoneBadges = (stats?.milestone_tiers || []).slice(0, 5).map((tier, i) => ({
     label: tier.reward,
     sub: `${tier.days}d streak`,
@@ -118,7 +91,6 @@ const BoardFigmaHero = ({
     { label: 'Coming soon', sub: 'Stay tuned', unlocked: false, style: BADGE_PALETTE[5] },
   ];
 
-  // Stats tab — progress ring
   const monthlyGoal = 50;
   const completed = Math.min(tests, monthlyGoal);
   const ringPct = (completed / monthlyGoal) * 100;
@@ -129,7 +101,6 @@ const BoardFigmaHero = ({
     ? new Date(user.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
     : '—';
 
-  // ───────── Sliding tab underline ─────────
   const tabIds = ['badges', 'stats', 'details'];
   useLayoutEffect(() => {
     const row = tabsRowRef.current;
@@ -142,41 +113,25 @@ const BoardFigmaHero = ({
   }, [tab]);
 
   return (
-    <section
-      className="relative mb-8"
-      data-testid="board-figma-hero"
-      style={{ fontFamily: '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}
-    >
-      {/* ─────────────── PURPLE HERO (compact) ─────────────── */}
-      <div
-        className="relative overflow-hidden rounded-b-[28px] px-5 pt-4 pb-14"
-        style={{
-          background: 'linear-gradient(180deg, #6D5BFF 0%, #8B7BFF 100%)',
-          paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
-        }}
-      >
-        {/* Decorative circles — small & tasteful */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          viewBox="0 0 400 200"
-          preserveAspectRatio="none"
-          aria-hidden
-        >
-          <circle cx="60" cy="40" r="56" fill="white" opacity="0.10" />
-          <circle cx="340" cy="60" r="34" fill="white" opacity="0.13" />
-          <circle cx="200" cy="18" r="18" fill="white" opacity="0.08" />
-          <circle cx="120" cy="150" r="22" fill="white" opacity="0.07" />
-          <circle cx="320" cy="140" r="14" fill="white" opacity="0.05" />
+    <section className="relative mb-8 rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_20px_50px_rgba(124,92,255,0.06)] hover:shadow-[0_30px_70px_rgba(124,92,255,0.1)] transition-all duration-500">
+      {/* ─────────────── FIGMA BACKGROUND HERO WITH RADIAL GLOW ─────────────── */}
+      <div className="relative overflow-hidden h-44 bg-gradient-to-br from-[#7c5cff] via-[#6a4ce4] to-[#4c2ec4] p-5">
+        {/* Animated background ambient rings */}
+        <div className="absolute top-[-50px] right-[-50px] w-52 h-52 rounded-full bg-violet-400/30 blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute bottom-[-80px] left-[10%] w-64 h-64 rounded-full bg-pink-400/20 blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+        
+        {/* Vector lines backdrop */}
+        <svg className="absolute inset-0 w-full h-full opacity-15" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M0,50 Q25,30 50,50 T100,50" fill="none" stroke="white" strokeWidth="0.5" />
+          <path d="M0,70 Q30,40 60,70 T100,70" fill="none" stroke="white" strokeWidth="0.5" />
         </svg>
 
-        {/* Top row: back + settings */}
-        <div className="relative flex items-center justify-between">
+        {/* Top actions toolbar */}
+        <div className="relative flex items-center justify-between z-20">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors active:scale-95"
-            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(10px)' }}
-            data-testid="board-figma-back"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md transition-all active:scale-95 shadow-lg shadow-black/5"
             aria-label="Back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -184,159 +139,91 @@ const BoardFigmaHero = ({
           <button
             type="button"
             onClick={() => navigate('/settings')}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors active:scale-95"
-            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(10px)' }}
-            data-testid="board-figma-settings"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md transition-all active:scale-95 shadow-lg shadow-black/5"
             aria-label="Settings"
           >
             <Settings className="w-5 h-5" />
           </button>
         </div>
+      </div>
 
-        {/* Avatar — absolutely positioned to overlap the seam */}
-        <div className="absolute left-1/2 bottom-0 translate-y-1/2 -translate-x-1/2 z-10 board-figma-avatar-in">
+      {/* Profile avatar overlay */}
+      <div className="relative flex flex-col items-center px-6 pb-6 -mt-16 z-10">
+        <div className="relative group">
+          {/* Glowing Avatar border */}
+          <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-pink-500 via-[#7c5cff] to-cyan-400 blur opacity-40 group-hover:opacity-85 transition duration-500" />
+          
           {avatar ? (
             <img
               src={avatar}
               alt={user?.name || 'User'}
-              className="w-24 h-24 rounded-full object-cover"
-              style={{
-                border: '4px solid #FFFFFF',
-                boxShadow: '0 8px 24px rgba(76,46,196,0.35)',
-              }}
+              className="relative w-28 h-28 rounded-full object-cover border-4 border-white shadow-xl transition-all duration-300 group-hover:scale-[1.03]"
             />
           ) : (
-            <div
-              className="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-semibold"
-              style={{
-                border: '4px solid #FFFFFF',
-                boxShadow: '0 8px 24px rgba(76,46,196,0.35)',
-                background: 'linear-gradient(135deg, #FF7A3D 0%, #FF5A28 100%)',
-              }}
-            >
+            <div className="relative w-28 h-28 rounded-full flex items-center justify-center text-white text-4xl font-extrabold border-4 border-white shadow-xl bg-gradient-to-br from-orange-400 to-rose-500 transition-all duration-300 group-hover:scale-[1.03]">
               {initial}
             </div>
           )}
         </div>
-      </div>
 
-      {/* ─────────────── WHITE SHEET ─────────────── */}
-      <div
-        className="relative bg-white px-5 pb-6"
-        style={{
-          paddingTop: 56,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          marginTop: -24,
-        }}
-      >
-        {/* Name + flag */}
-        <h2
-          className="text-center font-semibold text-slate-900"
-          style={{ fontSize: (user?.name?.length || 0) > 14 ? 20 : 22, lineHeight: 1.15 }}
-          data-testid="board-figma-name"
-        >
-          <span className="truncate inline-block max-w-[80%] align-middle">
-            {user?.name || 'Student'}
-          </span>
-          <span
-            className="ml-1.5 align-middle"
-            style={{ fontSize: 18, lineHeight: 1 }}
-            aria-label="Nationality"
-            data-testid="board-figma-flag"
-          >
-            {flag}
-          </span>
-        </h2>
-
-        {/* Beginner pill */}
-        <div className="flex justify-center mt-2">
-          <span
-            className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[13px] font-medium"
-            style={{ backgroundColor: '#F4F0FF', color: '#6D5BFF' }}
-            data-testid="board-figma-learner-level"
-          >
-            <Award className="w-3.5 h-3.5" strokeWidth={2.2} />
-            {learnerLevel}
-          </span>
+        {/* Name and Level */}
+        <div className="text-center mt-4">
+          <h2 className="text-2xl font-black text-slate-900 flex items-center justify-center gap-2">
+            <span className="truncate max-w-[240px]">{user?.name || 'Student'}</span>
+            <span className="text-xl filter drop-shadow-sm select-none" aria-label="Nationality">{flag}</span>
+          </h2>
+          
+          {/* Level Pill with glowing badge */}
+          <div className="flex justify-center mt-2.5">
+            <span className="inline-flex items-center gap-1.5 px-4 py-1 rounded-full text-xs font-bold bg-violet-50 text-[#7c5cff] border border-violet-100/50 shadow-sm">
+              <Award className="w-3.5 h-3.5 text-[#7c5cff]" strokeWidth={2.5} />
+              {learnerLevel}
+            </span>
+          </div>
         </div>
 
-        {/* ─────────────── STATS CARD: POINTS · WORLD RANK · LOCAL RANK ─────────────── */}
-        <div
-          className="relative mt-5 mx-auto max-w-md rounded-[20px] bg-white grid grid-cols-3 divide-x divide-slate-100"
-          style={{
-            boxShadow: '0 10px 30px -10px rgba(76,46,196,0.18)',
-            border: '1px solid #F1F5F9',
-          }}
-          data-testid="board-figma-stat-strip"
-        >
-          {/* POINTS */}
-          <div className="px-2 py-[18px] text-center">
-            <div className="flex items-center justify-center mb-1" style={{ color: '#6D5BFF' }}>
-              <Star className="w-6 h-6" strokeWidth={2.2} fill="currentColor" />
+        {/* ─────────────── PREMIUM STATS WIDGET ─────────────── */}
+        <div className="w-full max-w-lg mt-6 bg-white/80 border border-slate-100 rounded-2xl grid grid-cols-3 divide-x divide-slate-100 shadow-[0_12px_30px_-8px_rgba(124,92,255,0.08)]">
+          {/* Points */}
+          <div className="py-4 text-center group hover:bg-[#fcfcff] rounded-l-2xl transition-all">
+            <div className="flex items-center justify-center mb-1 text-[#7c5cff] group-hover:scale-110 transition-transform">
+              <Star className="w-6 h-6 fill-current" strokeWidth={2} />
             </div>
-            <div className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: '#94A3B8' }}>
-              Points
-            </div>
-            <div
-              className="mt-1 text-[22px] font-semibold tabular-nums"
-              style={{ color: '#0F172A' }}
-              data-testid="board-figma-points"
-            >
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Points</span>
+            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">
               {pointsValue.toLocaleString('en-IN')}
             </div>
           </div>
 
-          {/* WORLD RANK */}
-          <div className="px-2 py-[18px] text-center">
-            <div className="flex items-center justify-center mb-1" style={{ color: '#6D5BFF' }}>
-              <Globe className="w-6 h-6" strokeWidth={2.2} />
+          {/* World Rank */}
+          <div className="py-4 text-center group hover:bg-[#fcfcff] transition-all">
+            <div className="flex items-center justify-center mb-1 text-[#7c5cff] group-hover:scale-110 transition-transform">
+              <Globe className="w-6 h-6" strokeWidth={2} />
             </div>
-            <div className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: '#94A3B8' }}>
-              World Rank
-            </div>
-            <div
-              className="mt-1 text-[22px] font-semibold tabular-nums"
-              style={{ color: '#0F172A' }}
-              data-testid="board-figma-world-rank"
-            >
-              #—
-            </div>
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">World Rank</span>
+            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">#—</div>
           </div>
 
-          {/* LOCAL RANK */}
-          <div className="px-2 py-[18px] text-center">
-            <div className="flex items-center justify-center mb-1" style={{ color: '#6D5BFF' }}>
-              <Network className="w-6 h-6" strokeWidth={2.2} />
+          {/* Local Rank */}
+          <div className="py-4 text-center group hover:bg-[#fcfcff] rounded-r-2xl transition-all">
+            <div className="flex items-center justify-center mb-1 text-[#7c5cff] group-hover:scale-110 transition-transform">
+              <Network className="w-6 h-6" strokeWidth={2} />
             </div>
-            <div className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: '#94A3B8' }}>
-              Local Rank
-            </div>
-            <div
-              className="mt-1 text-[22px] font-semibold tabular-nums"
-              style={{ color: '#0F172A' }}
-              data-testid="board-figma-local-rank"
-            >
-              #—
-            </div>
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Local Rank</span>
+            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">#—</div>
           </div>
         </div>
 
-        {/* ─────────────── SEGMENTED TABS (with sliding underline) ─────────────── */}
-        <div
-          ref={tabsRowRef}
-          className="relative mt-6 flex items-center"
-          style={{ borderBottom: '1px solid #F1F5F9' }}
-        >
+        {/* ─────────────── SEGMENTED UNDERLINE TABS ─────────────── */}
+        <div ref={tabsRowRef} className="relative w-full mt-8 flex items-center border-b border-slate-100">
           {tabIds.map((t) => (
             <button
               key={t}
               type="button"
               data-tab-btn
               onClick={() => setTab(t)}
-              data-testid={`board-figma-tab-${t}`}
-              className="flex-1 py-3 text-[13px] font-semibold uppercase tracking-wide transition-colors"
-              style={{ color: tab === t ? '#6D5BFF' : '#94A3B8' }}
+              className="flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors duration-200"
+              style={{ color: tab === t ? '#7c5cff' : '#94a3b8' }}
             >
               {t}
             </button>
@@ -349,35 +236,51 @@ const BoardFigmaHero = ({
               height: 3,
               left: underlineStyle.left,
               width: underlineStyle.width,
-              background: '#6D5BFF',
-              transition: 'left 250ms cubic-bezier(0.32,0.72,0,1), width 250ms cubic-bezier(0.32,0.72,0,1)',
+              background: '#7c5cff',
+              boxShadow: '0 -2px 10px rgba(124,92,255,0.4)',
+              transition: 'left 300ms cubic-bezier(0.34, 1.56, 0.64, 1), width 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
             }}
           />
         </div>
 
-        {/* Tab content */}
-        <div className="mt-6 min-h-[260px]">
+        {/* Tab contents */}
+        <div className="w-full mt-6 min-h-[220px]">
           {tab === 'badges' && (
             <div
-              className="grid grid-cols-3 gap-y-6 gap-x-3 md:gap-x-6 py-4 place-items-center"
+              className="grid grid-cols-3 gap-y-6 gap-x-4 py-4 place-items-center"
               data-testid="board-figma-badges"
             >
               {allBadges.map((b, idx) => {
                 const Icon = b.style.icon;
                 return (
-                  <div key={idx} className="flex flex-col items-center text-center">
-                    <div
-                      className={`relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center text-white shadow-md ${
-                        b.unlocked ? b.style.bg : 'bg-slate-300'
-                      }`}
-                      style={HEX_CLIP}
-                    >
-                      <Icon className="w-7 h-7 md:w-8 md:h-8" strokeWidth={2.2} />
+                  <div key={idx} className="flex flex-col items-center text-center group">
+                    <div className="relative">
+                      {/* Ambient glowing backing for unlocked medals */}
+                      {b.unlocked && (
+                        <div className={`absolute inset-0 rounded-2xl blur-md opacity-25 group-hover:opacity-50 transition-opacity duration-300 ${b.style.bg}`} />
+                      )}
+                      
+                      <div
+                        className={`relative w-20 h-20 rounded-2xl flex items-center justify-center border transition-all duration-300 ${
+                          b.unlocked 
+                            ? `${b.style.bg} border-white/25 text-white shadow-md shadow-violet-500/10` 
+                            : 'bg-slate-50/70 border-slate-100 text-slate-350 shadow-inner'
+                        } group-hover:-translate-y-1 group-hover:scale-105`}
+                      >
+                        <Icon className={`w-8 h-8 ${b.unlocked ? 'drop-shadow-sm' : 'text-slate-400 opacity-60'}`} strokeWidth={2.2} />
+                        
+                        {/* Lock details */}
+                        {!b.unlocked && (
+                          <div className="absolute -bottom-1 -right-1 w-5.5 h-5.5 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 shadow-sm">
+                            <Lock className="w-2.5 h-2.5" strokeWidth={2.5} />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="mt-2 text-xs font-semibold text-slate-700 leading-tight max-w-[110px] truncate">
+                    <p className="mt-3 text-xs font-bold text-slate-800 leading-tight max-w-[100px] truncate">
                       {b.label}
                     </p>
-                    <p className="text-[10px] text-slate-400">{b.sub}</p>
+                    <p className="text-[10px] text-slate-400 font-semibold tracking-wider uppercase mt-0.5">{b.sub}</p>
                   </div>
                 );
               })}
@@ -385,92 +288,93 @@ const BoardFigmaHero = ({
           )}
 
           {tab === 'stats' && (
-            <div data-testid="board-figma-stats">
-              <p className="text-center text-sm text-slate-500">
+            <div className="animate-fade-in">
+              <p className="text-center text-sm text-slate-500 font-medium">
                 You have played a total{' '}
-                <span className="font-semibold" style={{ color: '#6D5BFF' }}>
-                  {tests} quizzes
-                </span>{' '}
-                so far!
+                <span className="font-extrabold text-[#7c5cff]">{tests} quizzes</span> so far!
               </p>
 
               <div className="flex justify-center my-6">
-                <div className="relative w-44 h-44">
+                <div className="relative w-44 h-44 filter drop-shadow-md">
                   <svg className="w-full h-full -rotate-90" viewBox="0 0 160 160">
-                    <circle cx="80" cy="80" r="70" fill="none" stroke="#f1f0fb" strokeWidth="12" />
+                    <circle cx="80" cy="80" r="70" fill="none" stroke="#f8fafc" strokeWidth="12" />
                     <circle
                       cx="80"
                       cy="80"
                       r="70"
                       fill="none"
-                      stroke="#6D5BFF"
+                      stroke="url(#progressGradient)"
                       strokeWidth="12"
                       strokeLinecap="round"
                       strokeDasharray={ringCircumference}
                       strokeDashoffset={ringDashOffset}
-                      className="transition-[stroke-dashoffset] duration-700"
+                      className="transition-[stroke-dashoffset] duration-1000 ease-out"
                     />
+                    <defs>
+                      <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#7c5cff" />
+                        <stop offset="100%" stopColor="#ec4899" />
+                      </linearGradient>
+                    </defs>
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-3xl font-semibold text-slate-900 tabular-nums">
+                    <div className="text-3xl font-black text-slate-900 tabular-nums">
                       {completed}
-                      <span className="text-slate-400 text-xl font-medium">/{monthlyGoal}</span>
+                      <span className="text-slate-400 text-lg font-bold">/{monthlyGoal}</span>
                     </div>
-                    <div className="text-xs text-slate-500 mt-1">quiz played</div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">Quizzes Played</span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4 text-center">
-                  <div className="text-2xl font-semibold text-slate-900 tabular-nums">{roomsCreated}</div>
-                  <div className="text-xs text-slate-500 font-medium mt-1">Rooms Created</div>
+              <div className="grid grid-cols-2 gap-3.5">
+                <div className="rounded-2xl bg-slate-50/50 border border-slate-100 p-4 text-center hover:bg-slate-50 transition-colors">
+                  <div className="text-2xl font-black text-slate-900 tabular-nums">{roomsCreated}</div>
+                  <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-0.5">Rooms Created</div>
                 </div>
-                <div className="rounded-2xl p-4 text-center" style={{ background: '#F4F0FF', border: '1px solid #E9E0FF' }}>
-                  <div className="text-2xl font-semibold tabular-nums" style={{ color: '#6D5BFF' }}>{streak}</div>
-                  <div className="text-xs font-medium mt-1" style={{ color: '#6D5BFF' }}>Day Streak</div>
+                <div className="rounded-2xl p-4 text-center bg-violet-50/30 border border-violet-100/50 hover:bg-violet-50/50 transition-colors">
+                  <div className="text-2xl font-black text-[#7c5cff] tabular-nums">{streak}</div>
+                  <div className="text-[10px] uppercase font-bold text-[#7c5cff] tracking-wider mt-0.5">Day Streak</div>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl p-5 text-white" style={{ background: 'linear-gradient(135deg, #6D5BFF 0%, #8B7BFF 100%)' }}>
+              <div className="mt-6 rounded-2xl p-5 text-white bg-gradient-to-br from-[#7c5cff] to-[#ec4899] shadow-lg shadow-violet-500/10">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-sm font-semibold leading-tight">
-                    Top performance<br />by category
-                  </h4>
-                  <div className="w-9 h-9 rounded-lg bg-white/15 backdrop-blur-md flex items-center justify-center">
-                    <Trophy className="w-4 h-4" />
+                  <h4 className="text-sm font-extrabold leading-tight">Top Performance<br />By Category</h4>
+                  <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
+                    <Trophy className="w-4 h-4 text-white" />
                   </div>
                 </div>
                 {subjectMastery.length > 0 ? (
                   <>
-                    <div className="flex flex-wrap items-center gap-3 text-xs mb-4">
+                    <div className="flex flex-wrap items-center gap-3 text-[10px] font-bold uppercase tracking-wider mb-4 text-white/90">
                       {subjectMastery.slice(0, 3).map((s, i) => (
                         <span key={s.subject} className="inline-flex items-center gap-1.5">
-                          <span className={`w-2 h-2 rounded-full ${
-                            i === 0 ? 'bg-rose-300' : i === 1 ? 'bg-sky-300' : 'bg-violet-200'
+                          <span className={`w-2.5 h-2.5 rounded-full ${
+                            i === 0 ? 'bg-pink-300' : i === 1 ? 'bg-cyan-300' : 'bg-amber-300'
                           }`} />
-                          <span className="font-medium">{s.subject}</span>
+                          <span>{s.subject}</span>
                         </span>
                       ))}
                     </div>
-                    <div className="relative h-32 flex items-end gap-4 pl-10 pr-2 border-l border-b border-white/15">
-                      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] font-medium text-white/60 pr-1">
+                    <div className="relative h-32 flex items-end gap-5 pl-10 pr-2 border-l border-b border-white/25">
+                      <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] font-bold text-white/60 pr-2 select-none">
                         <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
                       </div>
                       {subjectMastery.slice(0, 3).map((s, i) => {
-                        const barColor = i === 0 ? 'bg-rose-300' : i === 1 ? 'bg-sky-300' : 'bg-violet-200';
+                        const barColor = i === 0 ? 'bg-pink-300' : i === 1 ? 'bg-cyan-300' : 'bg-amber-300';
                         return (
                           <div key={s.subject} className="flex-1 flex flex-col items-center justify-end h-full">
-                            <span className="text-[10px] font-semibold mb-1">{s.mastery}%</span>
+                            <span className="text-[10px] font-bold mb-1 tabular-nums">{s.mastery}%</span>
                             <div
-                              className={`w-full max-w-[40px] rounded-t-lg ${barColor} transition-all duration-700`}
+                              className={`w-full max-w-[36px] rounded-t-lg ${barColor} shadow-md transition-all duration-1000 ease-out`}
                               style={{ height: `${Math.max(s.mastery, 4)}%` }}
                             />
                           </div>
                         );
                       })}
                     </div>
-                    <div className="flex gap-4 pl-8 pr-2 mt-2 text-[10px] text-white/80 font-medium">
+                    <div className="flex gap-5 pl-8 pr-2 mt-2 text-[10px] text-white/70 font-semibold uppercase tracking-wider">
                       {subjectMastery.slice(0, 3).map((s) => (
                         <span key={s.subject} className="flex-1 text-center truncate">
                           {s.tests_taken} tests
@@ -488,12 +392,12 @@ const BoardFigmaHero = ({
           )}
 
           {tab === 'details' && (
-            <div className="space-y-4 py-2" data-testid="board-figma-details">
+            <div className="space-y-4 py-2">
               <DetailRow icon={<BookOpen className="w-4 h-4" />} label="Bio">
-                {user?.bio || <span className="text-slate-400 italic">No bio yet</span>}
+                {user?.bio || <span className="text-slate-400 italic">No bio written yet</span>}
               </DetailRow>
               <DetailRow icon={<MapPin className="w-4 h-4" />} label="Location">
-                {user?.location || <span className="text-slate-400 italic">—</span>}
+                {user?.location || <span className="text-slate-400 italic">Not specified</span>}
               </DetailRow>
               <DetailRow icon={<GraduationCap className="w-4 h-4" />} label="Exam Focus">
                 {Array.isArray(user?.exam_focus) && user.exam_focus.length > 0
@@ -505,19 +409,17 @@ const BoardFigmaHero = ({
                   <button
                     type="button"
                     onClick={onChangeGoal}
-                    className="hover:underline font-semibold"
-                    style={{ color: '#6D5BFF' }}
-                    data-testid="board-figma-change-goal"
+                    className="hover:underline font-extrabold transition-all"
+                    style={{ color: '#7c5cff' }}
                   >
-                    {goalInfo.category_name} · Change
+                    {goalInfo.category_name} · Adjust Goal
                   </button>
                 ) : (
                   <button
                     type="button"
                     onClick={onChangeGoal}
-                    className="hover:underline font-semibold"
-                    style={{ color: '#6D5BFF' }}
-                    data-testid="board-figma-set-goal"
+                    className="hover:underline font-extrabold transition-all"
+                    style={{ color: '#7c5cff' }}
                   >
                     Set a study goal
                   </button>
@@ -530,28 +432,18 @@ const BoardFigmaHero = ({
           )}
         </div>
       </div>
-
-      {/* Subtle motion: avatar fade+scale-in on mount. Respects reduced-motion. */}
-      <style>{`
-        @keyframes board-figma-avatar-in {
-          from { opacity: 0; transform: translateY(50%) translateX(-50%) scale(0.85); }
-          to   { opacity: 1; transform: translateY(50%) translateX(-50%) scale(1); }
-        }
-        .board-figma-avatar-in { animation: board-figma-avatar-in 600ms cubic-bezier(0.32,0.72,0,1); }
-        @media (prefers-reduced-motion: reduce) { .board-figma-avatar-in { animation: none; } }
-      `}</style>
     </section>
   );
 };
 
 const DetailRow = ({ icon, label, children }) => (
-  <div className="flex items-start gap-3">
-    <div className="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: '#F4F0FF', color: '#6D5BFF' }}>
+  <div className="flex items-start gap-4 p-3 bg-slate-50/50 border border-slate-100/50 rounded-xl hover:bg-slate-50 transition-colors">
+    <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-violet-50 text-[#7c5cff] border border-violet-100/30 shadow-sm">
       {icon}
     </div>
     <div className="flex-1 min-w-0">
-      <div className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: '#94A3B8' }}>{label}</div>
-      <div className="text-sm font-medium text-slate-800 mt-0.5 break-words">{children}</div>
+      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">{label}</span>
+      <div className="text-sm font-bold text-slate-800 mt-0.5 break-words leading-tight">{children}</div>
     </div>
   </div>
 );

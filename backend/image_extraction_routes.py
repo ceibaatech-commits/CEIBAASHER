@@ -5,16 +5,12 @@ import json
 from typing import Optional
 from datetime import datetime
 import uuid
-from motor.motor_asyncio import AsyncIOMotorClient
 from emergentintegrations.llm.chat import LlmChat, UserMessage, FileContent
 
 router = APIRouter()
 
 # MongoDB setup
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
-mongo_client = AsyncIOMotorClient(MONGO_URL)
-db = mongo_client[DB_NAME]
+from database import db
 
 # Emergent LLM Key from environment
 EMERGENT_LLM_KEY = os.getenv("EMERGENT_LLM_KEY", "sk-emergent-1F12f948757325bDaE")

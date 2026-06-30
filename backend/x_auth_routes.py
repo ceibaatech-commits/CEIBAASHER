@@ -8,7 +8,6 @@ import httpx
 import secrets
 import jwt
 from datetime import datetime, timedelta
-from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter()
 
@@ -21,8 +20,7 @@ JWT_SECRET = os.environ.get('JWT_SECRET')
 MONGO_URL = os.environ.get('MONGO_URL')
 
 # MongoDB connection
-client = AsyncIOMotorClient(MONGO_URL)
-db = client['test_database']
+from database import db, client
 
 # OAuth 2.0 endpoints
 X_AUTHORIZE_URL = "https://twitter.com/i/oauth2/authorize"

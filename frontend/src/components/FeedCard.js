@@ -53,24 +53,8 @@ export default function FeedCard({ post, liked, bookmarked, onLike, onBookmark, 
       <div className="px-5 pb-3">
         <Link to={linkTo}><h3 className="text-slate-900 font-bold text-lg leading-snug group-hover:text-blue-600 transition-colors">{post.title}</h3></Link>
         {post.description && <p className="text-slate-500 text-sm mt-1.5 line-clamp-2 leading-relaxed">{post.description}</p>}
-        <div className="flex flex-wrap gap-2 mt-3">
-          {post.location && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><MapPin className="w-3 h-3" /> {post.location}</span>}
-          {post.salary && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><DollarSign className="w-3 h-3" /> {post.salary}</span>}
-          {post.role_type && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><Briefcase className="w-3 h-3" /> {post.role_type}</span>}
-          {post.air_filter && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 font-medium"><Award className="w-3 h-3" /> AIR &le; {post.air_filter.toLocaleString()}</span>}
-          {post.time_limit && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700"><Clock className="w-3 h-3" /> {post.time_limit} min</span>}
-          {post.num_questions && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700"><Code2 className="w-3 h-3" /> {post.num_questions} Qs</span>}
-          {post.team_size > 1 && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700"><Users className="w-3 h-3" /> Team of {post.team_size}</span>}
-          {post.event_type && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700"><Calendar className="w-3 h-3" /> {post.event_type}</span>}
-          {post.deadline && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500"><Clock className="w-3 h-3" /> {post.deadline}</span>}
-        </div>
-        {post.post_type === 'hackathon' && post.prizes && (
-          <div className="flex gap-2 mt-3">
-            {post.prizes.first && <div className="flex-1 bg-amber-50 border border-amber-200 rounded-xl py-2 text-center"><span className="text-amber-600 text-xs font-bold block">1st</span><span className="text-slate-800 text-xs font-semibold">&#8377;{post.prizes.first}</span></div>}
-            {post.prizes.second && <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center"><span className="text-slate-500 text-xs font-bold block">2nd</span><span className="text-slate-800 text-xs font-semibold">&#8377;{post.prizes.second}</span></div>}
-            {post.prizes.third && <div className="flex-1 bg-orange-50 border border-orange-200 rounded-xl py-2 text-center"><span className="text-orange-600 text-xs font-bold block">3rd</span><span className="text-slate-800 text-xs font-semibold">&#8377;{post.prizes.third}</span></div>}
-          </div>
-        )}
+        <PostMetadataChips post={post} />
+        {post.post_type === 'hackathon' && <PrizeDisplay prizes={post.prizes} />}
       </div>
       <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between">
         <div className="flex items-center gap-5">
@@ -94,3 +78,28 @@ export default function FeedCard({ post, liked, bookmarked, onLike, onBookmark, 
     </div>
   );
 }
+
+const PostMetadataChips = ({ post }) => (
+  <div className="flex flex-wrap gap-2 mt-3">
+    {post.location && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><MapPin className="w-3 h-3" /> {post.location}</span>}
+    {post.salary && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><DollarSign className="w-3 h-3" /> {post.salary}</span>}
+    {post.role_type && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600"><Briefcase className="w-3 h-3" /> {post.role_type}</span>}
+    {post.air_filter && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700 font-medium"><Award className="w-3 h-3" /> AIR &le; {post.air_filter.toLocaleString()}</span>}
+    {post.time_limit && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700"><Clock className="w-3 h-3" /> {post.time_limit} min</span>}
+    {post.num_questions && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700"><Code2 className="w-3 h-3" /> {post.num_questions} Qs</span>}
+    {post.team_size > 1 && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700"><Users className="w-3 h-3" /> Team of {post.team_size}</span>}
+    {post.event_type && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-amber-50 text-amber-700"><Calendar className="w-3 h-3" /> {post.event_type}</span>}
+    {post.deadline && <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 text-slate-500"><Clock className="w-3 h-3" /> {post.deadline}</span>}
+  </div>
+);
+
+const PrizeDisplay = ({ prizes }) => {
+  if (!prizes) return null;
+  return (
+    <div className="flex gap-2 mt-3">
+      {prizes.first && <div className="flex-1 bg-amber-50 border border-amber-200 rounded-xl py-2 text-center"><span className="text-amber-600 text-xs font-bold block">1st</span><span className="text-slate-800 text-xs font-semibold">&#8377;{prizes.first}</span></div>}
+      {prizes.second && <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center"><span className="text-slate-500 text-xs font-bold block">2nd</span><span className="text-slate-800 text-xs font-semibold">&#8377;{prizes.second}</span></div>}
+      {prizes.third && <div className="flex-1 bg-orange-50 border border-orange-200 rounded-xl py-2 text-center"><span className="text-orange-600 text-xs font-bold block">3rd</span><span className="text-slate-800 text-xs font-semibold">&#8377;{prizes.third}</span></div>}
+    </div>
+  );
+};

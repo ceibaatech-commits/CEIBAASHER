@@ -4,7 +4,6 @@ Serves all CBSE subjects and chapters data to both frontend and admin panel
 """
 
 from fastapi import APIRouter, HTTPException
-import motor.motor_asyncio
 import re
 from board_master_data import (
     get_subjects_for_board_class,
@@ -19,10 +18,8 @@ from board_sheet_data import (
 )
 import os
 
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ.get('DB_NAME', 'test_database')
-mongo_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URL)
-db = mongo_client[DB_NAME]
+# MongoDB connection
+from database import db
 
 router = APIRouter(prefix="/cbse-data", tags=["CBSE Data"])
 

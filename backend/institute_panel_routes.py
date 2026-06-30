@@ -1,17 +1,23 @@
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 import os
+import re
+import secrets
 from motor.motor_asyncio import AsyncIOMotorClient
 from jose import jwt, JWTError
 import bcrypt
+from utils.email_service import send_email
 
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "test_database")
-mongo_client = AsyncIOMotorClient(MONGO_URL)
-db = mongo_client[DB_NAME]
+db = None
+
+
+def init_db(database):
+    global db
+    db = database
+
 
 router = APIRouter(prefix="/api/institutes", tags=["institutes"])
 
@@ -127,6 +133,134 @@ class InstituteOwnerLogin(BaseModel):
     password: str = Field(..., min_length=6, max_length=120)
 
 
+class InstituteRegisterSendOTP(BaseModel):
+    email: str = Field(..., min_length=5, max_length=180)
+
+
+class InstituteRegisterVerifyOTP(BaseModel):
+    email: str = Field(..., min_length=5, max_length=180)
+    code: str = Field(..., min_length=6, max_length=6)
+    institute_name: str = Field(..., min_length=2, max_length=120)
+    owner_name: str = Field(..., min_length=2, max_length=120)
+    password: str = Field(..., min_length=6, max_length=120)
+
+
+def _slugify(text: str) -> str:
+    text = text.lower().strip()
+    text = re.sub(r"[^\w\s-]", "", text)
+    text = re.sub(r"[\s_]+", "-", text)
+    return text
+
+
+@router.post("/auth/register/send-otp")
+async def send_register_otp(payload: InstituteRegisterSendOTP):
+    email = payload.email.lower().strip()
+    existing = await db.institute_owner_accounts.find_one({"email": email})
+    if existing:
+        raise HTTPException(status_code=409, detail="An owner account already exists with this email")
+
+    code = "".join(secrets.choice("0123456789") for _ in range(6))
+    
+    await db.institute_register_otps.delete_many({"email": email})
+    await db.institute_register_otps.insert_one({
+        "email": email,
+        "code": code,
+        "expires_at": datetime.utcnow() + timedelta(minutes=10)
+    })
+
+    html_content = f"""
+    <div style="font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px;">
+      <h2 style="color: #0f172a;">Verify your Institute Owner Email</h2>
+      <p style="color: #475569;">Use the verification code below to verify your email address and generate your new Institute ID:</p>
+      <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; padding: 15px; background-color: #f1f5f9; border-radius: 8px; text-align: center; margin: 20px 0; color: #0f172a; font-family: monospace;">
+        {code}
+      </div>
+      <p style="color: #64748b; font-size: 12px;">This code will expire in 10 minutes.</p>
+    </div>
+    """
+    try:
+        await send_email(email, "Verify your Institute Owner Email", html_content)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to send verification email: " + str(e))
+
+    return {"success": True, "message": "Verification code sent to your email"}
+
+
+@router.post("/auth/register/verify-otp")
+async def verify_register_otp(payload: InstituteRegisterVerifyOTP):
+    email = payload.email.lower().strip()
+    
+    otp_doc = await db.institute_register_otps.find_one({"email": email})
+    if not otp_doc:
+        raise HTTPException(status_code=400, detail="No verification code found or code expired")
+
+    if otp_doc["code"] != payload.code:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+
+    if otp_doc["expires_at"] < datetime.utcnow():
+        await db.institute_register_otps.delete_one({"email": email})
+        raise HTTPException(status_code=400, detail="Verification code has expired")
+
+    await db.institute_register_otps.delete_one({"email": email})
+
+    base_id = _slugify(payload.institute_name)
+    if len(base_id) < 3:
+        base_id = "inst"
+    
+    institute_id = base_id
+    counter = 1
+    while await db.institute_owner_accounts.find_one({"institute_id": institute_id}):
+        suffix = "".join(secrets.choice("abcdefghijklmnopqrstuvwxyz0123456789") for _ in range(3))
+        institute_id = f"{base_id}-{suffix}"
+        counter += 1
+        if counter > 10:
+            institute_id = f"{base_id}-{secrets.token_hex(4)}"
+            break
+
+    owner_doc = {
+        "id": str(uuid.uuid4()),
+        "institute_id": institute_id,
+        "institute_name": payload.institute_name,
+        "owner_name": payload.owner_name,
+        "email": email,
+        "password_hash": _hash_password(payload.password),
+        "role": "institute_owner",
+        "created_at": datetime.utcnow().isoformat(),
+        "updated_at": datetime.utcnow().isoformat()
+    }
+    await db.institute_owner_accounts.insert_one(owner_doc)
+
+    await db.institute_profiles.update_one(
+        {"institute_id": institute_id},
+        {
+            "$setOnInsert": {
+                "institute_id": institute_id,
+                "institute_name": payload.institute_name,
+                "logo_url": "",
+                "description": "",
+                "website_url": "",
+                "created_at": datetime.utcnow().isoformat()
+            },
+            "$set": {"updated_at": datetime.utcnow().isoformat()}
+        },
+        upsert=True
+    )
+
+    token = _create_owner_token(owner_doc)
+    return {
+        "success": True,
+        "token": token,
+        "institute_id": institute_id,
+        "owner": {
+            "id": owner_doc["id"],
+            "institute_id": owner_doc["institute_id"],
+            "owner_name": owner_doc["owner_name"],
+            "email": owner_doc["email"],
+            "role": owner_doc["role"]
+        }
+    }
+
+
 @router.post("/auth/register")
 async def register_institute_owner(payload: InstituteOwnerRegister):
     existing = await db.institute_owner_accounts.find_one({
@@ -237,12 +371,20 @@ async def verify_institute_owner(request: Request):
     }
 
 
+@router.get("/")
+async def list_institutes():
+    cursor = db.institute_profiles.find({}, {"_id": 0})
+    profiles = await cursor.to_list(length=100)
+    return {"success": True, "institutes": profiles}
+
+
 @router.get("/{institute_id}/profile")
 async def get_institute_profile(institute_id: str):
     profile = await db.institute_profiles.find_one({"institute_id": institute_id}, {"_id": 0})
     if not profile:
         return {
             "success": True,
+            "is_listed": False,
             "profile": {
                 "institute_id": institute_id,
                 "institute_name": institute_id.replace("-", " ").title(),
@@ -251,146 +393,120 @@ async def get_institute_profile(institute_id: str):
                 "website_url": ""
             }
         }
-    return {"success": True, "profile": profile}
+    return {"success": True, "is_listed": True, "profile": profile}
 
 
 @router.put("/{institute_id}/profile")
 async def upsert_institute_profile(institute_id: str, payload: InstituteProfileUpsert, request: Request):
     await _require_institute_owner(request, institute_id)
-    doc = {
+    profile_doc = {
         "institute_id": institute_id,
         "institute_name": payload.institute_name,
-        "logo_url": payload.logo_url or "",
-        "description": payload.description or "",
-        "website_url": payload.website_url or "",
+        "logo_url": payload.logo_url,
+        "description": payload.description,
+        "website_url": payload.website_url,
         "updated_at": datetime.utcnow().isoformat()
     }
     await db.institute_profiles.update_one(
         {"institute_id": institute_id},
-        {"$set": doc, "$setOnInsert": {"created_at": datetime.utcnow().isoformat()}},
+        {"$set": profile_doc},
         upsert=True
     )
-    updated = await db.institute_profiles.find_one({"institute_id": institute_id}, {"_id": 0})
-    return {"success": True, "profile": updated, "message": "Profile updated"}
-
-
-@router.post("/videos")
-async def create_video(payload: VideoCreate, request: Request):
-    try:
-        await _require_institute_owner(request, payload.institute_id)
-        video_doc = {
-            "id": str(uuid.uuid4()),
-            "institute_id": payload.institute_id,
-            "title": payload.title,
-            "description": payload.description or "",
-            "video_url": payload.video_url,
-            "thumbnail_url": payload.thumbnail_url or "",
-            "exam_id": payload.exam_id or "",
-            "subject": payload.subject or "",
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
-        }
-        await db.institute_videos.insert_one(video_doc)
-        return {"success": True, "video": video_doc, "message": "Video uploaded"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return {"success": True, "profile": profile_doc}
 
 
 @router.get("/{institute_id}/videos")
-async def list_videos(institute_id: str):
-    items = await db.institute_videos.find({"institute_id": institute_id}, {"_id": 0}).sort("created_at", -1).to_list(500)
-    return {"success": True, "videos": items}
+async def list_institute_videos(institute_id: str):
+    cursor = db.institute_videos.find({"institute_id": institute_id}, {"_id": 0}).sort("created_at", -1)
+    videos = await cursor.to_list(length=100)
+    return {"success": True, "videos": videos}
 
 
-@router.post("/mcqs")
-async def create_mcq_set(payload: MCQSetCreate, request: Request):
-    try:
-        await _require_institute_owner(request, payload.institute_id)
-        questions = []
-        for q in payload.questions:
-            if q.correct_index < 0 or q.correct_index >= len(q.options):
-                raise HTTPException(status_code=400, detail="Invalid correct option index")
-            questions.append({
-                "question": q.question,
-                "options": q.options,
-                "correct_index": q.correct_index,
-                "explanation": q.explanation or ""
-            })
-
-        mcq_doc = {
-            "id": str(uuid.uuid4()),
-            "institute_id": payload.institute_id,
-            "title": payload.title,
-            "description": payload.description or "",
-            "thumbnail_url": payload.thumbnail_url or "",
-            "exam_id": payload.exam_id or "",
-            "subject": payload.subject or "",
-            "questions": questions,
-            "question_count": len(questions),
-            "attempt_count": 0,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
-        }
-        await db.institute_mcq_sets.insert_one(mcq_doc)
-        safe_doc = dict(mcq_doc)
-        safe_doc.pop("questions", None)
-        return {"success": True, "mcq_set": safe_doc, "message": "MCQ set published"}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+@router.post("/videos")
+async def create_institute_video(payload: VideoCreate, request: Request):
+    await _require_institute_owner(request, payload.institute_id)
+    video_doc = {
+        "id": str(uuid.uuid4()),
+        "institute_id": payload.institute_id,
+        "title": payload.title,
+        "description": payload.description,
+        "video_url": payload.video_url,
+        "thumbnail_url": payload.thumbnail_url,
+        "exam_id": payload.exam_id,
+        "subject": payload.subject,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    await db.institute_videos.insert_one(video_doc)
+    return {"success": True, "video": video_doc}
 
 
 @router.get("/{institute_id}/mcqs")
-async def list_mcq_sets(institute_id: str):
-    items = await db.institute_mcq_sets.find({"institute_id": institute_id}, {"_id": 0, "questions": 0}).sort("created_at", -1).to_list(500)
-    return {"success": True, "mcq_sets": items}
+async def list_institute_mcq_sets(institute_id: str):
+    cursor = db.institute_mcq_sets.find({"institute_id": institute_id}, {"_id": 0}).sort("created_at", -1)
+    mcqs = await cursor.to_list(length=100)
+    return {"success": True, "mcq_sets": mcqs}
+
+
+@router.post("/mcqs")
+async def create_institute_mcq_set(payload: MCQSetCreate, request: Request):
+    await _require_institute_owner(request, payload.institute_id)
+    mcq_set_doc = {
+        "id": str(uuid.uuid4()),
+        "institute_id": payload.institute_id,
+        "title": payload.title,
+        "description": payload.description,
+        "thumbnail_url": payload.thumbnail_url,
+        "exam_id": payload.exam_id,
+        "subject": payload.subject,
+        "question_count": len(payload.questions),
+        "questions": [q.dict() for q in payload.questions],
+        "attempt_count": 0,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    await db.institute_mcq_sets.insert_one(mcq_set_doc)
+    return {"success": True, "mcq_set": mcq_set_doc}
 
 
 @router.get("/mcqs/{mcq_id}")
-async def get_mcq_set(mcq_id: str):
-    item = await db.institute_mcq_sets.find_one({"id": mcq_id}, {"_id": 0})
-    if not item:
+async def get_institute_mcq_set_public(mcq_id: str):
+    mcq_set = await db.institute_mcq_sets.find_one({"id": mcq_id}, {"_id": 0})
+    if not mcq_set:
         raise HTTPException(status_code=404, detail="MCQ set not found")
-    return {"success": True, "mcq_set": item}
+    return {"success": True, "mcq_set": mcq_set}
 
 
 @router.post("/mcqs/{mcq_id}/attempt")
 async def submit_mcq_attempt(mcq_id: str, payload: MCQAttemptSubmit):
-    item = await db.institute_mcq_sets.find_one({"id": mcq_id}, {"_id": 0})
-    if not item:
+    mcq_set = await db.institute_mcq_sets.find_one({"id": mcq_id})
+    if not mcq_set:
         raise HTTPException(status_code=404, detail="MCQ set not found")
 
-    questions = item.get("questions", [])
-    if not questions:
-        raise HTTPException(status_code=400, detail="MCQ set has no questions")
-
-    total = len(questions)
-    answers = payload.answers or []
+    questions = mcq_set.get("questions", [])
     correct = 0
+    total = len(questions)
 
-    for i, q in enumerate(questions):
-        if i < len(answers) and answers[i] == q.get("correct_index"):
+    for idx, q in enumerate(questions):
+        user_ans = payload.answers[idx] if idx < len(payload.answers) else -1
+        if user_ans == q.get("correct_index"):
             correct += 1
 
-    score_percent = round((correct / total) * 100, 2)
+    score_percent = round((correct / total) * 100, 1) if total > 0 else 0
 
     attempt_doc = {
         "id": str(uuid.uuid4()),
-        "mcq_id": mcq_id,
-        "institute_id": item.get("institute_id"),
+        "mcq_set_id": mcq_id,
         "user_name": payload.user_name,
-        "answers": answers,
-        "correct": correct,
+        "score": correct,
         "total": total,
         "score_percent": score_percent,
         "created_at": datetime.utcnow().isoformat()
     }
-
     await db.institute_mcq_attempts.insert_one(attempt_doc)
-    await db.institute_mcq_sets.update_one({"id": mcq_id}, {"$inc": {"attempt_count": 1}})
+
+    await db.institute_mcq_sets.update_one(
+        {"id": mcq_id},
+        {"$inc": {"attempt_count": 1}}
+    )
 
     return {
         "success": True,
