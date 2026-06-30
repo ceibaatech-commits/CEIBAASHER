@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
-  BookOpen, Award, GraduationCap, ArrowRight, Sparkles, 
+  BookOpen, Award, GraduationCap, ArrowRight, 
   Zap, Target, BarChart3, Smartphone, Users, Bell, Clock, 
   ChevronRight, Play, Star, Search, CheckCircle, ChevronDown, BarChart
 } from 'lucide-react';
