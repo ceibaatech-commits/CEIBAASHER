@@ -154,7 +154,7 @@ const NewHome = () => {
               onClick={() => navigate('/join-room')}
               className="px-8 py-4 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white rounded-xl font-bold text-lg transition-all border-2 border-white/30 hover:border-cyan-400"
             >
-              Join with PIN
+              Join with Room Code
             </button>
           </div>
 
@@ -209,7 +209,7 @@ const NewHome = () => {
               {
                 icon: Users,
                 title: 'Multiplayer Rooms',
-                desc: 'Create PIN-based rooms for friends or join public battles instantly',
+                desc: 'Create battle rooms or join quiz rooms instantly with a room code',
                 color: 'from-green-400 to-emerald-500'
               },
               {

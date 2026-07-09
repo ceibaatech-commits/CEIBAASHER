@@ -6,7 +6,7 @@ const ExamPotentialSection = ({ navigate }) => {
   return (
     <>
       {/* Unlocking Exam Potential Section */}
-      <section className="py-8 md:py-16 bg-gradient-to-b from-white via-indigo-50/30 to-white relative overflow-hidden">
+      <section className="py-6 md:py-10 bg-gradient-to-b from-white via-indigo-50/30 to-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Header */}
           <div className="text-center mb-6 md:mb-12">

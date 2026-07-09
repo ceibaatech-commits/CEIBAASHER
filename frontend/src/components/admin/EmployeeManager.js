@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import EmployeeFormModal from './EmployeeFormModal';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const EmployeeManager = () => {
   const [employees, setEmployees] = useState([]);

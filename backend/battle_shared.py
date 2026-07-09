@@ -23,12 +23,16 @@ mgr = None
 try:
     # Try importing redis package first to prevent boot failures if package is missing
     import redis
+    # Validate Redis connectivity synchronously with a 1.0s timeout before initializing the manager
+    # to avoid persistent connection errors / crashing background threads on unreachable server.
+    r = redis.Redis.from_url(REDIS_URL, socket_connect_timeout=1.0, socket_timeout=1.0)
+    r.ping()
     mgr = socketio.AsyncRedisManager(REDIS_URL)
     print(f"[INFO] Redis Pub/Sub client manager loaded successfully at {REDIS_URL}")
 except (ImportError, ModuleNotFoundError):
     print("[WARNING] Redis module not installed. Falling back to local in-memory Socket.IO manager.")
 except Exception as e:
-    print(f"[WARNING] Failed to load Redis client manager: {e}. Falling back to local in-memory Socket.IO manager.")
+    print(f"[WARNING] Redis is unreachable or failed to initialize: {e}. Falling back to local in-memory Socket.IO manager.")
 
 sio_args = {
     "async_mode": 'asgi',
@@ -55,13 +59,19 @@ _reaction_last_emit_ms = {}  # {sid: last_emit_timestamp_ms}
 db = None
 
 
+deferred_tasks = []
+
 def init_socketio_db(database):
     """Initialize database for Socket.IO and room manager"""
     global db
     db = database
     # Initialize room manager database
     import asyncio
-    asyncio.create_task(room_manager.init_db(database))
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(room_manager.init_db(database))
+    except RuntimeError:
+        deferred_tasks.append(room_manager.init_db(database))
 
 
 # ==================== HELPERS: Extracted to reduce handler complexity ====================

@@ -660,26 +660,44 @@ const useLiveBattle = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (chatInput.trim()) {
-      try {
-        const userStr = localStorage.getItem('ceibaa_user');
-        const localUser = userStr ? JSON.parse(userStr) : null;
-        const userId = localUser ? localUser.id : playerName.toLowerCase().replace(/\s+/g, '_');
-        
-        const response = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/messages`, {
-          player_id: userId,
-          player_name: playerName,
-          message: chatInput,
-          avatar: '👤'
-        });
-        
-        if (response.data.success) {
-          setChatInput('');
-        }
-      } catch (error) {
-        console.error('❌ Failed to send message:', error);
-        alert('Failed to send message. Please try again.');
+    const text = chatInput.trim();
+    if (!text) return;
+
+    const userStr = localStorage.getItem('ceibaa_user');
+    const localUser = userStr ? JSON.parse(userStr) : null;
+    const userId = localUser?.id || user?.id || playerName.toLowerCase().replace(/\s+/g, '_');
+
+    try {
+      // Primary path: async-room REST API (persists chat for polling + replay).
+      const response = await axios.post(`${BATTLE_SERVER_URL}/api/battle/async/rooms/${pin}/messages`, {
+        player_id: userId,
+        player_name: playerName,
+        message: text,
+        avatar: '👤'
+      });
+
+      if (response.data?.success) {
+        setChatInput('');
+        return;
       }
+      throw new Error('Async chat endpoint returned unsuccessful response');
+    } catch (error) {
+      console.warn('⚠️ Async chat send failed, trying socket fallback:', error?.response?.data || error.message);
+
+      // Fallback path: realtime socket event for room-manager battles.
+      if (socket && socket.connected) {
+        socket.emit('send_message', {
+          roomId: pin,
+          message: text,
+          playerName,
+          player_name: playerName,
+        });
+        setChatInput('');
+        return;
+      }
+
+      console.error('❌ Failed to send message (REST + socket):', error);
+      alert('Failed to send message. Please try again.');
     }
   };
 

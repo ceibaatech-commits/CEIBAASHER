@@ -6,12 +6,16 @@ import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 
 const BATTLE_URL = window.location.origin;
+const ROOM_CODE_LENGTH = 6;
+
+const normalizeRoomCode = (value) => value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, ROOM_CODE_LENGTH);
+const getJoinDisplayName = (playerName, user) => playerName.trim() || user?.name || user?.username || 'Player';
 
 const JoinRoom = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const prefilledPin = location.state?.prefilledPin || '';
+  const prefilledPin = normalizeRoomCode(location.state?.prefilledPin || '');
   
   const [pin, setPin] = useState(prefilledPin);
   const [playerName, setPlayerName] = useState('');
@@ -87,18 +91,22 @@ const JoinRoom = () => {
     setError('');
     
     // Validation
-    if (!pin.trim() || !playerName.trim()) {
-      setError('Please enter both PIN and your name');
+    const normalizedPin = normalizeRoomCode(pin);
+
+    if (!normalizedPin) {
+      setError('Please enter a room code');
       return;
     }
 
-    if (pin.length !== 6) {
-      setError('PIN must be 6 digits');
+    if (normalizedPin.length !== ROOM_CODE_LENGTH) {
+      setError('Room code must be 6 letters or numbers');
       return;
     }
+
+    const joinDisplayName = getJoinDisplayName(playerName, user);
 
     setLoading(true);
-    console.log('[JOIN] Attempting to join room:', pin);
+    console.log('[JOIN] Attempting to join room:', normalizedPin);
     
     try {
       // Add timeout to prevent indefinite hanging
@@ -106,7 +114,7 @@ const JoinRoom = () => {
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
       // Check if room exists using NEW REST API
-      const response = await axios.get(`${BATTLE_URL}/api/battle/async/rooms/${pin}`, {
+      const response = await axios.get(`${BATTLE_URL}/api/battle/async/rooms/${normalizedPin}`, {
         signal: controller.signal,
         timeout: 10000 // 10 seconds
       });
@@ -117,10 +125,10 @@ const JoinRoom = () => {
       if (response.data.success) {
         console.log('[JOIN] Room found via NEW REST API, navigating directly to quiz (AUTO-START)');
         // AUTO-START: Skip lobby, go directly to quiz with REST API
-        navigate(`/live-battle/${pin}`, { 
+        navigate(`/live-battle/${normalizedPin}`, { 
           state: { 
             isHost: false, 
-            playerName: playerName,
+            playerName: joinDisplayName,
             autoJoin: true // Triggers REST API join with auto-start
           } 
         });
@@ -142,7 +150,35 @@ const JoinRoom = () => {
         const detail = error.response.data?.detail;
         
         if (status === 404) {
-          setError(`Room ${pin} not found. Please check the PIN.`);
+          try {
+            const socialResponse = await axios.get(`${BATTLE_URL}/api/social/quiz-rooms/${normalizedPin}`, {
+              timeout: 10000,
+            });
+
+            if (socialResponse.data?.success) {
+              navigate(`/quiz-room/${normalizedPin}`, {
+                state: {
+                  room: socialResponse.data.room,
+                  questions: socialResponse.data.room?.questions || [],
+                },
+              });
+              return;
+            }
+          } catch (socialError) {
+            const socialStatus = socialError.response?.status;
+            const socialDetail = socialError.response?.data?.detail;
+
+            if (socialStatus === 410) {
+              setError(socialDetail || 'This quiz room has expired.');
+              return;
+            }
+            if (socialStatus === 403) {
+              setError(socialDetail || 'You do not have access to this quiz room.');
+              return;
+            }
+          }
+
+          setError(`Room ${normalizedPin} not found. Please check the room code.`);
         } else if (status === 410) {
           setError(detail || 'This room has expired or already completed.');
         } else if (status === 403) {
@@ -182,8 +218,8 @@ const JoinRoom = () => {
             <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-10 h-10" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Join Battle</h1>
-            <p className="text-gray-600">Enter the room PIN to join</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Join Room</h1>
+            <p className="text-gray-600">Enter a battle PIN or quiz room code to join</p>
           </div>
 
           <div className="space-y-6">
@@ -200,33 +236,34 @@ const JoinRoom = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Room PIN
+                Room Code
               </label>
               <input
                 type="text"
                 value={pin}
                 onChange={(e) => {
-                  setPin(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  setPin(normalizeRoomCode(e.target.value));
                   setError(''); // Clear error on input
                 }}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter' && pin.length === 6 && playerName.trim()) {
+                  if (e.key === 'Enter' && pin.length === ROOM_CODE_LENGTH) {
                     handleJoinRoom();
                   }
                 }}
-                placeholder="Enter 6-digit PIN"
-                maxLength="6"
+                placeholder="Enter 6-character code"
+                maxLength={ROOM_CODE_LENGTH}
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-center text-2xl font-bold tracking-widest"
                 disabled={loading}
+                autoCapitalize="characters"
               />
               <p className="text-xs text-gray-500 mt-1 text-center">
-                {pin.length}/6 digits
+                {pin.length}/{ROOM_CODE_LENGTH} characters
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Your Name
+                Your Name (used for battles)
               </label>
               <input
                 type="text"
@@ -236,11 +273,11 @@ const JoinRoom = () => {
                   setError(''); // Clear error on input
                 }}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter' && pin.length === 6 && playerName.trim()) {
+                  if (e.key === 'Enter' && pin.length === ROOM_CODE_LENGTH) {
                     handleJoinRoom();
                   }
                 }}
-                placeholder="Enter your name"
+                placeholder="Optional for quiz rooms"
                 className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
                 disabled={loading}
               />
@@ -248,7 +285,7 @@ const JoinRoom = () => {
 
             <button
               onClick={handleJoinRoom}
-              disabled={loading || pin.length !== 6 || !playerName.trim()}
+              disabled={loading || pin.length !== ROOM_CODE_LENGTH}
               className="w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white py-4 rounded-lg font-bold text-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (

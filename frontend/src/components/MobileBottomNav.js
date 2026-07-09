@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Trophy, User, Hash, Plus, X, Zap } from 'lucide-react';
+import { Home, BookOpen, Trophy, User, Hash, Plus, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 const BATTLE_URL = window.location.origin;
+const ROOM_CODE_LENGTH = 6;
+const normalizeRoomCode = (value) => value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, ROOM_CODE_LENGTH);
 
 const MobileBottomNav = () => {
   const navigate = useNavigate();
@@ -51,9 +53,9 @@ const MobileBottomNav = () => {
 
   const handleJoinRoom = async () => {
     setJoinError('');
-    const code = roomCode.trim().toUpperCase();
+    const code = normalizeRoomCode(roomCode);
     if (!code) { setJoinError('Enter a room code'); return; }
-    if (code.length !== 6) { setJoinError('Room code must be 6 characters'); return; }
+    if (code.length !== ROOM_CODE_LENGTH) { setJoinError('Room code must be 6 characters'); return; }
 
     const isAuth = typeof isAuthenticated === 'function' ? isAuthenticated() : !!user;
     if (!isAuth) {
@@ -68,13 +70,35 @@ const MobileBottomNav = () => {
       if (res.data.success) {
         setShowRoomSheet(false);
         navigate(`/live-battle/${code}`, {
-          state: { isHost: false, playerName: user?.name || '', autoJoin: true },
+          state: { isHost: false, playerName: user?.name || user?.username || 'Player', autoJoin: true },
         });
       } else {
         setJoinError(res.data.message || 'Room not found');
       }
     } catch (err) {
       if (err.response?.status === 404) {
+        try {
+          const socialRes = await axios.get(`${BATTLE_URL}/api/social/quiz-rooms/${code}`, { timeout: 10000 });
+          if (socialRes.data?.success) {
+            setShowRoomSheet(false);
+            navigate(`/quiz-room/${code}`, {
+              state: {
+                room: socialRes.data.room,
+                questions: socialRes.data.room?.questions || [],
+              },
+            });
+            return;
+          }
+        } catch (socialErr) {
+          if (socialErr.response?.status === 410) {
+            setJoinError(socialErr.response?.data?.detail || 'This quiz room has expired.');
+            return;
+          }
+          if (socialErr.response?.status === 403) {
+            setJoinError(socialErr.response?.data?.detail || 'You do not have access to this quiz room.');
+            return;
+          }
+        }
         setJoinError('Room not found. Check the code.');
       } else {
         setJoinError('Could not connect. Try again.');
@@ -139,10 +163,10 @@ const MobileBottomNav = () => {
               <input
                 type="text"
                 value={roomCode}
-                onChange={(e) => setRoomCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+                onChange={(e) => setRoomCode(normalizeRoomCode(e.target.value))}
                 placeholder="• • • • • •"
                 className="w-full text-center text-3xl font-black tracking-[0.5em] border-2 border-gray-200 focus:border-violet-500 focus:ring-2 focus:ring-violet-200 rounded-2xl py-4 px-3 outline-none bg-gray-50 uppercase transition-colors mb-3"
-                maxLength={6}
+                maxLength={ROOM_CODE_LENGTH}
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleJoinRoom()}
               />
@@ -154,14 +178,14 @@ const MobileBottomNav = () => {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 onClick={handleJoinRoom}
-                disabled={joining || roomCode.length !== 6}
+                disabled={joining || roomCode.length !== ROOM_CODE_LENGTH}
                 className="w-full py-4 bg-violet-600 text-white rounded-2xl font-bold text-base disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all active:scale-95"
                 style={{ boxShadow: '0 4px 18px rgba(109,40,217,0.35)' }}
               >
                 {joining ? (
                   <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Joining...</>
                 ) : (
-                  <><Zap className="w-5 h-5" /> Join Room</>
+                  <><span className="text-xl leading-none">🪂</span> Join Room</>
                 )}
               </motion.button>
             </motion.div>
@@ -175,20 +199,6 @@ const MobileBottomNav = () => {
         className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom"
         style={{ overflow: 'visible' }}
       >
-        {/* Smooth arch cutout behind the center button */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2 bg-white pointer-events-none"
-          style={{
-            top: '-26px',
-            width: '80px',
-            height: '26px',
-            borderRadius: '40px 40px 0 0',
-            borderTop: '1px solid #e5e7eb',
-            borderLeft: '1px solid #e5e7eb',
-            borderRight: '1px solid #e5e7eb',
-          }}
-        />
-
         {/* Center action button — sits half above the nav border */}
         <div
           className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center"
@@ -203,8 +213,7 @@ const MobileBottomNav = () => {
           >
             <CenterIcon className="w-6 h-6 text-white" strokeWidth={2.5} />
           </motion.button>
-          <span className="text-[9px] font-semibold text-violet-600 mt-1 leading-none">{centerLabel}</span>
-                  <span className="text-[9px] font-semibold text-purple-600 mt-1 leading-none">{centerLabel}</span>
+          <span className="text-[9px] font-semibold text-purple-600 mt-1 leading-none">{centerLabel}</span>
         </div>
 
         {/* Nav row: Left items | spacer | Right items */}

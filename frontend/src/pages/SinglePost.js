@@ -587,7 +587,11 @@ const SinglePost = () => {
                 {/* Action Button */}
                 <div className="p-4 pt-2">
                   <button
-                    onClick={() => navigate(`/quiz-room/${post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code}`)}
+                    onClick={() => navigate('/join-room', {
+                      state: {
+                        prefilledPin: post.room_code || post.quiz_room?.room_code || post.quiz_details?.room_code,
+                      },
+                    })}
                     className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

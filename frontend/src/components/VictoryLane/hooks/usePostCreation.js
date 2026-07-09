@@ -5,6 +5,12 @@ import { uploadImage, uploadVideo, validateFile, validateVideoDuration, getVideo
 
 const BACKEND_URL = window.location.origin;
 
+const normalizeMediaPermissions = (data = {}) => ({
+  allow_media: Boolean(data.allow_media),
+  can_post_images: Boolean(data.can_post_images),
+  can_post_videos: Boolean(data.can_post_videos)
+});
+
 // Generate unique ID for media items
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -37,14 +43,10 @@ const usePostCreation = (user, fetchFeed) => {
     const fetchMediaSettings = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`);
-        setMediaSettings({
-          allow_media: !response.data.media_disabled_globally,
-          can_post_images: response.data.can_post_images || false,
-          can_post_videos: response.data.can_post_videos || false
-        });
+        setMediaSettings(normalizeMediaPermissions(response.data));
       } catch (error) {
         console.error('Error fetching media permissions:', error);
-        setMediaSettings({ allow_media: false, can_post_images: false, can_post_videos: false });
+        setMediaSettings(normalizeMediaPermissions());
       }
     };
     fetchMediaSettings();

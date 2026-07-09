@@ -13,7 +13,7 @@ import {
   Sun,
   Moon,
   Plus,
-  Smile,
+  Check,
   MoreVertical,
 } from 'lucide-react';
 import axios from 'axios';
@@ -22,10 +22,27 @@ import UserAvatar from '../components/UserAvatar';
 import Header from '../components/Header';
 import GroupModal from '../components/messages/GroupModal';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-
 import { useChatTheme } from '../hooks/useChatTheme';
 import { DaySeparator, SystemMessage, TypingIndicator, Receipt } from '../components/messages/ChatPrimitives';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+const EMOJI_FONT_STACK = '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif';
+
+const isSameDay = (left, right) => (
+  left.getFullYear() === right.getFullYear() &&
+  left.getMonth() === right.getMonth() &&
+  left.getDate() === right.getDate()
+);
+
+const formatDaySeparator = (date) => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  if (isSameDay(date, today)) return 'Today';
+  if (isSameDay(date, yesterday)) return 'Yesterday';
+  return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+};
 
 // =====================================================================
 // Main component
@@ -34,7 +51,7 @@ export default function Messages() {
   const { conversationId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const { isDark, pref, setPreference } = useChatTheme();
 
   const [conversations, setConversations] = useState([]);
@@ -48,6 +65,7 @@ export default function Messages() {
   const [chatViewportHeight, setChatViewportHeight] = useState('100dvh');
   const [searchQuery, setSearchQuery] = useState('');
   const [convsRefreshKey, setConvsRefreshKey] = useState(0);
+  const [groupMembersRefreshKey, setGroupMembersRefreshKey] = useState(0);
   const [groupModal, setGroupModal] = useState(null);
   const [groupMembers, setGroupMembers] = useState([]);
   const [showJumpToBottom, setShowJumpToBottom] = useState(false);
@@ -62,6 +80,11 @@ export default function Messages() {
   const textareaRef = useRef(null);
   const chatContainerRef = useRef(null);
   const touchStartRef = useRef(null);
+  const lastMarkedReadKeyRef = useRef('');
+  const refreshConversations = useCallback(() => setConvsRefreshKey(k => k + 1), []);
+  const refreshGroupMembers = useCallback(() => setGroupMembersRefreshKey(k => k + 1), []);
+
+
 
   // ---------- Body attribute to hide global Header + BottomNav while in chat ----------
   useLayoutEffect(() => {
@@ -81,11 +104,12 @@ export default function Messages() {
   useEffect(() => {
     if (!conversationId || typeof window === 'undefined' || !window.visualViewport) return;
     const vv = window.visualViewport;
+    const currentChatContainer = chatContainerRef.current;
     const sync = () => {
       const height = `${Math.max(320, Math.floor(vv.height))}px`;
       setChatViewportHeight(height);
-      if (chatContainerRef.current) {
-        chatContainerRef.current.style.height = height;
+      if (currentChatContainer) {
+        currentChatContainer.style.height = height;
       }
     };
     sync();
@@ -94,7 +118,7 @@ export default function Messages() {
     return () => {
       vv.removeEventListener('resize', sync);
       vv.removeEventListener('scroll', sync);
-      if (chatContainerRef.current) chatContainerRef.current.style.height = '';
+      if (currentChatContainer) currentChatContainer.style.height = '';
       setChatViewportHeight('100dvh');
     };
   }, [conversationId]);
@@ -114,10 +138,10 @@ export default function Messages() {
       try {
         const res = await axios.post(`${BACKEND_URL}/api/messages/conversations`, {
           target_user_id: targetUserId,
-        });
+        }, { withCredentials: true });
         if (!cancelled && res.data?.success && res.data.conversation?.id) {
           navigate(`/messages/${res.data.conversation.id}`, { replace: true });
-          setConvsRefreshKey(k => k + 1);
+          refreshConversations();
         }
       } catch (err) {
         console.error('Failed to start conversation from userId param:', err);
@@ -125,7 +149,7 @@ export default function Messages() {
       }
     })();
     return () => { cancelled = true; };
-  }, [location.search, user, navigate]);
+  }, [location.search, user, navigate, refreshConversations]);
 
   // ---------- Socket ----------
   useEffect(() => {
@@ -150,7 +174,7 @@ export default function Messages() {
     });
     sock.on('user_typing', () => setOtherTyping(true));
     sock.on('user_stop_typing', () => setOtherTyping(false));
-    sock.on('conversations_refresh', () => setConvsRefreshKey(k => k + 1));
+    sock.on('conversations_refresh', refreshConversations);
     sock.on('presence_update', ({ user_id: pUid, online }) => {
       setConversations(prev => prev.map(c =>
         c.other_user?.id === pUid
@@ -170,7 +194,7 @@ export default function Messages() {
       setMessages(prev => prev.map(m => (ids.has(m.id) ? { ...m, delivered: true, read: true } : m)));
     });
     return () => { sock.disconnect(); };
-  }, [user]);
+  }, [user, refreshConversations]);
 
   // ---------- Load conversations ----------
   useEffect(() => {
@@ -178,7 +202,7 @@ export default function Messages() {
     let cancelled = false;
     setLoadingConvs(true);
     setConvsError(null);
-    axios.get(`${BACKEND_URL}/api/messages/conversations`)
+    axios.get(`${BACKEND_URL}/api/messages/conversations`, { withCredentials: true })
       .then(res => {
         if (cancelled) return;
         if (res.data?.success) setConversations(res.data.conversations || []);
@@ -202,10 +226,11 @@ export default function Messages() {
     if (!conversationId || !user) {
       setActiveConv(null);
       setMessages([]);
+      lastMarkedReadKeyRef.current = '';
       return;
     }
     let cancelled = false;
-    axios.get(`${BACKEND_URL}/api/messages/conversations/${conversationId}/messages`)
+    axios.get(`${BACKEND_URL}/api/messages/conversations/${conversationId}/messages`, { withCredentials: true })
       .then(res => {
         if (cancelled) return;
         if (res.data?.success) {
@@ -224,9 +249,21 @@ export default function Messages() {
   // Auto-mark new incoming messages as read while the conversation is open
   useEffect(() => {
     if (!conversationId || !user) return;
-    const hasUnreadIncoming = messages.some(m => m.sender_id !== user.id && !m.read);
-    if (!hasUnreadIncoming) return;
-    axios.put(`${BACKEND_URL}/api/messages/conversations/${conversationId}/read`).catch(() => {});
+    const unreadIncomingIds = messages
+      .filter(m => m.sender_id !== user.id && !m.read)
+      .map(m => m.id)
+      .filter(Boolean);
+
+    if (unreadIncomingIds.length === 0) {
+      lastMarkedReadKeyRef.current = '';
+      return;
+    }
+
+    const unreadKey = `${conversationId}:${unreadIncomingIds.join(',')}`;
+    if (lastMarkedReadKeyRef.current === unreadKey) return;
+
+    lastMarkedReadKeyRef.current = unreadKey;
+    axios.put(`${BACKEND_URL}/api/messages/conversations/${conversationId}/read`, {}, { withCredentials: true }).catch(() => {});
     setMessages(prev => prev.map(m => (m.sender_id !== user.id && !m.read ? { ...m, read: true, delivered: true } : m)));
   }, [messages, conversationId, user]);
 
@@ -273,7 +310,8 @@ export default function Messages() {
     try {
       const res = await axios.post(
         `${BACKEND_URL}/api/messages/conversations/${conversationId}/messages`,
-        { text: newMsg.trim() }
+        { text: newMsg.trim() },
+        { withCredentials: true }
       );
       if (res.data?.success) {
         setMessages(prev => (prev.some(m => m.id === res.data.message.id) ? prev : [...prev, res.data.message]));
@@ -311,6 +349,8 @@ export default function Messages() {
     ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
   };
 
+
+
   const otherUser = activeConv
     ? conversations.find(c => c.id === activeConv.id)?.other_user
     : null;
@@ -320,11 +360,11 @@ export default function Messages() {
   useEffect(() => {
     if (!isGroup || !conversationId) { setGroupMembers([]); return; }
     let cancelled = false;
-    axios.get(`${BACKEND_URL}/api/messages/groups/${conversationId}/members`)
+    axios.get(`${BACKEND_URL}/api/messages/groups/${conversationId}/members`, { withCredentials: true })
       .then(res => { if (!cancelled && res.data?.success) setGroupMembers(res.data.members || []); })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, [isGroup, conversationId, convsRefreshKey]);
+  }, [isGroup, conversationId, groupMembersRefreshKey]);
 
   // ---------- Touch gestures: swipe-down on header to close chat ----------
   const closeChat = useCallback(() => {
@@ -440,17 +480,40 @@ export default function Messages() {
     return out;
   }, [messages]);
 
-  const filteredConversations = conversations.filter(c => {
+  const filteredConversations = useMemo(() => conversations.filter(c => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     const name = c.is_group ? (c.name || '') : (c.other_user?.name || '');
     const uname = c.other_user?.username || '';
     return name.toLowerCase().includes(q) || uname.toLowerCase().includes(q);
-  });
+  }), [conversations, searchQuery]);
+
+  const existingMemberIds = useMemo(
+    () => new Set(groupMembers.map(m => m.id)),
+    [groupMembers]
+  );
+
+  const groupHeaderSummary = useMemo(() => {
+    if (groupMembers.length === 0) return 'Group chat';
+    const memberNames = groupMembers
+      .map(m => m.name?.split(' ')[0])
+      .filter(Boolean)
+      .slice(0, 3)
+      .join(', ');
+    return `${groupMembers.length} members${memberNames ? ` · ${memberNames}` : ''}${groupMembers.length > 3 ? '…' : ''}`;
+  }, [groupMembers]);
 
   // =====================================================================
   // GUARD: not logged in
   // =====================================================================
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center px-6" data-testid="messages-auth-loading">
+        <div className="w-6 h-6 border-2 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center px-6" data-testid="messages-login-required">
@@ -599,7 +662,7 @@ export default function Messages() {
                     style={{ color: T.muted }}
                   >
                     {groupMembers.length > 0
-                      ? `${groupMembers.length} members · ${groupMembers.map(m => m.name?.split(' ')[0]).slice(0, 3).join(', ')}${groupMembers.length > 3 ? '…' : ''}`
+                      ? groupHeaderSummary
                       : 'Group chat'}
                   </p>
                 </div>
@@ -792,6 +855,7 @@ export default function Messages() {
                               : 'linear-gradient(135deg, #5B5BF0 0%, #7C3AED 100%)')
                           : T.bubbleIn,
                         color: isMine ? '#FFFFFF' : T.bubbleInText,
+                        fontFamily: EMOJI_FONT_STACK,
                         boxShadow: isMine
                           ? '0 1px 2px rgba(124, 58, 237, 0.18)'
                           : (isDark ? 'none' : '0 1px 1px rgba(15,23,42,0.04)'),
@@ -880,17 +944,9 @@ export default function Messages() {
                     }
                   }}
                   className="flex-1 resize-none bg-transparent outline-none text-[15px] py-1.5 leading-[1.4] max-h-[120px]"
-                  style={{ color: T.inputText, fontFamily: 'inherit' }}
+                  style={{ color: T.inputText, fontFamily: EMOJI_FONT_STACK }}
                 />
-                <button
-                  data-testid="chat-emoji-btn"
-                  aria-label="Emoji"
-                  onClick={() => {}}
-                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors"
-                  style={{ color: T.muted }}
-                >
-                  <Smile className="w-4.5 h-4.5" />
-                </button>
+
               </div>
               <button
                 data-testid="send-message-btn"
@@ -919,13 +975,16 @@ export default function Messages() {
           <GroupModal
             mode={groupModal}
             conversationId={conversationId}
-            existingMemberIds={new Set(groupMembers.map(m => m.id))}
+            existingMemberIds={existingMemberIds}
             onClose={() => setGroupModal(null)}
             onCreated={(conv) => {
-              setConvsRefreshKey(k => k + 1);
+              refreshConversations();
               navigate(`/messages/${conv.id}`);
             }}
-            onAdded={() => setConvsRefreshKey(k => k + 1)}
+            onAdded={() => {
+              refreshGroupMembers();
+              refreshConversations();
+            }}
           />
         )}
       </>
@@ -975,19 +1034,22 @@ export default function Messages() {
         </div>
 
         {/* Search */}
-        <div className="relative mb-3">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+        <div
+          className="mb-3 h-11 w-full rounded-2xl flex items-center gap-2.5 px-3.5 focus-within:ring-2 focus-within:ring-[#7C3AED]/30 transition-all"
+          style={{
+            backgroundColor: '#F7F8FA',
+            border: '1px solid #E5E7EB',
+          }}
+        >
+          <Search className="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" />
           <input
             data-testid="conversation-search"
             type="text"
             placeholder="Search conversations"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full h-11 pl-11 pr-4 rounded-2xl text-[14px] text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 transition-all"
-            style={{
-              backgroundColor: '#F7F8FA',
-              border: '1px solid #E5E7EB',
-            }}
+            className="w-full bg-transparent outline-none text-[16px] leading-tight text-slate-900 placeholder-slate-400"
+            style={{ WebkitTextSizeAdjust: '100%' }}
           />
         </div>
 
@@ -1008,7 +1070,7 @@ export default function Messages() {
                   <p className="text-red-600 text-sm font-semibold mb-2">{convsError}</p>
                   <button
                     data-testid="conversations-retry"
-                    onClick={() => setConvsRefreshKey(k => k + 1)}
+                    onClick={refreshConversations}
                     className="mt-2 px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 transition-colors"
                   >
                     Retry
@@ -1108,13 +1170,16 @@ export default function Messages() {
         <GroupModal
           mode={groupModal}
           conversationId={conversationId}
-          existingMemberIds={new Set(groupMembers.map(m => m.id))}
+          existingMemberIds={existingMemberIds}
           onClose={() => setGroupModal(null)}
           onCreated={(conv) => {
-            setConvsRefreshKey(k => k + 1);
+            refreshConversations();
             navigate(`/messages/${conv.id}`);
           }}
-          onAdded={() => setConvsRefreshKey(k => k + 1)}
+          onAdded={() => {
+            refreshGroupMembers();
+            refreshConversations();
+          }}
         />
       )}
     </div>

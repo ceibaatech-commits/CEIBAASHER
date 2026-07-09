@@ -648,6 +648,7 @@ def _public_user_response(user_doc: dict) -> dict:
         "verified": user_doc["verified"],
         "rating": user_doc["rating"],
         "streak": user_doc["streak"],
+        "theme_preference": user_doc.get("theme_preference"),
     }
 
 
@@ -697,6 +698,7 @@ def _build_user_response(user: dict) -> dict:
         "isProfessor": user.get("isProfessor", False),
         "isOfficial": user.get("isOfficial", False),
         "isInstitute": user.get("isInstitute", False),
+        "theme_preference": user.get("theme_preference"),
     }
 
 

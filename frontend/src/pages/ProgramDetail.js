@@ -228,7 +228,7 @@ function EnquiryModal({ program, cfg, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => !submitting && onClose()}>
+    <div className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={() => !submitting && onClose()}>
       <div onClick={e => e.stopPropagation()} className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden" data-testid="enquiry-form-modal">
         <div className={`bg-gradient-to-r ${cfg.accent} p-5 text-white`}>
           <h3 className="font-bold text-lg">Express Interest</h3>
@@ -242,15 +242,89 @@ function EnquiryModal({ program, cfg, onClose }) {
             <button onClick={onClose} className="text-sm text-violet-600 font-medium">Close</button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            <div className="relative"><User className="absolute left-3 top-3 w-4 h-4 text-slate-400" /><input type="text" required placeholder="Full Name" value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-400 outline-none" data-testid="enquiry-name" /></div>
-            <div className="relative"><Mail className="absolute left-3 top-3 w-4 h-4 text-slate-400" /><input type="email" required placeholder="Email" value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))} className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-400 outline-none" data-testid="enquiry-email" /></div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="relative"><Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" /><input type="tel" placeholder="Phone" value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))} className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-400 outline-none" data-testid="enquiry-phone" /></div>
-              <select value={form.grade} onChange={e => setForm(f => ({...f, grade: e.target.value}))} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-400 outline-none text-slate-600" data-testid="enquiry-grade"><option value="">Grade</option>{[8,9,10,11,12].map(g => <option key={g} value={g}>Grade {g}</option>)}</select>
+          <form onSubmit={handleSubmit} className="p-5 pb-8 sm:pb-5 space-y-4">
+            {/* Full Name */}
+            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-violet-400 transition">
+              <div className="pl-4 pr-2 flex items-center justify-center text-slate-400">
+                <User className="w-4 h-4" />
+              </div>
+              <input
+                type="text"
+                required
+                placeholder="Full Name"
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                className="flex-1 bg-transparent py-2.5 pr-4 text-sm outline-none placeholder:text-slate-400"
+                data-testid="enquiry-name"
+              />
             </div>
-            <div className="relative"><School className="absolute left-3 top-3 w-4 h-4 text-slate-400" /><input type="text" placeholder="School Name" value={form.school_name} onChange={e => setForm(f => ({...f, school_name: e.target.value}))} className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-400 outline-none" data-testid="enquiry-school" /></div>
-            <button type="submit" disabled={submitting} data-testid="submit-enquiry-btn" className={`w-full bg-gradient-to-r ${cfg.accent} text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-60`}>{submitting ? 'Submitting...' : <><Send className="w-4 h-4" /> Submit Interest</>}</button>
+
+            {/* Email */}
+            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-violet-400 transition">
+              <div className="pl-4 pr-2 flex items-center justify-center text-slate-400">
+                <Mail className="w-4 h-4" />
+              </div>
+              <input
+                type="email"
+                required
+                placeholder="Email"
+                value={form.email}
+                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                className="flex-1 bg-transparent py-2.5 pr-4 text-sm outline-none placeholder:text-slate-400"
+                data-testid="enquiry-email"
+              />
+            </div>
+
+            {/* Phone + Grade */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-violet-400 transition">
+                <div className="pl-4 pr-2 flex items-center justify-center text-slate-400">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <input
+                  type="tel"
+                  placeholder="Phone"
+                  value={form.phone}
+                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                  className="flex-1 w-full min-w-0 bg-transparent py-2.5 pr-3 text-sm outline-none placeholder:text-slate-400"
+                  data-testid="enquiry-phone"
+                />
+              </div>
+
+              <select
+                value={form.grade}
+                onChange={e => setForm(f => ({ ...f, grade: e.target.value }))}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-400 outline-none text-slate-600"
+                data-testid="enquiry-grade"
+              >
+                <option value="">Grade</option>
+                {[8, 9, 10, 11, 12].map(g => <option key={g} value={g}>Grade {g}</option>)}
+              </select>
+            </div>
+
+            {/* School Name */}
+            <div className="flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-violet-400 transition">
+              <div className="pl-4 pr-2 flex items-center justify-center text-slate-400">
+                <School className="w-4 h-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="School Name"
+                value={form.school_name}
+                onChange={e => setForm(f => ({ ...f, school_name: e.target.value }))}
+                className="flex-1 bg-transparent py-2.5 pr-4 text-sm outline-none placeholder:text-slate-400"
+                data-testid="enquiry-school"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              data-testid="submit-enquiry-btn"
+              className={`w-full bg-gradient-to-r ${cfg.accent} text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all text-sm flex items-center justify-center gap-2 disabled:opacity-60`}
+            >
+              {submitting ? 'Submitting...' : <><Send className="w-4 h-4" /> Submit Interest</>}
+            </button>
           </form>
         )}
       </div>

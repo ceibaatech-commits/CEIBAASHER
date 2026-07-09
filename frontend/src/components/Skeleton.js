@@ -134,11 +134,4 @@ export const Skeleton = {
   ),
 };
 
-export default {
-  PostCardSkeleton,
-  QuizRoomSkeleton,
-  FeedSkeleton,
-  ProfileSkeleton,
-  CommentSkeleton,
-  Skeleton,
-};
+export default FeedSkeleton;

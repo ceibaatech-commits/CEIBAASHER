@@ -6,7 +6,7 @@ import {
   UserPlus, BarChart3
 } from 'lucide-react';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const OverviewDashboard = () => {
   const [stats, setStats] = useState({

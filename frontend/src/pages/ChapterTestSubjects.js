@@ -1,54 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { 
-  ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator, 
-  Atom, Brain, Users, Loader2, FlaskConical, Scale, TrendingUp, 
-  Landmark, Map, Scroll, Briefcase, Dna, Clock, BarChart3, Award, 
-  ChevronRight, GraduationCap
+import {
+  ArrowLeft, BookOpen, Beaker, Globe, Languages, Calculator, Atom, Brain,
+  Users, Loader2, FlaskConical, Scale, TrendingUp, Landmark, Map, Scroll,
+  Briefcase, Dna, Sparkles, ChevronRight, BarChart3, Trophy, Zap, Clock,
 } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import { useAuth } from '../hooks/useAuth';
-import { CLASS_COLORS } from '../config/constants';
 
 const BACKEND_URL = window.location.origin;
+const FONT = '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-// Icon mapping for subjects
 const ICON_MAP = {
-  'Calculator': Calculator,
-  'BookOpen': BookOpen,
-  'Languages': Languages,
-  'Beaker': Beaker,
-  'Flask': FlaskConical,
-  'Globe': Globe,
-  'Atom': Atom,
-  'Brain': Brain,
-  'Scale': Scale,
-  'TrendingUp': TrendingUp,
-  'Landmark': Landmark,
-  'Map': Map,
-  'Scroll': Scroll,
-  'Briefcase': Briefcase,
-  'Dna': Dna,
+  Calculator, BookOpen, Languages, Beaker, Globe, Atom, Brain,
+  Flask: FlaskConical, Scale, TrendingUp, Landmark, Map, Scroll, Briefcase, Dna,
 };
+
+// Same pastel cycle as home for visual continuity
+const PASTEL_CYCLE = [
+  { bg: 'bg-[#A7F3D0]', accent: '#A7F3D0', label: 'mint' },
+  { bg: 'bg-[#E9D5FF]', accent: '#E9D5FF', label: 'lavender' },
+  { bg: 'bg-[#FFD831]', accent: '#FFD831', label: 'yellow' },
+  { bg: 'bg-[#FFBDBE]', accent: '#FFBDBE', label: 'peach' },
+  { bg: 'bg-[#BAE6FD]', accent: '#BAE6FD', label: 'sky' },
+  { bg: 'bg-[#FDE68A]', accent: '#FDE68A', label: 'butter' },
+  { bg: 'bg-[#C7D2FE]', accent: '#C7D2FE', label: 'periwinkle' },
+];
 
 const ChapterTestSubjects = () => {
   const navigate = useNavigate();
   const { classNumber, stream } = useParams();
   const location = useLocation();
   const { user, isLoggedIn, handleLogout, handleLogin } = useAuth();
-  
+
   const selectedClass = classNumber?.replace('class-', '') || '';
   const board = new URLSearchParams(location.search).get('board') || 'cbse';
-  const boardLabel = board === 'rbse' ? 'Rajasthan Board' : board === 'hbse' ? 'Haryana Board' : board === 'upboard' ? 'UP Board' : board === 'bseb' ? 'Bihar Board' : board === 'mpbse' ? 'MP Board' : 'CBSE';
+  const boardLabel =
+    board === 'rbse' ? 'Rajasthan Board' :
+    board === 'hbse' ? 'Haryana Board' :
+    board === 'upboard' ? 'UP Board' :
+    board === 'bseb' ? 'Bihar Board' :
+    board === 'mpbse' ? 'MP Board' : 'CBSE';
   const boardQuery = `?board=${board}`;
   const seoClassLabel = `Class ${selectedClass}`;
-  const pageTitle = `${boardLabel} ${seoClassLabel} Subjects | Ceibaa`;
-  const pageDescription = `Explore ${boardLabel} ${seoClassLabel} subjects for free chapter-wise MCQs, practice tests, and detailed NCERT solutions.`;
-  
+  const pageTitle = `${boardLabel} ${seoClassLabel} Subjects - Chapter-wise MCQs & Practice Tests`;
+  const pageDescription = `Explore ${boardLabel} ${seoClassLabel} subjects for free chapter-wise MCQs, practice tests, solutions, and quick revision. Start with your subject and move chapter by chapter.`;
+
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -62,143 +62,160 @@ const ChapterTestSubjects = () => {
         if (stream && (selectedClass === '11' || selectedClass === '12')) {
           url += `&stream=${stream}`;
         }
-        
         const response = await axios.get(url);
         if (response.data.success && response.data.subjects) {
-          const mappedSubjects = response.data.subjects.map(subj => ({
+          const mappedSubjects = response.data.subjects.map((subj) => ({
             name: subj.name,
             slug: subj.slug,
             icon: ICON_MAP[subj.icon] || BookOpen,
-            color: subj.color || 'from-violet-500 to-violet-600',
-            bgColor: `bg-violet-50/50 border-violet-100`,
-            textColor: `text-[#7c5cff]`,
-            description: `${boardLabel} Class ${selectedClass} ${subj.name} syllabus chapters.`
+            description: `${boardLabel} ${subj.name} chapters`,
           }));
           setSubjects(mappedSubjects);
         }
       } catch (err) {
         console.error('Error fetching subjects:', err);
-        setError('Failed to load subjects for this class');
+        setError('Failed to load subjects');
       } finally {
         setLoading(false);
       }
     };
 
-    if (selectedClass) {
-      fetchSubjects();
+    if (selectedClass) fetchSubjects();
+  }, [selectedClass, stream, board, boardLabel]);
+
+  const handleSubjectClick = (subject) => {
+    const subjectSlug = subject.slug || subject.name.toLowerCase().replace(/ - /g, '---').replace(/\s+/g, '-');
+    if (stream && (selectedClass === '11' || selectedClass === '12')) {
+      navigate(`/chapter-tests/class-${selectedClass}/${stream}/${subjectSlug}${boardQuery}`);
+    } else {
+      navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}${boardQuery}`);
     }
-  }, [selectedClass, stream, board]);
-  
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF9FF] text-slate-800">
+    <div className="min-h-screen flex flex-col" style={{ fontFamily: FONT, background: '#FDFBF7' }}>
       <SEO
         title={pageTitle}
         description={pageDescription}
-        keywords={`${boardLabel.toLowerCase()} class ${selectedClass}, ${seoClassLabel.toLowerCase()} subjects, chapter wise mcq, free subject wise mock test`}
+        keywords={`${boardLabel.toLowerCase()} class ${selectedClass}, ${seoClassLabel.toLowerCase()} subjects, chapter wise mcq, chapter wise practice test, ${boardLabel.toLowerCase()} quiz, free subject wise mock test`}
         canonical={`https://ceibaa.in/chapter-tests/${classNumber}${boardQuery}`}
       />
-      
-      <Header 
-        isLoggedIn={isLoggedIn}
-        user={user}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
-      
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 md:px-6 py-6 space-y-6">
-        {/* Back navigation */}
+      <Header isLoggedIn={isLoggedIn} user={user} onLogin={handleLogin} onLogout={handleLogout} />
+
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+
+        {/* ═══════ BREADCRUMB & BACK ═══════ */}
         <button
           onClick={() => navigate(`/chapter-tests${boardQuery}`)}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-455 hover:text-[#7c5cff] transition-colors uppercase tracking-wider"
+          className="inline-flex items-center gap-2 bg-white border-2 border-[#0A0A0A] rounded-full px-4 py-2 text-sm font-bold text-[#0A0A0A] shadow-[3px_3px_0px_#0A0A0A] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0px_#0A0A0A] transition-all mb-6 sm:mb-8"
+          data-testid="back-to-class-btn"
+          style={{ fontFamily: FONT }}
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Syllabus Index</span>
+          <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
+          <span>Back to Class</span>
         </button>
 
-        {/* Head description */}
-        <section className="py-2 border-b border-slate-100/60 pb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md bg-violet-50 text-[#7c5cff] text-[10px] font-extrabold uppercase tracking-wider border border-violet-100/50">
-                <GraduationCap className="w-3.5 h-3.5 text-[#7c5cff]" />
-                {boardLabel} · Class {selectedClass} {stream ? `(${stream.toUpperCase()})` : ''}
+        {/* ═══════ HEADER ═══════ */}
+        <div className="mb-8 sm:mb-10">
+          <div className="flex flex-wrap items-center gap-2 mb-4" data-testid="page-chips">
+            <span className="inline-flex items-center gap-1.5 bg-[#FFD831] border-2 border-[#0A0A0A] rounded-full px-3 py-1 text-xs font-bold shadow-[2px_2px_0px_#0A0A0A]">
+              <Sparkles className="w-3 h-3" strokeWidth={2.5} />
+              {boardLabel}
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-[#A7F3D0] border-2 border-[#0A0A0A] rounded-full px-3 py-1 text-xs font-bold shadow-[2px_2px_0px_#0A0A0A]">
+              Class {selectedClass}
+            </span>
+            {stream && (
+              <span className="inline-flex items-center gap-1.5 bg-[#E9D5FF] border-2 border-[#0A0A0A] rounded-full px-3 py-1 text-xs font-bold shadow-[2px_2px_0px_#0A0A0A] uppercase">
+                {stream}
               </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">
-              Choose Subject
-            </h1>
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-              Select a subject to access its chapter-wise mock tests
-            </p>
+            )}
+            {!loading && !error && subjects.length > 0 && (
+              <span className="inline-flex items-center gap-1.5 bg-[#BAE6FD] border-2 border-[#0A0A0A] rounded-full px-3 py-1 text-xs font-bold shadow-[2px_2px_0px_#0A0A0A]">
+                {subjects.length} Subjects
+              </span>
+            )}
           </div>
 
-          {!loading && !error && subjects.length > 0 && (
-            <span className="rounded-xl bg-slate-50 border border-slate-200/50 px-3 py-1.5 text-xs font-bold text-slate-500 shadow-sm shrink-0 self-start sm:self-auto">
-              {subjects.length} Subjects available
-            </span>
-          )}
-        </section>
+          <span className="inline-block bg-[#0A0A0A] text-[#FFD831] text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full mb-3" style={{ fontFamily: FONT }}>
+            · Step 2 ·
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-bold text-[#0A0A0A] leading-tight mb-3" style={{ fontFamily: FONT }} data-testid="page-title">
+            Pick a <span className="bg-[#FFD831] border-2 border-[#0A0A0A] px-2 inline-block rotate-[-1deg] shadow-[3px_3px_0px_#0A0A0A]">Subject</span>
+          </h1>
+          <p className="text-sm sm:text-base text-gray-500 max-w-2xl leading-relaxed">
+            Start with one. Practice chapter-by-chapter. Track your progress for {boardLabel} Class {selectedClass}.
+          </p>
+        </div>
 
-        {/* Subjects Grid layout */}
+        {/* ═══════ SUBJECTS GRID ═══════ */}
         {loading ? (
-          <div className="text-center py-12 bg-white rounded-3xl border border-slate-200/60 shadow-sm flex flex-col items-center justify-center">
-            <Loader2 className="w-8 h-8 text-[#7c5cff] animate-spin mb-3" />
-            <p className="text-sm font-bold text-slate-400">Loading subjects...</p>
+          <div className="bg-white border-2 border-[#0A0A0A] rounded-2xl p-10 text-center shadow-[4px_4px_0px_#0A0A0A]" data-testid="loading-state">
+            <Loader2 className="w-10 h-10 text-[#0A0A0A] mx-auto mb-3 animate-spin" strokeWidth={2.5} />
+            <p className="text-base font-bold text-[#0A0A0A]">Loading subjects...</p>
           </div>
         ) : error ? (
-          <div className="text-center py-12 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
-            <BookOpen className="w-12 h-12 text-rose-400 mx-auto mb-3" />
-            <p className="text-sm font-bold text-slate-550">{error}</p>
+          <div className="bg-[#FFBDBE] border-2 border-[#0A0A0A] rounded-2xl p-10 text-center shadow-[4px_4px_0px_#0A0A0A]" data-testid="error-state">
+            <BookOpen className="w-14 h-14 text-[#0A0A0A] mx-auto mb-3" strokeWidth={2.5} />
+            <p className="text-base font-bold text-[#0A0A0A] mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-xl text-xs font-bold transition-all"
+              className="bg-[#0A0A0A] text-white border-2 border-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold text-sm shadow-[3px_3px_0px_#FFD831] hover:translate-y-0.5 transition-all"
+              data-testid="retry-btn"
             >
-              Retry Loading
+              Retry
             </button>
           </div>
         ) : subjects.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
-            <BookOpen className="w-12 h-12 text-slate-350 mx-auto mb-3" />
-            <p className="text-sm font-bold text-slate-550">No subjects loaded for Class {selectedClass}</p>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Upload the chapter sheet in the administrator dashboard to show active content.</p>
+          <div className="bg-white border-2 border-dashed border-[#0A0A0A] rounded-2xl p-10 text-center" data-testid="empty-state">
+            <BookOpen className="w-14 h-14 text-gray-400 mx-auto mb-3" />
+            <p className="text-base font-bold text-[#0A0A0A] mb-1">No subjects yet for Class {selectedClass}</p>
+            <p className="text-sm text-gray-500 mb-4">Upload class-wise sheets in admin panel — they appear here automatically.</p>
             <button
               onClick={() => navigate(`/chapter-tests${boardQuery}`)}
-              className="mt-4 px-4 py-2 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-xl text-xs font-bold transition-all"
+              className="bg-[#FFD831] text-[#0A0A0A] border-2 border-[#0A0A0A] px-5 py-2.5 rounded-lg font-bold text-sm shadow-[3px_3px_0px_#0A0A0A] hover:translate-y-0.5 hover:translate-x-0.5 hover:shadow-[1px_1px_0px_#0A0A0A] transition-all"
             >
               Go Back
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {subjects.map((subject) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" data-testid="subjects-grid">
+            {subjects.map((subject, idx) => {
+              const pastel = PASTEL_CYCLE[idx % PASTEL_CYCLE.length];
               const Icon = subject.icon;
               return (
                 <button
                   key={subject.name}
-                  onClick={() => {
-                    const subjectSlug = subject.slug || subject.name.toLowerCase().replace(/ - /g, '---').replace(/\s+/g, '-');
-                    if (stream && (selectedClass === '11' || selectedClass === '12')) {
-                      navigate(`/chapter-tests/class-${selectedClass}/${stream}/${subjectSlug}${boardQuery}`);
-                    } else {
-                      navigate(`/chapter-tests/class-${selectedClass}/${subjectSlug}${boardQuery}`);
-                    }
-                  }}
-                  className="group bg-white hover:bg-slate-50/20 border border-slate-250/60 hover:border-violet-200 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all duration-300 text-left flex items-start gap-4 active:scale-95 w-full"
+                  onClick={() => handleSubjectClick(subject)}
+                  data-testid={`subject-card-${subject.slug || subject.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="group relative bg-white border-2 border-[#0A0A0A] rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_#0A0A0A] hover:shadow-[6px_6px_0px_#0A0A0A] hover:-translate-y-1 hover:-translate-x-0.5 transition-all text-left overflow-hidden"
                 >
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 transition-transform duration-300 group-hover:scale-105 ${subject.bgColor}`}>
-                    <Icon className={`w-5 h-5 ${subject.textColor}`} />
+                  {/* Decorative corner accent */}
+                  <div
+                    className="absolute -top-8 -right-8 w-24 h-24 rounded-full border-2 border-[#0A0A0A] opacity-30 group-hover:opacity-60 transition-opacity"
+                    style={{ background: pastel.accent }}
+                  />
+
+                  {/* Icon */}
+                  <div className={`relative w-14 h-14 sm:w-16 sm:h-16 ${pastel.bg} border-2 border-[#0A0A0A] rounded-xl flex items-center justify-center mb-4 shadow-[3px_3px_0px_#0A0A0A] group-hover:rotate-[-4deg] transition-transform`}>
+                    <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-[#0A0A0A]" strokeWidth={2.5} />
                   </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-extrabold text-slate-800 leading-tight group-hover:text-[#7c5cff] transition-colors truncate">
-                      {subject.name}
-                    </h3>
-                    <p className="text-xs text-slate-450 font-semibold leading-relaxed mt-1 line-clamp-2">
-                      {subject.description}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-3 text-[10px] font-extrabold text-[#7c5cff] uppercase tracking-wider">
-                      <span>View chapters</span>
-                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+
+                  {/* Title */}
+                  <h3 className="relative text-lg sm:text-xl font-bold text-[#0A0A0A] mb-1 leading-tight" style={{ fontFamily: FONT }}>
+                    {subject.name}
+                  </h3>
+                  <p className="relative text-xs sm:text-sm text-gray-500 mb-5 leading-relaxed">
+                    {subject.description}
+                  </p>
+
+                  {/* CTA Row */}
+                  <div className="relative flex items-center justify-between pt-3 border-t-2 border-dashed border-[#0A0A0A]/20">
+                    <span className="text-xs sm:text-sm font-bold text-[#0A0A0A] uppercase tracking-wider">
+                      View chapters
+                    </span>
+                    <div className={`w-9 h-9 ${pastel.bg} border-2 border-[#0A0A0A] rounded-full flex items-center justify-center shadow-[2px_2px_0px_#0A0A0A] group-hover:translate-x-1 transition-transform`}>
+                      <ChevronRight className="w-4 h-4 text-[#0A0A0A]" strokeWidth={3} />
                     </div>
                   </div>
                 </button>
@@ -207,31 +224,40 @@ const ChapterTestSubjects = () => {
           </div>
         )}
 
-        {/* Platform Info Section (Lucide Icons, No Emojis) */}
-        <section className="bg-white border border-slate-200/60 rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider">
-              About {boardLabel} Class {selectedClass} Practice
-            </h2>
-          </div>
-          <p className="text-xs text-slate-455 font-semibold leading-relaxed">
-            This workspace assists students to transition directly into mock quizzes and revisions. Select a subject above to explore its chapters. All questions are reviewed against the latest CBSE and NCERT textbook guidelines.
-          </p>
+        {/* ═══════ INFO STRIP ═══════ */}
+        {!loading && !error && subjects.length > 0 && (
+          <div className="mt-10 sm:mt-14 bg-white border-2 border-[#0A0A0A] rounded-2xl shadow-[6px_6px_0px_#0A0A0A] overflow-hidden" data-testid="info-strip">
+            <div className="bg-[#0A0A0A] px-5 sm:px-7 py-3 flex items-center gap-2">
+              <span className="w-2 h-2 bg-[#A7F3D0] rounded-full animate-pulse" />
+              <p className="text-[#FFD831] text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em]" style={{ fontFamily: FONT }}>
+                About {boardLabel} · Class {selectedClass}
+              </p>
+            </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
-            {[
-              { icon: BookOpen, label: 'Subject-wise syllabus' },
-              { icon: Clock, label: 'Instant mobile speed' },
-              { icon: BarChart3, label: 'Performance analytics' },
-              { icon: Award, label: 'Board-level revisions' }
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2 p-2.5 rounded-xl border border-slate-100/80 bg-slate-50/50">
-                <item.icon className="w-4 h-4 text-[#7c5cff]" />
-                <span className="text-[10px] font-extrabold text-slate-650 leading-none">{item.label}</span>
+            <div className="p-5 sm:p-7">
+              <p className="text-sm sm:text-base text-gray-600 mb-5 leading-relaxed">
+                Each subject opens a dedicated chapter list with MCQs, solutions, progress tracking, and test-ready revision — designed around the latest {boardLabel} curriculum.
+              </p>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { Icon: BookOpen, label: 'Subject-wise', bg: 'bg-[#A7F3D0]' },
+                  { Icon: Zap, label: 'Fast practice', bg: 'bg-[#FFD831]' },
+                  { Icon: BarChart3, label: 'Analytics', bg: 'bg-[#E9D5FF]' },
+                  { Icon: Trophy, label: 'Exam-ready', bg: 'bg-[#FFBDBE]' },
+                ].map(({ Icon, label, bg }) => (
+                  <div
+                    key={label}
+                    className={`${bg} border-2 border-[#0A0A0A] rounded-xl p-3 flex items-center gap-2 shadow-[2px_2px_0px_#0A0A0A]`}
+                  >
+                    <Icon className="w-4 h-4 text-[#0A0A0A] flex-shrink-0" strokeWidth={2.5} />
+                    <span className="text-xs sm:text-sm font-bold text-[#0A0A0A] leading-tight">{label}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-        </section>
+        )}
       </main>
 
       <Footer />

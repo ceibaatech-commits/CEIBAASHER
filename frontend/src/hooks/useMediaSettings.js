@@ -3,6 +3,12 @@ import axios from 'axios';
 
 const BACKEND_URL = window.location.origin;
 
+const normalizeMediaPermissions = (data = {}) => ({
+  allow_media: Boolean(data.allow_media),
+  can_post_images: Boolean(data.can_post_images),
+  can_post_videos: Boolean(data.can_post_videos)
+});
+
 /**
  * Custom hook for managing media settings and permissions
  */
@@ -21,17 +27,11 @@ export const useMediaSettings = (user) => {
     const fetchMediaSettings = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/user/media-permissions`);
-        
-        if (response.data.success) {
-          setMediaSettings(response.data.permissions || {
-            allow_media: false,
-            can_post_images: false,
-            can_post_videos: false
-          });
-        }
+
+        setMediaSettings(normalizeMediaPermissions(response.data));
       } catch (error) {
         console.error('Error fetching media settings:', error);
-        setMediaSettings({ allow_media: false, can_post_images: false, can_post_videos: false });
+        setMediaSettings(normalizeMediaPermissions());
       }
     };
 

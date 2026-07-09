@@ -53,7 +53,6 @@ const LiveBattleMode = () => {
 
   useEffect(() => {
     // Initialize socket connection
-    console.log('🔗 Connecting to battle server for 1v1:', SOCKET_URL);
     const newSocket = io(SOCKET_URL, {
       path: '/api/battlews/socket.io',  // Battle Socket.IO mounted at /api/battlews in server.py
       transports: ['polling', 'websocket']
@@ -69,11 +68,9 @@ const LiveBattleMode = () => {
     });
 
     newSocket.on('waiting', (data) => {
-      console.log('Waiting for opponent:', data.message);
     });
 
     newSocket.on('match-found', async (data) => {
-      console.log('Match found!', data);
       // Reset per-battle state so rematches start clean
       setMyScore(0);
       setOpponentScore(0);
@@ -131,26 +128,21 @@ const LiveBattleMode = () => {
   // HEARTBEAT: Keep connection alive during 1v1 battle (prevents timeout)
   useEffect(() => {
     if (!socket) return;
-    
-    console.log('💓 Starting heartbeat mechanism for 1v1 battle (every 10 seconds)');
-    
+
     // Send heartbeat every 10 seconds to prevent timeout
     const heartbeatInterval = setInterval(() => {
       if (socket && socket.connected) {
         socket.emit('heartbeat', { timestamp: Date.now() });
-        console.log('💓 Heartbeat sent');
       }
     }, 10000); // 10 seconds
-    
+
     // Listen for heartbeat acknowledgment
     socket.on('heartbeat_ack', (data) => {
-      console.log('💓 Heartbeat acknowledged by server');
     });
-    
+
     return () => {
       clearInterval(heartbeatInterval);
       socket.off('heartbeat_ack');
-      console.log('💓 Heartbeat mechanism stopped');
     };
   }, [socket]);
 

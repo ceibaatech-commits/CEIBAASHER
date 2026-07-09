@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Settings, Image, Video, ToggleLeft, ToggleRight, Save, Loader2, AlertCircle, Users, Search, UserX, UserCheck, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const SystemSettings = () => {
   const [users, setUsers] = useState([]);

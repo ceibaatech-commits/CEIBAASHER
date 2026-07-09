@@ -5,7 +5,7 @@ import { Send, MessageSquare, ChevronLeft, Loader } from 'lucide-react';
 import { toast } from 'sonner';
 import io from 'socket.io-client';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 export default function RecruiterMessages() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Repeat2, Trophy, GraduationCap, BookOpen, TrendingUp, Star, Target } from 'lucide-react';
+import { Repeat2, Trophy, GraduationCap, BookOpen, TrendingUp, Star, Target, Heart, Hash } from 'lucide-react';
 import UserAvatar from '../UserAvatar';
 import MathText from '../MathText';
 import PostCardMenu from './PostCardMenu';
@@ -151,6 +151,24 @@ const PostCard = ({
           <span className="font-medium hover:underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onOpenProfile(post.user_id); }}>
             {post.user_name || post.username} reposted
           </span>
+        </div>
+      )}
+
+      {/* Liked by following indicator */}
+      {post.liked_by_following_name && (
+        <div data-testid="liked-by-following-indicator" className="flex items-center gap-2 text-gray-500 text-xs px-3 sm:px-4 pt-2 pl-14">
+          <Heart className="w-3 h-3 fill-rose-500 text-rose-500" />
+          <span className="font-medium hover:underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onOpenProfile(post.liked_by_following_username); }}>
+            {post.liked_by_following_name} liked
+          </span>
+        </div>
+      )}
+
+      {/* Feed reason / Topic indicator */}
+      {post.feed_reason && (
+        <div data-testid="feed-reason-indicator" className="flex items-center gap-2 text-gray-500 text-xs px-3 sm:px-4 pt-2 pl-14">
+          <Hash className="w-3 h-3 text-blue-500 animate-pulse" />
+          <span className="font-semibold text-gray-600">{post.feed_reason}</span>
         </div>
       )}
 

@@ -44,6 +44,7 @@ import LiveBattle from "@/pages/LiveBattle";
 import BattleResults from "@/pages/BattleResults";
 import QuizRoom from "@/pages/QuizRoom";
 import QuizResults from "@/pages/QuizResults";
+import SponsoredQuizPage from "./pages/SponsoredQuizPage";
 import Board from "@/pages/Board";
 import RoomDetail from "@/pages/RoomDetail";
 
@@ -218,6 +219,7 @@ function App() {
           <Route path="/live-battle/:pin" element={<LiveBattle />} />
           <Route path="/battle-results/:pin" element={<BattleResults />} />
           <Route path="/quiz-results/:pin" element={<QuizResults />} />
+          <Route path="/sponsored-quiz/:quizId" element={<SponsoredQuizPage />} />
           <Route path="/profile/board" element={<Board />} />
           <Route path="/board" element={<Board />} />
           <Route path="/room/:pin" element={<RoomDetail />} />

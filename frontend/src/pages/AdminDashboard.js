@@ -22,6 +22,7 @@ import SupportPanel from '../components/admin/SupportPanel';
 import EmployeeManager from '../components/admin/EmployeeManager';
 import LiveBattlesManager from '../components/admin/LiveBattlesManager';
 import ProgramsManager from '../components/admin/ProgramsManager';
+import SponsoredQuizManager from '../components/admin/SponsoredQuizManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -92,6 +93,7 @@ const AdminDashboard = () => {
     { id: 'analytics', label: 'Analytics', icon: BarChart3, color: 'pink' },
     { id: 'battles', label: 'Live Battles', icon: Zap, color: 'red' },
     { id: 'programs', label: 'Programs', icon: GraduationCap, color: 'violet' },
+    { id: 'sponsored-quiz', label: 'Sponsored Quizzes', icon: Award, color: 'teal' },
     { id: 'support', label: 'Support Tickets', icon: MessageSquare, color: 'teal' },
     { id: 'settings', label: 'System Settings', icon: Settings, color: 'gray' },
   ];
@@ -127,6 +129,8 @@ const AdminDashboard = () => {
         return <LiveBattlesManager />;
       case 'programs':
         return <ProgramsManager />;
+      case 'sponsored-quiz':
+        return <SponsoredQuizManager />;
       case 'support':
         return <SupportPanel />;
       case 'settings':

@@ -18,6 +18,60 @@ def init_db(database):
     global db
     db = database
 
+
+# ---- Admin auth guard (used by sponsor-banner admin routes) ----
+ADMIN_COOKIE_NAME = "ceibaa_admin_token"
+import os as _os
+_JWT_SECRET = None
+
+def _get_jwt_secret():
+    global _JWT_SECRET
+    if _JWT_SECRET is None:
+        _JWT_SECRET = _os.environ.get("JWT_SECRET", "")
+    return _JWT_SECRET
+
+async def _require_admin(request: Request):
+    """Dependency: raises 401/403 if caller is not an authenticated admin."""
+    token = request.cookies.get(ADMIN_COOKIE_NAME) or ""
+    if not token:
+        auth = request.headers.get("Authorization", "")
+        if auth.lower().startswith("bearer "):
+            token = auth[7:].strip()
+    if not token:
+        raise HTTPException(status_code=401, detail="Admin authentication required")
+
+    # 1) DB-backed session (canonical)
+    session = await db.admin_sessions.find_one({"token": token})
+    if session:
+        expires_at = session.get("expires_at", "")
+        if expires_at:
+            try:
+                from datetime import datetime, timezone
+                expiry = datetime.fromisoformat(expires_at.replace("Z", "+00:00"))
+                if datetime.now(timezone.utc) > expiry:
+                    raise HTTPException(status_code=401, detail="Session expired")
+            except ValueError:
+                pass
+        return {"user_id": session.get("user_id"), "role": session.get("role", "admin")}
+
+    # 2) Legacy placeholder token
+    if token == "admin_authenticated":
+        return {"user_id": "admin", "role": "admin"}
+
+    # 3) JWT fallback
+    if _jose_jwt:
+        try:
+            payload = _jose_jwt.decode(token, _get_jwt_secret(), algorithms=["HS256"])
+            uid = payload.get("id") or payload.get("user_id") or payload.get("sub")
+            if uid:
+                user = await db.users.find_one({"id": uid}, {"_id": 0})
+                if user and (user.get("is_admin") or user.get("role") in ["admin", "super_admin"]):
+                    return payload
+        except Exception:
+            pass
+
+    raise HTTPException(status_code=403, detail="Admin access required")
+
 # ==================== PLATFORM SETTINGS ====================
 
 class PlatformSettingsModel(BaseModel):
@@ -951,3 +1005,114 @@ async def add_manual_question(question_data: ManualQuestion):
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error adding question: {str(e)}")
+
+
+# ==================== SPONSOR BANNERS ====================
+
+class SponsorBannerModel(BaseModel):
+    title: Optional[str] = ""
+    image_url: str
+    link_url: Optional[str] = ""
+    active: Optional[bool] = True
+    order: Optional[int] = 0
+
+
+@router.get("/banners")
+async def get_active_banners():
+    """Public endpoint — returns only active sponsor banners, sorted by order."""
+    try:
+        banners = await db.sponsor_banners.find(
+            {"active": True}, {"_id": 0}
+        ).sort("order", 1).to_list(50)
+        return {"success": True, "banners": banners}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/admin/banners")
+async def get_all_banners(_: dict = Depends(_require_admin)):
+    """Admin — returns all sponsor banners regardless of active status."""
+    try:
+        banners = await db.sponsor_banners.find(
+            {}, {"_id": 0}
+        ).sort("order", 1).to_list(100)
+        return {"success": True, "banners": banners}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/admin/banners")
+async def create_banner(banner: SponsorBannerModel, _: dict = Depends(_require_admin)):
+    """Admin — create a new sponsor banner."""
+    try:
+        count = await db.sponsor_banners.count_documents({})
+        doc = {
+            "id": str(uuid.uuid4()),
+            "title": banner.title or "",
+            "image_url": banner.image_url,
+            "link_url": banner.link_url or "",
+            "active": banner.active if banner.active is not None else True,
+            "order": banner.order if banner.order is not None else count,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        await db.sponsor_banners.insert_one(doc.copy())
+        doc.pop("_id", None)
+        return {"success": True, "banner": doc}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/admin/banners/{banner_id}")
+async def update_banner(banner_id: str, banner: SponsorBannerModel, _: dict = Depends(_require_admin)):
+    """Admin — update an existing sponsor banner."""
+    try:
+        update_data = {
+            "title": banner.title or "",
+            "image_url": banner.image_url,
+            "link_url": banner.link_url or "",
+            "active": banner.active if banner.active is not None else True,
+            "order": banner.order if banner.order is not None else 0,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        result = await db.sponsor_banners.update_one(
+            {"id": banner_id}, {"$set": update_data}
+        )
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Banner not found")
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/admin/banners/{banner_id}/toggle")
+async def toggle_banner_active(banner_id: str, _: dict = Depends(_require_admin)):
+    """Admin — flip the active flag of a sponsor banner."""
+    try:
+        banner = await db.sponsor_banners.find_one({"id": banner_id}, {"_id": 0})
+        if not banner:
+            raise HTTPException(status_code=404, detail="Banner not found")
+        new_active = not banner.get("active", True)
+        await db.sponsor_banners.update_one(
+            {"id": banner_id}, {"$set": {"active": new_active}}
+        )
+        return {"success": True, "active": new_active}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/admin/banners/{banner_id}")
+async def delete_banner(banner_id: str, _: dict = Depends(_require_admin)):
+    """Admin — permanently delete a sponsor banner."""
+    try:
+        result = await db.sponsor_banners.delete_one({"id": banner_id})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Banner not found")
+        return {"success": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -62,6 +62,8 @@ import media_upload_routes
 from messaging_routes import router as messaging_router
 import messaging_routes
 from institute_panel_routes import router as institute_panel_router
+from sponsored_quiz_routes import router as sponsored_quiz_router
+import sponsored_quiz_routes
  
 # ── Divya AI Tutor (merged: podcast + live tutor, Sarvam TTS) ─────────────────
 from divya_routes import router as divya_router, live_router as divya_live_router
@@ -106,6 +108,7 @@ social_auto_post.init_db(db)
 # Initialize institute panel routes
 import institute_panel_routes
 institute_panel_routes.init_db(db)
+sponsored_quiz_routes.init_db(db)
  
 # Create the main FastAPI app without a prefix
 fastapi_app = FastAPI()
@@ -219,6 +222,7 @@ fastapi_app.include_router(question_image_router, prefix="/api")
 fastapi_app.include_router(cbse_data_router, prefix="/api")
 fastapi_app.include_router(media_upload_router, prefix="/api")
 fastapi_app.include_router(institute_panel_router)
+fastapi_app.include_router(sponsored_quiz_router, prefix="")
  
 # Employee routes
 from employee_routes import router as employee_router

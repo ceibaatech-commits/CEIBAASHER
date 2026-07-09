@@ -1,10 +1,14 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSocialSocket } from '../../../hooks/useSocialSocket';
 import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
+
+const MOBILE_BREAKPOINT = 768;
+
+const getFeedPageSize = () => (window.innerWidth < MOBILE_BREAKPOINT ? 6 : 10);
 
 const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedTag) => {
   const navigate = useNavigate();
@@ -13,6 +17,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(getFeedPageSize);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const observerTarget = useRef(null);
@@ -119,6 +124,16 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     }
   }, [activeTab, isConnected, joinFeed]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const nextPageSize = getFeedPageSize();
+      setPageSize(prevPageSize => (prevPageSize === nextPageSize ? prevPageSize : nextPageSize));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // --- Data fetching ---
   const fetchMyFollowing = useCallback(async () => {
     if (!user) return;
@@ -152,7 +167,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
     else setLoading(true);
 
     try {
-      const limit = 20;
+      const limit = pageSize;
       const skip = pageNum * limit;
 
       let endpoint = `${BACKEND_URL}/api/social/feed/for-you?skip=${skip}&limit=${limit}`;
@@ -219,7 +234,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [activeTab, user]);
+  }, [activeTab, pageSize, user]);
 
   // Reset feed on tab change
   useEffect(() => {
@@ -234,7 +249,7 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
       }
     };
     loadInitialFeed();
-  }, [activeTab, user, fetchFeed, fetchMyFollowing, fetchMyStats]);
+  }, [activeTab, user, pageSize, fetchFeed, fetchMyFollowing, fetchMyStats]);
 
   // Pagination
   const loadMorePosts = useCallback(() => {
@@ -263,28 +278,33 @@ const useVictoryLane = (user, isAuthenticated, activeTab, searchQuery, selectedT
   }, [hasMore, loadingMore, loading, loadMorePosts]);
 
   // --- Computed values ---
-  const filteredPosts = posts.filter(post => {
-    if (selectedTag) {
+  const normalizedSelectedTag = selectedTag?.toLowerCase().replace('#', '');
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+
+  const filteredPosts = useMemo(() => posts.filter(post => {
+    if (normalizedSelectedTag) {
       const tagInArray = post.tags && post.tags.some(tag =>
-        tag.toLowerCase().replace('#', '') === selectedTag.toLowerCase().replace('#', '')
+        tag.toLowerCase().replace('#', '') === normalizedSelectedTag
       );
-      const tagInContent = post.content && post.content.toLowerCase().includes(`#${selectedTag.toLowerCase().replace('#', '')}`);
+      const tagInContent = post.content && post.content.toLowerCase().includes(`#${normalizedSelectedTag}`);
       if (!tagInArray && !tagInContent) return false;
     }
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    if (normalizedSearchQuery) {
       return (
-        post.content?.toLowerCase().includes(query) ||
-        (post.user_name || post.username || '').toLowerCase().includes(query) ||
-        post.exam_category?.toLowerCase().includes(query) ||
-        post.subject?.toLowerCase().includes(query) ||
-        post.tags?.some(tag => tag.toLowerCase().includes(query))
+        post.content?.toLowerCase().includes(normalizedSearchQuery) ||
+        (post.user_name || post.username || '').toLowerCase().includes(normalizedSearchQuery) ||
+        post.exam_category?.toLowerCase().includes(normalizedSearchQuery) ||
+        post.subject?.toLowerCase().includes(normalizedSearchQuery) ||
+        post.tags?.some(tag => tag.toLowerCase().includes(normalizedSearchQuery))
       );
     }
     return true;
-  });
+  }), [posts, normalizedSearchQuery, normalizedSelectedTag]);
 
-  const allTags = [...new Set(posts.flatMap(post => post.tags || []))].filter(Boolean).slice(0, 20);
+  const allTags = useMemo(
+    () => [...new Set(posts.flatMap(post => post.tags || []))].filter(Boolean).slice(0, 20),
+    [posts]
+  );
 
   // --- Social actions ---
   const toggleFollow = async (targetUserId) => {

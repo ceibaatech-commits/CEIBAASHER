@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Users, Trophy, Play, Copy, Check, Crown, Clock, AlertCircle, Loader2 } from 'lucide-react';
 import io from 'socket.io-client';
-import BattleVideoChat from '../components/BattleVideoChat';
 import Header from '../components/Header';
 
 // Connect to Socket.IO on main backend - Battle endpoint
@@ -25,15 +24,10 @@ const BattleLobby = () => {
   const [timeRemaining, setTimeRemaining] = useState(null);
 
   useEffect(() => {
-    console.log('🚀 BattleLobby useEffect RUNNING');
-    console.log('🔗 Room info:', { pin, isHost, playerName, hostName });
-    
     if (!pin) {
-      console.log('⚠️ No PIN yet, waiting...');
       return;
     }
-    
-    console.log('📡 Creating Socket.io connection');
+
     const newSocket = io(BATTLE_SERVER_URL, {
       path: SOCKET_PATH,
       transports: ['polling', 'websocket'],
@@ -46,7 +40,6 @@ const BattleLobby = () => {
 
     // Connection events
     newSocket.on('connect', () => {
-      console.log('✅ Socket CONNECTED! Socket ID:', newSocket.id);
       const username = isHost ? hostName : playerName;
       newSocket.emit('join_room', { 
         roomId: pin,
@@ -62,12 +55,10 @@ const BattleLobby = () => {
     });
 
     newSocket.on('disconnect', (reason) => {
-      console.log('❌ Disconnected:', reason);
     });
 
     // Listen for room_joined confirmation
     newSocket.on('room_joined', (data) => {
-      console.log('📬 Room joined successfully:', data);
       if (data.room) {
         setRoomInfo(data.room);
         if (data.room.participants) {
@@ -87,7 +78,6 @@ const BattleLobby = () => {
 
     // Listen for new participants joining
     newSocket.on('participant_joined', (data) => {
-      console.log('📬 Participant joined:', data);
       if (data.room && data.room.participants) {
         setPlayers(data.room.participants);
       }
@@ -95,7 +85,6 @@ const BattleLobby = () => {
 
     // Listen for participants leaving
     newSocket.on('participant_left', (data) => {
-      console.log('📤 Participant left:', data);
       if (data.room && data.room.participants) {
         setPlayers(data.room.participants);
       }
@@ -103,7 +92,6 @@ const BattleLobby = () => {
 
     // Listen for battle started event - ANY PLAYER CAN START
     newSocket.on('battle_started', (data) => {
-      console.log('🚀 Battle started:', data);
       navigate(`/live-battle/${pin}`, { 
         state: { 
           playerName: isHost ? hostName : playerName,
@@ -123,7 +111,6 @@ const BattleLobby = () => {
 
     // Listen for questions update
     newSocket.on('questions_updated', (data) => {
-      console.log('📝 Questions updated:', data);
       if (data.questions && data.questions.length > 0) {
         setHasQuestions(true);
       }
@@ -176,7 +163,6 @@ const BattleLobby = () => {
       return;
     }
     setIsStarting(true);
-    console.log('🚀 Starting battle for room:', pin);
     socket.emit('start_battle', { roomId: pin });
   };
 
@@ -326,15 +312,6 @@ const BattleLobby = () => {
         </div>
       </div>
     </div>
-
-    {/* Video Chat available in lobby */}
-    <BattleVideoChat
-      socket={socket}
-      roomId={pin}
-      playerName={playerName || 'Player'}
-      opponentName={players?.find(p => p.name !== playerName)?.name || 'Opponent'}
-      opponentId={players?.find(p => p.name !== playerName)?.id}
-    />
     </>
   );
 };

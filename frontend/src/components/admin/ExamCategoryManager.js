@@ -8,7 +8,7 @@ import {
 import ExamCategoryModal from './ExamCategoryModal';
 import ExamCategoryStatsGrid from './ExamCategoryStatsGrid';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 // Excluded IDs and Categories for "Other Competitive Exams"
 const EXCLUDED_EXAM_IDS = ['NDA', 'Agniveer', 'CDS', 'CAPF'];

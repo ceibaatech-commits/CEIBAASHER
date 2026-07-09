@@ -7,7 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Users, Briefcase, Code2, Trophy, Calendar, CheckCircle2, Globe, MapPin, DollarSign, Clock, ChevronRight, Heart, MessageCircle, Share2, Bookmark, Award, TrendingUp, ExternalLink } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const postTypeConfig = {
   job: { icon: Briefcase, color: 'bg-blue-600', textColor: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', label: 'Job', actionLabel: 'Apply' },

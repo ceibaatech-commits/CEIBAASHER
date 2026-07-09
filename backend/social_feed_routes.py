@@ -240,10 +240,151 @@ async def filter_expired_quiz_posts(posts: list) -> list:
     
     return filtered
 
+# ==================== FOR-YOU PERSONALIZATION HELPERS ====================
+# Lightweight, X/Twitter-style scoring: two candidate pools (in-network +
+# out-of-network), each post scored by trending * recency decay + an
+# interest-match boost, with memes interleaved on a fixed ratio so the feed
+# never turns into a wall of textbook content.
+
+INTEREST_MATCH_WEIGHT = 40       # points added per unit of interest-weight matched
+RECENCY_HALF_LIFE_HOURS = 18     # trending posts lose half their score every 18h
+MEME_INTERLEAVE_EVERY = 5        # roughly 1 in 5 posts in the feed is a meme
+MEME_KEYWORDS = {"meme", "memes", "funny", "comedy", "lol", "relatable"}
+
+
+def _post_created_dt(post: dict) -> datetime:
+    """Robustly parse a post's created_at into an aware datetime (mirrors parse_date)."""
+    try:
+        date_val = post.get("created_at", "")
+        if isinstance(date_val, datetime):
+            return date_val if date_val.tzinfo else date_val.replace(tzinfo=timezone.utc)
+        if date_val:
+            if "+" in date_val or date_val.endswith("Z"):
+                return datetime.fromisoformat(date_val.replace("Z", "+00:00"))
+            return datetime.fromisoformat(date_val).replace(tzinfo=timezone.utc)
+    except Exception:
+        pass
+    return datetime.min.replace(tzinfo=timezone.utc)
+
+
+def _recency_decay(post: dict) -> float:
+    """Exponential decay (1.0 = brand new, 0.5 at RECENCY_HALF_LIFE_HOURS old, etc.)."""
+    age_hours = max(0.0, (datetime.now(timezone.utc) - _post_created_dt(post)).total_seconds() / 3600)
+    return 0.5 ** (age_hours / RECENCY_HALF_LIFE_HOURS)
+
+
+def _is_meme_post(post: dict) -> bool:
+    if post.get("post_type") == "meme":
+        return True
+    tags = {str(t).lower() for t in (post.get("tags") or [])}
+    hashtags = {str(h).lower().lstrip("#") for h in (post.get("hashtags") or [])}
+    return bool(MEME_KEYWORDS & (tags | hashtags))
+
+
+async def get_user_interest_profile(user_id: Optional[str]) -> dict:
+    """
+    Build a cheap weighted interest map, e.g. {"jee": 8, "class 10": 8, "rbse": 8}.
+    Signals, strongest first:
+      1) Onboarding goal on the user doc (instant, zero cold-start)
+      2) User's own recent posts' subject/exam_category/board/degree_category
+      3) Posts the user recently liked
+    Safe no-op for anonymous users. No ML - just counts, cheap to run per request.
+    """
+    weights: dict = {}
+    if not user_id:
+        return weights
+
+    user = await db.users.find_one({"id": user_id}, {"_id": 0})
+    if user:
+        # From GoalSelectionModal.js: onSelectGoal(type, categoryId) saves
+        # `goal_type` ("competitive" | "school" | "university") and
+        # `goal_category`:
+        #   competitive -> flat exam slug, e.g. "jee", "neet"
+        #   university  -> flat degree slug, e.g. "bcom", "mba"
+        #   school      -> combo "{board}_{class}", e.g. "rbse_class_10"
+        # Everything is normalized to lowercase and matched the same way
+        # in _relevance_score / _expand_goal_keys.
+        goal_type = str(user.get("goal_type") or "").lower()
+        goal_category = user.get("goal_category")
+        if goal_category:
+            for key in _expand_goal_keys(goal_type, str(goal_category).lower()):
+                weights[key] = weights.get(key, 0) + 8
+
+    post_fields = {"_id": 0, "subject": 1, "exam_category": 1, "academic_class": 1, "academic_subject": 1, "board": 1, "degree_category": 1}
+
+    own_posts = await db.social_posts.find(
+        {"user_id": user_id}, post_fields
+    ).sort("created_at", -1).limit(100).to_list(100)
+    for p in own_posts:
+        for key in (p.get("subject"), p.get("exam_category"), p.get("academic_class"), p.get("academic_subject"), p.get("board"), p.get("degree_category")):
+            if key:
+                key = str(key).lower()
+                weights[key] = weights.get(key, 0) + 3
+
+    liked = await db.post_likes.find(
+        {"user_id": user_id}, {"_id": 0, "post_id": 1}
+    ).sort("created_at", -1).limit(200).to_list(200)
+    liked_ids = [l["post_id"] for l in liked if l.get("post_id")]
+    if liked_ids:
+        liked_posts = await db.social_posts.find(
+            {"id": {"$in": liked_ids}}, post_fields
+        ).to_list(len(liked_ids))
+        for p in liked_posts:
+            for key in (p.get("subject"), p.get("exam_category"), p.get("academic_class"), p.get("academic_subject"), p.get("board"), p.get("degree_category")):
+                if key:
+                    key = str(key).lower()
+                    weights[key] = weights.get(key, 0) + 2
+
+    return weights
+
+
+def _expand_goal_keys(goal_type: str, goal_category: str) -> list:
+    """
+    Turn a raw goal_category into the set of keys worth matching against post
+    fields. Handles the school "{board}_{class}" combo by splitting it into a
+    board key (matches a future `board` field on posts) and a class key
+    normalized with spaces (matches `academic_class`, e.g. "Class 10" -> "class 10").
+    Competitive/university categories are already flat, so they're returned as-is.
+    """
+    if goal_type == "school" and "_class_" in goal_category:
+        idx = goal_category.index("_class_")
+        board_part = goal_category[:idx]
+        class_part = goal_category[idx + 1:]  # keeps the leading "class_..."
+        return [board_part, class_part.replace("_", " ")]
+    return [goal_category]
+
+
+def _relevance_score(post: dict, interests: dict) -> float:
+    """trending_score * recency_decay + interest-match boost. Higher = ranked higher."""
+    base = (post.get("trending_score") or 0) * _recency_decay(post)
+    boost = 0.0
+    if interests:
+        for key in (post.get("subject"), post.get("exam_category"), post.get("academic_class"), post.get("academic_subject"), post.get("board"), post.get("degree_category")):
+            if key and str(key).lower() in interests:
+                boost += interests[str(key).lower()] * INTEREST_MATCH_WEIGHT
+    return base + boost
+
+
+def _interleave_memes(ranked_posts: list, meme_posts: list, every: int = MEME_INTERLEAVE_EVERY) -> list:
+    """Insert memes at a fixed cadence into an already-ranked non-meme list."""
+    if not meme_posts:
+        return ranked_posts
+    result = []
+    meme_iter = iter(meme_posts)
+    for i, post in enumerate(ranked_posts, start=1):
+        result.append(post)
+        if i % every == 0:
+            nxt = next(meme_iter, None)
+            if nxt:
+                result.append(nxt)
+    # Any leftover memes (rare) are appended at the end rather than dropped
+    result.extend(list(meme_iter))
+    return result
+
 # ==================== MODELS ====================
 
 class PostCreateRequest(BaseModel):
-    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq", "question", "academic_question"]
+    post_type: Literal["battle_victory", "quiz_announcement", "study_tip", "achievement", "government", "video", "general", "room_code", "quiz_room", "quiz_result", "mcq", "question", "academic_question", "meme"]
     mcq_data: Optional[dict] = None
     content: str
     battle_stats: Optional[dict] = None
@@ -257,6 +398,8 @@ class PostCreateRequest(BaseModel):
     academic_class: Optional[str] = None  # e.g., "Class 9", "Class 11 (Science)"
     academic_subject: Optional[str] = None  # e.g., "Mathematics", "Hindi - Malhar"
     academic_chapter: Optional[str] = None  # e.g., "1. Number Systems"
+    board: Optional[str] = None  # e.g., "rbse", "cbse", "icse" - matches GoalSelectionModal board ids
+    degree_category: Optional[str] = None  # e.g., "bcom", "bba", "mba" - matches GoalSelectionModal university category ids
     hashtags: Optional[List[str]] = None  # For hashtags
 
 class CommentRequest(BaseModel):
@@ -361,6 +504,8 @@ async def create_post(
             "academic_class": post_data.academic_class,
             "academic_subject": post_data.academic_subject,
             "academic_chapter": post_data.academic_chapter,
+            "board": post_data.board,
+            "degree_category": post_data.degree_category,
             "likes_count": 0,
             "comments_count": 0,
             "shares_count": 0,
@@ -698,7 +843,21 @@ async def get_for_you_feed(
     limit: int = 20,
     authorization: Optional[str] = Header(None)
 ):
-    """Get personalized feed with pagination"""
+    """
+    Personalized feed, X/Twitter-style:
+      - In-network pool: posts from people the user follows (via `follows`,
+        the single source of truth - previously this incorrectly read the
+        legacy `ceeps` collection, so followed-user posts never actually
+        showed up here even when a user had follows).
+      - Out-of-network pool: trending + recent quiz rooms, ranked by
+        trending_score * recency decay + a boost for matching the user's
+        interests (onboarding goal exam, own posts, recent likes).
+      - Memes are scored/pooled separately and interleaved at a fixed ratio
+        so the feed stays light and scrollable, not just exam content.
+      - New/anonymous users with no follows and no interest history still
+        get a full feed - it's just entirely out-of-network, weighted by
+        what's broadly trending. Nothing is ever gated behind following.
+    """
     try:
         # Validate parameters
         if skip < 0:
@@ -707,63 +866,91 @@ async def get_for_you_feed(
             raise HTTPException(status_code=400, detail="limit parameter must be non-negative")
         if limit > 100:
             limit = 100  # Cap at 100 for performance
-        
+
         user_id = await get_optional_user_id_async(authorization, request)
-        mixed_posts = []
-        
-        # Fetch ALL posts first, then paginate after combining and deduplicating
+
+        # ---- In-network pool (posts from people the user follows) ----
+        following_posts = []
+        following_ids = []
         if user_id:
-            ceeps = await db.ceeps.find({"user_id": user_id}, {"_id": 0, "ceep_user_id": 1}).to_list(1000)
-            following_ids = [c["ceep_user_id"] for c in ceeps]
-            
+            follows = await db.follows.find(
+                {"follower_id": user_id, "status": "approved"},
+                {"_id": 0, "following_id": 1}
+            ).to_list(1000)
+            following_ids = [f["following_id"] for f in follows if f.get("following_id")]
+
             if following_ids:
                 following_posts = await db.social_posts.find(
                     {"user_id": {"$in": following_ids}}, {"_id": 0}
                 ).sort("created_at", -1).limit(100).to_list(100)
-                mixed_posts.extend(following_posts)
-        
-        # Get trending posts (with limit for performance)
-        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).limit(100).to_list(100)
-        
-        # Get recent quiz rooms (last 24 hours) to ensure they appear
+
+        # ---- Out-of-network pools: trending, recent quiz rooms, memes ----
+        trending = await db.social_posts.find({}, {"_id": 0}).sort("trending_score", -1).limit(200).to_list(200)
+
         recent_quiz_rooms = await db.social_posts.find(
             {"post_type": "quiz_room"}, {"_id": 0}
         ).sort("created_at", -1).limit(20).to_list(20)
-        
-        # Combine and deduplicate
-        existing_ids = {p["id"] for p in mixed_posts}
-        for post in trending + recent_quiz_rooms:
+
+        meme_pool = await db.social_posts.find(
+            {"$or": [{"post_type": "meme"}, {"tags": {"$in": list(MEME_KEYWORDS)}}, {"hashtags": {"$in": list(MEME_KEYWORDS)}}]},
+            {"_id": 0}
+        ).sort("trending_score", -1).limit(40).to_list(40)
+
+        # Get the user's interest profile once (subject/exam_category weights)
+        interests = await get_user_interest_profile(user_id)
+
+        # ---- Combine + dedupe non-meme candidates ----
+        non_meme_posts = []
+        existing_ids = set()
+        for post in following_posts:
             if post["id"] not in existing_ids:
-                mixed_posts.append(post)
+                non_meme_posts.append(post)
                 existing_ids.add(post["id"])
-        
+        for post in trending + recent_quiz_rooms:
+            if post["id"] not in existing_ids and not _is_meme_post(post):
+                non_meme_posts.append(post)
+                existing_ids.add(post["id"])
+
+        # ---- Dedupe meme candidates separately (own bucket) ----
+        meme_posts = []
+        for post in meme_pool:
+            if post["id"] not in existing_ids:
+                meme_posts.append(post)
+                existing_ids.add(post["id"])
+
+        mixed_posts = non_meme_posts + meme_posts
+
         # Filter expired quiz rooms
         mixed_posts = await filter_expired_quiz_posts(mixed_posts)
+        meme_ids_after_filter = {p["id"] for p in meme_posts}
+        non_meme_posts = [p for p in mixed_posts if p["id"] not in meme_ids_after_filter]
+        meme_posts = [p for p in mixed_posts if p["id"] in meme_ids_after_filter]
 
         # Filter out posts authored by blocked users (either direction)
         blocked_ids = await get_blocked_user_ids_for_feed(user_id)
         if blocked_ids:
-            mixed_posts = [p for p in mixed_posts if p.get("user_id") not in blocked_ids]
+            non_meme_posts = [p for p in non_meme_posts if p.get("user_id") not in blocked_ids]
+            meme_posts = [p for p in meme_posts if p.get("user_id") not in blocked_ids]
 
-        # Sort by created_at with proper date parsing
-        def parse_date(post):
-            try:
-                date_val = post.get('created_at', '')
-                if isinstance(date_val, datetime):
-                    return date_val if date_val.tzinfo else date_val.replace(tzinfo=timezone.utc)
-                if date_val:
-                    if '+' in date_val or date_val.endswith('Z'):
-                        dt = datetime.fromisoformat(date_val.replace('Z', '+00:00'))
-                    else:
-                        dt = datetime.fromisoformat(date_val).replace(tzinfo=timezone.utc)
-                    return dt
-                return datetime.min.replace(tzinfo=timezone.utc)
-            except Exception:
-                return datetime.min.replace(tzinfo=timezone.utc)
-        
-        mixed_posts.sort(key=parse_date, reverse=True)
-        
-        # NOW apply pagination after combining and deduplicating
+        # ---- Rank non-meme posts by relevance (trending * recency + interest boost),
+        # with a following boost so in-network content surfaces reliably ----
+        following_id_set = set(following_ids)
+        FOLLOWING_BOOST = 30
+
+        def score(post):
+            s = _relevance_score(post, interests)
+            if post.get("user_id") in following_id_set:
+                s += FOLLOWING_BOOST
+            return s
+
+        non_meme_posts.sort(key=score, reverse=True)
+        # Memes are ranked purely by their own trending/recency, not subject-matched
+        meme_posts.sort(key=lambda p: (p.get("trending_score") or 0) * _recency_decay(p), reverse=True)
+
+        # ---- Interleave memes into the ranked feed at a fixed cadence ----
+        mixed_posts = _interleave_memes(non_meme_posts, meme_posts)
+
+        # NOW apply pagination after combining, ranking, and interleaving
         total_posts = len(mixed_posts)
         paginated = mixed_posts[skip:skip + limit]
         has_more = (skip + limit) < total_posts
@@ -853,7 +1040,8 @@ async def get_for_you_feed(
             "posts": paginated, 
             "count": len(paginated),
             "has_more": has_more,
-            "total": total_posts
+            "total": total_posts,
+            "personalized": bool(interests) or bool(following_ids)
         }
     except HTTPException:
         raise

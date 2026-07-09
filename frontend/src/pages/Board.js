@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { 
+import {
   Trophy, Clock, Users, Search, Play, CheckCircle,
-  Target, BookOpen, TrendingUp, Calendar,
-  ChevronRight, RefreshCw,
-  X, Settings, BarChart3, GraduationCap, School
+  BookOpen, Calendar, ChevronRight, RefreshCw, BarChart3,
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -19,16 +17,49 @@ import BoardStreakHero from '../components/board/BoardStreakHero';
 
 const BACKEND_URL = window.location.origin;
 
+/* ─────────────────────────────────────────────────────────────────
+ * Defensive score clamp
+ * Any percentage displayed anywhere on this page runs through this.
+ * Handles both raw counts and pre-computed percentages that may be
+ * broken upstream. Result is ALWAYS a valid 0-100 number.
+ * ───────────────────────────────────────────────────────────────── */
+const clampPct = (n) => {
+  const v = Number(n);
+  if (!Number.isFinite(v) || v < 0) return 0;
+  return Math.min(100, v);
+};
+
+/* ─────────────────────────────────────────────────────────────────
+ * Reusable card wrapper — TRUE edge-to-edge on mobile.
+ * Nuclear-level styles: forces zero padding/margin/border/shadow
+ * on mobile so it CANNOT be overridden by parent containers.
+ * ───────────────────────────────────────────────────────────────── */
+const EdgeCard = ({ children, className = '', innerClassName = '', ...props }) => (
+  <section
+    className={`relative w-full overflow-hidden bg-white/70 backdrop-blur-xl
+                border-0 md:border md:border-white/60
+                shadow-none md:shadow-[0_20px_50px_rgba(124,92,255,0.04)]
+                md:hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)]
+                md:rounded-3xl transition-all duration-500 ${className}`}
+    style={{ padding: 0, marginLeft: 0, marginRight: 0 }}
+    {...props}
+  >
+    <div className={`p-4 md:p-6 ${innerClassName}`}>
+      {children}
+    </div>
+  </section>
+);
+
 const Board = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
-  
+
   const [userGoal, setUserGoal] = useState(null);
   const [goalInfo, setGoalInfo] = useState(null);
   const [showGoalModal, setShowGoalModal] = useState(false);
-  
+
   const [dashboardStats, setDashboardStats] = useState({
     tests_completed: 0,
     avg_score: 0,
@@ -50,7 +81,7 @@ const Board = () => {
   const [loadingDashboard, setLoadingDashboard] = useState(true);
   const [loadingSchedule, setLoadingSchedule] = useState(true);
   const [loadingInsights, setLoadingInsights] = useState(true);
-  
+
   const [testHistory, setTestHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
@@ -84,27 +115,27 @@ const Board = () => {
     try {
       const res = await axios.post(`${BACKEND_URL}/api/dashboard/set-goal/${user.id}`, {
         goal_type: goalType,
-        goal_category: goalCategory
+        goal_category: goalCategory,
       });
       if (res.data.success) {
         setGoalInfo(res.data.goal_info);
         setUserGoal({ goal_type: goalType, goal_category: goalCategory });
-        
+
         setLoadingDashboard(true);
         setLoadingSchedule(true);
         setLoadingInsights(true);
-        
+
         setWeeklySchedule([]);
         setAiInsights(null);
         setRecommendedTests([]);
         setSubjectMastery([]);
-        
+
         try {
           await axios.post(`${BACKEND_URL}/api/dashboard/regenerate-schedule/${user.id}`);
         } catch (scheduleError) {
           console.error('Error regenerating schedule:', scheduleError);
         }
-        
+
         fetchDashboardData(user.id);
       }
     } catch (error) {
@@ -179,18 +210,18 @@ const Board = () => {
       const userStr = localStorage.getItem('ceibaa_user');
       if (!userStr) return;
       const userObj = JSON.parse(userStr);
-      
+
       const response = await axios.get(`${BACKEND_URL}/api/battle/async/user/${userObj.id}/rooms`);
-      
+
       if (response.data.success) {
         const roomsData = response.data.rooms;
         setRooms(roomsData);
-        
+
         const now = new Date();
         const active = roomsData.filter(r => new Date(r.expires_at) > now && r.is_active).length;
         const completed = roomsData.filter(r => new Date(r.expires_at) <= now || !r.is_active).length;
         const created = roomsData.filter(r => r.host_id === userObj.id).length;
-        
+
         setStats({ total: roomsData.length, active, completed, created });
       }
       setLoading(false);
@@ -238,10 +269,7 @@ const Board = () => {
   const rejoinRoom = (pin) => {
     const userObj = JSON.parse(localStorage.getItem('ceibaa_user'));
     navigate(`/live-battle/${pin}`, {
-      state: {
-        autoJoin: true,
-        playerName: userObj.name
-      }
+      state: { autoJoin: true, playerName: userObj.name },
     });
   };
 
@@ -253,7 +281,7 @@ const Board = () => {
     { id: 'all', label: 'All Rooms', count: stats.total },
     { id: 'active', label: 'Active', count: stats.active },
     { id: 'completed', label: 'Completed', count: stats.completed },
-    { id: 'created', label: 'Created by Me', count: stats.created }
+    { id: 'created', label: 'Created by Me', count: stats.created },
   ];
 
   const getTodaySchedule = () => {
@@ -265,30 +293,21 @@ const Board = () => {
   const startRecommendedTest = (test) => {
     if (test.exam_type === 'competitive') {
       const examMap = {
-        'jee': 'JEE',
-        'neet': 'NEET',
-        'upsc': 'UPSC',
-        'defence': 'NDA',
-        'banking': 'SSC',
-        'gate': 'GATE',
-        'cat': 'CAT'
+        'jee': 'JEE', 'neet': 'NEET', 'upsc': 'UPSC', 'defence': 'NDA',
+        'banking': 'SSC', 'gate': 'GATE', 'cat': 'CAT',
       };
       const examName = examMap[test.exam_category] || 'JEE';
-      navigate(`/exam/${examName}`, {
-        state: {
-          highlightSubject: test.subject
-        }
-      });
+      navigate(`/exam/${examName}`, { state: { highlightSubject: test.subject } });
     } else if (test.exam_type === 'cbse') {
       const classMatch = test.exam_category?.match(/class_(\d+)/);
       const classNum = classMatch ? classMatch[1] : '10';
-      
+
       const subjectSlug = test.subject
         .toLowerCase()
         .replace(/ - /g, '---')
         .replace(/: /g, ':')
         .replace(/\s+/g, '-');
-      
+
       if (classNum === '11' || classNum === '12') {
         const streamMatch = test.exam_category?.match(/class_\d+_(\w+)/);
         const stream = streamMatch ? streamMatch[1] : 'science';
@@ -344,13 +363,13 @@ const Board = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#faf9ff] via-[#f7f5ff] to-[#f0f4ff]">
+    <div className="min-h-screen bg-gradient-to-br from-[#faf9ff] via-[#f7f5ff] to-[#f0f4ff] overflow-x-hidden">
       {/* Dynamic light gradient nodes */}
       <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-[#e3ddff]/20 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-[20%] right-[-100px] w-96 h-96 rounded-full bg-sky-300/10 blur-3xl pointer-events-none" />
       <div className="absolute top-[50%] left-[-150px] w-[500px] h-[500px] rounded-full bg-violet-400/5 blur-3xl pointer-events-none" />
 
-      <Header 
+      <Header
         isLoggedIn={isLoggedIn}
         user={user}
         onLogout={() => {
@@ -358,46 +377,57 @@ const Board = () => {
           navigate('/login');
         }}
       />
-      
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8 relative z-10">
-        <GoalSelectionModal 
-          isOpen={showGoalModal} 
-          onClose={() => setShowGoalModal(false)}
-          onSelectGoal={handleSelectGoal}
-          currentGoal={userGoal}
-        />
 
-        {/* 1. Premium profile hero */}
-        <BoardFigmaHero
-          user={user}
-          stats={dashboardStats}
-          learnerLevel={learnerLevel}
-          subjectMastery={subjectMastery}
-          roomsCreated={stats.created}
-          goalInfo={goalInfo}
-          onChangeGoal={() => setShowGoalModal(true)}
-        />
+      {/* GoalSelectionModal — fixed/portal, safe outside container */}
+      <GoalSelectionModal
+        isOpen={showGoalModal}
+        onClose={() => setShowGoalModal(false)}
+        onSelectGoal={handleSelectGoal}
+        currentGoal={userGoal}
+      />
 
-        {/* 2. Parents Mode Panel */}
-        <ParentsModePanel />
+      {/* 1. Full-bleed profile hero — receives CLAMPED stats */}
+      <BoardFigmaHero
+        user={user}
+        stats={{ ...dashboardStats, avg_score: clampPct(dashboardStats.avg_score) }}
+        learnerLevel={learnerLevel}
+        subjectMastery={(subjectMastery || []).map(s => ({
+          ...s,
+          mastery: clampPct(s.mastery),
+          accuracy: clampPct(s.accuracy),
+        }))}
+        roomsCreated={stats.created}
+        goalInfo={goalInfo}
+        onChangeGoal={() => setShowGoalModal(true)}
+      />
 
-        {/* 3. Streak hero */}
-        <BoardStreakHero
-          streak={dashboardStats.streak}
-          nextMilestone={dashboardStats.next_milestone}
-          daysToMilestone={dashboardStats.days_to_milestone}
-          weeklyActivity={dashboardStats.weekly_activity}
-          nextReward={dashboardStats.next_reward}
-          currentWingman={dashboardStats.current_wingman}
-          nextRewardWingman={dashboardStats.next_reward_wingman}
-          milestoneTiers={dashboardStats.milestone_tiers}
-        />
+      {/* 2. Parents Mode Panel */}
+      <ParentsModePanel />
+
+      {/* 3. Full-bleed streak hero */}
+      <BoardStreakHero
+        streak={dashboardStats.streak}
+        nextMilestone={dashboardStats.next_milestone}
+        daysToMilestone={dashboardStats.days_to_milestone}
+        weeklyActivity={dashboardStats.weekly_activity}
+        nextReward={dashboardStats.next_reward}
+        currentWingman={dashboardStats.current_wingman}
+        nextRewardWingman={dashboardStats.next_reward_wingman}
+        milestoneTiers={dashboardStats.milestone_tiers}
+      />
+
+      {/*
+        Main content region.
+        • Mobile: full-width edge-to-edge (m/p forced to 0 via ! modifier).
+        • md+   : 24px side padding + centered max-width for reading comfort.
+      */}
+      <div className="relative z-10 space-y-4 md:space-y-8 py-4 md:py-8 !mx-0 !px-0 md:!mx-auto md:!max-w-6xl md:!px-6">
 
         {/* 4. Subject Mastery + Today's Schedule */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 md:gap-6">
           {/* Subject Mastery */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all duration-300">
-            <div className="flex items-center justify-between mb-6">
+          <EdgeCard>
+            <div className="flex items-center justify-between mb-4 md:mb-6">
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#7c5cff] flex items-center justify-center shadow-sm">
                   <BookOpen className="w-5 h-5" />
@@ -430,16 +460,16 @@ const Board = () => {
                 <p className="text-sm font-bold">Complete quizzes to see subject mastery</p>
               </div>
             )}
-          </div>
+          </EdgeCard>
 
           {/* Today's Schedule */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all duration-300">
-            <div className="flex items-center justify-between mb-6">
+          <EdgeCard>
+            <div className="flex items-center justify-between mb-4 md:mb-6">
               <h3 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#7c5cff] flex items-center justify-center shadow-sm">
                   <Calendar className="w-5 h-5" />
                 </div>
-                Today's Schedule
+                Today&apos;s Schedule
               </h3>
               <button
                 onClick={regenerateSchedule}
@@ -490,7 +520,7 @@ const Board = () => {
                 <p className="text-sm font-bold">No schedule generated yet</p>
               </div>
             )}
-          </div>
+          </EdgeCard>
         </div>
 
         {/* 5. AI Insights & Recommended Tests */}
@@ -502,141 +532,150 @@ const Board = () => {
         />
 
         {/* 6. Test Performance History */}
-        <SectionHeader icon={<BarChart3 className="w-4 h-4" />} label="Test Performance History" />
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-4 md:p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all mb-8" data-testid="board-test-history-section">
-          <TestHistoryTable data={testHistory} loading={historyLoading} />
+        <div>
+          <SectionHeader icon={<BarChart3 className="w-4 h-4" />} label="Test Performance History" />
+          <EdgeCard data-testid="board-test-history-section">
+            <TestHistoryTable data={testHistory} loading={historyLoading} />
+          </EdgeCard>
         </div>
 
         {/* 7. Quiz Battles & Rooms */}
-        <SectionHeader icon={<Trophy className="w-4 h-4" />} label="Quiz Battles & Rooms" />
+        <div>
+          <SectionHeader icon={<Trophy className="w-4 h-4" />} label="Quiz Battles & Rooms" />
 
-        {/* Room stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {[
-            { label: 'Total Rooms', value: stats.total, icon: <Trophy className="w-5 h-5 text-amber-500" />, accent: 'bg-amber-50/50 border-amber-100/40 text-amber-500' },
-            { label: 'Active Rooms', value: stats.active, icon: <Play className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />, accent: 'bg-emerald-50/50 border-emerald-100/40 text-emerald-500' },
-            { label: 'Completed', value: stats.completed, icon: <CheckCircle className="w-5 h-5 text-sky-500" />, accent: 'bg-sky-50/50 border-sky-100/40 text-sky-500' },
-            { label: 'Created by Me', value: stats.created, icon: <Users className="w-5 h-5 text-[#7c5cff]" />, accent: 'bg-[#f4f0ff]/50 border-violet-100/40 text-[#7c5cff]' },
-          ].map((c) => (
-            <div key={c.label} className="bg-white/75 backdrop-blur-md rounded-2xl p-4.5 border border-white/60 shadow-[0_12px_30px_-10px_rgba(124,92,255,0.05)] hover:-translate-y-0.5 transition-all">
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-9 h-9 rounded-xl ${c.accent.split(' ')[0]} ${c.accent.split(' ')[1]} flex items-center justify-center border`}>
-                  {c.icon}
+          {/* Room stats — edge-to-edge grid on mobile, card grid on desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-px md:gap-4 mb-0 md:mb-6">
+            {[
+              { label: 'Total Rooms', value: stats.total, icon: <Trophy className="w-5 h-5 text-amber-500" />, accent: 'bg-amber-50/50 border-amber-100/40' },
+              { label: 'Active Rooms', value: stats.active, icon: <Play className="w-5 h-5 text-emerald-500 fill-emerald-500/10" />, accent: 'bg-emerald-50/50 border-emerald-100/40' },
+              { label: 'Completed', value: stats.completed, icon: <CheckCircle className="w-5 h-5 text-sky-500" />, accent: 'bg-sky-50/50 border-sky-100/40' },
+              { label: 'Created by Me', value: stats.created, icon: <Users className="w-5 h-5 text-[#7c5cff]" />, accent: 'bg-[#f4f0ff]/50 border-violet-100/40' },
+            ].map((c) => (
+              <div
+                key={c.label}
+                className="bg-white/75 backdrop-blur-md p-4 border-0 md:rounded-2xl md:border md:border-white/60 md:shadow-[0_12px_30px_-10px_rgba(124,92,255,0.05)] md:hover:-translate-y-0.5 transition-all"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`w-9 h-9 rounded-xl ${c.accent} flex items-center justify-center border`}>
+                    {c.icon}
+                  </div>
+                  <span className="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">{c.value}</span>
                 </div>
-                <span className="text-2xl md:text-3xl font-black text-slate-900 tabular-nums">{c.value}</span>
+                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">{c.label}</div>
               </div>
-              <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">{c.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Rooms List */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-5 md:p-6 shadow-[0_20px_50px_rgba(124,92,255,0.04)] border border-white/60 hover:shadow-[0_30px_70px_rgba(124,92,255,0.08)] transition-all">
-          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between mb-6">
-            <div className="flex flex-wrap gap-2.5">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${
-                    activeTab === tab.id
-                      ? 'bg-[#7c5cff] text-white shadow-lg shadow-violet-500/20'
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {tab.label}
-                  <span className="ml-1.5 text-[10px] font-bold opacity-80">({tab.count})</span>
-                </button>
-              ))}
-            </div>
-            <div className="relative w-full md:w-72">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search by PIN or exam..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-[#7c5cff] focus:ring-4 focus:ring-violet-100 focus:outline-none transition-all"
-              />
-            </div>
+            ))}
           </div>
 
-          <div className="space-y-4">
-            {filteredRooms.length === 0 ? (
-              <div className="text-center py-16 text-slate-400">
-                <Trophy className="w-16 h-16 mx-auto mb-4 opacity-30" />
-                <p className="text-base font-extrabold text-slate-700">No battle rooms found</p>
-                <p className="text-sm text-slate-400 mt-1">Start creating or joining quiz battles!</p>
-              </div>
-            ) : (
-              filteredRooms.map(room => {
-                const isActive = new Date(room.expires_at) > new Date() && room.is_active;
-                return (
-                  <div
-                    key={room.pin}
-                    className="bg-white/50 hover:bg-violet-50/20 border border-slate-100 hover:border-violet-200/50 rounded-2xl p-4 md:p-5 transition-all shadow-[0_8px_20px_-8px_rgba(124,92,255,0.03)] hover:shadow-[0_12px_24px_-8px_rgba(124,92,255,0.06)] hover:-translate-y-0.5"
+          {/* Rooms List — edge-to-edge card */}
+          <EdgeCard className="mt-0 md:mt-0">
+            <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between mb-6">
+              <div className="flex flex-wrap gap-2.5">
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all active:scale-95 ${
+                      activeTab === tab.id
+                        ? 'bg-[#7c5cff] text-white shadow-lg shadow-violet-500/20'
+                        : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                    }`}
                   >
-                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2.5 mb-2">
-                          <span className="font-mono font-black text-2xl text-[#7c5cff] select-all tracking-wider">{room.pin}</span>
-                          {isActive ? (
-                            <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-100/50 rounded-full text-[9px] font-extrabold uppercase tracking-wider">Active</span>
-                          ) : (
-                            <span className="px-2.5 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[9px] font-extrabold uppercase tracking-wider">Completed</span>
-                          )}
-                        </div>
-                        <div className="text-slate-800 font-extrabold text-sm mb-1.5 truncate">{room.exam_category} · {room.subject}</div>
-                        <div className="flex flex-wrap gap-4 text-xs text-slate-500 font-bold uppercase tracking-wider">
-                          <span className="flex items-center gap-1.5 text-slate-400">
-                            <Users className="w-4 h-4 text-slate-400" />
-                            {room.participant_count} / {room.max_participants}
-                          </span>
-                          <span className="flex items-center gap-1.5 text-slate-400">
-                            <Trophy className="w-4 h-4 text-slate-400" />
-                            {room.submission_count} submissions
-                          </span>
-                          {isActive && (
-                            <span className="flex items-center gap-1.5 text-amber-600 font-black normal-case">
-                              <Clock className="w-4 h-4 text-amber-500" />
-                              {getTimeRemaining(room.expires_at)}
+                    {tab.label}
+                    <span className="ml-1.5 text-[10px] font-bold opacity-80">({tab.count})</span>
+                  </button>
+                ))}
+              </div>
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search by PIN or exam..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:border-[#7c5cff] focus:ring-4 focus:ring-violet-100 focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {filteredRooms.length === 0 ? (
+                <div className="text-center py-16 text-slate-400">
+                  <Trophy className="w-16 h-16 mx-auto mb-4 opacity-30" />
+                  <p className="text-base font-extrabold text-slate-700">No battle rooms found</p>
+                  <p className="text-sm text-slate-400 mt-1">Start creating or joining quiz battles!</p>
+                </div>
+              ) : (
+                filteredRooms.map(room => {
+                  const isActive = new Date(room.expires_at) > new Date() && room.is_active;
+                  return (
+                    <div
+                      key={room.pin}
+                      className="bg-white/50 hover:bg-violet-50/20 border border-slate-100 hover:border-violet-200/50 rounded-2xl p-4 md:p-5 transition-all shadow-[0_8px_20px_-8px_rgba(124,92,255,0.03)] hover:shadow-[0_12px_24px_-8px_rgba(124,92,255,0.06)] hover:-translate-y-0.5"
+                    >
+                      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2.5 mb-2">
+                            <span className="font-mono font-black text-2xl text-[#7c5cff] select-all tracking-wider">{room.pin}</span>
+                            {isActive ? (
+                              <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-100/50 rounded-full text-[9px] font-extrabold uppercase tracking-wider">Active</span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[9px] font-extrabold uppercase tracking-wider">Completed</span>
+                            )}
+                          </div>
+                          <div className="text-slate-800 font-extrabold text-sm mb-1.5 truncate">{room.exam_category} · {room.subject}</div>
+                          <div className="flex flex-wrap gap-4 text-xs text-slate-500 font-bold uppercase tracking-wider">
+                            <span className="flex items-center gap-1.5 text-slate-400">
+                              <Users className="w-4 h-4 text-slate-400" />
+                              {room.participant_count} / {room.max_participants}
                             </span>
-                          )}
+                            <span className="flex items-center gap-1.5 text-slate-400">
+                              <Trophy className="w-4 h-4 text-slate-400" />
+                              {room.submission_count} submissions
+                            </span>
+                            {isActive && (
+                              <span className="flex items-center gap-1.5 text-amber-600 font-black normal-case">
+                                <Clock className="w-4 h-4 text-amber-500" />
+                                {getTimeRemaining(room.expires_at)}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2.5 w-full md:w-auto mt-2 md:mt-0">
-                        {isActive && (
+                        <div className="flex gap-2.5 w-full md:w-auto mt-2 md:mt-0">
+                          {isActive && (
+                            <button
+                              onClick={() => rejoinRoom(room.pin)}
+                              className="flex-1 md:flex-none px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-emerald-500/10 transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <Play className="w-4 h-4 fill-white/10" strokeWidth={2.5} />
+                              Rejoin
+                            </button>
+                          )}
                           <button
-                            onClick={() => rejoinRoom(room.pin)}
-                            className="flex-1 md:flex-none px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-emerald-500/10 transition-all flex items-center justify-center gap-1.5"
+                            onClick={() => viewRoomDetail(room.pin)}
+                            className="flex-1 md:flex-none px-4 py-2.5 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-violet-500/10 transition-all"
                           >
-                            <Play className="w-4 h-4 fill-white/10" strokeWidth={2.5} />
-                            Rejoin
+                            View Details
                           </button>
-                        )}
-                        <button
-                          onClick={() => viewRoomDetail(room.pin)}
-                          className="flex-1 md:flex-none px-4 py-2.5 bg-[#7c5cff] hover:bg-[#6a4ce4] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md shadow-violet-500/10 transition-all"
-                        >
-                          View Details
-                        </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+                  );
+                })
+              )}
+            </div>
+          </EdgeCard>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
 };
 
+/* Section header — small horizontal padding on mobile so title breathes,
+   flush-left on desktop. */
 const SectionHeader = ({ icon, label }) => (
-  <div className="flex items-center gap-3.5 mb-5 mt-6">
+  <div className="flex items-center gap-3 mb-3 px-4 md:px-0 md:mb-5">
     <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#7c5cff] flex items-center justify-center shadow-sm">
       {icon}
     </div>

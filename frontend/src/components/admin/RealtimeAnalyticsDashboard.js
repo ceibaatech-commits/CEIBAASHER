@@ -5,7 +5,7 @@ import {
   Activity, AlertCircle, CheckCircle, BarChart3, Target, Flame
 } from 'lucide-react';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const RealtimeAnalyticsDashboard = () => {
   const [liveBattles, setLiveBattles] = useState([]);

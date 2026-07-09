@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare, Briefcase, KeyRound, Settings as SettingsIcon } from 'lucide-react';
+import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare, Briefcase, Settings as SettingsIcon } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import InboxDropdown from './InboxDropdown';
@@ -309,25 +309,13 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                             <span className="font-medium text-sm">Settings</span>
                           </button>
 
-                          <button
-                            onClick={() => {
-                              setShowProfileDropdown(false);
-                              navigate('/settings');
-                            }}
-                            className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left text-gray-700"
-                            data-testid="dropdown-change-password-link"
-                          >
-                            <KeyRound className="w-4 h-4 text-purple-600" />
-                            <span className="font-medium text-sm">Change Password</span>
-                          </button>
-
                           <div className="border-t border-gray-200 my-1"></div>
                           
                           <button
                             onClick={() => {
                               setShowProfileDropdown(false);
                               handleLogout();
-                              navigate('/');
+                              window.location.href = '/login';
                             }}
                             className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-red-50 transition-colors text-left text-red-600"
                           >
@@ -498,7 +486,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                     </button>
                     
                     <button 
-                      onClick={() => { handleLogout(); navigate('/'); setMobileMenuOpen(false); }} 
+                      onClick={() => { setMobileMenuOpen(false); handleLogout(); window.location.href = '/login'; }} 
                       className="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-all"
                     >
                       <LogOut className="w-4 h-4" />

@@ -9,7 +9,7 @@ import { SheetListTable } from './SheetListTable';
 import { syllabusTopicsMap, subjectsMap, subTopicsMap } from './examDataMaps';
 import ManualQuestionForm from './ManualQuestionForm';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const ExamSheetManager = () => {
   const [selectedOption, setSelectedOption] = useState('exam'); // 'exam', 'class', or 'book'

@@ -98,6 +98,78 @@ async def _connection_ids(user_id: str) -> set:
     return ids
 
 
+# --------------- conversation helpers ---------------
+async def _ensure_conversation_access(conversation_id: str, user_id: str, is_group: Optional[bool] = None):
+    """Validate conversation exists and user has access. Raises HTTPException on failure.
+    Returns the conversation document."""
+    conv = await db.conversations.find_one({"id": conversation_id}, {"_id": 0})
+    if not conv:
+        raise HTTPException(404, "Conversation not found")
+    if user_id not in conv.get("participants", []):
+        raise HTTPException(403, "Access denied")
+    if is_group is not None and conv.get("is_group", False) != is_group:
+        group_str = "group" if is_group else "direct"
+        raise HTTPException(404, f"{group_str.capitalize()} conversation not found")
+    return conv
+
+
+async def _mark_messages_read(conversation_id: str, user_id: str) -> List[str]:
+    """Mark all unread messages in conversation as read for the user.
+    Returns the list of message IDs that transitioned to read.
+    Broadcasts messages_read event to the room."""
+    await db.conversations.update_one(
+        {"id": conversation_id},
+        {"$set": {f"unread_counts.{user_id}": 0}}
+    )
+    # Find messages sent by others that are unread
+    just_read = await db.messages.find(
+        {"conversation_id": conversation_id, "sender_id": {"$ne": user_id}, "read": False},
+        {"_id": 0, "id": 1}
+    ).to_list(500)
+    read_ids = [m["id"] for m in just_read]
+    
+    if read_ids:
+        await db.messages.update_many(
+            {"id": {"$in": read_ids}},
+            {"$set": {"read": True, "delivered": True}}
+        )
+        # Broadcast to room so sender sees double-cyan checks
+        try:
+            from messaging_socketio import messaging_sio
+            await messaging_sio.emit("messages_read", {
+                "conversation_id": conversation_id,
+                "reader_id": user_id,
+                "message_ids": read_ids,
+            }, room=conversation_id)
+        except Exception:
+            pass
+    return read_ids
+
+
+async def _enrich_conversations(convs: List[dict], user_id: str) -> List[dict]:
+    """Enrich conversations with other-user info, online status, and unread count.
+    Groups show member count and name instead."""
+    try:
+        from messaging_socketio import is_user_online
+    except Exception:
+        is_user_online = lambda _uid: False  # noqa: E731
+    
+    enriched = []
+    for c in convs:
+        if c.get("is_group"):
+            c["other_user"] = None
+            c["member_count"] = len(c.get("participants", []))
+        else:
+            other_id = [p for p in c["participants"] if p != user_id]
+            other_id = other_id[0] if other_id else user_id
+            other_user = await _enrich_user(other_id)
+            other_user["online"] = is_user_online(other_id)
+            c["other_user"] = other_user
+        c["unread"] = c.get("unread_counts", {}).get(user_id, 0)
+        enriched.append(c)
+    return enriched
+
+
 async def _system_message(conversation_id: str, text: str):
     """Insert + broadcast a centered system line (e.g. 'X added Y')."""
     now = datetime.now(timezone.utc).isoformat()
@@ -224,11 +296,7 @@ async def create_group(body: CreateGroupReq, request: Request, authorization: Op
 async def add_group_member(conversation_id: str, body: AddMemberReq, request: Request, authorization: Optional[str] = Header(None)):
     """Any group member can add people from their own followers/following."""
     user_id = await _get_user_id(authorization, request)
-    conv = await db.conversations.find_one({"id": conversation_id}, {"_id": 0})
-    if not conv or not conv.get("is_group"):
-        raise HTTPException(404, "Group not found")
-    if user_id not in conv.get("participants", []):
-        raise HTTPException(403, "Access denied")
+    conv = await _ensure_conversation_access(conversation_id, user_id, is_group=True)
 
     new_id = body.user_id
     if new_id in conv["participants"]:
@@ -258,11 +326,7 @@ async def add_group_member(conversation_id: str, body: AddMemberReq, request: Re
 @router.get("/groups/{conversation_id}/members")
 async def list_group_members(conversation_id: str, request: Request, authorization: Optional[str] = Header(None)):
     user_id = await _get_user_id(authorization, request)
-    conv = await db.conversations.find_one({"id": conversation_id}, {"_id": 0})
-    if not conv or not conv.get("is_group"):
-        raise HTTPException(404, "Group not found")
-    if user_id not in conv.get("participants", []):
-        raise HTTPException(403, "Access denied")
+    conv = await _ensure_conversation_access(conversation_id, user_id, is_group=True)
     members = [await _enrich_user(uid) for uid in conv["participants"]]
     return {"success": True, "members": members, "created_by": conv.get("created_by")}
 
@@ -271,33 +335,11 @@ async def list_group_members(conversation_id: str, request: Request, authorizati
 async def list_conversations(request: Request, authorization: Optional[str] = Header(None)):
     """List all conversations for the current user, most recent first."""
     user_id = await _get_user_id(authorization, request)
-
     convs = await db.conversations.find(
         {"participants": user_id},
         {"_id": 0}
     ).sort("last_message_at", -1).to_list(50)
-
-    # Lazy import keeps the route module decoupled from socketio bootstrap order
-    try:
-        from messaging_socketio import is_user_online
-    except Exception:
-        is_user_online = lambda _uid: False  # noqa: E731
-
-    # Enrich with other user's info + online status (groups: name + member count)
-    enriched = []
-    for c in convs:
-        if c.get("is_group"):
-            c["other_user"] = None
-            c["member_count"] = len(c.get("participants", []))
-        else:
-            other_id = [p for p in c["participants"] if p != user_id]
-            other_id = other_id[0] if other_id else user_id
-            other_user = await _enrich_user(other_id)
-            other_user["online"] = is_user_online(other_id)
-            c["other_user"] = other_user
-        c["unread"] = c.get("unread_counts", {}).get(user_id, 0)
-        enriched.append(c)
-
+    enriched = await _enrich_conversations(convs, user_id)
     return {"success": True, "conversations": enriched}
 
 
@@ -305,10 +347,7 @@ async def list_conversations(request: Request, authorization: Optional[str] = He
 async def get_messages(conversation_id: str, request: Request, limit: int = 50, before: Optional[str] = None, authorization: Optional[str] = Header(None)):
     """Get messages for a conversation (newest last)."""
     user_id = await _get_user_id(authorization, request)
-
-    conv = await db.conversations.find_one({"id": conversation_id}, {"_id": 0})
-    if not conv or user_id not in conv.get("participants", []):
-        raise HTTPException(403, "Access denied")
+    conv = await _ensure_conversation_access(conversation_id, user_id)
 
     query = {"conversation_id": conversation_id}
     if before:
@@ -326,32 +365,9 @@ async def get_messages(conversation_id: str, request: Request, limit: int = 50, 
                     cache[sid_] = await _enrich_user(sid_)
                 m["sender"] = cache[sid_]
 
-    # Mark conversation read for this user + flip messages to read=True.
-    # Broadcasts `messages_read` so the sender sees double-cyan checks live.
-    await db.conversations.update_one(
-        {"id": conversation_id},
-        {"$set": {f"unread_counts.{user_id}": 0}}
-    )
-    just_read = await db.messages.find(
-        {"conversation_id": conversation_id, "sender_id": {"$ne": user_id}, "read": False},
-        {"_id": 0, "id": 1}
-    ).to_list(500)
-    read_ids = [m["id"] for m in just_read]
+    # Mark messages as read and update response
+    read_ids = await _mark_messages_read(conversation_id, user_id)
     if read_ids:
-        await db.messages.update_many(
-            {"id": {"$in": read_ids}},
-            {"$set": {"read": True, "delivered": True}}
-        )
-        try:
-            from messaging_socketio import messaging_sio
-            await messaging_sio.emit("messages_read", {
-                "conversation_id": conversation_id,
-                "reader_id": user_id,
-                "message_ids": read_ids,
-            }, room=conversation_id)
-        except Exception:
-            pass
-        # Patch the in-flight response so the caller sees the new state
         read_set = set(read_ids)
         for m in msgs:
             if m.get("id") in read_set:
@@ -368,10 +384,7 @@ async def send_message(conversation_id: str, body: SendMessageReq, request: Requ
     text = body.text.strip()
     if not text:
         raise HTTPException(400, "Message cannot be empty")
-
-    conv = await db.conversations.find_one({"id": conversation_id}, {"_id": 0})
-    if not conv or user_id not in conv.get("participants", []):
-        raise HTTPException(403, "Access denied")
+    conv = await _ensure_conversation_access(conversation_id, user_id)
 
     now = datetime.now(timezone.utc).isoformat()
     # All other participants (1 for direct chats, N for groups). Delivered iff
@@ -432,42 +445,16 @@ async def mark_read(conversation_id: str, request: Request, authorization: Optio
     bubble checkmarks to read (cyan, double-check) in real time.
     """
     user_id = await _get_user_id(authorization, request)
-    await db.conversations.update_one(
-        {"id": conversation_id},
-        {"$set": {f"unread_counts.{user_id}": 0}}
-    )
-
-    # Snapshot which messages just transitioned to read so we can broadcast
-    # only those IDs (lighter payload, safer client-side merge).
-    just_read = await db.messages.find(
-        {"conversation_id": conversation_id, "sender_id": {"$ne": user_id}, "read": False},
-        {"_id": 0, "id": 1}
-    ).to_list(500)
-    read_ids = [m["id"] for m in just_read]
-
-    if read_ids:
-        await db.messages.update_many(
-            {"id": {"$in": read_ids}},
-            {"$set": {"read": True, "delivered": True}}
-        )
-        # Best-effort socket fan-out
-        try:
-            from messaging_socketio import messaging_sio
-            await messaging_sio.emit("messages_read", {
-                "conversation_id": conversation_id,
-                "reader_id": user_id,
-                "message_ids": read_ids,
-            }, room=conversation_id)
-        except Exception:
-            pass
-
-    # Push refreshed unread total so header badges clear across all tabs.
+    # Ensure user has access to the conversation
+    await _ensure_conversation_access(conversation_id, user_id)
+    # Mark messages read and get the IDs that transitioned
+    read_ids = await _mark_messages_read(conversation_id, user_id)
+    # Push refreshed unread total so header badges clear across all tabs
     try:
         from messaging_socketio import emit_unread_messages_count
         await emit_unread_messages_count(user_id)
     except Exception:
         pass
-
     return {"success": True, "read_count": len(read_ids)}
 
 

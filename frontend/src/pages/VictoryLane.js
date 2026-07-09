@@ -7,19 +7,15 @@ import DeletePostModal from '../components/DeletePostModal';
 import QuestionPostModal from '../components/QuestionPostModal';
 import AcademicQuestionModal from '../components/AcademicQuestionModal';
 import { FeedSkeleton } from '../components/Skeleton';
-import {
-  PostCard,
-  VictoryLaneHeader,
-  CreatePostFAB,
-  CommentsSection,
-  PostComposer,
-  QuizRoomModal,
-  formatTimestamp,
-  getGradientColor,
-  getDifficultyColor,
-  useVictoryLane,
-  usePostCreation,
-} from '../components/VictoryLane';
+import PostCard from '../components/VictoryLane/PostCard';
+import VictoryLaneHeader from '../components/VictoryLane/VictoryLaneHeader';
+import CreatePostFAB from '../components/VictoryLane/CreatePostFAB';
+import CommentsSection from '../components/VictoryLane/CommentsSection';
+import PostComposer from '../components/VictoryLane/PostComposer';
+import QuizRoomModal from '../components/VictoryLane/QuizRoomModal';
+import { formatTimestamp, getGradientColor, getDifficultyColor } from '../components/VictoryLane/constants';
+import useVictoryLane from '../components/VictoryLane/hooks/useVictoryLane';
+import usePostCreation from '../components/VictoryLane/hooks/usePostCreation';
 
 const VictoryLane = () => {
   const { user, isAuthenticated, logout } = useAuth();

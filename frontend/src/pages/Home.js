@@ -29,13 +29,12 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-gray-50 to-zinc-100 pb-0 md:pb-0">
-      {/* SEO Component for Home Page */}
-      <SEO 
+      <SEO
         title="Ceibaa 2026 - India's #1 Social Learning & Career Platform"
         description="FREE 1M+ MCQ's. Live 1v1 Duels. Multiplayer Rooms. Capazoo (Post MCQ's, Videos and Photos. Courses. Interships and Jobs by Top Companies"
       />
-      
-      <Header 
+
+      <Header
         isLoggedIn={isLoggedIn}
         user={user}
         onLogin={handleLogin}
@@ -64,11 +63,11 @@ const Home = () => {
       {!searchQuery.trim() && !activeCategory && (
         <MobileSkillDrill navigate={navigate} />
       )}
-      
-      {/* Desktop Banner Carousel */}
-      <div className="hidden md:block">
-        <HomeBannerCarousel />
-      </div>
+
+      {/* Banner Carousel — now shows on mobile AND desktop.
+          Internal responsive logic (StaticHero desktop-only,
+          MobileCarousel / DesktopCarousel) handles the rest. */}
+      <HomeBannerCarousel />
 
       {/* Canopy Banner (Desktop & Mobile) */}
       <CanopyBanner navigate={navigate} />
@@ -129,4 +128,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Home;5

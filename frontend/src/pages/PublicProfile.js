@@ -14,6 +14,73 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = window.location.origin;
 
+/* ─────────────────────────────────────────────────────────────────
+ * StatsStrip — X / Threads style
+ * Clean, minimal, professional. No borders, no colors, no shadows.
+ * Just bold numbers + muted labels with subtle vertical dividers.
+ * ───────────────────────────────────────────────────────────────── */
+const StatsStrip = ({ profile }) => {
+  const streak = profile?.streak_days ?? 0;
+  const avg = profile?.average_score ?? 0;
+  const rank = profile?.rank;
+  const totalTests = profile?.total_tests ?? 0;
+
+  // Compact number formatter (1.2k, 12.4M, etc.) — matches X / Threads
+  const fmt = (n) => {
+    if (n == null) return '—';
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
+    if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, '')}k`;
+    return String(n);
+  };
+
+  const items = [
+    {
+      key: 'streak',
+      value: streak,
+      label: 'Day streak',
+      testId: 'profile-streak-stat',
+    },
+    {
+      key: 'avg',
+      value: totalTests > 0 ? `${avg.toFixed(1)}%` : '—',
+      label: 'Avg score',
+      testId: 'profile-avg-stat',
+    },
+    {
+      key: 'rank',
+      value: rank && rank > 0 ? `#${fmt(rank)}` : '—',
+      label: 'Rank',
+      testId: 'profile-rank-stat',
+    },
+  ];
+
+  return (
+    <div
+      className="mt-4 flex items-stretch border-t border-gray-100 pt-4"
+      data-testid="profile-stats-strip"
+    >
+      {items.map((item, idx) => (
+        <React.Fragment key={item.key}>
+          <div
+            className="flex-1 flex flex-col items-start px-1 sm:px-2"
+            data-testid={item.testId}
+          >
+            <span className="text-lg sm:text-xl font-bold text-gray-900 leading-tight tabular-nums tracking-tight">
+              {item.value}
+            </span>
+            <span className="text-xs text-gray-500 mt-0.5 leading-tight">
+              {item.label}
+            </span>
+          </div>
+          {idx < items.length - 1 && (
+            <div className="w-px bg-gray-200 mx-2 sm:mx-4 my-0.5" />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
 const PublicProfile = () => {
   const { username } = useParams();
   const { user } = useAuth();
@@ -35,6 +102,7 @@ const PublicProfile = () => {
   const [sharedPosts, setSharedPosts] = useState(new Set());
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
   const [showShareModal, setShowShareModal] = useState(false);
+  const [messageLoading, setMessageLoading] = useState(false);
 
   // Monotonic request-id so older fetchProfile() responses can't clobber
   // state set by a newer in-flight request (fixes race when AuthContext
@@ -109,6 +177,34 @@ const PublicProfile = () => {
     if (canView) {
       setFollowModalType('following');
       setShowFollowModal(true);
+    }
+  };
+
+  const handleMessageUser = async () => {
+    if (!profile?.id || profile.id === user?.id) return;
+    if (!user) {
+      toast.error('Please login to message users');
+      navigate('/login');
+      return;
+    }
+
+    setMessageLoading(true);
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/messages/conversations`, {
+        target_user_id: profile.id,
+      });
+
+      const convId = res.data?.conversation?.id;
+      if (convId) {
+        navigate(`/messages/${convId}`);
+      } else {
+        navigate('/messages');
+      }
+    } catch (err) {
+      const msg = err.response?.data?.detail || 'Failed to open conversation';
+      toast.error(msg);
+    } finally {
+      setMessageLoading(false);
     }
   };
 
@@ -439,13 +535,24 @@ const PublicProfile = () => {
             {/* Follow Button - only show for other users' profiles */}
             {user && user.id !== profile.id && (
               <div className="mt-6 flex justify-center">
-                <FollowButton
-                  targetUserId={profile.id}
-                  targetUsername={profile.username}
-                  initialStatus={followStatus}
-                  onFollowChange={handleFollowChange}
-                  onBlock={handleBlock}
-                />
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <FollowButton
+                    targetUserId={profile.id}
+                    targetUsername={profile.username}
+                    initialStatus={followStatus}
+                    onFollowChange={handleFollowChange}
+                    onBlock={handleBlock}
+                  />
+                  <button
+                    onClick={handleMessageUser}
+                    disabled={messageLoading}
+                    className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold transition-all shadow-md inline-flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    data-testid="profile-message-btn-private"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    {messageLoading ? 'Opening...' : 'Message'}
+                  </button>
+                </div>
               </div>
             )}
 
@@ -532,15 +639,26 @@ const PublicProfile = () => {
               {/* Follow/Edit Button - Full width on mobile */}
               <div className="w-full sm:w-auto sm:flex-shrink-0 flex flex-col gap-2">
                 {user && user.id !== profile.id ? (
-                  <div className="w-full sm:w-auto">
-                    <FollowButton
-                      targetUserId={profile.id}
-                      targetUsername={profile.username}
-                      initialStatus={followStatus}
-                      onFollowChange={handleFollowChange}
-                      onBlock={handleBlock}
-                      className="w-full sm:w-auto"
-                    />
+                  <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+                    <div className="w-full sm:w-auto">
+                      <FollowButton
+                        targetUserId={profile.id}
+                        targetUsername={profile.username}
+                        initialStatus={followStatus}
+                        onFollowChange={handleFollowChange}
+                        onBlock={handleBlock}
+                        className="w-full sm:w-auto"
+                      />
+                    </div>
+                    <button
+                      onClick={handleMessageUser}
+                      disabled={messageLoading}
+                      className="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold shadow-md text-sm inline-flex items-center justify-center gap-1.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                      data-testid="profile-message-btn"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      {messageLoading ? 'Opening...' : 'Message'}
+                    </button>
                   </div>
                 ) : user && user.id === profile.id ? (
                   <>
@@ -660,6 +778,9 @@ const PublicProfile = () => {
                 <span className="text-gray-500 text-xs">Following</span>
               </button>
             </div>
+
+            {/* Clean X / Threads-style stats: Streak · Avg Score · Rank */}
+            <StatsStrip profile={profile} />
           </div>
         </div>
 

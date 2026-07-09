@@ -36,7 +36,7 @@ const BoardStreakHero = ({
   return (
     <section
       data-testid="board-streak-hero"
-      className="relative mb-8 rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_20px_50px_rgba(34,197,94,0.06)] hover:shadow-[0_30px_70px_rgba(34,197,94,0.12)] transition-all duration-500"
+      className="relative mb-0 md:mb-8 rounded-none md:rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border-0 md:border md:border-white/60 shadow-none md:shadow-[0_20px_50px_rgba(34,197,94,0.06)] hover:md:shadow-[0_30px_70px_rgba(34,197,94,0.12)] transition-all duration-500"
     >
       {/* ──────────── HEADER: count + mascot ──────────── */}
       <div className="px-6 md:px-8 pt-6 md:pt-8 pb-5 flex items-start gap-4 md:gap-8">
@@ -85,15 +85,22 @@ const BoardStreakHero = ({
                 >
                   {d.day_label}
                 </span>
-                <span
+              <span
                   data-testid={`board-streak-day-${d.day_label?.toLowerCase()}`}
                   className={`relative flex items-center justify-center w-9 h-9 md:w-11 md:h-11 rounded-full transition-all duration-300 ${
                     d.active
                       ? 'bg-slate-800 text-white shadow-md shadow-slate-900/10 scale-105 border border-slate-700'
-                      : 'bg-white border border-slate-200/60 text-slate-300'
-                  } ${d.is_today && !d.active ? 'ring-2 ring-[#7c5cff] ring-offset-2 ring-offset-slate-50/40' : ''}`}
+                      : d.is_today
+                      ? 'bg-white border-2 border-[#7c5cff] text-[#7c5cff]'
+                      : 'bg-slate-50 border border-slate-200 text-slate-400'
+                  }`}
                 >
-                  {d.active ? <Check className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3.5} /> : null}
+                  {d.active
+                    ? <Check className="w-4 h-4 md:w-5 md:h-5" strokeWidth={3.5} />
+                    : <span className="text-[11px] md:text-xs font-bold tabular-nums leading-none">
+                        {d.date ? new Date(d.date).getDate() : '·'}
+                      </span>
+                  }
                 </span>
               </div>
             ))}

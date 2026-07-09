@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import {
   Star,
   Trophy,
@@ -10,8 +10,8 @@ import {
   MapPin,
   Calendar,
   GraduationCap,
-  Globe,
-  Network,
+  TrendingUp,
+  Flame,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -77,8 +77,7 @@ const BoardFigmaHero = ({
   const tests = stats?.tests_completed ?? 0;
   const avg = stats?.avg_score ?? 0;
   const streak = stats?.streak ?? 0;
-  const pointsTarget = useMemo(() => tests * 10 + Math.round(avg * streak), [tests, avg, streak]);
-  const pointsValue = useCountUp(pointsTarget, 700);
+  const rank = stats?.rank ?? 0;
 
   const milestoneBadges = (stats?.milestone_tiers || []).slice(0, 5).map((tier, i) => ({
     label: tier.reward,
@@ -113,15 +112,28 @@ const BoardFigmaHero = ({
   }, [tab]);
 
   return (
-    <section className="relative mb-8 rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_20px_50px_rgba(124,92,255,0.06)] hover:shadow-[0_30px_70px_rgba(124,92,255,0.1)] transition-all duration-500">
-      {/* ─────────────── FIGMA BACKGROUND HERO WITH RADIAL GLOW ─────────────── */}
-      <div className="relative overflow-hidden h-44 bg-gradient-to-br from-[#7c5cff] via-[#6a4ce4] to-[#4c2ec4] p-5">
-        {/* Animated background ambient rings */}
-        <div className="absolute top-[-50px] right-[-50px] w-52 h-52 rounded-full bg-violet-400/30 blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-[-80px] left-[10%] w-64 h-64 rounded-full bg-pink-400/20 blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
-        
-        {/* Vector lines backdrop */}
-        <svg className="absolute inset-0 w-full h-full opacity-15" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <section className="relative mb-4 md:mb-8 rounded-none md:rounded-3xl overflow-hidden bg-white/70 backdrop-blur-xl border-0 md:border md:border-white/60 shadow-none md:shadow-[0_20px_50px_rgba(124,92,255,0.06)] hover:md:shadow-[0_30px_70px_rgba(124,92,255,0.1)] transition-all duration-500">
+      {/* ─────────────── GLASSMORPHIC HERO BANNER ─────────────── */}
+      <div className="relative h-56 md:h-60 bg-gradient-to-br from-[#7c5cff] via-[#6a4ce4] to-[#4c2ec4] p-5 overflow-hidden">
+        {/* Radial white glow — top-right */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_0%,_rgba(255,255,255,0.22)_0%,_transparent_60%)] pointer-events-none" />
+        {/* Animated ambient blobs */}
+        <div className="absolute -top-8 -right-8 w-60 h-60 rounded-full bg-violet-300/35 blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+        <div className="absolute -bottom-12 left-[5%] w-72 h-72 rounded-full bg-pink-400/25 blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+        <div className="absolute top-1/2 left-1/3 w-32 h-32 rounded-full bg-indigo-300/20 blur-2xl" />
+
+        {/* Dot-grid overlay */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.07]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.5" fill="white" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dots)" />
+        </svg>
+
+        {/* Curved vector lines */}
+        <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none">
           <path d="M0,50 Q25,30 50,50 T100,50" fill="none" stroke="white" strokeWidth="0.5" />
           <path d="M0,70 Q30,40 60,70 T100,70" fill="none" stroke="white" strokeWidth="0.5" />
         </svg>
@@ -131,7 +143,7 @@ const BoardFigmaHero = ({
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md transition-all active:scale-95 shadow-lg shadow-black/5"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all active:scale-95 shadow-lg"
             aria-label="Back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -139,16 +151,38 @@ const BoardFigmaHero = ({
           <button
             type="button"
             onClick={() => navigate('/settings')}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md transition-all active:scale-95 shadow-lg shadow-black/5"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all active:scale-95 shadow-lg"
             aria-label="Settings"
           >
             <Settings className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Glassmorphic floating pill — bottom of banner */}
+        <div className="absolute bottom-4 left-5 right-5 flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+          <div className="flex-1 min-w-0">
+            <p className="text-white/60 text-[9px] uppercase tracking-widest font-extrabold">Level</p>
+            <p className="text-white text-sm font-black leading-tight truncate">{learnerLevel}</p>
+          </div>
+          {goalInfo && (
+            <>
+              <div className="w-px h-7 bg-white/20" />
+              <div className="flex-1 min-w-0">
+                <p className="text-white/60 text-[9px] uppercase tracking-widest font-extrabold">Goal</p>
+                <p className="text-white text-sm font-black leading-tight truncate">{goalInfo.title || goalInfo.goal_type}</p>
+              </div>
+            </>
+          )}
+          {/* Live indicator */}
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)] animate-pulse" />
+        </div>
+
+        {/* Frosted-glass bottom fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#4c2ec4]/30 to-transparent backdrop-blur-[1px] pointer-events-none" />
       </div>
 
       {/* Profile avatar overlay */}
-      <div className="relative flex flex-col items-center px-6 pb-6 -mt-16 z-10">
+      <div className="relative flex flex-col items-center px-4 pb-4 md:px-6 md:pb-6 -mt-16 z-10">
         <div className="relative group">
           {/* Glowing Avatar border */}
           <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-pink-500 via-[#7c5cff] to-cyan-400 blur opacity-40 group-hover:opacity-85 transition duration-500" />
@@ -183,39 +217,41 @@ const BoardFigmaHero = ({
         </div>
 
         {/* ─────────────── PREMIUM STATS WIDGET ─────────────── */}
-        <div className="w-full max-w-lg mt-6 bg-white/80 border border-slate-100 rounded-2xl grid grid-cols-3 divide-x divide-slate-100 shadow-[0_12px_30px_-8px_rgba(124,92,255,0.08)]">
-          {/* Points */}
+        <div className="w-full max-w-lg mt-4 md:mt-6 bg-white/80 border border-slate-100 rounded-2xl grid grid-cols-3 divide-x divide-slate-100 shadow-[0_12px_30px_-8px_rgba(124,92,255,0.08)]">
+          {/* Avg Score */}
           <div className="py-4 text-center group hover:bg-[#fcfcff] rounded-l-2xl transition-all">
             <div className="flex items-center justify-center mb-1 text-[#7c5cff] group-hover:scale-110 transition-transform">
-              <Star className="w-6 h-6 fill-current" strokeWidth={2} />
+              <TrendingUp className="w-6 h-6" strokeWidth={2} />
             </div>
-            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Points</span>
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Avg Score</span>
             <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">
-              {pointsValue.toLocaleString('en-IN')}
+              {avg > 0 ? `${avg.toFixed(1)}%` : '—'}
             </div>
           </div>
 
-          {/* World Rank */}
+          {/* Day Streak */}
           <div className="py-4 text-center group hover:bg-[#fcfcff] transition-all">
             <div className="flex items-center justify-center mb-1 text-[#7c5cff] group-hover:scale-110 transition-transform">
-              <Globe className="w-6 h-6" strokeWidth={2} />
+              <Flame className="w-6 h-6" strokeWidth={2} />
             </div>
-            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">World Rank</span>
-            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">#—</div>
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Day Streak</span>
+            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">{streak}</div>
           </div>
 
-          {/* Local Rank */}
+          {/* Rank */}
           <div className="py-4 text-center group hover:bg-[#fcfcff] rounded-r-2xl transition-all">
             <div className="flex items-center justify-center mb-1 text-[#7c5cff] group-hover:scale-110 transition-transform">
-              <Network className="w-6 h-6" strokeWidth={2} />
+              <Trophy className="w-6 h-6" strokeWidth={2} />
             </div>
-            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Local Rank</span>
-            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">#—</div>
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">Rank</span>
+            <div className="mt-0.5 text-xl font-black text-slate-900 tabular-nums">
+              {rank > 0 ? `#${rank}` : '—'}
+            </div>
           </div>
         </div>
 
         {/* ─────────────── SEGMENTED UNDERLINE TABS ─────────────── */}
-        <div ref={tabsRowRef} className="relative w-full mt-8 flex items-center border-b border-slate-100">
+        <div ref={tabsRowRef} className="relative w-full mt-5 md:mt-8 flex items-center border-b border-slate-100">
           {tabIds.map((t) => (
             <button
               key={t}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Pause, SkipForward, X, ArrowLeft } from 'lucide-react';
-import BattleVideoChat from '../components/BattleVideoChat';
 import Header from '../components/Header';
 
 // Import custom hook
@@ -261,15 +260,6 @@ const LiveBattle = () => {
           </>
         )}
       </div>
-
-      {/* Video Chat component */}
-      <BattleVideoChat
-        socket={socket}
-        roomId={pin}
-        playerName={user?.name || 'Player'}
-        opponentName={participants?.find(p => p.name !== user?.name)?.name || 'Opponent'}
-        opponentId={participants?.find(p => p.name !== user?.name)?.id}
-      />
 
       {/* Real-time floating reactions renderer */}
       <ReactionsOverlay reactions={reactions} />

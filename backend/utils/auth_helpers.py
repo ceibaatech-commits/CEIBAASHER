@@ -12,6 +12,21 @@ JWT_SECRET = os.environ["JWT_SECRET"]
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 
+def decode_jwt_token(authorization: str) -> str:
+    """Decode a Bearer JWT header and return the user id."""
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization header")
+    token = authorization[len("Bearer "):]
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except JWTError as exc:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(exc)}")
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return user_id
+
+
 def _extract_token(request: Request) -> Optional[str]:
     """Dual-mode token extraction: httpOnly session cookie first, then
     Authorization Bearer header. Matches the pattern in auth_routes._extract_token
@@ -66,6 +81,50 @@ async def _resolve_user_id(token: str) -> Optional[str]:
         return payload.get("sub")
     except JWTError:
         return None
+
+
+async def get_user_from_session(session_token: str) -> Optional[str]:
+    """Public wrapper for live-session lookup."""
+    return await _user_id_from_session(session_token)
+
+
+async def get_user_id_from_request(authorization: Optional[str], request: Optional[Request] = None) -> str:
+    """Resolve user id from cookie-backed session or Bearer auth header."""
+    token = request.cookies.get("session_token") if request else None
+    if token:
+        user_id = await _resolve_user_id(token)
+        if user_id:
+            return user_id
+
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization[len("Bearer "):]
+        user_id = await _resolve_user_id(token)
+        if user_id:
+            return user_id
+        return decode_jwt_token(authorization)
+
+    raise HTTPException(status_code=401, detail="Not authenticated")
+
+
+async def get_optional_user_id_async(authorization: Optional[str], request: Optional[Request] = None) -> Optional[str]:
+    """Resolve user id when present, otherwise return None."""
+    token = request.cookies.get("session_token") if request else None
+    if token:
+        user_id = await _resolve_user_id(token)
+        if user_id:
+            return user_id
+
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization[len("Bearer "):]
+        user_id = await _resolve_user_id(token)
+        if user_id:
+            return user_id
+        try:
+            return decode_jwt_token(authorization)
+        except HTTPException:
+            return None
+
+    return None
 
 
 async def get_current_student(request: Request):

@@ -214,7 +214,17 @@ const QuizResults = () => {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-gray-900 flex items-center gap-2">
-                    {player.player_name}
+                    {player.player_id === user?.id && user?.username ? (
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/profile/${user.username}`)}
+                        className="hover:text-purple-600 hover:underline transition-colors"
+                      >
+                        {player.player_name}
+                      </button>
+                    ) : (
+                      player.player_name
+                    )}
                     {player.player_name === playerName && (
                       <span className="text-xs bg-purple-500 text-white px-2 py-1 rounded-full">You</span>
                     )}

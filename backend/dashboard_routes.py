@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import json
 from dotenv import load_dotenv
@@ -72,7 +73,10 @@ STUDY_GOALS = {
 }
 
 # MongoDB connection
-from database import db
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+DB_NAME = os.getenv("DB_NAME", "test_database")
+client = AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
 
 # Pydantic models
 class DashboardStatsResponse(BaseModel):
@@ -252,48 +256,16 @@ async def get_dashboard_stats(user_id: str):
             {"user_id": user_id},
             {"_id": 0, "score": 1, "total_questions": 1, "completed_at": 1, "created_at": 1, "exam": 1, "subject": 1}
         ).to_list(500)
-        
-        # ==================== CALCULATE TOTAL TESTS ====================
-        
-        quiz_count = len(quiz_history)
+
+        quiz_count        = len(quiz_history)
         battle_room_count = len(battle_submissions)
         matchmaking_count = len(battle_results)
-        tests_completed = quiz_count + battle_room_count + matchmaking_count
         
-        # ==================== CALCULATE AVERAGE SCORE ====================
-        
-        all_scores = []
-        
-        # Scores from quiz history
-        for q in quiz_history:
-            score = q.get("score", 0)
-            if isinstance(score, (int, float)) and score >= 0:
-                all_scores.append(score)
-        
-        # Scores from battle submissions (calculate percentage)
-        for b in battle_submissions:
-            score = b.get("score", 0)
-            total = b.get("total_questions", 10)
-            if total > 0:
-                percentage = (score / total) * 100
-                all_scores.append(percentage)
-        
-        # Scores from 1v1 battles
-        # IMPORTANT: 1v1 battle `score` is RAW POINTS (max ~100/question, 1000/battle)
-        # — NOT a correct-count. So we normalize against (total × MAX_PER_QUESTION),
-        # not just `total`. Older entries created with the legacy equation may exceed
-        # the cap; we clamp to 100% so they don't pollute averages.
-        MAX_PER_QUESTION = 100
-        for b in battle_results:
-            score = b.get("score", 0)
-            total = b.get("total_questions", 10)
-            if total and total > 0:
-                max_possible = total * MAX_PER_QUESTION
-                percentage = (score / max_possible) * 100 if max_possible > 0 else 0
-                percentage = max(0, min(100, percentage))
-                all_scores.append(percentage)
-        
-        avg_score = round(sum(all_scores) / len(all_scores), 1) if all_scores else 0
+        # ==================== CALCULATE TOTAL TESTS & AVERAGE SCORE ====================
+        from profile_stats import compute_user_stats, get_user_rank
+        stats = await compute_user_stats(db, user_id)
+        avg_score       = stats["average_score"]
+        tests_completed = stats["total_tests"]
         
         # ==================== CALCULATE STREAK ====================
         
@@ -404,15 +376,26 @@ async def get_dashboard_stats(user_id: str):
         # ==================== CALCULATE SUBJECT MASTERY ====================
         
         subject_stats = {}
+
+        def _quiz_pct(q):
+            """Return score as a 0-100 percentage from a quiz_history doc.
+            Prefers the stored 'accuracy' field (already %) over raw score count."""
+            if q.get("accuracy") is not None:
+                return max(0.0, min(100.0, float(q["accuracy"])))
+            total = q.get("total_questions", 0)
+            raw   = q.get("score", 0)
+            if total > 0:
+                return max(0.0, min(100.0, (float(raw) / total) * 100))
+            return max(0.0, min(100.0, float(raw)))
         
         # From quiz history
         for q in quiz_history:
             subject = q.get("subject") or q.get("exam", "General")
             if subject not in subject_stats:
                 subject_stats[subject] = {"total_score": 0, "count": 0, "total_questions": 0}
-            subject_stats[subject]["total_score"] += q.get("score", 0)
+            subject_stats[subject]["total_score"] += _quiz_pct(q)
             subject_stats[subject]["count"] += 1
-            subject_stats[subject]["total_questions"] += q.get("total_questions", 10)
+            subject_stats[subject]["total_questions"] += q.get("total_questions", 10) or 10
         
         # From battle submissions
         for b in battle_submissions:
@@ -450,7 +433,7 @@ async def get_dashboard_stats(user_id: str):
         
         subject_mastery = []
         for i, (subject, stats) in enumerate(sorted(subject_stats.items(), key=lambda x: x[1]["count"], reverse=True)[:6]):
-            mastery = round(stats["total_score"] / stats["count"], 1) if stats["count"] > 0 else 0
+            mastery = round(min(100.0, stats["total_score"] / stats["count"]), 1) if stats["count"] > 0 else 0
             color = colors[i % len(colors)]
             subject_mastery.append({
                 "subject": subject,
@@ -463,6 +446,9 @@ async def get_dashboard_stats(user_id: str):
         
         # Calculate learner level
         learner_level = calculate_learner_level(tests_completed, avg_score)
+
+        # Calculate rank
+        rank = await get_user_rank(db, user_id, avg_score)
         
         return {
             "success": True,
@@ -470,6 +456,7 @@ async def get_dashboard_stats(user_id: str):
                 "tests_completed": tests_completed,
                 "avg_score": avg_score,
                 "streak": streak,
+                "rank": rank,
                 "study_hours": study_hours,
                 "weekly_activity": weekly_activity,
                 "next_milestone": next_milestone,

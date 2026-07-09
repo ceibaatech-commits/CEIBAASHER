@@ -6,7 +6,7 @@ import {
   Inbox, MessageCircle, CheckCheck, XCircle
 } from 'lucide-react';
 
-const BACKEND_URL = window.location.origin;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
 const SupportPanel = () => {
   const [tickets, setTickets] = useState([]);

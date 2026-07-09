@@ -16,7 +16,8 @@ const CreateRoom = () => {
   const classBasedData = isClassBased ? {
     class_name: location.state?.class_name,
     subject: location.state?.subject,
-    chapter: location.state?.chapter
+    chapter: location.state?.chapter,
+    board: location.state?.board || 'cbse'
   } : null;
   
   const [hostName, setHostName] = useState('');
@@ -78,15 +79,28 @@ const CreateRoom = () => {
         const user = JSON.parse(userStr);
         
         // Create room using NEW REST API with questions
-        const createRoomResponse = await axios.post(`${BATTLE_URL}/api/battle/async/rooms/create`, {
-          host_id: user.id, // Use actual user ID from localStorage
+        const createRoomPayload = {
+          host_id: user.id,
           host_name: hostName,
           exam_category: isClassBased ? `${classBasedData.class_name}-${classBasedData.subject}` : examId,
           subject: isClassBased ? classBasedData.subject : subject,
           questions: questions,
           time_per_question: 30,
           max_participants: 150
-        });
+        };
+
+        if (isClassBased && classBasedData) {
+          createRoomPayload.board = classBasedData.board || 'cbse';
+          createRoomPayload.class_name = classBasedData.class_name;
+          createRoomPayload.chapter = classBasedData.chapter;
+        } else {
+          createRoomPayload.syllabus_topic = topic;
+          if (subTopic) {
+            createRoomPayload.sub_topic = subTopic;
+          }
+        }
+
+        const createRoomResponse = await axios.post(`${BATTLE_URL}/api/battle/async/rooms/create`, createRoomPayload);
         
         if (createRoomResponse.data.success) {
           const pin = createRoomResponse.data.pin;

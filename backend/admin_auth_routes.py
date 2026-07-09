@@ -326,3 +326,64 @@ async def admin_me(request: Request):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"success": True, "user": _admin_user_response(user)}
+
+
+async def seed_super_admin(database) -> None:
+    """Seed the default super admin user on startup if not present or needs update."""
+    try:
+        email = "admin@ceibaa.in"
+        password = "SuperAdmin@123"
+        username = "admin"
+        
+        # Hash password using bcrypt
+        salt = bcrypt.gensalt()
+        pwd_hash = bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
+        
+        # Check if user already exists
+        user = await database.users.find_one({"email": email})
+        
+        if user:
+            # Update user to ensure admin/super_admin flags and password hash are set
+            await database.users.update_one(
+                {"email": email},
+                {"$set": {
+                    "role": "super_admin",
+                    "is_admin": True,
+                    "is_super_admin": True,
+                    "password_hash": pwd_hash,
+                },
+                "$unset": {
+                    "password": ""
+                }}
+            )
+            print(f"[ADMIN_AUTH] Updated super admin credentials for {email}")
+        else:
+            # Create new super admin
+            import uuid
+            user_id = str(uuid.uuid4())
+            new_admin = {
+                "id": user_id,
+                "user_id": user_id,
+                "email": email,
+                "username": username,
+                "name": "Super Admin",
+                "role": "super_admin",
+                "is_admin": True,
+                "is_super_admin": True,
+                "password_hash": pwd_hash,
+                "provider": "local",
+                "provider_id": "local",
+                "verified": True,
+                "rating": 1500,
+                "streak": 0,
+                "posts_count": 0,
+                "ceeping_count": 0,
+                "ceepers_count": 0,
+                "referral_coins": 0,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+            }
+            await database.users.insert_one(new_admin)
+            print(f"[ADMIN_AUTH] Created default super admin user {email}")
+    except Exception as e:
+        print(f"[ADMIN_AUTH] Failed to seed super admin: {e}")
+

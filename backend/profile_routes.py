@@ -54,6 +54,10 @@ class ProfileUpdate(BaseModel):
     cover_photo: Optional[str] = None
     website: Optional[str] = None
 
+class ThemeUpdate(BaseModel):
+    """Model for updating the logged-in user's Day/Night theme preference"""
+    theme: str = Field(..., pattern="^(light|dark)$")
+
 class UserProfile(BaseModel):
     """Extended user profile model"""
     user_id: str
@@ -276,5 +280,23 @@ async def create_notification(
     return notification
 
 # ==================== PROFILE ENDPOINTS ====================
+
+@router.patch("/theme")
+async def update_theme_preference(
+    payload: ThemeUpdate,
+    authorization: Optional[str] = Header(None),
+    request: Request = None,
+):
+    """
+    Persist the logged-in user's Day/Night theme choice so it follows them
+    across devices. The frontend still keeps a localStorage copy for instant,
+    logged-out theming — this just syncs it when a session exists.
+    """
+    user_id = await get_user_id_from_request(authorization, request)
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {"theme_preference": payload.theme}},
+    )
+    return {"success": True, "theme": payload.theme}
 
 # --- Close friend IDs endpoint ---
