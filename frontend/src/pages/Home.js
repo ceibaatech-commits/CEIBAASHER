@@ -7,6 +7,7 @@ import Footer from '../components/Footer';
 import HomeBannerCarousel from '../components/HomeBannerCarousel';
 import useHomeData from '../hooks/useHomeData';
 import HomeDesktopSections from '../components/home/HomeDesktopSections';
+import PartnerBrandingSection from '../components/home/PartnerBrandingSection';
 
 import MobileHero from '../components/home/MobileHero';
 import MobileCategoryFilter from '../components/home/MobileCategoryFilter';
@@ -68,6 +69,8 @@ const Home = () => {
           Internal responsive logic (StaticHero desktop-only,
           MobileCarousel / DesktopCarousel) handles the rest. */}
       <HomeBannerCarousel />
+
+      <PartnerBrandingSection />
 
       {/* Canopy Banner (Desktop & Mobile) */}
       <CanopyBanner navigate={navigate} />

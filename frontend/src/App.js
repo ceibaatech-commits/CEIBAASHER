@@ -105,6 +105,10 @@ import InstitutePanel from "@/pages/InstitutePanel";
 import InstituteHub from "@/pages/InstituteHub";
 import InstituteOwnerLogin from "@/pages/InstituteOwnerLogin";
 
+// Phase 2: Education Qualification System
+import EducationProfileOnboarding from "@/components/onboarding/EducationProfileOnboarding";
+import ProgramBrowser from "@/pages/ProgramBrowser";
+
 // Mobile Bottom Navigation
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Toaster } from "sonner";
@@ -161,6 +165,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/auth-callback" element={<AuthCallback />} />
+          <Route path="/education-onboarding" element={<EducationProfileOnboarding />} />
+          <Route path="/programs" element={<ProgramBrowser />} />
           <Route path="/old-dashboard" element={<UserDashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/earn" element={<Earn />} />

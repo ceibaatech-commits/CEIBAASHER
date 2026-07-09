@@ -259,6 +259,30 @@ const SheetManager = () => {
         "Computer Knowledge": ["IT & Computers"]
       }
     },
+    "LIC_AAO": {
+      "name": "LIC AAO",
+      "subjects": {
+        "Reasoning Ability": ["Puzzles & Seating", "Syllogism", "Inequality", "Blood Relations", "Direction Sense", "Coding-Decoding"],
+        "Quantitative Aptitude": ["Simplification", "Data Interpretation", "Number Series", "Quadratic Equations", "Arithmetic"],
+        "English Language": ["Reading Comprehension", "Error Spotting", "Sentence Correction", "Cloze Test", "Vocabulary"]
+      }
+    },
+    "LIC_ADO": {
+      "name": "LIC ADO",
+      "subjects": {
+        "Reasoning Ability": ["Puzzles & Seating", "Syllogism", "Inequality", "Blood Relations", "Direction Sense", "Coding-Decoding", "Input-Output"],
+        "Numerical Ability": ["Simplification", "Data Interpretation", "Number Series", "Quadratic Equations", "Arithmetic"],
+        "English Language": ["Reading Comprehension", "Error Spotting", "Sentence Correction", "Cloze Test", "Para Jumbles", "Vocabulary"]
+      }
+    },
+    "IBPS_RRB_PO": {
+      "name": "IBPS RRB PO",
+      "subjects": {
+        "Reasoning Ability": ["Puzzles & Seating", "Syllogism", "Inequality", "Blood Relations", "Direction Sense", "Coding-Decoding", "Alphabet Series"],
+        "Numerical Ability": ["Simplification", "Approximation", "Number Series", "Quadratic Equations", "Data Interpretation", "Arithmetic"],
+        "General Awareness": ["Current Affairs", "Banking Awareness", "Government Schemes", "Static GK"]
+      }
+    },
     "IES_ISS": {
       "name": "IES/ISS",
       "subjects": {

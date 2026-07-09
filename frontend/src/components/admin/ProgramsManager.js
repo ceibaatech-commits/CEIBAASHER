@@ -318,6 +318,7 @@ function ProgramFormModal({ program, onClose, onSave }) {
     seats_left: '', mentor_name: '', mentor_credentials: '',
     highlights: '', what_you_build: '', related_exams: '',
     is_active: true, is_enrolling: true,
+    education_level: ['all'], education_categories: [],
     ...(program ? {
       ...program,
       highlights: (program.highlights || []).join('\n'),
@@ -326,6 +327,8 @@ function ProgramFormModal({ program, onClose, onSave }) {
       seats_total: program.seats_total || '',
       seats_left: program.seats_left || '',
       price: program.price || '',
+      education_level: program.education_level || ['all'],
+      education_categories: program.education_categories || [],
     } : {})
   });
   const [saving, setSaving] = useState(false);
@@ -408,6 +411,57 @@ function ProgramFormModal({ program, onClose, onSave }) {
           <Field label="Highlights (one per line)" name="highlights" type="textarea" placeholder="Hands-on AI project&#10;Certificate of completion" />
           <Field label="What You'll Build (one per line)" name="what_you_build" type="textarea" placeholder="AI-powered web app&#10;Chatbot prototype" />
           <Field label="Related Exams (comma separated)" name="related_exams" placeholder="JEE, NEET, UPSC" />
+          
+          {/* Education Level Selection */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-2">Education Level *</label>
+            <div className="flex flex-wrap gap-3">
+              {['undergraduate', 'postgraduate', 'diploma', 'all'].map(level => (
+                <label key={level} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.education_level.includes(level)}
+                    onChange={e => {
+                      if (level === 'all') {
+                        setForm(f => ({...f, education_level: e.target.checked ? ['all'] : []}));
+                      } else {
+                        const updated = e.target.checked
+                          ? [...form.education_level.filter(l => l !== 'all'), level]
+                          : form.education_level.filter(l => l !== level);
+                        setForm(f => ({...f, education_level: updated.length === 0 ? ['all'] : updated}));
+                      }
+                    }}
+                    className="w-4 h-4 text-violet-600 rounded cursor-pointer"
+                  />
+                  <span className="capitalize">{level === 'postgraduate' ? 'Post Graduate' : level === 'undergraduate' ? 'Under Graduate' : level}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Education Categories Selection */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-2">Education Categories</label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-32 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-200">
+              {['engineering', 'science_medical', 'commerce', 'liberal_arts', 'law', 'hotel_management', 'fashion_design', 'nursing', 'agriculture', 'journalism', 'mba', 'mtech', 'llm', 'msc'].map(cat => (
+                <label key={cat} className="flex items-center gap-2 text-xs cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.education_categories.includes(cat)}
+                    onChange={e => {
+                      const updated = e.target.checked
+                        ? [...form.education_categories, cat]
+                        : form.education_categories.filter(c => c !== cat);
+                      setForm(f => ({...f, education_categories: updated}));
+                    }}
+                    className="w-3 h-3 text-violet-600 rounded cursor-pointer"
+                  />
+                  <span className="capitalize whitespace-nowrap">{cat.replace(/_/g, ' ')}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_active} onChange={e => setForm(f => ({...f, is_active: e.target.checked}))} className="w-4 h-4 text-violet-600 rounded" /> Active</label>
             <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.is_enrolling} onChange={e => setForm(f => ({...f, is_enrolling: e.target.checked}))} className="w-4 h-4 text-violet-600 rounded" /> Enrolling</label>

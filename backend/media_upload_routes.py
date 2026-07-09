@@ -46,7 +46,7 @@ MAX_VIDEO_SIZE = 100 * 1024 * 1024  # 100MB
 MAX_VIDEO_DURATION = 90  # 1 minute 30 seconds
 
 # Allowed folders for Cloudinary
-ALLOWED_FOLDERS = ("posts/", "users/", "avatars/", "covers/")
+ALLOWED_FOLDERS = ("posts/", "users/", "avatars/", "covers/", "programs/")
 
 # Aspect ratio configurations
 # 16:9 for professional content (1600x900)

@@ -5,6 +5,7 @@ import axios from 'axios';
 import NotificationBell from './NotificationBell';
 import InboxDropdown from './InboxDropdown';
 import NavbarSearch from './NavbarSearch';
+import { getProgramsPath, isActiveStudent } from '../utils/educationRouting';
 import '../styles/navbar-search.css';
 import { useAuth } from '../context/AuthContext';
 
@@ -50,16 +51,25 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProfileDropdown]);
 
+  // Smart navigation for Programs link based on user education status
+  const handleProgramsNavigation = () => {
+    const targetPath = getProgramsPath(user);
+    navigate(targetPath);
+  };
+
   // ────────────── Desktop nav config ──────────────
-  const NAV_ITEMS = React.useMemo(() => ([
-    { label: 'Home',             path: '/',            icon: Home,           tint: 'text-cyan-500',    hover: 'hover:text-cyan-600',    underline: 'bg-cyan-600' },
-    { label: 'Capazoo',          path: '/capazoo',     icon: Trophy,         tint: 'text-amber-500',   hover: 'hover:text-amber-600',   underline: 'bg-amber-500' },
-    { label: 'Skill Drills',     path: '/chapter-tests', icon: Zap,          tint: 'text-blue-500',    hover: 'hover:text-blue-600',    underline: 'bg-blue-500' },
-    { label: 'Courses',          path: '/courses',     icon: GraduationCap,  tint: 'text-indigo-500',  hover: 'hover:text-indigo-600',  underline: 'bg-indigo-500' },
-    { label: 'The Headhunt',     path: '/jobs',        icon: Briefcase,      tint: 'text-orange-500',  hover: 'hover:text-orange-600',  underline: 'bg-orange-500' },
-    { label: 'Join Battle Room', path: '/join-room',   icon: Swords,         tint: 'text-rose-500',    hover: 'hover:text-rose-600',    underline: 'bg-rose-500' },
-    { label: 'Divya Tutor',      path: '/divya',       icon: Mic,            tint: 'text-purple-500',  hover: 'hover:text-purple-600',  underline: 'bg-purple-600' },
-  ]), []);
+  const NAV_ITEMS = React.useMemo(() => {
+    const items = [
+      { label: 'Home',             path: '/',            icon: Home,           tint: 'text-cyan-500',    hover: 'hover:text-cyan-600',    underline: 'bg-cyan-600' },
+      { label: 'Capazoo',          path: '/capazoo',     icon: Trophy,         tint: 'text-amber-500',   hover: 'hover:text-amber-600',   underline: 'bg-amber-500' },
+      { label: isActiveStudent(user) ? 'Career Programs' : 'Programs', path: getProgramsPath(user), icon: BookOpen, tint: 'text-violet-500', hover: 'hover:text-violet-600', underline: 'bg-violet-500', isPrograms: true },
+      { label: 'Skill Drills',     path: '/chapter-tests', icon: Zap,          tint: 'text-blue-500',    hover: 'hover:text-blue-600',    underline: 'bg-blue-500' },
+      { label: 'The Headhunt',     path: '/jobs',        icon: Briefcase,      tint: 'text-orange-500',  hover: 'hover:text-orange-600',  underline: 'bg-orange-500' },
+      { label: 'Join Battle Room', path: '/join-room',   icon: Swords,         tint: 'text-rose-500',    hover: 'hover:text-rose-600',    underline: 'bg-rose-500' },
+      { label: 'Divya Tutor',      path: '/divya',       icon: Mic,            tint: 'text-purple-500',  hover: 'hover:text-purple-600',  underline: 'bg-purple-600' },
+    ];
+    return items;
+  }, [user]);
 
   const [moreOpen, setMoreOpen] = React.useState(false);
   React.useEffect(() => {
@@ -134,7 +144,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                   <button
                     key={item.path}
                     type="button"
-                    onClick={() => navigate(item.path)}
+                    onClick={() => item.isPrograms ? handleProgramsNavigation() : navigate(item.path)}
                     className="inline-flex group relative flex-shrink-0 items-center gap-1 xl:gap-1.5 whitespace-nowrap px-1 xl:px-1.5 py-2 text-xs lg:text-[13px] xl:text-sm font-medium text-gray-700 hover:text-cyan-600 transition-colors"
                     data-testid={`header-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                   >
@@ -172,7 +182,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                         <button
                           key={item.path}
                           type="button"
-                          onClick={() => { setMoreOpen(false); navigate(item.path); }}
+                          onClick={() => { setMoreOpen(false); item.isPrograms ? handleProgramsNavigation() : navigate(item.path); }}
                           className={`${cls} w-full items-center gap-3 px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 whitespace-nowrap first:rounded-t-xl last:rounded-b-xl`}
                           role="menuitem"
                           data-testid={`header-nav-more-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
@@ -425,11 +435,11 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                 </button>
                 
                 <button 
-                  onClick={() => { navigate('/courses'); setMobileMenuOpen(false); }} 
+                  onClick={() => { handleProgramsNavigation(); setMobileMenuOpen(false); }} 
                   className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-800 hover:bg-blue-50 hover:text-blue-600 transition-all"
                 >
-                  <GraduationCap className="w-4 h-4" />
-                  <span className="font-medium text-sm">Courses</span>
+                  <BookOpen className="w-4 h-4" />
+                  <span className="font-medium text-sm">{isActiveStudent(user) ? 'Career Programs' : 'Programs'}</span>
                 </button>
                 
                 <button 

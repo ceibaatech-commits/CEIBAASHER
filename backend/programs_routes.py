@@ -24,6 +24,28 @@ def init_db(database):
 
 # --- Models ---
 
+class Instructor(BaseModel):
+    name: Optional[str] = None
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
+    credentials: Optional[List[str]] = []
+    social_links: Optional[dict] = None
+
+class SyllabusModule(BaseModel):
+    module_number: int
+    title: str
+    topics: List[str] = []
+
+class FAQ(BaseModel):
+    question: str
+    answer: str
+
+class Testimonial(BaseModel):
+    name: str
+    role: str
+    quote: str
+    avatar_url: Optional[str] = None
+
 class ProgramCreate(BaseModel):
     title: str
     short_description: str
@@ -45,6 +67,22 @@ class ProgramCreate(BaseModel):
     is_active: bool = True
     is_enrolling: bool = True
     slug: Optional[str] = None
+    # Education qualification fields
+    education_level: List[str] = ["all"]  # ["undergraduate", "postgraduate", "diploma", "all"]
+    education_categories: List[str] = []  # ["engineering", "science_medical", "commerce", ...]
+    # Media and content fields
+    icon_url: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    banner_image_url: Optional[str] = None
+    syllabus: List[SyllabusModule] = []
+    faqs: List[FAQ] = []
+    testimonials: List[Testimonial] = []
+    learning_outcomes: List[str] = []
+    prerequisites: List[str] = []
+    instructor: Optional[Instructor] = None
+    mode: str = "online"  # online, offline, hybrid
+    language: str = "English"
+    certificate_offered: bool = False
 
 class ProgramUpdate(BaseModel):
     title: Optional[str] = None
@@ -66,6 +104,22 @@ class ProgramUpdate(BaseModel):
     related_exams: Optional[List[str]] = None
     is_active: Optional[bool] = None
     is_enrolling: Optional[bool] = None
+    # Education qualification fields
+    education_level: Optional[List[str]] = None
+    education_categories: Optional[List[str]] = None
+    # Media and content fields
+    icon_url: Optional[str] = None
+    cover_image_url: Optional[str] = None
+    banner_image_url: Optional[str] = None
+    syllabus: Optional[List[SyllabusModule]] = None
+    faqs: Optional[List[FAQ]] = None
+    testimonials: Optional[List[Testimonial]] = None
+    learning_outcomes: Optional[List[str]] = None
+    prerequisites: Optional[List[str]] = None
+    instructor: Optional[Instructor] = None
+    mode: Optional[str] = None
+    language: Optional[str] = None
+    certificate_offered: Optional[bool] = None
 
 class EnquiryCreate(BaseModel):
     program_id: str
@@ -76,6 +130,13 @@ class EnquiryCreate(BaseModel):
     grade: str = ""
     school_name: str = ""
     message: str = ""
+
+class EducationProfile(BaseModel):
+    education_level: str  # "undergraduate", "postgraduate", "diploma"
+    education_category: str  # "engineering", "science_medical", etc.
+    specific_program: str  # "B.Tech", "MBA", etc.
+    year_of_study: Optional[str] = None  # "1st Year", "2nd Year", etc.
+    institution: Optional[str] = None
 
 
 # --- Helpers ---
@@ -124,14 +185,43 @@ def make_slug(title: str) -> str:
 # --- Public Routes ---
 
 @router.get("/programs")
-async def list_programs(domain: Optional[str] = None, grade: Optional[int] = None):
+async def list_programs(
+    domain: Optional[str] = None, 
+    grade: Optional[int] = None,
+    education_level: Optional[str] = None,
+    education_category: Optional[str] = None
+):
+    """List programs with support for domain, grade, education level, and category filtering"""
     query = {"is_active": True}
-    if domain:
+    
+    # Domain filter (for /courses and /programs pages)
+    if domain and domain != "all":
         query["domain"] = domain
+    
+    # Grade filter
     if grade:
         query["grade_min"] = {"$lte": grade}
         query["grade_max"] = {"$gte": grade}
-    programs = await db.programs.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Education level filter - check if level is in the education_level array or if "all" is in the array
+    if education_level and education_level != "all":
+        query["education_level"] = {"$in": [education_level, "all"]}
+    
+    # Education category filter - check if category is in the education_categories array
+    if education_category:
+        query["education_categories"] = education_category
+    
+    programs_cursor = await db.programs.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    
+    # Ensure all programs have default values for education fields
+    programs = []
+    for program in programs_cursor:
+        if "education_level" not in program:
+            program["education_level"] = ["all"]
+        if "education_categories" not in program:
+            program["education_categories"] = []
+        programs.append(program)
+    
     return {"success": True, "programs": programs}
 
 
@@ -239,3 +329,59 @@ async def update_enquiry(enquiry_id: str, request: Request, authorization: Optio
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Enquiry not found")
     return {"success": True, "message": "Enquiry updated"}
+
+
+# --- Education Profile Routes ---
+
+@router.post("/api/user/education-profile")
+async def set_user_education_profile(profile: EducationProfile, request: Request, authorization: Optional[str] = Header(None)):
+    """Set user's education profile during onboarding"""
+    # Decode JWT token to get user_id
+    token = authorization
+    if authorization and authorization.lower().startswith("bearer "):
+        token = authorization[7:].strip()
+    if not token:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get("sub")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    # Update user's education profile
+    update_data = {
+        "education_profile": profile.dict(),
+        "education_profile_completed_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    result = await db.users.update_one(
+        {"$or": [{"id": user_id}, {"user_id": user_id}]},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"success": True, "message": "Education profile updated"}
+
+
+@router.get("/api/user/{user_id}/education-profile")
+async def get_user_education_profile(user_id: str):
+    """Get user's education profile"""
+    user = await db.users.find_one(
+        {"$or": [{"id": user_id}, {"user_id": user_id}]},
+        {"_id": 0, "education_profile": 1, "education_profile_completed_at": 1}
+    )
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {
+        "success": True,
+        "education_profile": user.get("education_profile"),
+        "education_profile_completed_at": user.get("education_profile_completed_at")
+    }

@@ -621,6 +621,8 @@ def _new_user_doc(user_id: str, name: str, email_lower: str, hashed_password: st
         "ceeping_count": 0,
         "ceepers_count": 0,
         "referral_coins": 0,
+        "education_profile": None,  # Set during onboarding
+        "education_profile_completed_at": None,
         "created_at": now,
         "last_login": now,
     }

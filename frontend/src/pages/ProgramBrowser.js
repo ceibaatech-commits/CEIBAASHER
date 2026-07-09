@@ -31,7 +31,7 @@ const FILTERS = [
   { key: 'summer', label: 'Summer' },
 ];
 
-const Courses = () => {
+const ProgramBrowser = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [programs, setPrograms] = useState([]);
@@ -68,9 +68,13 @@ const Courses = () => {
   );
 
   const isStudent = isActiveStudent();
+  const pageTitle = isStudent ? 'Career Programs & Courses' : 'Educational Programs';
+  const pageSubtitle = isStudent 
+    ? 'Go beyond textbooks. Research, intern, innovate — build skills that colleges and employers value.'
+    : 'Advance your education with specialized programs for your qualification level.';
 
   return (
-    <div className="min-h-screen bg-slate-50" data-testid="courses-page">
+    <div className="min-h-screen bg-slate-50">
       <Header isLoggedIn={isAuthenticated()} user={user} />
 
       {/* Hero */}
@@ -79,13 +83,13 @@ const Courses = () => {
         <div className="max-w-5xl mx-auto relative text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 mb-6">
             <Sparkles className="w-4 h-4 text-amber-400" />
-            <span className="text-sm text-white/90 font-medium">Beyond Exam Prep</span>
+            <span className="text-sm text-white/90 font-medium">{isStudent ? 'Beyond Exam Prep' : 'Education Advancement'}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-            Career Programs <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">&amp; Courses</span>
+            {pageTitle} <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-teal-400">&amp; Opportunities</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">
-            Go beyond textbooks. Research, intern, innovate &mdash; build skills that colleges and employers value.
+            {pageSubtitle}
           </p>
         </div>
       </section>
@@ -107,12 +111,11 @@ const Courses = () => {
         </div>
 
         {/* Filter Buttons */}
-        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 flex flex-nowrap gap-1 overflow-x-auto scrollbar-hide" data-testid="program-filters" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="bg-white rounded-xl shadow-lg border border-slate-200 p-1.5 flex flex-nowrap gap-1 overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
           {FILTERS.map(f => (
             <button
               key={f.key}
               onClick={() => { setFilter(f.key); setLoading(true); }}
-              data-testid={`filter-${f.key}`}
               className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-all shrink-0 ${
                 filter === f.key
                   ? 'bg-violet-600 text-white shadow-md'
@@ -137,12 +140,16 @@ const Courses = () => {
           <div className="text-center py-20 text-slate-500">
             <GraduationCap className="w-12 h-12 mx-auto mb-4 opacity-40" />
             <p className="text-lg font-medium">No programs found</p>
-            <p className="text-sm mt-1">Try a different filter</p>
+            <p className="text-sm mt-1">Try a different filter or search term</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="programs-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map(program => (
-              <ProgramCard key={program.id} program={program} onClick={() => navigate(`/programs/${program.slug || program.id}`)} />
+              <ProgramCardItem 
+                key={program.id} 
+                program={program} 
+                onClick={() => navigate(`/programs/${program.slug || program.id}`)} 
+              />
             ))}
           </div>
         )}
@@ -151,16 +158,20 @@ const Courses = () => {
       {/* Bottom CTA */}
       <section className="bg-gradient-to-r from-violet-600 to-teal-500 py-12 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">Already preparing for exams on Ceibaa?</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-3">
+            {isStudent ? 'Already preparing for exams on Ceibaa?' : 'Want to prepare for exams?'}
+          </h2>
           <p className="text-white/80 mb-6 text-sm sm:text-base">
-            Strengthen your foundation with our mock tests, then level up with career programs.
+            {isStudent 
+              ? 'Strengthen your foundation with our mock tests, then level up with career programs.'
+              : 'Explore our comprehensive exam preparation resources and mock tests.'
+            }
           </p>
           <button
             onClick={() => navigate('/')}
             className="bg-white text-violet-700 font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all text-sm"
-            data-testid="explore-exams-btn"
           >
-            Explore Mock Tests
+            {isStudent ? 'Explore Mock Tests' : 'Start Exam Prep'}
           </button>
         </div>
       </section>
@@ -170,7 +181,7 @@ const Courses = () => {
   );
 };
 
-function ProgramCard({ program, onClick }) {
+function ProgramCardItem({ program, onClick }) {
   const cfg = DOMAIN_CONFIG[program.domain] || DOMAIN_CONFIG.competition;
   const Icon = cfg.icon;
   const seatsLow = program.seats_left != null && program.seats_left < 30;
@@ -178,7 +189,6 @@ function ProgramCard({ program, onClick }) {
   return (
     <div
       onClick={onClick}
-      data-testid={`program-card-${program.slug || program.id}`}
       className="group bg-white rounded-2xl border border-slate-200 hover:border-violet-300 hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
     >
       {/* Top accent bar */}
@@ -229,7 +239,7 @@ function ProgramCard({ program, onClick }) {
           )}
           <span className={`inline-flex items-center gap-1 text-sm font-semibold bg-gradient-to-r ${cfg.accent} text-transparent bg-clip-text group-hover:gap-2 transition-all`}>
             {program.is_enrolling ? 'Enroll Now' : 'Learn More'}
-            <ArrowRight className={`w-4 h-4 text-violet-500 group-hover:translate-x-1 transition-transform`} />
+            <ArrowRight className="w-4 h-4 text-violet-500 group-hover:translate-x-1 transition-transform" />
           </span>
         </div>
       </div>
@@ -237,4 +247,4 @@ function ProgramCard({ program, onClick }) {
   );
 }
 
-export default Courses;
+export default ProgramBrowser;

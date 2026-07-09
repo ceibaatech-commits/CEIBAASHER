@@ -51,6 +51,7 @@ import exam_sync_routes
 from user_management_routes import router as user_management_router
 import user_management_routes
 from dashboard_routes import router as dashboard_router
+import dashboard_routes
 from question_image_routes import router as question_image_router
 from cbse_data_routes import router as cbse_data_router
 from class_chapters_routes import router as class_chapters_router
@@ -91,6 +92,7 @@ exam_structure_routes.init_db(db)
 exam_sync_routes.init_db(db)
 user_management_routes.init_db(db)
 battle_async_routes.init_db(db)
+dashboard_routes.init_db(db)
  
 # Initialize referral routes
 referral_routes.init_db(db)

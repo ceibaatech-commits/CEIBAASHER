@@ -512,6 +512,7 @@ async def create_post(
             "attempt_count": 0 if post_data.post_type == "mcq" else None,
             "correct_attempt_count": 0 if post_data.post_type == "mcq" else None,
             "trending_score": 100 if post_data.post_type == "quiz_room" else 0,  # Quiz rooms start with higher score
+            "is_retweet": False,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         
@@ -1957,6 +1958,7 @@ async def create_quiz_room(room_data: QuizRoomCreate, authorization: Optional[st
             "room_code": room_code,
             "host_id": user_id,
             "host_name": user_name,
+            "host_username": user.get("username") if user else None,
             "title": room_data.title,
             "description": room_data.description,
             "category": room_data.category,
@@ -1997,6 +1999,7 @@ async def create_quiz_room(room_data: QuizRoomCreate, authorization: Optional[st
             "comments_count": 0,
             "shares_count": 0,
             "trending_score": 100,
+            "is_retweet": False,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         

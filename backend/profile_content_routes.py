@@ -193,38 +193,77 @@ async def get_user_quiz_rooms(username: str, current_user_id: Optional[str] = No
             "post_type": "quiz_room"
         }, {"_id": 0}).sort("created_at", -1).to_list(length=100)
         
-        # Extract room codes and fetch full room details
-        room_codes = [post.get("room_code") for post in quiz_room_posts if post.get("room_code")]
+        # Also fetch quiz rooms directly by host_id to cover async battle-created rooms
+        direct_quiz_rooms = await db.quiz_rooms.find({"host_id": user_id}, {"_id": 0}).to_list(length=100)
         
-        quiz_rooms = []
+        # Also fetch async battle rooms by host_id
+        async_battle_rooms = await db.async_battle_rooms.find({"host_id": user_id}, {"_id": 0}).to_list(length=100)
+        
+        quiz_room_map = {}
+        
+        # Add direct quiz rooms (from social_feed endpoint)
+        for room in direct_quiz_rooms:
+            room_code = room.get("room_code")
+            if not room_code:
+                continue
+            room["question_count"] = len(room.get("questions", []))
+            room.pop("questions", None)
+            quiz_room_map[room_code] = room
+        
+        # Add async battle rooms (ensure room_code for deduplication)
+        for async_room in async_battle_rooms:
+            # Use PIN as identifier for async rooms (they don't have room_code field)
+            pin = async_room.get("pin")
+            if not pin:
+                continue
+            # Convert async room format to standard quiz room format
+            standard_room = {
+                "room_code": f"async_{pin}",  # Prefix to distinguish from regular quiz rooms
+                "title": f"Async Battle Room {pin}",
+                "description": f"Exam: {async_room.get('exam_category', 'General')} | Subject: {async_room.get('subject', 'General')}",
+                "category": async_room.get("exam_category", "General"),
+                "question_count": len(async_room.get("questions", [])),
+                "privacy": "public",
+                "host_id": user_id,
+                "host_name": async_room.get("host_name"),
+                "created_at": async_room.get("created_at"),
+                "pin": pin,
+                "max_participants": async_room.get("max_participants"),
+                "participant_count": async_room.get("participant_count", 0)
+            }
+            quiz_room_map[f"async_{pin}"] = standard_room
+        
+        # Extract room codes and fetch full room details from post records
+        room_codes = [post.get("room_code") for post in quiz_room_posts if post.get("room_code")]
         for room_code in room_codes:
+            if room_code in quiz_room_map:
+                continue
             # Try to get full room details from quiz_rooms collection
             room = await db.quiz_rooms.find_one({"room_code": room_code}, {"_id": 0})
             
             if room:
-                # Full room data found in quiz_rooms collection
-                # Don't include full questions array in list view
                 room["question_count"] = len(room.get("questions", []))
                 room.pop("questions", None)
-                quiz_rooms.append(room)
+                quiz_room_map[room_code] = room
             else:
                 # Fallback: Build room data from the post itself
-                # This handles cases where quiz_rooms collection is empty/missing
                 matching_post = next((p for p in quiz_room_posts if p.get("room_code") == room_code), None)
                 if matching_post:
-                    quiz_room_data = {
+                    quiz_room_map[room_code] = {
                         "room_code": room_code,
                         "title": matching_post.get("quiz_details", {}).get("title") or f"Quiz Room {room_code}",
                         "description": matching_post.get("content", ""),
                         "category": matching_post.get("quiz_details", {}).get("category", "General"),
                         "question_count": matching_post.get("quiz_details", {}).get("question_count", 0),
-                        "privacy": "public",  # Default to public
+                        "privacy": "public",
                         "host_id": user_id,
                         "host_username": user.get("username"),
                         "host_name": user.get("name"),
                         "created_at": matching_post.get("created_at")
                     }
-                    quiz_rooms.append(quiz_room_data)
+        
+        quiz_rooms = list(quiz_room_map.values())
+        quiz_rooms.sort(key=lambda r: r.get("created_at") or "", reverse=True)
         
         return {
             "success": True,

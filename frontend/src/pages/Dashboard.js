@@ -6,6 +6,7 @@ import { ArrowLeft, Trophy, FileText, Heart, MessageCircle, Repeat2, Trash2, Und
 import EditProfileModal from '../components/EditProfileModal';
 import FollowListModal from '../components/FollowListModal';
 import ShareReferralModal from '../components/ShareReferralModal';
+import DashboardEducationProfile from '../components/dashboard/DashboardEducationProfile';
 import Header from '../components/Header';
 import MathText from '../components/MathText';
 import DashboardProfileCard from '../components/dashboard/DashboardProfileCard';
@@ -386,6 +387,14 @@ const Dashboard = () => {
             setShowFollowModal(true);
           }}
         />
+
+        {/* Education Profile Card */}
+        <div className="mt-6">
+          <DashboardEducationProfile 
+            educationProfile={user?.education_profile}
+            onEditClick={() => setShowEditModal(true)}
+          />
+        </div>
 
         {/* Tabs Section */}
         <div className="mt-6 bg-white rounded-2xl shadow-xl overflow-hidden">

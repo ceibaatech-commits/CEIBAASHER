@@ -108,7 +108,8 @@ const Signup = () => {
         }
       }
 
-      navigate('/capazoo', { replace: true });
+      // Redirect to education profile onboarding, then dashboard
+      navigate('/education-onboarding', { replace: true });
       
     } catch (err) {
       setLoading(false);

@@ -20,7 +20,7 @@ export const syllabusTopicsMap = {
   // Banking & Finance
   'IBPS_PO': ['Reasoning Ability', 'English Language', 'Quantitative Aptitude', 'General Awareness', 'Computer Knowledge'],
   'IBPS_CLERK': ['Numerical Ability', 'Reasoning Ability', 'English Language'],
-  'IBPS_RRB_PO': ['Reasoning Ability', 'Numerical Ability'],
+  'IBPS_RRB_PO': ['Reasoning Ability', 'Numerical Ability', 'General Awareness'],
   'LIC_AAO': ['Reasoning Ability', 'Quantitative Aptitude', 'English Language'],
   'LIC_ADO': ['Reasoning Ability', 'Numerical Ability', 'English Language'],
   'IBPS_SO': ['Reasoning', 'Quantitative Aptitude', 'English Language', 'General Awareness'],
