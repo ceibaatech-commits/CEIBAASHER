@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Trophy, LogOut, Menu, X, Flame, User, LayoutDashboard, ChevronDown, Home, Zap, BookOpen, Users, Search, GraduationCap, TreePine, Mic, Swords, MessageSquare, Briefcase, Settings as SettingsIcon } from 'lucide-react';
 import axios from 'axios';
 import NotificationBell from './NotificationBell';
@@ -11,34 +11,33 @@ import { useAuth } from '../context/AuthContext';
 
 const BACKEND_URL = window.location.origin;
 
-const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout }) => {
+// Header no longer accepts auth props — AuthContext is the single source of
+// truth. Legacy call sites that still pass isLoggedIn/user/onLogout are
+// harmless (unused) and can be cleaned up in a later pass.
+const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
   const mobileMenuRef = React.useRef(null);
-  
-  // Use auth context as primary source, fall back to props
-  const auth = useAuth();
-  const contextUser = auth?.user;
-  const contextIsLoggedIn = auth?.isAuthenticated ? auth.isAuthenticated() : !!contextUser;
-  const contextLogout = auth?.logout;
-  
-  // Prefer context over props
-  const user = contextUser || propUser;
-  const isLoggedIn = contextIsLoggedIn || propIsLoggedIn || false;
-  
-  // Handle logout - use context logout or prop callback
-  const handleLogout = () => {
-    if (contextLogout) {
-      contextLogout();
-    } else if (onLogout) {
-      onLogout();
-    } else {
-      // Fallback: clear localStorage manually
-      localStorage.removeItem('ceibaa_user');
-      window.location.href = '/';
-    }
+
+  // Single source of truth — AuthContext. When logout() sets user to null
+  // this component re-renders and the Login/Signup buttons appear instantly.
+  const { user, logout } = useAuth();
+  const isLoggedIn = !!user;
+
+  const handleLogout = async () => {
+    await logout();
+    setShowProfileDropdown(false);
+    setMobileMenuOpen(false);
+    navigate('/', { replace: true });
   };
+
+  // Close menus on route change (prevents stale-menu bugs after navigation)
+  React.useEffect(() => {
+    setShowProfileDropdown(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
   
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -322,11 +321,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                           <div className="border-t border-gray-200 my-1"></div>
                           
                           <button
-                            onClick={() => {
-                              setShowProfileDropdown(false);
-                              handleLogout();
-                              window.location.href = '/login';
-                            }}
+                            onClick={handleLogout}
                             className="w-full flex items-center space-x-3 px-4 py-2.5 hover:bg-red-50 transition-colors text-left text-red-600"
                           >
                             <LogOut className="w-4 h-4" />
@@ -496,7 +491,7 @@ const Header = ({ isLoggedIn: propIsLoggedIn, user: propUser, onLogin, onLogout 
                     </button>
                     
                     <button 
-                      onClick={() => { setMobileMenuOpen(false); handleLogout(); window.location.href = '/login'; }} 
+                      onClick={() => { setMobileMenuOpen(false); handleLogout(); }} 
                       className="w-full flex items-center space-x-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-all"
                     >
                       <LogOut className="w-4 h-4" />

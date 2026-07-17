@@ -416,12 +416,14 @@ async def logout(request: Request, response: Response):
             # Remove Emergent session from database (JWT users have no DB session)
             await db.user_sessions.delete_one({"session_token": session_token})
 
-        # Clear cookie regardless of auth method
+        # Clear cookie — attributes MUST match _set_auth_cookie exactly or
+        # the browser won't remove it (httponly, secure, samesite, path).
         response.delete_cookie(
             key="session_token",
             path="/",
             secure=True,
             samesite="lax",
+            httponly=True,
         )
 
         return {"success": True, "message": "Logged out successfully"}

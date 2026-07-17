@@ -104,10 +104,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('ceibaa_user');
-    setUser(null);
-    console.log('[AuthContext] Logout complete');
+  const logout = async () => {
+    try {
+      // Hit backend so the httpOnly session_token cookie is cleared server-side.
+      // We wrap in try/finally so client state clears even if the network fails.
+      await axios.post(`${BACKEND_URL}/api/auth/logout`, {}, { withCredentials: true });
+    } catch (e) {
+      console.warn('[AuthContext] Backend logout failed (clearing client state anyway):', e?.message);
+    } finally {
+      delete axios.defaults.headers.common['Authorization'];
+      localStorage.removeItem('ceibaa_user');
+      setUser(null);
+      console.log('[AuthContext] Logout complete');
+    }
   };
 
   const updateUser = (userData) => {
