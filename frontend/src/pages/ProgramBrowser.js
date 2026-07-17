@@ -50,7 +50,7 @@ const ProgramBrowser = () => {
     const fetchPrograms = async () => {
       try {
         const params = filter !== 'all' ? `?domain=${filter}` : '';
-        const res = await axios.get(`${API_URL}/programs${params}`);
+        const res = await axios.get(`${API_URL}/api/programs${params}`);
         setPrograms(res.data.programs || []);
       } catch (error) {
         console.error('Failed to load programs:', error.response?.data || error.message);
