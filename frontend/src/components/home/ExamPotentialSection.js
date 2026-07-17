@@ -33,10 +33,13 @@ const ExamPotentialSection = ({ navigate }) => {
                   
                   <div className="flex items-center justify-center my-3 md:my-6">
                     <img 
-                      src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/dyz1aut8_Gemini_Generated_Image_pzpy3hpzpy3hpzpy_2-removebg-preview.png"
+                      src="/assets/features/mock-tests.webp"
                       alt="Real-Time Mock Tests"
+                      width="192"
+                      height="192"
                       className="w-28 h-28 md:w-48 md:h-48 object-contain"
-                      loading="lazy"
+                      loading="eager"
+                      fetchpriority="high"
                       decoding="async"
                     />
                   </div>
@@ -68,10 +71,13 @@ const ExamPotentialSection = ({ navigate }) => {
                   
                   <div className="flex items-center justify-center my-3 md:my-6">
                     <img 
-                      src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/vi47czpu_Gemini_Generated_Image_fduhiefduhiefduh_2-removebg-preview.png"
+                      src="/assets/features/personalized-plans.webp"
                       alt="Personalized Practice Plans"
+                      width="192"
+                      height="192"
                       className="w-28 h-28 md:w-48 md:h-48 object-contain"
-                      loading="lazy"
+                      loading="eager"
+                      fetchpriority="high"
                       decoding="async"
                     />
                   </div>
@@ -103,10 +109,13 @@ const ExamPotentialSection = ({ navigate }) => {
                   
                   <div className="flex items-center justify-center my-3 md:my-6">
                     <img 
-                      src="https://customer-assets.emergentagent.com/job_prep-together/artifacts/zn7jiygr_Gemini_Generated_Image_jj536ojj536ojj53_2-removebg-preview.png"
+                      src="/assets/features/analytics.webp"
                       alt="Performance Analytics"
+                      width="192"
+                      height="192"
                       className="w-28 h-28 md:w-48 md:h-48 object-contain"
-                      loading="lazy"
+                      loading="eager"
+                      fetchpriority="high"
                       decoding="async"
                     />
                   </div>
