@@ -138,13 +138,49 @@ class GoogleSheetsService:
                     passage = (row.get('Passage') or row.get('passage') or 
                               row.get('PASSAGE') or row.get('Reading Passage') or '').strip()
                 
+                # Get QUESTION IMAGE URL (public URL to diagram/figure)
+                # Accepts columns: "Question Image", "Image", "Diagram", "Figure", "questionimage"
+                question_image = ''
+                for key_variation in ['questionimage', 'image', 'diagram', 'figure', 'img']:
+                    if key_variation in row_normalized:
+                        question_image = row_normalized[key_variation]
+                        break
+
+                # Per-option image URLs (for questions where each option is itself a diagram).
+                # Accepts columns: "A Image", "B Image", "C Image", "D Image"
+                # (also "AImage", "OptionAImage", "imageA", etc. after normalization).
+                def _pick_option_image(letter):
+                    l = letter.lower()
+                    for k in [f'{l}image', f'option{l}image', f'image{l}', f'{l}img']:
+                        if k in row_normalized and row_normalized[k]:
+                            return row_normalized[k]
+                    return ''
+
+                image_a = _pick_option_image('a')
+                image_b = _pick_option_image('b')
+                image_c = _pick_option_image('c')
+                image_d = _pick_option_image('d')
+
+                # If any option has an image, promote options to object form so the
+                # frontend can render text + image side-by-side.
+                if any([image_a, image_b, image_c, image_d]):
+                    options_list = [
+                        {"text": option_a, "image": image_a or None},
+                        {"text": option_b, "image": image_b or None},
+                        {"text": option_c, "image": image_c or None},
+                        {"text": option_d, "image": image_d or None},
+                    ]
+                else:
+                    options_list = [option_a, option_b, option_c, option_d]
+
                 question_obj = {
                     "id": f"q_{idx + 1}",
                     "question": question_text,
-                    "options": [option_a, option_b, option_c, option_d],
+                    "options": options_list,
                     "correctAnswer": correct_answer,
                     "explanation": explanation,
-                    "passage": passage if passage else None  # Add passage if present
+                    "passage": passage if passage else None,
+                    "question_image": question_image if question_image else None,
                 }
                 
                 all_questions.append(question_obj)
@@ -260,3 +296,4 @@ class GoogleSheetsService:
                 "success": False,
                 "error": str(e)
             }
+

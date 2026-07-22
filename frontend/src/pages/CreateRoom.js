@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users, Clock, Trophy, Copy, Check } from 'lucide-react';
 import axios from 'axios';
+import Header from '../components/Header';
 
 const BATTLE_URL = window.location.origin;
 
@@ -148,7 +149,9 @@ const CreateRoom = () => {
 
   if (room) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+        <Header />
+        <div className="py-8 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl p-8">
             <div className="text-center mb-8">
@@ -211,12 +214,15 @@ const CreateRoom = () => {
             </button>
           </div>
         </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+      <Header />
+      <div className="py-8 px-4">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => navigate(-1)}
@@ -277,8 +283,10 @@ const CreateRoom = () => {
           </button>
         </div>
       </div>
+      </div>
     </div>
   );
 };
 
 export default CreateRoom;
+

@@ -83,7 +83,7 @@ const Home = () => {
               <div className="bg-blue-100 text-blue-600 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2">
                 <Trophy className="w-6 h-6" />
               </div>
-              <p className="text-sm font-semibold text-gray-900">38+ Competitive Exams</p>
+              <p className="text-sm font-semibold text-gray-900">60+ Competitive Exams</p>
               <p className="text-xs text-gray-600">Complete Syllabus</p>
             </div>
             <div className="text-center">

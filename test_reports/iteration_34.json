@@ -1,0 +1,57 @@
+{
+  "summary": "Iteration 34 — Resume Builder + CBSE bugfixes. Backend: 11/11 pytest cases PASS (Resume /me GET+PUT persistence, 401 unauth, recruiter-gated /user/{user_id} — 403 without application / 200 with application, CBSE Part 1 regex matches 'Class 11 (Science)', CBSE Part 2 /import-default success + count>0, CBSE Part 3 available-sources/preview-source/copy-from-board incl. same-board 400, /api/programs regression 200). Frontend: CRITICAL race condition — ResumeBuilder redirects to /login even when the user is authenticated, and ApplyJob never renders resume-status-card / edit-resume-btn — both caused by the same useEffect race against AuthContext hydration.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "ResumeBuilder (/app/frontend/src/pages/ResumeBuilder.js)",
+        "issue": "useEffect (empty deps) immediately calls navigate('/login') because isAuthenticated() returns false on first render (user is null until AuthContext's own useEffect hydrates from localStorage). Reproduced: after logging in as demo1 (localStorage.ceibaa_user is set, Header shows D1), navigating to /resume via a direct URL redirects back to /login within ~500ms. Fix: gate the auth check behind AuthContext's `loading` flag (e.g., `const { user, loading, isAuthenticated } = useAuth(); useEffect(() => { if (loading) return; if (!isAuthenticated()) navigate('/login'); ... }, [loading]);`) or key the effect off `user`.",
+        "selector": "[data-testid=\"resume-builder-page\"]",
+        "priority": "CRITICAL"
+      },
+      {
+        "component": "ApplyJob (/app/frontend/src/pages/ApplyJob.js)",
+        "issue": "Same race: the resume-status-card useEffect returns early because `isAuthenticated()` is false on first render. As a result, resume-status-card AND edit-resume-btn NEVER appear on /apply/:jobId even for logged-in students (verified: card count = 0, edit btn count = 0, apply-btn = 1, D1 shown in header). Fix: change deps from `[]` to `[user]` (or `[loading, user]`) and read `loading` from useAuth() so the fetch runs once user hydrates.",
+        "selector": "[data-testid=\"resume-status-card\"], [data-testid=\"edit-resume-btn\"]",
+        "priority": "CRITICAL"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Student — /resume + /apply/:jobId",
+        "issue": "Both pages fail their auth-dependent effects on first mount. End effect: student cannot build a resume at all, and cannot see the resume-status-card/edit-resume-btn on the apply page. Backend endpoints themselves work fine (verified via pytest).",
+        "affected_selectors": ["[data-testid=\"resume-builder-page\"]", "[data-testid=\"resume-status-card\"]", "[data-testid=\"edit-resume-btn\"]"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_resume_and_cbse_v34.py",
+    "/app/test_reports/pytest/pytest_resume_cbse_v34.xml"
+  ],
+  "action_items": [
+    "Fix useEffect race in /app/frontend/src/pages/ResumeBuilder.js — gate auth check behind AuthContext.loading OR add `user` to deps.",
+    "Fix useEffect race in /app/frontend/src/pages/ApplyJob.js resume-status useEffect (line 25) — change deps from `[]` to `[user]` so the fetch runs once user hydrates.",
+    "Consider centralising this pattern in a `useRequireAuth()` hook to avoid future regressions in ResumeCandidateView/ManageApplicants etc.",
+    "(Nice-to-have) Add an authenticated Playwright smoke test that visits /resume and /apply/:jobId after login and asserts the page renders."
+  ],
+  "critical_code_review_comments": [
+    "ResumeBuilder.js and ApplyJob.js both rely on `isAuthenticated?.()` inside a mount-only useEffect, which will always be false on the first render because AuthProvider loads `user` from localStorage in its own useEffect. This is a systemic pattern — worth introducing a shared hook.",
+    "resume_routes.py — recruiter access check is `db.recruitment_applications.find_one({user_id, company_id})`. If a student applied to multiple posts of the same recruiter this works; but the schema currently only stores company_id via the post owner, not directly. Verified working end-to-end via test — just noting the field name assumption.",
+    "class_chapters_routes.py::/import-default swallows the fine-grained per-doc error into a single 500. Consider counting failures separately.",
+    "chapter_test_routes.py — the new regex `^Class\\s+N(\\s*\\(|\\s*$)` is applied consistently in /chapters, /questions, /start-test. Good.",
+    "resume_routes.py — the meta injection in _resume_with_meta silently mutates the resume dict returned to the caller; PUT returns include `meta` and `updated_at`, but the strip-meta on the client (ResumeBuilder.save) only strips `meta`+`updated_at`, so the round-trip is fine. Confirmed via pytest.",
+    "utils/auth_helpers.py — cookie-first + Bearer fallback is well factored and covered by these tests."
+  ],
+  "updated_files": ["/app/backend/tests/test_resume_and_cbse_v34.py"],
+  "success_rate": {"backend": "100% (11/11)", "frontend": "~40% — resume-related pages blocked by auth race; other UI paths not tested due to blocker"},
+  "test_credentials": "demo1/demo1 via POST /api/auth/demo-login; hr@tcs.com/tcs123 via POST /api/recruitment/recruiter/login. Both used successfully.",
+  "seed_data_creation": "Pytest test inserted (a) 1 TEST recruitment_applications doc — cleaned up in teardown, (b) 1 TEST class_chapters doc for CBSE Class 11 (Science) Physics — cleaned up, (c) hbse Class 10 Science chapters via copy-from-board — cleaned up. Also cleared demo1 user.resume after PUT test.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "After main agent fixes the useEffect race in ResumeBuilder.js and ApplyJob.js, retest by (1) logging in as demo1, (2) navigating to /resume — assert 'Build Your Resume' visible + Save works + Preview modal opens, (3) navigating to /apply/post-tcs-intern-001 — assert data-testid='resume-status-card' visible and data-testid='edit-resume-btn' navigates to /resume. Backend suite /app/backend/tests/test_resume_and_cbse_v34.py already fully covers the new endpoints (11/11 passing). ChapterUploadManager Copy-from-Board admin UI was not tested end-to-end but backend endpoints all pass — worth a quick admin-login click-through when time permits.",
+  "rca of the issue": "React effect-ordering pitfall: `AuthProvider`'s hydration `useEffect` runs AFTER child components' `useEffect`s on the initial mount (React runs effects deepest-first). So when ResumeBuilder mounts, `user` is still `null`, `isAuthenticated?.()` returns false, and `navigate('/login')` fires immediately. Same holds for ApplyJob's resume-fetch effect, causing `resumeStatus.loaded` to stay false and the resume-status-card + edit-resume-btn to never render. Reproduction: `demo1/demo1` login → cookie + localStorage.ceibaa_user set → header shows D1 → visit /resume → 500ms later URL is /login. Mitigation: introduce a `loading` guard from useAuth() (already exposed) and either `if (loading) return;` before the auth check or key the effect off `user`."
+}

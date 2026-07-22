@@ -27,6 +27,15 @@ const ChapterUploadManager = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Copy-from-board modal state
+  const [showCopyModal, setShowCopyModal] = useState(false);
+  const [copySources, setCopySources] = useState([]); // [{ board, count }]
+  const [copySourceCounts, setCopySourceCounts] = useState({});
+  const [copySourceBoard, setCopySourceBoard] = useState('');
+  const [copyPreview, setCopyPreview] = useState([]);
+  const [copyLoading, setCopyLoading] = useState(false);
+  const [copySubmitting, setCopySubmitting] = useState(false);
+
   const boards = ['cbse', 'rbse', 'hbse', 'upboard', 'bseb', 'mpbse'];
   const classOptions = {
     cbse: ['Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 (Science)', 'Class 11 (Commerce)', 'Class 11 (Humanities)', 'Class 12 (Science)', 'Class 12 (Commerce)', 'Class 12 (Humanities)'],
@@ -244,6 +253,75 @@ const ChapterUploadManager = () => {
     }
   };
 
+  // ============== Copy From Board ==============
+  const openCopyModal = async () => {
+    if (!selectedClass || !selectedSubject) return;
+    setShowCopyModal(true);
+    setCopyLoading(true);
+    setCopySourceBoard('');
+    setCopyPreview([]);
+    try {
+      const { data } = await axios.get(
+        `${BACKEND_URL}/api/admin/class-chapters/available-sources`,
+        { params: { class_name: selectedClass, subject: selectedSubject } }
+      );
+      const others = (data.boards || []).filter((b) => b !== board);
+      setCopySources(others);
+      setCopySourceCounts(data.chapters_count || {});
+    } catch (e) {
+      setErrorMessage('Failed to load available source boards');
+      setShowCopyModal(false);
+    } finally {
+      setCopyLoading(false);
+    }
+  };
+
+  const selectCopySource = async (srcBoard) => {
+    setCopySourceBoard(srcBoard);
+    setCopyPreview([]);
+    setCopyLoading(true);
+    try {
+      const { data } = await axios.get(
+        `${BACKEND_URL}/api/admin/class-chapters/preview-source`,
+        { params: { board: srcBoard, class_name: selectedClass, subject: selectedSubject } }
+      );
+      setCopyPreview(data.chapters || []);
+    } catch (e) {
+      setErrorMessage('Failed to preview source chapters');
+    } finally {
+      setCopyLoading(false);
+    }
+  };
+
+  const confirmCopyFromBoard = async () => {
+    if (!copySourceBoard) return;
+    setCopySubmitting(true);
+    try {
+      const { data } = await axios.post(
+        `${BACKEND_URL}/api/admin/class-chapters/copy-from-board`,
+        {
+          source_board: copySourceBoard,
+          target_board: board,
+          class_name: selectedClass,
+          subject: selectedSubject,
+        }
+      );
+      if (data.success) {
+        setSuccessMessage(data.message);
+        setShowCopyModal(false);
+        loadChapters();
+        loadStats();
+        loadSubjects();
+        setTimeout(() => setSuccessMessage(''), 5000);
+      }
+    } catch (e) {
+      const errorMsg = e.response?.data?.detail || e.message;
+      setErrorMessage(`Copy failed: ${errorMsg}`);
+    } finally {
+      setCopySubmitting(false);
+    }
+  };
+
   const startEditChapter = (chapter) => {
     setEditingChapterId(chapter.id);
     setEditForm({
@@ -454,6 +532,20 @@ const ChapterUploadManager = () => {
         >
           <Plus className="w-4 h-4" />
           {showForm ? 'Cancel' : 'Add Chapters'}
+        </button>
+
+        <button
+          onClick={openCopyModal}
+          disabled={!selectedClass || !selectedSubject || loading}
+          data-testid="copy-from-board-btn"
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium border-2 border-black transition-all ${
+            selectedClass && selectedSubject && !loading
+              ? 'bg-amber-100 hover:bg-amber-200 text-slate-900 cursor-pointer shadow-[3px_3px_0_0_rgba(0,0,0,0.9)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0_0_rgba(0,0,0,0.9)]'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed border-gray-300'
+          }`}
+        >
+          <span role="img" aria-label="copy">📋</span>
+          Copy from Board
         </button>
 
         <button
@@ -711,6 +803,125 @@ const ChapterUploadManager = () => {
               No chapters found. {!showForm && 'Click "Add Chapters" to upload.'}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ============== Copy From Board Modal ============== */}
+      {showCopyModal && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          onClick={() => !copySubmitting && setShowCopyModal(false)}
+          data-testid="copy-from-board-modal"
+        >
+          <div
+            className="bg-white rounded-2xl border-2 border-black shadow-[6px_6px_0_0_rgba(0,0,0,0.9)] w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 border-b-2 border-black bg-amber-50 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <span role="img" aria-label="copy">📋</span> Copy Chapters from Another Board
+                </h3>
+                <p className="text-xs text-slate-600 mt-1">
+                  Target: <span className="font-semibold uppercase">{board}</span> · {selectedClass} · {selectedSubject}
+                </p>
+              </div>
+              <button
+                onClick={() => !copySubmitting && setShowCopyModal(false)}
+                className="text-slate-500 hover:text-slate-800"
+                data-testid="close-copy-modal-btn"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-5 overflow-y-auto flex-1">
+              {copyLoading && copySources.length === 0 ? (
+                <div className="py-10 text-center text-slate-500 text-sm">Loading…</div>
+              ) : copySources.length === 0 ? (
+                <div className="py-10 text-center text-slate-500 text-sm" data-testid="copy-no-sources">
+                  No other boards have chapters for this class + subject yet.
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                    Choose Source Board
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                    {copySources.map((b) => (
+                      <button
+                        key={b}
+                        onClick={() => selectCopySource(b)}
+                        data-testid={`copy-source-${b}`}
+                        className={`p-3 rounded-xl border-2 text-left transition-all ${
+                          copySourceBoard === b
+                            ? 'border-black bg-emerald-100 shadow-[3px_3px_0_0_rgba(0,0,0,0.9)]'
+                            : 'border-slate-200 bg-white hover:border-slate-400'
+                        }`}
+                      >
+                        <p className="text-sm font-bold uppercase text-slate-900">{b}</p>
+                        <p className="text-xs text-slate-500">
+                          {copySourceCounts[b] || 0} chapter{(copySourceCounts[b] || 0) !== 1 ? 's' : ''}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+
+                  {copySourceBoard && (
+                    <>
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                        Preview ({copyPreview.length})
+                      </p>
+                      {copyLoading ? (
+                        <div className="py-6 text-center text-slate-500 text-sm">Loading preview…</div>
+                      ) : copyPreview.length === 0 ? (
+                        <div className="py-6 text-center text-slate-500 text-sm">No chapters to preview.</div>
+                      ) : (
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {copyPreview.map((ch, i) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-3 p-2 border border-slate-200 rounded-lg bg-slate-50"
+                              data-testid={`copy-preview-${i}`}
+                            >
+                              <span className="w-8 h-8 rounded-lg bg-white border border-slate-300 text-slate-800 text-sm font-bold flex items-center justify-center">
+                                {ch.chapter_number || i + 1}
+                              </span>
+                              <p className="text-sm text-slate-800 flex-1">{ch.chapter_name}</p>
+                              <span className="text-xs text-slate-500">{ch.difficulty}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="p-5 border-t-2 border-black bg-slate-50 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowCopyModal(false)}
+                disabled={copySubmitting}
+                className="px-4 py-2 rounded-lg text-slate-700 border-2 border-slate-300 bg-white hover:bg-slate-100 text-sm disabled:opacity-50"
+                data-testid="cancel-copy-btn"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmCopyFromBoard}
+                disabled={!copySourceBoard || copyPreview.length === 0 || copySubmitting}
+                data-testid="confirm-copy-btn"
+                className={`px-4 py-2 rounded-lg text-sm font-semibold border-2 border-black shadow-[3px_3px_0_0_rgba(0,0,0,0.9)] transition-all ${
+                  copySourceBoard && copyPreview.length && !copySubmitting
+                    ? 'bg-emerald-400 hover:bg-emerald-500 text-slate-900 active:translate-x-[1px] active:translate-y-[1px] active:shadow-[2px_2px_0_0_rgba(0,0,0,0.9)]'
+                    : 'bg-gray-200 text-gray-400 cursor-not-allowed border-gray-300 shadow-none'
+                }`}
+              >
+                {copySubmitting ? 'Copying…' : `Copy ${copyPreview.length} Chapter${copyPreview.length === 1 ? '' : 's'}`}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

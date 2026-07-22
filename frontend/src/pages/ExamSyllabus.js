@@ -6,6 +6,7 @@ import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SEO from '../components/SEO';
+import BattleButton from '../components/BattleButton';
 
 const API_URL = window.location.origin;
 
@@ -286,16 +287,14 @@ const ExamSyllabus = () => {
                       <span>🎯</span>
                       <span>Room</span>
                     </button>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/matchmaking/${examId}/${topicData.subject}/${topicData.topic}`);
-                      }}
-                      className="flex-1 bg-orange-600 text-white py-1.5 px-1 rounded text-[10px] font-medium flex items-center justify-center space-x-0.5"
-                    >
-                      <span>⚔️</span>
-                      <span>Battle</span>
-                    </button>
+                    <BattleButton
+                      size="sm"
+                      className="flex-1"
+                      icon="⚔️"
+                      label="Battle"
+                      stopPropagation
+                      onClick={() => navigate(`/matchmaking/${examId}/${topicData.subject}/${topicData.topic}`)}
+                    />
                   </div>
                 </div>
               )}
@@ -371,15 +370,13 @@ const ExamSyllabus = () => {
                   >
                     🎯 Battle Room (PIN)
                   </button>
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/matchmaking/${examId}/${topicData.subject}/${topicData.topic}`);
-                    }}
-                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-2 px-3 rounded-lg text-sm font-semibold hover:shadow-lg transition-all"
-                  >
-                    ⚔️ Live Battle (1v1)
-                  </button>
+                  <BattleButton
+                    className="w-full"
+                    icon="⚔️"
+                    label="Live Battle (1v1)"
+                    stopPropagation
+                    onClick={() => navigate(`/matchmaking/${examId}/${topicData.subject}/${topicData.topic}`)}
+                  />
                 </div>
               </div>
             </div>
@@ -399,3 +396,4 @@ const ExamSyllabus = () => {
 };
 
 export default ExamSyllabus;
+

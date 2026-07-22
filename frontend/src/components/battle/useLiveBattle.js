@@ -743,6 +743,7 @@ const useLiveBattle = () => {
     myScore,
     isPaused,
     answerResult,
+    setAnswerResult,
     participants,
     showAllQuestions,
     loading,
@@ -784,3 +785,4 @@ const useLiveBattle = () => {
 };
 
 export default useLiveBattle;
+

@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import axios from 'axios';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Briefcase, MapPin, DollarSign, Clock, CheckCircle2, ArrowLeft, Users, AlertCircle } from 'lucide-react';
+import { Briefcase, MapPin, DollarSign, Clock, CheckCircle2, ArrowLeft, Users, AlertCircle, FileText, Pencil } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -17,9 +17,29 @@ export default function ApplyJob() {
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(false);
   const [error, setError] = useState('');
+  const [resumeStatus, setResumeStatus] = useState({ loaded: false, hasContent: false });
 
   // eslint-disable-next-line
   useEffect(() => { fetchPost(); }, [jobId]);
+
+  useEffect(() => {
+    if (!isAuthenticated?.()) return;
+    (async () => {
+      try {
+        const { data } = await axios.get(`${BACKEND_URL}/api/recruitment/resume/me`);
+        const hasContent = !!(
+          (data.experience && data.experience.length) ||
+          (data.education && data.education.length) ||
+          (data.projects && data.projects.length) ||
+          (data.basics && data.basics.headline)
+        );
+        setResumeStatus({ loaded: true, hasContent });
+      } catch (e) {
+        setResumeStatus({ loaded: true, hasContent: false });
+      }
+    })();
+    // eslint-disable-next-line
+  }, []);
 
   const fetchPost = async () => {
     try {
@@ -89,6 +109,36 @@ export default function ApplyJob() {
           )}
 
           {error && <div className="flex items-center gap-2 text-rose-600 text-sm mb-4 bg-rose-50 p-3 rounded-lg border border-rose-200" data-testid="apply-error"><AlertCircle size={16} /> {error}</div>}
+
+          {resumeStatus.loaded && !applied && (
+            <div
+              className={`mb-4 p-4 rounded-xl border flex items-start gap-3 ${
+                resumeStatus.hasContent
+                  ? 'bg-emerald-50 border-emerald-200'
+                  : 'bg-amber-50 border-amber-200'
+              }`}
+              data-testid="resume-status-card"
+            >
+              <FileText size={20} className={resumeStatus.hasContent ? 'text-emerald-600 flex-shrink-0' : 'text-amber-600 flex-shrink-0'} />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-800">
+                  {resumeStatus.hasContent ? 'Your CEIBAA resume is ready' : 'Build your resume first'}
+                </p>
+                <p className="text-xs text-slate-600 mt-1">
+                  {resumeStatus.hasContent
+                    ? 'The recruiter will see your resume when you apply.'
+                    : 'Applying now will only share your basic profile. Add experience, projects and education to stand out.'}
+                </p>
+              </div>
+              <button
+                onClick={() => navigate('/resume')}
+                className="text-xs font-medium px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center gap-1 flex-shrink-0"
+                data-testid="edit-resume-btn"
+              >
+                <Pencil size={12} /> {resumeStatus.hasContent ? 'Edit' : 'Build'}
+              </button>
+            </div>
+          )}
 
           {applied ? (
             <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 p-4 rounded-lg border border-emerald-200" data-testid="applied-success">

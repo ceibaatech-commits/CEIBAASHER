@@ -14,6 +14,43 @@ const HERO_VIDEO = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwI
 
 const FONT = '"Geist", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
+/**
+ * Board logo image with shimmer placeholder while loading.
+ * `priority` = true → eager fetch (for above-the-fold tiles).
+ * Falls back to a neutral book icon if the image fails.
+ */
+const BoardLogoImg = ({ src, alt, priority = false }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  return (
+    <div className="relative w-full h-full">
+      {!loaded && !errored && (
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-200/70 to-slate-100 animate-pulse rounded" />
+      )}
+      {errored ? (
+        <div className="w-full h-full flex items-center justify-center">
+          <BookOpen className="w-6 h-6 text-[#0A0A0A]/60" />
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          width={60}
+          height={60}
+          decoding="async"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : 'auto'}
+          onLoad={() => setLoaded(true)}
+          onError={() => { setErrored(true); setLoaded(true); }}
+          className={`w-full h-full object-contain bg-white transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+        />
+      )}
+    </div>
+  );
+};
+
+
 const PASTEL_CYCLE = [
   { bg: 'bg-[#A7F3D0]', hover: 'group-hover:bg-[#6EE7B7]' },
   { bg: 'bg-[#E9D5FF]', hover: 'group-hover:bg-[#D8B4FE]' },
@@ -35,9 +72,9 @@ const CLASS_DATA = [
 ];
 
 const STATE_BOARDS = [
-  { name: 'Tamil Nadu Board', abbr: 'TNBSE', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjQ-xL8bBH8V0muviqy4ugfn8z3fjC-9RTDAtOkSg4xRky7-GbkbY8nmM&s=10' },
-  { name: 'Maharashtra Board', abbr: 'MSBSHSE', logo: 'https://mahahsscboard.in/boardlogo.svg' },
-  { name: 'West Bengal Board', abbr: 'WBBSE', logo: 'https://wbbse.wb.gov.in/img/logo.png' },
+  { name: 'Tamil Nadu Board', abbr: 'TNBSE', logo: '/boards/tnbse.png' },
+  { name: 'Maharashtra Board', abbr: 'MSBSHSE', logo: '/boards/mahahsscboard.svg' },
+  { name: 'West Bengal Board', abbr: 'WBBSE', logo: '/boards/wbbse.svg' },
 ];
 
 const FEATURES = [
@@ -62,12 +99,12 @@ const ChapterTestHome = () => {
   }, [queryBoard]);
 
   const boardMeta = {
-    cbse: { label: 'CBSE', logo: 'https://www.cbse.gov.in/images//logo.png', hero: 'NCERT Aligned · CBSE 2026', classesText: 'Classes 6–12', classRangeText: '6, 7, 8, 9, 10, 11 & 12', shortClassText: 'Class 6 to 12' },
-    rbse: { label: 'Rajasthan Board', logo: 'https://rajeduboard.rajasthan.gov.in/Images/logo-bw.jpg', hero: 'RBSE Aligned · Rajasthan Board 2026', classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10', shortClassText: 'Class 6 to 10' },
-    hbse: { label: 'Haryana Board', logo: 'https://bseh.org.in/logo.png', hero: 'HBSE Aligned · Haryana Board 2026', classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10', shortClassText: 'Class 6 to 10' },
-    upboard: { label: 'UP Board', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH0-G5YTSz055LClxVm5HMPOXdk9YkJUz15fWpWxI2KuK9lCHuba85pRI&usqp=CAE&s', hero: 'UP Board Aligned · UPMSP 2026', classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10', shortClassText: 'Class 6 to 10' },
-    bseb: { label: 'Bihar Board', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurIRzAozqqvB6oeu6AtsBKajPXAcneI5cfKH3AIJPwQiRss722qGPjc&s=10', hero: 'Bihar Board Aligned · BSEB 2026', classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10', shortClassText: 'Class 6 to 10' },
-    mpbse: { label: 'MP Board', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLa5vNIMOo1x4zzw6gDoPw8j-uZ0ZOyCQCS3ojKlpxIKwOJxI4ERIUELnm&s=10', hero: 'MP Board Aligned · MPBSE 2026', classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10', shortClassText: 'Class 6 to 10' },
+    cbse:    { label: 'CBSE',            logo: '/boards/cbse.png',    hero: 'NCERT Aligned · CBSE 2026',              classesText: 'Classes 6–12', classRangeText: '6, 7, 8, 9, 10, 11 & 12', shortClassText: 'Class 6 to 12' },
+    rbse:    { label: 'Rajasthan Board', logo: '/boards/rbse.jpg',    hero: 'RBSE Aligned · Rajasthan Board 2026',    classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10',           shortClassText: 'Class 6 to 10' },
+    hbse:    { label: 'Haryana Board',   logo: '/boards/hbse.png',    hero: 'HBSE Aligned · Haryana Board 2026',      classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10',           shortClassText: 'Class 6 to 10' },
+    upboard: { label: 'UP Board',        logo: '/boards/upboard.png', hero: 'UP Board Aligned · UPMSP 2026',           classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10',           shortClassText: 'Class 6 to 10' },
+    bseb:    { label: 'Bihar Board',     logo: '/boards/bseb.png',    hero: 'Bihar Board Aligned · BSEB 2026',        classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10',           shortClassText: 'Class 6 to 10' },
+    mpbse:   { label: 'MP Board',        logo: '/boards/mpbse.png',   hero: 'MP Board Aligned · MPBSE 2026',          classesText: 'Classes 6–10', classRangeText: '6, 7, 8, 9, 10',           shortClassText: 'Class 6 to 10' },
   };
   const activeBoard = boardMeta[selectedBoard] || boardMeta.cbse;
   const boardLabel = activeBoard.label;
@@ -254,13 +291,13 @@ const ChapterTestHome = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 mb-6" data-testid="state-boards-grid">
               {[
-                { id: 'cbse', name: 'CBSE', description: 'Classes 6 to 12', logo: 'https://www.cbse.gov.in/images//logo.png' },
-                { id: 'rbse', name: 'Rajasthan Board', description: 'Classes 6 to 10', logo: 'https://rajeduboard.rajasthan.gov.in/Images/logo-bw.jpg' },
-                { id: 'hbse', name: 'Haryana Board', description: 'Classes 6 to 10', logo: 'https://bseh.org.in/logo.png' },
-                { id: 'upboard', name: 'UP Board', description: 'Classes 6 to 10', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRH0-G5YTSz055LClxVm5HMPOXdk9YkJUz15fWpWxI2KuK9lCHuba85pRI&usqp=CAE&s' },
-                { id: 'bseb', name: 'Bihar Board', description: 'Classes 6 to 10', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTurIRzAozqqvB6oeu6AtsBKajPXAcneI5cfKH3AIJPwQiRss722qGPjc&s=10' },
-                { id: 'mpbse', name: 'MP Board', description: 'Classes 6 to 10', logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLa5vNIMOo1x4zzw6gDoPw8j-uZ0ZOyCQCS3ojKlpxIKwOJxI4ERIUELnm&s=10' },
-              ].map(({ id, name, description, logo }) => {
+                { id: 'cbse',    name: 'CBSE',             description: 'Classes 6 to 12', logo: '/boards/cbse.png' },
+                { id: 'rbse',    name: 'Rajasthan Board',  description: 'Classes 6 to 10', logo: '/boards/rbse.jpg' },
+                { id: 'hbse',    name: 'Haryana Board',    description: 'Classes 6 to 10', logo: '/boards/hbse.png' },
+                { id: 'upboard', name: 'UP Board',         description: 'Classes 6 to 10', logo: '/boards/upboard.png' },
+                { id: 'bseb',    name: 'Bihar Board',      description: 'Classes 6 to 10', logo: '/boards/bseb.png' },
+                { id: 'mpbse',   name: 'MP Board',         description: 'Classes 6 to 10', logo: '/boards/mpbse.png' },
+              ].map(({ id, name, description, logo }, idx) => {
                 const isActive = selectedBoard === id;
                 return (
                   <div
@@ -270,11 +307,7 @@ const ChapterTestHome = () => {
                     className={`bg-white border-2 rounded-xl p-4 sm:p-5 flex flex-col items-center text-center cursor-pointer transition-all ${isActive ? 'border-[#0A0A0A] shadow-[4px_4px_0px_#0A0A0A] -translate-y-0.5' : 'border-gray-300 hover:border-[#0A0A0A] hover:shadow-[3px_3px_0px_#0A0A0A]'}`}
                   >
                     <div className={`w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-lg overflow-hidden flex items-center justify-center mb-2 border-2 ${isActive ? 'border-[#0A0A0A] bg-[#A7F3D0]' : 'border-gray-200 bg-white'}`}>
-                      {logo ? (
-                        <img src={logo} alt={`${name} logo`} className="w-full h-full object-contain bg-white" loading="lazy" />
-                      ) : (
-                        <BookOpen className="w-6 h-6 text-[#0A0A0A]" />
-                      )}
+                      <BoardLogoImg src={logo} alt={`${name} logo`} priority={idx < 3} />
                     </div>
                     <h3 className="text-xs sm:text-sm font-bold text-[#0A0A0A] leading-tight">{name}</h3>
                     <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{description}</p>
@@ -295,7 +328,7 @@ const ChapterTestHome = () => {
                   className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-4 sm:p-5 cursor-default opacity-70 flex flex-col items-center text-center"
                 >
                   <div className="w-12 h-12 sm:w-[60px] sm:h-[60px] rounded-lg overflow-hidden flex items-center justify-center mb-2 bg-white border-2 border-gray-200">
-                    <img src={logo} alt={`${name} logo`} className="w-full h-full object-contain" loading="lazy" />
+                    <BoardLogoImg src={logo} alt={`${name} logo`} />
                   </div>
                   <h3 className="text-xs sm:text-sm font-semibold text-gray-600 leading-tight">{name}</h3>
                   <p className="text-[9px] sm:text-[11px] text-gray-400 mt-0.5 uppercase">{abbr} · Coming Soon</p>

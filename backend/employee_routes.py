@@ -365,9 +365,17 @@ async def delete_employee(employee_id: str, admin: dict = Depends(verify_admin_t
 
 @router.post("/employee/sheets/add")
 async def employee_add_sheet(sheet_data: dict, employee: dict = Depends(verify_employee_token)):
-    """Employee adds a Google Sheet - treated same as admin"""
+    """Employee adds a Google Sheet — full parity with admin flow.
+
+    Behavior mirrors POST /admin/sheets exactly:
+      1. Persist the sheet metadata to `exam_sheets`
+      2. Fetch questions from the Google Sheet via GoogleSheetsService
+      3. Insert every parsed question into `db.questions`
+      4. Update the sheet doc with `questions_imported=True` + count
+      5. Invalidate the questions cache
+    """
     try:
-        # Add employee info to sheet data
+        # Attribution + metadata
         sheet_data["added_by"] = {
             "type": "employee",
             "id": employee["id"],
@@ -376,28 +384,78 @@ async def employee_add_sheet(sheet_data: dict, employee: dict = Depends(verify_e
         }
         sheet_data["created_at"] = datetime.now(timezone.utc).isoformat()
         sheet_data["id"] = str(uuid.uuid4())
-        
-        # Save to exam_sheets collection (same as admin)
-        await db.exam_sheets.insert_one(sheet_data)
-        
-        # Update employee stats
+        sheet_data["questions_imported"] = False
+        sheet_data["question_count"] = 0
+
+        # Normalize board on class-type sheets (admin does the same)
+        if sheet_data.get("type") == "class":
+            sheet_data["board"] = (sheet_data.get("board") or "cbse").lower()
+
+        sheet_id = sheet_data["id"]
+        sheet_link = sheet_data.get("sheet_link")
+
+        if not sheet_link:
+            raise HTTPException(status_code=400, detail="sheet_link is required")
+
+        # 1. Save sheet metadata to exam_sheets collection (same as admin)
+        await db.exam_sheets.insert_one(sheet_data.copy())
+
+        # 2. Import questions — reuse admin's exact helpers so employee behaviour
+        #    matches admin behaviour byte-for-byte (competitive exams AND classes).
+        imported = 0
+        import_error = None
+        try:
+            from admin_routes import ExamSheet, _import_sheet_questions
+            exam_sheet_model = ExamSheet(
+                type=sheet_data.get("type"),
+                exam_name=sheet_data.get("exam_name"),
+                syllabus_topic=sheet_data.get("syllabus_topic"),
+                subject=sheet_data.get("subject"),
+                sub_topic=sheet_data.get("sub_topic"),
+                sub_sub_topic=sheet_data.get("sub_sub_topic"),
+                class_name=sheet_data.get("class_name"),
+                board=sheet_data.get("board"),
+                chapter=sheet_data.get("chapter"),
+                sheet_link=sheet_link,
+            )
+            imported = await _import_sheet_questions(exam_sheet_model, sheet_id)
+        except Exception as e:
+            import_error = str(e)
+            print(f"❌ Employee sheet import failed for {sheet_id}: {e}")
+
+        # 3. Update employee stats
         await db.employees.update_one(
             {"id": employee["id"]},
             {"$inc": {"sheets_added": 1}}
         )
 
-        # Bust any cached parses for this sheet link.
+        # 4. Bust any cached parses for this sheet link.
         try:
             from quiz_routes import invalidate_questions_cache
-            await invalidate_questions_cache(db, sheet_url=sheet_data.get("sheet_link"))
+            await invalidate_questions_cache(db, sheet_url=sheet_link)
         except Exception as cache_err:
             print(f"⚠️ Cache invalidation skipped: {cache_err}")
-        
+
+        # 5. Return admin-shaped response so the frontend can show accurate feedback
+        if imported == 0:
+            return {
+                "success": True,
+                "message": (
+                    "Sheet added but no questions were imported. "
+                    "Please verify the sheet is public and has the expected columns."
+                ),
+                "sheet_id": sheet_id,
+                "questions_imported": 0,
+                "warning": import_error or "No questions parsed from the sheet."
+            }
         return {
             "success": True,
-            "message": "Sheet added successfully",
-            "sheet_id": sheet_data["id"]
+            "message": f"Sheet added and {imported} question(s) imported successfully",
+            "sheet_id": sheet_id,
+            "questions_imported": imported
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -454,3 +512,4 @@ async def employee_delete_sheet(sheet_id: str, employee: dict = Depends(verify_e
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+

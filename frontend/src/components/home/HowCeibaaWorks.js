@@ -54,7 +54,7 @@ const HowCeibaaWorks = () => {
                   <div className="text-4xl mb-2">🎯</div>
                   <h4 className="text-lg font-black mb-2 text-cyan-600">Select Your Exam</h4>
                   <p className="text-gray-800 text-sm leading-relaxed font-bold">
-                    Choose from 38+ competitive exams
+                    Choose from 60+ competitive exams
                   </p>
                 </div>
               </div>

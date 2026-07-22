@@ -6,7 +6,10 @@ const GOAL_OPTIONS = {
     name: "Competitive Exams",
     icon: GraduationCap,
     description: "JEE, NEET, UPSC, Defence, Banking & more",
+    // Static Tailwind classes (dynamic interpolation doesn't compile with JIT).
     color: "from-purple-500 to-indigo-600",
+    iconBg: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    hoverBg: "hover:bg-gradient-to-br hover:from-purple-500 hover:to-indigo-600",
     categories: [
       { id: "jee", name: "JEE (Engineering)", icon: "\u{1F3AF}" },
       { id: "neet", name: "NEET (Medical)", icon: "\u{1F3E5}" },
@@ -22,6 +25,8 @@ const GOAL_OPTIONS = {
     icon: School,
     description: "RBSE, CBSE, ICSE & other State Boards",
     color: "from-emerald-500 to-teal-600",
+    iconBg: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    hoverBg: "hover:bg-gradient-to-br hover:from-emerald-500 hover:to-teal-600",
     // School is a 2-step pick: board first, then class. `boards` drives step 2,
     // `categories` (classes) are shared across every board and drive step 3.
     boards: [
@@ -52,6 +57,8 @@ const GOAL_OPTIONS = {
     icon: Landmark,
     description: "B.Com, BBA, LLB, BA, B.Sc, Masters & more",
     color: "from-orange-500 to-amber-600",
+    iconBg: "bg-gradient-to-br from-orange-500 to-amber-600",
+    hoverBg: "hover:bg-gradient-to-br hover:from-orange-500 hover:to-amber-600",
     categories: [
       { id: "ba", name: "B.A.", icon: "\u{1F4DA}" },
       { id: "bcom", name: "B.Com", icon: "\u{1F4B0}" },
@@ -84,9 +91,17 @@ export const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal 
       ? `${selectedBoard}_${categoryId}`
       : categoryId;
     setLoading(true);
-    await onSelectGoal(type, finalCategoryId);
-    setLoading(false);
-    onClose();
+    try {
+      if (typeof onSelectGoal === 'function') {
+        await onSelectGoal(type, finalCategoryId);
+      }
+    } catch (err) {
+      // Never let a downstream failure white-screen the page.
+      console.error('GoalSelectionModal: onSelectGoal threw', err);
+    } finally {
+      setLoading(false);
+      if (typeof onClose === 'function') onClose();
+    }
   };
 
   const handleBack = () => {
@@ -104,35 +119,48 @@ export const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal 
   const isCategoryStep = selectedType && (selectedType !== 'school' || selectedBoard);
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white rounded-t-2xl">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Choose Your Study Goal</h2>
-            <p className="text-gray-500">Personalize your dashboard and recommendations</p>
+    <div
+      data-testid="goal-selection-modal"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] flex items-stretch md:items-center justify-center p-0 md:p-4"
+    >
+      <div className="bg-white w-full md:max-w-2xl md:w-full h-full md:h-auto md:max-h-[90vh] overflow-y-auto shadow-2xl rounded-none md:rounded-2xl flex flex-col pb-[env(safe-area-inset-bottom)]">
+        <div className="p-5 md:p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white md:rounded-t-2xl z-10">
+          <div className="min-w-0 pr-3">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 truncate">Choose Your Study Goal</h2>
+            <p className="text-gray-500 text-xs md:text-sm">Personalize your dashboard and recommendations</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            onClick={onClose}
+            data-testid="goal-modal-close-btn"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors shrink-0"
+            aria-label="Close"
+          >
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 md:p-6 flex-1">
           {!selectedType ? (
             // Step 1: competitive / school / university
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               {Object.entries(GOAL_OPTIONS).map(([type, data]) => {
                 const Icon = data.icon;
                 return (
                   <button
                     key={type}
                     onClick={() => setSelectedType(type)}
-                    className={`p-6 rounded-xl border-2 border-gray-200 hover:border-transparent hover:shadow-lg transition-all text-left group bg-gradient-to-br hover:${data.color} hover:text-white`}
+                    data-testid={`goal-type-${type}`}
+                    className={`relative p-5 md:p-6 rounded-xl border-2 border-gray-200 hover:border-transparent hover:shadow-lg transition-all text-left group overflow-hidden ${data.hoverBg}`}
                   >
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${data.color} flex items-center justify-center mb-4 group-hover:bg-white/20`}>
+                    <div className={`w-14 h-14 rounded-xl ${data.iconBg} flex items-center justify-center mb-4 shadow-md group-hover:bg-white/20 group-hover:shadow-none transition-colors`}>
                       <Icon className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-white">{data.name}</h3>
-                    <p className="text-gray-500 group-hover:text-white/80">{data.description}</p>
+                    <h3 className="text-lg md:text-xl font-bold mb-1.5 text-gray-900 group-hover:text-white transition-colors">
+                      {data.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 group-hover:text-white/90 transition-colors">
+                      {data.description}
+                    </p>
                   </button>
                 );
               })}
@@ -150,6 +178,7 @@ export const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal 
                   <button
                     key={board.id}
                     onClick={() => setSelectedBoard(board.id)}
+                    data-testid={`goal-board-${board.id}`}
                     className="p-4 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left flex items-center gap-3"
                   >
                     <span className="text-2xl">{board.icon}</span>
@@ -178,6 +207,7 @@ export const GoalSelectionModal = ({ isOpen, onClose, onSelectGoal, currentGoal 
                       key={cat.id}
                       onClick={() => handleSelectCategory(selectedType, cat.id)}
                       disabled={loading}
+                      data-testid={`goal-category-${finalId}`}
                       className={`p-4 rounded-xl border-2 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all text-left flex items-center gap-3 ${
                         currentGoal?.goal_category === finalId ? 'border-emerald-500 bg-emerald-50' : ''
                       } disabled:opacity-50`}

@@ -249,7 +249,8 @@ const SoloPractice = () => {
           chapter: classBasedData.chapter,
           board: classBasedData.board,
           exam: exam, // For compatibility
-          numberOfQuestions: numberOfQuestions
+          numberOfQuestions: numberOfQuestions,
+          userId: user?.id || undefined,
         };
       } else {
         // Exam-based quiz (NEET, JEE, etc.)
@@ -257,7 +258,8 @@ const SoloPractice = () => {
           exam: exam,
           subject: subject,
           topic: topic,
-          numberOfQuestions: numberOfQuestions
+          numberOfQuestions: numberOfQuestions,
+          userId: user?.id || undefined,
         };
         
         // Include sub_topic if available

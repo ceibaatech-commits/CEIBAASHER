@@ -55,6 +55,7 @@ const EmployeeDashboard = () => {
   });
 
   const [cbseClassSubjects, setCbseClassSubjects] = useState({});
+  const [chapters, setChapters] = useState([]);
   const [books, setBooks] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -89,6 +90,18 @@ const EmployeeDashboard = () => {
   useEffect(() => {
     fetchCbseData();
   }, [classForm.board]);
+
+  // Derive chapter dropdown options whenever class or subject changes —
+  // matches admin ExamSheetManager exactly (chapters come from the nested
+  // cbseClassSubjects[class][subject] array returned by /api/cbse-data).
+  useEffect(() => {
+    const classBucket = cbseClassSubjects[classForm.class_name];
+    if (classBucket && classForm.subject && Array.isArray(classBucket[classForm.subject])) {
+      setChapters(classBucket[classForm.subject]);
+    } else {
+      setChapters([]);
+    }
+  }, [classForm.class_name, classForm.subject, cbseClassSubjects]);
 
   // Cookie-based auth — no Authorization header needed.
   // Kept as a thin pass-through so existing callsites don't break.
@@ -533,20 +546,30 @@ const EmployeeDashboard = () => {
                         disabled={!classForm.class_name}
                       >
                         <option value="">Select Subject</option>
-                        {(cbseClassSubjects[classForm.class_name] || []).map(subject => (
+                        {Object.keys(cbseClassSubjects[classForm.class_name] || {}).map(subject => (
                           <option key={subject} value={subject}>{subject}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Chapter</label>
-                      <input
-                        type="text"
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Chapter *</label>
+                      <select
                         value={classForm.chapter}
                         onChange={(e) => setClassForm({...classForm, chapter: e.target.value})}
-                        placeholder="Enter chapter name"
                         className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
+                        disabled={!classForm.subject || chapters.length === 0}
+                      >
+                        <option value="">
+                          {!classForm.subject
+                            ? 'Select subject first'
+                            : chapters.length === 0
+                              ? 'No chapters found for this subject'
+                              : 'Select Chapter'}
+                        </option>
+                        {chapters.map(ch => (
+                          <option key={ch} value={ch}>{ch}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">Google Sheet Link *</label>
@@ -730,3 +753,4 @@ const EmployeeDashboard = () => {
 };
 
 export default EmployeeDashboard;
+

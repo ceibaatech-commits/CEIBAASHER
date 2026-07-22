@@ -73,8 +73,8 @@ export const ParentsModePanel = () => {
     <>
       {/* Confirmation Modal */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] flex items-end md:items-center justify-center p-0 md:p-4">
+          <div className="bg-white rounded-t-2xl md:rounded-2xl max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
@@ -116,8 +116,11 @@ export const ParentsModePanel = () => {
         </div>
       )}
 
-      {/* Card */}
-      <div className="bg-white rounded-2xl p-5 md:p-6 mb-6 shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border border-slate-100" data-testid="parents-mode-panel">
+      {/* Card — edge-to-edge on mobile, rounded card on desktop */}
+      <div
+        className="bg-white p-5 md:p-6 mb-4 md:mb-6 shadow-none md:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.08)] border-0 md:border md:border-slate-100 rounded-none md:rounded-2xl"
+        data-testid="parents-mode-panel"
+      >
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 ${
@@ -167,3 +170,4 @@ export const ParentsModePanel = () => {
     </>
   );
 };
+

@@ -9,8 +9,8 @@ const SEO = ({
   canonical = window.location.href 
 }) => {
   // Default values
-  const defaultTitle = "Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for 38+ Competitive Exams";
-  const defaultDescription = "Master 38+ competitive exams with Ceibaa's free online test series, MCQs, and practice quizzes. Prepare for JEE 2026, NEET 2026, UPSC, SSC & more with live battles.";
+  const defaultTitle = "Ceibaa 2026 - Test Series, MCQ & Free Practice Quizzes for 60+ Competitive Exams";
+  const defaultDescription = "Master 60+ competitive exams with Ceibaa's free online test series, MCQs, and practice quizzes. Prepare for JEE 2026, NEET 2026, UPSC, SSC & more with live battles.";
   const defaultKeywords = "competitive exams 2026, test series, MCQ practice, free quiz, online mock tests, exam preparation";
 
   // Generate exam-specific title if examName is provided

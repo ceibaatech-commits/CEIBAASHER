@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, User, Award, GraduationCap, Mail, CheckCircle2, XCircle, MessageSquare, Download } from 'lucide-react';
+import { ArrowLeft, User, Award, GraduationCap, Mail, CheckCircle2, XCircle, MessageSquare, Download, FileText } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -83,6 +83,13 @@ export default function ManageApplicants() {
                         'bg-[#4f7cff]/20 text-[#4f7cff]'
                       }`}>{app.status}</span>
                       <div className="flex gap-1 mt-1">
+                        <button
+                          onClick={() => navigate(`/recruiter/candidate/${app.user_id}/resume`)}
+                          className="px-2 py-1 bg-[#4f7cff]/10 text-[#4f7cff] rounded text-xs hover:bg-[#4f7cff]/20 flex items-center gap-1"
+                          data-testid={`view-resume-${app.id}`}
+                        >
+                          <FileText size={12} /> Resume
+                        </button>
                         {app.status !== 'shortlisted' && <button onClick={() => updateStatus(app.id, 'shortlisted')} className="px-2 py-1 bg-[#22c55e]/10 text-[#22c55e] rounded text-xs hover:bg-[#22c55e]/20" data-testid={`shortlist-${app.id}`}>Shortlist</button>}
                         {app.status !== 'rejected' && <button onClick={() => updateStatus(app.id, 'rejected')} className="px-2 py-1 bg-[#ef4444]/10 text-[#ef4444] rounded text-xs hover:bg-[#ef4444]/20" data-testid={`reject-${app.id}`}>Reject</button>}
                         {app.status === 'shortlisted' && <button onClick={() => updateStatus(app.id, 'offer')} className="px-2 py-1 bg-[#f59e0b]/10 text-[#f59e0b] rounded text-xs hover:bg-[#f59e0b]/20" data-testid={`offer-${app.id}`}>Send Offer</button>}

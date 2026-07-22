@@ -387,3 +387,4 @@ async def seed_super_admin(database) -> None:
     except Exception as e:
         print(f"[ADMIN_AUTH] Failed to seed super admin: {e}")
 
+ 

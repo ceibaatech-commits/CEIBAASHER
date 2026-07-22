@@ -5,6 +5,7 @@ import {
 import {
   ACTION_BAR_OFFSET, BOTTOM_SAFE, optionLetters, optionKey,
 } from './constants';
+import { renderMathText } from '../../utils/renderMath';
 
 const formatTime = (sec) => {
   const s = Math.max(0, Math.floor(sec));
@@ -277,17 +278,36 @@ const QuizScreen = ({
               data-testid="quiz-question-text"
               className="text-slate-900 font-bold text-[20px] sm:text-[28px] leading-snug tracking-tight mb-5 sm:mb-8 whitespace-pre-line break-words outline-none"
             >
-              {q.question}
+              {renderMathText(q.question)}
             </h2>
+
+            {/* Question diagram (if provided via sheet's "Question Image" column) */}
+            {q.question_image && (
+              <div className="mb-5 sm:mb-8 -mt-2">
+                <img
+                  src={q.question_image.startsWith('/api')
+                    ? `${window.location.origin}${q.question_image}`
+                    : q.question_image}
+                  alt="Question diagram"
+                  loading="lazy"
+                  className="max-w-full h-auto rounded-xl border border-slate-200 shadow-sm bg-white"
+                  style={{ maxHeight: '340px', objectFit: 'contain' }}
+                />
+              </div>
+            )}
 
             {/* Selector Modules */}
             <div className="space-y-2.5">
               {optionLetters.map((letter) => {
-                const val = q[optionKey(letter)];
-                if (!val) return null;
+                const rawVal = q[optionKey(letter)];
+                if (!rawVal && rawVal !== 0) return null;
+                // Option may be a plain string OR an object { text, image }
+                const isObj = typeof rawVal === 'object' && rawVal !== null;
+                const optText = isObj ? (rawVal.text ?? '') : String(rawVal);
+                const optImage = isObj ? rawVal.image : null;
                 const isCorrect = isCorrectLetter(letter);
                 const isSelected = letter === selected;
-                
+
                 return (
                   <button
                     key={letter}
@@ -297,7 +317,18 @@ const QuizScreen = ({
                     className={`group w-full flex items-center justify-between gap-3 rounded-xl border-2 p-4 text-left transition-all ${optStyle(letter)}`}
                   >
                     <span className="text-[14px] sm:text-base leading-relaxed font-medium flex-1 whitespace-pre-line break-words">
-                      {String(val)}
+                      {optImage && (
+                        <img
+                          src={optImage.startsWith('/api')
+                            ? `${window.location.origin}${optImage}`
+                            : optImage}
+                          alt={`Option ${letter}`}
+                          loading="lazy"
+                          className="mb-2 max-w-full h-auto rounded-md border border-slate-200 bg-white"
+                          style={{ maxHeight: '140px', objectFit: 'contain' }}
+                        />
+                      )}
+                      {optText && renderMathText(optText)}
                     </span>
                     {locked && isSelected && (
                       isCorrect ? (
@@ -322,7 +353,7 @@ const QuizScreen = ({
                     Explanation
                   </p>
                   <div className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-                    {String(q.explanation)}
+                    {renderMathText(String(q.explanation))}
                   </div>
                 </div>
               </div>

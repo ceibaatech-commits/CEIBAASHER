@@ -101,6 +101,8 @@ import ApplyJob from "@/pages/ApplyJob";
 import QuizAttempt from "@/pages/QuizAttempt";
 import HackathonDetail from "@/pages/HackathonDetail";
 import MyApplications from "@/pages/MyApplications";
+import ResumeBuilder from "@/pages/ResumeBuilder";
+import ResumeCandidateView from "@/pages/ResumeCandidateView";
 import InstitutePanel from "@/pages/InstitutePanel";
 import InstituteHub from "@/pages/InstituteHub";
 import InstituteOwnerLogin from "@/pages/InstituteOwnerLogin";
@@ -256,6 +258,8 @@ function App() {
           <Route path="/quiz-recruit/:quizId" element={<QuizAttempt />} />
           <Route path="/hackathon/:hackId" element={<HackathonDetail />} />
           <Route path="/my-applications" element={<MyApplications />} />
+          <Route path="/resume" element={<ResumeBuilder />} />
+          <Route path="/recruiter/candidate/:userId/resume" element={<ResumeCandidateView />} />
 
           {/* Coaching Institute Panel */}
           <Route path="/institute/login" element={<InstituteOwnerLogin />} />

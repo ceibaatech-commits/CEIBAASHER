@@ -67,16 +67,24 @@ async def get_chapters(class_param: str = None, subject: str = None, board: str 
         import re as _re_local
         board_filter = {"$regex": f"^{_re_local.escape(board_name)}$", "$options": "i"}
         subject_filter = {"$regex": f"^{_re_local.escape(normalized_subject)}$", "$options": "i"}
-        
+        # Class 11/12 in the admin panel are frequently saved as
+        # "Class 11 (Science)", "Class 11 (Commerce)", "Class 11 (Arts)" etc.
+        # Use a regex that matches the base "Class N" as well as any
+        # "Class N (…)" variant so admin-uploaded chapters are always found.
+        class_name_filter = {
+            "$regex": f"^Class\\s+{_re_local.escape(class_number)}(\\s*\\(|\\s*$)",
+            "$options": "i",
+        }
+
         # PRIORITY 1: Try to fetch from database (admin-uploaded chapters).
         # Case-insensitive board + subject so legacy "HBSE" rows and
         # mixed-case subject entries also resolve correctly.
         db_chapters = await db.class_chapters.find({
             "board": board_filter,
-            "class_name": class_name,
+            "class_name": class_name_filter,
             "subject": subject_filter
         }, {"_id": 0}).sort("chapter_number", 1).to_list(None)
-        
+
         if db_chapters:
             # Format database chapters to match API response structure
             chapters = []
@@ -89,7 +97,7 @@ async def get_chapters(class_param: str = None, subject: str = None, board: str 
                     "duration": ch.get("duration", 35)
                 })
         else:
-            # PRIORITY 2: Get chapters from dynamic board or hardcoded data
+            # PRIORITY 2: Dynamic-board lookup for custom boards, else hardcoded.
             if is_dynamic_board(board):
                 chapters = await get_dynamic_board_chapter_cards(db, class_number, normalized_subject, board)
             else:
@@ -191,7 +199,10 @@ async def get_chapter_questions(
         
         # Build query
         query = {
-            "class_name": f"Class {class_number}",
+            "class_name": {
+                "$regex": f"^Class\\s+{re.escape(class_number)}(\\s*\\(|\\s*$)",
+                "$options": "i",
+            },
             "chapter_number": chapter
         }
 
@@ -248,7 +259,10 @@ async def start_chapter_test(
         
         # Build query
         query = {
-            "class_name": f"Class {class_number}",
+            "class_name": {
+                "$regex": f"^Class\\s+{re.escape(class_number)}(\\s*\\(|\\s*$)",
+                "$options": "i",
+            },
             "chapter_number": chapter
         }
 

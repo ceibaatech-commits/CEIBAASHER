@@ -294,3 +294,9 @@ code {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* Battle button styles have moved to /components/BattleButton.css
+   (rendered by <BattleButton /> component — no longer a Tailwind class). */
+
+
+

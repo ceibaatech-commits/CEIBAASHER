@@ -8,6 +8,7 @@ import Footer from '../components/Footer';
 import SEO from '../components/SEO';
 import '../components/LanguageGameCard.css';
 import '../styles/exam-detail-mobile.css';
+import BattleButton from '../components/BattleButton';
 
 const API_URL = window.location.origin;
 
@@ -505,16 +506,12 @@ const ModernExamSyllabus = () => {
                       </span>
                       <span>{examData?.game_mode ? 'Team' : 'Room'}</span>
                     </button>
-                    <button 
+                    <BattleButton
+                      className="w-full"
+                      icon={<BattleInteractIcon className="w-3.5 h-3.5" />}
+                      label={examData?.game_mode ? '1v1' : 'Battle'}
                       onClick={() => navigate(`/matchmaking/${examId}/${topic.syllabus_topic}/${topic.subject}`)}
-                      className={`${examData?.game_mode ? 'bg-gradient-to-r from-rose-600 to-red-600' : 'bg-gradient-to-r from-rose-600 to-red-600'} text-white py-2.5 px-3 rounded-xl text-sm font-bold tracking-tight hover:shadow-lg transition-all flex items-center justify-center gap-1.5`}
-                      style={{ minHeight: '40px' }}
-                    >
-                      <span className="w-6 h-6 rounded-md bg-white/20 inline-flex items-center justify-center">
-                        <BattleInteractIcon className="w-3.5 h-3.5" />
-                      </span>
-                      <span>{examData?.game_mode ? '1v1' : 'Battle'}</span>
-                    </button>
+                    />
                   </div>
                 </div>
               </div>
@@ -673,5 +670,6 @@ const ModernExamSyllabus = () => {
 };
 
 export default ModernExamSyllabus;
+
 
 
