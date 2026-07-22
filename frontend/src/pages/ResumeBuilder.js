@@ -55,7 +55,7 @@ export default function ResumeBuilder() {
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [authLoading]);
 
   const save = async () => {

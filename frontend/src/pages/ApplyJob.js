@@ -19,7 +19,7 @@ export default function ApplyJob() {
   const [error, setError] = useState('');
   const [resumeStatus, setResumeStatus] = useState({ loaded: false, hasContent: false });
 
-  useEffect(() => { fetchPost(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [jobId]);
+  useEffect(() => { fetchPost(); /* eslint-disable-next-line */ }, [jobId]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -38,7 +38,7 @@ export default function ApplyJob() {
         setResumeStatus({ loaded: true, hasContent: false });
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [authLoading]);
 
   const fetchPost = async () => {
