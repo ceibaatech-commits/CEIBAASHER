@@ -1,0 +1,36 @@
+{
+  "summary": "Iteration 35 — Retest of auth-race regression fixes in ResumeBuilder.js and ApplyJob.js. Both flows now PASS end-to-end. Backend NOT re-tested per instruction (iteration_34 was 11/11 green).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Dev-server ESLint overlay",
+        "issues": [
+          "CRA 'Compiled with problems' overlay appears in dev because both files use `// eslint-disable-next-line react-hooks/exhaustive-deps` while the project's ESLint config does not have the `react-hooks/exhaustive-deps` rule registered (Definition for rule 'react-hooks/exhaustive-deps' was not found — ApplyJob.js:22 & 41, ResumeBuilder.js:58). Not a functional bug (I dismissed the overlay via DOM removal and everything worked), but it will nag every dev reload and can occasionally intercept clicks. Fix: either add `eslint-plugin-react-hooks` to the config or change the disable comment to a plain `// eslint-disable-next-line` (no rule name)."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_35.json"
+  ],
+  "action_items": [
+    "(Nice-to-have) Add `eslint-plugin-react-hooks` or drop the rule name from the eslint-disable comments in ResumeBuilder.js (line 58) and ApplyJob.js (lines 22, 41) to silence the CRA dev overlay.",
+    "(Follow-up from iter 34, still valid) Consider centralising the `if (authLoading) return;` guard in a `useRequireAuth()` hook so future pages don't regress."
+  ],
+  "critical_code_review_comments": [
+    "Fix verified: ResumeBuilder.js line 43 `if (authLoading) return;` gates the auth check; deps `[authLoading]` correctly re-runs after AuthProvider hydrates. Good.",
+    "Fix verified: ApplyJob.js line 25 `if (authLoading) return;` in the resume-status useEffect; deps `[authLoading]` triggers post-hydration fetch. Good.",
+    "Nit: ApplyJob.js has TWO useEffects that both use `// eslint-disable-next-line react-hooks/exhaustive-deps`. If AuthContext were to later expose a stable `isAuthenticated` reference, adding it to deps would be safer than disabling exhaustive-deps."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "not re-tested (100% in iter 34)", "frontend": "100% (7/7 checkpoints)"},
+  "test_credentials": "demo1 via POST /api/auth/demo-login (username=demo1, password=demo1) — 200 OK.",
+  "seed_data_creation": "Added a temporary experience entry (role='Software Engineer Intern', company='TEST_ACME_CORP') to demo1's resume via PUT /api/recruitment/resume/me to satisfy the emerald-variant assertion on /apply. Reset to empty at end of run (final PUT returned 200) — no residual test data.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Both auth-race regressions from iteration_34 are fully resolved. Verified checkpoints on /apply/post-tcs-intern-001 and /resume against https://mobile-search-fix-1.preview.emergentagent.com using demo1. Test flow: (1) demo-login via API + set localStorage.ceibaa_user, (2) reset demo1 resume, (3) goto /resume, assert resume-builder-page + 'Build Your Resume', (4) add-experience-btn + fill role/company + save-btn → 'Resume saved' toast, (5) reload /resume → entry persists, (6) preview-btn → resume-view rendered with role/company, (7) goto /apply/post-tcs-intern-001 → resume-status-card visible with `bg-emerald-50 border-emerald-200` class, edit-resume-btn present and navigates to /resume. Cleanup PUT resets the resume. If retesting, note the ESLint dev overlay may cover the viewport — dismiss via `document.getElementById('webpack-dev-server-client-overlay')?.remove()` or add eslint-plugin-react-hooks to project.",
+  "rca of the issue": "N/A — fix confirmed. Original RCA (iter 34): child useEffects fired before AuthProvider's hydration useEffect, so isAuthenticated() returned false on first render. Current fix uses `authLoading` guard + deps=[authLoading], which delays the auth check until after AuthProvider sets loading=false following localStorage read. Verified via full E2E on preview URL."
+}

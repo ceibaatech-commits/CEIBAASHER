@@ -10,7 +10,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function ApplyJob() {
   const { jobId } = useParams();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,10 +19,10 @@ export default function ApplyJob() {
   const [error, setError] = useState('');
   const [resumeStatus, setResumeStatus] = useState({ loaded: false, hasContent: false });
 
-  // eslint-disable-next-line
-  useEffect(() => { fetchPost(); }, [jobId]);
+  useEffect(() => { fetchPost(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [jobId]);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated?.()) return;
     (async () => {
       try {
@@ -38,8 +38,8 @@ export default function ApplyJob() {
         setResumeStatus({ loaded: true, hasContent: false });
       }
     })();
-    // eslint-disable-next-line
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading]);
 
   const fetchPost = async () => {
     try {

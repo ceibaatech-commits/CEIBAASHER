@@ -32,7 +32,7 @@ const SECTION_BLANKS = {
 };
 
 export default function ResumeBuilder() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [resume, setResume] = useState(EMPTY);
   const [loading, setLoading] = useState(true);
@@ -40,6 +40,7 @@ export default function ResumeBuilder() {
   const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated?.()) {
       navigate('/login');
       return;
@@ -54,8 +55,8 @@ export default function ResumeBuilder() {
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading]);
 
   const save = async () => {
     setSaving(true);
